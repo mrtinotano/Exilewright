@@ -1,0 +1,9 @@
+# raw game dump: regenerate with poe2_data/_tool/extract.mjs (see poe2_data/README.md)
+poe2_data/tables/
+poe2_data/files/
+poe2_data/all_files.txt
+poe2_data/schema.json
+poe2_data/failed_tables.txt
+poe2_data/digest/
+node_modules/
+__pycache__/

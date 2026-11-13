@@ -1,0 +1,209 @@
+[
+ {
+  "name": "Titan",
+  "class": "Warrior",
+  "attrs": {
+   "str": 15,
+   "dex": 7,
+   "int": 7
+  }
+ },
+ {
+  "name": "Warbringer",
+  "class": "Warrior",
+  "attrs": {
+   "str": 15,
+   "dex": 7,
+   "int": 7
+  }
+ },
+ {
+  "name": "Smith of Kitava",
+  "class": "Warrior",
+  "attrs": {
+   "str": 15,
+   "dex": 7,
+   "int": 7
+  }
+ },
+ {
+  "name": "Deadeye",
+  "class": "Ranger",
+  "attrs": {
+   "str": 7,
+   "dex": 15,
+   "int": 7
+  }
+ },
+ {
+  "name": "Pathfinder",
+  "class": "Ranger",
+  "attrs": {
+   "str": 7,
+   "dex": 15,
+   "int": 7
+  }
+ },
+ {
+  "name": "Amazon",
+  "class": "Huntress",
+  "attrs": {
+   "str": 7,
+   "dex": 15,
+   "int": 7
+  }
+ },
+ {
+  "name": "Spirit Walker",
+  "class": "Huntress",
+  "attrs": {
+   "str": 7,
+   "dex": 15,
+   "int": 7
+  }
+ },
+ {
+  "name": "Ritualist",
+  "class": "Huntress",
+  "attrs": {
+   "str": 7,
+   "dex": 15,
+   "int": 7
+  }
+ },
+ {
+  "name": "Infernalist",
+  "class": "Witch",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Blood Mage",
+  "class": "Witch",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Lich",
+  "class": "Witch",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Abyssal Lich",
+  "class": "Witch",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Stormweaver",
+  "class": "Sorceress",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Chronomancer",
+  "class": "Sorceress",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Disciple of Varashta",
+  "class": "Sorceress",
+  "attrs": {
+   "str": 7,
+   "dex": 7,
+   "int": 15
+  }
+ },
+ {
+  "name": "Tactician",
+  "class": "Mercenary",
+  "attrs": {
+   "str": 11,
+   "dex": 11,
+   "int": 7
+  }
+ },
+ {
+  "name": "Witchhunter",
+  "class": "Mercenary",
+  "attrs": {
+   "str": 11,
+   "dex": 11,
+   "int": 7
+  }
+ },
+ {
+  "name": "Gemling Legionnaire",
+  "class": "Mercenary",
+  "attrs": {
+   "str": 11,
+   "dex": 11,
+   "int": 7
+  }
+ },
+ {
+  "name": "Oracle",
+  "class": "Druid",
+  "attrs": {
+   "str": 11,
+   "dex": 7,
+   "int": 11
+  }
+ },
+ {
+  "name": "Shaman",
+  "class": "Druid",
+  "attrs": {
+   "str": 11,
+   "dex": 7,
+   "int": 11
+  }
+ },
+ {
+  "name": "Martial Artist",
+  "class": "Monk",
+  "attrs": {
+   "str": 7,
+   "dex": 11,
+   "int": 11
+  }
+ },
+ {
+  "name": "Invoker",
+  "class": "Monk",
+  "attrs": {
+   "str": 7,
+   "dex": 11,
+   "int": 11
+  }
+ },
+ {
+  "name": "Acolyte of Chayula",
+  "class": "Monk",
+  "attrs": {
+   "str": 7,
+   "dex": 11,
+   "int": 11
+  }
+ }
+]

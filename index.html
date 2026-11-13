@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>PoE2 Planner</title>
+<style>
+  :root { --bg:#111; --panel:#1b1b1b; --line:#333; --txt:#ddd; --acc:#c8a050; }
+  * { box-sizing: border-box; }
+  body { margin:0; display:flex; height:100vh; background:var(--bg); color:var(--txt); font:13px system-ui, sans-serif; }
+  aside { width:320px; overflow:auto; padding:10px; background:var(--panel); border-right:1px solid var(--line); }
+  main { flex:1; display:flex; flex-direction:column; min-width:0; }
+  nav button { background:none; border:0; color:var(--txt); padding:8px 14px; cursor:pointer; }
+  nav button.on { color:var(--acc); border-bottom:2px solid var(--acc); }
+  .view { flex:1; position:relative; min-height:0; }
+  .view[hidden] { display:none; }
+  canvas { display:block; width:100%; height:100%; }
+  input, select, textarea, button { background:#222; color:var(--txt); border:1px solid var(--line); padding:4px; font:inherit; }
+  input, select, textarea { width:100%; }
+  label { display:block; margin-top:8px; color:#999; }
+  h3 { margin:14px 0 4px; color:var(--acc); font-size:13px; }
+  ul { list-style:none; padding:0; margin:4px 0; }
+  li { display:flex; gap:4px; align-items:center; padding:2px 0; }
+  li span { flex:1; }
+  li input[type=number] { width:60px; }
+  .row { display:flex; gap:4px; margin-top:6px; }
+  #tip, #hud { position:absolute; pointer-events:none; background:#000c; padding:6px 8px; border:1px solid var(--line); white-space:pre; }
+  #hud { left:8px; top:8px; }
+  #items, #skills { overflow:auto; padding:10px; }
+  .skills { max-width:620px; background:#141210; border:1px solid #4a4134; padding:8px; }
+  .skill { display:flex; gap:8px; margin-bottom:8px; }
+  .sicon { width:72px; height:72px; border:1px solid #4a4134; background:#000; flex:none; }
+  .sbody { flex:1; } .shead { background:#24211d; border:1px solid #3a342c; padding:3px 6px; font-family:Georgia, serif; color:#ddd; }
+  .shead input { width:46px; padding:1px; } .shead b { font-weight:normal; font-size:15px; margin-left:6px; }
+  .shead { display:flex; align-items:center; gap:4px; } .sockn { margin-left:auto; color:#888; font-size:11px; white-space:nowrap; } .sockn select { width:auto; padding:0; }
+  .socks { display:flex; gap:6px; padding:6px; background:#1a1815; border:1px solid #2a2622; border-top:0; }
+  .sock { width:42px; height:42px; border-radius:50%; border:3px solid #6b5a3a; background:#0a0a0a; padding:0; cursor:pointer; overflow:hidden; }
+  .sock.main { border-color:#9a9a9a; cursor:default; display:inline-block; }
+  .sock img { width:100%; height:100%; border-radius:50%; } .sock.on { outline:2px solid var(--acc); }
+  .pick { margin-top:4px; } .cap { text-align:center; padding:8px; border-top:1px solid #3a342c; font-family:Georgia, serif; }
+  .inv { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+  .doll { display:grid; grid-template-columns:repeat(8, 52px); grid-template-rows:repeat(8, 52px); gap:4px; padding:12px; width:max-content;
+    background:#1c1a17; border:1px solid #4a4134; }
+  .cell { background:#0b0b0b; border:1px solid #3a342c; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; }
+  .cell img { max-width:100%; max-height:100%; }
+  .cell span { color:#555; font-size:10px; text-align:center; padding:2px; }
+  .cell.magic { border-color:#5555aa; } .cell.rare { border-color:#99993f; } .cell.unique { border-color:#af6025; }
+  .cell.sel { outline:2px solid var(--acc); }
+  .jewels { display:flex; flex-wrap:wrap; gap:4px; max-width:460px; } .jewels .cell { width:52px; height:52px; }
+  .editor { flex:1; min-width:320px; max-width:480px; }
+  .editor section { background:var(--panel); border:1px solid var(--line); padding:8px; }
+  .editor h3 { margin-top:0; display:flex; justify-content:space-between; }
+  .tip { flex:1; background:#000; border:1px solid #444; text-align:center; font-family:Georgia, serif; }
+  .tip .head { padding:4px; font-size:15px; border-bottom:1px solid; }
+  .tip.normal .head { color:#c8c8c8; background:#222; } .tip.magic .head { color:#8888ff; background:#1a1a33; }
+  .tip.rare .head { color:#ffff77; background:#332e10; } .tip.unique .head { color:#af6025; background:#2b1a0d; }
+  .tip .body { padding:6px; } .tip hr { border:0; border-top:1px solid #3a3a3a; margin:5px 20%; }
+  .prop { color:#7f7f7f; } .prop span { color:#fff; }
+  .mod { padding:1px 0; color:#8888ff; } .mod.off { color:#666; } .mod small { color:#666; margin-left:4px; }
+  .mod input { width:56px; padding:1px; } .mod button { padding:0 4px; margin-left:4px; }
+  .note { color:#888; font-size:12px; }
+  #stats { white-space:pre; font-family:monospace; font-size:11px; color:#aaa; }
+</style>
+</head>
+<body>
+<aside>
+  <div class="row">
+    <select id="buildList"></select>
+    <button id="newBuild">Nueva</button>
+    <button id="delBuild">Borrar</button>
+  </div>
+  <label>Nombre <input id="name"></label>
+  <label>Ascendencia <select id="asc"></select></label>
+
+  <h3>Habilidades</h3>
+  <input id="gemSearch" list="gemNames" placeholder="Añadir gema…">
+  <datalist id="gemNames"></datalist>
+  <ul id="gems"></ul>
+
+  <h3>Nodos de ascendencia</h3>
+  <ul id="ascNodes"></ul>
+
+  <h3>Notas</h3>
+  <textarea id="notes" rows="5"></textarea>
+
+  <h3>Stats: árbol + equipo (<span id="points">0</span> puntos)</h3>
+  <div id="stats"></div>
+
+  <div class="row">
+    <button id="export">Exportar</button>
+    <button id="import">Importar</button>
+    <input id="importFile" type="file" accept=".json" hidden>
+  </div>
+</aside>
+<main>
+  <nav><button data-v="tree" class="on">Árbol</button><button data-v="items">Equipo</button><button data-v="skills">Habilidades</button><button data-v="scene">Escena 3D</button></nav>
+  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><div id="tip" hidden></div></div>
+  <div class="view" id="items" hidden></div>
+  <div class="view" id="skills" hidden></div>
+  <div class="view" id="scene" hidden><div id="hud"></div></div>
+</main>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
