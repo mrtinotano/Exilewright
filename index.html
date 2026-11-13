@@ -23,7 +23,14 @@
   li span { flex:1; }
   li input[type=number] { width:60px; }
   .row { display:flex; gap:4px; margin-top:6px; }
-  #tip, #hud { position:absolute; pointer-events:none; background:#000c; padding:6px 8px; border:1px solid var(--line); white-space:pre; }
+  #hud { position:absolute; pointer-events:none; background:#000c; padding:6px 8px; border:1px solid var(--line); white-space:pre; }
+  #tip { position:absolute; pointer-events:none; max-width:380px; background:#0b0a08f2; border:1px solid #5a4a30; font-family:Georgia, serif; text-align:center; box-shadow:0 4px 18px #000; }
+  #tip .th { padding:6px 12px 4px; font-size:16px; color:#c8b890; background:linear-gradient(#2a241b, #16130e); border-bottom:1px solid #5a4a30; }
+  #tip .th small { display:block; font-size:11px; color:#8a7a5c; }
+  #tip.tip-notable .th { color:#e8c872; } #tip.tip-keystone .th { color:#f0a860; } #tip.tip-jewel .th { color:#7fc0e0; } #tip.tip-root .th { color:#f0e0b0; }
+  #tip .tb { padding:6px 12px; color:#8888ff; font-size:13px; line-height:1.45; }
+  #tip .tf { padding:4px 12px 6px; color:#7a6e58; font-size:11px; border-top:1px solid #2a2418; }
+  #treeCanvas { cursor:grab; }
   #hud { left:8px; top:8px; }
   #items, #skills { overflow:auto; padding:10px; }
   .skills { max-width:620px; background:#141210; border:1px solid #4a4134; padding:8px; }
@@ -75,9 +82,6 @@
   <input id="gemSearch" list="gemNames" placeholder="Añadir gema…">
   <datalist id="gemNames"></datalist>
   <ul id="gems"></ul>
-
-  <h3>Nodos de ascendencia</h3>
-  <ul id="ascNodes"></ul>
 
   <h3>Notas</h3>
   <textarea id="notes" rows="5"></textarea>

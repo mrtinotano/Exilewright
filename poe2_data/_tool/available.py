@@ -24,11 +24,12 @@ def save(name, data):
 
 
 def parse_psg(path):
-    """Passive tree graph: returns {node_id: [connected ids]}, class root ids and {node_id: (x, y)}."""
+    """Passive tree graph: returns {node_id: [connected ids]}, class root ids, {node_id: (x, y)},
+    group centres [(x, y)], {node_id: (group index, orbit)} and the orbit radii (the app draws same-orbit links as arcs)."""
     d = open(path, 'rb').read()
     per_orbit = d[3:13]
     radii = (0, 82, 162, 335, 493, 662, 846, 251, 1080, 1322)  # note: PoB constants, re-check if the tree looks warped
-    pos = {}
+    pos, centres, orbit = {}, [], {}
     o = 13
     n, = struct.unpack_from('<I', d, o); o += 4
     roots = [struct.unpack_from('<I', d, o + 8 * i)[0] for i in range(n)]; o += 8 * n
@@ -36,14 +37,16 @@ def parse_psg(path):
     graph = {}
     for _ in range(groups):
         gx, gy = struct.unpack_from('<ff', d, o); o += 17  # x f32, y f32, flags u32, unk u32, unk u8
+        centres.append((round(gx), round(gy)))
         nc, = struct.unpack_from('<I', d, o); o += 4
         for _ in range(nc):
             nid, orb, idx, cc = struct.unpack_from('<IIII', d, o); o += 16
             a = 2 * math.pi * idx / per_orbit[orb]
             pos[nid] = (round(gx + radii[orb] * math.sin(a)), round(gy - radii[orb] * math.cos(a)))
+            orbit[nid] = (len(centres) - 1, orb)
             graph[nid] = [struct.unpack_from('<I', d, o + 8 * i)[0] for i in range(cc)]; o += 8 * cc
     assert o == len(d), 'psg layout changed, update parse_psg'
-    return graph, roots, pos
+    return graph, roots, pos, centres, orbit, radii
 
 
 os.makedirs(OUT, exist_ok=True)
@@ -113,7 +116,7 @@ for i, g in enumerate(skill_gems):
 save('gems.json', gems)
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)
-graph, roots, pos = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))
+graph, roots, pos, centres, orbit, radii = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))
 asc = load('Ascendancy')
 passives, passives_es = load('PassiveSkills'), {p['PassiveSkillGraphId']: p for p in load('PassiveSkills', 'Spanish')}
 by_gid = {p['PassiveSkillGraphId']: p for p in passives}
@@ -131,7 +134,8 @@ for gid, conns in graph.items():
         'ascendancy': a, 'ascendancy_start': p['IsAscendancyStartingNode'],
         'stats': {stats[s]['Id']: v for s, v in zip(p['Stats'], vals)},
         'grants_skill': bases[skill_gems[p['GrantedSkill']]['BaseItemType']]['Name'] if p['GrantedSkill'] is not None else None,
-        'links': conns, 'x': pos[gid][0], 'y': pos[gid][1],
+        'icon': p.get('Icon_DDSFile') or None,
+        'links': conns, 'x': pos[gid][0], 'y': pos[gid][1], 'group': orbit[gid][0], 'orbit': orbit[gid][1],
     }
 for n in nodes.values():  # links are directed in the file; make undirected and drop removed nodes
     n['links'] = [c for c in n['links'] if c in nodes]
@@ -142,11 +146,14 @@ for gid, n in nodes.items():
 # what an "Attribute" node turns into when you pick one (hidden passives the game swaps in)
 attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(p['Stats'])}
              for p in passives for k in ('strength', 'dexterity', 'intelligence') if p['Id'].startswith('generic_attribute_' + k)}
-save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'nodes': {str(k): v for k, v in nodes.items()}})
+save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
 
 # --- ascendancies / classes
 chars = load('Characters')
 save('ascendancies.json', [{'name': a['Name'], 'class': chars[a['Character']]['Name'] if a['Character'] is not None else None,
+                            # art for the tree's central circle: the ascendancy's own, else its class's
+                            'tree_image': a.get('PassiveTreeImage') or None,
+                            'class_tree_image': chars[a['Character']].get('PassiveTreeImage') or None if a['Character'] is not None else None,
                             'attrs': {'str': chars[a['Character']]['BaseStrength'], 'dex': chars[a['Character']]['BaseDexterity'], 'int': chars[a['Character']]['BaseIntelligence']}
                             if a['Character'] is not None else None} for a in asc if ok(a['Name'])])
 

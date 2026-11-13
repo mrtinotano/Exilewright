@@ -1,4 +1,4 @@
-"""Item art straight from the game: extracts each base's and unique's .dds (via getfiles.mjs) and converts it to
+"""Item, gem and passive tree art straight from the game: extracts each base's and unique's .dds (via getfiles.mjs) and converts it to
 ../available/img/<path>.webp at half size. Usage: python images.py <gameDir>   (run after available.py and uniques.py)"""
 import json, os, subprocess, sys
 from PIL import Image
@@ -9,6 +9,10 @@ uniques = json.load(open(os.path.join(ROOT, 'available', 'unique_items.json'), e
 paths = {b['img'] for b in items['bases'] if b['img']} | {items['unique_img'][u['name']] for u in uniques if u['name'] in items['unique_img']}
 gems = json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8'))
 paths |= {g['icon'] for g in gems if g.get('icon')} | {g['socket_icon'] for g in gems if g.get('socket_icon')}
+tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), encoding='utf8'))
+ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
+paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
+paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
 paths = sorted(p.lower() for p in paths)
 todo = [p for p in paths if not os.path.exists(os.path.join(ROOT, 'files', p))]
 if todo:
