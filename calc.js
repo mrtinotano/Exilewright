@@ -2,7 +2,7 @@
 // Numbers that only the game install can give (class base life/mana, skill damage per level) come from
 // skills.json / ascendancies.json once the data is regenerated on Windows (see the to-do notes);
 // until then skilldata.js fills them from pob2.json, and what neither has is null and shown as "—".
-import { t, fmt } from './i18n.js';
+import { t, tn, fmt } from './i18n.js';
 import { weaponStats } from './items.js';
 import { SK } from './skilldata.js';
 
@@ -277,4 +277,13 @@ export function skill(g, b, treeGear) {
     out.dps = out.avg * (1 + c * (out.critBonus || 0) / 100) * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   return out;
+}
+
+// The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
+export function snapshot(b, sum) {
+  const c = character(b, sum), r = recovery(c, sum), R = c.res;
+  return { life: c.life, es: c.es, mana: c.mana, spirit: c.spirit, armour: c.armour, evasion: c.evasion, block: c.block,
+    fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs,
+    lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
+    dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };
 }

@@ -312,5 +312,10 @@
  "Import as a new build": "นำเข้าเป็นบิลด์ใหม่",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "ตั้งแต่ 0.5 ตัววางแผนบิลด์ในเกมโหลดไฟล์ .build ได้: บันทึกไว้ที่ Documents/My Games/Path of Exile 2/BuildPlanner ไฟล์มีทรี แอสเซนแดนซี และเจมพร้อมซัพพอร์ต ส่วนเลเวลเจมและอุปกรณ์จะอยู่ในโน้ต",
  ".build file for the game": "ไฟล์ .build สำหรับเกม",
- "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "หากต้องการนำอุปกรณ์มา ให้ชี้ที่ไอเทมในเกม กด Ctrl+C แล้ววางในหน้าอุปกรณ์ ปุ่มคัดลอก (⧉) บนไอเทมให้ข้อความสำหรับ Path of Building และเว็บเทรด"
+ "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "หากต้องการนำอุปกรณ์มา ให้ชี้ที่ไอเทมในเกม กด Ctrl+C แล้ววางในหน้าอุปกรณ์ ปุ่มคัดลอก (⧉) บนไอเทมให้ข้อความสำหรับ Path of Building และเว็บเทรด",
+ "If you allocate it": "หากจัดสรร",
+ "If you remove it": "หากนำออก",
+ "No change in the calculated numbers": "ค่าที่คำนวณไม่เปลี่ยนแปลง",
+ "{0} DPS": "DPS ของ {0}",
+ "What this item adds": "สิ่งที่ไอเทมนี้เพิ่มให้"
 }

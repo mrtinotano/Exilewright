@@ -312,5 +312,10 @@
  "Import as a new build": "导入为新构筑",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "自 0.5 起，游戏内的构筑规划器可以载入 .build 文件：请保存到 文档/My Games/Path of Exile 2/BuildPlanner。文件包含天赋树、升华职业以及技能宝石和辅助宝石；宝石等级和装备以备注形式写入。",
  ".build file for the game": "游戏用 .build 文件",
- "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "要导入装备，请在游戏中把鼠标移到物品上，按 Ctrl+C，然后粘贴到装备页。物品上的复制 (⧉) 会给出可用于 Path of Building 和交易网站的文本。"
+ "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "要导入装备，请在游戏中把鼠标移到物品上，按 Ctrl+C，然后粘贴到装备页。物品上的复制 (⧉) 会给出可用于 Path of Building 和交易网站的文本。",
+ "If you allocate it": "配置後",
+ "If you remove it": "移除後",
+ "No change in the calculated numbers": "計算數值沒有變化",
+ "{0} DPS": "{0} DPS",
+ "What this item adds": "此物品帶來的變化"
 }

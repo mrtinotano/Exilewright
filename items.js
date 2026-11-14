@@ -2,6 +2,7 @@
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn } from './i18n.js';
 import { statLines, statLinesEn } from './stats.js';
+import { diff, impactHtml, impactLine, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
@@ -185,7 +186,8 @@ const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', 
 const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
-export function initItems(el, getBuild, changed, jewelSockets = () => []) {
+// snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
+export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -194,15 +196,26 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
     ...D.bases.filter(b => b.slots.includes(s)).sort((a, b) => a.level - b.level)
       .map(b => ({ v: b.name, cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level), img: b.img })),
   ].map(o => ({ ...o, key: (o.name + ' ' + o.sub + ' ' + o.v).toLowerCase(),
-    html: `<li class="${o.cls}" data-base="${esc(o.v)}"><img src="${img(o.img)}" alt="" loading="lazy"><span>${esc(o.name)}<small>${esc(o.sub)}</small></span></li>` }))]));
-  const pickList = (slot, q = '') => { q = q.trim().toLowerCase(); return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => o.html).join('') || `<li class="note">${t('No results')}</li>`; };
+    html: `<li class="${o.cls}" data-base="${esc(o.v)}"><img src="${img(o.img)}" alt="" loading="lazy"><span>${esc(o.name)}<small>${esc(o.sub)}</small>` }))]));
+  // a base or unique as it is when first equipped: every roll at its best
+  const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
+    return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
+  // what the build would gain or lose with `it` in `slot`, against how it is now; kept until the next render
+  let now;
+  const gains = new Map();
+  const gain = (slot, it, key) => { const k = slot + ' ' + key;
+    if (!gains.has(k)) gains.set(k, diff(now, snapOf({ ...getBuild().items, [slot]: it })));
+    return gains.get(k); };
+  const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
+    return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => `${o.html}${impactLine(gain(slot, make(o.v), o.v))}</span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
 
   function card(slot, title, it) {
     const base = it && BASE[it.base];
     if (!base) return `<section class="item"><h3>${title}</h3><input data-slot="${slot}" data-act="filter" placeholder="${t('Search base or unique…')}" autocomplete="off"><ul class="picklist" data-slot="${slot}">${pickList(slot)}</ul></section>`;
     const uniq = it.unique && UNIQ[it.unique], l = local(it), mods = it.mods || [];
     const count = a => mods.filter(m => AFFIX[m.id].affix === a).length;
-    const rarity = rarityOf(it);
+    const rarity = rarityOf(it), rest = { ...getBuild().items };
+    delete rest[slot];
     const families = new Set(mods.map(m => AFFIX[m.id].family));
     const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base) && !families.has(a.family) && count(a.affix) < MAX_AFFIX)
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
@@ -220,9 +233,10 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(uniq.name)}<br>${esc(base.name)}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
-        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a =>
-          `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}</option>`).join('')}</select>` : ''}
-      </div></div></section>`;
+        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
+          const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
+          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
+      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
   }
 
   let sel = 'weapon', msg = '';
@@ -232,6 +246,7 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
       if (!BASE[it.base] || it.unique && !UNIQ[it.unique]) delete items[slot];
       else it.mods = (it.mods || []).filter(m => AFFIX[m.id]);
     }
+    now = snapOf(items); gains.clear();
     const g = gearStats(items), charms = (g.local_charm_slots || 0) + (g.local_additional_charm_slots || 0) + (g.num_charm_slots || 0);
     const sockets = jewelSockets(), names = Object.fromEntries(Object.entries(SLOTS).map(([k, x]) => [k, t(x)]));
     sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
@@ -269,14 +284,9 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
   }
   // choosing a base or unique: unique names never collide with base names, so one lookup covers both
   function equip(slot, name) {
-    const items = getBuild().items ||= {};
-    if (UNIQ[name]) {
-      const u = UNIQ[name], b = BASE[u.base];
-      items[slot] = { unique: u.name, base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) };
-    } else if (BASE[name]) {
-      const b = BASE[name];
-      items[slot] = { base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
-    } else return;
+    const it = make(name);
+    if (!it) return;
+    (getBuild().items ||= {})[slot] = it;
     changed(); render();
   }
   el.addEventListener('change', e => {

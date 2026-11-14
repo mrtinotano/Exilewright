@@ -312,5 +312,10 @@
  "Import as a new build": "Importar como nova build",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "Desde a 0.5 o planejador de builds do jogo carrega arquivos .build: salve em Documentos/My Games/Path of Exile 2/BuildPlanner. Ele leva a árvore, a ascendência e as gemas com seus suportes; níveis de gema e equipamento vão como notas.",
  ".build file for the game": "Arquivo .build para o jogo",
- "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "Para trazer seu equipamento, passe o mouse sobre um item no jogo, pressione Ctrl+C e cole em Equipamento. Copiar (⧉) num item dá o texto para o Path of Building e sites de troca."
+ "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "Para trazer seu equipamento, passe o mouse sobre um item no jogo, pressione Ctrl+C e cole em Equipamento. Copiar (⧉) num item dá o texto para o Path of Building e sites de troca.",
+ "If you allocate it": "Se você alocar",
+ "If you remove it": "Se você remover",
+ "No change in the calculated numbers": "Sem alteração nos valores calculados",
+ "{0} DPS": "DPS de {0}",
+ "What this item adds": "O que este item acrescenta"
 }

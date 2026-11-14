@@ -312,5 +312,10 @@
  "Import as a new build": "新しいビルドとしてインポート",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "0.5 からゲーム内のビルドプランナーが .build ファイルを読み込めます: ドキュメント/My Games/Path of Exile 2/BuildPlanner に保存してください。ツリー、アセンダンシー、ジェムとサポートを含み、ジェムのレベルと装備はメモとして入ります。",
  ".build file for the game": "ゲーム用 .build ファイル",
- "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "装備を取り込むには、ゲーム内でアイテムにカーソルを合わせて Ctrl+C を押し、装備に貼り付けてください。アイテムのコピー (⧉) で Path of Building やトレードサイト用のテキストが得られます。"
+ "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "装備を取り込むには、ゲーム内でアイテムにカーソルを合わせて Ctrl+C を押し、装備に貼り付けてください。アイテムのコピー (⧉) で Path of Building やトレードサイト用のテキストが得られます。",
+ "If you allocate it": "割り振った場合",
+ "If you remove it": "解除した場合",
+ "No change in the calculated numbers": "計算値に変化なし",
+ "{0} DPS": "{0}のDPS",
+ "What this item adds": "このアイテムの効果"
 }

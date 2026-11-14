@@ -3,10 +3,11 @@ import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
+import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
 
@@ -25,9 +26,10 @@ const SHAPES = { auto: 'Auto (game data)', circle: 'Circle (cursor)', nova: 'Nov
 const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.includes('projectile') ? 'projectile' : t.includes('aura') || t.includes('persistent') ? 'aura'
   : t.includes('slam') || t.includes('strike') ? 'cone' : 'circle';
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].name, gems: [], nodes: [], ascNodes: [], notes: '' });
-const save = () => { localStorage.setItem(KEY, JSON.stringify(builds)); };
+let rev = 0;   // goes up with every change to the builds: what is worked out from the build is kept until then
+const save = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
 function select(id) {
-  cur = id; localStorage.setItem(KEY + ':last', id);
+  cur = id; rev++; localStorage.setItem(KEY + ':last', id);
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }
@@ -56,8 +58,8 @@ const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t
 // Attribute nodes: right click cycles Str/Dex/Int
 const ATTR = { str: ['strength', '#c44'], dex: ['dexterity', '#4a4'], int: ['intelligence', '#48c'] };
 const NEXT = { undefined: 'str', str: 'dex', dex: 'int', int: 'str' };
-function nodeStats(id) {
-  const n = N[id], a = (B().attrs || {})[id];
+function nodeStats(id, b = B()) {
+  const n = N[id], a = (b.attrs || {})[id];
   return n.type === 'attribute' && a ? tree.attribute_options[ATTR[a][0]] : n.stats;  // game's hidden generic_attribute_* passives
 }
 function cycleAttr(id) {
@@ -66,12 +68,13 @@ function cycleAttr(id) {
   b.attrs[id] = NEXT[b.attrs[id]];
   save(); renderSide(); drawTree();
 }
-function treeSum() {
-  const b = B(), sum = {};
-  for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id))) sum[k] = (sum[k] || 0) + v;
+function sumOf(b) {   // every stat of a build's passives (with the weapon set in use) and gear
+  const sum = {};
+  for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id, b))) sum[k] = (sum[k] || 0) + v;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
   return sum;
 }
+const treeSum = () => sumOf(B());
 // Sum of "<prefix>_<suffix>" stats that apply to a gem: generic prefixes always, others only if the gem has that tag
 // (spell_area_of_effect_+% -> spell, slam_skill_area_of_effect_+% -> slam). Minion/companion ones affect other skills.
 function inc(sum, suffix, tags) {
@@ -173,7 +176,7 @@ function addGem(name) {
   save(); renderSide(); return true;
 }
 
-const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); };
+const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); if (!$('items').hidden) renderItems(); };  // the Equipment view shows what each item changes
 // in-app confirmation (native confirm() is blocked in some embedded browsers): resolves true on the OK button
 // in-app choice dialog (native confirm() is blocked in some embedded browsers):
 // resolves with the index of the chosen option, or -1 on Cancel / Escape / click outside
@@ -436,8 +439,7 @@ function prune(nodes) {            // keep only what is still connected to nodes
   return nodes.filter(n => keep.has(n));
 }
 // what clicking `id` would allocate (empty if it is allocated already or unreachable)
-function preview(id) {
-  const b = B();
+function preview(id, b = B()) {
   if (N[id].ascendancy) {
     const st = ascStart(b.asc);
     return id === st || b.ascNodes.includes(id) ? [] : pathTo([st, ...b.ascNodes], id, w => N[w]?.ascendancy === b.asc);
@@ -456,23 +458,33 @@ function preview(id) {
   if (id !== have[0] && !p.length) return [];
   return [...(b.nodes.length ? [] : have), ...p];
 }
-function clickNode(id) {
-  const b = B();
+function toggle(b, id) {   // what a click on `id` does to build b (false: nothing)
   if (N[id].ascendancy) {
     const st = ascStart(b.asc);
-    if (id === st) return;
-    b.ascNodes = b.ascNodes.includes(id) ? prune([st, ...b.ascNodes.filter(n => n !== id)]).slice(1) : [...b.ascNodes, ...preview(id)];
+    if (id === st) return false;
+    b.ascNodes = b.ascNodes.includes(id) ? prune([st, ...b.ascNodes.filter(n => n !== id)]).slice(1) : [...b.ascNodes, ...preview(id, b)];
   } else if (mode) {
     const own = setOf(b, mode);
     if (own.includes(id)) { b['set' + mode] = own.filter(n => n !== id); fixSets(b); }
-    else own.push(...preview(id));
+    else own.push(...preview(id, b));
   } else if (id === b.nodes[0]) setNodes(b, []);
   else if (b.nodes.includes(id)) setNodes(b, prune(b.nodes.filter(n => n !== id)));
   else {   // a set passive taken with a normal point stops being a set passive
-    const p = preview(id); b.nodes.push(...p);
+    const p = preview(id, b); b.nodes.push(...p);
     for (const k of [1, 2]) b['set' + k] = setOf(b, k).filter(n => !p.includes(n));
   }
-  save(); renderSide(); drawTree();
+}
+function clickNode(id) {
+  if (toggle(B(), id) !== false) { save(); renderSide(); drawTree(); }
+}
+// What that click would change in the panel numbers and each skill's DPS. The level stays as it is, so only the
+// passives count (the planner's level follows the points spent). Kept while the same passive is under the mouse.
+const snap = b => snapshot(b, sumOf(b));
+let impKey, impRows;
+function nodeImpact(id) {
+  const key = `${id} ${mode} ${rev}`;
+  if (key !== impKey) { const z = structuredClone(B()); toggle(z, id); impKey = key; impRows = diff(snap(B()), snap(z)); }
+  return impRows;
 }
 
 // link geometry in world units: same group + same orbit = arc around the group centre, like the game
@@ -670,6 +682,7 @@ function showTip(id, mx, my) {
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
   tip.innerHTML = `<div class="th">${esc(label(n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
+    + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
   const box = cv.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
@@ -709,6 +722,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   $('charPanel').hidden = v === 'skills';
   $('skillPanel').hidden = v !== 'skills';
   $('sceneSkills').hidden = v !== 'scene';
+  if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
   dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
 });
@@ -806,7 +820,8 @@ function renderEnemy() {
 scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg,
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum) }; } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
-  () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })));
+  () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
+  items => snap({ ...B(), items }));
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 

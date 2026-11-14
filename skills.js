@@ -4,6 +4,7 @@
 import { t, tn, fmt, lang } from './i18n.js';
 import { attributes, skill } from './calc.js';
 import { statLines } from './stats.js';
+import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const GEMS = await load('gems.json');
@@ -95,21 +96,22 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
         const s = sups[si];
         return `<span class="sockw"><button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(tn(s)) + ' — ' + t('right click to remove') : t('Empty support socket')}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>${s ? `<button class="sockx" data-unsup="${gi}:${si}" title="${t('Remove support')}">✕</button>` : ''}</span>`;
       }).join('');
+      const d = skill(g, b, sum);
       let picker = '';
-      if (open?.[0] === gi) {   // only supports this skill can take, with icon and what they do
+      if (open?.[0] === gi) {   // only supports this skill can take, with icon, what they do and what they would do to its DPS
+        const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(d.dps, skill({ ...g, supports }, b, sum).dps)); };
         const fams = new Set(sups.flatMap((s, i) => s && i !== open[1] ? s.family : []));
         const opts = SUPPORTS.filter(s => canSupport(s, types) && !s.family.some(f => fams.has(f)))
           .sort((x, y) => tn(x).localeCompare(tn(y)));
         const item = s => {
           const c = colour(s), what = descOf(s) || gemLines(s.name, 1).join(' · ');
           return `<button class="supopt${s.name === g.supports[open[1]] ? ' on' : ''}" data-sup="${esc(s.name)}" data-find="${esc((tn(s) + ' ' + s.name + ' ' + what).toLowerCase())}">
-            <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${esc(what || t('No description in the game data yet'))}</small></span></button>`;
+            <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${esc(what || t('No description in the game data yet'))}</small>${gain(s.name)}</span></button>`;
         };
         picker = `<div class="suppick"><div class="suphead"><input class="supfind" type="search" placeholder="${t('Filter supports…')}" autocomplete="off">
           <small class="note">${t('{0} supports compatible with this skill\'s types', opts.length)}</small></div>
-          <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small></span></button>` : ''}${opts.map(item).join('')}</div></div>`;
+          <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small>${gain(null)}</span></button>` : ''}${opts.map(item).join('')}</div></div>`;
       }
-      const d = skill(g, b, sum);
       return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
         <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <b>${esc(tn(G))}</b>
           <span class="sockn">${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
