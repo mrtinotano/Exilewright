@@ -1,5 +1,6 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
+import { t, tn } from './i18n.js';
 import { statLines } from './stats.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
@@ -9,8 +10,8 @@ const UNIQUES = await fetch('poe2_data/available/unique_items.json').then(r => r
 const UNIQ = Object.fromEntries(UNIQUES.filter(u => BASE[u.base]).map(u => [u.name, u]));
 const AFFIX = Object.fromEntries([...D.affixes.map(a => [a.id, a]),
   ...UNIQUES.flatMap(u => u.mods.map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);
-export const SLOTS = { weapon: 'Arma', offhand: 'Mano izquierda', helmet: 'Casco', body: 'Armadura', gloves: 'Guantes', boots: 'Botas', amulet: 'Amuleto',
-  ring1: 'Anillo 1', ring2: 'Anillo 2', belt: 'Cinturón', flask1: 'Frasco de vida', flask2: 'Frasco de maná', charm1: 'Vial 1', charm2: 'Vial 2', charm3: 'Vial 3' };
+export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots', amulet: 'Amulet',
+  ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
 const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
@@ -49,6 +50,9 @@ function local(item) {
   return r;
 }
 
+// main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
+export const weaponStats = (items = {}) => items.weapon && BASE[items.weapon.base]?.weapon ? local(items.weapon) : null;
+
 // global stats the gear gives the character (stat id -> value)
 export function gearStats(items = {}) {
   const sum = {};
@@ -76,18 +80,24 @@ const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => A
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
 const DOLL = ['w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
 const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
-const prop = (k, v) => `<div class="prop">${k}: <span>${v}</span></div>`;
+const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 export function initItems(el, getBuild, changed, jewelSockets = () => []) {
   const types = [...Object.keys(SLOTS), 'jewel'];
-  const lists = types.map(s => `<datalist id="bases-${s}">${D.bases.filter(b => b.slots.includes(s))
-    .map(b => `<option value="${esc(b.name)}">${esc(b.name_es || '')} · nv ${b.level}</option>`).join('')
-    }${Object.values(UNIQ).filter(u => BASE[u.base].slots.includes(s)).map(u => `<option value="${esc(u.name)}">Único · ${esc(u.base)}</option>`).join('')}</datalist>`).join('');
+  // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
+  const lists = Object.fromEntries(types.map(s => [s, [
+    ...Object.values(UNIQ).filter(u => BASE[u.base].slots.includes(s)).sort((a, b) => a.name.localeCompare(b.name))
+      .map(u => ({ v: u.name, cls: 'unique', name: u.name, sub: t('Unique') + ' · ' + (tn(BASE[u.base]) || u.base), img: D.unique_img[u.name] || BASE[u.base].img })),
+    ...D.bases.filter(b => b.slots.includes(s)).sort((a, b) => a.level - b.level)
+      .map(b => ({ v: b.name, cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level), img: b.img })),
+  ].map(o => ({ ...o, key: (o.name + ' ' + o.sub + ' ' + o.v).toLowerCase(),
+    html: `<li class="${o.cls}" data-base="${esc(o.v)}"><img src="${img(o.img)}" alt="" loading="lazy"><span>${esc(o.name)}<small>${esc(o.sub)}</small></span></li>` }))]));
+  const pickList = (slot, q = '') => { q = q.trim().toLowerCase(); return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => o.html).join('') || `<li class="note">${t('No results')}</li>`; };
 
   function card(slot, title, it) {
     const base = it && BASE[it.base];
-    if (!base) return `<section class="item"><h3>${title}</h3><input list="bases-${slotType(slot)}" data-slot="${slot}" data-act="base" placeholder="Elegir base o único…"></section>`;
+    if (!base) return `<section class="item"><h3>${title}</h3><input data-slot="${slot}" data-act="filter" placeholder="${t('Search base or unique…')}" autocomplete="off"><ul class="picklist" data-slot="${slot}">${pickList(slot)}</ul></section>`;
     const uniq = it.unique && UNIQ[it.unique], l = local(it), mods = it.mods || [];
     const count = a => mods.filter(m => AFFIX[m.id].affix === a).length;
     const rarity = rarityOf(it);
@@ -95,21 +105,21 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
     const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base) && !families.has(a.family) && count(a.affix) < MAX_AFFIX)
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
     const props = [
-      l.physical && prop('Daño físico', l.physical.join('–')),
-      ...['fire', 'cold', 'lightning'].filter(e => l[e]).map(e => prop({ fire: 'Daño de fuego', cold: 'Daño de frío', lightning: 'Daño de rayo' }[e], l[e].join('–'))),
-      l.crit && prop('Probabilidad de impacto crítico', l.crit.toFixed(2) + '%'), l.attacks_per_second && prop('Ataques por segundo', l.attacks_per_second.toFixed(2)),
-      l.armour && prop('Armadura', l.armour), l.evasion && prop('Evasión', l.evasion), l.energy_shield && prop('Escudo de energía', l.energy_shield),
-      l.movement && prop('Velocidad de movimiento base', l.movement + '%'),
-      l.flask?.life && prop('Recupera vida', `${l.flask.life} en ${l.flask.recovery_s} s`), l.flask?.mana && prop('Recupera maná', `${l.flask.mana} en ${l.flask.recovery_s} s`),
+      l.physical && prop('Physical Damage', l.physical.join('–')),
+      ...['fire', 'cold', 'lightning'].filter(e => l[e]).map(e => prop({ fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage' }[e], l[e].join('–'))),
+      l.crit && prop('Critical Hit Chance', l.crit.toFixed(2) + '%'), l.attacks_per_second && prop('Attacks per Second', l.attacks_per_second.toFixed(2)),
+      l.armour && prop('Armour', l.armour), l.evasion && prop('Evasion Rating', l.evasion), l.energy_shield && prop('Energy Shield', l.energy_shield),
+      l.movement && prop('Base Movement Speed', l.movement + '%'),
+      l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),
     ].filter(Boolean).join('');
     const impl = base.implicits.map((id, i) => `<div class="mod">${text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
-    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${text(a.stats, fixVals(a.stats, m.values))} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${a.affix === 'prefix' ? 'Prefijo' : 'Sufijo'} nivel ${a.level}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
-      + (uniq ? uniq.unmatched.filter(Boolean).map(t => `<div class="mod off" title="poe2db lo lista pero no coincide exacto con ningún mod del juego: no se suma">${esc(t)} (sin emparejar)</div>`).join('') : '');
+    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${text(a.stats, fixVals(a.stats, m.values))} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
+      + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="clear">✕</button></h3>
-      <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(uniq.name)}<br>${esc(base.name)}` : esc(base.name_es || base.name)}</div>
-        <div class="body"><div class="prop">${esc(base.class)} · nivel ${base.level}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
-        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">+ Afijo (${count('prefix')}/${MAX_AFFIX} P, ${count('suffix')}/${MAX_AFFIX} S)</option>${options.map(a =>
-          `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} nv${a.level} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}</option>`).join('')}</select>` : ''}
+      <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(uniq.name)}<br>${esc(base.name)}` : esc(tn(base))}</div>
+        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
+        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a =>
+          `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}</option>`).join('')}</select>` : ''}
       </div></div></section>`;
   }
 
@@ -121,30 +131,44 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
       else it.mods = (it.mods || []).filter(m => AFFIX[m.id]);
     }
     const g = gearStats(items), charms = (g.local_charm_slots || 0) + (g.local_additional_charm_slots || 0) + (g.num_charm_slots || 0);
-    const sockets = jewelSockets(), names = { ...SLOTS };
-    sockets.forEach(j => names['jewel:' + j.id] = 'Joya · ' + j.label);
+    const sockets = jewelSockets(), names = Object.fromEntries(Object.entries(SLOTS).map(([k, x]) => [k, t(x)]));
+    sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
     if (!names[sel]) sel = 'weapon';
     const cell = (slot, area) => {
       const it = items[slot], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
-      return `<div class="cell ${base ? rarityOf(it) : ''}${slot === sel ? ' sel' : ''}" data-pick="${slot}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + (u ? u.name : base.name_es || base.name) : ''))}">${
+      return `<div class="cell ${base ? rarityOf(it) : ''}${slot === sel ? ' sel' : ''}" data-pick="${slot}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + (u ? u.name : tn(base)) : ''))}">${
         base ? `<img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">` : `<span>${names[slot]}</span>`}</div>`;
     };
-    el.innerHTML = lists + `<div class="inv"><div><div class="doll" style="grid-template-areas:${DOLL.map(r => `'${r}'`).join(' ')}">${
+    el.innerHTML = `<div class="inv"><div><div class="doll" style="grid-template-areas:${DOLL.map(r => `'${r}'`).join(' ')}">${
       Object.keys(SLOTS).map(s => cell(s, AREA[s])).join('')}</div>
-      <h3>Joyas (${sockets.length} engarces asignados en el árbol)</h3>
-      <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || '<p class="note">Asigna engarces de joya en el árbol para poner joyas.</p>'}</div>
-      <p class="note">Huecos de vial que dan los mods de tu equipo: ${charms}. El hueco base del cinturón no está en los datos del juego.</p></div>
+      <h3>${t('Jewels ({0} sockets allocated on the tree)', sockets.length)}</h3>
+      <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || `<p class="note">${t('Allocate jewel sockets on the tree to add jewels.')}</p>`}</div>
+      <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p></div>
       <div class="editor">${card(sel, names[sel], items[sel])}</div></div>`;
   }
 
+  el.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
+  });
+  // choosing a base or unique: unique names never collide with base names, so one lookup covers both
+  function equip(slot, name) {
+    const items = getBuild().items ||= {};
+    if (UNIQ[name]) {
+      const u = UNIQ[name], b = BASE[u.base];
+      items[slot] = { unique: u.name, base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) };
+    } else if (BASE[name]) {
+      const b = BASE[name];
+      items[slot] = { base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+    } else return;
+    changed(); render();
+  }
   el.addEventListener('change', e => {
     const t = e.target, items = getBuild().items ||= {}, slot = t.dataset.slot;
-    if (t.dataset.act === 'base' && UNIQ[t.value]) {
-      const u = UNIQ[t.value], b = BASE[u.base];
-      items[slot] = { unique: u.name, base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) };
-    } else if (t.dataset.act === 'base' && BASE[t.value]) {
-      const b = BASE[t.value];
-      items[slot] = { base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+    if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
+      const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
+      if (o) equip(slot, o.v);
+      return;
     } else if (t.dataset.act === 'add' && t.value) {
       items[slot].mods.push({ id: t.value, values: fixVals(AFFIX[t.value].stats) });
     } else if (t.dataset.path) {
@@ -159,6 +183,8 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
   el.addEventListener('click', e => {
     const t = e.target, items = getBuild().items || {}, pick = t.closest('[data-pick]');
     if (pick) { sel = pick.dataset.pick; render(); return; }
+    const opt = t.closest('[data-base]');
+    if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
     if (t.dataset.act === 'clear') delete items[t.dataset.slot];
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
     else return;

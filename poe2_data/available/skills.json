@@ -3334,22 +3334,6 @@
    "duration_ms": null,
    "projectile_collision": 1
   },
-  "Maul": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Rend": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": 10000,
-   "projectile_collision": null
-  },
   "Lightning Bolt": {
    "radius": {
     "1": 8,
@@ -3448,14 +3432,6 @@
    "duration_ms": null,
    "projectile_collision": null
   },
-  "Enervation": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Unleash": {
    "radius": null,
    "projectile": false,
@@ -3513,14 +3489,6 @@
    "duration_ms": 12000,
    "projectile_collision": null
   },
-  "Chance to Freeze": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Furious Slam": {
    "radius": {
     "1": 20,
@@ -3570,14 +3538,6 @@
    "duration_ms": null,
    "projectile_collision": null
   },
-  "Invocation": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Lingering Illusion": {
    "radius": null,
    "projectile": false,
@@ -3600,14 +3560,6 @@
    "projectile_speed": null,
    "projectile_range": null,
    "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Shroud": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": 3000,
    "projectile_collision": null
   },
   "Explosive Grenade": {
@@ -4023,14 +3975,6 @@
    "projectile_speed": null,
    "projectile_range": null,
    "duration_ms": 1600,
-   "projectile_collision": null
-  },
-  "Spreading Frost": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
    "projectile_collision": null
   },
   "Unearth": {
@@ -4692,69 +4636,12 @@
    "duration_ms": 3000,
    "projectile_collision": 1
   },
-  "Detonate Minion": {
-   "radius": {
-    "1": 24,
-    "2": 24,
-    "3": 24,
-    "4": 24,
-    "5": 24,
-    "6": 24,
-    "7": 24,
-    "8": 24,
-    "9": 24,
-    "10": 24,
-    "11": 24,
-    "12": 24,
-    "13": 24,
-    "14": 24,
-    "15": 24,
-    "16": 24,
-    "17": 24,
-    "18": 24,
-    "19": 24,
-    "20": 24,
-    "21": 24,
-    "22": 24,
-    "23": 24,
-    "24": 24,
-    "25": 24,
-    "26": 24,
-    "27": 24,
-    "28": 24,
-    "29": 24,
-    "30": 24,
-    "31": 24,
-    "32": 24,
-    "33": 24,
-    "34": 24,
-    "35": 24,
-    "36": 24,
-    "37": 24,
-    "38": 24,
-    "39": 24,
-    "40": 24
-   },
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Explosive Spear": {
    "radius": null,
    "projectile": true,
    "projectile_speed": null,
    "projectile_range": null,
    "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Elemental Siphon": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": 8000,
    "projectile_collision": null
   },
   "Thunderous Leap": {
@@ -4807,14 +4694,6 @@
    "projectile_collision": null
   },
   "Wind Dancer": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Infusion": {
    "radius": null,
    "projectile": false,
    "projectile_speed": null,
@@ -4909,14 +4788,6 @@
    "projectile_speed": null,
    "projectile_range": null,
    "duration_ms": 8000,
-   "projectile_collision": null
-  },
-  "Spinning Inferno": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
    "projectile_collision": null
   },
   "Mana Drain": {
@@ -5568,86 +5439,6 @@
    "projectile_collision": null
   },
   "Crossbow Shot": {
-   "radius": null,
-   "projectile": true,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Grenade": {
-   "radius": {
-    "1": 15,
-    "2": 15,
-    "3": 15,
-    "4": 15,
-    "5": 15,
-    "6": 15,
-    "7": 15,
-    "8": 15,
-    "9": 15,
-    "10": 15,
-    "11": 15,
-    "12": 15,
-    "13": 15,
-    "14": 15,
-    "15": 15,
-    "16": 15,
-    "17": 15,
-    "18": 15,
-    "19": 15,
-    "20": 15,
-    "21": 15,
-    "22": 15,
-    "23": 15,
-    "24": 15,
-    "25": 15,
-    "26": 15,
-    "27": 15,
-    "28": 15,
-    "29": 15,
-    "30": 15,
-    "31": 15,
-    "32": 15,
-    "33": 15,
-    "34": 15,
-    "35": 15,
-    "36": 15,
-    "37": 15,
-    "38": 15,
-    "39": 15,
-    "40": 15
-   },
-   "projectile": true,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Playtest Attack": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Playtest Slam": {
-   "radius": {
-    "1": 25,
-    "2": 25,
-    "3": 25,
-    "4": 25,
-    "5": 25,
-    "6": 25
-   },
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Playtest Spell": {
    "radius": null,
    "projectile": true,
    "projectile_speed": null,
@@ -7457,14 +7248,6 @@
    "duration_ms": null,
    "projectile_collision": null
   },
-  "Removed Skill": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Gemini Surge": {
    "radius": {
     "1": 16,
@@ -7767,63 +7550,6 @@
    "duration_ms": 8000,
    "projectile_collision": null
   },
-  "Ice Fragments": {
-   "radius": {
-    "1": 18,
-    "2": 18,
-    "3": 18,
-    "4": 18,
-    "5": 18,
-    "6": 18,
-    "7": 18,
-    "8": 18,
-    "9": 18,
-    "10": 18,
-    "11": 18,
-    "12": 18,
-    "13": 18,
-    "14": 18,
-    "15": 18,
-    "16": 18,
-    "17": 18,
-    "18": 18,
-    "19": 18,
-    "20": 18,
-    "21": 18,
-    "22": 18,
-    "23": 18,
-    "24": 18,
-    "25": 18,
-    "26": 18,
-    "27": 18,
-    "28": 18,
-    "29": 18,
-    "30": 18,
-    "31": 18,
-    "32": 18,
-    "33": 18,
-    "34": 18,
-    "35": 18,
-    "36": 18,
-    "37": 18,
-    "38": 18,
-    "39": 18,
-    "40": 18
-   },
-   "projectile": true,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Shred": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
   "Fury of the Mountain": {
    "radius": {
     "1": 10,
@@ -7996,14 +7722,6 @@
    "projectile_collision": null
   },
   "Heart of Ice": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Primal Avatar": {
    "radius": null,
    "projectile": false,
    "projectile_speed": null,
@@ -8615,14 +8333,6 @@
    "projectile_collision": 2
   },
   "His Grave Command": {
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
-   "projectile_range": null,
-   "duration_ms": null,
-   "projectile_collision": null
-  },
-  "Soul Crystal: {0}": {
    "radius": null,
    "projectile": false,
    "projectile_speed": null,

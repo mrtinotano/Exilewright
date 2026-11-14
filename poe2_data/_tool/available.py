@@ -13,6 +13,26 @@ def load(t, lang='English'):
         return json.load(f)
 
 
+# game languages: the app's code -> folder name under Data/Balance (extract.mjs dumps each to tables/<folder>)
+LANGS = {'es': 'Spanish', 'pt': 'Portuguese', 'fr': 'French', 'de': 'German', 'ru': 'Russian',
+         'ja': 'Japanese', 'ko': 'Korean', 'th': 'Thai', 'zh': 'Traditional Chinese'}
+
+
+def load_langs(t):
+    """{code: rows} of a table for every translated language that was extracted."""
+    return {c: load(t, l) for c, l in LANGS.items() if os.path.exists(os.path.join(ROOT, 'tables', l, t + '.json'))}
+
+
+def tr(by_lang, i, field='Name', key='name'):
+    """{'name_es': ..., 'name_fr': ...} for row i (or row by key for dict tables); empty texts left out."""
+    out = {}
+    for c, rows in by_lang.items():
+        r = rows.get(i) if isinstance(rows, dict) else rows[i] if i is not None and i < len(rows) else None
+        if r and r.get(field):
+            out[f'{key}_{c}'] = r[field]
+    return out
+
+
 def ok(name):
     return bool(name) and not any(b in name for b in BAD)
 
@@ -50,7 +70,7 @@ def parse_psg(path):
 
 
 os.makedirs(OUT, exist_ok=True)
-bases, bases_es = load('BaseItemTypes'), load('BaseItemTypes', 'Spanish')
+bases, bases_tr = load('BaseItemTypes'), load_langs('BaseItemTypes')
 stats = load('Stats')
 gem_effects, gem_tags, grants = load('GemEffects'), load('GemTags'), load('GrantedEffects')
 skill_gems = load('SkillGems')
@@ -65,8 +85,28 @@ granted_by_unique = {s for x in load('SkillGemsForUniqueStat') for s in x['Skill
 granted_by_base = {s for x in load('ItemInherentSkills') for s in x['SkillsGranted']}
 weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']}
 
+# what exists in the live patch: GGG's official trade list. Downloaded again on every run so removed gems/uniques/bases
+# drop out after a patch; the cached copy is only used when offline.
+trade_file = os.path.join(ROOT, 'poe2db_cache', 'trade2_items.json')
+try:
+    import urllib.request
+    req = urllib.request.Request('https://www.pathofexile.com/api/trade2/data/items', headers={'User-Agent': 'Mozilla/5.0 (personal build planner)'})
+    data = urllib.request.urlopen(req, timeout=30).read()
+    json.loads(data)['result']
+    os.makedirs(os.path.dirname(trade_file), exist_ok=True)
+    open(trade_file, 'wb').write(data)
+except Exception as e:
+    print('trade list download failed, using cached copy:', e)
+trade = {c['id']: c['entries'] for c in json.load(open(trade_file, encoding='utf8'))['result']}
+trade_types = {e['type'] for c in trade.values() for e in c}
+trade_gems = {e['type'] for e in trade['gem']}
+trade_uniques = {e['name'] for c in trade.values() for e in c if e.get('flags', {}).get('unique')}
+json.dump(sorted(trade_uniques), open(os.path.join(ROOT, 'poe2db_cache', 'trade2_uniques.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+
 # --- gems
 active_skills, skill_types = load('ActiveSkills'), [t['Id'] for t in load('ActiveSkillType')]
+active_skills_tr = load_langs('ActiveSkills')
+gem_effects_tr = load_langs('GemEffects')
 support_row = {s['SkillGem']: s for s in supports}
 support_family = load('SupportGemFamily')
 types = lambda ids: [skill_types[t] for t in ids]   # support requirements are RPN: type names plus OR / AND / NOT
@@ -91,11 +131,15 @@ for i, g in enumerate(skill_gems):
         source = 'item_base'             # e.g. sceptre/talisman base skills
     elif i in weapon_default:
         source = 'weapon_default'
+    elif b['Name'] in trade_gems:
+        source = 'tradeable'             # no source found in the tables, but GGG's trade site lists it
     else:
-        source = 'unconfirmed'           # no known source: assume NOT obtainable
+        continue                         # no known source and not in the live patch: removed / unreleased / test gem
+    if source in ('gem_cutting', 'lineage_drop') and b['Name'] not in trade_gems:
+        continue                         # still in the tables but gone from the live patch
     tags = sorted({gem_tags[t]['Id'] for e in g['GemEffects'] for t in gem_effects[e]['GemTags'] if gem_tags[t]['Id']})
     gems.append({
-        'name': b['Name'], 'name_es': bases_es[g['BaseItemType']]['Name'], 'id': b['Id'],
+        'name': b['Name'], **tr(bases_tr, g['BaseItemType']), 'id': b['Id'],
         'kind': 'support' if i in support_ids else ('spirit' if g['GemType'] == 2 else 'active'),
         'tier': g['CraftingLevel'], 'source': source, 'tags': tags,
         'attr': {'str': g['StrengthRequirementPercent'], 'dex': g['DexterityRequirementPercent'], 'int': g['IntelligenceRequirementPercent']},
@@ -107,18 +151,26 @@ for i, g in enumerate(skill_gems):
     gems[-1]['socket_icon'] = art if not art.lower().endswith('/blankgem.dds') else PANEL + {'passive_or_ascendancy': 'SkillPanelAscendancyIcon.dds'}.get(source, 'SkillPanelItemIcon.dds')
     if i in support_ids:
         sr = support_row[i]
+        # what the support does, for the support picker. note: column name from dat-schema poe2 (GemEffects.SupportText);
+        # if it comes out empty the picker falls back to the support's stat lines (skills.json)
+        ex = gem_effects[g['GemEffects'][0]] if g['GemEffects'] else {}
+        desc_col = next((c for c in ('SupportText', 'Description') if ex.get(c)), 'SupportText')
+        gems[-1].update(description=ex.get(desc_col) or None, **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description') if g['GemEffects'] else {})
         gems[-1].update(icon=sr['Icon'], family=[support_family[f]['Id'] for f in sr['Family']], lineage=sr['IsLineage'],
                         require=types(ge['AllowedActiveSkillTypes']), exclude=types(ge['ExcludedActiveSkillTypes']),
                         adds=types(ge['AddedActiveSkillTypes']), gems_only=ge['SupportsGemsOnly'])
     elif ge and ge['ActiveSkill'] is not None:
         a = active_skills[ge['ActiveSkill']]
-        gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'])
+        gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'],
+                        # text for the skill's info window (ActiveSkills.Description, per language)
+                        description=a.get('Description') or None, **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description'))
 save('gems.json', gems)
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)
 graph, roots, pos, centres, orbit, radii = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))
 asc = load('Ascendancy')
-passives, passives_es = load('PassiveSkills'), {p['PassiveSkillGraphId']: p for p in load('PassiveSkills', 'Spanish')}
+passives = load('PassiveSkills')
+passives_tr = {c: {p['PassiveSkillGraphId']: p for p in rows} for c, rows in load_langs('PassiveSkills').items()}
 by_gid = {p['PassiveSkillGraphId']: p for p in passives}
 nodes = {}
 for gid, conns in graph.items():
@@ -128,7 +180,7 @@ for gid, conns in graph.items():
         continue
     vals = [p[f'Stat{k}Value'] for k in range(1, 8)]
     nodes[gid] = {
-        'name': p['Name'], 'name_es': passives_es.get(gid, {}).get('Name'), 'id': p['Id'],
+        'name': p['Name'], **tr(passives_tr, gid), 'id': p['Id'],
         'type': 'keystone' if p['IsKeystone'] else 'notable' if p['IsNotable'] else 'jewel' if p['IsJewelSocket']
                 else 'attribute' if p['IsAttribute'] else 'small',
         'ascendancy': a, 'ascendancy_start': p['IsAscendancyStartingNode'],
@@ -149,18 +201,22 @@ attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(
 save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
 
 # --- ascendancies / classes
-chars = load('Characters')
-save('ascendancies.json', [{'name': a['Name'], 'class': chars[a['Character']]['Name'] if a['Character'] is not None else None,
+chars, chars_tr, asc_tr = load('Characters'), load_langs('Characters'), load_langs('Ascendancy')
+save('ascendancies.json', [{'name': a['Name'], **tr(asc_tr, ai), 'class': chars[a['Character']]['Name'] if a['Character'] is not None else None,
+                            # the class name per language, as {name, name_es, ...} (app: tn(class_names))
+                            'class_names': {'name': chars[a['Character']]['Name'], **tr(chars_tr, a['Character'])} if a['Character'] is not None else None,
                             # art for the tree's central circle: the ascendancy's own, else its class's
                             'tree_image': a.get('PassiveTreeImage') or None,
                             'class_tree_image': chars[a['Character']].get('PassiveTreeImage') or None if a['Character'] is not None else None,
+                            # every number of the class row (base life/mana... whatever this patch's Characters has)
+                            'class_base': {k: v for k, v in chars[a['Character']].items() if type(v) in (int, float)} if a['Character'] is not None else None,
                             'attrs': {'str': chars[a['Character']]['BaseStrength'], 'dex': chars[a['Character']]['BaseDexterity'], 'int': chars[a['Character']]['BaseIntelligence']}
-                            if a['Character'] is not None else None} for a in asc if ok(a['Name'])])
+                            if a['Character'] is not None else None} for ai, a in enumerate(asc) if ok(a['Name'])])
 
 # --- uniques: what the Unique Stash Tab knows about; hidden-if-empty ones are flagged
 words, layout = load('Words'), load('UniqueStashLayout')
-words_es = load('Words', 'Spanish')
-save('uniques.json', sorted(({'name': words[u['WordsKey']]['Text'], 'name_es': words_es[u['WordsKey']]['Text'],
+words_tr = load_langs('Words')
+save('uniques.json', sorted(({'name': words[u['WordsKey']]['Text'], **tr(words_tr, u['WordsKey'], 'Text'),
                               'hidden_in_stash_tab': not (u['ShowIfEmptyStandard'] or u['ShowIfEmptyChallengeLeague'])}
                              for u in layout if u['RenamedVersion'] is None and not u['IsAlternateArt'] and ok(words[u['WordsKey']]['Text'])),
                             key=lambda x: x['name']))
@@ -172,7 +228,85 @@ save('item_mods.json', [{'id': m['Id'], 'name': m['Name'], 'affix': 'prefix' if 
                          'values': [m[f'Stat{k}Value'] for k in range(1, 9) if m[f'Stat{k}'] is not None]}
                         for m in mods if m['Domain'] == 1 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])])
 
-# --- stat texts (Spanish, English fallback) for stats used by passives and item mods; app formats them
+# --- skill geometry for the 3D scene. Units are game units (10 = 1 m).
+# radius: active_skill_base_area_of_effect_radius per gem level. Projectile speed: Projectiles.ProjectileSpeed / 10 = units/s
+# (poedb: Fireball 1040 -> 104 units/s); only exact name matches, there is no table linking a player skill to its projectile.
+# Player base speed: Pathfinding.base_speed in metadata/characters/character.ot (units/s).
+ge_tab, gfx, ss_tab = load('GrantedEffects'), load('GemEffects'), load('GrantedEffectStatSets')
+ss_lvl = {}
+for r in load('GrantedEffectStatSetsPerLevel'):
+    ss_lvl.setdefault(r['StatSet'], []).append(r)
+proj_by_id = {p['Id'].lower(): p for p in load('Projectiles')}
+ge_lvl = {}
+for r in load('GrantedEffectsPerLevel'):
+    ge_lvl.setdefault(id(ge_tab[r['GrantedEffect']]), []).append(r)
+try:
+    cost_types = load('CostTypes')
+except FileNotFoundError:
+    cost_types = None
+sid = lambda i: stats[i]['Id']
+skills = {}
+for g in gems:
+    if g['kind'] not in ('active', 'support'):   # supports too: their stat lines describe them in the picker
+        continue
+    e = ge_tab[gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]['GrantedEffect']]
+    s = ss_tab[e['StatSet']]
+    const = {sid(a): v for a, v in zip(s['ConstantStats'], s['ConstantStatsValues'])}
+    implicit = {sid(a) for a in s['ImplicitStats']}
+    radius = {}
+    for r in ss_lvl.get(e['StatSet'], []):
+        per = {sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])}
+        v = per.get('active_skill_base_area_of_effect_radius', const.get('active_skill_base_area_of_effect_radius'))
+        if v is not None:
+            radius[r['GemLevel']] = v
+    # every stat per gem level (constants + per-level + float stats) and the row's own numbers, for the DPS and the
+    # skill info window. note: column names from dat-schema poe2; .get() so a renamed column only drops that number
+    levels = {}
+    for r in ss_lvl.get(e['StatSet'], []):
+        st = {sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])}
+        st.update({sid(a): v for a, v in zip(r.get('FloatStats') or [], r.get('FloatStatsValues') or r.get('BaseResolvedValues') or [])})
+        for col, key in (('BaseMultiplier', '_base_multiplier'), ('DamageEffectiveness', '_damage_effectiveness'),
+                         ('SpellCritChance', '_spell_crit'), ('AttackCritChance', '_attack_crit')):
+            if r.get(col) is not None:
+                st[key] = r[col]
+        levels[r['GemLevel']] = st
+    for r in ge_lvl.get(id(e), []):
+        st = levels.setdefault(r['Level'], {})
+        for col, key in (('Cooldown', '_cooldown_ms'), ('StoredUses', '_stored_uses'), ('CostMultiplier', '_cost_multiplier'),
+                         ('Reservation', '_reservation'), ('SpiritReservation', '_spirit')):
+            if r.get(col) is not None:
+                st[key] = r[col]
+        if r.get('CostAmounts'):
+            st['_cost'] = {cost_types[t]['Id'] if cost_types else t: v for t, v in zip(r.get('CostTypes') or [], r['CostAmounts'])}
+    p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
+    skills[g['name']] = {
+        'cast_time_ms': e.get('CastTime'),
+        'constant': const,
+        'levels': levels or None,
+        'radius': radius or None,
+        'projectile': 'base_is_projectile' in implicit,
+        'projectile_speed': p['ProjectileSpeed'] / 10 if p and 'base_is_projectile' in implicit else None,
+        'projectile_range': const.get('projectile_maximum_range_override'),
+        'duration_ms': const.get('base_skill_effect_duration'),
+        'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
+    }
+ot = open(os.path.join(ROOT, 'files', 'metadata', 'characters', 'character.ot'), encoding='utf-16').read()
+base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
+cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
+capacity_per = int(re.search(r'(\d+) \[Strength[^=]*= \+1 Strength \[SupportGem', cs['StrengthDescription']).group(1))
+max_sockets = max(int(m.group(1)) for c in load('CurrencyItems') if (m := re.fullmatch(r'add_skill_gem_socket_(\d+)', c['Action'] or '')))
+# base character numbers (life, mana, resist caps...): every "stat = number" in character.ot, used by the stats panel
+char_stats = {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', ot, re.M)}
+attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
+# monster stats per level (character panel: armour % against a hit of a monster of your level, evade chance against its accuracy)
+try:
+    monster_stats = [{'level': int(r.get('DisplayLevel') or i + 1), **{k: v for k, v in r.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}} for i, r in enumerate(load('DefaultMonsterStats'))]
+except FileNotFoundError:
+    monster_stats = []
+save('skills.json', {'monster_stats': monster_stats, 'character_stats': char_stats, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+
+# --- stat texts for stats used by passives, item mods and skills; app formats them.
+# stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
 def parse_csd(path, out):
     lines = open(path, encoding='utf8').read().splitlines()
     i = 0
@@ -192,54 +326,20 @@ def parse_csd(path, out):
                 rows.append({'c': cond.split(), 't': text, 'h': rest.split()})
             langs[lang] = rows; i += 1 + n
             lang = 'English'
-        out[' '.join(ids)] = {'stats': ids, 'rows': langs.get('Spanish') or langs['English']}
+        out[' '.join(ids)] = {'stats': ids, 'langs': langs}
 
 sd = os.path.join(ROOT, 'files', 'data', 'statdescriptions')
 descs = {}
-for f in ('stat_descriptions.csd', 'passive_skill_stat_descriptions.csd'):  # later file overrides
-    parse_csd(os.path.join(sd, f), descs)
+for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_skill_gem_stat_descriptions.csd',
+          'stat_descriptions.csd', 'passive_skill_stat_descriptions.csd'):  # later file overrides
+    if os.path.exists(os.path.join(sd, f)):
+        parse_csd(os.path.join(sd, f), descs)
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
-save('stat_texts.json', [d for d in descs.values() if used & set(d['stats'])])
-
-# --- skill geometry for the 3D scene. Units are game units (10 = 1 m).
-# radius: active_skill_base_area_of_effect_radius per gem level. Projectile speed: Projectiles.ProjectileSpeed / 10 = units/s
-# (poedb: Fireball 1040 -> 104 units/s); only exact name matches, there is no table linking a player skill to its projectile.
-# Player base speed: Pathfinding.base_speed in metadata/characters/character.ot (units/s).
-ge_tab, gfx, ss_tab = load('GrantedEffects'), load('GemEffects'), load('GrantedEffectStatSets')
-ss_lvl = {}
-for r in load('GrantedEffectStatSetsPerLevel'):
-    ss_lvl.setdefault(r['StatSet'], []).append(r)
-proj_by_id = {p['Id'].lower(): p for p in load('Projectiles')}
-sid = lambda i: stats[i]['Id']
-skills = {}
-for g in gems:
-    if g['kind'] != 'active':
-        continue
-    e = ge_tab[gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]['GrantedEffect']]
-    s = ss_tab[e['StatSet']]
-    const = {sid(a): v for a, v in zip(s['ConstantStats'], s['ConstantStatsValues'])}
-    implicit = {sid(a) for a in s['ImplicitStats']}
-    radius = {}
-    for r in ss_lvl.get(e['StatSet'], []):
-        per = {sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])}
-        v = per.get('active_skill_base_area_of_effect_radius', const.get('active_skill_base_area_of_effect_radius'))
-        if v is not None:
-            radius[r['GemLevel']] = v
-    p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
-    skills[g['name']] = {
-        'radius': radius or None,
-        'projectile': 'base_is_projectile' in implicit,
-        'projectile_speed': p['ProjectileSpeed'] / 10 if p and 'base_is_projectile' in implicit else None,
-        'projectile_range': const.get('projectile_maximum_range_override'),
-        'duration_ms': const.get('base_skill_effect_duration'),
-        'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
-    }
-ot = open(os.path.join(ROOT, 'files', 'metadata', 'characters', 'character.ot'), encoding='utf-16').read()
-base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
-cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
-capacity_per = int(re.search(r'(\d+) \[Strength[^=]*= \+1 Strength \[SupportGem', cs['StrengthDescription']).group(1))
-max_sockets = max(int(m.group(1)) for c in load('CurrencyItems') if (m := re.fullmatch(r'add_skill_gem_socket_(\d+)', c['Action'] or '')))
-save('skills.json', {'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+used |= {k for sk in skills.values() for lv in (sk['levels'] or {}).values() for k in lv} | {k for sk in skills.values() for k in sk['constant']}
+kept = [d for d in descs.values() if used & set(d['stats'])]
+save('stat_texts.json', [{'stats': d['stats'], 'rows': d['langs']['English']} for d in kept])
+for c, l in LANGS.items():
+    save(f'stat_texts.{c}.json', [{'stats': d['stats'], 'rows': d['langs'].get(l) or d['langs']['English']} for d in kept])
 
 # --- equipment: bases (with tags inherited through the .it files), implicits and rollable affixes with spawn tags
 def read_it(p, cache={}):
@@ -272,25 +372,17 @@ armour = {a['BaseItemType']: a for a in load('ArmourTypes')}
 weapon = {w['BaseItemType']: w for w in load('WeaponTypes')}
 flasks = {f['BaseItemType']: f for f in load('Flasks')}
 visual = load('ItemVisualIdentity')
-mods_es = load('Mods', 'Spanish')
+mods_tr = load_langs('Mods')
 mod_stats = lambda m: [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]
-# obtainable bases: GGG's official trade list (cached; delete the file to refresh after a patch)
-trade_file = os.path.join(ROOT, 'poe2db_cache', 'trade2_items.json')
-if not os.path.exists(trade_file):
-    import urllib.request
-    os.makedirs(os.path.dirname(trade_file), exist_ok=True)
-    req = urllib.request.Request('https://www.pathofexile.com/api/trade2/data/items', headers={'User-Agent': 'Mozilla/5.0 (personal build planner)'})
-    open(trade_file, 'wb').write(urllib.request.urlopen(req, timeout=30).read())
-trade_types = {e['type'] for c in json.load(open(trade_file, encoding='utf8'))['result'] for e in c['entries']}
 bases, implicit_ids = [], set()
-for i, b in enumerate(bases_es and load('BaseItemTypes')):
+for i, b in enumerate(load('BaseItemTypes')):
     cls = classes[b['ItemClass']]['Name']
     if cls not in SLOT_CLASSES or not ok(b['Name']) or b['ModDomain'] not in (1, 2, 11) or b['Name'] not in trade_types:  # 1 item, 2 flask/charm, 11 jewel
         continue
     implicit_ids.update(b['Implicit_Mods'])
     a, w, fl = armour.get(i), weapon.get(i), flasks.get(i)
     bases.append({
-        'name': b['Name'], 'name_es': bases_es[i]['Name'], 'class': cls, 'slots': SLOT_CLASSES[cls], 'level': b['DropLevel'], 'domain': b['ModDomain'],
+        'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'slots': SLOT_CLASSES[cls], 'level': b['DropLevel'], 'domain': b['ModDomain'],
         'tags': sorted(set(read_it(b['InheritsFrom']) + [tags_tab[t]['Id'] for t in b['Tags']])),
         'implicits': [mods[m]['Id'] for m in b['Implicit_Mods']],
         'armour': a and {'armour': a['Armour'], 'evasion': a['Evasion'], 'energy_shield': a['EnergyShield'], 'movement_speed_%': a['IncreasedMovementSpeed']},
@@ -303,7 +395,7 @@ save('items.json', {
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     'unique_img': {words[u['WordsKey']]['Text']: visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
-    'affixes': [{'id': m['Id'], 'name': mods_es[i]['Name'] or m['Name'], 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
+    'affixes': [{'id': m['Id'], 'name': m['Name'], **tr(mods_tr, i), 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
                  'level': m['Level'], 'domain': m['Domain'], 'family': m['Families'][0] if m['Families'] else None, 'stats': mod_stats(m),
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])]}
                 for i, m in enumerate(mods) if m['Domain'] in (1, 2, 11) and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],

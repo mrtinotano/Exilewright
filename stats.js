@@ -1,5 +1,8 @@
 // Turns {stat_id: value} into game text using poe2_data/available/stat_texts.json (parsed from the game's .csd files).
-const descs = await fetch('poe2_data/available/stat_texts.json').then(r => r.json());
+import { lang } from './i18n.js';
+// stat_texts.<lang>.json per translated language (written by _tool/available.py); English file as fallback
+const load = f => fetch('poe2_data/available/' + f).then(r => r.ok ? r.json() : Promise.reject());
+const descs = await (lang === 'en' ? Promise.reject() : load(`stat_texts.${lang}.json`)).catch(() => load('stat_texts.json'));
 const byStat = {};
 for (const d of descs) for (const s of d.stats) (byStat[s] ||= []).push(d);
 

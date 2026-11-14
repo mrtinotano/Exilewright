@@ -1921,7 +1921,7 @@
   "id": "Metadata/Items/Gems/SupportGemBloodlust",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -4316,7 +4316,7 @@
   "id": "Metadata/Items/Gems/SkillGemSkeletalWarrior",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "chaos",
    "fire",
@@ -5940,7 +5940,7 @@
   "id": "Metadata/Items/Gems/SupportGemInfernalLegionThree",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "fire",
@@ -7183,41 +7183,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Demon Magus",
-  "name_es": "Invocar magus demonio",
-  "id": "Metadata/Items/Gems/SkillGemDemonMagus",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "companion",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "minion",
-   "persistent"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 198,
-  "socket_icon": "Art/2DItems/Gems/New/WitchDemonMagusSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/SpellcastingMinionSupport.dds",
-  "types": [
-   "CreatesMinion",
-   "CreatesDemonMinion",
-   "Meta",
-   "HasReservation",
-   "Persistent",
-   "Companion",
-   "CreatesCompanion",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
   "name": "Lightning Spear",
   "name_es": "Lanza de rayos",
   "id": "Metadata/Items/Gems/SkillGemLightningSpear",
@@ -7712,7 +7677,7 @@
   "id": "Metadata/Items/Gems/SupportGemRuthless",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -7909,7 +7874,7 @@
   "id": "Metadata/Items/Gems/SupportGemUnbreakable",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -7991,51 +7956,6 @@
   ],
   "exclude": [],
   "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Prolonged Duration III",
-  "name_es": "Duración prolongada III",
-  "id": "Metadata/Items/Gems/SupportGemPersistenceThree",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "duration",
-   "support"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 235,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/MoreDurationSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/MoreDurationSupport.dds",
-  "family": [
-   "ProlongedDuration"
-  ],
-  "lineage": false,
-  "require": [
-   "Duration"
-  ],
-  "exclude": [
-   "Cooldown",
-   "SupportedByDurationThree",
-   "NOT",
-   "AND",
-   "SummonsTotem",
-   "UsedByTotem",
-   "Trapped",
-   "RemoteMined",
-   "Persistent",
-   "Vaal",
-   "Triggered"
-  ],
-  "adds": [
-   "Cooldown",
-   "SupportedByDurationThree"
-  ],
   "gems_only": false
  },
  {
@@ -8597,46 +8517,6 @@
   "gems_only": false
  },
  {
-  "name": "Frozen Vortex",
-  "name_es": "Vórtice congelado",
-  "id": "Metadata/Items/Gems/SupportGemFrozenVortex",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "cold",
-   "duration",
-   "grants_active_skill",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 261,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/FrozenVortexSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/FrozenVortexSupport.dds",
-  "family": [
-   "FrozenVortex"
-  ],
-  "lineage": false,
-  "require": [
-   "Damage",
-   "Attack",
-   "CrossbowAmmoSkill"
-  ],
-  "exclude": [],
-  "adds": [
-   "DamageOverTime",
-   "Area",
-   "Duration"
-  ],
-  "gems_only": false
- },
- {
   "name": "Spiral Volley",
   "name_es": "Salva espiralada",
   "id": "Metadata/Items/Gems/SkillGemSpiralVolley",
@@ -8672,78 +8552,6 @@
    "Sustained",
    "ConsumesCharges",
    "Bow"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Maul",
-  "name_es": "Zarpazo",
-  "id": "Metadata/Items/Gems/SkillGemBearMaul",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "bear",
-   "grants_active_skill",
-   "melee",
-   "shapeshift",
-   "strike"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 264,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/DruidBearMaul.dds",
-  "types": [
-   "Attack",
-   "Melee",
-   "MeleeSingleTarget",
-   "Shapeshift",
-   "Bear",
-   "AttackInPlace",
-   "Area"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Rend",
-  "name_es": "Desgarrar",
-  "id": "Metadata/Items/Gems/SkillGemRend",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "duration",
-   "grants_active_skill",
-   "melee",
-   "shapeshift",
-   "strike",
-   "wyvern"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 266,
-  "socket_icon": "Art/2DItems/Gems/New/DruidWyvernSwipeSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/DruidWyvernSwipe.dds",
-  "types": [
-   "Attack",
-   "MeleeSingleTarget",
-   "Melee",
-   "Area",
-   "Shapeshift",
-   "Wyvern",
-   "ConsumesCharges",
-   "Duration"
   ],
   "cannot_be_supported": false
  },
@@ -8878,30 +8686,12 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Enervation",
-  "name_es": "Enervación",
-  "id": "Metadata/Items/Gems/SupportEnervation",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 40,
-   "int": 60
-  },
-  "skill_gems_index": 277,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/EnervationSupportGem.dds"
- },
- {
   "name": "Shock Siphon",
   "name_es": "Robo electrocutante",
   "id": "Metadata/Items/Gems/SupportGemShockSiphon",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "lightning",
    "support"
@@ -8999,7 +8789,7 @@
   "id": "Metadata/Items/Gems/SupportGemCoursingCurrentTwo",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "lightning",
@@ -9101,24 +8891,6 @@
    "Storm"
   ],
   "cannot_be_supported": false
- },
- {
-  "name": "Chance to Freeze",
-  "name_es": "Probabilidad de congelar",
-  "id": "Metadata/Items/Gems/SupportGemChanceToFreeze",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 60,
-   "int": 40
-  },
-  "skill_gems_index": 284,
-  "socket_icon": "Art/2DItems/Gems/Support/ChancetoFlee.dds"
  },
  {
   "name": "Ignite I",
@@ -9526,26 +9298,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Invocation",
-  "name_es": "Conjuración",
-  "id": "Metadata/Items/Gems/SupportGemInvocation",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "spell",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 297,
-  "socket_icon": "Art/2DItems/Gems/Support/UnleashSupport.dds"
- },
- {
   "name": "Cast on Freeze",
   "name_es": "Lanzar al congelar",
   "id": "Metadata/Items/Gems/SkillGemCastOnFreeze",
@@ -9661,78 +9413,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Cast on Melee Kill",
-  "name_es": "Lanzar al matar cuerpo a cuerpo",
-  "id": "Metadata/Items/Gems/SkillGemCastOnMeleeKill",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "persistent",
-   "strength",
-   "trigger"
-  ],
-  "attr": {
-   "str": 50,
-   "dex": 0,
-   "int": 50
-  },
-  "skill_gems_index": 301,
-  "socket_icon": "Art/2DItems/Gems/New/CastOnMeleeKillMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/CastOnMeleeKillSkill.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances",
-   "GeneratesEnergy",
-   "Triggers"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Cast on Death",
-  "name_es": "Lanzar al morir",
-  "id": "Metadata/Items/Gems/SkillGemCastOnDeath",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "dexterity",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "persistent",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 50,
-   "int": 50
-  },
-  "skill_gems_index": 302,
-  "socket_icon": "Art/2DItems/Gems/New/CastOnCritMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/DeathWalk.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances",
-   "GeneratesEnergy",
-   "Triggers"
-  ],
-  "cannot_be_supported": false
- },
- {
   "name": "Cast on Critical",
   "name_es": "Lanzar al infligir impactos críticos",
   "id": "Metadata/Items/Gems/SkillGemCastOnCritical",
@@ -9763,74 +9443,6 @@
    "Buff",
    "CanHaveMultipleOngoingSkillInstances",
    "GeneratesEnergy",
-   "Triggers"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Cast when Stunned",
-  "name_es": "Lanzar al ser aturdido",
-  "id": "Metadata/Items/Gems/SkillGemCastWhenStunned",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "persistent",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 304,
-  "socket_icon": "Art/2DItems/Gems/New/CastOnCritMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/TectonicSlam.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Cast when Damage Taken",
-  "name_es": "Lanzar al recibir daño",
-  "id": "Metadata/Items/Gems/SkillGemCastWhenDamageTaken",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "persistent",
-   "strength",
-   "trigger"
-  ],
-  "attr": {
-   "str": 50,
-   "dex": 0,
-   "int": 50
-  },
-  "skill_gems_index": 305,
-  "socket_icon": "Art/2DItems/Gems/New/CastOnCritMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/icononfire.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances",
    "Triggers"
   ],
   "cannot_be_supported": false
@@ -9881,7 +9493,7 @@
   "id": "Metadata/Items/Gems/SupportGemDevastate",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -9969,74 +9581,6 @@
   "skill_gems_index": 354,
   "socket_icon": "Art/2DItems/Gems/New/CastOnDodgeRollSkillGem.dds",
   "icon": "Art/2DArt/SkillIcons/CastOnDodgeRollSkill.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances",
-   "GeneratesEnergy",
-   "Triggers"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Cast while Channelling",
-  "name_es": "Lanzar al canalizar",
-  "id": "Metadata/Items/Gems/SkillGemCastWhileChannelling",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "persistent",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 355,
-  "socket_icon": "Art/2DItems/Gems/New/CastWhileChannellngMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/CastWhileChannellingSkill.dds",
-  "types": [
-   "HasReservation",
-   "OngoingSkill",
-   "Meta",
-   "Persistent",
-   "Buff",
-   "CanHaveMultipleOngoingSkillInstances"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Cast on Melee Stun",
-  "name_es": "Lanzar al aturdir cuerpo a cuerpo",
-  "id": "Metadata/Items/Gems/SkillGemCastOnMeleeStun",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "meta",
-   "persistent",
-   "strength",
-   "trigger"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 356,
-  "socket_icon": "Art/2DItems/Gems/New/CastOnMeleeStunMetaSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/CastOnMeleeStunSkill.dds",
   "types": [
    "HasReservation",
    "OngoingSkill",
@@ -10200,75 +9744,6 @@
   "icon": "Art/2DArt/SkillIcons/WitchBindSpectre.dds",
   "types": [
    "Minion"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Shroud",
-  "name_es": "Velo",
-  "id": "Metadata/Items/Gems/SkillGemShroud",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "persistent",
-   "spell"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 363,
-  "socket_icon": "Art/2DItems/Gems/Backstab.dds",
-  "icon": "Art/2DArt/SkillIcons/AmbushIcon.dds",
-  "types": [
-   "Spell",
-   "Buff",
-   "HasReservation",
-   "OngoingSkill",
-   "Persistent",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Summon Companion",
-  "name_es": "Invocar compañero",
-  "id": "Metadata/Items/Gems/SkillGemSummonMercenaryCompanion",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "ammunition",
-   "attack",
-   "companion",
-   "grants_active_skill",
-   "meta",
-   "minion",
-   "persistent"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 364,
-  "socket_icon": "Art/2DItems/Gems/New/SummonMercCompanionSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/SummonMercCompanion.dds",
-  "types": [
-   "Minion",
-   "MinionsCanExplode",
-   "CreatesMinion",
-   "HasReservation",
-   "Meta",
-   "Persistent",
-   "Singlular",
-   "Companion",
-   "CreatesCompanion",
-   "AttackInPlace"
   ],
   "cannot_be_supported": false
  },
@@ -11005,25 +10480,6 @@
    "Totemable"
   ],
   "cannot_be_supported": false
- },
- {
-  "name": "Spreading Frost",
-  "name_es": "Escarcha expansiva",
-  "id": "Metadata/Items/Gems/SupportGemSpreadingFrost",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "cold",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 384,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/BlankBlueSupportGem.dds"
  },
  {
   "name": "Neural Overload",
@@ -12398,36 +11854,6 @@
   "gems_only": false
  },
  {
-  "name": "Overabundance III",
-  "name_es": "Sobreabundancia III",
-  "id": "Metadata/Items/Gems/SupportGemOverabundanceThree",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "curse",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 421,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/IncreaseLimitSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/IncreaseLimitSupport.dds",
-  "family": [
-   "Overabundance"
-  ],
-  "lineage": false,
-  "require": [
-   "Limit"
-  ],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Electrocute",
   "name_es": "Paralizar",
   "id": "Metadata/Items/Gems/SupportGemElectrocute",
@@ -12540,7 +11966,7 @@
   "id": "Metadata/Items/Gems/SupportGemEnergyBarrier",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -12570,7 +11996,7 @@
   "id": "Metadata/Items/Gems/SupportGemWindWave",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "grants_active_skill",
@@ -12856,37 +12282,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Detonate Minion",
-  "name_es": "Detonar esbirro",
-  "id": "Metadata/Items/Gem/SkillGemDetonateMinion",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "dexterity",
-   "fire",
-   "grants_active_skill"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 433,
-  "socket_icon": "Art/2DItems/Gems/New/WitchReservationRagingSpiritsSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/WitchArsonistSkeleton.dds",
-  "types": [
-   "Attack",
-   "Cooldown",
-   "Area",
-   "Fire",
-   "Damage"
-  ],
-  "cannot_be_supported": false
- },
- {
   "name": "Explosive Spear",
   "name_es": "Lanza explosiva",
   "id": "Metadata/Items/Gem/SkillGemExplosiveSpear",
@@ -12933,47 +12328,6 @@
    "ProjectilesNumberModifiersNotApplied",
    "Detonator",
    "MirageArcherCanUse"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Elemental Siphon",
-  "name_es": "Sifón elemental",
-  "id": "Metadata/Items/Gem/SkillGemElementalSiphon",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "attack",
-   "cold",
-   "dexterity",
-   "duration",
-   "fire",
-   "grants_active_skill",
-   "lightning",
-   "melee",
-   "strike"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 436,
-  "socket_icon": "Art/2DItems/Gems/New/ElementalSiphonSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/ElementalSiphonSkillIcon.dds",
-  "types": [
-   "Attack",
-   "MeleeSingleTarget",
-   "Melee",
-   "Lightning",
-   "Cold",
-   "Fire",
-   "Spear",
-   "Cooldown",
-   "ManualCooldownConsumption",
-   "Duration",
-   "CannotSpiritStrike"
   ],
   "cannot_be_supported": false
  },
@@ -13083,25 +12437,6 @@
   "gems_only": false
  },
  {
-  "name": "Infusion",
-  "name_es": "Infusión",
-  "id": "Metadata/Items/Gems/SupportGemInfusion",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 440,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/BuffedHeraldSupportGem.dds"
- },
- {
   "name": "Mana Flare",
   "name_es": "Destello de maná",
   "id": "Metadata/Items/Gems/SupportGemManaFlare",
@@ -13145,7 +12480,7 @@
   "id": "Metadata/Items/Gems/SupportGemLockdown",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -13602,7 +12937,7 @@
   "id": "Metadata/Items/Gems/SupportGemManaBounty",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -13633,7 +12968,7 @@
   "id": "Metadata/Items/Gems/SupportGemLifeBounty",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -13732,7 +13067,7 @@
   "id": "Metadata/Items/Gem/SupportGemBreakEndurance",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -14342,7 +13677,7 @@
   "id": "Metadata/Items/Gems/SupportGemPremeditation",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -14371,7 +13706,7 @@
   "id": "Metadata/Items/Gems/SupportGemMurderousIntent",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -14424,40 +13759,6 @@
    "Duration",
    "Persistent",
    "Physical",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Spinning Inferno",
-  "name_es": "Infierno giratorio",
-  "id": "Metadata/Items/Gems/SkillGemSpinningInferno",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "fire",
-   "grants_active_skill",
-   "melee",
-   "strength",
-   "strike"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 481,
-  "socket_icon": "Art/2DItems/Gems/New/MagmaBarrierSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/FlamesOfJudgement.dds",
-  "types": [
-   "Attack",
-   "MeleeSingleTarget",
-   "Melee",
-   "Area",
-   "Fire",
    "AttackInPlace"
   ],
   "cannot_be_supported": false
@@ -14669,41 +13970,6 @@
    "Persistent",
    "Duration",
    "AffectsPresence",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Hydra Familiar",
-  "name_es": "Familiar hidra",
-  "id": "Metadata/Items/Gem/SkillGemHydra",
-  "kind": "spirit",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "buff",
-   "grants_active_skill",
-   "intelligence",
-   "meta",
-   "minion",
-   "persistent",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 488,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/AncestorTotemSkill.dds",
-  "types": [
-   "HasReservation",
-   "Persistent",
-   "Buff",
-   "Meta",
-   "CreatesMinion",
-   "Minion",
    "AttackInPlace"
   ],
   "cannot_be_supported": false
@@ -16401,155 +15667,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Grenade",
-  "name_es": "Granada",
-  "id": "Metadata/Items/Gem/SkillGemPlayerDefaultGrenadeLauncher",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "duration",
-   "grants_active_skill",
-   "grenade",
-   "physical",
-   "projectile"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 540,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/TheRedemption.dds",
-  "types": [
-   "Attack",
-   "RangedAttack",
-   "Area",
-   "ProjectileNumber",
-   "ProjectileSpeed",
-   "Cooldown",
-   "Triggerable",
-   "Grenade",
-   "UsableWhileMoving",
-   "DetonatesAfterTime",
-   "Projectile",
-   "Duration",
-   "MirageArcherCanUse",
-   "Physical"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Playtest Attack",
-  "name_es": "Playtest Attack",
-  "id": "Metadata/Items/Gem/SkillGemPlaytestAttack",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "grants_active_skill",
-   "melee",
-   "strike"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 541,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/iconbasicattack.dds",
-  "types": [
-   "Attack",
-   "MeleeSingleTarget",
-   "Melee",
-   "Area",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Playtest Slam",
-  "name_es": "Playtest Slam",
-  "id": "Metadata/Items/Gem/SkillGemPlaytestSlam",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "grants_active_skill",
-   "melee",
-   "slam",
-   "travel"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 542,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/BruteLeapSlam.dds",
-  "types": [
-   "Attack",
-   "Area",
-   "Melee",
-   "Slam",
-   "Totemable",
-   "Travel",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Playtest Spell",
-  "name_es": "Playtest Spell",
-  "id": "Metadata/Items/Gem/SkillGemPlaytestSpell",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "fire",
-   "grants_active_skill",
-   "projectile",
-   "repeatable",
-   "spell"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 543,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/FireballSkillStaff.dds",
-  "types": [
-   "Projectile",
-   "ProjectilesFromUser",
-   "Spell",
-   "Damage",
-   "Area",
-   "Trappable",
-   "Totemable",
-   "Mineable",
-   "Multicastable",
-   "Triggerable",
-   "Fire",
-   "Unleashable",
-   "AreaSpell",
-   "Invokable",
-   "UsableWhileMoving"
-  ],
-  "cannot_be_supported": false
- },
- {
   "name": "Life Remnants",
   "name_es": "Remanentes de vida",
   "id": "Metadata/Items/Gem/SkillGemAscendancyLifeRemnants",
@@ -18042,7 +17159,7 @@
   "id": "Metadata/Items/Gem/SkillGemAscendancyUnleash",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "duration",
@@ -19247,7 +18364,7 @@
   "id": "Metadata/Items/Gem/SupportGemHinder",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "chaos",
    "spell",
@@ -19274,55 +18391,6 @@
   ],
   "exclude": [],
   "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Fusillade",
-  "name_es": "Ráfaga",
-  "id": "Metadata/Items/Gems/SupportGemFusillade",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "attack",
-   "bow",
-   "projectile",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 630,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/FusilladeSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/FusilladeSupport.dds",
-  "family": [
-   "Fusilade"
-  ],
-  "lineage": false,
-  "require": [
-   "Projectile",
-   "RangedAttack",
-   "AND",
-   "Bow",
-   "AND"
-  ],
-  "exclude": [
-   "GroundTargetedProjectile",
-   "SupportedByFusillade",
-   "NOT",
-   "AND",
-   "Channel",
-   "Sustained",
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
-  ],
-  "adds": [
-   "GroundTargetedProjectile",
-   "SupportedByFusillade"
-  ],
   "gems_only": false
  },
  {
@@ -19859,40 +18927,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Soulbreaker",
-  "name_es": "Rompealmas",
-  "id": "Metadata/Items/Gem/SupportGemSoulbreaker",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "chaos",
-   "grants_active_skill",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 646,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/SoulbreakerSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/SoulbreakerSupport.dds",
-  "family": [
-   "Soulbreaker"
-  ],
-  "lineage": false,
-  "require": [],
-  "exclude": [
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
-  ],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Rupture",
   "name_es": "Ruptura",
   "id": "Metadata/Items/Gem/SupportGemRupture",
@@ -20180,7 +19214,7 @@
   "id": "Metadata/Items/Gems/SupportGemDiscombobulate",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "physical",
@@ -20212,7 +19246,7 @@
   "id": "Metadata/Items/Gems/SupportGemBreakPosture",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -20243,7 +19277,7 @@
   "id": "Metadata/Items/Gem/SupportGemDazingCry",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support",
    "warcry"
@@ -21188,7 +20222,7 @@
   "id": "Metadata/Items/Gems/SupportGemFontofRage",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support",
    "totem"
@@ -21284,46 +20318,6 @@
    "UsedByProxy",
    "Triggered",
    "Persistent"
-  ],
-  "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Aftershock III",
-  "name_es": "Réplica III",
-  "id": "Metadata/Items/Gems/SupportGemAftershockThree",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "attack",
-   "melee",
-   "slam",
-   "support"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 687,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/AftershockSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/AftershockSupport.dds",
-  "family": [
-   "Aftershock"
-  ],
-  "lineage": false,
-  "require": [
-   "Slam"
-  ],
-  "exclude": [
-   "Persistent",
-   "SummonsTotem",
-   "UsedByTotem",
-   "Trapped",
-   "RemoteMined",
-   "Vaal",
-   "Triggered"
   ],
   "adds": [],
   "gems_only": false
@@ -21767,7 +20761,7 @@
   "id": "Metadata/Items/Gem/SupportGemAutoReload",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "ammunition",
    "projectile",
@@ -22844,7 +21838,7 @@
   "id": "Metadata/Items/Gems/SupportGemDespoiler",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -22939,7 +21933,7 @@
   "id": "Metadata/Items/Gem/SupportGemRicochetThree",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "projectile",
    "support"
@@ -23621,7 +22615,7 @@
   "id": "Metadata/Items/Gem/SupportGemLeverage",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -23738,7 +22732,7 @@
   "id": "Metadata/Items/Gem/SupportGemPotential",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -23937,7 +22931,7 @@
   "id": "Metadata/Items/Gem/SupportGemFerocity",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -24440,7 +23434,7 @@
   "id": "Metadata/Items/Gem/SupportGemCommandment",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "command",
    "minion",
@@ -24471,7 +23465,7 @@
   "id": "Metadata/Items/Gem/SupportGemFlow",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -24541,36 +23535,6 @@
    "int": 0
   },
   "skill_gems_index": 787,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/StickyBombSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/StickyBombSupport.dds",
-  "family": [
-   "AdhesiveGrenades"
-  ],
-  "lineage": false,
-  "require": [
-   "Grenade"
-  ],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Adhesive Grenades III",
-  "name_es": "Granadas adhesivas III",
-  "id": "Metadata/Items/Gem/SupportGemAdhereThree",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "grenade",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 788,
   "socket_icon": "Art/2DItems/Gems/New/NewSupport/StickyBombSupportGem.dds",
   "icon": "Art/2DArt/SkillIcons/Support/StickyBombSupport.dds",
   "family": [
@@ -24660,7 +23624,7 @@
   "id": "Metadata/Items/Gem/SupportGemTremors",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -25267,7 +24231,7 @@
   "id": "Metadata/Items/Gem/SupportGemFlamepierce",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "fire",
    "projectile",
@@ -25302,7 +24266,7 @@
   "id": "Metadata/Items/Gem/SupportGemFreezefork",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "cold",
    "projectile",
@@ -25337,7 +24301,7 @@
   "id": "Metadata/Items/Gem/SupportGemStormchain",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "chaining",
    "lightning",
@@ -25485,37 +24449,6 @@
   "gems_only": false
  },
  {
-  "name": "Nadir",
-  "name_es": "Nadir",
-  "id": "Metadata/Items/Gem/SupportGemNadir",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "stages",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 814,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/NadirSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/NadirSupport.dds",
-  "family": [
-   "Nadir"
-  ],
-  "lineage": false,
-  "require": [
-   "GainsStages",
-   "HasSeals"
-  ],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Abiding Hex",
   "name_es": "Maleficio duradero",
   "id": "Metadata/Items/Gem/SupportGemAbidingHex",
@@ -25564,7 +24497,7 @@
   "id": "Metadata/Items/Gem/SupportGemRustedSpikes",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -25679,7 +24612,7 @@
   "id": "Metadata/Items/Gem/SupportGemRally",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -25713,46 +24646,6 @@
    "ConsumesCharges",
    "SkillConsumesEnduranceChargesOnUse",
    "SupportedByRally"
-  ],
-  "gems_only": false
- },
- {
-  "name": "Hoarfrost",
-  "name_es": "Helada blanca",
-  "id": "Metadata/Items/Gem/SupportGemHoarfrost",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "cold",
-   "duration",
-   "grants_active_skill",
-   "spell",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 820,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/HoarfrostSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/HoarfrostSupport.dds",
-  "family": [
-   "Hoarfrost"
-  ],
-  "lineage": false,
-  "require": [
-   "IceCrystal"
-  ],
-  "exclude": [],
-  "adds": [
-   "Duration",
-   "Damage",
-   "Cold",
-   "DamageOverTime"
   ],
   "gems_only": false
  },
@@ -26180,7 +25073,7 @@
   "id": "Metadata/Items/Gem/SupportGemReverberate",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -26249,7 +25142,7 @@
   "id": "Metadata/Items/Gem/SupportGemMalady",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -26281,7 +25174,7 @@
   "id": "Metadata/Items/Gem/SupportGemDazzle",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -26358,7 +25251,7 @@
   "id": "Metadata/Items/Gem/SupportGemUnyielding",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -26395,7 +25288,7 @@
   "id": "Metadata/Items/Gem/SupportGemDesperation",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -26432,7 +25325,7 @@
   "id": "Metadata/Items/Gem/SupportGemOverextend",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -26466,7 +25359,7 @@
   "id": "Metadata/Items/Gem/SupportGemExcoriate",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -26499,7 +25392,7 @@
   "id": "Metadata/Items/Gem/SupportGemUnbending",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "spell",
    "support"
@@ -27156,7 +26049,7 @@
   "id": "Metadata/Items/Gem/SupportGemSpar",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -27189,7 +26082,7 @@
   "id": "Metadata/Items/Gem/SupportGemDauntless",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "conditional",
    "support"
@@ -27233,7 +26126,7 @@
   "id": "Metadata/Items/Gem/SupportGemMagnetism",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -27335,45 +26228,6 @@
   "gems_only": false
  },
  {
-  "name": "Ancestral Call III",
-  "name_es": "Llamado ancestral III",
-  "id": "Metadata/Items/Gem/SupportGemAncestralCallThree",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "attack",
-   "melee",
-   "strike",
-   "support"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 867,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/AncestralCallSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/AncestralCallSupport.dds",
-  "family": [
-   "AncestralCall"
-  ],
-  "lineage": false,
-  "require": [
-   "MeleeSingleTarget",
-   "SpecialAncestralBoost"
-  ],
-  "exclude": [
-   "CannotSpiritStrike",
-   "Channel",
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
-  ],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Quill Burst",
   "name_es": "Estallido de espinas",
   "id": "Metadata/Items/Gem/SupportGemQuillBurst",
@@ -27418,7 +26272,7 @@
   "id": "Metadata/Items/Gem/SupportGemUnsteadyTempo",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "melee",
@@ -27456,7 +26310,7 @@
   "id": "Metadata/Items/Gem/SupportGemAncestralAid",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "conditional",
@@ -27633,7 +26487,7 @@
   "id": "Metadata/Items/Gem/SupportGemRime",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "cold",
    "support"
@@ -27663,7 +26517,7 @@
   "id": "Metadata/Items/Gem/SupportGemArmsLength",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -27697,7 +26551,7 @@
   "id": "Metadata/Items/Gem/SupportGemCharmBounty",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support"
   ],
@@ -28092,7 +26946,7 @@
   "id": "Metadata/Items/Gem/SupportGemUntouchable",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -28266,7 +27120,7 @@
   "id": "Metadata/Items/Gem/SupportGemGreatwoodTwo",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "support",
    "totem"
@@ -28365,7 +27219,7 @@
   "id": "Metadata/Items/Gem/SupportGemUnabating",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -28639,7 +27493,7 @@
   "id": "Metadata/Items/Gem/SupportGemFirstBlood",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "physical",
@@ -28710,7 +27564,7 @@
   "id": "Metadata/Items/Gem/SupportGemBloodintheEyes",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "physical",
    "support"
@@ -29029,7 +27883,7 @@
   "id": "Metadata/Items/Gem/SupportGemVolatilePower",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "chaos",
    "physical",
@@ -29094,7 +27948,7 @@
   "id": "Metadata/Items/Gem/SupportGemUnerringPower",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "support"
@@ -29221,7 +28075,7 @@
   "id": "Metadata/Items/Gem/SupportGemSeeRed",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "physical",
@@ -29307,44 +28161,12 @@
   "gems_only": false
  },
  {
-  "name": "Undermine",
-  "name_es": "Socavar",
-  "id": "Metadata/Items/Gem/SupportGemUndermine",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "physical",
-   "support"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 929,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/UndermineSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/UndermineSupport.dds",
-  "family": [
-   "Undermine"
-  ],
-  "lineage": false,
-  "require": [
-   "Attack",
-   "CrossbowSkill",
-   "CrossbowAmmoSkill"
-  ],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Outmaneuver",
   "name_es": "Aventajar",
   "id": "Metadata/Items/Gem/SupportGemOutmaneuver",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "physical",
    "support"
@@ -29443,7 +28265,7 @@
   "id": "Metadata/Items/Gem/SupportGemTumult",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "physical",
    "support"
@@ -29584,41 +28406,6 @@
    "Triggered",
    "Persistent",
    "Spell"
-  ],
-  "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Relentless Rage",
-  "name_es": "Furia imparable",
-  "id": "Metadata/Items/Gem/SupportGemGrudge",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "support"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 938,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/GrudgeSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/GrudgeSupport.dds",
-  "family": [
-   "RelentlessRage"
-  ],
-  "lineage": false,
-  "require": [
-   "Damage",
-   "Attack",
-   "CrossbowAmmoSkill"
-  ],
-  "exclude": [
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
   ],
   "adds": [],
   "gems_only": false
@@ -30918,27 +29705,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Removed Skill",
-  "name_es": "Habilidad eliminada",
-  "id": "Metadata/Items/Gem/SkillGemUnusable",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "grants_active_skill"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 974,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "",
-  "types": [],
-  "cannot_be_supported": true
- },
- {
   "name": "Gemini Surge",
   "name_es": "Sobrecarga de géminis",
   "id": "Metadata/Items/Gem/SkillGemGeminiSurge",
@@ -31226,81 +29992,6 @@
   "cannot_be_supported": false
  },
  {
-  "name": "Ice Fragments",
-  "name_es": "Fragmentos de hielo",
-  "id": "Metadata/Items/Gem/SkillGemIceFragments",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "cold",
-   "grants_active_skill",
-   "projectile",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 982,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelItemIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/iconbasicattack.dds",
-  "types": [
-   "Triggered",
-   "InbuiltTrigger",
-   "Triggerable",
-   "RangedAttack",
-   "Projectile",
-   "Attack",
-   "DetonatesAfterTime",
-   "Area",
-   "Cold",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Shred",
-  "name_es": "Despedazar",
-  "id": "Metadata/Items/Gem/SkillGemWolfShred",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "attack",
-   "cold",
-   "grants_active_skill",
-   "melee",
-   "payoff",
-   "projectile",
-   "shapeshift",
-   "strike",
-   "trigger",
-   "wolf"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 983,
-  "socket_icon": "Art/2DItems/Gems/New/DruidFrozenClawsSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/DruidFrozenClaws.dds",
-  "types": [
-   "Attack",
-   "Melee",
-   "MeleeSingleTarget",
-   "Shapeshift",
-   "Wolf",
-   "PerformsFinalStrike"
-  ],
-  "cannot_be_supported": false
- },
- {
   "name": "Fury of the Mountain",
   "name_es": "Furia de la montaña",
   "id": "Metadata/Items/Gem/SkillGemBearFuryOfTheMountain",
@@ -31576,32 +30267,6 @@
    "Cold",
    "Spell",
    "AttackInPlace"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Primal Avatar",
-  "name_es": "Avatar primitivo",
-  "id": "Metadata/Items/Gem/SkillGemPrimalAvatar",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "duration",
-   "grants_active_skill",
-   "intelligence",
-   "strength"
-  ],
-  "attr": {
-   "str": 50,
-   "dex": 0,
-   "int": 50
-  },
-  "skill_gems_index": 991,
-  "socket_icon": "Art/2DItems/Gems/New/DruidPrimalAvatarSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/DruidPrimalAvatar.dds",
-  "types": [
-   "Duration"
   ],
   "cannot_be_supported": false
  },
@@ -31961,53 +30626,6 @@
    "ProjectileNoCollision"
   ],
   "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Flame Pillar",
-  "name_es": "Pilar de fuego",
-  "id": "Metadata/Items/Gem/SupportGemFlamePillar",
-  "kind": "support",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "area",
-   "fire",
-   "grants_active_skill",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 100,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 1006,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/PillarofFireSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/PillarofFireSupport.dds",
-  "family": [
-   "FlamePillar"
-  ],
-  "lineage": false,
-  "require": [
-   "Attack",
-   "Damage",
-   "CrossbowSkill",
-   "CrossbowAmmoSkill"
-  ],
-  "exclude": [
-   "SkillConsumesIgnite",
-   "SupportedByFlamePillar",
-   "NOT",
-   "AND",
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
-  ],
-  "adds": [
-   "SkillConsumesIgnite",
-   "SupportedByFlamePillar"
-  ],
   "gems_only": false
  },
  {
@@ -32777,44 +31395,6 @@
   "gems_only": false
  },
  {
-  "name": "Atziri's Call",
-  "name_es": "Llamada de Atziri",
-  "id": "Metadata/Items/Gem/SupportGemAtzirisCall",
-  "kind": "support",
-  "tier": 0,
-  "source": "lineage_drop",
-  "tags": [
-   "area",
-   "grants_active_skill",
-   "lineage",
-   "spell",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 1031,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/BlankRedSupportGem.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/BlankBlueSupport.dds",
-  "family": [
-   "AtziriCallLineage"
-  ],
-  "lineage": true,
-  "require": [
-   "Spell"
-  ],
-  "exclude": [
-   "UsedByProxy",
-   "Triggered",
-   "Persistent"
-  ],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Atziri's Communion",
   "name_es": "Comunión de Atziri",
   "id": "Metadata/Items/Gem/SupportGemAtzirisCommunion",
@@ -33198,42 +31778,6 @@
    "Attack",
    "CrossbowSkill",
    "CrossbowAmmoSkill"
-  ],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
-  "name": "Dreamer's Knell",
-  "name_es": "Proclama del Soñador",
-  "id": "Metadata/Items/Gem/SupportGemDreamersKnell",
-  "kind": "support",
-  "tier": 0,
-  "source": "lineage_drop",
-  "tags": [
-   "area",
-   "attack",
-   "duration",
-   "grants_active_skill",
-   "lineage",
-   "melee",
-   "support",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 100,
-   "int": 0
-  },
-  "skill_gems_index": 1043,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageDreamer.dds",
-  "icon": "Art/2DArt/SkillIcons/Support/BlankGreenSupport.dds",
-  "family": [
-   "DreamersKnell"
-  ],
-  "lineage": true,
-  "require": [
-   "ComboStacking"
   ],
   "exclude": [],
   "adds": [],
@@ -34037,45 +32581,6 @@
    "Minion",
    "Companion",
    "Duration"
-  ],
-  "cannot_be_supported": false
- },
- {
-  "name": "Soul Crystal: {0}",
-  "name_es": "Cristal de alma: {0}",
-  "id": "Metadata/Items/Gems/SkillGemSoulCrystal",
-  "kind": "active",
-  "tier": 0,
-  "source": "unconfirmed",
-  "tags": [
-   "companion",
-   "grants_active_skill",
-   "intelligence",
-   "minion",
-   "persistent"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 100
-  },
-  "skill_gems_index": 1071,
-  "socket_icon": "Art/2DItems/Gems/New/GraveCommandSkillGem.dds",
-  "icon": "Art/2DArt/SkillIcons/GraveCommand.dds",
-  "types": [
-   "Minion",
-   "MinionsCanExplode",
-   "Trappable",
-   "Totemable",
-   "Mineable",
-   "Multicastable",
-   "Triggerable",
-   "CreatesMinion",
-   "HasReservation",
-   "Persistent",
-   "Companion",
-   "CreatesCompanion",
-   "AttackInPlace"
   ],
   "cannot_be_supported": false
  },
@@ -36508,34 +35013,6 @@
   "gems_only": false
  },
  {
-  "name": "Styrn's Anthem",
-  "name_es": "Himno de Styrn",
-  "id": "Metadata/Items/Gem/SupportGemKnightsAnthem",
-  "kind": "support",
-  "tier": 0,
-  "source": "lineage_drop",
-  "tags": [
-   "lineage",
-   "support"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 1146,
-  "socket_icon": "Art/2DItems/Gems/New/NewSupport/Lineage/KnightsAnthem.dds",
-  "icon": "",
-  "family": [
-   "BreachLineage"
-  ],
-  "lineage": true,
-  "require": [],
-  "exclude": [],
-  "adds": [],
-  "gems_only": false
- },
- {
   "name": "Catha's Brilliance",
   "name_es": "Genio de Catha",
   "id": "Metadata/Items/Gem/SupportGemCathasBrilliance",
@@ -36692,7 +35169,7 @@
   "id": "Metadata/Items/Gems/SupportGemConcussiveRunes",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -36728,7 +35205,7 @@
   "id": "Metadata/Items/Gems/SkillGemLeylines",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "buff",
@@ -36761,7 +35238,7 @@
   "id": "Metadata/Items/Gems/SkillGemFrostflameNova",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "cold",
@@ -36805,7 +35282,7 @@
   "id": "Metadata/Items/Gems/SkillGemHollowShell",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "buff",
@@ -36877,7 +35354,7 @@
   "id": "Metadata/Items/Gems/SupportGemRunicInfusion",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "physical",
@@ -36915,7 +35392,7 @@
   "id": "Metadata/Items/Gems/SupportGemRuneforgedBlades",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "attack",
    "grants_active_skill",
@@ -36961,7 +35438,7 @@
   "id": "Metadata/Items/Gems/SkillGemPoweredByVerisium",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "grants_active_skill",
    "repeatable",
@@ -36991,7 +35468,7 @@
   "id": "Metadata/Items/Gems/SkillGemRefutation",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "duration",
@@ -37024,7 +35501,7 @@
   "id": "Metadata/Items/Gems/SkillGemRepulsion",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -37068,7 +35545,7 @@
   "id": "Metadata/Items/Gems/SkillGemTriskelionCascade",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "duration",
@@ -37136,7 +35613,7 @@
   "id": "Metadata/Items/Gems/SkillGemSkyfall",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "cold",
@@ -37182,7 +35659,7 @@
   "id": "Metadata/Items/Gems/SkillGemDetonateLiving",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "grants_active_skill",
@@ -37221,7 +35698,7 @@
   "id": "Metadata/Items/Gems/SkillGemAnimusExchange",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "grants_active_skill",
    "spell"
@@ -37248,7 +35725,7 @@
   "id": "Metadata/Items/Gems/SkillGemBitterDead",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "cold",
@@ -37288,7 +35765,7 @@
   "id": "Metadata/Items/Gems/SkillGemEternalMarch",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "grants_active_skill",
    "minion",
@@ -37318,7 +35795,7 @@
   "id": "Metadata/Items/Gems/SkillGemGrimPillars",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "cold",
@@ -37358,7 +35835,7 @@
   "id": "Metadata/Items/Gems/SkillGemVerisiumManifestation",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "duration",
@@ -37394,7 +35871,7 @@
   "id": "Metadata/Items/Gems/SkillGemRemnantsOfKalguur",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "grants_active_skill",
@@ -37425,7 +35902,7 @@
   "id": "Metadata/Items/Gems/SkillGemWardboundMinions",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "duration",
    "grants_active_skill",
@@ -37462,7 +35939,7 @@
   "id": "Metadata/Items/Gems/SupportGemRunicExtraction",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "remnant",
    "support"
@@ -37495,7 +35972,7 @@
   "id": "Metadata/Items/Gems/SkillGemFragmentsOfThePast",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -37539,7 +36016,7 @@
   "id": "Metadata/Items/Gems/SkillGemConductiveRunes",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -37619,7 +36096,7 @@
   "id": "Metadata/Items/Gems/SkillGemAnimusSplinters",
   "kind": "spirit",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "grants_active_skill",
    "meta"
@@ -37647,7 +36124,7 @@
   "id": "Metadata/Items/Gems/SupportGemScouringFlame",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "fire",
    "support"
@@ -37679,7 +36156,7 @@
   "id": "Metadata/Items/Gems/SkillGemRunicReprieve",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "channelling",
    "grants_active_skill",
@@ -37708,7 +36185,7 @@
   "id": "Metadata/Items/Gems/SupportGemFistOfKalguur",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -37750,7 +36227,7 @@
   "id": "Metadata/Items/Gems/SkillGemVoltaicBarrier",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",
@@ -37783,7 +36260,7 @@
   "id": "Metadata/Items/Gems/SupportGemHealingRunes",
   "kind": "support",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "buff",
    "persistent",
@@ -37848,7 +36325,7 @@
   "id": "Metadata/Items/Gems/SkillGemExplosiveTransmutation",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "buff",
@@ -37884,7 +36361,7 @@
   "id": "Metadata/Items/Gems/SkillGemRainOfBlades",
   "kind": "active",
   "tier": 0,
-  "source": "unconfirmed",
+  "source": "tradeable",
   "tags": [
    "area",
    "attack",

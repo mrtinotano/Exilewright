@@ -1,13 +1,77 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>PoE2 Planner</title>
 <style>
   :root { --bg:#111; --panel:#1b1b1b; --line:#333; --txt:#ddd; --acc:#c8a050; }
   * { box-sizing: border-box; }
-  body { margin:0; display:flex; height:100vh; background:var(--bg); color:var(--txt); font:13px system-ui, sans-serif; }
-  aside { width:320px; overflow:auto; padding:10px; background:var(--panel); border-right:1px solid var(--line); }
+  body { margin:0; display:flex; flex-direction:column; height:100vh; background:var(--bg); color:var(--txt); font:13px system-ui, sans-serif; }
+  #top { display:flex; align-items:center; gap:8px; padding:6px 10px; background:linear-gradient(#24201a, #17140f); border-bottom:1px solid #4a3f2c; position:relative; flex-wrap:wrap; }
+  #top label { display:flex; align-items:center; gap:5px; margin:0; color:#a89878; font-family:Georgia, serif; }
+  #top input, #top select { width:auto; } #top #name { width:170px; } #top #level { width:56px; } #top #buildList { max-width:180px; }
+  #top .grow { flex:1; }
+  #top button { background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; }
+  #top button:hover { background:#3a3225; }
+  #notesBox { position:absolute; right:10px; top:100%; z-index:5; width:360px; padding:8px; background:#16130f; border:1px solid #5a4a30; box-shadow:0 6px 20px #000; }
+  #notesBox[hidden] { display:none; }
+  #body { flex:1; display:flex; min-height:0; }
+  aside { width:330px; display:flex; flex-direction:column; background:#0e0c0a; border-right:1px solid #3a3022; flex:none; }
+  aside[hidden] { display:none; }
+  #charPanel { flex:1; overflow:auto; min-height:0; }
+  #sceneSkills { flex:1; overflow:auto; min-height:0; padding:8px 10px; border-top:2px solid #4a3f2c; background:#121010; }
+  #sceneSkills[hidden] { display:none; }
+  #sceneSkills h3 { margin-top:0; }
+  /* character panel, like the in-game one */
+  .cp { font-family:Georgia, serif; padding:8px 8px 14px; color:#c8b890; font-variant:small-caps; }
+  .cp-name { display:block; width:calc(100% - 80px); box-sizing:border-box; text-align:center; color:#e8d8a8; font:16px Georgia, serif; font-variant:small-caps; padding:4px; margin:0 40px 8px; border:1px solid #5a4a30; background:linear-gradient(#2a2218, #15110c); }
+  .cp-name:hover, .cp-name:focus { border-color:#a08850; outline:none; }
+  .cp-id .cp-pick { display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; text-align:left; margin:2px 0; padding:3px 6px;
+    font:12px Georgia, serif; font-variant:small-caps; color:#c8b890; background:#14110d; border:1px solid #2e271c; cursor:pointer; }
+  .cp-id .cp-pick::after { content:'⌄'; color:#8a7a5c; line-height:0.6; }
+  .cp-id .cp-pick.open::after { content:'⌃'; line-height:1.2; }
+  .cp-id .cp-pick:hover, .cp-id .cp-pick.open { border-color:#a08850; color:#f0e0b0; }
+  .cp-classes { display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; margin-top:8px; padding:6px; background:#0e0c09; border:1px solid #5a4a30; }
+  .cp-classes button { font:12px Georgia, serif; font-variant:small-caps; color:#c8b890; background:linear-gradient(#211b14, #100d0a); border:1px solid #3a3022; padding:5px 2px; cursor:pointer; }
+  .cp-classes button:hover, .cp-classes button.on { border-color:#a08850; color:#f0e0b0; }
+  .cp-top { display:grid; grid-template-columns:1fr 58px 1fr; gap:6px; align-items:center; }
+  .cp-id div { font-size:12px; padding:3px 6px; margin:2px 0; background:#14110d; border:1px solid #2e271c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cp-id > div { color:#e8d8a8; }
+  .cp-attr div { display:flex; justify-content:space-between; gap:4px; color:#c8b890 !important; }
+  .cp-attr .str span { color:#e0a090; } .cp-attr .dex span { color:#a8d090; } .cp-attr .int span { color:#90b0e0; }
+  .cp-attr b { font-weight:normal; color:#e8e0cc; font-variant:normal; }
+  .cp-portrait { width:58px; height:58px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#8fa8c8;
+    background:radial-gradient(#2a3a4a, #0c1016); border:2px solid #7a6440; box-shadow:0 0 0 1px #2a2218; }
+  .cp-row4, .cp-row3 { display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; margin-top:10px; }
+  .cp-row3 { grid-template-columns:repeat(3, 1fr); padding:0 14px; margin-top:6px; }
+  .cp-box { text-align:center; padding:5px 2px 4px; background:linear-gradient(#211b14, #100d0a); border:1px solid #3a3022; border-radius:3px 3px 0 0; }
+  .cp-box small { display:block; font-size:10.5px; color:#c8b890; line-height:1.1; min-height:23px; display:flex; align-items:center; justify-content:center; }
+  .cp-box b { display:block; font-weight:normal; color:#e8e0cc; font-size:14px; font-variant:normal; padding-top:2px; border-top:1px solid #2e271c; }
+  .cp-ico { width:22px; height:22px; display:block; margin:0 auto 2px; }
+  .cp-ico.life { color:#d84a3a; } .cp-ico.es { color:#7ac0d0; } .cp-ico.mana { color:#5a8ae0; } .cp-ico.spirit { color:#e0b060; }
+  .cp-ico.armour { color:#b8b0a0; } .cp-ico.evasion { color:#b8c890; } .cp-ico.block { color:#b8b0a0; }
+  .cp-ico.fire { color:#ff7a3a; } .cp-ico.cold { color:#8ac8ff; } .cp-ico.lightning { color:#ffe25a; } .cp-ico.chaos { color:#c070d0; }
+  .cp h4 { margin:12px 0 6px; font-weight:normal; font-size:13px; color:#c8b890; text-align:center; display:flex; align-items:center; gap:8px; }
+  .cp h4::before, .cp h4::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, #6a5a3a, transparent); }
+  .cp-resists { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+  .cp-res { display:flex; align-items:center; gap:6px; padding:4px 6px; background:#14110d; border:1px solid #2e271c; font-size:13px; }
+  .cp-res .cp-ico { margin:0; width:20px; height:20px; flex:none; }
+  .cp-res b { margin-left:auto; font-weight:normal; color:#e8e0cc; font-variant:normal; white-space:nowrap; }
+  .cp-res i { font-style:normal; color:#7d6f56; }
+  .cp-list { margin-top:12px; }
+  .cp-list details { border-top:1px solid #2a2418; }
+  .cp-list summary { padding:6px 2px 2px; font-family:Georgia, serif; font-size:16px; color:#e8d8a8; cursor:pointer; list-style:none; }
+  .cp-list summary::-webkit-details-marker { display:none; }
+  .cp-list details > div { display:flex; justify-content:space-between; gap:10px; padding:1px 2px; font:12px Georgia, serif; font-variant:small-caps; color:#a89870; }
+  .cp-list details > div:last-child { padding-bottom:6px; }
+  .cp-list details > div b { color:#e8d8a8; font-weight:normal; font-variant:normal; white-space:nowrap; }
+  .cp-list details > div[title] span { text-decoration:underline dotted #6a5d47; cursor:help; }
+  .ask { position:fixed; inset:0; z-index:50; background:#000a; display:flex; align-items:center; justify-content:center; }
+  .ask > div { max-width:360px; padding:16px 18px; background:linear-gradient(#211b14, #100d0a); border:1px solid #7a6440; font-family:Georgia, serif; color:#e8d8a8; text-align:center; }
+  .ask p { margin:0 0 14px; line-height:1.4; }
+  .cp-note { color:#8a6a4a; font-size:11px; font-style:italic; font-variant:normal; }
+  .cp details { margin-top:12px; } .cp summary { cursor:pointer; color:#e8c872; }
+  .cp-all { color:#8888ff; font-size:12px; line-height:1.45; margin-top:6px; }
   main { flex:1; display:flex; flex-direction:column; min-width:0; }
   nav button { background:none; border:0; color:var(--txt); padding:8px 14px; cursor:pointer; }
   nav button.on { color:var(--acc); border-bottom:2px solid var(--acc); }
@@ -24,13 +88,41 @@
   li input[type=number] { width:60px; }
   .row { display:flex; gap:4px; margin-top:6px; }
   #hud { position:absolute; pointer-events:none; background:#000c; padding:6px 8px; border:1px solid var(--line); white-space:pre; }
-  #tip { position:absolute; pointer-events:none; max-width:380px; background:#0b0a08f2; border:1px solid #5a4a30; font-family:Georgia, serif; text-align:center; box-shadow:0 4px 18px #000; }
-  #tip .th { padding:6px 12px 4px; font-size:16px; color:#c8b890; background:linear-gradient(#2a241b, #16130e); border-bottom:1px solid #5a4a30; }
-  #tip .th small { display:block; font-size:11px; color:#8a7a5c; }
+  #treeSearch { position:absolute; top:62px; left:10px; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+  #treeFind { width:220px; padding:6px 10px; background:#0b0a08e6; border:1px solid #4a3e2a; color:#e8d8a8; font:13px Georgia, serif; outline:none; }
+  #treeFind:focus { border-color:#9fe8ff; }
+  #treeFindN { font:11px Georgia, serif; color:#9fe8ff; background:#0b0a08e6; padding:0 6px; } #treeFindN:empty { display:none; }
+  #treePts { position:absolute; top:10px; left:10px; display:flex; gap:4px; z-index:2; font-family:Georgia, serif; }
+  #treePts > * { display:flex; flex-direction:column; align-items:center; min-width:76px; padding:4px 10px; background:#0b0a08e6; border:1px solid #4a3e2a; color:#a89870; font:12px Georgia, serif; font-variant:small-caps; }
+  #treePts b { font-size:15px; color:#e8d8a8; font-variant:normal; }
+  #treePts button { cursor:pointer; }
+  #treePts button:hover { border-color:#7a6440; }
+  #treePts button.on { border-color:var(--set, #c9a85a); box-shadow:inset 0 0 0 1px var(--set, #c9a85a); }
+  #treePts button[data-mode="1"] b, #treePts button[data-mode="2"] b { color:var(--set); }
+  #treePts .over b { color:#e05050 !important; }
+  #treePts #treeReset { min-width:0; padding:4px 8px; }
+  #treePts #treeReset:hover { border-color:#e05050; color:#e05050; }
+  #tip, .gtip { position:absolute; pointer-events:none; max-width:380px; background:#0b0a08f2; border:1px solid #5a4a30; font-family:Georgia, serif; text-align:center; box-shadow:0 4px 18px #000; }
+  #tip .th, .gtip .th { padding:6px 12px 4px; font-size:16px; color:#c8b890; background:linear-gradient(#2a241b, #16130e); border-bottom:1px solid #5a4a30; }
+  #tip .th small, .gtip .th small { display:block; font-size:11px; color:#8a7a5c; }
   #tip.tip-notable .th { color:#e8c872; } #tip.tip-keystone .th { color:#f0a860; } #tip.tip-jewel .th { color:#7fc0e0; } #tip.tip-root .th { color:#f0e0b0; }
-  #tip .tb { padding:6px 12px; color:#8888ff; font-size:13px; line-height:1.45; }
-  #tip .tf { padding:4px 12px 6px; color:#7a6e58; font-size:11px; border-top:1px solid #2a2418; }
+  #tip .tb, .gtip .tb { padding:6px 12px; color:#8888ff; font-size:13px; line-height:1.45; }
+  #tip .tf, .gtip .tf { padding:4px 12px 6px; color:#7a6e58; font-size:11px; border-top:1px solid #2a2418; }
   #treeCanvas { cursor:grab; }
+  /* skill info window, like the in-game gem tooltip */
+  .gtip { position:fixed; z-index:20; width:360px; }
+  .gtip[hidden] { display:none; }
+  .gtip .th { color:#1ba29b; }
+  .gp { padding:6px 12px; color:#7f7f7f; font-size:13px; line-height:1.5; } .gp span { color:#fff; }
+  .gd { padding:6px 14px; color:#b0a080; font-size:12px; font-style:italic; border-top:1px solid #2a2418; }
+  .gtip .tb { border-top:1px solid #2a2418; }
+  .gc { padding:6px 12px 8px; border-top:1px solid #5a4a30; color:#7f7f7f; font-size:13px; line-height:1.5; } .gc span { color:#fff; }
+  .gch { color:#c8b890; font-size:12px; margin-bottom:2px; }
+  .gc .dps { font-size:15px; color:#c8b890; } .gc .dps span { color:#f0d070; }
+  .sdps { margin-left:auto; color:#f0d070; font-size:12px; white-space:nowrap; } .sdps small { color:#8a7a5c; }
+  .sicon { cursor:pointer; }
+  .skadd { max-width:620px; display:flex; gap:6px; margin-bottom:8px; }
+  .shead .sdel { padding:0 5px; margin-left:4px; }
   #hud { left:8px; top:8px; }
   #items, #skills { overflow:auto; padding:10px; }
   .skills { max-width:620px; background:#141210; border:1px solid #4a4134; padding:8px; }
@@ -43,6 +135,32 @@
   .sock { width:42px; height:42px; border-radius:50%; border:3px solid #6b5a3a; background:#0a0a0a; padding:0; cursor:pointer; overflow:hidden; }
   .sock.main { border-color:#9a9a9a; cursor:default; display:inline-block; }
   .sock img { width:100%; height:100%; border-radius:50%; } .sock.on { outline:2px solid var(--acc); }
+  #charPanel[hidden], #skillPanel[hidden] { display:none; }
+  .skdetail { flex:1; overflow-y:auto; min-height:0; padding:10px 12px; font-family:Georgia, serif; color:#c8b890; }
+  .skdetail h4 { margin:10px 0 3px; padding-bottom:2px; font-weight:normal; font-size:16px; color:#e8d8a8; border-bottom:1px solid #3a342c; }
+  .skdetail .kv { display:flex; justify-content:space-between; gap:8px; font-size:12px; font-variant:small-caps; padding:1px 0; }
+  .skdetail .kv:nth-of-type(even) { background:#1b1915; }
+  .skdetail .kv b { font-weight:normal; color:#e8e0c8; font-variant:normal; white-space:nowrap; }
+  .dhead { display:flex; gap:8px; align-items:center; } .dhead img { width:48px; height:48px; border:1px solid #4a4134; background:#000; }
+  .dhead b { display:block; font-size:17px; font-weight:normal; color:#1ba29b; } .dhead small { color:#8a7a5c; }
+  .ddesc { margin:6px 0 0; font-size:12px; color:#a89870; font-style:italic; }
+  .dlines { color:#8888ff; font-size:12px; line-height:1.45; }
+  .dsup { display:flex; gap:6px; margin:4px 0; } .dsup img { width:30px; height:30px; flex:none; }
+  .dsup b { font-weight:normal; font-size:13px; color:#ddd; } .dsup small { display:block; font-size:11px; color:#a89870; }
+  .sbody { min-width:0; } .shead { flex-wrap:wrap; }
+  .skill { cursor:pointer; padding:2px; border:1px solid transparent; } .skill.sel { border-color:#c9a85a; background:#1d1912; }
+  .sockw { position:relative; display:inline-block; }
+  .sockx { position:absolute; top:-4px; right:-4px; width:16px; height:16px; min-width:0; padding:0; border-radius:50%; font-size:10px; line-height:14px; background:#2a1414; border:1px solid #7a3030; color:#e88; cursor:pointer; display:none; }
+  .sockw:hover .sockx { display:block; }
+  .dsup .sockx { position:static; display:inline-block; vertical-align:middle; margin-left:4px; }
+  .suppick { margin-top:4px; border:1px solid #4a4134; background:#0b0b0b; }
+  .suphead { display:flex; align-items:center; gap:8px; padding:4px; border-bottom:1px solid #2a2622; } .supfind { width:180px; }
+  .suplist { max-height:340px; overflow-y:auto; }
+  .supopt { display:flex; gap:8px; align-items:center; width:100%; text-align:left; padding:4px 6px; background:none; border:0; border-bottom:1px solid #1c1a17; cursor:pointer; }
+  .supopt:hover, .supopt.on { background:#221d16; } .supopt[hidden] { display:none; }
+  .supopt img { width:36px; height:36px; flex:none; object-fit:contain; }
+  .supopt span { display:flex; flex-direction:column; gap:1px; } .supopt b { font-weight:normal; font-size:13px; font-family:Georgia, serif; }
+  .supopt small { color:#8a8a8a; font-size:11px; line-height:1.35; }
   .pick { margin-top:4px; } .cap { text-align:center; padding:8px; border-top:1px solid #3a342c; font-family:Georgia, serif; }
   .inv { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
   .doll { display:grid; grid-template-columns:repeat(8, 52px); grid-template-rows:repeat(8, 52px); gap:4px; padding:12px; width:max-content;
@@ -52,6 +170,13 @@
   .cell span { color:#555; font-size:10px; text-align:center; padding:2px; }
   .cell.magic { border-color:#5555aa; } .cell.rare { border-color:#99993f; } .cell.unique { border-color:#af6025; }
   .cell.sel { outline:2px solid var(--acc); }
+  .picklist { list-style:none; margin:6px 0 0; padding:0; max-height:460px; overflow-y:auto; border:1px solid #3a342c; background:#0b0b0b; }
+  .picklist li { display:flex; align-items:center; gap:8px; padding:3px 6px; cursor:pointer; border-bottom:1px solid #1c1a17; }
+  .picklist li:hover { background:#221d16; }
+  .picklist img { width:34px; height:34px; object-fit:contain; flex:none; }
+  .picklist span { display:flex; flex-direction:column; color:#c8c8c8; }
+  .picklist small { color:#7f7f7f; font-size:11px; }
+  .picklist li.unique span { color:#af6025; }
   .jewels { display:flex; flex-wrap:wrap; gap:4px; max-width:460px; } .jewels .cell { width:52px; height:52px; }
   .editor { flex:1; min-width:320px; max-width:480px; }
   .editor section { background:var(--panel); border:1px solid var(--line); padding:8px; }
@@ -69,39 +194,33 @@
 </style>
 </head>
 <body>
-<aside>
-  <div class="row">
-    <select id="buildList"></select>
-    <button id="newBuild">Nueva</button>
-    <button id="delBuild">Borrar</button>
-  </div>
-  <label>Nombre <input id="name"></label>
-  <label>Ascendencia <select id="asc"></select></label>
-
-  <h3>Habilidades</h3>
-  <input id="gemSearch" list="gemNames" placeholder="Añadir gema…">
-  <datalist id="gemNames"></datalist>
-  <ul id="gems"></ul>
-
-  <h3>Notas</h3>
-  <textarea id="notes" rows="5"></textarea>
-
-  <h3>Stats: árbol + equipo (<span id="points">0</span> puntos)</h3>
-  <div id="stats"></div>
-
-  <div class="row">
-    <button id="export">Exportar</button>
-    <button id="import">Importar</button>
-    <input id="importFile" type="file" accept=".json" hidden>
-  </div>
+<header id="top">
+  <select id="buildList" title="Saved builds" data-t></select>
+  <button id="newBuild" data-t>New build</button>
+  <button id="delBuild" data-t>Delete</button>
+  <span class="grow"></span>
+  <button id="notesBtn">Notes</button>
+  <button id="export" data-t>Export</button>
+  <button id="import" data-t>Import</button>
+  <select id="langPick" title="Language"></select>
+  <input id="importFile" type="file" accept=".json" hidden>
+  <div id="notesBox" hidden><textarea id="notes" rows="8" placeholder="Build notes…" data-t></textarea></div>
+</header>
+<div id="body">
+<aside id="side">
+  <div id="charPanel"></div>
+  <div id="skillPanel" class="skdetail" hidden></div>
+  <div id="sceneSkills" hidden></div>
 </aside>
 <main>
-  <nav><button data-v="tree" class="on">Árbol</button><button data-v="items">Equipo</button><button data-v="skills">Habilidades</button><button data-v="scene">Escena 3D</button></nav>
-  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><div id="tip" hidden></div></div>
+  <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="scene" data-t>3D scene</button></nav>
+  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
   <div class="view" id="items" hidden></div>
   <div class="view" id="skills" hidden></div>
   <div class="view" id="scene" hidden><div id="hud"></div></div>
 </main>
+</div>
+<div id="gtip" class="gtip" hidden></div>
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",

@@ -2,8 +2,10 @@
 // Dummies are point targets: monster hitbox sizes are not in the extracted data, so a hit needs the dummy's centre inside.
 // WASD move, 1-9 pick a skill from the build, left click casts it towards the cursor, R respawns dummies.
 import * as THREE from 'three';
+import { t } from './i18n.js';
+const SHAPE_NAME = { circle: 'circle', nova: 'nova', cone: 'cone', line: 'line', projectile: 'projectile', aura: 'aura' };
 
-export function initScene(el, getBuild, geo, playerSpeed) {
+export function initScene(el, getBuild, geo, playerSpeed, label = g => g.name) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   el.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -47,7 +49,7 @@ export function initScene(el, getBuild, geo, playerSpeed) {
     const g = getBuild().gems[skill];
     if (!g) return;
     const G = geo(g), shape = g.shape || 'circle', R = G.radius, W = G.width, p = player.position;
-    if (shape === 'projectile' ? !G.speed : !R) { msg = shape === 'projectile' ? 'Sin velocidad de proyectil en los datos' : 'Radio 0: el juego no da radio, pon uno manual'; return; }
+    if (shape === 'projectile' ? !G.speed : !R) { msg = t(shape === 'projectile' ? 'No projectile speed in the data' : 'Radius 0: the game gives no radius, set one manually'); return; }
     const dir = new THREE.Vector2(point.x - p.x, point.z - p.z).normalize(), ang = Math.atan2(-dir.y, dir.x);
     const rel = d => new THREE.Vector2(d.position.x - p.x, d.position.z - p.z);
     let mesh, test;
@@ -129,12 +131,12 @@ export function initScene(el, getBuild, geo, playerSpeed) {
     const gems = getBuild().gems;
     hud.textContent = (gems.length ? gems.map((g, i) => {
       const G = geo(g);
-      return `${i === skill ? '▶' : ' '} ${i + 1}. ${g.name}  (${g.shape || 'circle'}, ${g.shape === 'projectile'
-        ? (G.speed ? `${G.speed.toFixed(1)} m/s, ${G.range.toFixed(1)} m` : 'sin datos')
-        : `${G.radius.toFixed(2)} m${G.radiusFromData ? '' : ' manual'}`})`;
-    }).join('\n') : 'Añade gemas a la build')
-      + `\n\nVelocidad: ${playerSpeed().toFixed(2)} m/s · WASD mover · 1-9 habilidad · clic lanzar · R reiniciar`
-      + `\nImpactos totales: ${dummies.reduce((s, d) => s + d.userData.hits, 0)}${msg ? '\n' + msg : ''}`;
+      return `${i === skill ? '▶' : ' '} ${i + 1}. ${label(g)}  (${t(SHAPE_NAME[g.shape || 'circle'] || g.shape)}, ${g.shape === 'projectile'
+        ? (G.speed ? `${G.speed.toFixed(1)} m/s, ${G.range.toFixed(1)} m` : t('no data'))
+        : `${G.radius.toFixed(2)} m${G.radiusFromData ? '' : ' ' + t('manual')}`})`;
+    }).join('\n') : t('Add gems to the build'))
+      + '\n\n' + t('Speed: {0} m/s · WASD move · 1-9 skill · click cast · R reset', playerSpeed().toFixed(2))
+      + '\n' + t('Total hits: {0}', dummies.reduce((s, d) => s + d.userData.hits, 0)) + (msg ? '\n' + msg : '');
     renderer.render(scene, cam);
   });
 }

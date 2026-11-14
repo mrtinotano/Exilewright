@@ -1,13 +1,16 @@
 // Skills tab laid out like the in-game skill panel: icon, level, name and support sockets per skill.
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
+import { t, tn, fmt, lang } from './i18n.js';
+import { attributes, skill } from './calc.js';
+import { statLines } from './stats.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
-const [GEMS, SK, ASCS] = await Promise.all([load('gems.json'), load('skills.json'), load('ascendancies.json')]);
+const [GEMS, SK] = await Promise.all([load('gems.json'), load('skills.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
 const SUPPORTS = GEMS.filter(g => g.kind === 'support');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-const ATTRS = { str: ['Fue', 'strength', '#c44'], dex: ['Des', 'dexterity', '#4a4'], int: ['Int', 'intelligence', '#48c'] };
+const ATTRS = { str: [t('Str'), 'strength', '#c44'], dex: [t('Dex'), 'dexterity', '#4a4'], int: [t('Int'), 'intelligence', '#48c'] };
 // a support uses capacity of its main attribute (the requirement % the game gives it)
 const colour = g => { const a = Object.entries(g.attr).sort((x, y) => y[1] - x[1])[0]; return a[1] ? a[0] : null; };
 
@@ -23,22 +26,62 @@ function matches(expr, types) {
   return st.some(Boolean);
 }
 const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
+const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;   // stat with no game text: not shown
+const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
+// stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
+function gemLines(name, level) {
+  const d = SK.skills[name]; if (!d) return [];
+  const lv = d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {};
+  const st = Object.fromEntries(Object.entries({ ...(d.constant || {}), ...lv }).filter(([k]) => !k.startsWith('_')));
+  return statLines(st).filter(l => !RAW.test(l));
+}
+const descOf = G => G['description_' + lang] || G.description || '';
+const DTYPE = { physical: 'Physical Damage', fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage', chaos: 'Chaos Damage' };
 
-// attribute total: class base + flat stats from tree/gear, then % increased
-export function attributes(sum, ascName) {
-  const base = ASCS.find(a => a.name === ascName)?.attrs || { str: 0, dex: 0, int: 0 }, out = {};
-  const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
-  for (const [k, [, id]] of Object.entries(ATTRS)) {
-    const flat = base[k] + (sum['base_' + id] || 0) + (sum['additional_' + id] || 0) + (sum.additional_all_attributes || 0) + pair[k].reduce((t, p) => t + (sum['additional_' + p] || 0), 0);
-    out[k] = Math.floor(flat * (1 + (sum[id + '_+%'] || 0) / 100));
-  }
-  return out;
+// side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill details window
+function details(g, b, sum, geo) {
+  const G = GEM[g.name] || {}, s = skill(g, b, sum), st = s.stats, geom = geo?.(g) || {};
+  const sec = (title, rows) => (rows = rows.filter(Boolean)).length
+    ? `<h4>${t(title)}</h4>${rows.map(([k, v]) => `<div class="kv"><span>${t(k)}</span><b>${v}</b></div>`).join('')}` : '';
+  const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
+  const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
+  const sups = (g.supports || []).filter(n => GEM[n]);
+  const lines = gemLines(g.name, g.level);
+  return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${g.level}</small></div></div>
+    ${descOf(G) ? `<p class="ddesc">${esc(descOf(G))}</p>` : ''}
+    ${sec('Damage', [
+      ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
+      ['Total Combined Damage', hits.length ? `${fmt(lo)} – ${fmt(hi)}` : '—'],
+      ...hits.map(([k, [a, z]]) => [DTYPE[k], `${fmt(a)} – ${fmt(z)}`]),
+    ])}
+    ${sec('Speed', [
+      !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
+      [s.attack ? 'Attacks per second' : 'Uses per second', s.speed ? fmt(s.speed, 2) : '—'],
+      st._cooldown_ms && ['Cooldown time', fmt(st._cooldown_ms / 1000, 2) + ' s'],
+    ])}
+    ${sec('Critical Hits', [
+      ['Critical hit chance', s.crit != null ? fmt(s.crit, 2) + '%' : '—'],
+      ['Critical Damage Bonus', s.critBonus != null ? '+' + fmt(s.critBonus) + '%' : '—'],
+    ])}
+    ${sec('Cost & Reservation', [cost && ['Cost', cost], st._spirit && ['Reservation', t('{0} spirit', st._spirit)]])}
+    ${sec('Area & Duration', [
+      geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
+      SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
+      geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
+    ])}
+    ${s.reason ? `<p class="note">${esc(t(s.reason))}</p>` : ''}
+    <h4>${t('Skill Stats')}</h4>${lines.length ? `<div class="dlines">${lines.map(esc).join('<br>')}</div>` : `<p class="note">—</p>`}
+    <h4>${t('Supports')}</h4>${sups.length ? sups.map(n => {
+      const S = GEM[n], sl = gemLines(n, 1);
+      return `<div class="dsup"><img src="${img(S.icon)}" alt=""><div><b>${esc(tn(S))} <button class="sockx" data-unsup="${b.gems.indexOf(g)}:${g.supports.indexOf(n)}" title="${t('Remove support')}">✕</button></b>${descOf(S) ? `<small>${esc(descOf(S))}</small>` : ''}${sl.length ? `<div class="dlines">${sl.map(esc).join('<br>')}</div>` : ''}</div></div>`;
+    }).join('') : `<p class="note">${t('No supports socketed')}</p>`}`;
 }
 
-export function initSkills(el, getBuild, changed, getSum) {
+export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
   let open = null;  // [gem index, socket index] being edited
+  let sel = 0;      // skill shown in the details panel
   function render() {
-    const b = getBuild(), attrs = attributes(getSum(), b.asc), used = { str: 0, dex: 0, int: 0 };
+    const b = getBuild(), sum = getSum(), attrs = attributes(sum, b.asc), used = { str: 0, dex: 0, int: 0 };
     const rows = b.gems.map((g, gi) => {
       const G = GEM[g.name];
       if (!G || G.kind === 'support') return '';
@@ -47,40 +90,72 @@ export function initSkills(el, getBuild, changed, getSum) {
       const sups = g.supports.map(n => n && GEM[n]);
       sups.forEach(s => s && colour(s) && used[colour(s)]++);
       const types = new Set([...(G.types || []), ...sups.flatMap(s => s?.adds || [])]);
-      const sockets = G.cannot_be_supported ? '<small class="note">No admite soportes</small>' : Array.from({ length: g.sockets }, (_, si) => {
+      const sockets = G.cannot_be_supported ? `<small class="note">${t('Cannot be supported')}</small>` : Array.from({ length: g.sockets }, (_, si) => {
         const s = sups[si];
-        return `<button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(s.name_es || s.name) : 'Hueco de soporte vacío'}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>`;
+        return `<span class="sockw"><button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(tn(s)) + ' — ' + t('right click to remove') : t('Empty support socket')}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>${s ? `<button class="sockx" data-unsup="${gi}:${si}" title="${t('Remove support')}">✕</button>` : ''}</span>`;
       }).join('');
       let picker = '';
-      if (open?.[0] === gi) {
+      if (open?.[0] === gi) {   // only supports this skill can take, with icon and what they do
         const fams = new Set(sups.flatMap((s, i) => s && i !== open[1] ? s.family : []));
         const opts = SUPPORTS.filter(s => canSupport(s, types) && !s.family.some(f => fams.has(f)))
-          .sort((x, y) => (x.name_es || x.name).localeCompare(y.name_es || y.name));
-        picker = `<select class="pick" data-gi="${gi}" data-si="${open[1]}"><option value="">— vacío —</option>${opts.map(s =>
-          `<option value="${esc(s.name)}" ${s.name === g.supports[open[1]] ? 'selected' : ''}>${esc(s.name_es || s.name)}${colour(s) ? ' · ' + ATTRS[colour(s)][0] : ''}</option>`).join('')}</select>
-          <small class="note">${opts.length} soportes compatibles con los tipos de esta habilidad</small>`;
+          .sort((x, y) => tn(x).localeCompare(tn(y)));
+        const item = s => {
+          const c = colour(s), what = descOf(s) || gemLines(s.name, 1).join(' · ');
+          return `<button class="supopt${s.name === g.supports[open[1]] ? ' on' : ''}" data-sup="${esc(s.name)}" data-find="${esc((tn(s) + ' ' + s.name + ' ' + what).toLowerCase())}">
+            <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${esc(what || t('No description in the game data yet'))}</small></span></button>`;
+        };
+        picker = `<div class="suppick"><div class="suphead"><input class="supfind" type="search" placeholder="${t('Filter supports…')}" autocomplete="off">
+          <small class="note">${t('{0} supports compatible with this skill\'s types', opts.length)}</small></div>
+          <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small></span></button>` : ''}${opts.map(item).join('')}</div></div>`;
       }
-      return `<div class="skill"><img class="sicon" src="${img(G.icon)}" alt="">
-        <div class="sbody"><div class="shead">NV: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <b>${esc(G.name_es || G.name)}</b>
-          <span class="sockn">huecos <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span></div>
-        <div class="socks"><span class="sock main" title="${G.socket_icon?.endsWith('Icon.dds') ? 'Habilidad otorgada por ' + (G.source === 'passive_or_ascendancy' ? 'ascendencia o pasiva' : 'objeto o arma') : esc(G.name_es || G.name)}"><img src="${img(G.socket_icon)}" alt=""></span>${sockets}</div>${picker}</div></div>`;
+      const d = skill(g, b, sum);
+      return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
+        <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <b>${esc(tn(G))}</b>
+          <span class="sockn">${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
+          <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
+        <div class="socks">${sockets}</div>${picker}</div></div>`;
     }).join('');
     const per = SK.support_capacity_per_attribute;
-    el.innerHTML = `<div class="skills">${rows || '<p class="note">Añade gemas desde la barra lateral.</p>'}
-      <div class="cap">Capacidad de gemas de soporte: ${Object.entries(ATTRS).map(([k, [t, , c]]) =>
-        `<span style="color:${used[k] > Math.floor(attrs[k] / per) ? '#f55' : c}">${t} (${used[k]}/${Math.floor(attrs[k] / per)})</span>`).join(', ')}
-      <br><small class="note">${per} de atributo = 1 de capacidad. Atributos: Fue ${attrs.str}, Des ${attrs.dex}, Int ${attrs.int}. Huecos: los que tenga tu gema (orbes de joyero, máx ${SK.max_support_sockets}).</small></div></div>`;
+    const cur = b.gems[sel] && GEM[b.gems[sel].name]?.kind !== 'support' ? b.gems[sel] : null;
+    side.innerHTML = cur ? details(cur, b, sum, geo) : `<p class="note">${t('Select a skill to see all its stats.')}</p>`;
+    el.innerHTML = `<div class="skills"><div class="skadd"><input list="gemNames" placeholder="${t('Add skill…')}" id="gemSearch"><datalist id="gemNames">${GEMS.filter(g => g.kind !== 'support')
+      .map(g => `<option value="${esc(tn(g))}">`).join('')}</datalist></div>${rows || `<p class="note">${t('No skills yet: type a gem name above.')}</p>`}
+      <div class="cap">${t('Support gem capacity')}: ${Object.entries(ATTRS).map(([k, [a, , c]]) =>
+        `<span style="color:${used[k] > Math.floor(attrs[k] / per) ? '#f55' : c}">${a} (${used[k]}/${Math.floor(attrs[k] / per)})</span>`).join(', ')}
+      <br><small class="note">${t('{0} attribute = 1 capacity. Attributes: Str {1}, Dex {2}, Int {3}. Sockets: whatever your gem has (Jeweller\'s Orbs, max {4}).', per, attrs.str, attrs.dex, attrs.int, SK.max_support_sockets)}</small></div></div>`;
   }
+  // remove a support: ✕ on the socket or in the details panel, or right click on the socket
+  const unsup = (gi, si) => { const g = getBuild().gems[gi]; if (!g?.supports?.[si]) return false; g.supports[si] = null; open = null; changed(); render(); return true; };
+  side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number)); });
+  el.addEventListener('contextmenu', e => { const s = e.target.closest('.sock'); if (s && unsup(+s.dataset.gi, +s.dataset.si)) e.preventDefault(); });
   el.addEventListener('click', e => {
-    const t = e.target.closest('.sock:not(.main)'); if (!t) return;
+    const x = e.target.closest('[data-unsup]');
+    if (x) { unsup(...x.dataset.unsup.split(':').map(Number)); return; }
+    const del = e.target.closest('[data-del]');
+    if (del) { getBuild().gems.splice(del.dataset.del, 1); open = null; if (sel >= +del.dataset.del) sel = Math.max(0, sel - 1); changed(); render(); return; }
+    const opt = e.target.closest('[data-sup]');
+    if (opt) { const g = getBuild().gems[open[0]]; g.supports[open[1]] = opt.dataset.sup || null; open = null; changed(); render(); return; }
+    const t = e.target.closest('.sock');
+    if (!t) {   // anywhere else on a skill row (not its inputs) shows it in the details panel
+      const row = e.target.closest('[data-sel]');
+      if (row && !e.target.closest('input, select, .suppick') && +row.dataset.sel !== sel) { sel = +row.dataset.sel; render(); }
+      return;
+    }
+    sel = +t.dataset.gi;
     open = open?.[0] === +t.dataset.gi && open[1] === +t.dataset.si ? null : [+t.dataset.gi, +t.dataset.si];
     render();
   });
   el.addEventListener('change', e => {
+    if (e.target.id === 'gemSearch') { if (addGem(e.target.value)) el.querySelector('#gemSearch')?.focus(); return; }
     const t = e.target, g = getBuild().gems[t.dataset.gi]; if (!g) return;
-    if (t.classList.contains('pick')) { g.supports[t.dataset.si] = t.value || null; open = null; }
-    else g[t.dataset.k] = +t.value;
+    if (!t.dataset.k) return;
+    g[t.dataset.k] = +t.value;
     changed(); render();
+  });
+  el.addEventListener('input', e => {   // filter the support list in place (keeps the focus in the box)
+    if (!e.target.classList.contains('supfind')) return;
+    const q = e.target.value.trim().toLowerCase();
+    for (const o of el.querySelectorAll('.suplist [data-find]')) o.hidden = q && !o.dataset.find.includes(q);
   });
   return render;
 }

@@ -1,5 +1,8 @@
+import { t, tn, fmt, lang, LANGS, setLang } from './i18n.js';
 import { initScene } from './scene.js';
 import { statLines } from './stats.js';
+import { renderChar, skillTip } from './charpanel.js';
+import { skill, withSupports } from './calc.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
 
@@ -8,45 +11,41 @@ const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [tree, gems, ascs, SK] = await Promise.all([load('passive_tree.json'), load('gems.json'), load('ascendancies.json'), load('skills.json')]);
 const N = tree.nodes;
 const ROOTS = new Set(tree.class_roots.map(String));
-const label = n => n.name_es || n.name;
+const label = tn;
 
 // ---------- builds (localStorage; export/import as JSON files)
 const KEY = 'poe2builds';
 let builds = JSON.parse(localStorage.getItem(KEY) || '{}');
 let cur;
-const SHAPES = { circle: 'Círculo (cursor)', nova: 'Nova (en ti)', cone: 'Cono', line: 'Línea', projectile: 'Proyectil', aura: 'Aura (te sigue)' };
+const SHAPES = { circle: 'Circle (cursor)', nova: 'Nova (on you)', cone: 'Cone', line: 'Line', projectile: 'Projectile', aura: 'Aura (follows you)' };
 const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.includes('projectile') ? 'projectile' : t.includes('aura') || t.includes('persistent') ? 'aura'
   : t.includes('slam') || t.includes('strike') ? 'cone' : 'circle';
-const blank = () => ({ name: 'Nueva build', asc: ascs[0].name, gems: [], nodes: [], ascNodes: [], notes: '' });
+const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].name, gems: [], nodes: [], ascNodes: [], notes: '' });
 const save = () => { localStorage.setItem(KEY, JSON.stringify(builds)); };
 function select(id) {
   cur = id; localStorage.setItem(KEY + ':last', id);
   renderSide(); drawTree(); renderItems?.();
+  checkStart();
 }
 const B = () => builds[cur];
 if (!Object.keys(builds).length) builds[Date.now()] = blank();
 
-// ---------- sidebar
-$('asc').innerHTML = ascs.map(a => `<option>${a.name}</option>`).join('');
-$('gemNames').innerHTML = gems.filter(g => g.kind !== 'support').map(g => `<option value="${g.name}">${g.name_es || ''} · ${g.kind}</option>`).join('');
+// ---------- top bar (build, name, level, class, ascendancy) and side panel (character sheet)
+const CLASSES = [...new Set(ascs.map(a => a.class))];
+let picking = null;  // 'cls' | 'asc': which list is open in the character panel
+const clsOf = asc => ascs.find(a => a.name === asc)?.class;
 
 function renderSide() {
   const b = B();
   b.gems.forEach(g => { g.level ??= 20; g.width ??= 0; });  // builds saved before gem levels existed
-  $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${x.name}</option>`).join('');
-  $('name').value = b.name; $('asc').value = b.asc; $('notes').value = b.notes;
-  $('gems').innerHTML = b.gems.map((g, i) => {
-    const G = geo(g), num = (k, v, t) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${t}">`;
-    return `<li style="flex-wrap:wrap"><span>${i + 1}. ${g.name}</span>nv${num('level', g.level, 'nivel de gema')}<button data-del="${i}">✕</button>
-    <select data-i="${i}" data-k="shape" style="width:auto">${Object.entries(SHAPES).map(([k, t]) => `<option value="${k}" ${k === g.shape ? 'selected' : ''}>${t}</option>`).join('')}</select>
-    ${g.shape === 'projectile' ? '' : G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × área del árbol">radio ${G.radius.toFixed(2)} m</span>` : `radio${num('radius', g.radius, 'el juego no da radio para esta gema: valor manual')}<small>manual</small>`}
-    ${g.shape === 'cone' || g.shape === 'line' ? `${g.shape === 'cone' ? 'ángulo°' : 'ancho m'}${num('width', g.width, 'el juego no da este dato: valor manual')}<small>manual</small>` : ''}
-    ${g.shape === 'projectile' ? `<small>${G.speed ? `${G.speed.toFixed(1)} m/s · alcance ${G.range.toFixed(1)} m` : 'sin velocidad en los datos'}</small>` : ''}</li>`;
-  }).join('');
+  $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
+  $('notes').value = b.notes;
+  $('notesBtn').textContent = t('Notes') + (b.notes ? ' •' : '');
   renderStats();
+  renderSceneSkills();
   renderSkills?.();
 }
-const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? `\nOtorga: ${n.grants_skill}` : '');
+const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t('Grants: {0}', n.grants_skill) : '');
 
 // Attribute nodes: right click cycles Str/Dex/Int
 const ATTR = { str: ['strength', '#c44'], dex: ['dexterity', '#4a4'], int: ['intelligence', '#48c'] };
@@ -63,7 +62,7 @@ function cycleAttr(id) {
 }
 function treeSum() {
   const b = B(), sum = {};
-  for (const id of [...b.nodes, ...b.ascNodes]) for (const [k, v] of Object.entries(nodeStats(id))) sum[k] = (sum[k] || 0) + v;
+  for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id))) sum[k] = (sum[k] || 0) + v;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
   return sum;
 }
@@ -80,7 +79,7 @@ function inc(sum, suffix, tags) {
 }
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
-  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || [], sum = treeSum();
+  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || [], sum = withSupports(g, treeSum()).sum;  // supports' area / speed count
   const base = d.radius?.[g.level];
   const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) / 10;
   return {
@@ -97,30 +96,116 @@ function geo(g) {
 const playerSpeed = () => SK.player_base_speed * (1 + (treeSum()['base_movement_velocity_+%'] || 0) / 100) / 10;
 function renderStats() {
   const b = B(), sum = treeSum();
-  $('points').textContent = Math.max(0, b.nodes.length - 1);
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them
-  delete sum.display_passive_attribute_text;
-  $('stats').textContent = statLines(sum).sort().join('\n') + (pending ? `\n${pending} nodo(s) de atributo sin elegir (clic derecho)` : '');
+  const points = Math.max(0, b.nodes.length - 1);  // the class start node is free
+  b.level = Math.min(100, 1 + points);  // one passive point per level
+  renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
+  renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, pending, picking,
+    classes: CLASSES, ascOptions: ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name),
+    ascLabel: x => tn(ascs.find(a => a.name === x)) || x, clsLabel: x => tn(ascs.find(a => a.class === x)?.class_names) || x });
+}
+// lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
+function renderSceneSkills() {
+  const b = B(), sum = treeSum();
+  $('sceneSkills').innerHTML = `<h3>${t('Skills')} <small class="note">${t('keys 1-9 in the scene')}</small></h3><ul id="gems">${b.gems.map((g, i) => {
+    const G = geo(g), s = skill(g, b, sum), gem = gems.find(x => x.name === g.name);
+    const num = (k, v, t) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${t}">`;
+    return `<li style="flex-wrap:wrap"><div style="display:flex;width:100%;justify-content:space-between"><span data-tip="${i}" style="cursor:help">${i + 1}. ${esc(tn(gem) || g.name)}</span><b class="sdps">${s.dps != null ? fmt(s.dps) + ' <small>DPS</small>' : '— <small>DPS</small>'}</b></div>
+    <select data-i="${i}" data-k="shape" style="width:auto">${Object.entries(SHAPES).map(([k, name]) => `<option value="${k}" ${k === g.shape ? 'selected' : ''}>${t(name)}</option>`).join('')}</select>
+    ${g.shape === 'projectile' ? '' : G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × ${t('tree area')}">${t('radius')} ${G.radius.toFixed(2)} m</span>` : `${t('radius')}${num('radius', g.radius, t('the game gives no radius for this gem: manual value'))}<small>${t('manual')}</small>`}
+    ${g.shape === 'cone' || g.shape === 'line' ? `${g.shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small>` : ''}
+    ${g.shape === 'projectile' ? `<small>${G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : t('no speed in the data')}</small>` : ''}</li>`;
+  }).join('') || `<li class="note">${t('Add skills in the Skills tab.')}</li>`}</ul>`;
+}
+// skill info window: anything with data-tip="<gem index>"
+function gemTip(t) {
+  const tip = $('gtip'), g = t && B().gems[t.dataset.tip];
+  if (!g) { tip.hidden = true; return; }
+  tip.innerHTML = skillTip(gems.find(x => x.name === g.name) || {}, g, B(), treeSum(), geo);
+  tip.hidden = false;
+  const r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(4, r.right + 10 + w > innerWidth ? r.left - w - 10 : r.right + 10) + 'px';
+  tip.style.top = Math.max(4, Math.min(innerHeight - h - 4, r.top)) + 'px';
+}
+document.addEventListener('mouseover', e => gemTip(e.target.closest?.('[data-tip]')));
+function addGem(name) {
+  const g = gems.find(g => g.name === name || tn(g) === name || g.name_es === name);
+  if (!g) return false;
+  B().gems.push({ name: g.name, shape: guessShape(g.tags), level: 20, radius: 0, width: 0 });
+  save(); renderSide(); return true;
 }
 
 const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); };
+// in-app confirmation (native confirm() is blocked in some embedded browsers): resolves true on the OK button
+// in-app choice dialog (native confirm() is blocked in some embedded browsers):
+// resolves with the index of the chosen option, or -1 on Cancel / Escape / click outside
+function ask(text, ...opts) {
+  return new Promise(done => {
+    const d = document.createElement('div');
+    d.className = 'ask';
+    d.innerHTML = `<div><p>${esc(text)}</p>${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join(' ')} <button data-i="-1">${t('Cancel')}</button></div>`;
+    const close = v => { d.remove(); removeEventListener('keydown', key); done(v); };
+    const key = e => { if (e.key === 'Escape') close(-1); };
+    d.onclick = e => { if (e.target === d) close(-1); else if (e.target.dataset.i) close(+e.target.dataset.i); };
+    addEventListener('keydown', key);
+    document.body.append(d);
+    d.querySelector('button').focus();
+  });
+}
 $('buildList').onchange = e => select(e.target.value);
 $('newBuild').onclick = () => { const id = String(Date.now()); builds[id] = blank(); save(); select(id); };
-$('delBuild').onclick = () => {
-  if (!confirm(`¿Borrar "${B().name}"?`)) return;
+$('delBuild').onclick = async () => {
+  if (await ask(t('Delete the build «{0}»? This cannot be undone.', B().name), t('Delete')) !== 0) return;
   delete builds[cur]; if (!Object.keys(builds).length) builds[Date.now()] = blank();
   save(); select(Object.keys(builds)[0]);
 };
-$('name').onchange = edit((e, b) => b.name = e.target.value);
-$('asc').onchange = edit((e, b) => { b.asc = e.target.value; b.ascNodes = []; });
+// character panel: name, base class and ascendancy are edited in place
+$('charPanel').onchange = e => { if (e.target.dataset.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e); };
+$('charPanel').onclick = async e => {
+  const t = e.target.closest('[data-pick], [data-cls], [data-asc]'); if (!t) return;
+  if (t.dataset.pick) { picking = picking === t.dataset.pick ? null : t.dataset.pick; renderStats(); return; }
+  picking = null;
+  const b = B();
+  if (t.dataset.asc) {
+    if (t.dataset.asc === b.asc) renderStats(); else edit((_, b) => { b.asc = t.dataset.asc; b.ascNodes = []; })(e);
+    return;
+  }
+  const cls = t.dataset.cls;
+  if (cls === clsOf(b.asc)) { renderStats(); return; }
+  const asc = ascs.find(a => a.class === cls).name, root = classRoot(asc);
+  renderStats();  // close the list while asking
+  let nodes = [];
+  if (b.nodes.length > 1 && root === b.nodes[0]) nodes = b.nodes;   // same start node: the tree stays valid
+  else if (b.nodes.length > 1) {
+    nodes = await moveTree(b.nodes, root, cls, t('{0} starts somewhere else on the tree.', cls));
+    if (!nodes) return;
+  }
+  edit((_, b) => { b.asc = asc; b.ascNodes = []; setNodes(b, nodes); })(e);
+};
+const setNodes = (b, nodes) => {
+  b.nodes = nodes; fixSets(b);
+  const kept = new Set([...nodes, ...setOf(b, 1), ...setOf(b, 2)]);
+  b.attrs = Object.fromEntries(Object.entries(b.attrs || {}).filter(([id]) => kept.has(id)));
+};
+// the tree must start at the class start: offer to clear it or link it there (null = cancelled)
+async function moveTree(nodes, root, cls, why) {
+  const linked = reroot(nodes, root), had = nodes.length - 1;
+  const pick = await ask(why + ' ' + t('You have {0} points allocated.', had),
+    t('Clear the tree'),
+    ...linked.length ? [t('Connect it to the {0} start', cls)] : []);
+  return pick < 0 ? null : pick === 1 ? linked : [];
+}
+// builds made before the start was enforced may begin at another class start
+async function checkStart() {
+  const b = B(), root = classRoot(b.asc), id = cur;
+  if (!b.nodes.length || !root || b.nodes[0] === root) return;
+  const cls = clsOf(b.asc);
+  const nodes = await moveTree(b.nodes, root, cls, t('This build\'s tree begins at another class\'s start, and {0} can only start at its own.', cls));
+  if (nodes && id === cur) { setNodes(b, nodes); save(); renderSide(); drawTree(); }
+}
 $('notes').onchange = edit((e, b) => b.notes = e.target.value);
-$('gemSearch').onchange = edit((e, b) => {
-  const g = gems.find(g => g.name === e.target.value);
-  if (g) b.gems.push({ name: g.name, shape: guessShape(g.tags), level: 20, radius: 0, width: 0 });
-  e.target.value = '';
-});
-$('gems').onchange = edit((e, b) => b.gems[e.target.dataset.i][e.target.dataset.k] = e.target.dataset.k === 'shape' ? e.target.value : +e.target.value);
-$('gems').onclick = e => e.target.dataset.del && edit((_, b) => b.gems.splice(e.target.dataset.del, 1))(e);
+$('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if (!$('notesBox').hidden) $('notes').focus(); };
+$('sceneSkills').onchange = edit((e, b) => b.gems[e.target.dataset.i][e.target.dataset.k] = e.target.dataset.k === 'shape' ? e.target.value : +e.target.value);
 $('export').onclick = () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(B(), null, 1)], { type: 'application/json' }));
@@ -159,23 +244,79 @@ const world = (x, y, a) => a ? [(x - FIT[a].cx) * FIT[a].k, (y - FIT[a].cy) * FI
 const WP = Object.fromEntries(Object.entries(N).map(([id, n]) => [id, world(n.x, n.y, n.ascendancy)]));
 const main = Object.keys(N).filter(id => !N[id].ascendancy);
 const ascStart = a => (ASC[a] || []).find(i => N[i].ascendancy_start);
-const classRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
+const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
+// every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
+const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
 const BACKDROPS = new Map();   // small node clusters get a faint round backdrop, like the game's group art
 for (const id of main) { const n = N[id]; if (n.group != null && ORBIT[n.orbit] <= 335) BACKDROPS.set(n.group, Math.max(BACKDROPS.get(n.group) || 0, ORBIT[n.orbit])); }
 const visible = () => [...main, ...(ASC[B().asc] || [])];
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
+// ---------- weapon sets: passives that only apply while that weapon set is in use
+// game rules (no table in the extracted data): 99 points from levels + 24 from quests, 8 ascendancy points
+// (4 trials x 2), up to 24 weapon set points for each set; keystones and jewel sockets can't go in a set
+const TOTAL = { tree: 123, asc: 8, set: 24 };
+const SET_COL = { 1: '#e0704a', 2: '#62b0e8' };
+let mode = 0;   // what a click on the tree allocates: 0 = normal points, 1 / 2 = weapon set points
+const setOf = (b, k) => (b['set' + k] ||= []);
+const setOK = id => !ROOTS.has(id) && N[id].type !== 'keystone' && N[id].type !== 'jewel' && !N[id].ascendancy;
+function fixSets(b) {   // set passives must stay linked to the start through normal or same-set passives
+  for (const k of [1, 2]) {
+    const own = setOf(b, k).filter(n => !b.nodes.includes(n));
+    b['set' + k] = b.nodes.length ? prune([...b.nodes, ...own]).filter(n => own.includes(n)) : [];
+  }
+}
+function renderPoints(b) {
+  const box = (label, used, total, m, tip) => `<${m == null ? 'div' : `button data-mode="${m}"`} class="${m === mode ? 'on' : ''}${used > total ? ' over' : ''}" title="${tip}"${m ? ` style="--set:${SET_COL[m]}"` : ''}>${label}<b>${used} / ${total}</b></${m == null ? 'div' : 'button'}>`;
+  $('treePts').innerHTML =
+    box(t('Tree'), Math.max(0, b.nodes.length - 1), TOTAL.tree, 0, t('Click: allocate normal points (99 from levels + 24 from quests)'))
+    + box(t('Ascendancy'), b.ascNodes.length, TOTAL.asc, null, t('Ascendancy points (4 trials × 2)'))
+    + box(t('Set 1'), setOf(b, 1).length, TOTAL.set, 1, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 1))
+    + box(t('Set 2'), setOf(b, 2).length, TOTAL.set, 2, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 2))
+    + `<button id="treeReset" title="${t('Remove every allocated passive, ascendancy and weapon set point')}">${t('Reset')}<b>⟲</b></button>`;
+}
+$('treePts').onclick = async e => {
+  if (e.target.closest('#treeReset')) {
+    const b = B(), n = Math.max(0, b.nodes.length - 1) + b.ascNodes.length + setOf(b, 1).length + setOf(b, 2).length;
+    if (!n || await ask(t('Reset the whole tree? {0} allocated points will be removed.', n), t('Reset')) !== 0) return;
+    return edit((_, b) => { b.ascNodes = []; setNodes(b, []); })(e);
+  }
+  const el = e.target.closest('[data-mode]'); if (!el) return;
+  mode = +el.dataset.mode;
+  if (mode) B().wset = mode;
+  save(); renderSide(); drawTree();
+};
 const walkable = (id, root) => N[id] && !N[id].ascendancy && (!ROOTS.has(id) || id === root);
-function pathTo(have, target, ok) {   // BFS from the allocated set to target, returns the new node ids
+function pathTo(have, target, ok) {   // BFS from the allocated set to target (id or test), returns the new node ids
+  const hit = typeof target === 'function' ? target : u => u === target;
   const prev = new Map(have.map(n => [n, null])), q = [...have];
+  let end = null;
   while (q.length) {
     const u = q.shift();
-    if (u === target) break;
+    if (hit(u)) { end = u; break; }
     for (const w of N[u].links.map(String)) if (!prev.has(w) && ok(w)) { prev.set(w, u); q.push(w); }
   }
-  if (!prev.has(target)) return [];
-  const out = []; for (let u = target; prev.get(u) !== null; u = prev.get(u)) out.push(u);
+  if (end === null) return [];
+  const out = []; for (let u = end; prev.get(u) !== null; u = prev.get(u)) out.push(u);
   return out.reverse();
+}
+// move an allocated tree to another class start: keep every passive and join each loose piece,
+// nearest first, to what is already connected by the shortest path (nodes that can't be reached are dropped)
+function reroot(nodes, root) {
+  if (!root) return [];
+  const rest = new Set(nodes.filter(n => !ROOTS.has(n))), have = [root];
+  const absorb = from => {   // pull in allocated passives touching the connected set
+    const q = [...from];
+    while (q.length) for (const w of N[q.shift()].links.map(String)) if (rest.has(w)) { rest.delete(w); have.push(w); q.push(w); }
+  };
+  absorb(have);
+  while (rest.size) {
+    const p = pathTo(have, u => rest.has(u), w => walkable(w, root) || rest.has(w));
+    if (!p.length) break;
+    for (const u of p) rest.delete(u);
+    have.push(...p); absorb(p);
+  }
+  return have;
 }
 function prune(nodes) {            // keep only what is still connected to nodes[0]
   const keep = new Set([nodes[0]]), q = [nodes[0]], set = new Set(nodes);
@@ -190,9 +331,18 @@ function preview(id) {
     return id === st || b.ascNodes.includes(id) ? [] : pathTo([st, ...b.ascNodes], id, w => N[w]?.ascendancy === b.asc);
   }
   if (b.nodes.includes(id)) return [];
-  const have = b.nodes.length ? b.nodes : ROOTS.has(id) ? [] : [classRoot(b.asc)].filter(Boolean);
-  if (!have.length) return ROOTS.has(id) ? [id] : [];
-  return [...(b.nodes.length ? [] : have), ...pathTo(have, id, w => walkable(w, have[0]))];
+  if (mode) {   // weapon set: grows from the normal tree plus that set's passives
+    const own = setOf(b, mode);
+    if (own.includes(id) || !b.nodes.length || !setOK(id)) return [];
+    const p = pathTo([...b.nodes, ...own], id, w => walkable(w, b.nodes[0]));
+    return p.every(setOK) ? p : [];
+  }
+  // the tree always grows from the class start, like in the game
+  const have = b.nodes.length ? b.nodes : [classRoot(b.asc)].filter(Boolean);
+  if (!have.length) return [];
+  const p = id === have[0] ? [] : pathTo(have, id, w => walkable(w, have[0]));
+  if (id !== have[0] && !p.length) return [];
+  return [...(b.nodes.length ? [] : have), ...p];
 }
 function clickNode(id) {
   const b = B();
@@ -200,9 +350,16 @@ function clickNode(id) {
     const st = ascStart(b.asc);
     if (id === st) return;
     b.ascNodes = b.ascNodes.includes(id) ? prune([st, ...b.ascNodes.filter(n => n !== id)]).slice(1) : [...b.ascNodes, ...preview(id)];
-  } else if (id === b.nodes[0]) b.nodes = [];
-  else if (b.nodes.includes(id)) b.nodes = prune(b.nodes.filter(n => n !== id));
-  else b.nodes.push(...preview(id));
+  } else if (mode) {
+    const own = setOf(b, mode);
+    if (own.includes(id)) { b['set' + mode] = own.filter(n => n !== id); fixSets(b); }
+    else own.push(...preview(id));
+  } else if (id === b.nodes[0]) setNodes(b, []);
+  else if (b.nodes.includes(id)) setNodes(b, prune(b.nodes.filter(n => n !== id)));
+  else {   // a set passive taken with a normal point stops being a set passive
+    const p = preview(id); b.nodes.push(...p);
+    for (const k of [1, 2]) b['set' + k] = setOf(b, k).filter(n => !p.includes(n));
+  }
   save(); renderSide(); drawTree();
 }
 
@@ -226,12 +383,12 @@ function art(p) {
   if (!(k in IMG)) { IMG[k] = null; const im = new Image(); im.onload = () => { IMG[k] = im; redraw(); }; im.src = 'poe2_data/available/img/' + k.replace(/\.dds$/, '.webp'); }
   return IMG[k];
 }
-function drawNode(id, x, y, r, state) {   // state: on | path | off
+function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint: weapon set colour
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
-  const frame = state === 'on' ? '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
+  const frame = tint || state === 'on' ? tint || '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
   if (r < 3) { ctx.fillStyle = lit ? frame : type === 'keystone' || type === 'notable' ? '#8a7650' : '#4a4236'; ctx.beginPath(); ctx.arc(x, y, Math.max(1.2, r), 0, 7); ctx.fill(); return; }
-  if (state === 'on') { ctx.shadowColor = '#f0b84a'; ctx.shadowBlur = r * .9; }
+  if (state === 'on') { ctx.shadowColor = tint || '#f0b84a'; ctx.shadowBlur = r * .9; }
   // icon disc
   const g = ctx.createRadialGradient(x - r * .25, y - r * .3, r * .05, x, y, r);
   g.addColorStop(0, col); g.addColorStop(.75, '#100c08'); g.addColorStop(1, '#000');
@@ -261,6 +418,34 @@ function drawNode(id, x, y, r, state) {   // state: on | path | off
   if (id === hover) { ctx.strokeStyle = '#fff6d8'; ring(r * 1.12, 1.5); }
 }
 
+// ---------- node search: highlights nodes whose name or description contains the text (case and accent insensitive)
+const fold = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const SEARCH_TEXT = {};
+const searchText = id => SEARCH_TEXT[id] ??= fold([N[id].name, N[id].name_es, N[id].grants_skill, ...statLines(nodeStats(id))].filter(Boolean).join('\n'));
+let found = new Set(), foundAt = -1;
+function search() {
+  const q = fold($('treeFind').value.trim());
+  found = new Set(q ? visible().filter(id => !isRoot(id) && searchText(id).includes(q)) : []);
+  foundAt = -1;
+  $('treeFindN').textContent = q ? t(found.size === 1 ? '1 result' : '{0} results', found.size) : '';
+  redraw();
+}
+$('treeFind').oninput = search;
+$('treeFind').onkeydown = e => {   // Enter / Shift+Enter: centre the view on the next / previous match
+  if (e.key === 'Escape') { e.target.value = ''; search(); }
+  if (e.key !== 'Enter' || !found.size) return;
+  const ids = [...found];
+  foundAt = (foundAt + (e.shiftKey ? -1 : 1) + ids.length) % ids.length;
+  [view.x, view.y] = WP[ids[foundAt]]; view.s = Math.max(view.s, .12);
+  $('treeFindN').textContent = `${foundAt + 1} / ${ids.length}`;
+  redraw();
+};
+function drawFound(x, y, r) {
+  const rr = Math.max(r * 1.45, 7);
+  ctx.shadowColor = '#7fe0ff'; ctx.shadowBlur = 12; ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = Math.max(2, r * .16);
+  ctx.beginPath(); ctx.arc(x, y, rr, 0, 7); ctx.stroke(); ctx.shadowBlur = 0;
+}
+
 const dpr = () => devicePixelRatio || 1;
 function drawTree() {
   if (!cv.offsetParent) return;
@@ -268,7 +453,9 @@ function drawTree() {
   if (cv.width !== W * D || cv.height !== H * D) { cv.width = W * D; cv.height = H * D; }
   view.s ||= Math.min(W, H) / 26000;   // fit whole tree on first draw
   const s = view.s, b = B(), st = ascStart(b.asc);
-  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : [])]);
+  const set1 = new Set(setOf(b, 1)), set2 = new Set(setOf(b, 2));
+  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2]);
+  const setTint = id => b.nodes.includes(id) ? null : set1.has(id) && (mode !== 2 || !set2.has(id)) ? SET_COL[1] : set2.has(id) ? SET_COL[2] : null;
   const pre = new Set(hover ? preview(hover) : []);
   const vis = visible(), visSet = new Set(vis);
   const sx = x => (x - view.x) * s + W / 2, sy = y => (y - view.y) * s + H / 2;
@@ -300,12 +487,13 @@ function drawTree() {
   ctx.strokeStyle = '#3a3022'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(0, 0, CENTRE_R - 40, 0, 7); ctx.stroke();
 
   // links: off, preview, allocated (glowing)
-  const off = new Path2D(), path = new Path2D(), lit = new Path2D();
+  const off = new Path2D(), path = new Path2D(), lit = new Path2D(), setLit = { [SET_COL[1]]: new Path2D(), [SET_COL[2]]: new Path2D() };
   for (const id of vis) for (const l of N[id].links) {
     const m = String(l);
     if (!visSet.has(m) || +m < +id || !N[id].ascendancy !== !N[m].ascendancy) continue;
     const A = on.has(id), Bo = on.has(m);
-    linkPath(A && Bo ? lit : (A || pre.has(id)) && (Bo || pre.has(m)) ? path : off, id, m);
+    const tint = A && Bo && (setTint(id) || setTint(m));
+    linkPath(tint ? setLit[tint] : A && Bo ? lit : (A || pre.has(id)) && (Bo || pre.has(m)) ? path : off, id, m);
   }
   const px = v => v / s;   // screen pixels -> world units
   ctx.lineCap = 'round';
@@ -315,6 +503,10 @@ function drawTree() {
   ctx.strokeStyle = '#e8bf62'; ctx.lineWidth = Math.max(px(2.5), 16); ctx.stroke(lit);
   ctx.shadowBlur = 0;
   ctx.strokeStyle = '#fff0c0'; ctx.lineWidth = Math.max(px(.8), 5); ctx.stroke(lit);
+  for (const [c, p] of Object.entries(setLit)) {
+    ctx.shadowColor = c; ctx.shadowBlur = 10 * D; ctx.strokeStyle = c; ctx.lineWidth = Math.max(px(2.5), 16); ctx.stroke(p);
+  }
+  ctx.shadowBlur = 0;
 
   // nodes (screen space so they stay crisp)
   ctx.setTransform(D, 0, 0, D, 0, 0);
@@ -323,7 +515,8 @@ function drawTree() {
     const n = N[id], [wx, wy] = WP[id], x = sx(wx), y = sy(wy);
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
     if (x < -r * 2 || y < -r * 2 || x > W + r * 2 || y > H + r * 2) continue;
-    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off');
+    if (found.has(id)) drawFound(x, y, r);
+    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id));
   }
   // labels
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -357,17 +550,20 @@ function nodeAt(mx, my) {
   return best;
 }
 const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-const KIND = { keystone: 'Piedra angular', notable: 'Notable', jewel: 'Engarce de joya', attribute: 'Atributo', small: 'Pasiva' };
+const KIND = { keystone: 'Keystone', notable: 'Notable', jewel: 'Jewel socket', attribute: 'Attribute', small: 'Passive' };
 function showTip(id, mx, my) {
   const tip = $('tip'), n = N[id];
   tip.hidden = !id;
   if (!id) return;
-  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [`Otorga: ${n.grants_skill}`] : []);
-  const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start;
+  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : []);
+  const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start, b = B();
+  const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
+  const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode);
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
-  tip.innerHTML = `<div class="th">${esc(label(n))}<small>${isRoot(id) ? 'Inicio de clase' : KIND[n.type]}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}</small></div>`
+  tip.innerHTML = `<div class="th">${esc(label(n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
-    + `<div class="tf">${n.type === 'attribute' ? 'Clic derecho: Fue / Des / Int<br>' : ''}${start ? 'Inicio de la ascendencia' : cost ? `Clic: asignar (${cost} punto${cost > 1 ? 's' : ''})` : preview(id).length ? 'Clic: empezar aquí' : 'Clic: quitar'}</div>`;
+    + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
+      : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
   const box = cv.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   tip.style.left = Math.min(mx + 16, box.width - w - 4) + 'px';
   tip.style.top = (my + 16 + h > box.height ? my - h - 10 : my + 16) + 'px';
@@ -397,14 +593,24 @@ cv.onwheel = e => {
 addEventListener('resize', redraw);
 
 // ---------- tabs
+// side panel: character sheet in Tree / Equipment, details of the selected skill in Skills, sheet + skills split in the 3D scene
 document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
+  const v = btn.dataset.v;
   document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === btn));
-  document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== btn.dataset.v);
+  document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== v);
+  $('charPanel').hidden = v === 'skills';
+  $('skillPanel').hidden = v !== 'skills';
+  $('sceneSkills').hidden = v !== 'scene';
+  dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
 });
 
-initScene($('scene'), B, geo, playerSpeed);
+initScene($('scene'), B, geo, playerSpeed, g => tn(gems.find(x => x.name === g.name)) || g.name);
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
-  () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: `engarce ${i + 1}` })));
-const renderSkills = initSkills($('skills'), B, () => { save(); renderSide(); }, treeSum);
+  () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })));
+const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
+
+// language picker: changing it reloads the page in the new language
+$('langPick').innerHTML = Object.entries(LANGS).map(([k, name]) => `<option value="${k}" ${k === lang ? 'selected' : ''}>${name}</option>`).join('');
+$('langPick').onchange = e => setLang(e.target.value);

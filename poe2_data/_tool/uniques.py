@@ -13,7 +13,7 @@ load = lambda t: json.load(open(os.path.join(ROOT, 'tables', 'English', t + '.js
 
 def get(page):
     f = os.path.join(CACHE, re.sub(r'[^\w.-]', '_', page) + '.html')
-    if not os.path.exists(f):
+    if not os.path.exists(f) or time.time() - os.path.getmtime(f) > 7 * 86400:  # re-read after a week: patches change uniques
         req = urllib.request.Request('https://poe2db.tw/us/' + page, headers={'User-Agent': 'Mozilla/5.0 (personal build planner)'})
         data = urllib.request.urlopen(req, timeout=30).read()
         open(f, 'wb').write(data)
@@ -36,6 +36,10 @@ base_implicits = {}
 for b in load('BaseItemTypes'):  # poe2db also lists the base implicit among the unique's mods; the base already gives it
     base_implicits.setdefault(b['Name'], set()).update(mods[i]['Id'] for i in b['Implicit_Mods'])
 obtainable = {u['name'] for u in json.load(open(os.path.join(ROOT, 'available', 'uniques.json'), encoding='utf8')) if not u['hidden_in_stash_tab']}
+# and only those GGG's trade site lists for the live patch (written by available.py)
+live = os.path.join(CACHE, 'trade2_uniques.json')
+if os.path.exists(live):
+    obtainable &= set(json.load(open(live, encoding='utf8')))
 listing = get('Unique_item')
 entries = dict.fromkeys(re.findall(r'href="/us/([^"]+)"[^>]*><span class="uniqueName">([^<]+)</span> <span class="uniqueTypeLine">([^<]+)</span>', listing))
 

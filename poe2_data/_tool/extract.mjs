@@ -10,7 +10,8 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 
 const [gameDir, outDir] = process.argv.slice(2)
-const LANGS = { English: 'Data/Balance', Spanish: 'Data/Balance/Spanish' }
+// every game language (folder names under Data/Balance); available.py turns them into name_<code> fields
+const LANGS = Object.fromEntries([['English', 'Data/Balance'], ...['Spanish', 'Portuguese', 'French', 'German', 'Russian', 'Japanese', 'Korean', 'Thai', 'Traditional Chinese'].map(l => [l, 'Data/Balance/' + l])])
 const TEXT_PREFIXES = ['data/statdescriptions/', 'metadata/']
 const TEXT_EXT = /(statdescriptions\/.*\.csd|\.psg)$/i
 
