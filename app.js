@@ -1,15 +1,18 @@
 import { t, tn, fmt, lang, LANGS, setLang } from './i18n.js';
 import { initScene } from './scene.js';
+import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character } from './calc.js';
+import { skill, withSupports, character, recovery } from './calc.js';
+import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
+import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
 
 const $ = id => document.getElementById(id);
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
-const [tree, gems, ascs, SK] = await Promise.all([load('passive_tree.json'), load('gems.json'), load('ascendancies.json'), load('skills.json')]);
+const [tree, gems, ascs] = await Promise.all([load('passive_tree.json'), load('gems.json'), load('ascendancies.json')]);
 const N = tree.nodes;
 const ROOTS = new Set(tree.class_roots.map(String));
 const label = tn;
@@ -18,7 +21,7 @@ const label = tn;
 const KEY = 'poe2builds';
 let builds = JSON.parse(localStorage.getItem(KEY) || '{}');
 let cur;
-const SHAPES = { circle: 'Circle (cursor)', nova: 'Nova (on you)', cone: 'Cone', line: 'Line', projectile: 'Projectile', aura: 'Aura (follows you)' };
+const SHAPES = { auto: 'Auto (game data)', circle: 'Circle (cursor)', nova: 'Nova (on you)', cone: 'Cone', line: 'Line', projectile: 'Projectile', aura: 'Aura (follows you)' };
 const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.includes('projectile') ? 'projectile' : t.includes('aura') || t.includes('persistent') ? 'aura'
   : t.includes('slam') || t.includes('strike') ? 'cone' : 'circle';
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].name, gems: [], nodes: [], ascNodes: [], notes: '' });
@@ -39,6 +42,8 @@ const clsOf = asc => ascs.find(a => a.name === asc)?.class;
 function renderSide() {
   const b = B();
   b.gems.forEach(g => { g.level ??= 20; g.width ??= 0; });  // builds saved before gem levels existed
+  // builds saved before the scene read each skill's behaviour from the game data: a guessed shape becomes Auto, a hand-picked one stays
+  if (!b.fx) { b.fx = 1; b.gems.forEach(g => { if (!g.shape || g.shape === guessShape(gems.find(x => x.name === g.name)?.tags || [])) g.shape = 'auto'; }); }
   $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
   $('notes').value = b.notes;
   $('notesBtn').textContent = t('Notes') + (b.notes ? ' •' : '');
@@ -92,6 +97,7 @@ function geo(g) {
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,
     collision: (d.projectile_collision || 0) / 10,
+    duration: (d.duration_ms || 0) / 1000,
   };
 }
 const playerSpeed = () => SK.player_base_speed * (1 + (treeSum()['base_movement_velocity_+%'] || 0) / 100) / 10;
@@ -106,17 +112,48 @@ function renderStats() {
     ascLabel: x => tn(ascs.find(a => a.name === x)) || x, clsLabel: x => tn(ascs.find(a => a.class === x)?.class_names) || x });
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
+const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
+const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon) }; };
+// enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
+const SCENE_KEY = 'poe2scene';
+const sceneCfg = (({ enemy = null, level = 0, attack = null }) => ({ enemy, level, attack }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
+// damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
+const dmgCache = new Map();
+const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
+let scene3d;
 function renderSceneSkills() {
-  const b = B(), sum = treeSum();
-  $('sceneSkills').innerHTML = `<h3>${t('Skills')} <small class="note">${t('keys 1-9 in the scene')}</small></h3><ul id="gems">${b.gems.map((g, i) => {
-    const G = geo(g), s = skill(g, b, sum), gem = gems.find(x => x.name === g.name);
-    const num = (k, v, t) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${t}">`;
-    return `<li style="flex-wrap:wrap"><div style="display:flex;width:100%;justify-content:space-between"><span data-tip="${i}" style="cursor:help">${i + 1}. ${esc(tn(gem) || g.name)}</span><b class="sdps">${s.dps != null ? fmt(s.dps) + ' <small>DPS</small>' : '— <small>DPS</small>'}</b></div>
-    <select data-i="${i}" data-k="shape" style="width:auto">${Object.entries(SHAPES).map(([k, name]) => `<option value="${k}" ${k === g.shape ? 'selected' : ''}>${t(name)}</option>`).join('')}</select>
-    ${g.shape === 'projectile' ? '' : G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × ${t('tree area')}">${t('radius')} ${G.radius.toFixed(2)} m</span>` : `${t('radius')}${num('radius', g.radius, t('the game gives no radius for this gem: manual value'))}<small>${t('manual')}</small>`}
-    ${g.shape === 'cone' || g.shape === 'line' ? `${g.shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small>` : ''}
-    ${g.shape === 'projectile' ? `<small>${G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : t('no speed in the data')}</small>` : ''}</li>`;
-  }).join('') || `<li class="note">${t('Add skills in the Skills tab.')}</li>`}</ul>`;
+  const b = B(), sum = treeSum(), on = scene3d?.selected();
+  dmgCache.clear();
+  const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
+  const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
+  const cards = list.map(({ g, inf, P }, i) => {
+    const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
+    const num = (k, v, tip) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${tip}">`;
+    const facts = [
+      G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × ${t('tree area')}">${t('radius')} <b>${G.radius.toFixed(2)} m</b></span>` : '',
+      G.speed ? `<span>${t('speed')} <b>${G.speed.toFixed(1)} m/s</b></span><span>${t('range')} <b>${G.range.toFixed(1)} m</b></span>` : '',
+      G.duration ? `<span>${t('duration')} <b>${fmt(G.duration, G.duration % 1 ? 1 : 0)} s</b></span>` : '',
+    ].join('');
+    return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
+      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${i < 9 ? `<i>${i + 1}</i>` : ''}</span>
+        <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
+        <b class="sdps">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
+      <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
+      ${facts ? `<div class="sk-facts">${facts}</div>` : ''}
+      <div class="sk-edit"><select data-i="${i}" data-k="shape" title="${t('How the scene casts it: Auto follows the game data of the gem')}">${opts(SHAPES, shape)}</select>
+        ${G.radiusFromData ? '' : `<label title="${t('the game gives no radius for this gem: manual value')}">${t('radius')}${num('radius', g.radius, t('the game gives no radius for this gem: manual value'))}<small>${t('manual')}</small></label>`}
+        ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
+    </div>`;
+  }).join('');
+  const syn = synergies(list), name = i => `<b>${esc(list[i].label)}</b>`;
+  const line = x => `<li data-card="${x.a}">${t(x.text, name(x.a), x.b == null ? '' : name(x.b), x.args[2] ? `<i>${esc(t(x.args[2]))}</i>` : '')}</li>`;
+  $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('keys 1-9 in the scene')}</small></h3>
+    ${cards || `<p class="note">${t('Add skills in the Skills tab.')}</p>`}
+    ${list.length > 1 ? `<h3>${t('Synergies in this build')} <small class="note">${syn.length}</small></h3>
+      ${syn.length ? `<ul class="syn">${syn.slice(0, 14).map(line).join('')}</ul>${syn.length > 14 ? `<details class="syn-more"><summary>${t('{0} more', syn.length - 14)}</summary><ul class="syn">${syn.slice(14).map(line).join('')}</ul></details>` : ''}`
+        : `<p class="note">${t('No combos found between these skills yet.')}</p>`}` : ''}
+    <p class="note">${t('Areas, speeds and durations come from the game data, like the damage of your skills and the enemy; ailment chance, combo bonuses and how enemy attacks look use fixed scene values.')}</p>`;
+  syncEnemy(); renderEnemy();
 }
 // skill info window: anything with data-tip="<gem index>"
 function gemTip(t) {
@@ -132,7 +169,7 @@ document.addEventListener('mouseover', e => gemTip(e.target.closest?.('[data-tip
 function addGem(name) {
   const g = gems.find(g => g.name === name || tn(g) === name || g.name_es === name);
   if (!g) return false;
-  B().gems.push({ name: g.name, shape: guessShape(g.tags), level: 20, radius: 0, width: 0 });
+  B().gems.push({ name: g.name, shape: 'auto', level: 20, radius: 0, width: 0 });
   save(); renderSide(); return true;
 }
 
@@ -206,7 +243,22 @@ async function checkStart() {
 }
 $('notes').onchange = edit((e, b) => b.notes = e.target.value);
 $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if (!$('notesBox').hidden) $('notes').focus(); };
-$('sceneSkills').onchange = edit((e, b) => b.gems[e.target.dataset.i][e.target.dataset.k] = e.target.dataset.k === 'shape' ? e.target.value : +e.target.value);
+$('sceneSkills').onchange = e => {
+  const d = e.target.dataset;
+  if (d.en === 'level' || d.en === 'attack') {  // the enemy of the scene
+    if (d.en === 'attack') sceneCfg.attack = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
+    saveScene(); syncEnemy(); renderEnemy();
+  } else if (d.i != null) edit((e, b) => b.gems[d.i][d.k] = d.k === 'shape' ? e.target.value : +e.target.value)(e);
+};
+$('sceneSkills').onclick = e => {
+  const en = e.target.dataset.en;
+  if (en === 'place') return scene3d.placing(!scene3d.placing());
+  if (en === 'clear' || en === 'reset') { e.target.blur(); return scene3d[en](); }   // blur: Space rolls in the scene, it must not press the button again
+  if (en === 'mylevel') { sceneCfg.level = 0; saveScene(); syncEnemy(); return renderEnemy(); }
+  const c = !e.target.closest('input, select, label, summary') && e.target.closest('[data-card]');
+  if (c) { scene3d.select(+c.dataset.card); markCard(+c.dataset.card); }
+};
+const markCard = i => { document.querySelectorAll('#sceneSkills .sk-card').forEach(c => c.classList.toggle('on', +c.dataset.card === i)); renderEnemy(); };
 // ---------- share: Path of Building 2 code, build sites, JSON file
 const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5 });
 const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
@@ -264,7 +316,7 @@ $('share').onclick = async () => {
         if (/^https?:\/\/|^[\w.]+\.\w+\//.test(txt)) { inmsg.textContent = t('Downloading…'); txt = await download(txt); }
         const xml = txt.startsWith('<') ? txt : await decode(txt);
         const { build, warn } = fromXML(xml, shareCtx(), blank);
-        build.gems.forEach(g => { const G = gems.find(x => x.name === g.name); Object.assign(g, { shape: guessShape(G?.tags || []), radius: 0, width: 0 }); });
+        build.gems.forEach(g => Object.assign(g, { shape: 'auto', radius: 0, width: 0 }));
         addBuild(build);
         inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
       } catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
@@ -592,10 +644,6 @@ function drawTree() {
     ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
     ctx.strokeText(label(n), x, y + r * 1.25 + 2); ctx.fillText(label(n), x, y + r * 1.25 + 2);
   }
-  if (s > .02) {
-    ctx.font = '16px Georgia, serif'; ctx.fillStyle = '#c8a860';
-    ctx.fillText(b.asc, sx(0), sy(-CENTRE_R * .8));
-  }
 }
 let raf = 0;
 const redraw = () => raf ||= requestAnimationFrame(() => { raf = 0; drawTree(); });
@@ -665,7 +713,98 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   drawTree();
 });
 
-initScene($('scene'), B, geo, playerSpeed, g => tn(gems.find(x => x.name === g.name)) || g.name);
+// ---------- enemy of the 3D scene: searchable list of the game's monsters, its level and attack, and what the numbers say (enemies.js)
+const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg));
+const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
+const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack);
+const attr = x => esc(x).replace(/"/g, '&quot;');
+$('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(ENEMIES.length))}</small></h3>
+  <div class="en-pick"><input id="enFind" type="search" placeholder="${attr(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
+  <div id="enDetail"></div>`;
+const enFind = $('enFind'), enList = $('enList');
+let enAt = 0;   // row the arrow keys are on
+function listEnemies() {
+  const { total, list } = findEnemies(enFind.value, 60);
+  enAt = Math.max(0, Math.min(enAt, list.length - 1));
+  enList.innerHTML = list.map((m, i) => `<div class="en-row${i === enAt ? ' at' : ''}${m.id === sceneCfg.enemy ? ' on' : ''}" data-id="${attr(m.id)}">
+      <span>${esc(m.name)}${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}</span>
+      <small>${m.boss ? `<b>${t('Boss')}</b> · ` : ''}${t(m.category)}${m.areas?.[0] ? ' · ' + esc(m.areas[0]) : ''}</small></div>`).join('')
+    + (total > list.length ? `<p class="note">${t('{0} more: type to narrow the list', fmt(total - list.length))}</p>` : total ? '' : `<p class="note">${t('No enemy matches')}</p>`);
+  enList.hidden = false;
+}
+const closeEnemies = () => { enList.hidden = true; enFind.value = enemy(sceneCfg.enemy)?.name || ''; };
+function pickEnemy(id) {
+  if (!enemy(id)) return;
+  sceneCfg.enemy = id; sceneCfg.attack = null; saveScene();
+  enFind.blur(); closeEnemies(); syncEnemy(); renderEnemy();
+  scene3d.placing(true);   // the next clicks in the scene place it
+}
+enFind.onfocus = () => { enFind.value = ''; enAt = 0; listEnemies(); enList.scrollTop = 0; };
+enFind.oninput = () => { enAt = 0; listEnemies(); enList.scrollTop = 0; };
+enFind.onblur = closeEnemies;
+enFind.onkeydown = e => {
+  const rows = enList.querySelectorAll('.en-row');
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); if (!rows.length) return;
+    enAt = (enAt + (e.key === 'ArrowDown' ? 1 : rows.length - 1)) % rows.length;
+    rows.forEach((r, i) => r.classList.toggle('at', i === enAt)); rows[enAt].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') { if (rows[enAt]) pickEnemy(rows[enAt].dataset.id); }
+  else if (e.key === 'Escape') { e.preventDefault(); enFind.blur(); }
+};
+enList.onmousedown = e => { e.preventDefault(); const r = e.target.closest('[data-id]'); if (r) pickEnemy(r.dataset.id); };   // keeps the focus until the pick is done
+
+const EL_NAME = { physical: 'Physical', fire: 'Fire', cold: 'Cold', lightning: 'Lightning', chaos: 'Chaos' };
+const secs = x => x == null ? '—' : x >= 3600 ? '> 1 h' : fmt(x, x < 10 ? 2 : x < 100 ? 1 : 0) + ' s';
+// the picked enemy: its stats at the level, its attack against the defences of the build, and the selected skill against it
+function renderEnemy() {
+  const box = $('enDetail'), m = enemy(sceneCfg.enemy);
+  if (document.activeElement !== enFind) enFind.value = m?.name || '';
+  if (!m) { box.innerHTML = `<p class="note">${t('Pick an enemy and click in the scene to place it. Its life, defences and damage are the game\'s at the level you set: test your damage on it and your defences against its attacks.')}</p>`; return; }
+  const b = B(), c = character(b, treeSum()), L = enemyLevel(), st = enemyStats(m, L);
+  const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key), vp = versusPlayer(atk, st, c);
+  const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
+  const el = (type, text) => `<span class="dm ${type}">${text}</span>`;
+  const rng = r => r[0] === r[1] ? fmt(r[0]) : `${fmt(r[0])}–${fmt(r[1])}`;
+  const pct = x => fmt(x) + '%', small = x => fmt(x, x < 100 ? 1 : 0);
+  const types = v => v.types.map(x => row(t(EL_NAME[x.type]), `${el(x.type, rng(x.raw))} → <b>${rng(x.taken)}</b>`));
+  const stats = [row(t('Life'), fmt(st.life)), st.es ? row(t('Energy Shield'), el('es', fmt(st.es))) : '', row(t('Armour'), fmt(st.armour)), row(t('Evasion'), fmt(st.evasion)),
+    row(t('Accuracy'), fmt(st.accuracy)), row(t('Resistances'), ['fire', 'cold', 'lightning', 'chaos'].map(e => el(e, pct(st.res[e]))).join(' '))];
+  const theirs = [...types(vp),
+    ...vp.dots.map(x => row(t('{0} per second', t(EL_NAME[x.type])), `${el(x.type, small(x.raw))} → <b>${small(x.taken)}</b>`)),
+    row(t('Every'), secs(atk.interval)),
+    atk.hasHit ? row(t('Chance to hit you'), pct(vp.hit)) : '',
+    vp.block > 0 ? row(t('Block'), pct(vp.block)) : '',
+    atk.hasHit ? row(t('Critical hit'), `${pct(vp.crit)} · ${t('biggest hit')} <b>${fmt(vp.maxTaken)}</b>`) : '',
+    atk.hasHit ? row(t('Mitigated'), pct(vp.mitigated)) : '',
+    row(t('Damage per second'), `<b>${small(vp.dps)}</b>`),
+    row(t('You survive'), vp.pool == null ? t('life unknown') : vp.ttd == null ? '∞' : `<b>${secs(vp.ttd)}</b>`)];
+  const g = b.gems[scene3d?.selected() ?? 0], dmg = g && skillDmg(g), ve = dmg && versusEnemy(dmg, st, c.accuracy);
+  const yours = !g ? '' : `<h4>${t('{0} against it', esc(gemInfo(g).label))}</h4>` + (ve ? `<table class="en-t">${[...types(ve),
+      ve.dotTaken > 0 ? row(t('Damage over time'), `<b>${small(ve.dotTaken)}</b> / s`) : '',
+      dmg.attack ? row(t('Chance to hit'), pct(ve.hit)) : '',
+      ve.types.length ? row(t('Mitigated'), pct(ve.mitigated)) : '',
+      row(t('Damage per second'), ve.dps != null ? `<b>${fmt(ve.dps)}</b>` : '—'),
+      ve.hitsToKill ? row(t('Hits to kill'), fmt(ve.hitsToKill)) : '',
+      row(t('Time to kill'), `<b>${secs(ve.ttk)}</b>`)].join('')}</table>`
+    : `<p class="note">${t(dmg.reason || 'This skill does not deal direct damage')}. ${t('In the scene each of its hits takes 1/8 of the enemy\'s life, marked with ~.')}</p>`);
+  const placing = !!scene3d?.placing();
+  box.innerHTML = `<div class="en-head"><b>${esc(m.name)}</b>${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}<span>${m.boss ? t('Boss') + ' · ' : ''}${t(m.category)}</span></div>
+    ${m.areas?.length ? `<p class="note en-areas" title="${attr(m.areas.join('\n'))}">${esc(m.areas.slice(0, 3).join(' · '))}${m.areas.length > 3 ? ' …' : ''}</p>` : ''}
+    <div class="sk-set"><label><span>${t('Level')} ${sceneCfg.level ? `<a data-en="mylevel" title="${attr(t('Use the level of your build ({0})', b.level))}">↺</a>` : `<small>${t('yours')}</small>`}</span>
+        <input type="number" min="1" max="100" step="1" data-en="level" value="${L}"></label>
+      <label><span>${t('Attack')}</span><select data-en="attack">${list.map(a => `<option value="${attr(a.key)}" ${a.key === key ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>
+    ${atk.description ? `<p class="note">${esc(atk.description)}</p>` : ''}
+    <table class="en-t">${stats.join('')}</table>
+    <h4>${t('{0} against you', esc(atk.name))} <small>${t('hit → after your defences')}</small></h4>
+    <table class="en-t">${theirs.join('')}</table>
+    ${yours}
+    <div class="en-btns"><button data-en="place" class="${placing ? 'on' : ''}">${placing ? t('Placing: click in the scene') : t('Place with a click')}</button>
+      <button data-en="clear">${t('Remove enemies')}</button><button data-en="reset" title="R">${t('Reset the scene')}</button></div>
+    <p class="note">${t('Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.')}</p>`;
+}
+
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg,
+  sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum) }; } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })));
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);

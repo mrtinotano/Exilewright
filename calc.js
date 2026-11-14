@@ -1,12 +1,13 @@
 // Character sheet and skill damage, from the summed tree + gear stats (app.js treeSum) and the game data.
 // Numbers that only the game install can give (class base life/mana, skill damage per level) come from
 // skills.json / ascendancies.json once the data is regenerated on Windows (see the to-do notes);
-// until then those values are null and the UI shows "—".
+// until then skilldata.js fills them from pob2.json, and what neither has is null and shown as "—".
 import { t, fmt } from './i18n.js';
 import { weaponStats } from './items.js';
+import { SK } from './skilldata.js';
 
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
-const [SK, ASCS, GEMS] = await Promise.all([load('skills.json'), load('ascendancies.json'), load('gems.json')]);
+const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
 const CHAR = SK.character_stats || {};
 const v = (sum, ...ids) => ids.reduce((t, id) => t + (sum[id] || 0), 0);
@@ -58,7 +59,7 @@ export function character(b, sum) {
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
   const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
-  const evasion = Math.round(v(sum, 'base_evasion_rating') * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
+  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
   const mDmg = monster(lvl, 'Damage', 'PhysicalDamage', 'MonsterDamage'), mAcc = monster(lvl, 'Accuracy', 'AccuracyRating');
   // documented game formulas: armour reduces a hit by A / (A + 10·damage), max 90%;
   // chance to be hit = 1.25·accuracy / (accuracy + (evasion/5)^0.9), between 5% and 100% (so evade max 95%)
@@ -80,8 +81,24 @@ export function character(b, sum) {
     castSpeed: v(sum, 'base_cast_speed_+%', 'attack_and_cast_speed_+%'),
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
-    accuracy: Math.round((v(sum, 'accuracy_rating') + fromAttr('accuracy')) * pct('accuracy_rating_+%')),
+    // character.ot: accuracy per level above the first
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + fromAttr('accuracy')) * pct('accuracy_rating_+%')),
     missingBase: lifeBase == null,
+  };
+}
+
+// Life regeneration and energy shield recharge per second of a character() result: shared by the sheet below and by
+// the 3D scene, where the enemies hit the character.
+export function recovery(c, sum) {
+  const pct = (...ids) => 1 + v(sum, ...ids) / 100;
+  // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
+  const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
+  const esRate = first(CHAR['energy_shield_recharge_rate_per_minute_%'], 750) / 100 / 60;   // 750/min = 12.5%/s
+  return {
+    lifeRegen: lifePctRegen && c.life == null ? null
+      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'),
+    esRate, esDelay: first(CHAR.energy_shield_delay_ms, 4000) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
+    esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
   };
 }
 
@@ -93,14 +110,7 @@ export function sheet(b, sum) {
   const c = character(b, sum), at = c.attrs, pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const num = fmt;
   const NO_LIFE = t('Needs the class base life (regenerate the data on Windows)'), NO_MANA = t('Needs the class base mana (regenerate the data on Windows)');
-  // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
-  const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
-  const lifeRegen = lifePctRegen && c.life == null ? null
-    : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * pct('life_regeneration_rate_+%', 'life_recovery_rate_+%');
-  // energy shield recharge
-  const esRate = first(CHAR['energy_shield_recharge_rate_per_minute_%'], 750) / 100 / 60;   // 750/min = 12.5%/s
-  const esDelay = first(CHAR.energy_shield_delay_ms, 4000) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100);
-  const esRecharge = c.es * esRate * pct('energy_shield_recharge_rate_+%');
+  const { lifeRegen, esRate, esDelay, esRecharge } = recovery(c, sum);
   // mana: inherent 4%/s unless a keystone removes it, plus "mana equal to X% of life"
   const manaBase = sum.no_inherent_mana_regeneration ? 0 : first(CHAR['mana_regeneration_rate_per_minute_%'], 240) / 100 / 60;   // 240/min = 4%/s
   const manaLife = v(sum, 'regenerate_mana_equal_to_x%_of_life_per_minute');
@@ -217,12 +227,13 @@ export function skill(g, b, treeGear) {
   const { sum, fin } = withSupports(g, treeGear);
   const st = { ...(d.constant || {}), ...(d.levels?.[g.level] || {}) };
   const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
-  const out = { attack, spell, stats: st, castTime: d.cast_time_ms ?? null, hits: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
+  const out = { attack, spell, stats: st, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
   const w = attack ? weaponStats(b.items) : null;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
   const mult = attack ? (first(st._base_multiplier, st._damage_effectiveness) ?? 10000) / 10000 : 1;
+  const base = {};
   for (const t of DMG) {
     let lo = 0, hi = 0;
     if (attack && w) {
@@ -232,9 +243,22 @@ export function skill(g, b, treeGear) {
     }
     lo += first(st[`spell_minimum_base_${t}_damage`], st[`attack_minimum_added_${t}_damage`], st[`minimum_base_${t}_damage`], 0);
     hi += first(st[`spell_maximum_base_${t}_damage`], st[`attack_maximum_added_${t}_damage`], st[`maximum_base_${t}_damage`], 0);
-    if (!hi) continue;
-    const k = mult * (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * (1 + (inc(sum, 'damage_+%', tags) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0)) / 100);
-    out.hits[t] = [Math.round(lo * k), Math.round(hi * k)];
+    base[t] = [lo, hi];
+  }
+  // the skill's own conversion (Lightning Arrow: 80% of physical to lightning); converted damage scales as its new type
+  for (const t of DMG.slice(1)) {
+    const p = Math.min(100, st[`active_skill_base_physical_damage_%_to_convert_to_${t}`] || 0) / 100;
+    if (p) for (const i of [0, 1]) base[t][i] += base.physical[i] * p;
+  }
+  const kept = 1 - Math.min(1, DMG.slice(1).reduce((s, t) => s + (st[`active_skill_base_physical_damage_%_to_convert_to_${t}`] || 0), 0) / 100);
+  base.physical = base.physical.map(x => x * kept);
+  const scale = t => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * (1 + (inc(sum, 'damage_+%', tags) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0)) / 100);
+  for (const t of DMG) {
+    const [lo, hi] = base[t];
+    if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
+    // damage over time of the skill itself (Contagion, burning ground...), per second
+    const perMin = st[`base_${t}_damage_to_deal_per_minute`];
+    if (perMin) out.dot[t] = perMin / 60 * scale(t);
   }
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
@@ -251,6 +275,6 @@ export function skill(g, b, treeGear) {
   if (out.avg != null && out.speed) {
     const c = (out.crit || 0) / 100;
     out.dps = out.avg * (1 + c * (out.critBonus || 0) / 100) * out.speed;
-  } else if (!out.reason && out.avg == null) out.reason = 'This skill does not deal direct damage';
+  } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   return out;
 }

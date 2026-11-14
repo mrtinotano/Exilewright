@@ -24,3 +24,6 @@ python -I available.py
 python -I uniques.py
 python images.py "C:/Program Files (x86)/Steam/steamapps/common/Path of Exile 2"   # needs Pillow
 ```
+
+The enemies of the 3D scene (`poe2_data/available/monsters.json`) come from Path of Building 2's export of the game
+tables and need no install: `python -I pob2.py` in the same folder.

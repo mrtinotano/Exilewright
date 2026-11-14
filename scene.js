@@ -1,142 +1,1350 @@
-// 3D test room. 1 unit = 1 metre (PoE: 10 game units = 1 m). Sizes/speeds come from geo() / playerSpeed() (game data).
-// Dummies are point targets: monster hitbox sizes are not in the extracted data, so a hit needs the dummy's centre inside.
-// WASD move, 1-9 pick a skill from the build, left click casts it towards the cursor, R respawns dummies.
+// 3D test room. 1 unit = 1 metre (PoE: 10 game units = 1 m).
+// From the game: radius, projectile speed / range / collision and duration (geo() in app.js), the gem tags and skill types that
+// decide how every skill behaves and what it combines with (skillfx.js), the enemies (life, energy shield, armour, evasion,
+// resistances and the damage of their attacks at the chosen level: enemies.js) and the damage and speed of your skills (calc.js),
+// each mitigated with the game's own formulas.
+// Not in the game data: ailment chance and build-up, the combo multipliers, fuse times, and how an enemy attack looks and reaches
+// you. Those are the SIM defaults of skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
+// WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset.
 import * as THREE from 'three';
-import { t } from './i18n.js';
-const SHAPE_NAME = { circle: 'circle', nova: 'nova', cone: 'cone', line: 'line', projectile: 'projectile', aura: 'aura' };
+import { t, fmt } from './i18n.js';
+import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
+import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
+import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 
-export function initScene(el, getBuild, geo, playerSpeed, label = g => g.name) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  el.appendChild(renderer.domElement);
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x15151a);
-  const cam = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x333344, 1.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(10, 20, 5); scene.add(sun);
+const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
+const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), ease = k => 1 - (1 - k) ** 3, cap = s => s[0].toUpperCase() + s.slice(1);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function segDist(p, a, b) {
+  const vx = b.x - a.x, vz = b.z - a.z, k = clamp(((p.x - a.x) * vx + (p.z - a.z) * vz) / (vx * vx + vz * vz || 1), 0, 1);
+  return Math.hypot(p.x - a.x - vx * k, p.z - a.z - vz * k);
+}
+const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
+// shape picked by hand in the panel → behaviour (anything else follows the game data)
+const FORCE = { circle: 'area', nova: 'nova', cone: 'cone', line: 'beam', projectile: 'projectile', aura: 'field' };
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
+const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
+const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
+const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', expo: 'gold', curse: 'curse', mark: 'mark' };
+const DUR = { ignite: GAME.ignite_duration || SIM.ignite, chill: SIM.chill, shock: SIM.shock, freeze: SIM.freeze, poison: GAME.poison_duration || SIM.poison, bleed: GAME.bleed_duration || SIM.bleed, armour: SIM.broken, expo: 6 };
+const GFX = { burning: ['fire', 'patch'], chilled: ['cold', 'patch'], shocked: ['lightning', 'patch'], oil: [0x050403, 'patch', true], gas: ['gas', 'patch'],
+  jagged: [0x070605, 'cracks', true], caustic: ['poison', 'patch'], consecrated: ['holy', 'rune'] };
+const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'poison', caustic: 'poison' };
+const CHC = { frenzy: 'poison', power: 'arcane', endurance: 'fire' };
 
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x2a2a30 }));
-  ground.rotation.x = -Math.PI / 2; scene.add(ground);
-  const grid = new THREE.GridHelper(200, 200, 0x444455, 0x33333a); grid.position.y = 0.01; scene.add(grid);
+// api: { build(), geo(g), playerSpeed(), info(g) → { gem, data, label, icon }, onSelect(i), sheet() → calc.js character() + recovery(),
+//        damage(g) → calc.js skill(), onPlacing(on) }
+export function initScene(el, api) {
+  // ---------- renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+  const dom = renderer.domElement; el.prepend(dom);
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(42, 1, .1, 400);
+  const fx = createFx(scene), arena = buildArena(scene, fx), player = makePlayer(fx), pp = player.group.position;
+  scene.add(player.group);
+  const size = { w: 0, h: 0 };
+  let composer = null;
+  // bloom: the effects are drawn brighter than white so they glow. Without the add-ons the scene still renders.
+  Promise.all(['EffectComposer', 'RenderPass', 'UnrealBloomPass', 'OutputPass'].map(n => import(`three/addons/postprocessing/${n}.js`))).then(([E, R, U, O]) => {
+    const c = new E.EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 4 }));
+    c.addPass(new R.RenderPass(scene, cam));
+    c.addPass(new U.UnrealBloomPass(new THREE.Vector2(256, 256), .5, .55, .92));
+    c.addPass(new O.OutputPass());
+    composer = c; size.w = 0;
+  }).catch(e => console.warn('scene: post-processing unavailable', e));
 
-  const player = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1, 4, 12), new THREE.MeshStandardMaterial({ color: 0xc8a050 }));
-  player.position.y = 0.9; scene.add(player);
+  // ---------- state
+  const tpl = { mon: null, level: 1, attack: null };   // the enemy the next click places
+  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false };   // your life and energy shield against their attacks
+  const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
+  const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
+  const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, tog = {};
+  let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false;
+  let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [];
+  let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
-  let dummies = [];
-  function spawn() {
-    dummies.forEach(d => scene.remove(d));
-    dummies = Array.from({ length: 25 }, () => {
-      const d = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.6, 12), new THREE.MeshStandardMaterial({ color: 0x777777 }));
-      const a = Math.random() * Math.PI * 2, r = 4 + Math.random() * 14;
-      d.position.set(player.position.x + Math.cos(a) * r, 0.8, player.position.z + Math.sin(a) * r);
-      d.userData.hits = 0; d.userData.flash = 0;
-      scene.add(d); return d;
+  // ---------- HUD
+  const hud = el.querySelector('#hud') || el.appendChild(Object.assign(document.createElement('div'), { id: 'hud' }));
+  const div = (cls, into = el) => into.appendChild(Object.assign(document.createElement('div'), { className: cls }));
+  const top = div('s-top'), bottom = div('s-bottom'); top.appendChild(hud);   // two flex rows, so nothing overlaps on a narrow scene
+  const infoEl = div('s-info', top), logEl = div('s-log', bottom), buffEl = div('s-buffs', bottom), vitEl = div('s-vitals', bottom), bar = div('s-bar', bottom), toastEl = div('s-toast');
+  const shown = new Map(), put = (node, html) => { if (shown.get(node) !== html) { shown.set(node, html); node.innerHTML = html; } };
+  const say = (text, c = 'gold') => {
+    const l = logs[logs.length - 1];
+    if (l && l.text === text && time - l.at < 2.5) { l.n++; l.at = time; }
+    else { logs.push({ text, c: css(c), at: time, n: 1 }); if (logs.length > 7) logs.shift(); }
+  };
+  const toast = text => { toastEl.textContent = text; toastEl.classList.add('on'); toastT = 2.2; };
+  const later = (sec, fn) => { timers.push({ s: sec, fn }); };
+  const hand = () => player.hand(V());
+  // the character of the build (calc.js): defences, accuracy and recovery
+  let shC = { at: -9, v: {} };
+  const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.() || {} }; return shC.v; };
+  const short = n => n < 99999.5 ? fmt(Math.round(n)) : n < 999950 ? fmt(n / 1e3, 1) + 'k' : fmt(n / 1e6, 2) + 'M';
+  const NUMC = el => el === 'physical' ? '#f2ead8' : css(el);
+
+  // ---------- skills of the build
+  const profs = new Map(), cache = new Map();
+  const prof = (g, inf) => { let P = profs.get(g.name); if (!P) profs.set(g.name, P = profile(inf.gem || { name: g.name }, inf.data || {})); return P; };
+  function base(i) {
+    const g = api.build().gems[i]; if (!g) return null;
+    const c = cache.get(i); if (c && c.g === g && c.shape === g.shape && time - c.at < .5) return c.S;
+    const inf = api.info(g), G = api.geo(g), P = prof(g, inf);
+    const kind = g.shape && g.shape !== 'auto' && FORCE[g.shape] || P.kind;
+    const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
+    let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
+    // gas and oil only burn once something sets them alight
+    if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
+    const S = { i, g, P, G, kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
+    cache.set(i, { g, shape: g.shape, at: time, S }); return S;
+  }
+  const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
+  const byName = name => api.build().gems.findIndex(g => g.name === name);
+  const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
+  const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
+  const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
+  const coneHalf = S => (S.g.shape === 'cone' && S.g.width > 0 ? S.g.width / 2 : S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
+  function aim(S, p) {
+    const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? SIM.travelRange : S.kind === 'slam' ? SIM.meleeRange : SIM.castRange;
+    let dx = p.x - pp.x, dz = p.z - pp.z, l = Math.hypot(dx, dz);
+    if (l < .001) { dx = Math.sin(facing); dz = Math.cos(facing); l = 0; } else { dx /= l; dz /= l; }
+    const k = S.src ? l : Math.min(l, max);
+    S.dx = dx; S.dz = dz; S.from = { x: pp.x, z: pp.z }; S.at = { x: pp.x + dx * k, z: pp.z + dz * k };
+  }
+
+  // ---------- enemies: monsters of the game placed with a click, with their stats at the chosen level (enemies.js)
+  const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);   // sources the damage of the build does not describe
+  const MAXE = 60;
+  function arm(d, level, key) {
+    const m = d.mon, list = attacksOf(m), fresh = d.level !== level;
+    d.level = level; d.stat = enemyStats(m, level); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key);
+    d.col = Object.entries(d.atk.hasHit ? d.atk.hits : d.atk.dot).map(([el, x]) => [el, x[1] ?? x]).sort((x, y) => y[1] - x[1])[0]?.[0] || 'physical';
+    d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es;
+    if (fresh) { d.life = d.max; d.es = d.maxEs; }
+    d.fig.setLabel(`${m.name} · ${t('Lv. {0}', level)}`); d.sig = ''; d.wind = null;
+  }
+  function place(x, z) {
+    const m = tpl.mon; if (!m) return null;
+    if (dummies.length >= MAXE) { toast(t('The scene holds up to {0} enemies', MAXE)); return null; }
+    const fig = makeDummy(fx, { kind: m.category, scale: m.boss ? 1.45 : 1 });
+    fig.group.position.set(x, 0, z); fig.group.rotation.y = Math.atan2(pp.x - x, pp.z - z); scene.add(fig.group);
+    const d = { fig, pos: fig.group.position, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, curse: null, mark: null, dots: [], dead: false, corpse: 0, back: 0, fall: 0,
+      flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expoEl: null, wind: null, wait: rnd(.6, 1.2) };
+    arm(d, tpl.level, tpl.attack); dummies.push(d);
+    fx.ring(d.pos, 1.3 * d.sc, .3, 'gold', .4, { a: .6 });
+    fx.emit(12, { p: { x, y: .2, z }, r: .5, v: 1, up: 1, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
+    hudT = 0; return d;
+  }
+  const restore = d => {
+    const f = d.fig; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
+    d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0;
+    f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
+  };
+  function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.life = me.maxL; me.es = me.maxE; me.hurt = -9; }
+  function reset() {
+    objs = objs.filter(o => o.keep || (o.remove(), false));
+    grounds.forEach(g => g.decal.remove()); grounds = [];
+    hazards.forEach(h => h.decal.remove()); hazards = [];
+    timers = []; empower = []; buffs = []; charge = held = move = null; pp.y = 0;
+    for (const k in charges) charges[k] = 0;
+    stats.kills = stats.dealt = stats.taken = stats.deaths = 0; dummies.forEach(restore); heal(); hudT = 0;
+  }
+  function near(p, r, ok) {
+    let best = null, bd = r;
+    for (const d of dummies) if (!d.dead && (!ok || ok(d))) { const k = dist(d.pos, p); if (k <= bd) { bd = k; best = d; } }
+    return best;
+  }
+  const inside = (c, R) => dummies.filter(d => !d.dead && dist(d.pos, c) <= R + SIM.body * d.sc);
+  const has = (d, s) => s === 'curse' ? !!d.curse : s === 'mark' ? !!d.mark : d.st[s] > 0;
+  const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
+  const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
+  const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
+  // floating number of what a hit or a tick removed
+  const floatN = (d, n, el, o = {}) => {
+    if (Math.round(n) < 1) return;
+    fx.num({ x: d.pos.x + rnd(-.25, .25), y: (o.low ? 1.25 : 1.7) * d.sc, z: d.pos.z }, (o.sim ? '~' : '') + short(n) + (o.crit ? '!' : ''), NUMC(el), o.crit ? .64 : o.low ? .34 : .46, !!o.crit);
+  };
+
+  // ---------- combat rules
+  function gainCharge(type, by) {
+    if (charges[type] >= SIM.maxCharges) return;
+    charges[type]++; fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
+    say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
+  }
+  // n: damage in life points, already past the enemy's armour and resistances. Energy shield first, then life.
+  function damage(d, n, S, quiet) {
+    if (d.dead || !(n > 0)) return;
+    stats.dealt += Math.min(n, d.life + d.es);
+    d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
+    const e = Math.min(d.es, n); d.es -= e; d.life -= n - e;
+    if (d.life <= 0) kill(d, S);
+  }
+  function pay(d, S, s, consumed) {
+    const c = PIP[s];
+    fx.ring(d.pos, .2, 1.6, c, .4); fx.emit(18, { p: chest(d), v: 4, up: 2, life: .5, size: .2, c, c2: 'white', drag: 1.5 });
+    fx.text(over(d), (consumed ? '− ' : '+ ') + t(STATE[s]), css(c));
+    say(consumed ? t('{0} consumes {1}: a much bigger hit', S.label, t(STATE[s])) : t('{0} hits harder: {1}', S.label, t(STATE[s])), c);
+  }
+  // One hit of the skill context S on the enemy d. o: { mult, noPay }
+  // The number is the skill's own damage (calc.js) rolled between its minimum and maximum, with its crit chance, after the enemy's
+  // armour and resistances. The combo multipliers of the scene (consumed states, shock, exposure, charges...) scale it and mark it
+  // "~", like the hits whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
+  function hit(d, S, o = {}) {
+    if (d.dead) return false;
+    const P = S.P, D = S.dmg, own = !APPROX.has(S.src);
+    if (own && (D ? D.attack : P.attack)) {   // attacks roll your accuracy against its evasion; spells always hit
+      const acc = sheet().accuracy;
+      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+    }
+    let m = (o.mult ?? 1) * S.mult;
+    if (!o.noPay) {
+      for (const s of P.consumes) if (has(d, s)) { clear(d, s); m += SIM.consume; pay(d, S, s, true); }
+      for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
+    }
+    if (d.st.shock > 0) m *= 1 + SIM.shockTaken;
+    if (d.st.armour > 0 && S.els.includes('physical')) m *= 1 + SIM.brokenTaken;
+    if (d.st.expo > 0 && S.els.includes(d.expoEl)) m *= 1 + SIM.shockTaken;
+    if (d.curse && d.curse.els.some(e => S.els.includes(e))) m *= 1 + SIM.curseTaken;
+    const M = d.mark;
+    if (M && M.gain && !S.src) {   // marks that grant charges are consumed by your next hit
+      d.mark = null; m += 1; fx.ring(d.pos, .3, 1.5, 'mark', .35);
+      say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
+    } else if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; later(.05, () => boom(d.pos, M.R, M.S)); }
+    fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
+    const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
+    let total = 0, top = S.el, best = 0, crit = false;
+    if (real) {
+      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + (D.critBonus || 0) / 100 : 1;
+      for (const el in D.hits) {
+        const [lo, hi] = D.hits[el], r = (lo + Math.random() * (hi - lo)) * m * cm, got = enemyTakes(d.stat, el, r);
+        raw[el] = r; total += got; if (got > best) { best = got; top = el; }
+      }
+    } else total = (d.max + d.maxEs) / 8 * m;
+    floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
+    d.by = S; damage(d, total, S);
+    if (d.dead) return true;
+    for (const a of S.ail) inflict(d, a, S, 1, real ? raw : null);
+    if (P.dotHit) dot(d, S);
+    event('hit', d.pos, S);
+    return true;
+  }
+  // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
+  // after the enemy's resistances. Without that hit (grounds, minions, missing damage) they use the scene value, drawn with "~".
+  const AIL_DOT = { ignite: ['fire', ['fire']], bleed: ['physical', ['physical']], poison: ['chaos', ['physical', 'chaos']] };
+  function ailDps(d, a, raw) {
+    const [el, from] = AIL_DOT[a], base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
+    return base > 0 && per ? { dps: enemyTakes(d.stat, el, base * per / 6000, false), sim: false, el } : { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el };
+  }
+  function inflict(d, a, S, k = 1, raw = null) {
+    if (d.dead) return;
+    if (a === 'freeze') {   // freeze builds up over several cold hits
+      if (d.st.freeze > 0) return;
+      d.frz += k * (d.mark?.els.includes('cold') ? 2 : 1);
+      if (d.frz < SIM.freezeHits) return;
+      d.frz = 0; d.st.chill = 0;
+    } else if (a === 'armour') {
+      if (d.st.armour > 0 || (d.brk += k) < SIM.breakHits) return;
+      d.brk = 0;
+    } else if (a === 'chill' && d.st.freeze > 0) return;
+    if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
+      const v = ailDps(d, a, raw), o = d.st[a] > 0 && d.burn[a];
+      if (!o || o.sim && !v.sim || o.sim === v.sim && v.dps > o.dps) d.burn[a] = v;
+    }
+    const fresh = !(d.st[a] > 0); d.st[a] = DUR[a]; d.by = S;
+    if (!fresh) return;
+    const p = chest(d);
+    if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
+    else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
+    else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
+    else if (a === 'ignite') fx.emit(8, { p, r: .25, v: .5, up: 2.2, life: .5, size: .32, c: 'fire', c2: 'ember' });
+    event(a, d.pos, S);
+  }
+  const expo = (d, e) => { d.st.expo = DUR.expo; d.expoEl = e; };
+  // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
+  function dotOf(d, S) {
+    const list = S.dmg && !APPROX.has(S.src) ? Object.entries(S.dmg.dot) : [];
+    if (!list.length) return { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el: S.el };
+    let dps = 0, el = list[0][0], best = 0;
+    for (const [e, v] of list) { const got = enemyTakes(d.stat, e, v * S.mult, false); dps += got; if (got > best) { best = got; el = e; } }
+    return { dps, sim: Math.abs(S.mult - 1) > .001, el };
+  }
+  function dot(d, S) {
+    const o = d.dots.find(o => o.name === S.name), s = S.P.dur || 5, v = dotOf(d, S);
+    if (o) Object.assign(o, v, { s, S }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
+    d.by = S;
+  }
+  // Things that react to what happens: meta gems fill their energy, persistent buffs grant charges.
+  function metaWants(P) {
+    if (/Dodge/.test(P.name)) return ['dodge'];
+    if (/Minion Death/.test(P.name)) return ['miniondeath'];
+    if (P.els.length) return [...new Set(P.els.flatMap(e => e === 'cold' ? ['freeze'] : AILMENT[e] ? [AILMENT[e]] : []))];
+    return ['hit'];
+  }
+  function event(type, p, S) {
+    if (S.src === 'meta') return;
+    for (const k in tog) {
+      const T = tog[k];
+      if (T.kind === 'meta' && T.wants.includes(type)) {
+        if (++T.energy < T.need) continue;
+        T.energy = 0;
+        const j = api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && b.P.triggerable && b.P.spell && !NOHIT.has(b.kind); });
+        if (j < 0) continue;
+        const at = { x: p.x, z: p.z };
+        say(t('{0} triggers {1}', T.label, base(j).label), T.el);
+        fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
+        later(.12, () => use(j, { at, src: 'meta' }));
+      } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
+    }
+  }
+  function kill(d, S) {
+    d.dead = true; stats.kills++;
+    const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
+    // heralds: an enemy that dies with the ailment of their element explodes
+    for (const k in tog) {
+      const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];
+      if (a && st[a] > 0) later(.1, () => herald(T, p));
+    }
+    if (M?.bomb || M?.els.length) later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.bomb ? M.R : SIM.heraldR, M.S); });
+    const sp = d.dots.find(o => o.spread);
+    if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it
+      const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
+      for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) e.dots.push({ ...o, s: 5, ...dotOf(e, o.S) }); e.by = S; }
+      if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
+    }
+    if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) gainCharge(S.P.gain, S.label);
+    event('kill', p, S);
+    d.st = {}; d.burn = {}; d.curse = d.mark = null; d.dots = []; d.frz = d.brk = 0; d.sig = ''; d.wind = null; d.life = d.es = 0;
+    f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
+    if (frozen) {   // frozen enemies shatter: no corpse
+      fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
+      fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
+    } else { d.corpse = SIM.corpseTime; d.fall = 0; }
+  }
+  function herald(T, p) {
+    const i = byName(T.name), b = i >= 0 && mk(i); if (!b) return;
+    const S = { ...b, src: 'herald', ail: ailOf(T.P.els) };
+    say(t('{0} explodes on the kill', T.label), T.el);
+    if (T.P.el === 'lightning') {   // bolts on the enemies around instead of one blast
+      dummies.filter(e => !e.dead && dist(e.pos, p) <= 7).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, 3).forEach((e, k) => later(k * .08, () => {
+        fx.bolt(V(e.pos.x + rnd(-1.5, 1.5), 13, e.pos.z + rnd(-1.5, 1.5)), V(e.pos.x, 0, e.pos.z), 'lightning', .22, .07, .5); pop(e.pos, 1.1, 'lightning'); area(e.pos, 1.1, S);
+      }));
+    } else boom(p, SIM.heraldR, S);
+  }
+  const revive = d => { restore(d); fx.ring(d.pos, 1.2 * d.sc, .3, 'gold', .4, { a: .5 }); };
+  const corpseAt = (p, r) => { let best = null, bd = r; for (const d of dummies) if (d.corpse > 0) { const k = dist(d.pos, p); if (k <= bd) { bd = k; best = d; } } return best; };
+  function eat(d, c) {
+    d.corpse = 0; d.back = SIM.respawn; d.fig.group.visible = false;
+    fx.emit(26, { p: { x: d.pos.x, y: .4, z: d.pos.z }, r: .5, v: 1.5, up: 3, life: .8, size: .22, c, c2: 'blood' }); fx.ring(d.pos, 1.3, .2, c, .4);
+  }
+  // Corpse skills act on a corpse near the cursor; without one they do nothing.
+  function useCorpse(S) {
+    const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
+    if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
+    const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); if (S.P.gain) gainCharge(S.P.gain, S.label);
+    return p;
+  }
+
+  // Every enemy in a circle, plus whatever lies there and reacts (grenades, crystals, rods, gas, oil).
+  function area(c, R, S, o = {}) {
+    let n = 0;
+    for (const d of dummies) if (!d.dead && dist(d.pos, c) <= R + SIM.body && hit(d, S, o)) n++;
+    if (!o.noTouch) touch(c, R, S);
+    return n;
+  }
+  function touch(c, R, S) {
+    for (const o of objs) if (o.touch && !o.dead && o !== S.self && dist(o.pos, c) <= R + (o.r || 0)) o.touch(S);
+    const fire = S.els.includes('fire');
+    if (!fire && !S.P.detonator) return;
+    for (const g of grounds) {
+      if (g.dead || dist(g, c) > R + g.r) continue;
+      if (g.type === 'gas') {
+        g.dead = true; say(t('{0}: the gas cloud explodes', S.label), 'fire');
+        later(.08, () => boom(g, g.r, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' }));
+      } else if (g.type === 'oil' && fire) {
+        g.dead = true; say(t('{0}: the oil catches fire', S.label), 'fire');
+        fx.explode(g, g.r, 'fire', { soft: true }); ground('burning', g, g.r, SIM.groundTime, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
+      }
+    }
+  }
+  function boom(c, R, S, o = {}) {
+    fx.explode(c, R, S.el, o);
+    if (R > 1.4 && !o.soft) shake = Math.max(shake, Math.min(.5, R * .09));
+    return area(c, R, S, o);
+  }
+  // small impact without the full explosion
+  function pop(p, r, c) {
+    fx.disc(p, r, c, .28, { a: .6 }); fx.ring(p, r * .3, r, c, .3); fx.flash(p, c, 12, .2, 5);
+    fx.emit(Math.min(24, 6 + r * 8), { p: { x: p.x, y: .2, z: p.z }, r: r * .5, v: r * 2.2, up: 2, life: .4, size: .16, c, c2: 'white', drag: 1.5, g: 4 });
+  }
+  function chain(from, d, S, n, seen = new Set()) {
+    const to = chest(d);
+    fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
+    seen.add(d); hit(d, S, { mult: seen.size > 1 ? .8 : 1 });
+    if (n <= 0) return;
+    later(.07, () => {
+      // a lightning rod within reach takes the bolt and pulses over its whole area
+      if (S.els.includes('lightning')) for (const o of objs) if (o.rod && !o.dead && !seen.has(o) && o !== S.self && dist(o.pos, d.pos) <= SIM.chainRange) { seen.add(o); fx.bolt(to, V(o.pos.x, 1.7, o.pos.z), S.el, .18); o.pulse(S); break; }
+      const e = near(d.pos, SIM.chainRange, e => !seen.has(e));
+      if (e) chain(to, e, S, n - 1, seen);
     });
   }
-  spawn();
-
-  // Shapes: circle at cursor, nova around you, cone/line from you towards the cursor,
-  // projectile flies and stops at the first dummy, aura toggles a circle that follows you and marks who is inside.
-  const effects = [], projectiles = [];
-  let aura = null;
-  const mat = color => new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide });
-  const hit = d => { d.userData.hits++; d.userData.flash = 0.3; };
-  function flat(geo, x, z, rotY = 0, color = 0x66aaff) {
-    const m = new THREE.Mesh(geo, mat(color));
-    m.rotation.set(-Math.PI / 2, 0, rotY); m.position.set(x, 0.02, z);
-    scene.add(m); return m;
+  function ground(type, c, r, dur, S) {
+    if (grounds.length >= 40) grounds[0].dead = true;
+    const [col, tex, dark] = GFX[type];
+    const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
+    grounds.push({ type, x: c.x, z: c.z, r, s: dur || SIM.groundTime, tick: .2, S, decal, dead: false });
   }
-  function cast(point) {
-    const g = getBuild().gems[skill];
-    if (!g) return;
-    const G = geo(g), shape = g.shape || 'circle', R = G.radius, W = G.width, p = player.position;
-    if (shape === 'projectile' ? !G.speed : !R) { msg = t(shape === 'projectile' ? 'No projectile speed in the data' : 'Radius 0: the game gives no radius, set one manually'); return; }
-    const dir = new THREE.Vector2(point.x - p.x, point.z - p.z).normalize(), ang = Math.atan2(-dir.y, dir.x);
-    const rel = d => new THREE.Vector2(d.position.x - p.x, d.position.z - p.z);
-    let mesh, test;
-    if (shape === 'circle' || shape === 'nova') {
-      const c = shape === 'nova' ? p : point;
-      mesh = flat(new THREE.CircleGeometry(R, 48), c.x, c.z);
-      test = d => Math.hypot(d.position.x - c.x, d.position.z - c.z) <= R;
-    } else if (shape === 'cone') {
-      const half = THREE.MathUtils.degToRad(W) / 2;
-      mesh = flat(new THREE.CircleGeometry(R, 32, -half, 2 * half), p.x, p.z, ang);
-      test = d => { const v = rel(d); return v.length() <= R && Math.abs(Math.atan2(dir.x * v.y - dir.y * v.x, dir.dot(v))) <= half; };
-    } else if (shape === 'line') {
-      const geo = new THREE.PlaneGeometry(R, W); geo.translate(R / 2, 0, 0);
-      mesh = flat(geo, p.x, p.z, ang);
-      test = d => { const v = rel(d), t = dir.dot(v); return t >= 0 && t <= R && Math.abs(dir.x * v.y - dir.y * v.x) <= W / 2; };
-    } else if (shape === 'projectile') {
-      const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.1, G.collision), 12, 8), new THREE.MeshBasicMaterial({ color: 0xffaa44 }));
-      m.position.set(p.x, 0.9, p.z); scene.add(m);
-      projectiles.push({ mesh: m, dir, left: G.range, speed: G.speed, r: G.collision }); return;
-    } else if (shape === 'aura') {
-      if (aura) { scene.remove(aura.mesh); aura = null; return; }
-      aura = { mesh: flat(new THREE.CircleGeometry(R, 48), p.x, p.z, 0, 0x88ff88), R }; return;
-    }
-    effects.push({ mesh, t: 0 });
-    dummies.filter(test).forEach(hit);
+  function groundFx(g) {
+    const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;
+    if (g.type === 'burning') fx.emit(1, { p, r, v: .2, up: 2, life: .6, size: .4, c: 'fire', c2: 'ember' });
+    else if (g.type === 'chilled') fx.emit(1, { p, r, v: .1, up: .5, life: 1, size: .22, c: 'ice', k: 1.2 });
+    else if (g.type === 'shocked') fx.emit(2, { p, r, v: 1.5, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
+    else if (g.type === 'gas') fx.emit(1, { p, r, h: .8, v: .3, up: .3, life: 1.6, size: 1.1, grow: 1.6, c: 0x5c7a22, smoke: true, a: .28 });
+    else if (g.type === 'caustic') fx.emit(1, { p, r, v: .1, up: .7, life: .9, size: .2, c: 'poison' });
+    else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: 1, size: .14, c: 'holy' });
+  }
+  // A wind skill picks up the elemental ground it passes over.
+  function absorb(S, at, r) {
+    const g = grounds.find(g => !g.dead && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
+    if (!g) return S;
+    const e = GROUND_EL[g.type]; g.dead = true;
+    say(t('{0} absorbs {1} and gains {2}', S.label, t(GROUND[g.type]), t(cap(e))), e);
+    fx.ring(at, g.r, .3, e, .45); fx.emit(30, { p: { x: g.x, y: .2, z: g.z }, r: g.r, v: .5, up: 3, life: .7, size: .25, c: e, c2: 'white' });
+    return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])] };
   }
 
-  function update(dt) {
-    for (let i = effects.length - 1; i >= 0; i--) {
-      const f = effects[i]; f.t += dt; f.mesh.material.opacity = 0.45 * (1 - f.t / 0.6);
-      if (f.t > 0.6) { scene.remove(f.mesh); f.mesh.geometry.dispose(); effects.splice(i, 1); }
-    }
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-      const q = projectiles[i], step = Math.min(q.left, q.speed * dt);
-      q.mesh.position.x += q.dir.x * step; q.mesh.position.z += q.dir.y * step; q.left -= step;
-      const d = dummies.find(d => Math.hypot(d.position.x - q.mesh.position.x, d.position.z - q.mesh.position.z) <= q.r);
-      if (d) hit(d);
-      if (d || q.left <= 0) { scene.remove(q.mesh); projectiles.splice(i, 1); }
-    }
-    if (aura) {
-      aura.mesh.position.set(player.position.x, 0.02, player.position.z);
-      for (const d of dummies) if (Math.hypot(d.position.x - player.position.x, d.position.z - player.position.z) <= aura.R) d.userData.flash = Math.max(d.userData.flash, 0.05);
-    }
+  // ---------- things that live in the scene for a while
+  function thing(mesh, dur, o = {}) {
+    scene.add(mesh);
+    const e = { pos: mesh.position, r: 0, dead: false, s: 0, dur, ...o,
+      update(dt) { e.s += dt; o.tick?.(dt, e); if (e.s >= e.dur && !e.dead) { e.dead = true; o.end?.(e); } },
+      remove() { fx.drop(mesh); o.off?.(e); } };
+    objs.push(e); return e;
+  }
+  const holder = c => { const g = new THREE.Group(); g.position.set(c.x, 0, c.z); return g; };
+  function lob(mesh, from, to, dur, h, land, o = {}) {
+    mesh.position.copy(from); scene.add(mesh); let k = 0;
+    const e = { pos: mesh.position, dead: false,
+      update(dt) {
+        k = Math.min(1, k + dt / dur);
+        mesh.position.set(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k + Math.sin(k * Math.PI) * h, from.z + (to.z - from.z) * k);
+        if (o.spin) mesh.rotation.x += dt * 9;
+        if (o.trail) fx.emit(o.big ? 4 : 1, { p: mesh.position, v: .5, life: o.big ? .6 : .3, size: o.big ? .6 : .16, c: o.trail, c2: 'white', drag: 1 });
+        if (k >= 1) { e.dead = true; land(); }
+      },
+      remove() { fx.drop(mesh); } };
+    objs.push(e); return e;
+  }
+  const tint = (m, c) => m.traverse(x => { if (x.material) x.material.color.copy(fx.color(c, x.isSprite ? 1.5 : 3)); });
+  function shoot(S, from, dx, dz, o = {}) {
+    const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
+    const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
+    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0;
+    m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
+    const seen = new Set();
+    const end = hitD => {
+      q.dead = true; const p = { x: m.position.x, z: m.position.z };
+      if (P.chains && hitD) chain(m.position.clone(), hitD, cur, SIM.chains);
+      else if (P.explodes || S.aoe) boom(p, S.A, cur);
+      else if (hitD) { hit(hitD, cur); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); }
+      else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
+    };
+    const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
+      update(dt) {
+        if (P.wander) { a0 += rnd(-1, 1) * 9 * dt; dx = Math.sin(a0); dz = Math.cos(a0); m.rotation.y = a0; }
+        let stepLeft = Math.min(left, speed * dt); left -= stepLeft; trail += stepLeft;
+        while (stepLeft > 0 && !q.dead) {
+          const s = Math.min(.3, stepLeft); stepLeft -= s; m.position.x += dx * s; m.position.z += dz * s;
+          if (!cur.fired) for (const w of objs) if (w.wall && w.fire && !w.dead && segDist(m.position, w.a, w.b) < .45) {   // through a wall of fire
+            cur = { ...cur, els: [...new Set([...cur.els, 'fire'])], el: 'fire', ail: [...new Set([...cur.ail, 'ignite'])], fired: true }; tint(m, 'fire');
+            say(t('{0} gains fire through {1}', S.label, w.label), 'fire'); break;
+          }
+          for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
+            seen.add(d);
+            if (slow) hit(d, cur); else { end(d); break; }
+          }
+        }
+        if (q.dead) return;
+        fx.emit(slow ? 2 : 1, { p: m.position, v: .4, life: .35, size: slow ? .3 : .16, c: cur.el, c2: 'white', drag: 1 });
+        if (slow) {
+          if (P.absorbs) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
+          if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
+          if (S.R && (pulse -= dt) <= 0) { pulse = .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: .5 }); }
+        }
+        if (left <= 0) end(null);
+      },
+      remove() { fx.drop(m); } };
+    objs.push(q); return q;
+  }
+  function minion(S, p, life) {
+    const f = makeMinion(fx, S.el), MS = { ...S, src: 'minion', mult: .5 }, ranged = S.P.ranged;
+    f.group.position.set(p.x, 0, p.z); scene.add(f.group);
+    fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
+    let wait = rnd(.3, 1), sw = 0;
+    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0,
+      update(dt) {
+        e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
+        if (e.s >= life) { e.dead = true; return; }
+        const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
+        if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
+        if (k > stop) { const v = Math.min(k - stop, 5.5 * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        else if (d && wait <= 0) {
+          wait = ranged ? 1.5 : 1.1; sw = 1;
+          if (ranged) shoot(MS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
+          else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, MS); }
+        }
+      },
+      remove() {
+        fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
+        if (!e.keep) event('miniondeath', e.pos, MS);
+      } };
+    objs.push(e); return e;
+  }
+  function rod(S, c) {   // Lightning Rod: stays planted and pulses over its area whenever lightning reaches it
+    const g = holder(c), R = S.A, range = fx.decal(c, R, 'outline', S.el, { a: .3, rot: 0 });
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, 1.8, 6), new THREE.MeshBasicMaterial({ color: fx.color(S.el, 2.4), fog: false }));
+    pin.position.y = .9; pin.userData.own = true; g.add(pin);
+    const tip = fx.orb(S.el, .07); tip.position.y = 1.8; g.add(tip);
+    let last = -9;
+    const e = thing(g, S.P.dur || SIM.lifetime, { r: .3, rod: true, name: S.name,
+      pulse(by) {
+        if (time - last < .5 || by.src === 'rod') return; last = time;
+        say(t('{0} pulses: struck by {1}', S.label, by.label), S.el);
+        fx.bolt(V(c.x, 11, c.z), V(c.x, 1.8, c.z), S.el, .2, .06, .4); fx.ring(c, .3, R, S.el, .4, { k: 2.8 }); fx.flash(c, S.el, 30, .3, 9);
+        fx.emit(30, { p: { x: c.x, y: .4, z: c.z }, v: R * 3, flat: true, life: .3, size: .16, c: S.el, c2: 'white', drag: 2, k: 3 });
+        area(c, R, { ...S, self: e, src: 'rod' });
+      },
+      touch(by) { if (by.els.includes('lightning') && by.name !== S.name) e.pulse(by); },
+      off: () => range.remove() });
+    pop(c, 1, S.el); area(c, 1, { ...S, self: e }, { noTouch: true });
+  }
+  const ICE = new THREE.ConeGeometry(.32, 1.5, 5);
+  function crystal(S, p, dur) {
+    const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
+    m.position.set(p.x, .75, p.z); m.rotation.set(rnd(-.15, .15), rnd(TAU), rnd(-.15, .15)); m.scale.setScalar(.01); m.castShadow = true;
+    fx.emit(8, { p: { x: p.x, y: .2, z: p.z }, r: .3, v: 1, up: 2, life: .5, size: .16, c: 'ice' });
+    const h = rnd(.8, 1.2);
+    const e = thing(m, dur, { r: .4, name: S.name,
+      tick(dt, e) { const s = ease(Math.min(1, e.s * 5)); m.scale.set(s, s * h, s); },
+      touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
+        e.dead = true;
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, S.A, { ...S, self: e, src: 'crystal' }); });
+      },
+      end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
+  }
+  function vortex(S, c, R, dur) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
+    const g = holder(c); let cur = S, tk = .2;
+    const e = thing(g, dur, { name: S.name,
+      tick(dt, e) {
+        const p = g.position, col = cur.el === 'physical' ? 'dust' : cur.el;
+        for (let i = 0; i < 3; i++) {
+          const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
+          fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
+        }
+        const d = near(p, 9);
+        if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * 1.3 * dt; p.z += (d.pos.z - p.z) / k * 1.3 * dt; } }
+        if (S.P.absorbs) cur = absorb(cur, p, R);
+        if ((tk -= dt) <= 0) { tk = .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: .4 }); }
+      } });
+  }
+  function fissure(S, from, ang, len) {
+    const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len };
+    fx.strip(from, b, .9, 0x070605, 4, { dark: true, tex: 'beam', a: .9, y: .033 });
+    for (let k = 1; k <= len; k++) later(k * .06, () => {
+      const p = { x: from.x + dx * k, z: from.z + dz * k };
+      pop(p, .8, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); area(p, .8, S, { mult: .5, noPay: true, noTouch: true });
+    });
+  }
+  function slash(S, dx, dz, r = 2, half = .95) {
+    fx.sector(pp, dx, dz, r, half, S.el, .2, { k: 2.6, a: .85, grow: true });
+    fx.emit(8, { p: { x: pp.x + dx, y: 1.1, z: pp.z + dz }, dir: V(dx * 4, 0, dz * 4), v: 2, life: .25, size: .16, c: S.el, c2: 'white', drag: 2 });
   }
 
-  let skill = 0, msg = '';
-  const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster();
-  addEventListener('keydown', e => {
-    if (el.hidden || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    keys[e.code] = true;
-    if (/^Digit[1-9]$/.test(e.code)) skill = +e.code[5] - 1;
-    if (e.code === 'KeyR') spawn();
-  });
-  addEventListener('keyup', e => keys[e.code] = false);
-  renderer.domElement.addEventListener('mousedown', e => {
-    const r = renderer.domElement.getBoundingClientRect();
-    mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
-    ray.setFromCamera(mouse, cam);
-    const hit = ray.intersectObject(ground)[0];
-    msg = ''; if (hit) cast(hit.point);
-  });
+  // ---------- how each kind of skill plays out. S carries the aim: S.from, S.at, S.dx, S.dz.
+  const K = {
+    projectile(S) {
+      const n = (S.P.count || 1) + S.spent * 2, a0 = Math.atan2(S.dx, S.dz), spread = S.P.wander ? .45 : .13, h = hand();
+      for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
+      fx.glow(h, .9, S.el, .2);
+    },
+    chain(S) {
+      const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand();
+      if (d) chain(h, d, S, SIM.chains);
+      else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
+    },
+    rain(S) {
+      const P = S.P, c = S.at, R = S.A, h = hand();
+      const shot = land => lob(P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, { trail: S.el });
+      if (P.object) return shot(() => rod(S, c));
+      if (P.detonates) {   // pods that burst after a moment (or at once when a detonator reaches them)
+        return shot(() => {
+          for (let i = 0; i < 3; i++) {
+            const a = rnd(TAU), r = i ? rnd(.6, 1.6) : 0, p = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, m = fx.orb(S.el, .16); m.position.set(p.x, .2, p.z);
+            const e = thing(m, SIM.fuse + i * .15, { r: .3, name: S.name,
+              tick(dt, e) { m.userData.core.scale.setScalar(.16 * (1 + e.s / e.dur)); },
+              touch(by) { if (by.P.detonator || by.els.includes('fire')) e.s = e.dur; },
+              end: e => boom(p, R, { ...S, self: e }) });
+          }
+        });
+      }
+      if (P.rainy && S.R >= 1.5) {   // a volley goes up and comes down over the whole area
+        fx.streak(h, V(h.x + S.dx * 2, 15, h.z + S.dz * 2), S.el, .25, .04, 2); fx.telegraph(c, R, S.el, .5);
+        const n = 22 + S.spent * 8;
+        for (let i = 0; i < n; i++) later(.42 + i * .034, () => {
+          const a = rnd(TAU), r = Math.sqrt(rnd()) * R, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
+          fx.streak(V(q.x + 1.5, 12, q.z - 1), V(q.x, 0, q.z), S.el, .13, .025, 1.6);
+          later(.13, () => { fx.ring(q, .1, .75, S.el, .25, { a: .7 }); fx.emit(4, { p: { x: q.x, y: .1, z: q.z }, v: 1.5, up: 1.5, life: .3, size: .12, c: S.el, c2: 'white' }); area(q, .75, S, { mult: .5, noTouch: i % 4 > 0 }); });
+        });
+        return;
+      }
+      shot(() => {
+        if (P.plant && P.dur) return K.zone({ ...S, at: c });
+        boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur || SIM.groundTime, S);
+      });
+    },
+    grenade(S) {
+      const P = S.P, c = S.at;
+      lob(fx.orb(S.el, .11), hand(), V(c.x, .15, c.z), .55, 2.6, () => {
+        if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
+          fx.explode(c, S.A, S.el, { soft: true });
+          for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, 'fire'); else inflict(d, 'poison', S); d.wob = .6; }
+          ground(P.ground, c, S.A, P.dur || SIM.groundTime, S);
+          return;
+        }
+        const m = fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
+        const blow = e => {
+          const X = { ...S, self: e }; boom(c, S.A, X);
+          for (let i = 0; i < (P.cluster || 0); i++) later(.22 + i * .08, () => { const a = rnd(TAU), r = rnd(.4, .9) * S.A; boom({ x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, S.A * .45, X, { soft: true, mult: .5, noPay: true }); });
+        };
+        thing(m, /Flash/.test(S.name) ? .7 : SIM.fuse, { r: .25, name: S.name,
+          tick(dt, e) { m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
+          touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; say(t('{0} detonates {1}', by.label, S.label), 'fire'); later(.06, () => blow(this)); } },
+          end: blow });
+      }, { spin: true, trail: S.el });
+    },
+    orb(S) {
+      const P = S.P, c = S.at, R = S.A, dur = P.detonates ? SIM.orbFuse : P.dur || SIM.lifetime;
+      for (const o of objs) if (o.orbOf === S.name) o.dead = true;   // one at a time
+      const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
+      fx.ring(c, .2, 1.4, S.el, .4);
+      let tk = .4;
+      const e = thing(m, dur, { r: R, orbOf: S.name, name: S.name,
+        tick(dt, e) {
+          m.position.y = 1.3 + Math.sin(e.s * 3) * .08; if (P.detonates) m.userData.core.scale.setScalar(.3 * (1 + e.s / dur * .7));
+          if ((tk -= dt) > 0) return;
+          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, S.el === 'ice' ? 'cold' : P.el); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
+          else if (P.chains) { tk = .9; e.zap(); }
+          else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
+        },
+        end: e => { if (P.detonates) boom(c, R, { ...S, self: e }); },
+        off: () => range.remove() });
+      if (P.chains) e.zap = extra => {
+        const d = near(c, R); if (!d) return;
+        if (extra) say(t('{0} fires an extra bolt', S.label), S.el);
+        chain(V(c.x, m.position.y, c.z), d, { ...S, self: e, src: 'orb' }, 2);
+      };
+    },
+    wall(S) {
+      const P = S.P, c = S.at, L = SIM.wall / 2, px = -S.dz, pz = S.dx, dur = P.dur || SIM.lifetime;   // across the aim
+      const a = { x: c.x - px * L, z: c.z - pz * L }, b = { x: c.x + px * L, z: c.z + pz * L };
+      if (P.crystal) {
+        for (let i = 0; i < 6; i++) { const k = i / 5, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k }; later(i * .04, () => crystal(S, p, dur)); }
+        for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) hit(d, S);
+        return;
+      }
+      const fire = S.els.includes('fire'); let tk = 0;
+      fx.strip(a, b, 1.2, S.el, dur, { a: .6 });
+      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label,
+        tick(dt, e) {
+          for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
+          if ((tk -= dt) > 0) return; tk = .5;
+          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) hit(d, { ...S, self: e }, { mult: .3, noPay: true });
+        } });
+    },
+    curse(S) {
+      const c = S.at, R = S.A;
+      fx.telegraph(c, R, 'curse', SIM.curseDelay);
+      later(SIM.curseDelay, () => {
+        fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
+        const list = inside(c, R);
+        for (const d of list) { d.curse = { s: SIM.curseTime, els: S.P.els, label: S.label }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
+        if (list.length) say(t('{0}: {1} enemies cursed', S.label, list.length), 'curse');
+      });
+    },
+    mark(S) {
+      const d = near(S.at, SIM.snap); if (!d) return toast(t('No enemy at the cursor'));
+      for (const e of dummies) if (e.mark) e.mark = null;   // one mark at a time
+      d.mark = { s: S.P.dur || 8, els: S.P.els, label: S.label, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
+      fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
+      say(t('{0} marks the target', S.label), 'mark');
+    },
+    warcry(S) {
+      const c = S.from, R = S.A, col = S.P.els.length ? S.el : 'gold';
+      fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
+      fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
+      const list = inside(c, R);
+      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); }
+      if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
+      if (S.P.gain && list.length) gainCharge(S.P.gain, S.label);
+    },
+    toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
+      const k = S.name;
+      if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
+      const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
+      if (S.kind === 'meta') { T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy; }
+      else if (S.kind === 'minion') for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
+      else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
+      fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
+    },
+    raise(S) {
+      const r = Math.max(S.A, SIM.snap), list = dummies.filter(d => d.corpse > 0 && dist(d.pos, S.at) <= r).slice(0, S.R ? 4 : 1 + S.spent);
+      if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
+      for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); minion(S, p, SIM.minionTime); }
+      say(t('{0}: {1} raised from corpses', S.label, list.length), S.el);
+    },
+    totem(S) {
+      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= 2) mine[0].dead = true;
+      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...S, src: 'totem' }, R = S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
+      f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
+      fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
+      let wait = .5;
+      const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
+        update(dt) {
+          e.s += dt; if (e.s > SIM.totemTime) { e.dead = true; return; }
+          if ((wait -= dt) > 0) return;
+          const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
+          wait = far ? 1 : 1.3; f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z);
+          const k = dist(d.pos, e.pos) || 1;
+          if (far) shoot(TS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 22, range: 13 });
+          else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, { mult: .6 }); }
+        },
+        remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
+      objs.push(e);
+    },
+    travel(S) {
+      const P = S.P, to = S.at, from = { x: pp.x, z: pp.z };
+      const land = () => {
+        if (S.R || P.attack) boom(to, S.A, S); else fx.ring(to, .2, 1.6, S.el, .4);
+        if (P.ground) ground(P.ground, to, S.A, P.dur || SIM.groundTime, S);
+      };
+      if (P.blink && !P.jump) {
+        fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
+        fx.bolt(V(from.x, 1, from.z), V(to.x, 1, to.z), S.el, .2, .05, .15);
+        pp.x = to.x; pp.z = to.z; fx.pillar(to, .6, 3.5, S.el, .35); land();
+      } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set() };
+    },
+    nova(S) {
+      const P = S.P; let c = S.src ? S.at : S.from;
+      if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
+      const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
+      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
+      fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
+      for (const d of inside(c, R)) later(dist(d.pos, c) / R * dur, () => hit(d, S));   // the wave reaches the near ones first
+      later(dur * .5, () => touch(c, R, S));
+      if (P.ground) later(dur, () => ground(P.ground, c, R, Math.min(P.dur || SIM.groundTime, 8), S));
+    },
+    slam(S) {
+      const P = S.P, c = S.at, R = stageR(S);
+      later(.12, () => {
+        boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
+        if (P.ground) ground(P.ground, c, R * 1.15, P.dur || SIM.groundTime, S);
+        if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
+        if (P.fan && S.spent) { const a0 = Math.atan2(S.dx, S.dz), n = 1 + S.spent * 2; for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .22; shoot({ ...S, aoe: false, P: { ...P, explodes: false } }, c, Math.sin(a), Math.cos(a), { speed: 20, range: 11 }); } }
+      });
+    },
+    strike(S) {
+      const P = S.P, reach = (P.dash ? SIM.dashRange : SIM.meleeRange) + .6, n = P.dash ? Math.max(1, S.spent) : 1;
+      const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
+      if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
+      const go = (d, k) => {
+        if (d.dead) return;
+        if (P.dash || dist(d.pos, pp) > SIM.meleeRange) {   // strikes that carry you to the target
+          const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
+          fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
+        }
+        const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
+        facing = Math.atan2(dx, dz); castAt = time; slash(S, dx / l, dz / l);
+        if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); }
+        if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
+      };
+      go(first, 0);
+    },
+    sweep(S) {
+      const half = coneHalf(S), R = S.R || SIM.meleeRange, c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
+      fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .45 : .7 });
+      fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
+      for (const d of inside(c, R)) { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; if (Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half) hit(d, S); }
+      touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
+    },
+    wave(S) {
+      const R = S.A, c = S.from;
+      if (R > 3) {   // one long wave from you
+        const b = { x: c.x + S.dx * R, z: c.z + S.dz * R };
+        fx.strip(c, b, 2.4, S.el, .5, { a: .8 });
+        fx.emit(50, { p: { x: c.x, y: .3, z: c.z }, r: .8, dir: V(S.dx * R * 2.4, .5, S.dz * R * 2.4), v: 1.5, life: .45, size: .3, c: S.el, c2: 'white', drag: .6 });
+        for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= 1.2 + SIM.body) later(dist(d.pos, c) / R * .3, () => hit(d, S));
+        later(.15, () => touch({ x: (c.x + b.x) / 2, z: (c.z + b.z) / 2 }, R / 2, S));
+      } else {   // eruptions that walk away from you; the last one is the big one
+        const n = 6, st = Math.max(1, R * 2);
+        for (let i = 1; i <= n; i++) later(i * .09, () => {
+          const p = { x: c.x + S.dx * st * i, z: c.z + S.dz * st * i }, last = i === n;
+          fx.pillar(p, R * .5, 1.5 + i * .25, S.el, .3, 2.4); boom(p, R * (last ? 1.8 : 1 + i * .08), S, { soft: !last, noPay: !last, mult: last ? 1 : .5 });
+        });
+      }
+    },
+    storm(S) {
+      const P = S.P, c = S.at, R = S.A, dur = Math.min(P.dur || 4, 10);
+      if (P.wind) return vortex(S, c, R, dur);
+      const old = objs.filter(o => o.stormOf === S.name && !o.dead); if (old.length >= 2) old[0].dead = true;
+      const Z = Math.max(R * 2.4, SIM.stormArea), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
+      let tk = 0;
+      thing(holder(c), dur, { stormOf: S.name, name: S.name,
+        tick(dt, e) {   // impacts scattered over the area for as long as it lasts
+          if ((tk -= dt) > 0) return; tk = .17;
+          const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
+          if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
+          later(bolt ? 0 : .16, () => { pop(q, R, S.el); area(q, R, { ...S, self: e }, { mult: .6 }); });
+        },
+        off: () => out.remove() });
+    },
+    zone(S) {
+      const P = S.P, R = S.A, dur = Math.min(P.dur || SIM.groundTime, 12); let c = S.at;
+      if (P.corpse) { c = useCorpse(S); if (!c) return; }
+      fx.ring(c, .2, R, S.el, .45);
+      if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
+      const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
+      thing(holder(c), dur, { name: S.name,
+        tick(dt, e) {
+          if (Math.random() < dt * R * 8) fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R * .9, v: .2, up: 1.4, life: .7, size: .22, c: S.el });
+          if ((tk -= dt) > 0) return; tk = .5;
+          area(c, R, { ...S, self: e }, { mult: .25, noPay: e.s > .6, noTouch: true });
+        },
+        off: () => dec.remove() });
+    },
+    dot(S) {
+      const R = S.A; let c = S.at;
+      if (S.P.corpse) { c = useCorpse(S); if (!c) return; }
+      fx.disc(c, R, S.el, .6, { tex: 'patch', a: .7 }); fx.ring(c, .2, R, S.el, .45);
+      fx.emit(30, { p: { x: c.x, y: .3, z: c.z }, r: R * .8, v: .6, up: 1.6, life: 1, size: .3, c: S.el, c2: 'poison' });
+      for (const d of inside(c, R)) { dot(d, S); d.wob = .5; }
+      touch(c, R, S);
+    },
+    buff(S) {
+      const P = S.P;
+      if (P.corpse && !useCorpse(S)) return;
+      fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
+      if (P.repeats) { empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n: 2 + S.spent, label: S.label, s: 12 }); say(t('{0}: your next skill repeats {1} times', S.label, 2 + S.spent), 'gold'); }
+      else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
+      else { buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
+    },
+    area(S) {
+      const P = S.P, R = S.A; let c = S.at;
+      if (P.corpse) { c = useCorpse(S); if (!c) return; }
+      if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
+        const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
+        thing(holder(pp), P.dur, { off: () => dec.remove() });
+        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, c: css(S.el), s: P.dur }); say(t('{0} active', S.label), S.el);
+        return;
+      }
+      if (P.consumes.length && S.R >= 6) {   // strikes only the enemies that carry the state, wherever they stand in range
+        const list = inside(S.from, R).filter(d => P.consumes.some(s => has(d, s)));
+        fx.ring(S.from, .3, R, S.el, .5, { a: .4 });
+        if (!list.length) return toast(t('{0} finds nothing to consume ({1})', S.label, P.consumes.map(s => t(STATE[s])).join(', ')));
+        list.forEach((d, k) => later(k * .03, () => {
+          if (S.els.includes('lightning')) fx.bolt(V(d.pos.x + rnd(-1, 1), 12, d.pos.z + rnd(-1, 1)), V(d.pos.x, 0, d.pos.z), S.el, .22, .07, .5); else fx.pillar(d.pos, .5, 5, S.el, .3);
+          pop(d.pos, 1, S.el); hit(d, S);
+        }));
+        return;
+      }
+      if (S.R >= 6 && !S.src) c = S.from;
+      boom(c, R, S);
+      if (P.ground) ground(P.ground, c, R, Math.min(P.dur || SIM.groundTime, 10), S);
+    },
+    meteor(S) {
+      const P = S.P, R = S.A, delay = P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
+      const d = P.attack ? near(S.at, SIM.snap) : null, c = d ? { x: d.pos.x, z: d.pos.z } : S.at;
+      fx.telegraph(c, R, S.el, delay);
+      if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
+      const fly = Math.min(.4, delay);
+      later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));
+    },
+    beam(S) {
+      const L = S.R || 10, w = S.g.width || 1, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };
+      fx.strip(c, b, w, S.el, .35); fx.bolt(V(c.x, 1.1, c.z), V(b.x, 1.1, b.z), S.el, .2, .05, 0);
+      for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w / 2 + SIM.body) hit(d, S);
+      touch({ x: (c.x + b.x) / 2, z: (c.z + b.z) / 2 }, L / 2, S);
+    },
+  };
+  K.cone = K.sweep;
+  K.herald = K.aura = K.meta = K.minion = K.field = K.toggle;
+  function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
-  const hud = el.querySelector('#hud'), clock = new THREE.Clock();
-  renderer.setAnimationLoop(() => {
-    if (el.hidden) return;
-    const dt = Math.min(clock.getDelta(), 0.1);
-    if (renderer.domElement.width !== el.clientWidth || renderer.domElement.height !== el.clientHeight) {
-      renderer.setSize(el.clientWidth, el.clientHeight); cam.aspect = el.clientWidth / el.clientHeight; cam.updateProjectionMatrix();
+  // ---------- using a skill
+  function use(i, o = {}) {
+    let S = mk(i); if (!S) return false;
+    const P = S.P, auto = !!o.src;
+    Object.assign(S, o);
+    aim(S, o.at || cursor);
+    if (!auto) {
+      if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
+      for (const c of P.spend) if (charges[c]) { S.spent += charges[c]; charges[c] = 0; }
+      if (S.spent) { S.mult += S.spent * SIM.chargeMult; say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
+      if (S.stage != null) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
+      if (P.channel && !P.stages) S.mult *= SIM.channelHit;
+      facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el);
+      if (P.absorbs) S = absorb(S, pp, 1);
+      // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
+      const hits = !NOHIT.has(S.kind);
+      for (let k = empower.length - 1; k >= 0; k--) {
+        const E = empower[k];
+        if (E.type === 'infuse' && P.attack && hits) {
+          S.els = [...new Set([...S.els, E.el])]; S.el = E.el; S.ail = [...new Set([...S.ail, ...ailOf([E.el])])]; empower.splice(k, 1);
+          say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
+        } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; if (--E.uses <= 0) empower.splice(k, 1); }
+        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
+      }
     }
-    const mv = new THREE.Vector2((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), (keys.KeyS ? 1 : 0) - (keys.KeyW ? 1 : 0)).normalize().multiplyScalar(playerSpeed() * dt);
-    player.position.x += mv.x; player.position.z += mv.y;
-    cam.position.set(player.position.x, 18, player.position.z + 14); cam.lookAt(player.position);
+    const run = K[S.kind] || K.area;
+    run(S);
+    if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
+    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, from: { x: pp.x, z: pp.z } }); }); }
+    // an Orb of Storms nearby answers your lightning skills with a bolt of its own
+    if (!auto && S.els.includes('lightning')) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
+    return true;
+  }
+  function fire(i) {
+    const b = base(i);
+    if (b && use(i)) cd = b.P.channel && !b.P.stages ? SIM.channelTick : useTime(b); else { cd = .3; held = null; }
+  }
+  // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
+  const useTime = b => b.dmg?.speed > 0 ? clamp(1 / b.dmg.speed, .15, 3) : SIM.castTime;
+  function press(i, key) {
+    const b = base(i); if (!b || move) return;
+    held = null;
+    if (b.P.stages && b.P.channel) { charge = { i, s: 0 }; held = { i, key }; return; }   // charge while held, release to fire
+    if (b.P.toggle || b.kind === 'field') { use(i); return; }
+    if (ONCE.has(b.kind)) { if (cd <= 0 && use(i)) cd = useTime(b); return; }
+    held = { i, key };
+    if (cd <= 0) fire(i);
+  }
+  function release() {
+    const c = charge; charge = null; held = null;
+    const P = c && base(c.i)?.P; if (!P) return;
+    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2 })) cd = useTime(base(c.i));
+  }
+  // keep: selecting with the number keys does not stop placing enemies
+  function select(i, tell = true, keep = false) { if (!api.build().gems[i]) return; sel = i; hudT = 0; if (placing && !keep) setPlacing(false); if (tell) api.onSelect?.(i); }
+  function setPlacing(on) { placing = !!on && !!tpl.mon; dom.style.cursor = placing ? 'cell' : ''; hudT = 0; api.onPlacing?.(placing); }
 
-    update(dt);
+  // ---------- input
+  const typing = e => /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable;
+  const aimMouse = e => { const r = dom.getBoundingClientRect(); mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); };
+  // the cursor on the ground; over the body of an enemy it aims at that enemy, as clicking a monster does in the game
+  const bodyA = V(0, 0, 0), bodyB = V(0, 0, 0);
+  const pick = (ground = placing) => {
+    ray.setFromCamera(mouse, cam); ray.ray.intersectPlane(plane, cursor);
+    if (ground) return;
+    let best = null, near = Infinity;
     for (const d of dummies) {
-      d.userData.flash = Math.max(0, d.userData.flash - dt);
-      d.material.color.setHex(d.userData.flash ? 0xff4444 : 0x777777);
+      if (d.dead) continue;
+      bodyA.set(d.pos.x, .25, d.pos.z); bodyB.set(d.pos.x, 1.75 * d.sc, d.pos.z);
+      if (ray.ray.distanceSqToSegment(bodyA, bodyB) > (.42 * d.sc) ** 2) continue;
+      const k = cam.position.distanceToSquared(bodyA); if (k < near) { near = k; best = d; }
     }
-    const gems = getBuild().gems;
-    hud.textContent = (gems.length ? gems.map((g, i) => {
-      const G = geo(g);
-      return `${i === skill ? '▶' : ' '} ${i + 1}. ${label(g)}  (${t(SHAPE_NAME[g.shape || 'circle'] || g.shape)}, ${g.shape === 'projectile'
-        ? (G.speed ? `${G.speed.toFixed(1)} m/s, ${G.range.toFixed(1)} m` : t('no data'))
-        : `${G.radius.toFixed(2)} m${G.radiusFromData ? '' : ' ' + t('manual')}`})`;
-    }).join('\n') : t('Add gems to the build'))
-      + '\n\n' + t('Speed: {0} m/s · WASD move · 1-9 skill · click cast · R reset', playerSpeed().toFixed(2))
-      + '\n' + t('Total hits: {0}', dummies.reduce((s, d) => s + d.userData.hits, 0)) + (msg ? '\n' + msg : '');
-    renderer.render(scene, cam);
+    if (best) cursor.set(best.pos.x, 0, best.pos.z);
+  };
+  addEventListener('keydown', e => {
+    if (el.hidden || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
+    const c = e.code;
+    if (c === 'Space') e.preventDefault();
+    keys[c] = true;
+    if (e.repeat) return;
+    if (/^Digit[1-9]$/.test(c)) { const i = +c[5] - 1; if (api.build().gems[i]) { select(i, true, true); press(i, c); } }
+    else if (c === 'KeyR') reset();
+    else if (c === 'Escape') setPlacing(false);
+    else if (c === 'KeyF') { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
+    else if (c === 'KeyC') { const d = near(cursor, 4); if (d) { d.st.freeze = 0; kill(d, NONE); } }
+    else if (c === 'KeyG') { for (const k in charges) charges[k] = SIM.maxCharges; fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
+    else if (c === 'Space' && !move && rollCd <= 0) {
+      const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r);
+      const dx = l ? (-sy * f + cy * r) / l : Math.sin(facing), dz = l ? (-cy * f - sy * r) / l : Math.cos(facing);
+      move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = null;
+      fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
+      event('dodge', near(pp, 30)?.pos || pp, NONE);
+    }
   });
+  addEventListener('keyup', e => { keys[e.code] = false; if (held?.key === e.code) release(); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = false; if (held) release(); });
+  dom.addEventListener('mousemove', e => {
+    aimMouse(e);
+    if (orbit) { camS.yaw -= e.movementX * .006; camS.pitch = clamp(camS.pitch + e.movementY * .005, .35, 1.45); }
+  });
+  dom.addEventListener('mousedown', e => {
+    aimMouse(e);
+    if (e.button === 2) orbit = true;
+    else if (e.button === 0) { const put = !!tpl.mon && (placing || e.shiftKey); pick(put); if (put) place(cursor.x, cursor.z); else press(sel, 'mouse'); }
+  });
+  addEventListener('mouseup', e => { if (e.button === 0 && held?.key === 'mouse') release(); if (e.button === 2) orbit = false; });
+  dom.addEventListener('contextmenu', e => e.preventDefault());
+  dom.addEventListener('wheel', e => { e.preventDefault(); camS.dist = clamp(camS.dist * (1 + Math.sign(e.deltaY) * .1), 8, 42); }, { passive: false });
+  bar.addEventListener('mousedown', e => {
+    const b = e.target.closest('[data-i]'); if (!b) return;
+    e.preventDefault(); const i = +b.dataset.i; select(i);
+    if (base(i)?.P.toggle) use(i);
+  });
+
+  // ---------- target reticle: the real area of the selected skill, where it would land
+  const ret = {
+    circle: new THREE.Mesh(new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), fx.glowMat('white', 1.2, .6, fx.T.outline)),
+    strip: new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2).translate(.5, 0, 0), fx.glowMat('white', 1.2, .3, fx.T.beam)),
+    sector: new THREE.Mesh(new THREE.BufferGeometry(), fx.glowMat('white', 1, .22, fx.T.disc)), half: 0,
+  };
+  for (const m of [ret.circle, ret.strip, ret.sector]) { m.renderOrder = 3; m.visible = false; scene.add(m); }
+  let pk = null;
+  function peek() {
+    const b = base(sel); if (!b) return null;
+    if (pk?.b !== b) pk = { b, S: { ...b } };
+    aim(pk.S, cursor); pk.S.stage = charge && charge.i === sel ? Math.min(1, charge.s / (b.P.perfect ? 1 : 1.6)) : null;
+    return pk.S;
+  }
+  function reticle() {
+    ret.circle.visible = ret.strip.visible = ret.sector.visible = false;
+    if (placing) {   // where the enemy will stand
+      const m = ret.circle, r = (tpl.mon.boss ? 1.45 : 1) * .6 * (1 + Math.sin(time * 6) * .06);
+      m.visible = true; m.position.set(cursor.x, .07, cursor.z); m.scale.set(r, 1, r); m.material.color.copy(fx.color('gold', 1.5)); return;
+    }
+    const S = peek(); if (!S) return;
+    const c = S.at, P = S.P, col = fx.color(S.el, 1.3);
+    const circle = (p, r) => { const m = ret.circle; m.visible = true; m.position.set(p.x, .07, p.z); m.scale.set(r, 1, r); m.material.color.copy(col); };
+    const strip = (p, dx, dz, len, w) => { const m = ret.strip; m.visible = true; m.position.set(p.x, .07, p.z); m.rotation.y = Math.atan2(-dz, dx); m.scale.set(len, 1, w); m.material.color.copy(col); };
+    const sector = (r, half) => {
+      const m = ret.sector; if (ret.half !== half) { ret.half = half; m.geometry.dispose(); m.geometry = new THREE.CircleGeometry(1, 32, -half, 2 * half).rotateX(-Math.PI / 2); }
+      m.visible = true; m.position.set(pp.x, .07, pp.z); m.rotation.y = Math.atan2(-S.dz, S.dx); m.scale.set(r, 1, r); m.material.color.copy(col);
+    };
+    switch (S.kind) {
+      case 'projectile': strip(pp, S.dx, S.dz, S.G.speed ? S.G.range : SIM.projRange, Math.max(.3, (S.G.collision || 0) * 2)); break;
+      case 'chain': case 'mark': { const d = near(cursor, SIM.snap); if (d) circle(d.pos, .7); break; }
+      case 'nova': case 'warcry': circle(pp, S.kind === 'nova' ? stageR(S) : S.A); break;
+      case 'aura': case 'herald': if (S.R) circle(pp, S.R); break;
+      case 'field': circle(pp, S.A); break;
+      case 'meta': case 'minion': case 'buff': break;
+      case 'strike': { const reach = (P.dash ? SIM.dashRange : SIM.meleeRange) + .6, d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
+      case 'sweep': case 'cone': sector(S.R || SIM.meleeRange, coneHalf(S)); break;
+      case 'beam': strip(pp, S.dx, S.dz, S.R || 10, S.g.width || 1); break;
+      case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
+      case 'wall': strip({ x: c.x + S.dz * SIM.wall / 2, z: c.z - S.dx * SIM.wall / 2 }, -S.dz, S.dx, SIM.wall, .6); break;
+      case 'storm': circle(c, P.wind ? S.A : Math.max(S.A * 2.4, SIM.stormArea)); break;
+      case 'slam': circle(c, stageR(S)); break;
+      case 'totem': circle(c, P.ballista || P.ranged ? .6 : S.R || SIM.totemArea); break;
+      case 'raise': circle(c, Math.max(S.A, SIM.snap)); break;
+      case 'area': circle(S.R >= 6 ? pp : c, S.A); break;
+      default: circle(c, S.A);
+    }
+  }
+
+  // ---------- HUD text
+  let spdC = { at: -9, v: 0 };
+  const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed() }; return spdC.v; };
+  function drawHud() {
+    const gems = api.build().gems, names = gems.map(g => g.name);
+    for (const k in tog) if (!names.includes(k)) untoggle(k);
+    if (sel >= gems.length) sel = Math.max(0, gems.length - 1);
+    put(bar, gems.slice(0, 12).map((g, i) => {
+      const inf = api.info(g), P = prof(g, inf);
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" title="${esc(inf.label)}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${i < 9 ? `<b>${i + 1}</b>` : ''}</button>`;
+    }).join('') || `<span class="note">${t('Add skills in the Skills tab.')}</span>`);
+    const S = peek();
+    if (S) {
+      const G = S.G, P = S.P, rows = [];
+      if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
+      else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
+      if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);
+      if (P.dur) rows.push(`${t('duration')} ${P.dur.toFixed(1)} s`);
+      const notes = [...P.consumes.map(s => t('Consumes {0}', t(STATE[s]))), ...P.bonus.map(s => t('Payoff: {0}', t(STATE[s])))];
+      if (P.corpse) notes.push(t('Needs a corpse'));
+      P.spend.forEach(c => notes.push(t('Spends {0} charges', t(CHARGE[c]))));
+      put(infoEl, `<b style="color:${css(S.el)}">${esc(S.label)}</b><span>${t(KIND[S.kind === 'field' ? 'aura' : S.kind] || S.kind)}${P.els.length ? ' · ' + P.els.map(e => t(cap(e))).join(' / ') : ''}</span>`
+        + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : ''));
+    } else put(infoEl, '');
+    infoEl.hidden = !S;
+    const b = [];
+    for (const c in charges) if (charges[c]) b.push(`<span style="--c:${css(CHC[c])}">${'●'.repeat(charges[c])}${'○'.repeat(SIM.maxCharges - charges[c])} ${t(CHARGE[c])}</span>`);
+    for (const k in tog) { const T = tog[k]; b.push(`<span style="--c:${css(T.el)}">${esc(T.label)}${T.kind === 'meta' ? ` ${T.energy}/${T.need}` : ''}</span>`); }
+    for (const E of empower) b.push(`<span style="--c:${css(E.el || 'gold')}">▸ ${esc(E.label)}${E.uses > 1 ? ' ×' + E.uses : ''}</span>`);
+    for (const B of buffs) b.push(`<span style="--c:${B.c}">${esc(B.label)} ${Math.ceil(B.s)}s</span>`);
+    if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
+    put(buffEl, b.join(''));
+    put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
+    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('WASD move · 1-9 or click: cast at the cursor (hold to repeat)'), t('Right-drag: orbit · Wheel: zoom · Space: roll'),
+      t('C: corpse at the cursor · G: fill charges · F: refill life · R: reset'),
+      !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Shift+click: place {0}', tpl.mon.name),
+      t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
+    if (hud.textContent !== text) hud.textContent = text;
+    // your life and energy shield
+    const pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), bars = [];
+    if (me.known) bars.push(`<div class="life"><i style="width:${pct(me.life, me.maxL)}%"></i><span>${t('Life')} ${short(Math.max(0, Math.ceil(me.life)))} / ${short(me.maxL)}</span></div>`);
+    else if (dummies.length) bars.push(`<div class="life none"><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`);
+    if (me.maxE > 0) bars.push(`<div class="es"><i style="width:${pct(me.es, me.maxE)}%"></i><span>${t('Energy Shield')} ${short(Math.max(0, Math.ceil(me.es)))} / ${short(me.maxE)}</span></div>`);
+    put(vitEl, bars.join(''));
+  }
+
+  // ---------- frame
+  function tickDummy(d, dt) {
+    const f = d.fig, st = d.st;
+    if (d.dead) {
+      if (d.corpse > 0) {
+        d.fall = Math.min(1, d.fall + dt * 3.5); f.upper.rotation.x = -1.42 * ease(d.fall); f.upper.rotation.z = 0;
+        if ((d.corpse -= dt) <= 0) { d.back = 1; f.group.visible = false; fx.emit(10, { p: { x: d.pos.x, y: .2, z: d.pos.z }, r: .5, v: .5, up: 1, life: .7, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 }); }
+      } else if ((d.back -= dt) <= 0) revive(d);
+      return;
+    }
+    for (const k in st) if (st[k] > 0) st[k] -= dt;
+    if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
+    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) boom(d.pos, M.R, M.S); }
+    for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
+    if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
+      d.tick = .5; let n = 0, sim = false, el = 'chaos', best = 0;
+      const add = v => { n += v.dps; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
+      for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a]);
+      d.dots.forEach(add);
+      if (n > 0) { const fl = d.flash; floatN(d, n * .5, el, { sim, low: true }); damage(d, n * .5, d.by || NONE, true); d.flash = fl; if (d.dead) return; }
+    }
+    d.flash = Math.max(0, d.flash - dt); d.wob = Math.max(0, d.wob - dt * 2.2);
+    const frozen = st.freeze > 0, e = f.sack.emissive;
+    if (!frozen) { let a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) - f.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a)); f.group.rotation.y += a * Math.min(1, dt * 5); }   // they watch you
+    d.lunge = Math.max(0, d.lunge - dt * 3.2);
+    f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
+    f.ice.visible = frozen; f.curse.visible = !!d.curse; f.mark.visible = !!d.mark;
+    if (d.curse) f.curse.rotation.y += dt * .8;
+    if (d.mark) { f.mark.rotation.y += dt * 2.5; f.mark.scale.setScalar(1 + Math.sin(time * 5) * .08); }
+    if (d.flash > 0) e.setRGB(.9, .3, .2).multiplyScalar(d.flash / .18);
+    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (st.poison > 0 || d.dots.length) e.setRGB(.1, .28, .04);
+    else if (st.chill > 0) e.setRGB(.05, .2, .35); else e.setRGB(0, 0, 0);
+    const p = { x: d.pos.x, y: .9 * d.sc, z: d.pos.z };
+    if (st.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
+    if (st.shock > 0 && Math.random() < dt * 9) fx.emit(2, { p, r: .3, h: 1, v: 1.6, life: .18, size: .13, c: 'lightning', c2: 'white', k: 3 });
+    if (st.poison > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .8, life: .9, size: .16, c: 'poison' });
+    if (st.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
+    if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
+    if (d.dots.length && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
+    const pips = Object.keys(PIP).filter(s => has(d, s)).map(s => css(PIP[s])); if (d.dots.length) pips.push(css('chaos'));
+    const sig = Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '') + pips.join('');
+    if (sig !== d.sig) { d.sig = sig; f.draw({ life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null, pips }); }
+  }
+
+  // ---------- the enemies attack: the chosen attack at their level against your defences (enemies.js)
+  // From the game: the damage per type, the crit chance and the seconds between uses of the attack, and your evasion, block, armour,
+  // resistances, life regeneration and energy shield recharge. Fixed by the scene: the wind-up, the reach, and how each shape
+  // (strike, slam, projectile, area, bolt) is drawn. Enemies stand still, like dummies: step into their reach to be attacked.
+  const REACH = { projectile: 14, area: 11, bolt: 11 };
+  const reachOf = d => REACH[d.atk.shape] || Math.max(d.atk.reach + .8, 2.2) * d.sc;
+  const above = () => ({ x: pp.x, y: 2.5, z: pp.z });
+  const GREY = '#c8c0b0';
+  function hurt(n, chaos, el, crit, d) {
+    if (!(n > 0)) return;
+    stats.taken += n; me.hurt = time; shake = Math.min(.45, shake + .1);
+    const c = el === 'physical' ? 'blood' : el;
+    if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
+    fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
+    if (!me.known) return;   // without the class base life there is no pool to empty: the numbers still show what gets through
+    // energy shield takes the damage first; chaos damage removes twice as much of it
+    const other = n - chaos; let e = Math.min(me.es, other), left = other - e; me.es -= e;
+    e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
+    me.life -= left;
+    if (me.life <= 0) {
+      stats.deaths++; say(t('{0} killed you', d?.mon.name || '?'), 'blood'); toast(t('You died: life and energy shield restored'));
+      fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2;
+    }
+  }
+  // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
+  function struck(d) {
+    const a = d.atk, c = sheet();
+    if (d.dead || me.safe > 0 || !a.hasHit) return;
+    if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
+    if (Math.random() * 100 >= hitChance(d.stat.accuracy, c.evasion || 0)) return fx.text(above(), t('Evaded'), GREY, .32);
+    if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
+    const crit = Math.random() * 100 < a.crit, cm = crit ? 1 + a.critBonus / 100 : 1;
+    let total = 0, chaos = 0, top = d.col, best = 0;
+    for (const el in a.hits) {
+      const [lo, hi] = a.hits[el], got = playerTakes(c, el, (lo + Math.random() * (hi - lo)) * cm);
+      total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
+    }
+    hurt(total, chaos, top, crit, d);
+  }
+  // ground left by a skill that deals damage over time: it hurts while you stand in it
+  function hazard(d, p) {
+    const list = Object.entries(d.atk.dot).sort((x, y) => y[1] - x[1]); if (!list.length) return;
+    if (hazards.length >= 30) hazards.shift().decal.remove();
+    const el = list[0][0], r = 2.2;
+    hazards.push({ x: p.x, z: p.z, r, s: d.atk.dotDur || 3, tick: .25, d, dot: { ...d.atk.dot }, el, decal: fx.decal(p, r, 'patch', el, { a: .55, k: 1.2, pulse: 5, y: .04 }) });
+  }
+  function bullet(d) {
+    const a = d.atk, c = d.col, from = chest(d), ox = pp.x - from.x, oz = pp.z - from.z, l = Math.hypot(ox, oz) || 1, dx = ox / l, dz = oz / l;
+    const m = a.attack ? fx.arrow(c) : fx.orb(c, .2); m.position.set(from.x, Math.min(from.y, 1.3), from.z); m.rotation.y = Math.atan2(dx, dz); scene.add(m);
+    let left = a.hasHit ? 18 : l;   // a skill without a hit lands where you stood
+    const land = () => { q.dead = true; if (a.area || !a.hasHit) fx.explode(m.position, 1.4, c, { soft: true }); hazard(d, m.position); };
+    const q = { pos: m.position, r: 0, dead: false,
+      update(dt) {
+        let s = Math.min(left, 15 * dt); left -= s;
+        while (s > 0 && !q.dead) {
+          const k = Math.min(.3, s); s -= k; m.position.x += dx * k; m.position.z += dz * k;
+          if (a.hasHit && dist(m.position, pp) <= .55) { struck(d); land(); }
+        }
+        if (q.dead) return;
+        fx.emit(1, { p: m.position, v: .3, life: .3, size: .15, c, c2: 'white', drag: 1 });
+        if (left <= 0) { if (a.hasHit) q.dead = true; else land(); }
+      },
+      remove() { fx.drop(m); } };
+    objs.push(q);
+  }
+  function strike(d) {
+    const a = d.atk, c = d.col, sc = d.sc;
+    d.lunge = 1;
+    if (a.shape === 'melee') {
+      const R = reachOf(d);
+      d.wind = { s: Math.min(.35, a.interval * .4), land() {
+        const dx = pp.x - d.pos.x, dz = pp.z - d.pos.z, l = Math.hypot(dx, dz) || 1;
+        fx.sector(d.pos, dx / l, dz / l, R, .7, c, .22, { a: .5 });
+        if (l <= R + .3) { struck(d); hazard(d, pp); }
+      } };
+    } else if (a.shape === 'slam' || a.shape === 'area') {   // telegraphed on the ground where you stand: walk out of it
+      const slam = a.shape === 'slam', p = { x: pp.x, z: pp.z }, R = slam ? 1.8 * sc : 2.5, w = slam ? clamp(a.interval * .45, .4, .7) : .8;
+      fx.telegraph(p, R, c, w);
+      d.wind = { s: w, land() {
+        if (a.hasHit) { fx.explode(p, R, c, { soft: true }); if (slam) shake = Math.min(.45, shake + .1); if (dist(p, pp) <= R) struck(d); }
+        hazard(d, p);
+      } };
+    } else if (a.shape === 'projectile') d.wind = { s: .2, land() { bullet(d); } };
+    else {   // bolt: a spell that strikes you directly
+      fx.emit(10, { p: chest(d), r: .3, v: .6, up: 1, life: .5, size: .2, c, c2: 'white' });
+      d.wind = { s: .5, land() { const to = V(pp.x, 1.1, pp.z); fx.bolt(chest(d), to, c, .18, .05, .3); fx.glow(to, 1.2, c, .25); struck(d); hazard(d, pp); } };
+    }
+  }
+  function think(d, dt) {
+    if (d.dead) return;
+    if (d.st.freeze > 0) { d.wind = null; return; }   // frozen enemies cannot act
+    d.wait -= dt;
+    if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
+    if (d.wait > 0 || me.safe > 0 || dist(d.pos, pp) > reachOf(d)) return;
+    d.wait = Math.max(.25, d.atk.interval); strike(d);
+  }
+  // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
+  function vitals(dt) {
+    const c = sheet(), L = c.life || 0, E = c.es || 0; me.known = c.life != null;
+    if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
+    if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
+    me.safe = Math.max(0, me.safe - dt);
+    if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * dt);
+    if (me.es < E && time - me.hurt >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * dt);
+  }
+  function tickHazards(dt) {
+    for (let i = hazards.length - 1; i >= 0; i--) {
+      const h = hazards[i]; h.s -= dt; h.tick -= dt;
+      if (h.s <= 0) { h.decal.remove(); hazards.splice(i, 1); continue; }
+      if (Math.random() < dt * 9) fx.emit(1, { p: { x: h.x + rnd(-h.r, h.r) * .65, y: .1, z: h.z + rnd(-h.r, h.r) * .65 }, v: .2, up: 1, life: .7, size: .26, c: h.el });
+      if (h.tick > 0) continue;
+      h.tick = .5;
+      if (me.safe > 0 || dist(h, pp) > h.r) continue;
+      const c = sheet(); let n = 0, chaos = 0;
+      for (const el in h.dot) { const got = playerTakes(c, el, h.dot[el], false) * .5; n += got; if (el === 'chaos') chaos += got; }
+      hurt(n, chaos, h.el, false, h.d);
+    }
+  }
+  function step(dt) {
+    // movement
+    let moving = false;
+    if (move) {
+      const m = move; m.k = Math.min(1, m.k + dt / m.dur); moving = true;
+      pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
+      if (m.S) {
+        fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
+        if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
+      }
+      if (m.k >= 1) { pp.y = 0; move = null; m.land?.(); }
+    } else {
+      const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
+      if (f || r) {
+        const sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r), mx = (-sy * f + cy * r) / l, mz = (-cy * f - sy * r) / l, v = spd() * dt;
+        pp.x += mx * v; pp.z += mz * v; moving = true;
+        if (time - castAt > .45 && !charge) facing = Math.atan2(mx, mz);
+      }
+    }
+    const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
+    let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
+
+    // camera and cursor
+    camT.lerp(pp, 1 - Math.exp(-dt * 9)); shake = Math.max(0, shake - dt * 1.8);
+    const cp = Math.cos(camS.pitch);
+    cam.position.set(camT.x + Math.sin(camS.yaw) * cp * camS.dist + rnd(-shake, shake) * .4, Math.sin(camS.pitch) * camS.dist + rnd(-shake, shake) * .4, camT.z + Math.cos(camS.yaw) * cp * camS.dist);
+    cam.lookAt(camT.x, 1, camT.z); cam.updateMatrixWorld();
+    pick();
+
+    // casting
+    cd -= dt; rollCd -= dt;
+    if (charge) {
+      charge.s += dt; castAt = time; facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
+      const b = base(charge.i), h = hand();
+      if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
+    } else if (held && !move && cd <= 0) fire(held.i);
+
+    // the world
+    for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; if ((x.s -= dt) <= 0) { timers.splice(i, 1); x.fn(); } }
+    for (let i = objs.length - 1; i >= 0; i--) { const o = objs[i]; if (!o.dead) o.update(dt); if (o.dead) { o.remove(); objs.splice(objs.indexOf(o), 1); } }
+    for (let i = grounds.length - 1; i >= 0; i--) {
+      const g = grounds[i]; g.s -= dt; g.tick -= dt;
+      if (g.dead || g.s <= 0) { g.decal.remove(); grounds.splice(i, 1); continue; }
+      if (Math.random() < dt * (3 + g.r * g.r * 3)) groundFx(g);
+      if (g.tick > 0) continue;
+      g.tick = .5; const a = GAIL[g.type]; if (!a) continue;
+      for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S);
+    }
+    vitals(dt); tickHazards(dt);
+    for (const d of dummies) { tickDummy(d, dt); think(d, dt); }
+    for (const k in tog) {
+      const T = tog[k]; T.decal?.move(pp);
+      if (T.kind === 'herald' && Math.random() < dt * 14) { const a = time * 3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .8, y: rnd(.2, 1.8), z: pp.z + Math.sin(a) * .8 }, v: .1, up: .8, life: .6, size: .16, c: T.el }); }
+      if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
+    }
+    for (let i = empower.length - 1; i >= 0; i--) if ((empower[i].s -= dt) <= 0) empower.splice(i, 1);
+    for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt) <= 0) buffs.splice(i, 1);
+
+    player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
+    reticle(); arena.update(dt, pp); fx.update(dt);
+    if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
+    if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); }
+  }
+  const clock = new THREE.Clock(); let lastErr = '';
+  renderer.setAnimationLoop(() => {
+    if (el.hidden) { clock.getDelta(); return; }
+    const dt = Math.min(clock.getDelta(), .05), w = el.clientWidth, h = el.clientHeight;
+    if (!w || !h) return;
+    if (w !== size.w || h !== size.h) {
+      size.w = w; size.h = h; renderer.setSize(w, h, false); composer?.setSize(w, h);
+      cam.aspect = w / h; cam.updateProjectionMatrix(); fx.setViewport(dom.height, cam.fov);
+    }
+    time += dt;
+    try { step(dt); } catch (e) { if (e.message !== lastErr) { lastErr = e.message; console.error('scene:', e); } }
+    composer ? composer.render(dt) : renderer.render(scene, cam);
+  });
+
+  return {
+    select: i => select(i, false),
+    selected: () => sel,
+    reset,
+    // the enemy the next click places: { id → monster of enemies.js, level, attack }. The ones of that monster already in the scene follow it.
+    enemy(mon, level, attack) {
+      tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; hudT = 0;
+      if (!tpl.mon) return setPlacing(false);
+      for (const d of dummies) if (d.mon === tpl.mon) arm(d, tpl.level, tpl.attack);
+    },
+    placing: on => on == null ? placing : setPlacing(on),
+    clear: wipe,
+    count: () => dummies.length,
+  };
 }

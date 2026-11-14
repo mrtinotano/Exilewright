@@ -21,7 +21,102 @@
   #charPanel { flex:1; overflow:auto; min-height:0; }
   #sceneSkills { flex:1; overflow:auto; min-height:0; padding:8px 10px; border-top:2px solid #4a3f2c; background:#121010; }
   #sceneSkills[hidden] { display:none; }
-  #sceneSkills h3 { margin-top:0; }
+  #sceneSkills { flex:1.6; }
+  #sceneSkills h3 { margin:14px 0 6px; font:14px Georgia, serif; font-variant:small-caps; color:#e8d8a8; display:flex; align-items:baseline; gap:6px; border-bottom:1px solid #3a3022; padding-bottom:3px; }
+  #sceneSkills h3:first-child { margin-top:0; }
+  #sceneList { margin-top:16px; }
+  /* enemy picker of the 3D scene */
+  .en-pick input { width:100%; box-sizing:border-box; padding:4px 6px; background:#14110d; border:1px solid #5a4a30; color:#e8d8a8; font:13px Georgia, serif; }
+  .en-pick input:focus { outline:none; border-color:#c9a85a; }
+  #enList { max-height:290px; overflow:auto; background:#0e0c09; border:1px solid #5a4a30; border-top:0; }
+  .en-row { display:flex; flex-direction:column; padding:3px 7px; border-bottom:1px solid #1e1a14; cursor:pointer; font-size:12.5px; color:#d8c8a0; }
+  .en-row small { font-size:11px; color:#8a7a5c; } .en-row span small { color:#a89878; } .en-row small b { font-weight:normal; color:#e0a060; }
+  .en-row:hover, .en-row.at { background:#2a2318; } .en-row.on { box-shadow:inset 3px 0 #c9a85a; }
+  #enList p.note { margin:0; padding:5px 7px; }
+  .en-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 6px; margin-top:8px; font:14px Georgia, serif; color:#e8d8a8; }
+  .en-head small { font-size:11px; color:#a89878; } .en-head span { margin-left:auto; font-size:11.5px; color:#c9a85a; }
+  #sceneSkills p.en-areas { margin:1px 0 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #enDetail .sk-set { margin:6px 0; } #enDetail .sk-set a { color:#c9a85a; cursor:pointer; } #enDetail .sk-set small { color:#6f6450; }
+  #enDetail h4 { margin:10px 0 3px; font:12.5px Georgia, serif; color:#c9a85a; display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 6px; }
+  #enDetail h4 small { margin-left:auto; font-size:10.5px; color:#6f6450; }
+  .en-t { width:100%; border-collapse:collapse; font-size:12px; }
+  .en-t th { padding:1.5px 0; text-align:left; font-weight:normal; color:#8a7a5c; } .en-t td { padding:1.5px 0; text-align:right; color:#c8b890; } .en-t td b { font-weight:normal; color:#f0e8d0; }
+  .en-t tr + tr { border-top:1px solid #1e1a14; }
+  .dm.fire { color:#f0906a; } .dm.cold { color:#7cc4f0; } .dm.lightning { color:#f0e070; } .dm.chaos { color:#d48ae2; } .dm.physical { color:#d8c8b0; } .dm.es { color:#7cb8f0; }
+  .en-btns { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; }
+  .en-btns button { flex:1 1 auto; padding:4px 6px; font-size:12px; background:#2c261d; border:1px solid #5a4a30; color:#e0cfa8; cursor:pointer; } .en-btns button:hover { background:#3a3225; }
+  .en-btns button.on { flex-basis:100%; background:#4a3a14; border-color:#c9a85a; color:#ffe9a8; }
+  #sceneSkills h3 .note { font-variant:normal; margin-left:auto; }
+  /* 3D scene side panel: one card per skill, the build's combos and the training-ground settings */
+  .sk-card { --c:#8a7a5c; margin:0 0 6px; padding:6px 7px 6px 9px; background:linear-gradient(#1c1813, #13100c); border:1px solid #3a3022; border-left:3px solid var(--c); cursor:pointer; }
+  .sk-card:hover { border-color:#6a5a3a; border-left-color:var(--c); }
+  .sk-card.on { border-color:#c9a85a; border-left-color:var(--c); background:linear-gradient(#262015, #17130d); box-shadow:0 0 0 1px #c9a85a44; }
+  .el-fire { --c:#ff7a3a; } .el-cold { --c:#8ac8ff; } .el-lightning { --c:#ffe25a; } .el-chaos { --c:#c070d0; } .el-physical { --c:#c8b8a0; } .el-arcane { --c:#6f9cff; }
+  .sk-head { display:flex; align-items:center; gap:8px; }
+  .sk-ico { position:relative; width:34px; height:34px; flex:none; border:1px solid #5a4a30; background:#000; }
+  .sk-ico img { width:100%; height:100%; display:block; object-fit:cover; }
+  .sk-ico i { position:absolute; left:-5px; top:-5px; min-width:15px; height:15px; padding:0 3px; font:bold 10px/14px system-ui, sans-serif; text-align:center; color:#17130d; background:#c9a85a; border-radius:8px; }
+  .sk-name { flex:1; min-width:0; display:flex; flex-direction:column; font:14px Georgia, serif; color:#e8d8a8; }
+  .sk-name > span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help; }
+  .sk-name small { font:11px system-ui, sans-serif; color:#8a7a5c; }
+  .chips { display:flex; flex-wrap:wrap; gap:3px; margin-top:5px; }
+  .chip { padding:1px 6px; font-size:10.5px; line-height:1.5; color:#b8a888; background:#211c15; border:1px solid #3a3022; border-radius:9px; white-space:nowrap; }
+  .chip.k { color:#17130d; background:#c9a85a; border-color:#c9a85a; font-weight:600; }
+  .chip.fire { color:#ff9a62; border-color:#7a3a1c; } .chip.cold { color:#9ad2ff; border-color:#33566f; } .chip.lightning { color:#ffe66e; border-color:#6f6222; }
+  .chip.chaos { color:#d48ae2; border-color:#5d3168; } .chip.physical { color:#d8c8b0; border-color:#5a5044; }
+  .chip.a { color:#a8b890; border-color:#3f4a30; } .chip.g { color:#8fc0a0; border-color:#2f5540; } .chip.p { color:#ffd27a; border-color:#7a5a1c; background:#2a2010; }
+  .chip.w { color:#f09a8a; border-color:#6f3329; } .chip.c { color:#a8b8f0; border-color:#3a4478; }
+  .sk-facts { display:flex; flex-wrap:wrap; gap:2px 12px; margin-top:5px; font-size:11.5px; color:#8a7a5c; }
+  .sk-facts b { font-weight:normal; color:#e8e0cc; }
+  .sk-edit { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin-top:5px; font-size:11px; color:#8a7a5c; }
+  .sk-edit select { width:auto; max-width:150px; padding:1px 2px; font-size:11px; background:#14110d; border-color:#3a3022; color:#b8a888; }
+  .sk-edit label, .sk-set label { display:flex; align-items:center; gap:4px; margin:0; color:#8a7a5c; }
+  .sk-edit input { width:54px; padding:1px 3px; font-size:11px; background:#14110d; border-color:#3a3022; }
+  .syn { margin:0; } .syn li { display:block; position:relative; padding:3px 0 3px 14px; font-size:12px; line-height:1.4; color:#a89878; cursor:pointer; border-bottom:1px solid #1e1a14; }
+  .syn li::before { content:'◆'; position:absolute; left:1px; top:5px; font-size:8px; color:#c9a85a; }
+  .syn li:hover { color:#d8c8a0; } .syn b { font-weight:normal; color:#e8d8a8; } .syn i { font-style:normal; color:#ffd27a; }
+  .syn-more summary { cursor:pointer; padding:3px 0; font-size:12px; color:#c9a85a; }
+  .sk-set { display:grid; grid-template-columns:1fr 1fr; gap:6px 8px; font-size:12px; }
+  .sk-set label { flex-direction:column; align-items:stretch; gap:2px; }
+  .sk-set input, .sk-set select { padding:2px 4px; background:#14110d; border-color:#3a3022; }
+  .sk-set button { align-self:end; padding:3px 6px; background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; } .sk-set button:hover { background:#3a3225; }
+  #sceneSkills p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
+  /* 3D scene overlays */
+  #scene { overflow:hidden; background:#07080b; user-select:none; }
+  #scene canvas { position:absolute; inset:0; cursor:crosshair; }
+  .s-top, .s-bottom, .s-toast { position:absolute; pointer-events:none; font-family:Georgia, serif; }
+  .s-top { left:10px; right:10px; top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:6px; }
+  .s-bottom { left:10px; right:10px; bottom:12px; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  #scene #hud { position:static; flex:0 1 auto; min-width:0; padding:6px 9px; font:11.5px/1.5 system-ui, sans-serif; white-space:pre-wrap; color:#a89878; background:#0b0a08cc; border:1px solid #3a3022; }
+  .s-info { flex:0 1 250px; margin-left:auto; padding:7px 10px 8px; color:#a89878; background:#0b0a08d9; border:1px solid #5a4a30; border-top:2px solid var(--c, #c9a85a); }
+  .s-info[hidden] { display:none; }
+  .s-info b { display:block; font-weight:normal; font-size:16px; color:var(--c, #e8d8a8); margin-bottom:2px; }
+  .s-info span { display:block; font-size:12px; line-height:1.45; }
+  .s-info span:first-of-type { color:#c8b890; font-variant:small-caps; font-size:13px; }
+  .s-info small { display:block; margin-top:3px; font-size:11.5px; color:#ffd27a; }
+  .s-log { align-self:flex-start; width:min(420px, 100%); display:flex; flex-direction:column; gap:2px; }
+  .s-log div { padding:2px 8px; font-size:12.5px; color:#e8e0cc; background:linear-gradient(90deg, #0b0a08d9, #0b0a0800); border-left:2px solid var(--c, #c9a85a); transition:opacity .8s; }
+  .s-log div.old { opacity:.35; }
+  .s-buffs { display:flex; flex-wrap:wrap; justify-content:center; gap:4px; }
+  .s-buffs span { padding:2px 8px; font-size:12px; color:var(--c, #e8d8a8); background:#0b0a08d9; border:1px solid var(--c, #5a4a30); border-radius:10px; white-space:nowrap; }
+  .s-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; max-width:100%; box-sizing:border-box; padding:6px; background:#0b0a08d9; border:1px solid #5a4a30; pointer-events:auto; }
+  .s-bar:empty, .s-buffs:empty, .s-vitals:empty { display:none; }
+  .s-vitals { display:flex; gap:6px; justify-content:center; width:min(440px, 100%); }
+  .s-vitals div { position:relative; flex:1; height:17px; background:#0b0a08d9; border:1px solid #5a4a30; overflow:hidden; }
+  .s-vitals i { position:absolute; inset:0 auto 0 0; background:linear-gradient(#b02a22, #6e1410); transition:width .12s linear; }
+  .s-vitals .es i { background:linear-gradient(#4a8fd0, #23507f); }
+  .s-vitals span { position:relative; display:block; font:11.5px/17px Georgia, serif; text-align:center; color:#f4ecd8; text-shadow:0 1px 2px #000; white-space:nowrap; }
+  .s-vitals .none span { color:#a89878; }
+  .s-slot { position:relative; flex:none; width:52px; height:52px; padding:0; background:#000; border:2px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  .s-slot img { width:100%; height:100%; display:block; object-fit:cover; }
+  .s-slot span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:12px Georgia, serif; color:var(--c, #c8b890); }
+  .s-slot img + span { display:none; }
+  .s-slot b { position:absolute; left:2px; top:1px; font:bold 11px system-ui, sans-serif; color:#fff; text-shadow:0 0 3px #000, 0 0 3px #000; }
+  .s-slot:hover { border-color:#8a7a5c; }
+  .s-slot.on { border-color:var(--c, #c9a85a); box-shadow:0 0 10px var(--c, #c9a85a); }
+  .s-slot.act::after { content:''; position:absolute; inset:0; border:2px solid var(--c, #c9a85a); box-shadow:inset 0 0 12px var(--c, #c9a85a); }
+  .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; white-space:nowrap; }
+  .s-toast.on { opacity:1; }
   /* character panel, like the in-game one */
   .cp { font-family:Georgia, serif; padding:8px 8px 14px; color:#c8b890; font-variant:small-caps; }
   .cp-name { display:block; width:calc(100% - 80px); box-sizing:border-box; text-align:center; color:#e8d8a8; font:16px Georgia, serif; font-variant:small-caps; padding:4px; margin:0 40px 8px; border:1px solid #5a4a30; background:linear-gradient(#2a2218, #15110c); }
@@ -218,7 +313,7 @@
 <aside id="side">
   <div id="charPanel"></div>
   <div id="skillPanel" class="skdetail" hidden></div>
-  <div id="sceneSkills" hidden></div>
+  <div id="sceneSkills" hidden><div id="sceneEnemy"></div><div id="sceneList"></div></div>
 </aside>
 <main>
   <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="scene" data-t>3D scene</button></nav>

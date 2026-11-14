@@ -4,8 +4,9 @@
 import { t, tn, fmt, lang } from './i18n.js';
 import { attributes, skill } from './calc.js';
 import { statLines } from './stats.js';
+import { SK } from './skilldata.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
-const [GEMS, SK] = await Promise.all([load('gems.json'), load('skills.json')]);
+const GEMS = await load('gems.json');
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
 const SUPPORTS = GEMS.filter(g => g.kind === 'support');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
