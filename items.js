@@ -1,7 +1,7 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn } from './i18n.js';
-import { statLines } from './stats.js';
+import { statLines, statLinesEn } from './stats.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
@@ -69,6 +69,108 @@ export function gearStats(items = {}) {
   return sum;
 }
 
+// ---------- item text, in English like Path of Building and the game's Ctrl+C copy
+const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
+const enLines = (stats, vals) => statLinesEn(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
+function itemParts(it) {
+  const base = BASE[it.base];
+  if (!base) return null;
+  const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
+  const impl = base.implicits.flatMap((id, i) => enLines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
+  const expl = mods.flatMap(m => enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)));
+  const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
+  return { r, base, impl, expl, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? 'Planned Item' : '' };
+}
+export function itemText(it) {
+  const p = itemParts(it);
+  if (!p) return '';
+  return ['Rarity: ' + RARITY[p.r], ...p.name ? [p.name] : [], p.base.name,
+    'Item Level: ' + p.ilvl, 'Implicits: ' + p.impl.length, ...p.impl, ...p.expl].join('\n');
+}
+// the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
+// colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
+const RGB = { normal: '200, 200, 200', magic: '136, 136, 255', rare: '255, 255, 119', unique: '175, 96, 37' };
+export function itemNote(it) {
+  const p = itemParts(it);
+  if (!p) return '';
+  const clean = l => l.replace(/[{}]/g, '');   // braces delimit the markup
+  return [`<rgb(${RGB[p.r]})>{<b>{${clean([p.name, p.base.name].filter(Boolean).join('\n'))}}}`,
+    ...[...p.impl, ...p.expl].map(l => `<rgb(${RGB.magic})>{${clean(l)}}`)].join('\n');
+}
+
+// reading item text back: each mod that can be on the item is written out in English and compared line by line
+// with the numbers blanked out; the numbers of the matching lines become the mod's values
+const NUM = /[+-]?\d+(?:\.\d+)?/g;
+const skel = l => l.toLowerCase().replace(NUM, '#').replace(/\s+/g, ' ').trim();
+const nums = ls => ls.join(' ').match(NUM)?.map(Number) || [];
+function shapes(key, stats) {   // the mod as text at its top and bottom roll (the wording can change with the sign)
+  const out = new Map();
+  for (const end of [2, 1]) {
+    const v = stats.map(s => s[end]), lines = enLines(stats, v), shown = nums(lines);
+    out.set(lines.map(skel).join('\n'), { key, stats, lines: lines.map(skel), scale: v.map((x, k) => x && shown[k] ? shown[k] / x : 1) });
+  }
+  return [...out.values()];
+}
+function matchLines(lines, cands, family = () => null) {
+  const by = new Map(), found = [], missed = [], used = new Set();
+  for (const c of cands) (by.get(c.lines[0]) || by.set(c.lines[0], []).get(c.lines[0])).push(c);
+  for (let i = 0; i < lines.length;) {
+    let best = null;
+    for (const c of by.get(skel(lines[i])) || []) {
+      const span = lines.slice(i, i + c.lines.length);
+      if (span.length < c.lines.length || c.lines.some((l, j) => l !== skel(span[j])) || used.has(family(c.key) ?? c.key)) continue;
+      const n = nums(span), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
+      const off = c.stats.reduce((t, [, lo, hi], k) => t + Math.max(0, Math.min(lo, hi) - values[k], values[k] - Math.max(lo, hi)), 0);
+      if (!best || c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off) best = { c, values, off };
+    }
+    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values) }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
+    else missed.push(lines[i++]);
+  }
+  return { found, missed };
+}
+const META = /^[A-Z][A-Za-z' ()]*: |^(Corrupted|Mirrored|Unidentified|Sanctified|Requirements:?|-+)$/;
+// text copied from the game (Ctrl+C on an item) or from Path of Building -> {item, missed: [lines not understood]}
+export function parseItem(text) {
+  const raw = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+  const ri = raw.findIndex(l => /^Rarity:/i.test(l));
+  if (ri < 0) return null;
+  const head = [];
+  for (let i = ri + 1; i < raw.length && head.length < 2 && !META.test(raw[i]); i++) head.push(raw[i]);
+  const strip = n => n.replace(/^Superior /, '');
+  const u = head.map(n => UNIQ[n]).find(Boolean);
+  const base = u ? BASE[u.base] : head.map(n => BASE[strip(n)]).find(Boolean)
+    || D.bases.filter(b => head.some(n => n.includes(b.name))).sort((a, b) => b.name.length - a.name.length)[0];
+  if (!base) return null;
+  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^(\{[^}]*\})+/, ''));
+  const tagged = l => l.match(/\s*\((implicit|rune|enchant|crafted|fractured|desecrated|augmented)\)$/i)?.[1].toLowerCase();
+  const clean = l => l.replace(/\s*\((implicit|rune|enchant|crafted|fractured|desecrated|augmented)\)$/i, '');
+  let impl, expl, skipped = [];
+  const pi = body.findIndex(l => /^Implicits: \d+$/.test(l));
+  if (pi >= 0) {   // Path of Building: "Implicits: N", then N implicit lines, then the rest
+    const n = +body[pi].split(' ')[1];
+    impl = body.slice(pi + 1, pi + 1 + n); expl = body.slice(pi + 1 + n);
+  } else {         // the game: implicits end in "(implicit)"; runes and enchants are not modelled
+    impl = body.filter(l => tagged(l) === 'implicit').map(clean);
+    skipped = body.filter(l => ['rune', 'enchant'].includes(tagged(l)));
+    expl = body.filter(l => !['implicit', 'rune', 'enchant'].includes(tagged(l)) && !META.test(l)).map(clean);
+  }
+  const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+  const im = matchLines(impl, base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])));
+  im.found.forEach(f => item.implicits[f.key] = f.values);
+  let ex;
+  if (u) {
+    item.unique = u.name;
+    item.mods = u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) }));
+    ex = matchLines(expl, u.mods.flatMap(m => shapes(m.id, m.stats)));
+    ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
+    ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
+  } else {
+    ex = matchLines(expl, D.affixes.filter(a => canRoll(a, base)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+    item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
+  }
+  return { item, slots: base.slots, missed: [...im.missed, ...ex.missed.filter(l => !META.test(l)), ...skipped] };
+}
+
 // ---------- UI (laid out like the in-game item tooltip)
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => lo === hi ? '' :
@@ -115,7 +217,7 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
     const impl = base.implicits.map((id, i) => `<div class="mod">${text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${text(a.stats, fixVals(a.stats, m.values))} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
-    return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="clear">✕</button></h3>
+    return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(uniq.name)}<br>${esc(base.name)}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a =>
@@ -123,7 +225,7 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
       </div></div></section>`;
   }
 
-  let sel = 'weapon';
+  let sel = 'weapon', msg = '';
   function render() {
     const items = getBuild().items ||= {};
     for (const [slot, it] of Object.entries(items)) {  // data can change between patches: drop what no longer exists
@@ -143,14 +245,28 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
       Object.keys(SLOTS).map(s => cell(s, AREA[s])).join('')}</div>
       <h3>${t('Jewels ({0} sockets allocated on the tree)', sockets.length)}</h3>
       <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || `<p class="note">${t('Allocate jewel sockets on the tree to add jewels.')}</p>`}</div>
-      <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p></div>
+      <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p>
+      <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
+      <p class="note" data-msg>${msg}</p></div>
       <div class="editor">${card(sel, names[sel], items[sel])}</div></div>`;
   }
 
   el.addEventListener('input', e => {
     const t = e.target;
     if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
+    if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
+  // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
+  function paste(text) {
+    const r = parseItem(text);
+    if (!r) { msg = t('That is not item text (it needs the "Rarity:" line and a known base).'); render(); msg = ''; return; }
+    const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
+    const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
+    if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
+    items[slot] = r.item; sel = slot;
+    msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
+    changed(); render(); msg = '';
+  }
   // choosing a base or unique: unique names never collide with base names, so one lookup covers both
   function equip(slot, name) {
     const items = getBuild().items ||= {};
@@ -185,6 +301,7 @@ export function initItems(el, getBuild, changed, jewelSockets = () => []) {
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
+    if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
     if (t.dataset.act === 'clear') delete items[t.dataset.slot];
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
     else return;

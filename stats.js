@@ -2,9 +2,10 @@
 import { lang } from './i18n.js';
 // stat_texts.<lang>.json per translated language (written by _tool/available.py); English file as fallback
 const load = f => fetch('poe2_data/available/' + f).then(r => r.ok ? r.json() : Promise.reject());
-const descs = await (lang === 'en' ? Promise.reject() : load(`stat_texts.${lang}.json`)).catch(() => load('stat_texts.json'));
-const byStat = {};
-for (const d of descs) for (const s of d.stats) (byStat[s] ||= []).push(d);
+const index = descs => { const by = {}; for (const d of descs) for (const s of d.stats) (by[s] ||= []).push(d); return by; };
+const EN = index(await load('stat_texts.json'));
+// English text is always needed too: Path of Building and the game's item text are in English
+const byStat = lang === 'en' ? EN : await load(`stat_texts.${lang}.json`).then(index).catch(() => EN);
 
 const DIV = { two: 2, three: 3, four: 4, five: 5, ten: 10, fifteen: 15, twenty: 20, fifty: 50, one_hundred: 100 };
 function apply(h, v) {
@@ -30,8 +31,10 @@ const inRange = (c, v) => {
   return (a === '#' || v >= +a) && (b === '#' || v <= +b);
 };
 const num = v => +v.toFixed(2);
+const BY = byStat;
 
-export function statLines(stats) {
+export const statLinesEn = stats => statLines(stats, EN);
+export function statLines(stats, byStat = BY) {
   const done = new Set(), out = [];
   for (const id of Object.keys(stats)) {
     if (done.has(id) || id.endsWith('_no_display')) continue;

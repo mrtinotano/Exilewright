@@ -69,6 +69,15 @@
   .ask { position:fixed; inset:0; z-index:50; background:#000a; display:flex; align-items:center; justify-content:center; }
   .ask > div { max-width:360px; padding:16px 18px; background:linear-gradient(#211b14, #100d0a); border:1px solid #7a6440; font-family:Georgia, serif; color:#e8d8a8; text-align:center; }
   .ask p { margin:0 0 14px; line-height:1.4; }
+  #sharePanel > div { max-width:560px; width:92vw; text-align:left; max-height:90vh; overflow:auto; }
+  #sharePanel h3 { margin:12px 0 6px; font-size:15px; color:#d8b870; }
+  #sharePanel h3:first-child { margin-top:0; }
+  #sharePanel textarea { width:100%; box-sizing:border-box; font:11px monospace; background:#0c0a08; color:#c8b890; border:1px solid #5a4a30; }
+  #sharePanel .row { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
+  #sharePanel .msg { font-size:12px; color:#c8b890; word-break:break-all; min-height:1em; }
+  #sharePanel .msg a { color:#8cf; }
+  #sharePanel .close { float:right; }
+  .pasteItem { width:100%; box-sizing:border-box; margin-top:8px; font:11px monospace; background:#0c0a08; color:#c8b890; border:1px solid #5a4a30; }
   .cp-note { color:#8a6a4a; font-size:11px; font-style:italic; font-variant:normal; }
   .cp details { margin-top:12px; } .cp summary { cursor:pointer; color:#e8c872; }
   .cp-all { color:#8888ff; font-size:12px; line-height:1.45; margin-top:6px; }
@@ -200,8 +209,7 @@
   <button id="delBuild" data-t>Delete</button>
   <span class="grow"></span>
   <button id="notesBtn">Notes</button>
-  <button id="export" data-t>Export</button>
-  <button id="import" data-t>Import</button>
+  <button id="share" data-t>Share</button>
   <select id="langPick" title="Language"></select>
   <input id="importFile" type="file" accept=".json" hidden>
   <div id="notesBox" hidden><textarea id="notes" rows="8" placeholder="Build notes…" data-t></textarea></div>

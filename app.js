@@ -2,9 +2,10 @@ import { t, tn, fmt, lang, LANGS, setLang } from './i18n.js';
 import { initScene } from './scene.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports } from './calc.js';
+import { skill, withSupports, character } from './calc.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
+import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
 
 const $ = id => document.getElementById(id);
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
@@ -206,15 +207,74 @@ async function checkStart() {
 $('notes').onchange = edit((e, b) => b.notes = e.target.value);
 $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if (!$('notesBox').hidden) $('notes').focus(); };
 $('sceneSkills').onchange = edit((e, b) => b.gems[e.target.dataset.i][e.target.dataset.k] = e.target.dataset.k === 'shape' ? e.target.value : +e.target.value);
-$('export').onclick = () => {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(B(), null, 1)], { type: 'application/json' }));
-  a.download = B().name.replace(/[^\w-]+/g, '_') + '.json'; a.click();
+// ---------- share: Path of Building 2 code, build sites, JSON file
+const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5 });
+const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
+$('share').onclick = async () => {
+  const d = document.createElement('div');
+  d.className = 'ask'; d.id = 'sharePanel';
+  const code = await encode(toXML(B(), shareCtx()));
+  d.innerHTML = `<div><button class="close" data-a="close">✕</button>
+    <h3>${t('Export')}</h3>
+    <p class="note">${t('Path of Building 2 code: paste it in Path of Building (Import/Export Build) or on any of these sites.')}</p>
+    <textarea rows="3" readonly data-code>${code}</textarea>
+    <div class="row"><button data-a="copy">${t('Copy code')}</button>${SITES.map(s => `<button data-up="${s.id}">${t('Link on {0}', s.name)}</button>`).join('')}
+      <button data-a="json">${t('JSON file')}</button></div>
+    <div class="msg" data-out></div>
+    <h3>${t('Import')}</h3>
+    <textarea rows="3" data-in placeholder="${t('Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)')}"></textarea>
+    <div class="row"><button data-a="import">${t('Import as a new build')}</button><button data-a="file">${t('JSON file')}</button></div>
+    <div class="msg" data-inmsg></div>
+    <h3>${t('The game')}</h3>
+    <p class="note">${t('Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.')}</p>
+    <div class="row"><button data-a="game">${t('.build file for the game')}</button></div>
+    <p class="note">${t('To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.')}</p></div>`;
+  const out = d.querySelector('[data-out]'), inmsg = d.querySelector('[data-inmsg]');
+  const close = () => { d.remove(); removeEventListener('keydown', key); };
+  const key = e => { if (e.key === 'Escape') close(); };
+  addEventListener('keydown', key);
+  d.onclick = async e => {
+    const el = e.target, a = el.dataset.a;
+    if (el === d || a === 'close') return close();
+    if (a === 'copy') { await navigator.clipboard.writeText(code); out.textContent = t('Code copied.'); }
+    const save = (text, name) => {
+      const l = document.createElement('a');
+      l.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      l.download = name; l.click();
+    };
+    if (a === 'json') save(JSON.stringify(B(), null, 1), B().name.replace(/[^\w-]+/g, '_') + '.json');
+    if (a === 'game') save(toBuildFile(B(), shareCtx()), buildFileName(B()));
+    if (a === 'file') $('importFile').click();
+    if (el.dataset.up) {
+      const s = SITES.find(s => s.id === el.dataset.up);
+      out.textContent = t('Uploading to {0}…', s.name);
+      try {
+        const url = await upload(s.id, code);
+        await navigator.clipboard.writeText(url).catch(() => {});
+        out.innerHTML = `${t('Link copied:')} <a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`;
+      } catch (err) {   // no serve.py, or the site refused: hand the code over by hand
+        await navigator.clipboard.writeText(code).catch(() => {});
+        out.innerHTML = `${esc(t('{0} could not be reached from here ({1}). The code is copied: paste it on', s.name, err.message))} <a href="${s.home}" target="_blank" rel="noopener">${s.home}</a>`;
+      }
+    }
+    if (a === 'import') {
+      let txt = d.querySelector('[data-in]').value.trim();
+      if (!txt) return;
+      try {
+        if (/^https?:\/\/|^[\w.]+\.\w+\//.test(txt)) { inmsg.textContent = t('Downloading…'); txt = await download(txt); }
+        const xml = txt.startsWith('<') ? txt : await decode(txt);
+        const { build, warn } = fromXML(xml, shareCtx(), blank);
+        build.gems.forEach(g => { const G = gems.find(x => x.name === g.name); Object.assign(g, { shape: guessShape(G?.tags || []), radius: 0, width: 0 }); });
+        addBuild(build);
+        inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
+      } catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
+    }
+  };
+  document.body.append(d);
 };
-$('import').onclick = () => $('importFile').click();
 $('importFile').onchange = async e => {
-  const b = { ...blank(), ...JSON.parse(await e.target.files[0].text()) };
-  const id = String(Date.now()); builds[id] = b; save(); select(id); e.target.value = '';
+  addBuild({ ...blank(), ...JSON.parse(await e.target.files[0].text()) });
+  e.target.value = ''; document.getElementById('sharePanel')?.remove();
 };
 
 // ---------- passive tree (canvas 2D), drawn like the in-game tree
