@@ -8,13 +8,13 @@ import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const GEMS = await load('gems.json');
-const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
-const SUPPORTS = GEMS.filter(g => g.kind === 'support');
+export const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
+export const SUPPORTS = GEMS.filter(g => g.kind === 'support');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const ATTRS = { str: [t('Str'), 'strength', '#c44'], dex: [t('Dex'), 'dexterity', '#4a4'], int: [t('Int'), 'intelligence', '#48c'] };
 // a support uses capacity of its main attribute (the requirement % the game gives it)
-const colour = g => { const a = Object.entries(g.attr).sort((x, y) => y[1] - x[1])[0]; return a[1] ? a[0] : null; };
+export const colour = g => { const a = Object.entries(g.attr).sort((x, y) => y[1] - x[1])[0]; return a[1] ? a[0] : null; };
 
 // same evaluation as the game's support type expressions (RPN): any true value left on the stack = match
 function matches(expr, types) {
@@ -27,7 +27,7 @@ function matches(expr, types) {
   }
   return st.some(Boolean);
 }
-const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
+export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
 const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;   // stat with no game text: not shown
 const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
 // stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
@@ -38,6 +38,8 @@ function gemLines(name, level) {
   return statLines(st).filter(l => !RAW.test(l));
 }
 const descOf = G => G['description_' + lang] || G.description || '';
+// what a support does in words: the game's description, else Path of Building's reading of its stats (English)
+export const supportText = S => descOf(S) || SK.supports?.[S.name]?.text || '';
 const DTYPE = { physical: 'Physical Damage', fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage', chaos: 'Chaos Damage' };
 
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill details window
@@ -104,7 +106,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
         const opts = SUPPORTS.filter(s => canSupport(s, types) && !s.family.some(f => fams.has(f)))
           .sort((x, y) => tn(x).localeCompare(tn(y)));
         const item = s => {
-          const c = colour(s), what = descOf(s) || gemLines(s.name, 1).join(' · ');
+          const c = colour(s), what = supportText(s) || gemLines(s.name, 1).join(' · ');
           return `<button class="supopt${s.name === g.supports[open[1]] ? ' on' : ''}" data-sup="${esc(s.name)}" data-find="${esc((tn(s) + ' ' + s.name + ' ' + what).toLowerCase())}">
             <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${esc(what || t('No description in the game data yet'))}</small>${gain(s.name)}</span></button>`;
         };

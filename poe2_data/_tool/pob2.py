@@ -4,6 +4,8 @@
   tables that turn those multipliers into life, armour, evasion, accuracy and damage (the enemies of the 3D scene).
 - ../available/pob2.json: what available.py puts in skills.json on Windows and is missing until then: the stats of
   every gem per level, the cast times and the character constants. The app only uses it where skills.json has nothing.
+- ../available/trade_mods.json: for every item modifier of items.json and unique_items.json, its English name and the
+  number the official trade site gives each of its lines (the gear search, trade.js).
 Files are cached in ../pob2_cache so re-runs don't hit GitHub.
 Usage: python -I pob2.py"""
 import json, os, re, time, urllib.request
@@ -301,6 +303,52 @@ for path in ('Skills/act_str.lua', 'Skills/act_dex.lua', 'Skills/act_int.lua', '
         gems[name] = {'cast_time_ms': round(s['castTime'] * 1000) if s.get('castTime') else None, 'constant': const,
                       'levels': {str(k): rows[k] for k in sorted(rows)}}
 
+# ---- support gems ---------------------------------------------------------------------------------------------------
+# What a support gives the skill it is socketed in (supports have one level per tier): its description, and its stats.
+# Where Path of Building 2 says what a stat does to the calculation (the support's own statMap, else SkillStatMap.lua:
+# Damage MORE, Speed INC, a NeverCrit flag...) the stat is written as that mod - [name, MORE|INC|BASE|FLAG, value, flags,
+# conditional] - so calc.js need not guess it from the stat id; conditional = only under a condition (enemy on low
+# life, a buff being up...), which the app cannot assume. The stats it has no reading for keep their game id.
+STAT_MAP = r'^%s\["([^"]+)"\] = \{\n(.*?)^%s\},'
+MOD = re.compile(r'^\t+(mod|flag)\("(\w+)"(?:, "(\w+)", (nil|-?[\d.]+))?(.*)$', re.M)
+
+
+def reading(body, val):
+    div, mult = (re.search(r'^\t+' + k + r' = (-?[\d.]+)', body, re.M) for k in ('div', 'mult'))
+    for call, name, kind, fixed, rest in MOD.findall(body):
+        if call == 'mod' and not kind:  # a list of minion mods, a granted skill...: nothing the app calculates
+            continue
+        x = 1 if call == 'flag' else float(fixed) if fixed != 'nil' else val
+        if not isinstance(x, (int, float)):
+            continue
+        x = x / float(div.group(1) if div else 1) * float(mult.group(1) if mult else 1)
+        flags = sorted({f.lower() for f in re.findall(r'(?:ModFlag|KeywordFlag)\.(\w+)', rest)})
+        yield [name, kind or 'FLAG', int(x) if x == int(x) else round(x, 4), flags, 1 if 'type = ' in rest else 0]
+
+
+shared = dict(re.findall(STAT_MAP % ('', ''), get('SkillStatMap.lua'), re.M | re.S))
+support_names = {g['name'] for g in json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8')) if g['kind'] == 'support'}
+supports = {}
+for path in ('Skills/sup_str.lua', 'Skills/sup_dex.lua', 'Skills/sup_int.lua'):
+    src = get(path)
+    found = list(entries(src, 'skills'))
+    for n, (sid, s, pos) in enumerate(found):
+        name = s.get('name')
+        if not s.get('support') or name not in support_names or name in supports:
+            continue
+        sets = s.get('statSets') or {}
+        st = (sets.get(1) if isinstance(sets, dict) else sets[0] if sets else None) or {}
+        lv = st.get('levels') or {}
+        lv = (lv.get(1) if isinstance(lv, dict) else lv[0] if lv else None) or {}
+        lv = lv if isinstance(lv, dict) else {i + 1: v for i, v in enumerate(lv)}
+        stats = {a: b for a, b in (st.get('constantStats') or [])}
+        stats.update({stat: lv.get(i + 1, 1) for i, stat in enumerate(st.get('stats') or [])})  # no number: a flag
+        text = src[pos:found[n + 1][2] if n + 1 < len(found) else len(src)]
+        text = text[text.find('statMap = {'):text.find('baseFlags = {')] if 'statMap = {' in text else ''
+        own = dict(re.findall(STAT_MAP % ('\t' * 4, '\t' * 4), text, re.M | re.S))
+        mods = [m for stat in list(stats) if stat in own or stat in shared for m in reading(own.get(stat, shared.get(stat)), stats.pop(stat))]
+        supports[name] = {k: v for k, v in {'text': s.get('description'), 'stats': stats, 'mods': mods}.items() if v}
+
 # character.ot. The level-1 life and mana are not in it: Path of Building 2 (CalcSetup.lua) adds 16 life and 30 mana to
 # the per-level amounts, and gives 2 life per Strength, 2 mana per Intelligence and AccuracyPerDexBase per Dexterity.
 acc = re.search(r'AccuracyPerDexBase\s*=\s*(\d+)', get('../Modules/Data.lua'))
@@ -321,6 +369,26 @@ pob = {
     'attribute_text': {'Strength': '+2 to maximum Life', 'Intelligence': '+2 to maximum Mana',
                        **({'Dexterity': f'+{acc.group(1)} to Accuracy Rating'} if acc else {})},
     'skills': {k: gems[k] for k in sorted(gems)},
+    'supports': {k: supports[k] for k in sorted(supports)},
 }
 dump(pob, 'pob2.json')
 print(f'{len(gems)} of {len(names)} gems with levels; without: {", ".join(sorted(names - set(gems))[:15])}')
+print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
+
+# The trade site's stat of every modifier line. ModItem.lua / ModItemExclusive.lua, one modifier per row:
+#   ["Strength1"] = { type = "Suffix", affix = "of the Brute", "+(5-8) to Strength", ..., tradeHashes = { [4080418644] = { "+(5-8) to Strength" }, } },
+# -> id: [English name, [hash, lo, hi, lo, hi...] per line]: the site's stat is "explicit.stat_<hash>" and the numbers
+# are those the line shows, in order ("(5-8)" is a roll, a bare number is fixed).
+ROW = re.compile(r'^\t\["([^"]+)"\] = \{ (?:type = "\w+", )?affix = "([^"]*)".*?tradeHashes = \{ (.*?)\} \},?$', re.M)
+SHOWN = re.compile(r'\((-?[\d.]+)-(-?[\d.]+)\)|(-?\d+(?:\.\d+)?)')
+used = {a['id'] for a in json.load(open(os.path.join(ROOT, 'available', 'items.json'), encoding='utf8'))['affixes']}
+used |= {m['id'] for u in json.load(open(os.path.join(ROOT, 'available', 'unique_items.json'), encoding='utf8')) for m in u['mods']}
+num = lambda x: int(float(x)) if float(x) == int(float(x)) else float(x)
+trade = {}
+for path in ('ModItem.lua', 'ModItemExclusive.lua'):
+    for mod, name, hashes in ROW.findall(get(path)):
+        if mod in used:
+            trade[mod] = [name] + [[int(h)] + [num(x) for a, b, c in SHOWN.findall(' '.join(re.findall(r'"((?:[^"\\]|\\.)*)"', lines))) for x in ((a, b) if a else (c, c))]
+                                   for h, lines in re.findall(r'\[(\d+)\] = \{ (.*?) \},', hashes)]
+dump({'source': 'Path of Building 2 game-data export (Mods, trade stat hashes) - (c) Grinding Gear Games', 'mods': {k: trade[k] for k in sorted(trade)}}, 'trade_mods.json')
+print(f'{len(trade)} of {len(used)} item modifiers with their trade site stat; without: {", ".join(sorted(used - set(trade))[:15])}')

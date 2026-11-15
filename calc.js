@@ -182,31 +182,54 @@ export function sheet(b, sum) {
 
 const DMG = ['physical', 'fire', 'cold', 'lightning', 'chaos'];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
-// Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always)
+// Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
+// several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
+// Damage types are added per type by the caller, and what is the minions' is not the character's.
 function inc(sum, suffix, tags) {
   let t = 0;
   for (const [k, val] of Object.entries(sum)) {
     if (!k.endsWith(suffix)) continue;
-    const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '');
-    if (pre === '' || pre === 'base' || pre === 'global' || tags.includes(pre) && !DMG.includes(pre) && pre !== 'minion' && pre !== 'companion') t += val;
+    const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand');
+    if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += val;
   }
   return t;
 }
+// what the stat ids call the weapon an attack is made with (item base tags; warstaff is the quarterstaff)
+const WEAPON = ['mace', 'bow', 'crossbow', 'spear', 'sword', 'axe', 'dagger', 'flail', 'claw', 'talisman', 'onehand', 'twohand'];
+const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff' : x).filter(x => x === 'quarterstaff' || WEAPON.includes(x));
 
 // Stats of the supports socketed in a skill (their first level: supports have one level per tier).
-// "..._+%_final" stats are separate "more" multipliers (fin); every other stat joins the tree + gear sum for this skill only.
+// Where Path of Building 2 says what a stat does (SK.supports[name].mods: [name, MORE|INC|BASE|FLAG, value, flags,
+// conditional], e.g. Damage MORE 25 for hits) that reading is used, except the conditional ones (enemy on low life, a
+// buff being up...): the app cannot assume them. Of the other stats, "..._+%_final" are separate "more" multipliers
+// (fin) and the rest join the tree + gear sum for this skill only. A "more" whose id says something else than the
+// support's name and words the calculation knows (..._distance_based_pin_damage: Pin buildup, not damage;
+// ..._randomise_higher_damage; ..._detonation_damage) is left out: it is not a plain multiplier of the skill.
+const PLAIN = new Set(['support', 'damage', 'attack', 'cast', 'speed', 'spell', 'projectile', 'melee', 'area', 'of', 'effect', 'and', 'minion', 'skill', 'hit', 'ailment', 'elemental', '+%', 'final', ...DMG]);
+const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
-  const all = { ...sum }, fin = {};
+  const all = { ...sum }, fin = {}, mods = [];
   for (const n of g.supports || []) {
-    const d = n && SK.skills[n]; if (!d) continue;
-    const lv = d.levels?.[Object.keys(d.levels || {})[0]] || {};
-    for (const [k, val] of Object.entries({ ...(d.constant || {}), ...lv })) {
+    const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
+    if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
+    const lv = d?.levels?.[Object.keys(d?.levels || {})[0]] || {};
+    for (const [k, val] of Object.entries(p ? p.stats || {} : { ...(d.constant || {}), ...lv })) {
       if (k.startsWith('_') || typeof val !== 'number') continue;
-      const o = k.endsWith('_final') ? fin : all; o[k] = (o[k] || 0) + val;
+      if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
+      else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;
     }
   }
-  return { sum: all, fin };
+  return { sum: all, fin, mods };
 }
+// true when the data says what this support does to the numbers the app calculates
+export const supportKnown = name => !!SK.supports?.[name] || !!SK.skills[name]?.levels;
+// support mods called one of <names> whose flags this use of the skill meets (has): product of the MORE ones, sum of the others
+function mod(mods, kind, names, has) {
+  let m = kind === 'MORE' ? 1 : 0;
+  for (const [n, k, val, flags] of mods) if (k === kind && names.includes(n) && flags.every(has)) m = kind === 'MORE' ? m * (1 + val / 100) : m + val;
+  return m;
+}
+const cap = s => s[0].toUpperCase() + s.slice(1);
 // product of the support "more" multipliers ending in <suffix>_final that fit this skill: the stat id may name a damage
 // type, skill tag or minion; if it names one this skill / damage type does not have, it does not apply
 function more(fin, suffix, tags, type) {
@@ -223,12 +246,16 @@ function more(fin, suffix, tags, type) {
 
 // Hit, speed, crit and DPS of one gem of the build. Everything null-safe: missing data -> dps null + reason.
 export function skill(g, b, treeGear) {
-  const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, tags = G.tags || [];
-  const { sum, fin } = withSupports(g, treeGear);
+  const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
+  const { sum, fin, mods } = withSupports(g, treeGear);
   const st = { ...(d.constant || {}), ...(d.levels?.[g.level] || {}) };
   const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
+  // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
+  const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
+  const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
   const out = { attack, spell, stats: st, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
   const w = attack ? weaponStats(b.items) : null;
+  const tags = w ? [...own, ...weaponTags(w)] : own;   // passives for a weapon type count for attacks made with it
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -252,25 +279,34 @@ export function skill(g, b, treeGear) {
   }
   const kept = 1 - Math.min(1, DMG.slice(1).reduce((s, t) => s + (st[`active_skill_base_physical_damage_%_to_convert_to_${t}`] || 0), 0) / 100);
   base.physical = base.physical.map(x => x * kept);
-  const scale = t => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * (1 + (inc(sum, 'damage_+%', tags) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0)) / 100);
+  // supports: "gain X% of damage as extra <type>" adds to that type, "deal no <type> damage" removes it, and some
+  // only raise the top of the range (Heft)
+  const all = [0, 1].map(i => DMG.reduce((s, t) => s + base[t][i], 0));
+  for (const t of DMG) {
+    const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
+    base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
+  }
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot))
+    * (1 + (inc(sum, 'damage_+%', tags) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
     if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
     // damage over time of the skill itself (Contagion, burning ground...), per second
     const perMin = st[`base_${t}_damage_to_deal_per_minute`];
-    if (perMin) out.dot[t] = perMin / 60 * scale(t);
+    if (perMin) out.dot[t] = perMin / 60 * scale(t, true);
   }
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   // uses per second
-  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%')) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags);
-  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%')) / 100) * more(fin, 'cast_speed_+%', tags);
+  const speedMods = (1 + mod(mods, 'INC', ['Speed'], hit) / 100) * mod(mods, 'MORE', ['Speed'], hit);
+  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods;
+  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   if (st._cooldown_ms && out.speed) out.speed = Math.min(out.speed, 1000 / st._cooldown_ms);
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    out.crit = Math.min(100, baseCrit * (1 + inc(sum, 'critical_strike_chance_+%', tags) / 100));
-    out.critBonus = 100 + inc(sum, 'critical_strike_multiplier_+', tags);
+    out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
   }
   if (out.avg != null && out.speed) {
     const c = (out.crit || 0) / 100;

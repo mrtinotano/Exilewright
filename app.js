@@ -7,6 +7,7 @@ import { skill, withSupports, character, recovery, snapshot } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
+import { initOpt } from './optview.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
@@ -52,6 +53,7 @@ function renderSide() {
   renderStats();
   renderSceneSkills();
   renderSkills?.();
+  if (!$('opt').hidden) renderOpt();   // its numbers are the build's
 }
 const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t('Grants: {0}', n.grants_skill) : '');
 
@@ -564,6 +566,17 @@ $('treeFind').onkeydown = e => {   // Enter / Shift+Enter: centre the view on th
   $('treeFindN').textContent = `${foundAt + 1} / ${ids.length}`;
   redraw();
 };
+// the passives the optimizer would take, lit like search matches, with the tree moved and zoomed to show them all
+function showOnTree(ids) {
+  $('treeFind').value = ''; found = new Set(ids); foundAt = -1;
+  $('treeFindN').textContent = t(found.size === 1 ? '1 result' : '{0} results', found.size);
+  document.querySelector('nav button[data-v="tree"]').click();
+  const at = ids.map(id => WP[id]).filter(Boolean); if (!at.length) return;
+  const xs = at.map(p => p[0]), ys = at.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  view.x = (x0 + x1) / 2; view.y = (y0 + y1) / 2;
+  view.s = Math.min(.12, Math.max(.01, Math.min(cv.clientWidth / (x1 - x0 + 1500), cv.clientHeight / (y1 - y0 + 1500))));
+  redraw();
+}
 function drawFound(x, y, r) {
   const rr = Math.max(r * 1.45, 7);
   ctx.shadowColor = '#7fe0ff'; ctx.shadowBlur = 12; ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = Math.max(2, r * .16);
@@ -723,6 +736,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   $('skillPanel').hidden = v !== 'skills';
   $('sceneSkills').hidden = v !== 'scene';
   if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
+  if (v === 'opt') renderOpt();
   dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
 });
@@ -823,6 +837,8 @@ const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   items => snap({ ...B(), items }));
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
+const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
+  change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 
 // language picker: changing it reloads the page in the new language

@@ -11,6 +11,9 @@ export const TYPES = ['physical', 'fire', 'cold', 'lightning', 'chaos'];
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const row = (tab, level) => MON.tables[tab]?.[clamp(Math.round(level) || 1, 1, 100) - 1] ?? 0;
 
+// what a normal monster of a level hits with (DefaultMonsterStats row, no monster multiplier): the yardstick for defences
+export const typical = level => ({ damage: Math.floor(row('damage', level)), accuracy: Math.round(row('accuracy', level)) });
+
 // ---------- list and search
 const shared = {};
 for (const m of MON.monsters) shared[m.name] = (shared[m.name] || 0) + 1;
@@ -103,7 +106,8 @@ export function attackOf(m, level, key) {
 // ---------- the game's defence formulas
 const avg = r => (r[0] + r[1]) / 2;
 // chance (%) that a monster with this accuracy hits a character with this evasion
-export const hitChance = (accuracy, evasion) => !evasion ? 100 : clamp(Math.round((1 - .95 * evasion / (evasion + 4 * accuracy)) * 100), 100 - (K.player_max_evade ?? 95), 100);
+export const hitChanceExact = (accuracy, evasion) => !evasion ? 100 : clamp((1 - .95 * evasion / (evasion + 4 * accuracy)) * 100, 100 - (K.player_max_evade ?? 95), 100);
+export const hitChance = (accuracy, evasion) => Math.round(hitChanceExact(accuracy, evasion));   // as the game shows it
 // chance (%) that the character's attack hits a monster (spells always hit)
 export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy ? 5 : clamp(Math.round(accuracy * 1.25 / (accuracy + evasion * .3) * 100), 5, 100);
 // fraction of a physical hit that armour removes

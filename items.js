@@ -46,6 +46,7 @@ function local(item) {
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
     r.crit = w.crit + (s.local_critical_strike_chance || 0) / 100;
     r.range = w.range;
+    r.tags = base.tags;   // mace, bow, onehand...: what kind of weapon it is
   }
   if (base.flask) r.flask = base.flask;
   return r;
@@ -172,6 +173,106 @@ export function parseItem(text) {
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed.filter(l => !META.test(l)), ...skipped] };
 }
 
+// ---------- what a slot can have and what the trade site lists (gear search, trade.js)
+// trade_mods.json (from Path of Building 2, _tool/pob2.py): modifier id -> [its English name, [the trade site's number of
+// the stat, then lo, hi of every number the line shows] per line]. The site and the app meet on those numbers, so
+// nothing here depends on how a line is worded or in which language.
+const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok ? r.json() : {}).then(j => j.mods || {}).catch(() => ({}));
+// a base or unique as it is when first equipped: every roll at its best
+const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
+  return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
+export const classOf = it => BASE[it?.base]?.class;
+export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
+// Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
+// stored per minute...). -> [{ hash, at: [{ k (index in stats), scale (shown / stored) } | null per number shown] }]
+const SHOWN_AS = [1, -1, 1 / 60, -1 / 60, 1 / 100, -1 / 100, 1 / 10, 1 / 1000], partsOf = new Map();
+function parts(id, stats) {
+  if (partsOf.has(id)) return partsOf.get(id);
+  const used = new Set(), near = (x, y) => Math.abs(x - y) < 0.06;
+  const out = (TRADE[id] || []).slice(1).map(([hash, ...shown]) => ({ hash, at: Array.from({ length: shown.length / 2 }, (_, j) => {
+    const lo = shown[2 * j], hi = shown[2 * j + 1];
+    for (const r of SHOWN_AS) {
+      const k = stats.findIndex(([, a, b], k) => !used.has(k) && (near(a * r, lo) && near(b * r, hi) || near(a * r, hi) && near(b * r, lo)));
+      if (k >= 0) { used.add(k); return { k, scale: r }; }
+    }
+    return null;
+  }) }));
+  return partsOf.set(id, out).get(id);
+}
+// Every modifier line a rare item of class `cls` can roll that the trade site can search for: the best tier of each
+// affix that is one line, on the best base of each kind (a Str helmet rolls Armour, an Int one Energy Shield;
+// `first`: a base to try before the rest).
+// -> [{ hash (the site's stat), text (top roll), local, stats: [ids], roll (the number the site sorts by), tries: [{ bare, item }] }]
+// bare = the base alone, item = the base with only this modifier: what the line is worth is the difference.
+export function affixLines(cls, first) {
+  const kind = b => b.tags.filter(x => !/_basetype$|^runeforged$|^default$/.test(x)).sort().join(), seen = new Set(), out = new Map();
+  const bases = [BASE[first], ...D.bases.filter(b => b.class === cls).sort((a, b) => b.level - a.level)]
+    .filter(b => b && b.class === cls && !seen.has(kind(b)) && seen.add(kind(b)));
+  for (const base of bases) {
+    const top = new Map();   // family -> its highest tier this base rolls
+    for (const a of D.affixes) if (canRoll(a, base) && !(top.get(a.family)?.level >= a.level)) top.set(a.family, a);
+    for (const a of top.values()) {
+      const tr = TRADE[a.id]; if (tr?.length !== 2) continue;
+      const [hash, ...shown] = tr[1], vals = fixVals(a.stats), his = shown.filter((_, i) => i % 2).map(Math.abs);
+      const o = out.get(hash) || out.set(hash, { hash, text: statLines(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '),
+        local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: his.reduce((x, y) => x + y, 0) / (his.length || 1), tries: [] }).get(hash);
+      const bare = make(base.name);
+      o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
+    }
+  }
+  return [...out.values()];
+}
+// An item as the trade site lists it -> { item, slots, missed: [lines not counted] } like parseItem, null when the app
+// does not have its base. Each line comes with the site's stat and the modifiers it adds up (English name, level and
+// range of each): lines: [{ text, hash, kind: 'implicit' | 'explicit' | ..., mods: [{ name, level, mags: [[min, max]] }] }]
+export function tradeItem({ name, base: baseName, lines }) {
+  const u = UNIQ[name], base = BASE[u ? u.base : baseName];
+  if (!base) return null;
+  const item = make(u ? u.name : base.name), missed = new Set();
+  // the stored value of a shown number: rounded, and with the sign the modifier has ("20% reduced" is -20)
+  const stored = (n, scale, [, lo, hi]) => { const v = Math.round(n / scale), in_ = x => x >= Math.min(lo, hi) && x <= Math.max(lo, hi); return !in_(v) && in_(-v) ? -v : v; };
+  const read = (id, stats, values, hash, shown) => { for (const p of parts(id, stats)) if (p.hash === hash) p.at.forEach((a, j) => { if (a && shown[j] !== undefined) values[a.k] = stored(shown[j], a.scale, stats[a.k]); }); };
+  // implicits: the base's own, in its order
+  const imp = lines.filter(l => l.kind === 'implicit');
+  if (imp.length === base.implicits.length) imp.forEach((l, i) => { const st = D.implicits[base.implicits[i]], sc = shapes(i, st)[0].scale, n = nums([l.text]);
+    item.implicits[i] = fixVals(st, st.map((s, k) => n[k] === undefined ? undefined : stored(n[k], sc[k] || 1, s))); });
+  else imp.forEach(l => missed.add(l.text));
+  const rest = lines.filter(l => l.kind !== 'implicit');
+  if (u) {   // a unique has its own modifiers: only their rolls are read
+    for (const l of rest) { const m = u.mods.find(m => parts(m.id, m.stats).some(p => p.hash === l.hash)), on = m && item.mods.find(x => x.id === m.id);
+      if (on) { read(m.id, m.stats, on.values, l.hash, nums([l.text])); on.values = fixVals(m.stats, on.values); } }
+    return { item, slots: base.slots, missed: [] };
+  }
+  // a rare: the same modifier (name and level) can be behind several lines, and a line can add up several modifiers
+  const found = new Map();
+  for (const l of rest) {
+    if (!l.mods?.length) { missed.add(l.text); continue; }
+    const n = nums([l.text]);
+    l.mods.forEach((m, i) => {
+      const key = m.name + '|' + m.level;
+      if (!found.has(key)) {
+        const hashes = rest.filter(x => x.mods?.some(y => y.name === m.name && y.level === m.level)).map(x => x.hash);
+        const fits = a => a.domain === base.domain && a.level === m.level && TRADE[a.id]?.[0] === m.name && hashes.every(h => parts(a.id, a.stats).some(p => p.hash === h));
+        const a = D.affixes.find(a => fits(a) && canRoll(a, base)) || D.affixes.find(fits);
+        found.set(key, a ? { a, values: fixVals(a.stats) } : null);
+      }
+      const f = found.get(key);
+      if (!f) { missed.add(l.text); return; }
+      // its part of each number: every modifier of the line gets at least its minimum, the rest goes to them in order
+      const mine = n.map((total, j) => {
+        const mags = l.mods.map(x => x.mags?.[j] ? [Math.min(...x.mags[j]), Math.max(...x.mags[j])] : null);
+        if (l.mods.length < 2 || mags.some(x => !x)) return l.mods.length < 2 ? total : undefined;
+        let left = total - mags.reduce((t, x) => t + x[0], 0), got;
+        mags.forEach((x, k) => { const add = Math.max(0, Math.min(left, x[1] - x[0])); if (k === i) got = x[0] + add; left -= add; });
+        return got;
+      });
+      read(f.a.id, f.a.stats, f.values, l.hash, mine);
+    });
+  }
+  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: fixVals(f.a.stats, f.values) }));
+  return { item, slots: base.slots, missed: [...missed] };
+}
+
 // ---------- UI (laid out like the in-game item tooltip)
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => lo === hi ? '' :
@@ -197,9 +298,6 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
       .map(b => ({ v: b.name, cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level), img: b.img })),
   ].map(o => ({ ...o, key: (o.name + ' ' + o.sub + ' ' + o.v).toLowerCase(),
     html: `<li class="${o.cls}" data-base="${esc(o.v)}"><img src="${img(o.img)}" alt="" loading="lazy"><span>${esc(o.name)}<small>${esc(o.sub)}</small>` }))]));
-  // a base or unique as it is when first equipped: every roll at its best
-  const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
-    return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
   // what the build would gain or lose with `it` in `slot`, against how it is now; kept until the next render
   let now;
   const gains = new Map();
