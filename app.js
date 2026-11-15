@@ -8,6 +8,7 @@ import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf,
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
+import { initLoot } from './loot.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
@@ -54,6 +55,7 @@ function renderSide() {
   renderSceneSkills();
   renderSkills?.();
   if (!$('opt').hidden) renderOpt();   // its numbers are the build's
+  if (!$('loot').hidden) renderLoot();
 }
 const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t('Grants: {0}', n.grants_skill) : '');
 
@@ -737,6 +739,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   $('sceneSkills').hidden = v !== 'scene';
   if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
   if (v === 'opt') renderOpt();
+  if (v === 'loot') renderLoot();
   dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
 });
@@ -838,6 +841,9 @@ const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   items => snap({ ...B(), items }));
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
+  change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
+const renderLoot = initLoot($('loot'), { build: B, id: () => cur, rev: () => rev, sumOf, snap,
+  sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 

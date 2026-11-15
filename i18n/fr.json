@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "{0} réservé par vos compétences",
  "Share": "Partager",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "Collez un code Path of Building ou un lien (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "Ce n'est pas un texte d'objet (il faut la ligne \"Rarity:\" et une base connue).",
+ "That is not item text, or the planner does not have its base.": "Ce n'est pas un texte d'objet, ou le planificateur ne connaît pas sa base.",
  "Link copied:": "Lien copié :",
  "Select an allocated jewel socket first.": "Sélectionnez d'abord une châsse de joyau allouée.",
  "Downloading…": "Téléchargement…",

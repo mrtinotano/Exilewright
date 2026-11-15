@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "스킬이 {0} 예약 중",
  "Share": "공유",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "Path of Building 코드나 링크를 붙여넣으세요 (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "아이템 텍스트가 아닙니다 (\"Rarity:\" 줄과 알려진 베이스가 필요합니다).",
+ "That is not item text, or the planner does not have its base.": "아이템 텍스트가 아니거나, 플래너에 해당 베이스가 없습니다.",
  "Link copied:": "링크 복사됨:",
  "Select an allocated jewel socket first.": "먼저 할당된 주얼 소켓을 선택하세요.",
  "Downloading…": "다운로드 중…",

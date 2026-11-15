@@ -27,6 +27,30 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   `POESESSID=... python3 serve.py` (it is only sent to www.pathofexile.com; this mode has not been tested).
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
+**Loot** (its own tab) says whether an item is better than what the character wears: hold the pointer over an item in
+the game (one you found and identified, one in the inventory or the stash, one a merchant sells) and press Ctrl+C.
+The game puts the item's text in the clipboard, `serve.py` passes it to the page (`/clipboard`), and the page puts the
+item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
+decide what counts. Without a skill in the build only defences and the weapon's own damage are judged.
+- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, plus a sound, so there
+  is nothing to paste and no need to look at the planner. It only has to stay open in the browser, started from
+  `serve.py`. The window is made on Windows (`start.cmd`); elsewhere start the server with `python3 serve.py overlay`.
+  It needs a Python with tkinter, and the game in windowed full screen: nothing draws over exclusive full screen.
+- *What the character wears*: the planner cannot read it from the game. **Equip** on an item of the Loot tab tells it
+  you put that item on; or compare with the build's own Equipment instead.
+- One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
+  and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one
+  read of the clipboard per manual key press and nothing automatic, so there is no scan of the whole inventory.
+  Modifiers `calc.js` does not calculate are listed as not counted.
+- *Loot filter for the game*: **Save the filter** writes a `.filter` file for the game's own item filter (folder
+  `Documents/My Games/Path of Exile 2`, picked in the game's options), made from the build (`filter.js`): the weapon
+  classes it uses (for a spell, only the wands and staves that can roll modifiers for its damage type), armour pieces
+  with the same defences as the ones it wears, amulets, rings, belts, jewels when the tree has a socket, and the bases
+  of its unique items stand out where they drop. A filter sees an item's class, base and rarity, never its modifiers,
+  so it marks what is worth a look and Ctrl+C gives the verdict. It can be put in front of a filter already in use
+  (NeverSink's, for instance): the build's gear takes the planner's look and the rest stays as that filter has it.
+  Save it again after changing the build. Not yet loaded in the game: see the to-do notes.
+
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so the app works right after cloning.
 

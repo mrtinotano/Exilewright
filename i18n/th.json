@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "สกิลจองไว้ {0}",
  "Share": "แชร์",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "วางโค้ด Path of Building หรือลิงก์ (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "นี่ไม่ใช่ข้อความไอเทม (ต้องมีบรรทัด \"Rarity:\" และเบสที่รู้จัก)",
+ "That is not item text, or the planner does not have its base.": "นี่ไม่ใช่ข้อความไอเทม หรือตัววางแผนไม่มีเบสของไอเทมนี้",
  "Link copied:": "คัดลอกลิงก์แล้ว:",
  "Select an allocated jewel socket first.": "เลือกช่องใส่จิวเวลที่จัดสรรแล้วก่อน",
  "Downloading…": "กำลังดาวน์โหลด…",

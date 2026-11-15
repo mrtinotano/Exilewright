@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "{0} зарезервировано умениями",
  "Share": "Поделиться",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "Вставьте код Path of Building или ссылку (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "Это не текст предмета (нужна строка \"Rarity:\" и известная база).",
+ "That is not item text, or the planner does not have its base.": "Это не текст предмета, или в планировщике нет его базы.",
  "Link copied:": "Ссылка скопирована:",
  "Select an allocated jewel socket first.": "Сначала выберите взятое гнездо для самоцвета.",
  "Downloading…": "Загрузка…",

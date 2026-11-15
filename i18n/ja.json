@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "スキルが{0}を確保中",
  "Share": "共有",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "Path of Building のコードかリンクを貼り付け (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "アイテムのテキストではありません (\"Rarity:\" 行と既知のベースが必要)。",
+ "That is not item text, or the planner does not have its base.": "アイテムのテキストではないか、プランナーにそのベースがありません。",
  "Link copied:": "リンクをコピーしました:",
  "Select an allocated jewel socket first.": "先に割り当て済みのジュエルソケットを選んでください。",
  "Downloading…": "ダウンロード中…",

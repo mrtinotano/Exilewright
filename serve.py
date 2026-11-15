@@ -13,17 +13,37 @@ The site's answers, errors and rate limit headers go back as they come. Logged-o
 searches; to let the app run them start the server with your own session of the site in the POESESSID environment
 variable (it is only ever sent to www.pathofexile.com, never to the page):  POESESSID=... python3 serve.py
 
-Usage: python3 serve.py [port]   (default 8765)
+/clipboard?lang=<code> (GET, a stream of server-sent events) tells the Loot tab (loot.js) about the items copied in
+the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
+the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
+here.
+
+/overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
+for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
+  GET  /overlay   {"overlay": true} when this server has that window
+  POST /overlay   body = {kind, title, name, lines} (JSON), shown for a few seconds; null = nothing to show
+The window needs tkinter, which comes with Python. It is made on Windows, and elsewhere with: python3 serve.py overlay
+Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
+no page is there to judge it gets an answer too, a line saying so.
+
+Usage: python3 serve.py [port] [overlay]   (default port 8765)
 """
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, quote
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+import ctypes
 import json
 import os
+import queue
 import re
+import shutil
+import signal
+import subprocess
 import sys
+import threading
+import time
 
 UPLOAD = {  # site -> (post url, form field prefix, prefix added to the reply to make the link)
     'maxroll': ('https://maxroll.gg/poe2/api/pob', 'pobCode=', 'https://maxroll.gg/poe2/pob/'),
@@ -71,6 +91,212 @@ def trade(path, body=None):
             return r.status, r.read(), {k: r.headers[k] for k in PASS if r.headers[k]}
     except HTTPError as e:
         return e.code, e.read(), {k: e.headers[k] for k in PASS if e.headers[k]}
+
+
+def clipboard():
+    """-> (look, seconds between looks) for this system's clipboard, or None when there is no way to read it.
+    look(seen) -> (stamp, text): text is None while nothing was copied since the look that gave `seen`"""
+    if sys.platform == 'win32':
+        user, kernel = ctypes.windll.user32, ctypes.windll.kernel32
+        user.OpenClipboard.argtypes = [ctypes.c_void_p]
+        user.GetClipboardData.argtypes = [ctypes.c_uint]
+        user.GetClipboardData.restype = ctypes.c_void_p
+        kernel.GlobalLock.argtypes = kernel.GlobalUnlock.argtypes = [ctypes.c_void_p]
+        kernel.GlobalLock.restype = ctypes.c_void_p
+
+        def look(seen):
+            n = user.GetClipboardSequenceNumber()   # goes up with every copy, the same text again included
+            if n == seen:
+                return n, None
+            if not user.OpenClipboard(None):        # another program has it open: the next look reads it
+                return seen, None
+            try:
+                h = user.GetClipboardData(13)       # CF_UNICODETEXT
+                p = kernel.GlobalLock(h) if h else None
+                if not p:
+                    return n, ''
+                try:
+                    return n, ctypes.wstring_at(p)
+                finally:
+                    kernel.GlobalUnlock(h)
+            finally:
+                user.CloseClipboard()
+        return look, .4
+    cmd = next((c for c in (['pbpaste'], ['wl-paste', '-n'], ['xclip', '-o', '-selection', 'clipboard']) if shutil.which(c[0])), None)
+    if not cmd:
+        return None
+    env = dict(os.environ, LC_ALL='en_US.UTF-8') if cmd[0] == 'pbpaste' else None   # it writes in the locale's encoding
+    copies = None
+    if sys.platform == 'darwin':   # macOS counts the copies too, the same text again included
+        try:
+            objc = ctypes.CDLL('/usr/lib/libobjc.dylib')
+            ctypes.CDLL('/System/Library/Frameworks/AppKit.framework/AppKit')
+            objc.objc_getClass.restype = objc.sel_registerName.restype = ctypes.c_void_p
+            objc.objc_getClass.argtypes = objc.sel_registerName.argtypes = [ctypes.c_char_p]
+            send, count = objc['objc_msgSend'], objc['objc_msgSend']   # one function, two kinds of answer
+            send.argtypes = count.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+            send.restype, count.restype = ctypes.c_void_p, ctypes.c_long
+            board = send(objc.objc_getClass(b'NSPasteboard'), objc.sel_registerName(b'generalPasteboard'))
+            changes = objc.sel_registerName(b'changeCount')
+            if board and count(board, changes) >= 0:
+                copies = lambda: count(board, changes)
+        except (OSError, AttributeError):
+            pass
+
+    def look(seen):   # without a copy counter the text itself says whether something new was copied
+        n = copies() if copies else None
+        if copies and n == seen:
+            return n, None
+        try:
+            text = subprocess.run(cmd, capture_output=True, timeout=3, env=env).stdout.decode(errors='replace')
+        except (OSError, subprocess.SubprocessError):
+            return seen, None
+        return (n, text) if copies else (text, None if text == seen else text)
+    return look, .4 if copies else 1
+
+
+def overlay():
+    """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
+    show(verdict) puts {kind, title, name, lines} in it, next to the pointer, for a few seconds (from any thread);
+    loop() runs the window and has to be called in the thread that called this, the main one"""
+    try:
+        import tkinter as tk
+        root = tk.Tk()
+    except Exception:
+        return None
+    win, back = sys.platform == 'win32', '#12100c'
+    try:   # macOS has a kind of window made for this: no title bar, over the others, and showing it takes no keyboard
+        root.tk.call('::tk::unsupported::MacWindowStyle', 'style', root._w, 'help', 'noActivates')
+    except tk.TclError:
+        root.overrideredirect(True)                  # no title bar, no place in the task bar
+    root.attributes('-alpha', 0 if win else .95)
+    root.configure(bg='#6b5a36')                     # shows as a frame, 1px wide
+    box = tk.Frame(root, bg=back, padx=12, pady=8)
+    box.pack(padx=1, pady=1)
+    face = 'Segoe UI' if win else 'Helvetica'
+    title = tk.Label(box, bg=back, font=(face, 14, 'bold'), justify='left', anchor='w', wraplength=460)
+    body = tk.Label(box, bg=back, fg='#d8ccb0', font=(face, 11), justify='left', anchor='w', wraplength=460)
+    title.pack(fill='x')
+    q, timer = queue.Queue(), [None]
+    if win:
+        # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
+        # can take the keyboard from the game. And clicks go through it, to the game
+        user = ctypes.windll.user32
+        user.GetAncestor.restype = ctypes.c_void_p
+        user.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
+        user.GetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        user.SetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_long]
+
+        def through():   # layered + transparent (to clicks) + tool window + never the window in use
+            h = user.GetAncestor(root.winfo_id(), 2)
+            user.SetWindowLongW(h, -20, user.GetWindowLongW(h, -20) | 0x80000 | 0x20 | 0x80 | 0x08000000)
+        root.update()
+        through()
+    else:
+        root.withdraw()
+
+    def hide():
+        timer[0] = None
+        if win:
+            root.attributes('-alpha', 0)
+        else:
+            root.withdraw()
+
+    def draw(v):
+        title.config(text=v['title'], fg=TINT.get(v['kind'], '#d8ccb0'))
+        text = '\n'.join(filter(None, [v['name'], *v['lines']]))
+        body.config(text=text)
+        if text:
+            body.pack(fill='x')
+        else:
+            body.pack_forget()
+        root.update_idletasks()
+        w, h, (px, py) = root.winfo_reqwidth(), root.winfo_reqheight(), root.winfo_pointerxy()
+        sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
+        x, y = px - w // 2, py + 28                  # under the pointer: the game describes the item above it
+        if 0 <= px < sw and 0 <= py < sh:            # on the main screen it is kept whole (the size of the others is not known)
+            x, y = min(max(x, 8), max(sw - w - 8, 8)), y if y + h < sh - 8 else py - 28 - h
+        root.geometry(f'+{x}+{y}')
+        if win:
+            root.attributes('-alpha', .95)
+            through()
+        else:
+            root.deiconify()
+        root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
+        root.lift()
+        if timer[0]:
+            root.after_cancel(timer[0])
+        timer[0] = root.after(SHOWN * 1000, hide)
+
+    def poll():
+        try:
+            while True:
+                draw(q.get_nowait())
+        except queue.Empty:
+            pass
+        root.after(100, poll)
+    root.after(100, poll)
+    return q.put, root.mainloop
+
+
+def tongue():
+    """-> the language this system is in ('es'), '' when it does not say"""
+    try:
+        if sys.platform == 'win32':
+            name = ctypes.create_unicode_buffer(85)
+            ctypes.windll.kernel32.GetUserDefaultLocaleName(name, 85)
+            return name.value[:2].lower()
+        return (os.environ.get('LC_ALL') or os.environ.get('LANG') or '')[:2].lower()
+    except Exception:
+        return ''
+
+
+def tell(text):
+    """a line of this server's own in the window over the game, in the app's words for it (i18n/<code>.json)"""
+    try:
+        with open(os.path.join(HERE, 'i18n', TONGUE + '.json'), encoding='utf-8') as f:
+            text = json.load(f).get(text) or text
+    except (OSError, ValueError):
+        pass
+    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [text]})
+
+
+def watch_clipboard():
+    """the one reader of the clipboard: item text goes to every page listening. With the window over the game, a line
+    in it when no page is there to judge the item, or none answers"""
+    global ASKED
+    look, wait = CLIP
+    seen, idle = None, True
+    while True:
+        time.sleep(wait)
+        if not LISTEN and not OVER:
+            idle = True                              # nobody to tell: the clipboard is left alone
+            continue
+        if idle:                                     # what was copied before anyone asked is nobody's business
+            seen, idle = look(None)[0], False
+            continue
+        seen, text = look(seen)
+        if text and len(text) < 8000 and re.search(r'\n-{8}\r?\n', text):
+            for q in list(LISTEN):
+                q.put(text)
+            if OVER and LISTEN:
+                ASKED = time.monotonic()
+            elif OVER:
+                tell('The planner is not open in the browser: nothing can judge the item')
+        if ASKED and time.monotonic() - ASKED > 3:
+            ASKED = 0
+            tell("The planner's page is not answering: look at its tab once")
+
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ARGS = sys.argv[1:]
+SHOWN = 7      # seconds a verdict stays over the game
+TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
+LISTEN = []    # a queue for every page listening to /clipboard
+ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
+TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
+CLIP = clipboard()
+OVER = overlay() if sys.platform == 'win32' or 'overlay' in ARGS else None
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -122,10 +348,64 @@ class Handler(SimpleHTTPRequestHandler):
             return self.reply_json(502, json.dumps({'error': {'message': str(e)}}).encode())
         self.reply_json(404, b'{"error":{"message":"not found"}}')
 
+    def mine(self):
+        """the request is from the page this server serves: not from a foreign page that points a name of its own at
+        127.0.0.1, nor from another site's page open in the same browser"""
+        host = self.headers.get('Host', '')
+        return host.rsplit(':', 1)[0] in ('127.0.0.1', 'localhost') and self.headers.get('Origin') in (None, 'http://' + host)
+
+    def do_clipboard(self, u):
+        global TONGUE
+        if not self.mine():   # the clipboard can hold anything: only item text ever leaves, and only to that page
+            return self.reply(403, 'local only')
+        if not CLIP:
+            return self.reply(501, 'no way to read the clipboard on this system')
+        code = parse_qs(u.query).get('lang', [''])[0]
+        if re.fullmatch('[a-z]{2}', code):
+            TONGUE = code
+        q = queue.Queue()
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/event-stream')
+        self.end_headers()
+        LISTEN.append(q)
+        try:
+            self.wfile.write(b': watching\n\n')
+            while True:
+                self.wfile.flush()
+                try:
+                    self.wfile.write(f'data: {json.dumps(q.get(timeout=5))}\n\n'.encode())
+                except queue.Empty:
+                    self.wfile.write(b': still here\n\n')   # also how a closed page is noticed
+        except OSError:   # the page was closed
+            pass
+        finally:
+            LISTEN.remove(q)
+
+    def do_overlay(self, body=None):
+        global ASKED
+        if body is None:
+            return self.reply_json(200, json.dumps({'overlay': bool(OVER)}).encode())
+        if not OVER or not self.mine():
+            return self.reply(403, 'no window to show it in')
+        try:
+            v = json.loads(body) if len(body) < 4000 else None
+        except ValueError:
+            v = None
+        ASKED = 0   # the page answered, be it with nothing to show
+        if isinstance(v, dict):
+            lines = v.get('lines')
+            OVER[0]({'kind': str(v.get('kind')), 'title': str(v.get('title', ''))[:120], 'name': str(v.get('name', ''))[:120],
+                     'lines': [str(x)[:160] for x in (lines if isinstance(lines, list) else [])[:8]]})
+        self.reply(200, 'ok')
+
     def do_GET(self):
         u = urlparse(self.path)
         if u.path.startswith('/trade/'):
             return self.do_trade(u)
+        if u.path == '/clipboard':
+            return self.do_clipboard(u)
+        if u.path == '/overlay':
+            return self.do_overlay()
         if u.path != '/share/download':
             return super().do_GET()
         link = parse_qs(u.query).get('url', [''])[0]
@@ -142,6 +422,8 @@ class Handler(SimpleHTTPRequestHandler):
         u = urlparse(self.path)
         if u.path.startswith('/trade/'):
             return self.do_trade(u, self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        if u.path == '/overlay':
+            return self.do_overlay(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         site = UPLOAD.get(parse_qs(u.query).get('site', [''])[0])
         if u.path != '/share/upload' or not site:
             return self.reply(404, 'not found')
@@ -155,4 +437,19 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply(502, str(e))
 
 
-ThreadingHTTPServer(('127.0.0.1', int(sys.argv[1]) if len(sys.argv) > 1 else 8765), partial(Handler, directory=os.path.dirname(os.path.abspath(__file__)))).serve_forever()
+class Server(ThreadingHTTPServer):
+    request_queue_size = 128   # a page asks for dozens of files at once; the ones that do not fit in the queue are lost
+
+
+server = Server(('127.0.0.1', next((int(a) for a in ARGS if a.isdigit()), 8765)), partial(Handler, directory=HERE))
+if CLIP:
+    threading.Thread(target=watch_clipboard, daemon=True).start()
+if OVER:   # the window wants the main thread: the server goes to one of its own
+    signal.signal(signal.SIGINT, signal.SIG_DFL)   # Ctrl+C in the terminal still stops it at once
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    tell('Copy an item in the game: Ctrl+C over it')
+    OVER[1]()
+else:
+    if sys.platform == 'win32' or 'overlay' in ARGS:
+        print('No window over the game: this Python has no tkinter (the Loot tab still works in the browser)')
+    server.serve_forever()

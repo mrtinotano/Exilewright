@@ -290,7 +290,7 @@
  "{0} reserved by your skills": "技能保留 {0}",
  "Share": "分享",
  "Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)": "粘贴 Path of Building 代码或链接 (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)",
- "That is not item text (it needs the \"Rarity:\" line and a known base).": "这不是物品文本（需要 \"Rarity:\" 行和已知的基底）。",
+ "That is not item text, or the planner does not have its base.": "这不是物品文本，或者规划器没有它的基底。",
  "Link copied:": "链接已复制：",
  "Select an allocated jewel socket first.": "请先选择一个已分配的珠宝插槽。",
  "Downloading…": "下载中…",

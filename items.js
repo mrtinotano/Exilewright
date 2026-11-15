@@ -1,6 +1,6 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
-import { t, tn } from './i18n.js';
+import { t, tn, lang } from './i18n.js';
 import { statLines, statLinesEn } from './stats.js';
 import { diff, impactHtml, impactLine, impactText } from './impact.js';
 
@@ -73,7 +73,8 @@ export function gearStats(items = {}) {
 
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
-const enLines = (stats, vals) => statLinesEn(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
+const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
+const enLines = (stats, vals) => linesIn(statLinesEn, stats, vals);
 function itemParts(it) {
   const base = BASE[it.base];
   if (!base) return null;
@@ -100,15 +101,17 @@ export function itemNote(it) {
     ...[...p.impl, ...p.expl].map(l => `<rgb(${RGB.magic})>{${clean(l)}}`)].join('\n');
 }
 
-// reading item text back: each mod that can be on the item is written out in English and compared line by line
-// with the numbers blanked out; the numbers of the matching lines become the mod's values
+// reading item text back: each mod that can be on the item is written out and compared line by line with the
+// numbers blanked out; the numbers of the matching lines become the mod's values. Written in English (Path of
+// Building, an English game) and in the language of the page: the game copies items in the language it is played in
 const NUM = /[+-]?\d+(?:\.\d+)?/g;
 const skel = l => l.toLowerCase().replace(NUM, '#').replace(/\s+/g, ' ').trim();
 const nums = ls => ls.join(' ').match(NUM)?.map(Number) || [];
+const SAY = lang === 'en' ? [statLinesEn] : [statLinesEn, statLines];
 function shapes(key, stats) {   // the mod as text at its top and bottom roll (the wording can change with the sign)
   const out = new Map();
-  for (const end of [2, 1]) {
-    const v = stats.map(s => s[end]), lines = enLines(stats, v), shown = nums(lines);
+  for (const say of SAY) for (const end of [2, 1]) {
+    const v = stats.map(s => s[end]), lines = linesIn(say, stats, v), shown = nums(lines);
     out.set(lines.map(skel).join('\n'), { key, stats, lines: lines.map(skel), scale: v.map((x, k) => x && shown[k] ? shown[k] / x : 1) });
   }
   return [...out.values()];
@@ -130,47 +133,77 @@ function matchLines(lines, cands, family = () => null) {
   }
   return { found, missed };
 }
-const META = /^[A-Z][A-Za-z' ()]*: |^(Corrupted|Mirrored|Unidentified|Sanctified|Requirements:?|-+)$/;
-// text copied from the game (Ctrl+C on an item) or from Path of Building -> {item, missed: [lines not understood]}
+// The game's text is in the language the game is played in, so nothing here goes by a label's wording, only by shape:
+// "Label: value" lines, the "--------" lines between blocks, a one word "(tag)" closing a line.
+const META = /^\p{L}[\p{L}\p{M}' ()]*[:：](\s|$)|^(Corrupted|Mirrored|Unidentified|Sanctified|-+)$/u;
+const TAG = /\s*\(([\p{L}\p{M}]+)\)$/u;
+const TAGS = { implicit: 'implicit', rune: 'skip', enchant: 'skip', crafted: 'explicit', fractured: 'explicit', desecrated: 'explicit', augmented: 'explicit' };
+const UNID = /^(Unidentified|Sin identificar|Non identifié|Nicht identifiziert|Não identificado|Неопознано)$/i;   // not English: to be confirmed in the game
+const NAMED = new Map();   // every name the data has for a base (English, then the translations), in lower case
+for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
+  for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
+// text copied from the game (Ctrl+C on an item) or from Path of Building
+// -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
 export function parseItem(text) {
   const raw = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
-  const ri = raw.findIndex(l => /^Rarity:/i.test(l));
-  if (ri < 0) return null;
+  let ri = raw.findIndex(l => /^Rarity:/i.test(l));
+  if (ri < 0) {   // another language: the names follow the last label of the first block
+    const end = raw.findIndex(l => /^-{4,}$/.test(l));
+    if (end < 0) return null;
+    ri = raw.slice(0, end).findLastIndex(l => META.test(l));
+  }
   const head = [];
   for (let i = ri + 1; i < raw.length && head.length < 2 && !META.test(raw[i]); i++) head.push(raw[i]);
-  const strip = n => n.replace(/^Superior /, '');
-  const u = head.map(n => UNIQ[n]).find(Boolean);
-  const base = u ? BASE[u.base] : head.map(n => BASE[strip(n)]).find(Boolean)
-    || D.bases.filter(b => head.some(n => n.includes(b.name))).sort((a, b) => b.name.length - a.name.length)[0];
+  const strip = n => n.replace(/^Superior /, '').toLowerCase();
+  let u = head.map(n => UNIQ[n]).find(Boolean);
+  const base = u ? BASE[u.base] : head.map(n => NAMED.get(strip(n))).find(Boolean)   // a magic item's name has the base's in it
+    || [...NAMED].filter(([n]) => head.some(h => h.toLowerCase().includes(n))).sort((a, b) => b[0].length - a[0].length)[0]?.[1];
   if (!base) return null;
   const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^(\{[^}]*\})+/, ''));
-  const tagged = l => l.match(/\s*\((implicit|rune|enchant|crafted|fractured|desecrated|augmented)\)$/i)?.[1].toLowerCase();
-  const clean = l => l.replace(/\s*\((implicit|rune|enchant|crafted|fractured|desecrated|augmented)\)$/i, '');
-  let impl, expl, skipped = [];
+  let impl = [], expl = [];
+  const skipped = [];
   const pi = body.findIndex(l => /^Implicits: \d+$/.test(l));
   if (pi >= 0) {   // Path of Building: "Implicits: N", then N implicit lines, then the rest
     const n = +body[pi].split(' ')[1];
     impl = body.slice(pi + 1, pi + 1 + n); expl = body.slice(pi + 1 + n);
-  } else {         // the game: implicits end in "(implicit)"; runes and enchants are not modelled
-    impl = body.filter(l => tagged(l) === 'implicit').map(clean);
-    skipped = body.filter(l => ['rune', 'enchant'].includes(tagged(l)));
-    expl = body.filter(l => !['implicit', 'rune', 'enchant'].includes(tagged(l)) && !META.test(l)).map(clean);
+  } else {
+    // the game: implicits end in "(implicit)", runes and enchantments (not modelled) in "(rune)" / "(enchant)". In
+    // another language the tag is another word: a block whose lines all end in the same one is taken for the
+    // implicits (the last such block first, as the game lists them last; what is not one of the base's is left out),
+    // and a tagged line among plain ones is a modifier like any other (crafted, fractured...)
+    const blocks = [[]];
+    for (const l of body) if (/^-{4,}$/.test(l)) blocks.push([]); else if (!META.test(l)) blocks.at(-1).push(l);
+    for (const lines of blocks) {
+      const tags = lines.map(l => l.match(TAG)?.[1].toLowerCase());
+      const own = lines.length > 0 && tags.every(x => x && x === tags[0] && !TAGS[x]), mine = [];
+      lines.forEach((l, i) => {
+        const kind = own ? 'implicit' : TAGS[tags[i]] || 'explicit', line = tags[i] ? l.replace(TAG, '') : l;
+        if (kind === 'skip') skipped.push(l); else (kind === 'explicit' ? expl : mine).push(line);
+      });
+      impl = own ? [...mine, ...impl] : [...impl, ...mine];
+    }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
   const im = matchLines(impl, base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])));
   im.found.forEach(f => item.implicits[f.key] = f.values);
-  let ex;
+  const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
+  // reminder text "(…)" and one word states ("Corrupted" in any language) are not modifiers
+  const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l);
+  let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+  // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of
+  // this base (two at least) among them
+  if (ex?.missed.some(l => !noise(l)) && head.length > 1) u = UNIQUES.filter(x => x.base === base.name)
+    .map(x => ({ x, need: x.mods.filter(m => shapes(m.id, m.stats).some(s => s.lines.length)).length, got: own(x).found.length }))
+    .filter(o => o.need > 1 && o.got === o.need).sort((a, b) => b.got - a.got)[0]?.x;
   if (u) {
     item.unique = u.name;
     item.mods = u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) }));
-    ex = matchLines(expl, u.mods.flatMap(m => shapes(m.id, m.stats)));
+    ex = own(u);
     ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
-  } else {
-    ex = matchLines(expl, D.affixes.filter(a => canRoll(a, base)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
-    item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
-  }
-  return { item, slots: base.slots, missed: [...im.missed, ...ex.missed.filter(l => !META.test(l)), ...skipped] };
+  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
+  return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...skipped].filter(l => !noise(l)),
+    name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)) };
 }
 
 // ---------- what a slot can have and what the trade site lists (gear search, trade.js)
@@ -182,6 +215,8 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
+export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
+export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
 // stored per minute...). -> [{ hash, at: [{ k (index in stats), scale (shown / stored) } | null per number shown] }]
@@ -281,6 +316,18 @@ const fixVals = (stats, vals) => stats.map(([, lo, hi], k) => Math.min(Math.max(
 const text = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
 const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => AFFIX[m.id].affix === a).length;
   return it.unique ? 'unique' : !mods.length ? 'normal' : c('prefix') <= 1 && c('suffix') <= 1 ? 'magic' : 'rare'; };
+// an item for a card, in the language of the page: its names, art, own numbers and modifier lines (loot.js)
+export function itemView(it) {
+  const base = BASE[it?.base];
+  if (!base) return null;
+  const l = local(it), say = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]])));
+  const hit = ['physical', 'fire', 'cold', 'lightning'].reduce((s, k) => s + (l[k] ? (l[k][0] + l[k][1]) / 2 : 0), 0);
+  return { rarity: rarityOf(it), name: it.unique || '', base: tn(base) || base.name, cls: base.class, img: img(it.unique && D.unique_img[it.unique] || base.img),
+    dps: hit * (l.attacks_per_second || 0),   // the weapon's own damage per second
+    props: [['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield]].filter(p => p[1]),
+    mods: [...base.implicits.flatMap((id, i) => say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
+      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => say(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)))] };
+}
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
 const DOLL = ['w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
 const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
@@ -372,7 +419,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
   function paste(text) {
     const r = parseItem(text);
-    if (!r) { msg = t('That is not item text (it needs the "Rarity:" line and a known base).'); render(); msg = ''; return; }
+    if (!r) { msg = t('That is not item text, or the planner does not have its base.'); render(); msg = ''; return; }
     const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
     const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
