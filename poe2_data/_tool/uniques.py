@@ -35,20 +35,27 @@ mod_stats = lambda m: {norm(stats[m[f'Stat{k}']]['Id']): tuple(m[f'Stat{k}Value'
 base_implicits = {}
 for b in load('BaseItemTypes'):  # poe2db also lists the base implicit among the unique's mods; the base already gives it
     base_implicits.setdefault(b['Name'], set()).update(mods[i]['Id'] for i in b['Implicit_Mods'])
-obtainable = {u['name'] for u in json.load(open(os.path.join(ROOT, 'available', 'uniques.json'), encoding='utf8')) if not u['hidden_in_stash_tab']}
-# and only those GGG's trade site lists for the live patch (written by available.py)
-live = os.path.join(CACHE, 'trade2_uniques.json')
-if os.path.exists(live):
-    obtainable &= set(json.load(open(live, encoding='utf8')))
+names = {u['name']: u for u in json.load(open(os.path.join(ROOT, 'available', 'uniques.json'), encoding='utf8')) if not u['hidden_in_stash_tab']}
+# and only those GGG's trade site lists for the live patch, with their base (written by available.py)
+live = json.load(open(os.path.join(CACHE, 'trade2_uniques.json'), encoding='utf8'))
+obtainable = names.keys() & live.keys()
 listing = get('Unique_item')
-entries = dict.fromkeys(re.findall(r'href="/us/([^"]+)"[^>]*><span class="uniqueName">([^<]+)</span> <span class="uniqueTypeLine">([^<]+)</span>', listing))
+# the list page writes a unique in two ways: <a href="/us/Page"><span class="uniqueName">Name</span> ..., and <a href="Page">Name</a> ...
+entries = dict.fromkeys(re.findall(r'href="(?:/us/)?([^"]+)"[^>]*>(?:<span class="uniqueName">)?([^<]+)(?:</span>)?(?:</a>)? <span class="uniqueTypeLine">([^<]+)</span>', listing))
+# the newest uniques are not on it yet but have their own page: the base comes from the trade list
+for name in sorted(obtainable - {html.unescape(n) for _, n, _ in entries}):
+    entries[(re.sub(r"[^\w ]", '', name).replace(' ', '_'), name, live[name])] = None
 
 out, total, matched = [], 0, 0
 for page, name, base in entries:
     name, base = html.unescape(name), html.unescape(base)
     if name not in obtainable:
         continue
-    doc = get(page)
+    base = live[name]   # GGG's own name for the base: poe2db's can be out of date
+    try:
+        doc = get(page)
+    except urllib.error.HTTPError:   # no page for it: left out, never guessed
+        continue
     found, unmatched = [], []
     for header, table in re.findall(r'<h5 class="card-header">((?:(?!</h5>).)*)</h5>\s*<table[^>]*>(.*?)</table>', doc, re.S):
         row = dict((text(k), v) for k, v in re.findall(r'<tr><th>(.*?)(?:</th>)?<td>(.*?)(?=<tr>|$)', table, re.S))  # poe2db omits closing tags
@@ -69,7 +76,7 @@ for page, name, base in entries:
             matched += 1
         else:
             unmatched.append(text(header))
-    out.append({'name': name, 'base': base, 'mods': found, 'unmatched': unmatched})
+    out.append({**{k: v for k, v in names[name].items() if k.startswith('name')}, 'base': base, 'mods': found, 'unmatched': unmatched})   # name, name_es...
 
 with open(os.path.join(ROOT, 'available', 'unique_items.json'), 'w', encoding='utf8') as f:
     json.dump(out, f, ensure_ascii=False, indent=1)

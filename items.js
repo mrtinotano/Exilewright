@@ -322,7 +322,7 @@ export function itemView(it) {
   if (!base) return null;
   const l = local(it), say = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]])));
   const hit = ['physical', 'fire', 'cold', 'lightning'].reduce((s, k) => s + (l[k] ? (l[k][0] + l[k][1]) / 2 : 0), 0);
-  return { rarity: rarityOf(it), name: it.unique || '', base: tn(base) || base.name, cls: base.class, img: img(it.unique && D.unique_img[it.unique] || base.img),
+  return { rarity: rarityOf(it), name: it.unique ? tn(UNIQ[it.unique]) || it.unique : '', base: tn(base) || base.name, cls: base.class, img: img(it.unique && D.unique_img[it.unique] || base.img),
     dps: hit * (l.attacks_per_second || 0),   // the weapon's own damage per second
     props: [['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield]].filter(p => p[1]),
     mods: [...base.implicits.flatMap((id, i) => say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
@@ -340,7 +340,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
     ...Object.values(UNIQ).filter(u => BASE[u.base].slots.includes(s)).sort((a, b) => a.name.localeCompare(b.name))
-      .map(u => ({ v: u.name, cls: 'unique', name: u.name, sub: t('Unique') + ' · ' + (tn(BASE[u.base]) || u.base), img: D.unique_img[u.name] || BASE[u.base].img })),
+      .map(u => ({ v: u.name, cls: 'unique', name: tn(u), sub: t('Unique') + ' · ' + (tn(BASE[u.base]) || u.base), img: D.unique_img[u.name] || BASE[u.base].img })),
     ...D.bases.filter(b => b.slots.includes(s)).sort((a, b) => a.level - b.level)
       .map(b => ({ v: b.name, cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level), img: b.img })),
   ].map(o => ({ ...o, key: (o.name + ' ' + o.sub + ' ' + o.v).toLowerCase(),
@@ -376,7 +376,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${text(a.stats, fixVals(a.stats, m.values))} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
-      <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(uniq.name)}<br>${esc(base.name)}` : esc(tn(base))}</div>
+      <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
@@ -398,7 +398,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     if (!names[sel]) sel = 'weapon';
     const cell = (slot, area) => {
       const it = items[slot], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
-      return `<div class="cell ${base ? rarityOf(it) : ''}${slot === sel ? ' sel' : ''}" data-pick="${slot}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + (u ? u.name : tn(base)) : ''))}">${
+      return `<div class="cell ${base ? rarityOf(it) : ''}${slot === sel ? ' sel' : ''}" data-pick="${slot}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
         base ? `<img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">` : `<span>${names[slot]}</span>`}</div>`;
     };
     el.innerHTML = `<div class="inv"><div><div class="doll" style="grid-template-areas:${DOLL.map(r => `'${r}'`).join(' ')}">${

@@ -159,12 +159,15 @@ def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
     show(verdict) puts {kind, title, name, lines} in it, next to the pointer, for a few seconds (from any thread);
     loop() runs the window and has to be called in the thread that called this, the main one"""
+    win, back = sys.platform == 'win32', '#12100c'
+    if win:   # a new window takes the keyboard on Windows: remember who has it, to give it back below
+        ctypes.windll.user32.GetForegroundWindow.restype = ctypes.c_void_p
+        front = ctypes.windll.user32.GetForegroundWindow()
     try:
         import tkinter as tk
         root = tk.Tk()
     except Exception:
         return None
-    win, back = sys.platform == 'win32', '#12100c'
     try:   # macOS has a kind of window made for this: no title bar, over the others, and showing it takes no keyboard
         root.tk.call('::tk::unsupported::MacWindowStyle', 'style', root._w, 'help', 'noActivates')
     except tk.TclError:
@@ -192,6 +195,8 @@ def overlay():
             user.SetWindowLongW(h, -20, user.GetWindowLongW(h, -20) | 0x80000 | 0x20 | 0x80 | 0x08000000)
         root.update()
         through()
+        user.SetForegroundWindow.argtypes = [ctypes.c_void_p]
+        user.SetForegroundWindow(front)
     else:
         root.withdraw()
 
@@ -217,6 +222,7 @@ def overlay():
         if 0 <= px < sw and 0 <= py < sh:            # on the main screen it is kept whole (the size of the others is not known)
             x, y = min(max(x, 8), max(sw - w - 8, 8)), y if y + h < sh - 8 else py - 28 - h
         root.geometry(f'+{x}+{y}')
+        root.update_idletasks()                      # now: on Windows the first move is lost if it waits for the calls below
         if win:
             root.attributes('-alpha', .95)
             through()

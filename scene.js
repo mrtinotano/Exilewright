@@ -1140,7 +1140,8 @@ export function initScene(el, api) {
 
   // ---------- the enemies attack: the chosen attack at their level against your defences (enemies.js)
   // From the game: the damage per type, the crit chance and the seconds between uses of the attack, and your evasion, block, armour,
-  // resistances, life regeneration and energy shield recharge. Fixed by the scene: the wind-up, the reach, and how each shape
+  // resistances, life regeneration and energy shield recharge; the projectile's speed and the area's radius where the tables have them.
+  // Fixed by the scene: the wind-up, the reach, and how each shape
   // (strike, slam, projectile, area, bolt) is drawn. Enemies stand still, like dummies: step into their reach to be attacked.
   const REACH = { projectile: 14, area: 11, bolt: 11 };
   const reachOf = d => REACH[d.atk.shape] || Math.max(d.atk.reach + .8, 2.2) * d.sc;
@@ -1191,7 +1192,7 @@ export function initScene(el, api) {
     const land = () => { q.dead = true; if (a.area || !a.hasHit) fx.explode(m.position, 1.4, c, { soft: true }); hazard(d, m.position); };
     const q = { pos: m.position, r: 0, dead: false,
       update(dt) {
-        let s = Math.min(left, 15 * dt); left -= s;
+        let s = Math.min(left, (a.projSpeed || 15) * dt); left -= s;
         while (s > 0 && !q.dead) {
           const k = Math.min(.3, s); s -= k; m.position.x += dx * k; m.position.z += dz * k;
           if (a.hasHit && dist(m.position, pp) <= .55) { struck(d); land(); }
@@ -1214,7 +1215,7 @@ export function initScene(el, api) {
         if (l <= R + .3) { struck(d); hazard(d, pp); }
       } };
     } else if (a.shape === 'slam' || a.shape === 'area') {   // telegraphed on the ground where you stand: walk out of it
-      const slam = a.shape === 'slam', p = { x: pp.x, z: pp.z }, R = slam ? 1.8 * sc : 2.5, w = slam ? clamp(a.interval * .45, .4, .7) : .8;
+      const slam = a.shape === 'slam', p = { x: pp.x, z: pp.z }, R = a.radius || (slam ? 1.8 * sc : 2.5), w = slam ? clamp(a.interval * .45, .4, .7) : .8;
       fx.telegraph(p, R, c, w);
       d.wind = { s: w, land() {
         if (a.hasHit) { fx.explode(p, R, c, { soft: true }); if (slam) shake = Math.min(.45, shake + .1); if (dist(p, pp) <= R) struck(d); }

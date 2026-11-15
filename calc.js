@@ -1,7 +1,6 @@
 // Character sheet and skill damage, from the summed tree + gear stats (app.js treeSum) and the game data.
-// Numbers that only the game install can give (class base life/mana, skill damage per level) come from
-// skills.json / ascendancies.json once the data is regenerated on Windows (see the to-do notes);
-// until then skilldata.js fills them from pob2.json, and what neither has is null and shown as "—".
+// The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
+// regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt } from './i18n.js';
 import { weaponStats } from './items.js';
 import { SK } from './skilldata.js';
@@ -28,11 +27,11 @@ export function attributes(sum, ascName) {
   return out;
 }
 
-// What one attribute point gives, read from the game's own attribute text (ClientStrings <Attr>Description), e.g.
-// "+2 [Life|maximum Life] per ..." -> {life: 2}. note: text format checked only once the data is regenerated
+// What one attribute point gives, read from the game's own attribute text (ClientStrings <Attr>Description):
+// "1 [Strength|Strength] = +2 Life", "1 [Dexterity|Dexterity] = +8 [Accuracy|Accuracy]" -> {life: 2}, {accuracy: 8}
 function perAttr(attr) {
   const t = SK.attribute_text?.[attr] || '', out = {};
-  for (const [k, re] of [['life', /\+(\d+) (?:to )?\[?(?:Life\|)?maximum Life/i], ['mana', /\+(\d+) (?:to )?\[?(?:Mana\|)?maximum Mana/i], ['accuracy', /\+(\d+) (?:to )?\[?Accuracy/i]]) {
+  for (const [k, re] of [['life', /\+(\d+) \[?Life/], ['mana', /\+(\d+) \[?Mana/], ['accuracy', /\+(\d+) \[?Accuracy/]]) {
     const m = t.match(re); if (m) out[k] = +m[1];
   }
   return out;
@@ -41,20 +40,15 @@ function perAttr(attr) {
 export function character(b, sum) {
   const A = ASCS.find(a => a.name === b.asc) || {}, cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
   const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0);
-  // class base + per level: Characters row first, else character.ot (whichever this patch has)
-  const base = (row, stat, perLvlRow, perLvlStat) => {
-    const b0 = first(cb[row], CHAR[stat]); if (b0 == null) return null;
-    return b0 + (lvl - 1) * (first(cb[perLvlRow], CHAR[perLvlStat]) || 0);
-  };
-  const lifeBase = base('BaseMaxLife', 'base_maximum_life', 'LifePerLevel', 'maximum_life_per_level');
-  const manaBase = base('BaseMaxMana', 'base_maximum_mana', 'ManaPerLevel', 'maximum_mana_per_level');
+  // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
+  const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
+  const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const res = {};
   for (const [k, others] of Object.entries({ fire: ['cold', 'lightning', 'chaos'], cold: ['fire', 'lightning', 'chaos'], lightning: ['fire', 'cold', 'chaos'], chaos: ['fire', 'cold', 'lightning'] })) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
     const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%']));
-    // 75%: the game's default cap (character.ot when present)
-    const max = first(CHAR[`base_maximum_${k}_damage_resistance_%`], 75) + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']));
+    const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']));
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -93,26 +87,26 @@ export function recovery(c, sum) {
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
   // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
-  const esRate = first(CHAR['energy_shield_recharge_rate_per_minute_%'], 750) / 100 / 60;   // 750/min = 12.5%/s
+  const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
   return {
     lifeRegen: lifePctRegen && c.life == null ? null
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'),
-    esRate, esDelay: first(CHAR.energy_shield_delay_ms, 4000) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
+    esRate, esDelay: CHAR.energy_shield_delay_ms / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
     esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
   };
 }
 
 // Detailed list under the resistances, by section like the in-game character panel.
-// Each row: [label, value text, tooltip?]. Base rates come from character.ot when the regenerated data has them,
-// else these documented game rules: energy shield recharges 12.5% of max per second after a 4 s delay,
-// mana regenerates 4% of max per second, stun and ailment thresholds start at maximum life.
+// Each row: [label, value text, tooltip?]. Base rates come from character.ot and GameConstants (skills.json character_stats):
+// energy shield recharges 12.5% of max per second after a 4 s delay, mana regenerates 4% of max per second; stun and
+// ailment thresholds start at maximum life.
 export function sheet(b, sum) {
   const c = character(b, sum), at = c.attrs, pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const num = fmt;
   const NO_LIFE = t('Needs the class base life (regenerate the data on Windows)'), NO_MANA = t('Needs the class base mana (regenerate the data on Windows)');
   const { lifeRegen, esRate, esDelay, esRecharge } = recovery(c, sum);
   // mana: inherent 4%/s unless a keystone removes it, plus "mana equal to X% of life"
-  const manaBase = sum.no_inherent_mana_regeneration ? 0 : first(CHAR['mana_regeneration_rate_per_minute_%'], 240) / 100 / 60;   // 240/min = 4%/s
+  const manaBase = sum.no_inherent_mana_regeneration ? 0 : CHAR['character_inherent_mana_regeneration_rate_per_minute_%'] / 100 / 60;   // 240/min = 4%/s
   const manaLife = v(sum, 'regenerate_mana_equal_to_x%_of_life_per_minute');
   const manaRegen = c.mana == null || manaLife && c.life == null ? null
     : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%');

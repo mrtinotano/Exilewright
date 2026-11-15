@@ -1,9 +1,9 @@
 // Enemies of the training scene: the game's monsters, their stats at a level, the attacks they can use against the
 // character, and the game's defence formulas in both directions.
-// Data: poe2_data/available/monsters.json (poe2_data/_tool/pob2.py: Path of Building 2's export of the game tables).
-// The formulas are the game's, as Path of Building 2 implements them. What the data does not have (area radius,
-// projectile speed, animation timing, reach of ranged skills) is decided by scene.js and shown there as simulated.
-import { t } from './i18n.js';
+// Data: poe2_data/available/monsters.json (poe2_data/_tool/available.py, from the game's own tables).
+// The formulas are the game's, as Path of Building 2 implements them. What the data does not have (the area radius of
+// most skills, animation timing, reach of ranged skills) is decided by scene.js and shown there as simulated.
+import { t, tn } from './i18n.js';
 
 const MON = await fetch('poe2_data/available/monsters.json').then(r => r.json()).catch(() => null) || { tables: {}, constants: {}, monsters: [], skills: {} };
 export const K = MON.constants || {};
@@ -15,12 +15,13 @@ const row = (tab, level) => MON.tables[tab]?.[clamp(Math.round(level) || 1, 1, 1
 export const typical = level => ({ damage: Math.floor(row('damage', level)), accuracy: Math.round(row('accuracy', level)) });
 
 // ---------- list and search
-const shared = {};
-for (const m of MON.monsters) shared[m.name] = (shared[m.name] || 0) + 1;
+const shared = {}, plain = id => id.replace(/_+$/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2');   // a game id as words
+// the name in the page's language (name_<code> from the game's tables); the English one still finds the monster
+for (const m of MON.monsters) { m.en = m.name; m.name = tn(m); shared[m.name] = (shared[m.name] || 0) + 1; }
 for (const m of MON.monsters) {
   // several monsters share a name (three "Vaal Guard"): the tail of the game id tells them apart
-  if (shared[m.name] > 1) m.variant = m.id.split('/').pop().replace(/_+$/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2');
-  m.key = [m.name, m.variant, m.category, t(m.category), m.boss ? 'boss ' + t('Boss') : '', ...(m.areas || [])].join(' ').toLowerCase();
+  if (shared[m.name] > 1) m.variant = plain(m.id.split('/').pop());
+  m.key = [m.name, m.en, m.variant, m.category, m.category && t(m.category), m.boss ? 'boss ' + t('Boss') : '', ...(m.areas || [])].join(' ').toLowerCase();
 }
 export const ENEMIES = [...MON.monsters].sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 const BY_ID = new Map(ENEMIES.map(m => [m.id, m]));
@@ -57,7 +58,7 @@ export function attacksOf(m) {
   const seen = {}, list = [];
   for (const id of m.skills || []) {
     const s = MON.skills[id]; if (!usable(s)) continue;
-    const name = s.name || s.sets[0].label || id; seen[name] = (seen[name] || 0) + 1;
+    const name = s.name || s.sets[0].label || plain(id); seen[name] = (seen[name] || 0) + 1;
     list.push({ key: id, name: seen[name] > 1 ? `${name} (${seen[name]})` : name });
   }
   // monsters whose skills were not exported still hit with their basic attack
@@ -92,13 +93,15 @@ export function attackOf(m, level, key) {
   const own = sk && sk.cast !== 1 ? sk.cast : null;
   const period = attack ? own ?? m.attack_time / (1 + (sk?.speed || 0) / 100) : sk?.cast || 1;
   return {
-    key: sk ? key : 'basic', name: sk ? sk.name || set.label || key : t('Basic attack'), description: sk?.description || '',
+    key: sk ? key : 'basic', name: sk ? sk.name || set.label || plain(key) : t('Basic attack'), description: sk?.description || '',
     attack, hits, dot, hasHit,
     dotDur: set.const?.base_skill_effect_duration ? set.const.base_skill_effect_duration / 1000 : null,
     interval: Math.max(period, sk?.cooldown || 0), cooldown: sk?.cooldown || 0,
     crit: sk?.crit ?? m.crit ?? 0, critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     area, unblockable: !!set.unblockable,
+    // metres and metres per second, where the game's tables say them (else the scene uses its own)
+    radius: (set.const?.active_skill_base_area_of_effect_radius || 0) / 10 || null, projSpeed: (sk?.proj_speed || 0) / 10 || null,
     reach: (m.range || 10) / 10,   // metres, for melee attacks
   };
 }

@@ -62,8 +62,10 @@ node extract.mjs "C:/Program Files (x86)/Steam/steamapps/common/Path of Exile 2"
 python -I available.py
 python -I uniques.py
 python images.py "C:/Program Files (x86)/Steam/steamapps/common/Path of Exile 2"   # needs Pillow
+python -I pob2.py
 ```
-
-The enemies of the 3D scene (`poe2_data/available/monsters.json`) and the trade-site numbers of every item modifier
-(`trade_mods.json`, what the gear search matches by) come from Path of Building 2's export of the game tables and need
-no install: `python -I pob2.py` in the same folder. Run it again after regenerating the items.
+Everything comes from the game's own tables, in its ten languages: gems with their stats per level, items, uniques,
+the passive tree, and the monsters of the 3D scene. `available.py` ends with a self-check that fails if a patch renames
+a column it needs. `pob2.py` needs no install: it reads from Path of Building 2 the two things the tables do not say,
+what each support's stats do to the calculation (`pob2.json`) and the trade-site number of every item modifier
+(`trade_mods.json`, what the gear search matches by).

@@ -759,7 +759,7 @@ function listEnemies() {
   enAt = Math.max(0, Math.min(enAt, list.length - 1));
   enList.innerHTML = list.map((m, i) => `<div class="en-row${i === enAt ? ' at' : ''}${m.id === sceneCfg.enemy ? ' on' : ''}" data-id="${attr(m.id)}">
       <span>${esc(m.name)}${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}</span>
-      <small>${m.boss ? `<b>${t('Boss')}</b> · ` : ''}${t(m.category)}${m.areas?.[0] ? ' · ' + esc(m.areas[0]) : ''}</small></div>`).join('')
+      <small>${[m.boss && `<b>${t('Boss')}</b>`, m.category && t(m.category), m.areas?.[0] && esc(m.areas[0])].filter(Boolean).join(' · ')}</small></div>`).join('')
     + (total > list.length ? `<p class="note">${t('{0} more: type to narrow the list', fmt(total - list.length))}</p>` : total ? '' : `<p class="note">${t('No enemy matches')}</p>`);
   enList.hidden = false;
 }
@@ -819,7 +819,7 @@ function renderEnemy() {
       row(t('Time to kill'), `<b>${secs(ve.ttk)}</b>`)].join('')}</table>`
     : `<p class="note">${t(dmg.reason || 'This skill does not deal direct damage')}. ${t('In the scene each of its hits takes 1/8 of the enemy\'s life, marked with ~.')}</p>`);
   const placing = !!scene3d?.placing();
-  box.innerHTML = `<div class="en-head"><b>${esc(m.name)}</b>${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}<span>${m.boss ? t('Boss') + ' · ' : ''}${t(m.category)}</span></div>
+  box.innerHTML = `<div class="en-head"><b>${esc(m.name)}</b>${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}<span>${[m.boss && t('Boss'), m.category && t(m.category)].filter(Boolean).join(' · ')}</span></div>
     ${m.areas?.length ? `<p class="note en-areas" title="${attr(m.areas.join('\n'))}">${esc(m.areas.slice(0, 3).join(' · '))}${m.areas.length > 3 ? ' …' : ''}</p>` : ''}
     <div class="sk-set"><label><span>${t('Level')} ${sceneCfg.level ? `<a data-en="mylevel" title="${attr(t('Use the level of your build ({0})', b.level))}">↺</a>` : `<small>${t('yours')}</small>`}</span>
         <input type="number" min="1" max="100" step="1" data-en="level" value="${L}"></label>

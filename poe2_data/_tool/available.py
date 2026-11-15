@@ -5,7 +5,7 @@ import json, math, os, struct
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 OUT = os.path.join(ROOT, 'available')
-BAD = ('[DNT', '[UNUSED', 'Coming Soon', '[TEST', 'DNT-UNUSED')
+BAD = ('DNT', 'INCOMPLETE', '[UNUSED', 'Coming Soon', '[TEST')
 
 
 def load(t, lang='English'):
@@ -18,9 +18,19 @@ LANGS = {'es': 'Spanish', 'pt': 'Portuguese', 'fr': 'French', 'de': 'German', 'r
          'ja': 'Japanese', 'ko': 'Korean', 'th': 'Thai', 'zh': 'Traditional Chinese'}
 
 
+def text(*path):
+    """a game text file under ../files: UTF-16 as the game has it (getfiles.mjs), or UTF-8 (extract.mjs)"""
+    raw = open(os.path.join(ROOT, 'files', *path), 'rb').read()
+    return raw.decode('utf-16') if raw[:2] == b'\xff\xfe' else raw.decode('utf8')
+
+
 def load_langs(t):
     """{code: rows} of a table for every translated language that was extracted."""
     return {c: load(t, l) for c, l in LANGS.items() if os.path.exists(os.path.join(ROOT, 'tables', l, t + '.json'))}
+
+
+# the game's keyword markup, "[Keyword|shown text]" or "[Shown]", as the text it shows
+plain = lambda s: re.sub(r'\[(?:[^\]|]*\|)?([^\]]*)\]', r'\1', s) if s else None
 
 
 def tr(by_lang, i, field='Name', key='name'):
@@ -29,7 +39,7 @@ def tr(by_lang, i, field='Name', key='name'):
     for c, rows in by_lang.items():
         r = rows.get(i) if isinstance(rows, dict) else rows[i] if i is not None and i < len(rows) else None
         if r and r.get(field):
-            out[f'{key}_{c}'] = r[field]
+            out[f'{key}_{c}'] = plain(r[field])
     return out
 
 
@@ -100,8 +110,8 @@ except Exception as e:
 trade = {c['id']: c['entries'] for c in json.load(open(trade_file, encoding='utf8'))['result']}
 trade_types = {e['type'] for c in trade.values() for e in c}
 trade_gems = {e['type'] for e in trade['gem']}
-trade_uniques = {e['name'] for c in trade.values() for e in c if e.get('flags', {}).get('unique')}
-json.dump(sorted(trade_uniques), open(os.path.join(ROOT, 'poe2db_cache', 'trade2_uniques.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+trade_uniques = {e['name']: e['type'] for c in trade.values() for e in reversed(c) if e.get('flags', {}).get('unique')}   # name -> base
+json.dump(dict(sorted(trade_uniques.items())), open(os.path.join(ROOT, 'poe2db_cache', 'trade2_uniques.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 
 # --- gems
 active_skills, skill_types = load('ActiveSkills'), [t['Id'] for t in load('ActiveSkillType')]
@@ -155,7 +165,7 @@ for i, g in enumerate(skill_gems):
         # if it comes out empty the picker falls back to the support's stat lines (skills.json)
         ex = gem_effects[g['GemEffects'][0]] if g['GemEffects'] else {}
         desc_col = next((c for c in ('SupportText', 'Description') if ex.get(c)), 'SupportText')
-        gems[-1].update(description=ex.get(desc_col) or None, **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description') if g['GemEffects'] else {})
+        gems[-1].update(description=plain(ex.get(desc_col)), **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description') if g['GemEffects'] else {})
         gems[-1].update(icon=sr['Icon'], family=[support_family[f]['Id'] for f in sr['Family']], lineage=sr['IsLineage'],
                         require=types(ge['AllowedActiveSkillTypes']), exclude=types(ge['ExcludedActiveSkillTypes']),
                         adds=types(ge['AddedActiveSkillTypes']), gems_only=ge['SupportsGemsOnly'])
@@ -163,7 +173,7 @@ for i, g in enumerate(skill_gems):
         a = active_skills[ge['ActiveSkill']]
         gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'],
                         # text for the skill's info window (ActiveSkills.Description, per language)
-                        description=a.get('Description') or None, **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description'))
+                        description=plain(a.get('Description')), **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description'))
 save('gems.json', gems)
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)
@@ -216,9 +226,11 @@ save('ascendancies.json', [{'name': a['Name'], **tr(asc_tr, ai), 'class': chars[
 # --- uniques: what the Unique Stash Tab knows about; hidden-if-empty ones are flagged
 words, layout = load('Words'), load('UniqueStashLayout')
 words_tr = load_langs('Words')
-save('uniques.json', sorted(({'name': words[u['WordsKey']]['Text'], **tr(words_tr, u['WordsKey'], 'Text'),
-                              'hidden_in_stash_tab': not (u['ShowIfEmptyStandard'] or u['ShowIfEmptyChallengeLeague'])}
-                             for u in layout if u['RenamedVersion'] is None and not u['IsAlternateArt'] and ok(words[u['WordsKey']]['Text'])),
+shown = lambda i: words[i]['Text2'] or words[i]['Text']   # the name the game shows, in every language (Text is the internal one: "Brynabas")
+tab = [(u['WordsKey'], not (u['ShowIfEmptyStandard'] or u['ShowIfEmptyChallengeLeague'])) for u in layout if u['RenamedVersion'] is None and not u['IsAlternateArt']]
+# and the uniques with no slot in the stash tab (tablets, relics, the newest ones) that GGG's trade site lists all the same
+tab += [(i, False) for i, w in enumerate(words) if w['Wordlist'] == 6 and shown(i) in trade_uniques.keys() - {shown(u['WordsKey']) for u in layout}]
+save('uniques.json', sorted(({'name': shown(k), **tr(words_tr, k, 'Text2'), 'hidden_in_stash_tab': hidden} for k, hidden in tab if ok(shown(k))),
                             key=lambda x: x['name']))
 
 # --- rollable item mods: prefix/suffix on items with some non-zero spawn weight
@@ -236,51 +248,66 @@ ge_tab, gfx, ss_tab = load('GrantedEffects'), load('GemEffects'), load('GrantedE
 ss_lvl = {}
 for r in load('GrantedEffectStatSetsPerLevel'):
     ss_lvl.setdefault(r['StatSet'], []).append(r)
-proj_by_id = {p['Id'].lower(): p for p in load('Projectiles')}
+proj_tab = load('Projectiles')
+proj_by_id = {p['Id'].lower(): p for p in proj_tab}
 ge_lvl = {}
 for r in load('GrantedEffectsPerLevel'):
     ge_lvl.setdefault(id(ge_tab[r['GrantedEffect']]), []).append(r)
-try:
-    cost_types = load('CostTypes')
-except FileNotFoundError:
-    cost_types = None
+cost_types = load('CostTypes')
 sid = lambda i: stats[i]['Id']
 skills = {}
-for g in gems:
+for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support'):   # supports too: their stat lines describe them in the picker
         continue
-    e = ge_tab[gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]['GrantedEffect']]
-    s = ss_tab[e['StatSet']]
-    const = {sid(a): v for a, v in zip(s['ConstantStats'], s['ConstantStatsValues'])}
-    implicit = {sid(a) for a in s['ImplicitStats']}
-    radius = {}
-    for r in ss_lvl.get(e['StatSet'], []):
-        per = {sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])}
-        v = per.get('active_skill_base_area_of_effect_radius', const.get('active_skill_base_area_of_effect_radius'))
-        if v is not None:
-            radius[r['GemLevel']] = v
-    # every stat per gem level (constants + per-level + float stats) and the row's own numbers, for the DPS and the
-    # skill info window. note: column names from dat-schema poe2; .get() so a renamed column only drops that number
+    fx = gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]
+    e = ge_tab[fx['GrantedEffect']]
+    # A skill that deals no damage itself has the one that does laid over it: a gem's own skill that only loads
+    # ammunition or reserves spirit (crossbow rounds, Black Powder Blitz) under the skill the gem then uses, and the
+    # main stat set of a skill made of several parts (Rolling Slam) under its first part that deals damage
+    idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
+    effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])]
+    # ...unless the skill sets that part off by itself (Ancestral Cry's shockwave): then the cry's own cast time, cost and area stay on top
+    if 'display_statset_hide_usage_stats' in {sid(a) for a in ss_tab[effects[-1]['StatSet']]['ImplicitStats']}:
+        effects.reverse()
+    sets = [i for x in effects for i in [x['StatSet']] + ([j for j in x['AdditionalStatSets'] if not idle(j)][:1] if idle(x['StatSet']) else [])]
+    implicit = {sid(a) for i in sets for a in ss_tab[i]['ImplicitStats']}
+    const = {sid(a): v for i in sets for a, v in zip(ss_tab[i]['ConstantStats'], ss_tab[i]['ConstantStatsValues'])}
+    # every stat per gem level and the row's own numbers under "_" keys, for the DPS and the skill info window.
+    # FloatStats: BaseResolvedValues is the number the game shows (FloatStatsValues is its share of the level's
+    # effectiveness). BaseMultiplier is what an attack deals over / under 100% of the weapon, in 1/100 %.
     levels = {}
-    for r in ss_lvl.get(e['StatSet'], []):
-        st = {sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])}
-        st.update({sid(a): v for a, v in zip(r.get('FloatStats') or [], r.get('FloatStatsValues') or r.get('BaseResolvedValues') or [])})
-        for col, key in (('BaseMultiplier', '_base_multiplier'), ('DamageEffectiveness', '_damage_effectiveness'),
-                         ('SpellCritChance', '_spell_crit'), ('AttackCritChance', '_attack_crit')):
-            if r.get(col) is not None:
-                st[key] = r[col]
-        levels[r['GemLevel']] = st
-    for r in ge_lvl.get(id(e), []):
-        st = levels.setdefault(r['Level'], {})
-        for col, key in (('Cooldown', '_cooldown_ms'), ('StoredUses', '_stored_uses'), ('CostMultiplier', '_cost_multiplier'),
-                         ('Reservation', '_reservation'), ('SpiritReservation', '_spirit')):
-            if r.get(col) is not None:
-                st[key] = r[col]
-        if r.get('CostAmounts'):
-            st['_cost'] = {cost_types[t]['Id'] if cost_types else t: v for t, v in zip(r.get('CostTypes') or [], r['CostAmounts'])}
+    for i in sets:
+        for r in ss_lvl.get(i, []):
+            st = levels.setdefault(r['GemLevel'], {})
+            st.update({sid(a): v for a, v in zip(r['AdditionalStats'], r['AdditionalStatsValues'])})
+            st.update({sid(a): v for a, v in zip(r['FloatStats'], r['BaseResolvedValues'])})
+            if r['BaseMultiplier']:
+                st['_base_multiplier'] = 10000 + r['BaseMultiplier']
+            for col, key in (('SpellCritChance', '_spell_crit'), ('AttackCritChance', '_attack_crit')):
+                if r[col]:
+                    st[key] = r[col]
+    for x in effects:
+        for r in ge_lvl.get(id(x), []):
+            st = levels.setdefault(r['Level'], {})
+            for col, key in (('Cooldown', '_cooldown_ms'), ('StoredUses', '_stored_uses'), ('Reservation', '_spirit'),
+                             ('AttackSpeedMultiplier', 'active_skill_attack_speed_+%_final')):
+                if r[col]:
+                    st[key] = r[col]
+            if any(r['CostAmounts']):   # channelled skills cost per minute: written per second
+                st['_cost'] = {c['Id'].removesuffix('PerMinute'): round(v / c['Divisor'], 1) if c['PerMinute'] else v
+                               for c, v in zip((cost_types[t] for t in x['CostTypes']), r['CostAmounts'])}
+    area = 'active_skill_base_area_of_effect_radius'
+    radius = {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const}
+    if levels:   # what never changes with the level goes to "constant": keeps the file small
+        one = next(iter(levels.values()))
+        for k in set.intersection(*map(set, levels.values())):
+            if all(lv[k] == one[k] for lv in levels.values()):
+                const[k] = one[k]
+                for lv in levels.values():
+                    del lv[k]
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
     skills[g['name']] = {
-        'cast_time_ms': e.get('CastTime'),
+        'cast_time_ms': effects[-1]['CastTime'],
         'constant': const,
         'levels': levels or None,
         'radius': radius or None,
@@ -290,13 +317,15 @@ for g in gems:
         'duration_ms': const.get('base_skill_effect_duration'),
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
     }
-ot = open(os.path.join(ROOT, 'files', 'metadata', 'characters', 'character.ot'), encoding='utf-16').read()
+ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
 capacity_per = int(re.search(r'(\d+) \[Strength[^=]*= \+1 Strength \[SupportGem', cs['StrengthDescription']).group(1))
 max_sockets = max(int(m.group(1)) for c in load('CurrencyItems') if (m := re.fullmatch(r'add_skill_gem_socket_(\d+)', c['Action'] or '')))
 # base character numbers (life, mana, resist caps...): every "stat = number" in character.ot, used by the stats panel
 char_stats = {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', ot, re.M)}
+# not in character.ot: how long energy shield waits before recharging (GameConstants)
+char_stats['energy_shield_delay_ms'] = next(c['Value'] for c in load('GameConstants') if c['Id'] == 'BaseShieldRegenCooldownTimeMs')
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
 # monster stats per level (character panel: armour % against a hit of a monster of your level, evade chance against its accuracy)
 try:
@@ -346,12 +375,9 @@ def read_it(p, cache={}):
     """tags + parent of a metadata/items/*.it file, following 'extends'."""
     p = p.lower()
     if p not in cache:
-        f = os.path.join(ROOT, 'files', p + '.it')
         tags, parent = [], None
-        if os.path.exists(f):
-            raw = open(f, 'rb').read()
-            txt = raw.decode('utf-16') if raw[:2] == b'\xff\xfe' else raw.decode('utf8')
-            for line in txt.splitlines():
+        if os.path.exists(os.path.join(ROOT, 'files', p + '.it')):
+            for line in text(p + '.it').splitlines():
                 line = line.strip()
                 if line.startswith('extends ') and '"nothing"' not in line:
                     parent = line.split('"')[1]
@@ -394,9 +420,151 @@ for i, b in enumerate(load('BaseItemTypes')):
 save('items.json', {
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
-    'unique_img': {words[u['WordsKey']]['Text']: visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
+    'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
     'affixes': [{'id': m['Id'], 'name': m['Name'], **tr(mods_tr, i), 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
                  'level': m['Level'], 'domain': m['Domain'], 'family': m['Families'][0] if m['Families'] else None, 'stats': mod_stats(m),
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])]}
                 for i, m in enumerate(mods) if m['Domain'] in (1, 2, 11) and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
 })
+
+# --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
+# per-level tables that turn the multipliers into life, armour, evasion, accuracy and damage
+ELEMENTS = ('physical', 'fire', 'cold', 'lightning', 'chaos')
+KEEP = re.compile(r'area_of_effect|radius|number_of_(?:additional_)?projectiles|number_of_chains|base_skill_effect_duration|'
+                  r'chance_to_(?:poison|bleed)|ignite_chance|shock_chance|freeze|maim|knockback|_damage_\+%_final')
+filled = lambda d: {k: v for k, v in d.items() if v not in (None, {}, [], '', 0, False)}
+
+
+def monster_skill(e):
+    a = active_skills[e['ActiveSkill']] if e['ActiveSkill'] is not None else {}
+    kinds, sets = set(types(a.get('ActiveSkillTypes') or [])), []
+    for i in [e['StatSet']] + e['AdditionalStatSets']:
+        s, lv = ss_tab[i], (ss_lvl.get(i) or [{}])[0]
+        on = {sid(x) for x in s['ImplicitStats'] + lv.get('AdditionalFlags', [])}
+        const = dict(zip(map(sid, s['ConstantStats']), s['ConstantStatsValues']))
+        # level-1 values with their interpolation: 3 = a share of the effectiveness of the monster's level (enemies.js
+        # works it out), anything else is the number itself
+        vals = {sid(x): (f if it == 3 else r, it) for x, f, r, it in
+                zip(lv.get('FloatStats', []), lv.get('FloatStatsValues', []), lv.get('BaseResolvedValues', []), lv.get('StatInterpolations', []))}
+        # a skill of both types (the beams) has its own damage values, like a spell
+        flags = sorted(f for f, yes in (('attack', 'Attack' in kinds and 'Spell' not in kinds), ('spell', 'Spell' in kinds), ('melee', 'Melee' in kinds), ('area', 'Area' in kinds),
+                                        ('duration', 'Duration' in kinds), ('projectile', 'base_is_projectile' in on)) if yes)
+        hit, dot = {}, {}
+        for el in ELEMENTS:
+            lo, hi = vals.get(f'spell_minimum_base_{el}_damage'), vals.get(f'spell_maximum_base_{el}_damage')
+            if lo and hi and hi[0]:
+                hit[el] = [round(lo[0], 6), round(hi[0], 6), lo[1]]
+            d = vals.get(f'base_{el}_damage_to_deal_per_minute')
+            if d and d[0]:   # a share of the effectiveness is per second, in thousandths
+                dot[el] = [round(d[0] * 1000 / 60, 6) if d[1] == 3 else d[0], d[1]]
+        sets.append(filled({
+            'label': labels[s['Label']]['Text'] if s['Label'] is not None else None,
+            'eff': [round(s[k], 6) for k in ('BaseEffectiveness', 'IncrementalEffectiveness', 'DamageIncrementalEffectiveness')],
+            'hit': hit, 'dot': dot,
+            'convert': {el: const[k] for el in ELEMENTS if const.get(k := f'active_skill_base_physical_damage_%_to_convert_to_{el}')},
+            'no_damage': 'base_deal_no_damage' in on, 'area': 'is_area_damage' in on,
+            'unblockable': 'base_cannot_be_blocked' in on or not ('base_skill_can_be_blocked' in on or 'attack' in flags),
+            'const': {k: v for k, v in const.items() if KEEP.search(k)},
+        }) | {'flags': flags})
+    lv, gl = (ss_lvl.get(e['StatSet']) or [{}])[0], (ge_lvl.get(id(e)) or [{}])[0]
+    shot = dict(zip(map(sid, ss_tab[e['StatSet']]['ConstantStats']), ss_tab[e['StatSet']]['ConstantStatsValues'])).get('monster_projectile_variation')
+    return filled({
+        # game units per second (10 = 1 m), like the gems' projectile_speed
+        'proj_speed': (shots_attack if 'Attack' in kinds else shots_spell).get(shot, 0) / 10,
+        'name': a.get('DisplayedName'), 'types': sorted(kinds), 'cast': e['CastTime'] / 1000,
+        'cooldown': gl.get('Cooldown', 0) / 1000, 'uses': gl.get('StoredUses'), 'speed': gl.get('AttackSpeedMultiplier'),
+        'crit': (lv.get('SpellCritChance') or lv.get('AttackCritChance') or 0) / 100,
+        'mult': 1 + lv['BaseMultiplier'] / 10000 if lv.get('BaseMultiplier') else None,
+        'description': plain(a.get('Description')), 'sets': sets,
+    })
+
+
+labels, world = load('GrantedEffectLabels'), load('WorldAreas')
+# the projectile a monster skill fires: its "monster_projectile_variation" number -> Projectiles row
+shots_spell, shots_attack = ({r['Id']: proj_tab[r['Projectile']]['ProjectileSpeed'] for r in load(t) if r['Projectile'] is not None}
+                             for t in ('MonsterProjectileSpell', 'MonsterProjectileAttack'))
+varieties, varieties_tr, mtypes, mres, mcats = load('MonsterVarieties'), load_langs('MonsterVarieties'), load('MonsterTypes'), load('MonsterResistances'), load('MonsterCategories')
+# Where each monster is met, by name (its varieties share the list, as in Path of Building 2's export): the areas of the
+# packs it is part of, the maps those packs are native to, and the areas it is the boss of.
+def place(w):
+    floor = re.match(r'Sanctum_(\d+)', w['Id'])
+    if w['Id'] == 'G_Endgame_Town':   # the endgame's hub: the packs listed there are the ones any map can have
+        return 'Found in Maps'
+    return w['Name'] + (' (Map)' if 'map' in [tags_tab[t]['Id'] for t in w['Tags']] else f' (Floor {floor[1]})' if floor
+                        else f" (Act {w['Act']})" if w['Act'] != 10 and not w['Id'].startswith('Sanctum') else '')
+
+
+named = lambda w: ok(w['Name']) and w['Name'] != 'NULL'
+packs, areas, in_pack, area_bosses = load('MonsterPacks'), {}, {}, set()
+pack_areas = [{place(world[w]) for w in p['WorldAreas'] if named(world[w])} for p in packs]
+for x in load('EndGameMaps'):
+    for pi in x['MonsterPacks'] if x['WorldArea'] is not None and named(world[x['WorldArea']]) else []:
+        pack_areas[pi].add(place(world[x['WorldArea']]))
+for x in load('MonsterPackEntries'):
+    in_pack.setdefault(x['MonsterPacksKey'], []).append(x['MonsterVarietiesKey'])
+for pi, p in enumerate(packs):
+    for k in p['BossMonsters'] + p['AdditionalMonsters'] + in_pack.get(pi, []):
+        if k is not None:
+            areas.setdefault(varieties[k]['Name'], set()).update(pack_areas[pi])
+for w in world:
+    area_bosses.update(w['Bosses_MonsterVarietiesKeys'])
+    for k in w['Bosses_MonsterVarietiesKeys'] if named(w) else []:
+        areas.setdefault(varieties[k]['Name'], set()).add(place(w))
+monsters, mskills, seen = [], {}, {}
+for i, m in enumerate(varieties):
+    if not ok(m['Name']) or not re.search(r'[A-Za-z]{2}', m['Name']):
+        continue
+    t = mtypes[m['MonsterType']]
+    res = mres[t['MonsterResistances'][0]] if t['MonsterResistances'] else None
+    mon = {'id': m['Id'], 'name': m['Name'], **tr(varieties_tr, i), **filled({
+        'category': mcats[m['MonsterCategory']]['Name'] if m['MonsterCategory'] is not None else None,
+        'boss': 'Boss' in m['Id'] or m['BossHealthBar'] or i in area_bosses,
+        'es': t['EnergyShieldFromLife'] / 100, 'armour': t['Armour'] / 100, 'evasion': t['Evasion'] / 100,
+        'crit': round(m['AttackCrit'] * 100, 2), 'ranged': 'ranged' in [tags_tab[x]['Id'] for x in m['Tags']],
+        'areas': sorted(areas.get(m['Name'], ())), 'skills': [ge_tab[g]['Id'] for g in m['GrantedEffects']]}),
+        'life': m['LifeMultiplier'] / 100, 'damage': m['DamageMultiplier'] / 100, 'spread': t['DamageSpread'] / 100,
+        'res': [res[el + '1'][0] if res else 0 for el in ('Fire', 'Cold', 'Lightning', 'Chaos')],
+        'attack_time': m['AttackSpeed'] / 1000, 'range': m['MaximumAttackDistance'], 'speed': m['MovementSpeed'],
+        # note: MonsterTypes has this flag in a column the schema has no name for, so extract.mjs leaves it out; all
+        # but 2 of the 598 monsters Path of Building 2 exports have it. Read that column if those two ever matter
+        'ignores_attack_speed': True}
+    same = json.dumps({k: v for k, v in mon.items() if k not in ('id', 'areas')}, sort_keys=True)
+    if same in seen:   # the same monster placed somewhere else: one entry, all its areas
+        seen[same]['areas'] = sorted(set(seen[same].get('areas', []) + mon.get('areas', [])))
+        continue
+    seen[same] = mon
+    monsters.append(mon)
+    mskills.update({ge_tab[g]['Id']: g for g in m['GrantedEffects']})
+monsters.sort(key=lambda m: (m['name'], m['id']))
+game = {c['Id']: c['Value'] / c['Divisor'] for c in load('GameConstants')}
+mon_stats = {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', text('metadata', 'monsters', 'monster.ot'), re.M)}
+dms = load('DefaultMonsterStats')
+with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
+    json.dump({
+        # index = monster level - 1
+        'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'))},
+        'constants': {
+            'skill_effectiveness': game['SkillDamageBaseEffectiveness'],
+            'monster_crit_bonus': mon_stats.get('base_critical_hit_damage_bonus'), 'monster_max_resistance': mon_stats.get('base_maximum_all_resistances_%'),
+            'monster_max_physical_reduction': mon_stats.get('maximum_physical_damage_reduction_%'),
+            'player_max_resistance': char_stats.get('base_maximum_all_resistances_%'), 'player_max_physical_reduction': char_stats.get('maximum_physical_damage_reduction_%'),
+            'player_max_evade': game['DefaultMaxEvadeChancePercent'], 'player_crit_bonus': char_stats.get('base_critical_hit_damage_bonus'),
+            'es_recharge_delay_ms': game['BaseShieldRegenCooldownTimeMs'], 'es_recharge_per_minute': char_stats.get('energy_shield_recharge_rate_per_minute_%'),
+            'player_max_block': char_stats.get('object_inherent_base_maximum_block_%_from_ot'),
+            # ailments: % of the hit dealt per minute, and how long they last
+            'ignite_per_minute': game['IgniteHitDamagePercentPerMinute'], 'ignite_duration': game['BaseIgniteDuration'],
+            'bleed_per_minute': game['BleedingHitDamagePercentPerMinute'], 'bleed_duration': game['BaseBleedingDuration'],
+            'poison_per_minute': game['PoisonHitDamagePercentPerMinute'], 'poison_duration': game['BasePoisonDuration'],
+        },
+        'monsters': monsters,
+        'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
+    }, f, ensure_ascii=False, separators=(',', ':'))
+print(f'monsters.json {len(monsters)} monsters ({sum(1 for m in monsters if m.get("boss"))} bosses), {len(mskills)} skills')
+
+# --- self-check: a column renamed by a patch has to fail here, not show up as "—" in the app
+assert plain('[Knockback|Knocking Back] a [Projectile]') == 'Knocking Back a Projectile'
+assert all(s['levels'] for s in skills.values()), 'a gem without stats per level'
+assert skills['Fireball']['cast_time_ms'] and skills['Fireball']['levels'][20]['spell_minimum_base_fire_damage'] > 0
+assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms')), 'character.ot / GameConstants'
+assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'BaseMaxMana')), 'Characters base life / mana'
+assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
