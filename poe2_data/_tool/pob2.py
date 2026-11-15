@@ -134,10 +134,6 @@ def entries(src, var):
         yield m.group(1), Lua(src, m.end()).value(), m.start()
 
 
-def assigned(src, name):
-    return Lua(src, re.search(r'^data\.' + name + r'\s*=\s*(?=\{)', src, re.M).end()).value()
-
-
 dump = lambda o, name: json.dump(o, open(os.path.join(ROOT, 'available', name), 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 
 # ---- support gems ---------------------------------------------------------------------------------------------------

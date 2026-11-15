@@ -44,11 +44,11 @@ listing = get('Unique_item')
 entries = dict.fromkeys(re.findall(r'href="(?:/us/)?([^"]+)"[^>]*>(?:<span class="uniqueName">)?([^<]+)(?:</span>)?(?:</a>)? <span class="uniqueTypeLine">([^<]+)</span>', listing))
 # the newest uniques are not on it yet but have their own page: the base comes from the trade list
 for name in sorted(obtainable - {html.unescape(n) for _, n, _ in entries}):
-    entries[(re.sub(r"[^\w ]", '', name).replace(' ', '_'), name, live[name])] = None
+    entries[(re.sub(r"[^\w ]", '', name).replace(' ', '_'), name, None)] = None
 
 out, total, matched = [], 0, 0
-for page, name, base in entries:
-    name, base = html.unescape(name), html.unescape(base)
+for page, name, _ in entries:
+    name = html.unescape(name)
     if name not in obtainable:
         continue
     base = live[name]   # GGG's own name for the base: poe2db's can be out of date

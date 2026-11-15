@@ -300,7 +300,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     radius = {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const}
     if levels:   # what never changes with the level goes to "constant": keeps the file small
         one = next(iter(levels.values()))
-        for k in set.intersection(*map(set, levels.values())):
+        for k in sorted(set.intersection(*map(set, levels.values()))):   # sorted: the same file on every run
             if all(lv[k] == one[k] for lv in levels.values()):
                 const[k] = one[k]
                 for lv in levels.values():
@@ -323,9 +323,11 @@ cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
 capacity_per = int(re.search(r'(\d+) \[Strength[^=]*= \+1 Strength \[SupportGem', cs['StrengthDescription']).group(1))
 max_sockets = max(int(m.group(1)) for c in load('CurrencyItems') if (m := re.fullmatch(r'add_skill_gem_socket_(\d+)', c['Action'] or '')))
 # base character numbers (life, mana, resist caps...): every "stat = number" in character.ot, used by the stats panel
-char_stats = {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', ot, re.M)}
+ot_stats = lambda s: {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', s, re.M)}
+char_stats = ot_stats(ot)
 # not in character.ot: how long energy shield waits before recharging (GameConstants)
-char_stats['energy_shield_delay_ms'] = next(c['Value'] for c in load('GameConstants') if c['Id'] == 'BaseShieldRegenCooldownTimeMs')
+game = {c['Id']: c['Value'] / c['Divisor'] for c in load('GameConstants')}
+char_stats['energy_shield_delay_ms'] = round(game['BaseShieldRegenCooldownTimeMs'])
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
 # monster stats per level (character panel: armour % against a hit of a monster of your level, evade chance against its accuracy)
 try:
@@ -437,11 +439,12 @@ filled = lambda d: {k: v for k, v in d.items() if v not in (None, {}, [], '', 0,
 
 def monster_skill(e):
     a = active_skills[e['ActiveSkill']] if e['ActiveSkill'] is not None else {}
-    kinds, sets = set(types(a.get('ActiveSkillTypes') or [])), []
+    kinds, sets, shot = set(types(a.get('ActiveSkillTypes') or [])), [], None
     for i in [e['StatSet']] + e['AdditionalStatSets']:
         s, lv = ss_tab[i], (ss_lvl.get(i) or [{}])[0]
         on = {sid(x) for x in s['ImplicitStats'] + lv.get('AdditionalFlags', [])}
         const = dict(zip(map(sid, s['ConstantStats']), s['ConstantStatsValues']))
+        shot = shot or const.get('monster_projectile_variation')
         # level-1 values with their interpolation: 3 = a share of the effectiveness of the monster's level (enemies.js
         # works it out), anything else is the number itself
         vals = {sid(x): (f if it == 3 else r, it) for x, f, r, it in
@@ -467,7 +470,6 @@ def monster_skill(e):
             'const': {k: v for k, v in const.items() if KEEP.search(k)},
         }) | {'flags': flags})
     lv, gl = (ss_lvl.get(e['StatSet']) or [{}])[0], (ge_lvl.get(id(e)) or [{}])[0]
-    shot = dict(zip(map(sid, ss_tab[e['StatSet']]['ConstantStats']), ss_tab[e['StatSet']]['ConstantStatsValues'])).get('monster_projectile_variation')
     return filled({
         # game units per second (10 = 1 m), like the gems' projectile_speed
         'proj_speed': (shots_attack if 'Attack' in kinds else shots_spell).get(shot, 0) / 10,
@@ -536,8 +538,7 @@ for i, m in enumerate(varieties):
     monsters.append(mon)
     mskills.update({ge_tab[g]['Id']: g for g in m['GrantedEffects']})
 monsters.sort(key=lambda m: (m['name'], m['id']))
-game = {c['Id']: c['Value'] / c['Divisor'] for c in load('GameConstants')}
-mon_stats = {k: int(v) for k, v in re.findall(r'^\s*([a-z_%+\-]+)\s*=\s*(-?\d+)\s*$', text('metadata', 'monsters', 'monster.ot'), re.M)}
+mon_stats = ot_stats(text('metadata', 'monsters', 'monster.ot'))
 dms = load('DefaultMonsterStats')
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({

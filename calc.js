@@ -253,7 +253,7 @@ export function skill(g, b, treeGear) {
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
-  const mult = attack ? (first(st._base_multiplier, st._damage_effectiveness) ?? 10000) / 10000 : 1;
+  const mult = attack ? (st._base_multiplier ?? 10000) / 10000 : 1;
   const base = {};
   for (const t of DMG) {
     let lo = 0, hi = 0;
