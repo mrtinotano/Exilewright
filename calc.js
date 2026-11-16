@@ -373,7 +373,7 @@ export function skill(g, b, treeGear) {
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   // "per active Totem" counts each one: all the build may place (the game's windows, 16/11: one Mortar Cannon x1.0183
   // damage, two x1.0366)
-  const totems = out.totems = byTotem && attack ? Math.max(1, totem(meta, treeGear)?.limit || 1) : 0;
+  const totems = out.totems = byTotem && attack ? (totem(meta, treeGear)?.limit || 1) : 0;
   const perTotem = totems * v(sum, 'attack_damage_+%_per_active_totem_in_presence');
   const perTotemSpeed = totems * v(sum, 'totems_attack_speed_+%_per_active_totem');
   // and the meta gem's own support part slows it and lowers its damage (Mortar Cannon: -50% more attack speed and damage;
