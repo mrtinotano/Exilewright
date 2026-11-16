@@ -614,6 +614,14 @@ for i, m in enumerate(varieties):
 monsters.sort(key=lambda m: (m['name'], m['id']))
 mon_stats = ot_stats(text('metadata', 'monsters', 'monster.ot'))
 dms = load('DefaultMonsterStats')
+# what a monster's rarity adds (Mods MonsterMagic<n>, MonsterRare<n>, MonsterUnique<n>): +% final life, energy shield, damage
+RARITY_STATS = {'monster_life_+%_final_from_rarity': 'life', 'monster_energy_shield_+%_final_from_rarity': 'es', 'monster_rarity_damage_+%_final': 'damage'}
+rarity = {}
+for m in mods:
+    r = re.fullmatch(r'Monster(Magic|Rare|Unique)\d+', m['Id'])
+    for j in range(1, 7):
+        if r and m.get(f'Stat{j}') is not None and stats[m[f'Stat{j}']]['Id'] in RARITY_STATS:
+            rarity.setdefault(r[1].lower(), {})[RARITY_STATS[stats[m[f'Stat{j}']]['Id']]] = m[f'Stat{j}Value'][0]
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({
         # index = monster level - 1
@@ -631,7 +639,7 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             'bleed_per_minute': game['BleedingHitDamagePercentPerMinute'], 'bleed_duration': game['BaseBleedingDuration'],
             'poison_per_minute': game['PoisonHitDamagePercentPerMinute'], 'poison_duration': game['BasePoisonDuration'],
         },
-        'monsters': monsters,
+        'monsters': monsters, 'rarity': rarity,
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
     }, f, ensure_ascii=False, separators=(',', ':'))
 print(f'monsters.json {len(monsters)} monsters ({sum(1 for m in monsters if m.get("boss"))} bosses), {len(mskills)} skills')
@@ -648,6 +656,7 @@ assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and re
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
 assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJewelType'] == 1, 'Mods.RadiusJewelType: 1 = small passives'
+assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'
 assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'

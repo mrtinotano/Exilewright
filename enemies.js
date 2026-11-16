@@ -35,13 +35,16 @@ export function search(q, limit = 80) {
 }
 
 // ---------- stats of a monster at a level (DefaultMonsterStats row × the monster's own multipliers)
+// A boss is a unique monster: its rarity's "more" life, energy shield and damage (Mods MonsterUnique<n>) on top.
+// note: normal monsters taken as normal rarity; a magic / rare choice when the scene needs one (MON.rarity has them)
 export function enemyStats(m, level) {
-  const total = Math.floor(row('life', level) * m.life), es = Math.round(total * (m.es || 0));   // part of the life pool is energy shield
-  let dmg = Math.floor(row('damage', level)) * m.damage;
+  const R = m.boss && MON.rarity?.unique || {}, more = k => 1 + (R[k] || 0) / 100;
+  const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
+  let dmg = Math.floor(row('damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
   const cap = K.monster_max_resistance ?? 75;
   return {
-    level, life: total - es, es,
+    level, life: Math.round((pool - part) * more('life')), es: Math.round(part * more('es')),
     armour: Math.round(row('armour', level) * (m.armour || 0)), evasion: Math.round(row('evasion', level) * (m.evasion || 0)),
     accuracy: Math.round(row('accuracy', level)),
     res: Object.fromEntries(TYPES.slice(1).map((el, i) => [el, Math.min(cap, m.res?.[i] || 0)])),
