@@ -17,3 +17,5 @@ build/
 dist/
 .venv-build/
 *.spec
+# pages of poe2db.tw read by poe2_data/_tool/uniques.py: their content, not ours to publish
+poe2_data/poe2db_cache/

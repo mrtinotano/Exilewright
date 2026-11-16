@@ -9,7 +9,7 @@ import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { SLOTS, classOf, slotClasses } from './items.js';
 import { diff, impactHtml, impactLine } from './impact.js';
-import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, wanted, withIds, findGear, leagues, status, weighted, siteLink, siteQuery } from './trade.js';
+import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, wanted, withIds, findGear, leagues, weighted, siteLink, siteQuery } from './trade.js';
 
 const KEY = 'poe2opt';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -36,7 +36,7 @@ export function initOpt(el, ctx) {
   let thinking = false;          // supports being worked out
   let msg = {};                  // what the last action did, per card
   const G = {};                  // gear found, per build + slot + class + objective
-  let net = null;                // the trade site: { leagues, session, offline }
+  let net = null;                // the trade site: { leagues, offline }
   const wantMemo = { key: '', list: [] };
 
   // ---------- the build and the objective
@@ -155,9 +155,8 @@ export function initOpt(el, ctx) {
   }
   function netStart(again) {
     if (net && !again) return;
-    const me = net = { leagues: null, session: false, offline: false };
+    const me = net = { leagues: null, offline: false };
     leagues().then(l => { me.leagues = l; }, e => { me.leagues = []; me.offline = e.kind === 'offline'; })
-      .then(() => me.offline || status().then(s => { me.session = !!s.session; }, () => { }))
       .then(() => { if (net === me && !el.hidden) render(); });
   }
   async function runGear() {
@@ -166,7 +165,7 @@ export function initOpt(el, ctx) {
     render();
     try {
       const wants = await withIds(wantsFor(b, g, sel));
-      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, S.key), wants, price, level, state, session: !!net?.session,
+      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, S.key), wants, price, level, state,
         tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
       G[id] = { res, wants, league, price, level, state, cls: sel.cls };
       if (res.errors.some(e => e.kind === 'offline')) netStart(true);   // the server may be up the next time
@@ -174,7 +173,7 @@ export function initOpt(el, ctx) {
   }
   const errText = e => e.kind === 'offline' ? t('The gear search needs the planner\'s own server: start it with "python3 serve.py" and open the page it prints.')
     : e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message);
-  const planText = p => p.weighted ? t('Weighted by what each modifier is worth') : p.prop ? t('Highest {0} of the item', t(PROPS[p.prop])) : t('Most of: {0}', p.by.text);
+  const planText = p => p.prop ? t('Highest {0} of the item', t(PROPS[p.prop])) : t('Most of: {0}', p.by.text);
   function found(b, g, sel, hit) {
     const { res, league } = hit, items = b.items || {}, value = valueOf(b, g, S.key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) })).sort((x, y) => (y.v ?? -Infinity) - (x.v ?? -Infinity)).slice(0, SHOWN);
@@ -195,7 +194,7 @@ export function initOpt(el, ctx) {
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
       ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.')}</p>` : ''}
-      ${w && !res.logged ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
+      ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
   }
   function gearCard(b, g) {
     const sel = gearSel(b), blocked = OBJECTIVES[S.key].skill && !g, wants = blocked ? [] : wantsFor(b, g, sel), cur = blocked ? null : valueOf(b, g, S.key)(b.items || {}), hit = G[gearKey(b, sel)];
@@ -213,7 +212,7 @@ export function initOpt(el, ctx) {
       ${net?.offline ? `<p class="opterr">${esc(errText({ kind: 'offline' }))}</p>` : ''}
       ${blocked ? '' : wants.length ? `<div class="optlist"><span class="note">${t('Worth the most here (a top roll of each)')}:</span> ${wants.slice(0, 8).map(w => `<span>${esc(w.text)} <i class="up">${gain(w)}</i></span>`).join(' · ')}</div>`
         : `<p class="note">${t('No modifier this slot can roll raises this objective.')}</p>`}
-      ${net && !net.offline && net.leagues ? `<p class="note">${net.session ? t('Trade session found: the weighted search runs here too.') : t('Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.')}</p>` : ''}
+      ${net && !net.offline && net.leagues ? `<p class="note">${t('Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.')}</p>` : ''}
       ${busy ? `<p class="optrun"><span id="optBusy">${esc(busy.text)}</span></p>` : hit ? found(b, g, sel, hit) : ''}</section>`;
   }
 

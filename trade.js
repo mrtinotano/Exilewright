@@ -74,7 +74,6 @@ async function call(path, body) {
 const cache = {};
 const data = kind => cache[kind] ||= call('data/' + kind).catch(e => { delete cache[kind]; throw e; });
 export const leagues = () => data('leagues').then(j => j.result.filter(l => l.realm === 'poe2').map(l => l.id));
-export const status = () => call('status');   // { session: true } when serve.py was started with the user's trade session
 
 // adds .id (the site's stat) to each line: "explicit.stat_<number>", the number Path of Building's data gives the
 // modifier. When the site's own list can be read, a line it does not have gets none. A desecrated line is found by
@@ -151,18 +150,16 @@ export function readListing(r) {
 // ---------- the search
 // Runs the searches, reads the first `per` items of each and rates them: value(items) with the item in `slot`.
 // tick(text key, args): progress. -> { found: [{ ...listing, value, plan }] best first, searches: [{ plan, id, total }],
-// unread (listed items the app has no base for), errors: [TradeError], logged (the weighted search ran) }
-export async function findGear({ league, cls, slot, items, value, wants, price, level, state, per = 10, session = false, tick }) {
-  const todo = plans({ cls, wants, price, level, state }), w = session && weighted({ cls, wants, price, level, state });
-  if (w) todo.unshift({ key: 'weight', gain: Infinity, body: w, weighted: true });
+// unread (listed items the app has no base for), errors: [TradeError] }
+export async function findGear({ league, cls, slot, items, value, wants, price, level, state, per = 10, tick }) {
+  const todo = plans({ cls, wants, price, level, state });
   const seen = new Set(), found = [], searches = [], errors = [];
-  let unread = 0, logged = false;
+  let unread = 0;
   for (const plan of todo) {
     try {
       tick?.('Searching the trade site ({0} of {1})…', searches.length + errors.length + 1, todo.length);
       const s = await call('search?league=' + encodeURIComponent(league), plan.body);
       searches.push({ plan, id: s.id, total: s.total });
-      if (plan.weighted) logged = true;
       const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, per);
       if (!ids.length) continue;
       ids.forEach(id => seen.add(id));
@@ -176,9 +173,9 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;
       errors.push(e);
-      if (e.kind !== 'site') break;   // the site turned this search down (the weighted one, when not logged in after all): the others may still run
+      if (e.kind !== 'site') break;   // the site turned this search down: the others may still run
     }
   }
   found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
-  return { found, searches, unread, errors, logged };
+  return { found, searches, unread, errors };
 }

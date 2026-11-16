@@ -3,6 +3,9 @@
 Personal Path of Exile 2 build planner: passive tree, equipment, skills/supports and a 3D scene.
 Every number comes from the game's own data (see `poe2_data/README.md`).
 
+Fan-made, not affiliated with or endorsed by Grinding Gear Games. Path of Exile, its data and images are (c)
+Grinding Gear Games; support stat readings come from Path of Building Community (MIT). See `LICENSE`.
+
 ## Run
 Double-click `start.cmd` (or `python serve.py`) and open http://127.0.0.1:8765
 
@@ -37,8 +40,7 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   trade site through `serve.py` (`/trade/*`, so the app has to be opened from `serve.py`), puts each listed item on
   the build and ranks them by what they change. Without a login the site only takes simple searches, so the app asks
   for the items with the most of each of the best modifiers; the weighted search Path of Building makes opens on the
-  site with one link. To run that one inside the app, start the server with your own session cookie of the site:
-  `POESESSID=... python3 serve.py` (it is only sent to www.pathofexile.com; this mode has not been tested).
+  site with one link (it runs there when you are logged in).
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
 **Loot** (its own tab) says whether an item is better than what the character wears: hold the pointer over an item in

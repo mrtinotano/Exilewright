@@ -12,10 +12,8 @@ here that way: the game's site hands characters only to programs registered with
   GET  /trade/data/<stats|filters|leagues|static>   what can be searched (kept in memory)
   POST /trade/search?league=<name>                   body = the query (JSON) -> ids of the items listed
   GET  /trade/fetch?ids=<a,b,...>&query=<search id>  the items (10 at most)
-  GET  /trade/status                                 {"session": true} when a session was given
-The site's answers, errors and rate limit headers go back as they come. Logged-out visitors cannot run weighted
-searches; to let the app run them start the server with your own session of the site in the POESESSID environment
-variable (it is only ever sent to www.pathofexile.com, never to the page):  POESESSID=... python3 serve.py
+The site's answers, errors and rate limit headers go back as they come. No login: weighted searches open on the
+official site instead.
 
 /clipboard?lang=<code> (GET, a stream of server-sent events) tells the Loot tab (loot.js) about the items copied in
 the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
@@ -85,8 +83,6 @@ def call(url, body=None):
 
 
 TRADE = 'https://www.pathofexile.com/api/trade2/'
-SESSION = os.environ.get('POESESSID', '').strip()
-SESSION = SESSION if re.fullmatch(r'[0-9a-f]{32}', SESSION) else ''   # anything else is not a session of the site
 PASS = ('Retry-After', 'X-Rate-Limit-Policy', 'X-Rate-Limit-Rules', 'X-Rate-Limit-Ip', 'X-Rate-Limit-Ip-State',
         'X-Rate-Limit-Account', 'X-Rate-Limit-Account-State')
 trade_data = {}
@@ -97,8 +93,6 @@ def trade(path, body=None):
     headers = dict(UA, Accept='application/json')
     if body is not None:
         headers['Content-Type'] = 'application/json'
-    if SESSION:
-        headers['Cookie'] = 'POESESSID=' + SESSION
     try:
         with urlopen(Request(TRADE + path, data=body, headers=headers), timeout=20) as r:
             return r.status, r.read(), {k: r.headers[k] for k in PASS if r.headers[k]}
@@ -401,8 +395,6 @@ class Handler(SimpleHTTPRequestHandler):
         one = lambda k: q.get(k, [''])[0]
         what = u.path[len('/trade/'):]
         try:
-            if what == 'status' and body is None:
-                return self.reply_json(200, json.dumps({'session': bool(SESSION)}).encode())
             if what in ('data/stats', 'data/filters', 'data/leagues', 'data/static') and body is None:
                 if what not in trade_data:
                     code, data, headers = trade(what)
