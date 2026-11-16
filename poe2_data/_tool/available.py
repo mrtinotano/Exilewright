@@ -262,7 +262,7 @@ weapon_req = [[classes[wieldable[c]['ItemClass']]['Name'] for c in r['WieldableC
 # Socketed Skills an additional effect" (Gemling Legionnaire)
 quality_tab = {r['GrantedEffect']: r for r in load('GrantedEffectQualityStats')}
 # a totem is a monster: ActiveSkills.SkillTotemId -> SkillTotemVariations -> MonsterVarieties (its life multiplier)
-totem_variety, varieties = {}, load('MonsterVarieties')
+totem_variety, varieties, monster_types = {}, load('MonsterVarieties'), load('MonsterTypes')
 for r in load('SkillTotemVariations'):
     totem_variety.setdefault(r['SkillTotemsKey'], varieties[r['MonsterVarietiesKey']])
 skills, skill_csd = {}, {}
@@ -334,7 +334,8 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     }
     totem = next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
     if totem and 'is_totem' in implicit:   # the totem's life: a monster of its level times its variety's multiplier
-        skills[g['name']]['totem'] = {'life_mult': totem['LifeMultiplier'] / 100, 'ballista': 'is_ranged_attack_totem' in implicit}
+        skills[g['name']]['totem'] = {'life_mult': totem['LifeMultiplier'] / 100, 'ballista': 'is_ranged_attack_totem' in implicit,
+                                      'armour': monster_types[totem['MonsterType']]['Armour']}   # MonsterTypes.Armour: 0 or 100 for totems
     # the skill's own stat texts (Berserk's Rage effect, Virtuous Barrier's Motes): ActiveSkills.StatDescription
     csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')
     if 'specific_skill_stat_descriptions' in csd.lower():
@@ -616,7 +617,7 @@ assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit:
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
-assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
+assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))

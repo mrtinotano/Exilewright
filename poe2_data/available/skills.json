@@ -50513,7 +50513,8 @@
    ],
    "totem": {
     "life_mult": 1.0,
-    "ballista": false
+    "ballista": false,
+    "armour": 0
    }
   },
   "Blind I": {
@@ -59105,7 +59106,8 @@
    ],
    "totem": {
     "life_mult": 1.0,
-    "ballista": true
+    "ballista": true,
+    "armour": 100
    }
   },
   "Second Wind I": {
@@ -68036,7 +68038,8 @@
    ],
    "totem": {
     "life_mult": 1.0,
-    "ballista": true
+    "ballista": true,
+    "armour": 100
    }
   },
   "Mana Tempest": {
@@ -73048,7 +73051,8 @@
    ],
    "totem": {
     "life_mult": 1.2,
-    "ballista": false
+    "ballista": false,
+    "armour": 100
    }
   },
   "Spell Totem": {
@@ -73398,7 +73402,8 @@
    "weapons": null,
    "totem": {
     "life_mult": 1.0,
-    "ballista": false
+    "ballista": false,
+    "armour": 100
    }
   },
   "Explosive Grenade": {
@@ -85758,7 +85763,8 @@
    "weapons": null,
    "totem": {
     "life_mult": 1.0,
-    "ballista": false
+    "ballista": false,
+    "armour": 0
    }
   },
   "Bounty I": {
@@ -113680,7 +113686,8 @@
    ],
    "totem": {
     "life_mult": 1.0,
-    "ballista": true
+    "ballista": true,
+    "armour": 100
    }
   },
   "Ancestral Cry": {
