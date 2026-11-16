@@ -2448,7 +2448,8 @@
   "energy_shield_delay_ms": 4000,
   "ailment_threshold_life_%": 50,
   "ignite_%_per_second": 20.0,
-  "ignite_duration_s": 4.0
+  "ignite_duration_s": 4.0,
+  "base_maximum_rage": 30.0
  },
  "quest_rewards": [
   [

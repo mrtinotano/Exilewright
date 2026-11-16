@@ -371,6 +371,7 @@ char_stats['ailment_threshold_life_%'] = round(game['PlayerAilmentThresholdLifeF
 # Ignite: a share of the hit's fire damage per second, for a few seconds (the game's window: 815-1772 fire -> 163-354.4/s)
 char_stats['ignite_%_per_second'] = game['IgniteHitDamagePercentPerMinute'] / 60
 char_stats['ignite_duration_s'] = game['BaseIgniteDuration']
+char_stats['base_maximum_rage'] = game['BaseMaximumRage']   # 30; passives add maximum_rage
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
 # what the campaign leaves on a character: the stats of every permanent quest reward (the table also keeps rewards the
 # campaign no longer gives: which ones count is pob2.py's part; the tally of boss faces is no stat of the character),
@@ -652,6 +653,7 @@ assert all(s['levels'] for s in skills.values()), 'a gem without stats per level
 assert skills['Fireball']['cast_time_ms'] and skills['Fireball']['levels'][20]['spell_minimum_base_fire_damage'] > 0
 assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms', 'ailment_threshold_life_%')), 'character.ot / GameConstants'
 assert char_stats['ignite_%_per_second'] == 20 and char_stats['ignite_duration_s'] == 4, 'GameConstants: Ignite'
+assert char_stats['base_maximum_rage'] == 30, 'GameConstants: BaseMaximumRage'
 assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'BaseMaxMana')), 'Characters base life / mana'
 assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'

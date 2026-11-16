@@ -376,6 +376,13 @@ export function skill(g, b, treeGear) {
   // the game's window, 1.79 s, has them). Its +100% cooldown recovery is not in that window (10.99 s fits without)
   const metaFinal = end => byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
   const metaSpeed = metaFinal('attack_speed_+%_final'), metaDmg = metaFinal('ballista_damage_+%_final');
+  // Rage: 1% more attack damage per point (measured in the game, 16/11: 44 Rage made every damage type of Cluster Grenade
+  // x1.440; the value is in no table, only the stat attack_damage_final_permyriad_from_rage). note: full Rage (30 of
+  // GameConstants + "maximum Rage") when a gem of the build regenerates it (Eternal Rage), else none; Berserk's
+  // "Rage effect" not counted until measured
+  const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
+  const rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') : 0;
+  out.rage = rage;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -406,7 +413,7 @@ export function skill(g, b, treeGear) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * (1 + rage / 100)
     * (1 + (inc(sum, 'damage_+%', byTotem ? [...tags, 'totem'] : tags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];

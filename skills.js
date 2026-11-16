@@ -54,6 +54,7 @@ function details(g, b, sum, geo) {
       ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
       ['Total Combined Damage', hits.length ? `${fmt(lo)} – ${fmt(hi)}` : '—'],
       ...hits.map(([k, [a, z]]) => [DTYPE[k], `${fmt(a)} – ${fmt(z)}`]),
+      s.rage > 0 && ['Rage (more attack damage)', s.rage],
     ])}
     ${sec('Speed', [
       !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
