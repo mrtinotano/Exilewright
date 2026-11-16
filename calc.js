@@ -381,8 +381,7 @@ export function skill(g, b, treeGear) {
   // GameConstants + "maximum Rage") when a gem of the build regenerates it (Eternal Rage), else none; Berserk's
   // "Rage effect" not counted until measured
   const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
-  const rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') : 0;
-  out.rage = rage;
+  const rage = out.rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') : 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
