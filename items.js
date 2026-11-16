@@ -18,7 +18,8 @@ const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 
 // first spawn tag the base has decides the weight (game rule); weight 0 = cannot roll
-// desecrated: also the desecrated modifiers (Abyss) its tags allow, for reading an item; making one only rolls the usual
+// desecrated: also the desecrated modifiers (Abyss) its tags allow, for reading an item and in the item maker; the gear
+// search (affixLines) only the usual ones: the trade site looks for desecrated ones apart
 const canRoll = (a, base, desecrated) => { if (a.desecrated ? !desecrated : a.domain !== base.domain) return false; const t = a.spawn.find(([tag]) => base.tags.includes(tag)); return !!t && t[1] > 0; };
 
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
@@ -30,19 +31,20 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
   return out;
 }
 
-// item's own numbers after its local mods: (base + flat) × (1 + increased%)
+// item's own numbers after its local mods: (base + flat) × (1 + increased%) × (1 + quality%), quality on its own as
+// Path of Building 2 has it (Item.lua: armour, evasion, energy shield and a weapon's physical damage)
 function local(item) {
-  const base = BASE[item.base], s = rolled(item), r = {};
+  const base = BASE[item.base], s = rolled(item), r = {}, q = 1 + (item.quality || 0) / 100;
   if (base.armour) {
     const inc = (...ids) => 1 + ids.reduce((t, id) => t + (s[`local_${id}_+%`] || 0), 0) / 100, all = 'armour_and_evasion_and_energy_shield';
     // note: Math.round, the game's exact rounding for defences isn't in the data
-    r.armour = Math.round((base.armour.armour + (s.local_base_physical_damage_reduction_rating || 0)) * inc('physical_damage_reduction_rating', 'armour_and_evasion', 'armour_and_energy_shield', all));
-    r.evasion = Math.round((base.armour.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all));
-    r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all));
+    r.armour = Math.round((base.armour.armour + (s.local_base_physical_damage_reduction_rating || 0)) * inc('physical_damage_reduction_rating', 'armour_and_evasion', 'armour_and_energy_shield', all) * q);
+    r.evasion = Math.round((base.armour.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
+    r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
     r.movement = base.armour['movement_speed_%'] / 100;
   }
   if (base.weapon) {
-    const w = base.weapon, phys = 1 + (s['local_physical_damage_+%'] || 0) / 100;
+    const w = base.weapon, phys = (1 + (s['local_physical_damage_+%'] || 0) / 100) * q;
     r.physical = [Math.round((w.min + (s.local_minimum_added_physical_damage || 0)) * phys), Math.round((w.max + (s.local_maximum_added_physical_damage || 0)) * phys)];
     for (const e of ['fire', 'cold', 'lightning']) if (s[`local_minimum_added_${e}_damage`]) r[e] = [s[`local_minimum_added_${e}_damage`], s[`local_maximum_added_${e}_damage`]];
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
@@ -92,7 +94,7 @@ export function itemText(it) {
   const p = itemParts(it);
   if (!p) return '';
   return ['Rarity: ' + RARITY[p.r], ...p.name ? [p.name] : [], p.base.name,
-    'Item Level: ' + p.ilvl, 'Implicits: ' + p.impl.length, ...p.impl, ...p.expl].join('\n');
+    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], 'Implicits: ' + p.impl.length, ...p.impl, ...p.expl].join('\n');
 }
 // the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
@@ -215,6 +217,8 @@ export function parseItem(text) {
     }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+  const quality = raw.map(l => l.match(/^Quality: \+?(\d+)/)?.[1]).find(Boolean);   // the game: "Quality: +20% (augmented)", Path of Building: "Quality: 20"
+  if (+quality) item.quality = +quality;
   const own0 = base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])), im = matchLines(impl, own0);
   // the game's detailed text gives implicits no tag: a plain line worded as one of the base's own is it
   const im2 = matchLines(expl, own0.filter(c => !im.found.some(f => f.key === c.key)));
@@ -227,6 +231,13 @@ export function parseItem(text) {
     if (!left.length) break;
     const m = matchLines(left, D.affixes.filter(pool).flatMap(a => shapes(a.id, a.stats)));
     for (const f of m.found) AFFIX[f.key].stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
+    left = m.missed;
+  }
+  // ...and what is no modifier's wording, by what the runes themselves give (SoulCoreStats: "32% increased Life and
+  // Mana Recovery from Flasks")
+  if (left.length) {
+    const m = matchLines(left, (D.runes || []).flatMap((st, i) => shapes(i, st)));
+    for (const f of m.found) D.runes[f.key].forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
     left = m.missed;
   }
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
@@ -431,7 +442,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     const rarity = rarityOf(it), rest = { ...getBuild().items };
     delete rest[slot];
     const families = new Set(mods.map(m => AFFIX[m.id].family));
-    const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base) && !families.has(a.family) && count(a.affix) < MAX_AFFIX)
+    const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX)
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
     const props = [
       l.physical && prop('Physical Damage', l.physical.join('–')),
@@ -439,6 +450,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
       l.crit && prop('Critical Hit Chance', l.crit.toFixed(2) + '%'), l.attacks_per_second && prop('Attacks per Second', l.attacks_per_second.toFixed(2)),
       l.armour && prop('Armour', l.armour), l.evasion && prop('Evasion Rating', l.evasion), l.energy_shield && prop('Energy Shield', l.energy_shield),
       l.movement && prop('Base Movement Speed', l.movement + '%'),
+      (base.armour || base.weapon) && prop('Quality', `<input type="number" min="0" step="1" class="qual" data-slot="${slot}" data-act="quality" value="${it.quality || 0}">%`),
       l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),
     ].filter(Boolean).join('');
     const impl = base.implicits.map((id, i) => `<div class="mod">${text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
@@ -449,7 +461,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
-          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
+          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
   }
 
@@ -509,6 +521,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
       if (o) equip(slot, o.v);
       return;
+    } else if (t.dataset.act === 'quality') {
+      const q = Math.max(0, Math.round(+t.value) || 0);
+      if (q) items[slot].quality = q; else delete items[slot].quality;
     } else if (t.dataset.act === 'add' && t.value) {
       items[slot].mods.push({ id: t.value, values: fixVals(AFFIX[t.value].stats) });
     } else if (t.dataset.path) {
@@ -534,6 +549,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   return render;
 }
 
+const NL = String.fromCharCode(10);
 // self-check, a rare as the game copies it (detailed text): two plain modifiers, not the two-line one of another tier
 console.assert(parseItem('Rarity: Rare\nWoe Crusher\nOmen Sceptre\n--------\nSpirit: 134 (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Viscount\'s" (Tier: 6) }\n34(33-38)% increased Spirit\n{ Prefix Modifier "Blue" (Tier: 1) — Mana }\n+159(150-164) to maximum Mana')
   ?.item.mods.map(m => m.values).join() === '34,159', 'parseItem: detailed item text');
@@ -543,6 +559,12 @@ console.assert(parseItem('Rarity: Magic\nVitiating Ultimate Life Flask of the Pe
 // ...and gloves as Path of Building writes them: the rune counts (among its "Implicits"), its Bonded lines do not
 console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSockets: S\nRune: Greater Desert Rune\nLevelReq: 59\nImplicits: 3\n{enchant}{rune}Bonded: +20 to maximum Life\n{enchant}{rune}Bonded: +20 to maximum Mana\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield')
   ?.item.extra?.['base_fire_damage_resistance_%'] === 18, 'parseItem: a rune in Path of Building text');
+// ...and a rune no modifier is worded like
+console.assert(parseItem('Rarity: Rare'+NL+'Woe Mantle'+NL+'Gold Gloves'+NL+'--------'+NL+'Item Level: 70'+NL+'--------'+NL+'32% increased Life and Mana Recovery from Flasks (rune)')
+  ?.item.extra?.['flask_life_and_mana_to_recover_+%'] === 32, 'parseItem: a rune of its own wording');
+// ...and quality, a multiplier of its own on the item's defences
+{ const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && BASE[r.item.base].armour.energy_shield;
+  console.assert(r?.item.quality === 20 && local(r.item).energy_shield === Math.round(base * 1.2), 'parseItem: quality'); }
 { // ...and the off hand: none next to a crossbow, a quiver next to a bow only
   const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
   console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');

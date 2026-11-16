@@ -467,7 +467,12 @@ for i, b in enumerate(load('BaseItemTypes')):
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
         'spirit': spirit.get(i),
     })
+# what a rune (soul core, talisman...) gives in a socket, every set of stats once ([[id, value, value], ...]): parseItem
+# reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
+rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValues'])): 1 for r in load('SoulCoreStats') if r['Stats']})
+assert any(x[0][0] == 'base_fire_damage_resistance_%' for x in rune_sets), 'SoulCoreStats'
 save('items.json', {
+    'runes': rune_sets,
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
