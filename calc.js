@@ -24,16 +24,21 @@ console.assert(QUESTS.length && QUESTS.every(q => q.options.every(o => !o.missed
 // skill's own text has it. It holds Motes of each attribute, at most the skill's own number plus one per skill of the
 // build that requires that attribute (two if it requires no other), and each kind of Mote gives its part: life,
 // "Armour, Evasion and Energy Shield" in one line, life and mana regeneration.
-// A meta gem (Mortar Cannon) is not counted: the game's 10 / 5 / 6 Motes of a build with Mortar Cannon and the Cluster
-// Grenade it uses (both Strength and Dexterity) count one of the two. note: the meta gem left out, not the skill in it;
-// a build with a meta gem and its skills of other attributes would tell which.
+// A meta gem and the skill it uses count once: the game's 13 / 6 / 6 Motes of a build with Ancestral Warrior Totem
+// (a meta gem, Strength) and Mortar Cannon with the Cluster Grenade it uses (both Strength and Dexterity). note: the
+// meta gem counted, not the skill in it; a build with a meta gem and its skills of other attributes would tell which.
 // note: every Mote it can hold (a hit takes one away, they come back in seconds)
 const ATTRS = ['strength', 'dexterity', 'intelligence'];
+// the meta gem that uses the build's i-th gem: the one before it, with the same supports, for a weapon both use
+// (Mortar Cannon's crossbow grenades; Ancestral Warrior Totem's maces, not the Orb of Storms after it)
+const usedBy = (b, i) => { const m = i > 0 && b.gems[i - 1], ws = m && SK.skills[m.name]?.weapons;
+  return ws && GEM[m.name]?.tags?.includes('meta') && String(m.supports || []) === String(b.gems[i].supports || [])
+    && SK.skills[b.gems[i].name]?.weapons?.some(x => ws.includes(x)) ? m : null; };
 export function skillStats(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};
   const motes = Object.fromEntries(ATTRS.map(a => [a, c.skill_specific_stat_description_mode || 0]));
-  for (const g of b.gems) { if (GEM[g.name]?.tags?.includes('meta')) continue; const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
+  for (const [i, g] of b.gems.entries()) { if (usedBy(b, i)) continue; const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
   const per = (id, a) => (c[id] || 0) * motes[a];
   return { 'maximum_life_+%': per('gem_barrier_red_grants_maximum_life_+%', 'strength'),
     'global_armour_evasion_energy_shield_+%': per('gem_barrier_green_grants_evasion_rating_+%', 'dexterity'),
@@ -44,8 +49,9 @@ export function skillStats(b) {
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
-// self-check: 3 Strength Motes of its own and 2 for Berserk, which requires Strength alone, at 2% life each (none for a meta gem)
-console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }] })['maximum_life_+%'] === 10 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
+// self-check: 3 Strength Motes of its own, 2 for Berserk, which requires Strength alone, and 1 for Mortar Cannon with the
+// Cluster Grenade it uses, at 2% life each
+console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }, { name: 'Cluster Grenade' }] })['maximum_life_+%'] === 12 && skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Ancestral Warrior Totem' }, { name: 'Orb of Storms' }] })['life_regeneration_rate_+%'] === 25 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
 const CHAR = SK.character_stats || {};
 const v = (sum, ...ids) => ids.reduce((t, id) => t + (sum[id] || 0), 0);
 const first = (...xs) => xs.find(x => x != null) ?? null;
@@ -361,8 +367,7 @@ export function skill(g, b, treeGear) {
   // Path of Building group comes in) is a ballista's attack: "increased Ballista Damage" counts, and "per active Totem
   // in your Presence" once, for that totem. Fitted on the game's window (+55%: 45 Ballista, 10 per totem); its 95%
   // "increased Totem Damage" did not count there. note: the gem before it, a link of its own if a build breaks it
-  const i = (b.gems || []).indexOf(g), meta = i > 0 && b.gems[i - 1], byTotem = meta && GEM[meta.name]?.tags?.includes('meta')
-    && SK.skills[meta.name]?.totem && String(meta.supports || []) === String(g.supports || []) ? SK.skills[meta.name].totem : null;
+  const meta = usedBy(b, (b.gems || []).indexOf(g)), byTotem = meta && SK.skills[meta.name]?.totem || null;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   const perTotem = byTotem && attack ? v(sum, 'attack_damage_+%_per_active_totem_in_presence') : 0;
   // and the meta gem's own support part slows it (Mortar Cannon: -50% more attack speed; the game's window, 1.79 s,
