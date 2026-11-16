@@ -1,9 +1,9 @@
-﻿; Inno Setup 6 script for the installer (build_app.py runs it): installs dist\Exilewright for the current user,
+; Inno Setup 6 script for the installer (build_app.py runs it): installs dist\Exilewright for the current user,
 ; no admin rights needed. The app keeps its data in %LOCALAPPDATA%\Exilewright, which uninstalling leaves alone.
 [Setup]
 AppName=Exilewright
 AppVersion=1.1
-AppPublisher=OxtailGames
+AppPublisher=mrtinotano
 DefaultDirName={autopf}\Exilewright
 DefaultGroupName=Exilewright
 PrivilegesRequired=lowest
