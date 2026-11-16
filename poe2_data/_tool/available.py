@@ -489,6 +489,11 @@ save('items.json', {
     'runes': rune_sets,
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
     'jewel_radii': {r['Radius']: re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', r['ID']) for r in load('PassiveJewelRadii')},
+    # how the game opens a radius jewel's line in each language (ClientStrings ModStatJewelAddTo*: "Small Passive Skills
+    # in Radius also grant {0}", "[SmallPassive|Small Passive]" markup shown as its second part): {0} is the stat's line
+    'radius_grant': {c: {k: re.sub(r'\[(?:[^|\]]*\|)?([^\]]*)\]', r'\1', t['ModStatJewelAddTo' + k.title()]).strip()
+                         for k in ('small', 'notable')}
+                     for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},

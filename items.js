@@ -41,8 +41,11 @@ export function radiusOf(item) {
 // the implicit that is a radius jewel's radius reads as the game shows it: "Radius: Small" (PassiveJewelRadii)
 const radiusOnly = st => st.length === 1 && st[0][0] === 'local_jewel_effect_base_radius';
 const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
-// how the game words a radius modifier: the passives' part before the modifier's own line
-const RADIUS = /^(Small|Notable) Passive Skills in Radius also grant:?\s*/;
+// how the game words a radius modifier in any language (ClientStrings: "Small Passive Skills in Radius also grant {0}",
+// "…は{0}も付与する"): line -> [kind, the modifier's own line]
+const RADIUS = Object.values(D.radius_grant).flatMap(o => Object.entries(o).map(([kind, tpl]) =>
+  [kind, new RegExp('^' + tpl.split('{0}').map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(':?\\s*(.+?)\\s*') + '$')]));
+const radLine = l => RADIUS.map(([kind, re]) => [kind, l.match(re)?.[1]]).find(x => x[1]);
 const radLines = (a, lines, en) => !a.radius ? lines : lines.map(l => en ? `${a.radius === 'small' ? 'Small' : 'Notable'} Passive Skills in Radius also grant ${l}`
   : t(a.radius === 'small' ? 'Small Passive Skills in Radius also grant {0}' : 'Notable Passive Skills in Radius also grant {0}', l));
 
@@ -260,9 +263,9 @@ export function parseItem(text) {
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
   // a flask: no modifier ends in one) are not modifiers
   const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l) || /[.。]$/.test(l);
-  const rad = expl.filter(l => RADIUS.test(l)).map(l => { const kind = l.match(RADIUS)[1].toLowerCase(), line = l.replace(RADIUS, '').replace(/\bGlobal /, '');
+  const rad = expl.filter(radLine).map(l => { const [kind, said] = radLine(l), line = said.replace(/\s*\bglobal\b/i, '');
     return matchLines([line], D.affixes.filter(a => a.radius === kind && canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats))).found[0] || l; });
-  expl = expl.filter(l => !RADIUS.test(l));
+  expl = expl.filter(l => !radLine(l));
   let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
   if (ex) { ex.found.push(...rad.filter(f => typeof f !== 'string')); ex.missed.push(...rad.filter(f => typeof f === 'string')); }
   // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of

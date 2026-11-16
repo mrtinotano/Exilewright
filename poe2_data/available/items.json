@@ -3772,6 +3772,48 @@
   "1500": "Very Large",
   "2400": "Massive"
  },
+ "radius_grant": {
+  "en": {
+   "small": "Small Passive Skills in Radius also grant {0}",
+   "notable": "Notable Passive Skills in Radius also grant {0}"
+  },
+  "es": {
+   "small": "Las habilidades pasivas pequeñas dentro del radio también otorgan {0}",
+   "notable": "Las habilidades pasivas notables dentro del radio también otorgan {0}"
+  },
+  "pt": {
+   "small": "Habilidades passivas pequenas ao alcance também concedem {0}",
+   "notable": "Habilidades passivas notáveis ao alcance também concedem {0}"
+  },
+  "fr": {
+   "small": "Les Talents Mineurs dans le Rayon octroient également {0}",
+   "notable": "Les Talents éminents dans le Rayon octroient également {0}"
+  },
+  "de": {
+   "small": "Kleine Passive Fertigkeiten im Radius gewähren auch {0}",
+   "notable": "Bedeutende Passive Fertigkeiten im Radius gewähren auch {0}"
+  },
+  "ru": {
+   "small": "Малые пассивные умения в радиусе также дают: {0}",
+   "notable": "Значимые пассивные умения в радиусе также дают: {0}"
+  },
+  "ja": {
+   "small": "範囲内のスモールパッシブスキルは{0}も付与する",
+   "notable": "範囲内のノータブルパッシブスキルは{0}も付与する"
+  },
+  "ko": {
+   "small": "반경 내 소형 패시브 스킬이 {0}도 부여",
+   "notable": "반경 내 주요 패시브 스킬이 {0}도 부여"
+  },
+  "th": {
+   "small": "พาสซีฟเล็ก ในรัศมี มอบม็อด: {0}",
+   "notable": "พาสซีฟกลาง ในรัศมี มอบม็อด: {0}"
+  },
+  "zh": {
+   "small": "範圍內小型天賦也會賦予 {0}",
+   "notable": "範圍內核心天賦也會賦予 {0}"
+  }
+ },
  "bases": [
   {
    "name": "Warlord Cuirass",
