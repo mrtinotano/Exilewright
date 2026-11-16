@@ -466,8 +466,11 @@ save('items.json', {
     'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
     'affixes': [{'id': m['Id'], 'name': m['Name'], **tr(mods_tr, i), 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
                  'level': m['Level'], 'domain': m['Domain'], 'family': m['Families'][0] if m['Families'] else None, 'stats': mod_stats(m),
-                 'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])]}
-                for i, m in enumerate(mods) if m['Domain'] in (1, 2, 11) and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
+                 'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])],
+                 **({'desecrated': True} if m['Domain'] == 28 else {})}
+                # desecrated modifiers (Abyss: "Ulaman's", "of Kurgal"...) are AbyssMod* of domain 28, for any item their tags fit
+                for i, m in enumerate(mods) if (m['Domain'] in (1, 2, 11) or m['Domain'] == 28 and m['Id'].startswith('AbyssMod'))
+                and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
 })
 
 # --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
@@ -612,6 +615,7 @@ assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'Ba
 assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
+assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
 assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'

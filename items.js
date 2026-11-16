@@ -18,7 +18,8 @@ const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 
 // first spawn tag the base has decides the weight (game rule); weight 0 = cannot roll
-const canRoll = (a, base) => { if (a.domain !== base.domain) return false; const t = a.spawn.find(([tag]) => base.tags.includes(tag)); return !!t && t[1] > 0; };
+// desecrated: also the desecrated modifiers (Abyss) its tags allow, for reading an item; making one only rolls the usual
+const canRoll = (a, base, desecrated) => { if (a.desecrated ? !desecrated : a.domain !== base.domain) return false; const t = a.spawn.find(([tag]) => base.tags.includes(tag)); return !!t && t[1] > 0; };
 
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = BASE[item.base], out = {};
@@ -232,7 +233,7 @@ export function parseItem(text) {
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
   // a flask: no modifier ends in one) are not modifiers
   const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l) || /[.。]$/.test(l);
-  let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+  let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
   // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of
   // this base (two at least) among them
   if (ex?.missed.some(l => !noise(l)) && head.length > 1) u = UNIQUES.filter(x => x.base === base.name)
