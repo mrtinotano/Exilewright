@@ -141,13 +141,15 @@ function shapes(key, stats) {   // the mod as text at its top and bottom roll (t
 }
 function matchLines(lines, cands, family = () => null) {
   const by = new Map(), found = [], missed = [], used = new Set();
-  for (const c of cands) (by.get(c.lines[0]) || by.set(c.lines[0], []).get(c.lines[0])).push(c);
+  // a modifier of several lines is looked up by any of them: the game may print them in another order than ours
+  for (const c of cands) for (const l of new Set(c.lines)) (by.get(l) || by.set(l, []).get(l)).push(c);
   for (let i = 0; i < lines.length;) {
     let best = null;
     for (const c of by.get(skel(lines[i])) || []) {
-      const span = lines.slice(i, i + c.lines.length);
-      if (span.length < c.lines.length || c.lines.some((l, j) => l !== skel(span[j])) || used.has(family(c.key) ?? c.key)) continue;
-      const n = nums(span), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
+      const span = lines.slice(i, i + c.lines.length), sk = span.map(skel), at = [];
+      for (const l of c.lines) at.push(sk.findIndex((x, j) => x === l && !at.includes(j)));
+      if (span.length < c.lines.length || at.includes(-1) || used.has(family(c.key) ?? c.key)) continue;
+      const n = nums(at.map(j => span[j])), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
       const off = c.stats.reduce((t, [, lo, hi], k) => t + Math.max(0, Math.min(lo, hi) - values[k], values[k] - Math.max(lo, hi)), 0);
       // rolls inside the modifier's range first (two plain modifiers also read as one two-line modifier of another
       // tier, with their numbers far off its range), then the one that takes more lines, then the nearest
@@ -607,6 +609,9 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
   const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
   console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');
 }
+// ...and a modifier of several lines the game prints in another order than its stats (Noble's: base lines first)
+{ const k = parseItem("Item Class: Body Armours\nRarity: Magic\nNoble's Wolfskin Mantle\n--------\nItem Level: 65\n--------\n+8 to Armour\n+5 to maximum Energy Shield\n15% increased Armour and Energy Shield");
+  console.assert(!k.missed.length && String(k.item.mods[0]?.values) === '15,8,5', 'hybrid modifier out of order', k); }
 // ...and a radius jewel as the game copies it: its line read as a small passives' modifier, not one of its own
 { const j = parseItem('Item Class: Jewels\nRarity: Magic\nSharpened Time-Lost Ruby\n--------\nRadius: Small\n--------\nItem Level: 62\n--------\nSmall Passive Skills in Radius also grant 2(1-2)% increased Global Physical Damage');
   console.assert(!j.missed.length && radiusOf(j.item)?.r === 1000 && radiusOf(j.item).small['physical_damage_+%'] === 2 && !gearStats({ 'jewel:1': j.item })['physical_damage_+%']
