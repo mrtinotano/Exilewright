@@ -265,6 +265,11 @@ quality_tab = {r['GrantedEffect']: r for r in load('GrantedEffectQualityStats')}
 totem_variety, varieties, monster_types = {}, load('MonsterVarieties'), load('MonsterTypes')
 for r in load('SkillTotemVariations'):
     totem_variety.setdefault(r['SkillTotemsKey'], varieties[r['MonsterVarietiesKey']])
+# ...unless a stat of the skill says which monster it is: totem_has_<X> -> MonsterVarietiesArtVariations X
+# (Ancestral Warrior Totem's spirit: life x1 and no x4 armour, as the game's window shows, not SkillTotemId's SlamTotem)
+art_variety = {}
+for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietiesKeys']):
+    art_variety.setdefault(r['Id'], varieties[r['MonsterVarietiesKeys'][0]])
 skills, skill_csd = {}, {}
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
@@ -332,7 +337,8 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
     }
-    totem = next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
+    totem = next((art_variety[k[10:]] for k in implicit | set(const) if k.startswith('totem_has_') and k[10:] in art_variety), None) \
+        or next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
     if totem and 'is_totem' in implicit:   # the totem's life: a monster of its level times its variety's multiplier
         skills[g['name']]['totem'] = {'life_mult': totem['LifeMultiplier'] / 100, 'ballista': 'is_ranged_attack_totem' in implicit,
                                       'armour': monster_types[totem['MonsterType']]['Armour']}   # MonsterTypes.Armour: 0 or 100 for totems
@@ -617,7 +623,7 @@ assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit:
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
-assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
+assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))

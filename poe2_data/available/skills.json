@@ -73050,9 +73050,9 @@
     "Two Hand Maces"
    ],
    "totem": {
-    "life_mult": 1.2,
+    "life_mult": 1.0,
     "ballista": false,
-    "armour": 100
+    "armour": 0
    }
   },
   "Spell Totem": {
