@@ -66,6 +66,10 @@ function details(g, b, sum, geo) {
       ['Critical hit chance', s.crit != null ? fmt(s.crit, 2) + '%' : '—'],
       ['Critical Damage Bonus', s.critBonus != null ? '+' + fmt(s.critBonus) + '%' : '—'],
     ])}
+    ${sec('Ailments', [
+      s.ignite && ['Ignite damage per second', `${fmt(s.ignite.perSecond[0], 1)} – ${fmt(s.ignite.perSecond[1], 1)}`],
+      s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],
+    ])}
     ${sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
     ${sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],

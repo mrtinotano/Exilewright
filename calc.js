@@ -407,6 +407,9 @@ export function skill(g, b, treeGear) {
     const perMin = st[`base_${t}_damage_to_deal_per_minute`];
     if (perMin) out.dot[t] = perMin / 60 * scale(t, true);
   }
+  // Ignite of a hit with fire damage: GameConstants' share of it per second, for its base duration. note: no
+  // ignite magnitude or duration modifiers yet (none on the build it was checked with, 163-354.4/s as the game)
+  if (out.hits.fire && CHAR['ignite_%_per_second']) out.ignite = { perSecond: out.hits.fire.map(x => x * CHAR['ignite_%_per_second'] / 100), duration: CHAR.ignite_duration_s };
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   // uses per second
