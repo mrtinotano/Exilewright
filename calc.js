@@ -379,12 +379,13 @@ export function skill(g, b, treeGear) {
   // Rage: 1% more attack damage per point (measured in the game, 16/11: 44 Rage made every damage type of Cluster Grenade
   // x1.440; the value is in no table, only the stat attack_damage_final_permyriad_from_rage). note: full Rage (30 of
   // GameConstants + "maximum Rage") when a gem of the build regenerates it (Eternal Rage), else none. Berserk's "increased
-  // Rage effect" (its gem level) scales that bonus: the game's window with Berserk 17 (56%) and 46 Rage, 16/11, gives
-  // x1.730 (46 x 1.56% = x1.718). note: the +2 Rage Berserk showed in the game is in no table, not counted
+  // Rage effect" (gem level and quality) scales that bonus, and its Gemling alt quality grants maximum Rage: the game's
+  // window with Berserk 17, 6% quality (59%, +2 Rage: 46), 16/11, gives x1.730 (46 x 1.59% = x1.731)
   const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
-  const rage = out.rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') : 0;
   const berserk = (b.gems || []).find(x => SK.skills[x.name]?.quality?.['skill_base_rage_effect_+%_to_apply']);
-  const rageEffect = out.rageEffect = berserk ? gemStats(berserk, treeGear)['skill_base_rage_effect_+%_to_apply'] || 0 : 0;
+  const bst = berserk ? gemStats(berserk, treeGear) : {};
+  const rage = out.rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (bst['berserk_maximum_rage_granted_+'] || 0) : 0;
+  const rageEffect = out.rageEffect = bst['skill_base_rage_effect_+%_to_apply'] || 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
