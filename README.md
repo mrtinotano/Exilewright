@@ -41,7 +41,7 @@ the game (one you found and identified, one in the inventory or the stash, one a
 The game puts the item's text in the clipboard, `serve.py` passes it to the page (`/clipboard`), and the page puts the
 item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
 decide what counts. Without a skill in the build only defences and the weapon's own damage are judged.
-- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, plus a sound, so there
+- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, so there
   is nothing to paste and no need to look at the planner. It only has to stay open in the browser, started from
   `serve.py`. The window is made on Windows (`start.cmd`); elsewhere start the server with `python3 serve.py overlay`.
   It needs a Python with tkinter, and the game in windowed full screen: nothing draws over exclusive full screen.

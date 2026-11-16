@@ -21,7 +21,6 @@ const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>
 const chk = (k, on, text) => `<label class="chk"><input type="checkbox" data-c="${k}"${on ? ' checked' : ''}> ${esc(text)}</label>`;
 const BADGE = { up: ['▲', 'Upgrade'], mix: ['⇄', 'Trade-off'], same: ['≈', 'About the same'], down: ['▼', 'Worse'], on: ['✓', 'Equipped'], none: ['–', 'No slot for it'] };
 const RANK = { on: 4, up: 3, mix: 2, same: 1, down: 0 };
-const NOTES = { up: [[660, 0], [880, .12], [1320, .24]], mix: [[660, 0], [660, .16]], same: [[220, 0]], down: [[220, 0]] };   // [Hz, seconds in]
 const FLOAT_CSS = `body{margin:0;padding:6px;background:#0c0a08;color:#d8ccb0;font:13px/1.35 sans-serif}
 .c{padding:5px 8px;margin-bottom:5px;border-left:4px solid #666;background:#1c1c1c}.c:first-child{font-size:15px}
 .c b{white-space:nowrap}.c small{display:block;color:#aaa;font-size:11px}p{color:#888;text-align:center}
@@ -38,7 +37,7 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, sound: true, notify: false, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, notify: false, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
   if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
@@ -50,7 +49,7 @@ export function initLoot(el, ctx) {
   const tab = document.querySelector('nav button[data-v="loot"]');
   let msg = '', bad = false;     // what the last text given was, when it was no item
   let es = null, live = '';      // the clipboard watch: '' off, 'wait' (connecting), 'on', 'none' (this server has no /clipboard)
-  let ac = null, pip = null;     // sound, the floating window
+  let pip = null;               // the floating window
   let over = false, awake = false;   // serve.py has a window to show verdicts over the game; this tab was told to stay awake
   let wornRev = 0;               // goes up with every change to the worn gear
 
@@ -119,7 +118,7 @@ export function initLoot(el, ctx) {
     return e.v;
   }
 
-  // ---------- telling: the window over the game, sound, desktop notification, the floating window and a dot on the tab
+  // ---------- telling: the window over the game, desktop notification, the floating window and a dot on the tab
   const noSlot = e => t(e.r.slots.includes('jewel') ? 'Allocate a jewel socket in the tree first' : 'It does not go with the weapon in use');
   // the verdict in a few lines: plain text, or pieces of it each with its tone ([text, 'up' | 'down' | 'dim'])
   function told(e, v) {
@@ -138,23 +137,10 @@ export function initLoot(el, ctx) {
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
   const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(S.over ? v : null) }).catch(() => {}); };
-  function beep(kind) {
-    if (!S.sound || !NOTES[kind]) return;
-    try {
-      ac ||= new AudioContext(); ac.resume();
-      const vol = kind === 'up' ? .22 : kind === 'mix' ? .15 : .05;
-      for (const [hz, at] of NOTES[kind]) {
-        const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + at;
-        o.type = 'triangle'; o.frequency.value = hz;
-        g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .25);
-        o.connect(g).connect(ac.destination); o.start(t0); o.stop(t0 + .26);
-      }
-    } catch {}   // no sound in this browser: the rest still tells
-  }
   function notify(e, v) {
     if (!S.notify || !('Notification' in window) || Notification.permission !== 'granted' || document.hasFocus()) return;
     const w = told(e, v);
-    try { new Notification(`${w.title}: ${w.name}`, { tag: 'poe2loot', silent: S.sound, body: w.lines.map(plain).join('\n') }); } catch {}
+    try { new Notification(`${w.title}: ${w.name}`, { tag: 'poe2loot', silent: true, body: w.lines.map(plain).join('\n') }); } catch {}
   }
   // a small window that stays over the others (the game too, unless it runs in exclusive full screen)
   async function float() {
@@ -192,7 +178,7 @@ export function initLoot(el, ctx) {
       const free = S.vs === 'build' ? null : r.slots.find(s => verdict(list[0]).some(x => x.slot === s && !x.old));
       if (free) { list[0].took = free; put(free, r.item, r.name); }
       const v = verdict(list[0])[0];
-      if (v) { beep(v.kind); if (v.kind === 'up' || v.kind === 'mix') notify(list[0], v); if (v.kind === 'up' && el.hidden) tab?.classList.add('new'); }
+      if (v) { if (v.kind === 'up' || v.kind === 'mix') notify(list[0], v); if (v.kind === 'up' && el.hidden) tab?.classList.add('new'); }
       if (game) say(told(list[0], v));
     } else if (game) say({ kind: 'none', title: 'PoE2 Planner', lines: [msg] });
     render();
@@ -214,12 +200,10 @@ export function initLoot(el, ctx) {
   function showLive() {
     const s = el.querySelector('.llive');
     if (!s) return;
-    const mute = S.sound && live === 'on' && navigator.userActivation && !navigator.userActivation.hasBeenActive;   // browsers play nothing on a page nobody touched
     s.className = 'llive ' + (live === 'on' ? 'optmsg' : live === 'none' ? 'opterr' : 'note');
-    s.textContent = live === 'on' ? t('watching what the game copies') + (mute ? ' · ' + t('click anywhere on this page once so it can play sounds') : '')
+    s.textContent = live === 'on' ? t('watching what the game copies')
       : live === 'wait' ? t('connecting…') : live === 'none' ? t("this needs the planner's own server: python3 serve.py") : '';
   }
-  addEventListener('pointerdown', showLive, { once: true });
 
   // ---------- the tab
   // slot <- item (null empties it): the worn gear kept here, or the build itself
@@ -278,7 +262,6 @@ export function initLoot(el, ctx) {
           : `<span class="note">${t('To see the verdict over the game, start the server with: python3 serve.py overlay')}</span>`}
         </div>
         <div class="optrow">
-          ${chk('sound', S.sound, t('Sound'))}
           ${'Notification' in window ? chk('notify', S.notify, t('Desktop notification on upgrades') + (blocked ? ` (${t('blocked in the browser')})` : '')) : ''}
           ${'documentPictureInPicture' in window ? `<button data-do="float">${pip ? t('Close the floating window') : t('Floating window')}</button>` : ''}
         </div>
