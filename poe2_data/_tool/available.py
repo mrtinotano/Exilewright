@@ -311,8 +311,8 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
             if any(r['CostAmounts']):   # channelled skills cost per minute: written per second
                 st['_cost'] = {c['Id'].removesuffix('PerMinute'): round(v / c['Divisor'], 1) if c['PerMinute'] else v
                                for c, v in zip((cost_types[t] for t in x['CostTypes']), r['CostAmounts'])}
-    area = 'active_skill_base_area_of_effect_radius'
-    radius = {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const}
+    rad = lambda area: {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const} or None
+    radius = rad('active_skill_base_area_of_effect_radius')
     if levels:   # what never changes with the level goes to "constant": keeps the file small
         one = next(iter(levels.values()))
         for k in sorted(set.intersection(*map(set, levels.values()))):   # sorted: the same file on every run
@@ -348,11 +348,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         skill_csd.setdefault(csd.lower(), []).append(g['name'])
         # the radius the game's skill window shows is the one the skill's .csd gives a table_only row ("Orb radius@{0}m"):
         # the secondary one when only that has a row (Orb of Storms: 3.6 m, its 5.6 m is not shown)
-        if os.path.exists(cp := os.path.join(ROOT, 'files', csd.lower())):
-            rows = {b.split()[1] for b in open(cp, encoding='utf-8', errors='replace').read().split('description')[1:] if 'table_only' in b and b.split()[0] == '1'}
-            area2 = 'active_skill_base_secondary_area_of_effect_radius'
+        if os.path.exists(os.path.join(ROOT, 'files', csd.lower())):
+            rows = {b.split()[1] for b in text(csd.lower()).split('description')[1:] if 'table_only' in b and b.split()[0] == '1'}
             if 'active_skill_secondary_area_of_effect_radius' in rows and 'active_skill_area_of_effect_radius' not in rows:
-                skills[g['name']]['radius'] = {lvl: st.get(area2, const.get(area2)) for lvl, st in levels.items() if area2 in st or area2 in const} or None
+                skills[g['name']]['radius'] = rad('active_skill_base_secondary_area_of_effect_radius')
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
@@ -635,7 +634,8 @@ assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit:
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
-assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Orb of Storms']['radius'][12] == 36 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
+assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
+assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
