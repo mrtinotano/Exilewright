@@ -22,3 +22,4 @@ for (const el of document.querySelectorAll('[data-t]')) {
   if (el.children.length === 0 && el.textContent.trim()) el.textContent = t(el.textContent.trim());
   for (const a of ['title', 'placeholder']) if (el.hasAttribute(a)) el.setAttribute(a, t(el.getAttribute(a)));
 }
+export const cap = s => s[0].toUpperCase() + s.slice(1);

@@ -1,7 +1,7 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn, lang, fmt } from './i18n.js';
-import { statLines, statLinesEn } from './stats.js';
+import { statLines, statLinesEn, shownLines } from './stats.js';
 import { diff, impactHtml, impactLine, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
@@ -394,7 +394,7 @@ export function modDiff(old, item) {
     else if (Math.abs(y) > Math.abs(x)) gain[k] = y - x;
     else if (x !== y) lose[k] = x - y;
   }
-  return [gain, lose].map(s => statLines(s).filter(l => !/^[\w+%]+: -?[\d.]+$/.test(l)));   // stats the game has no text for
+  return [gain, lose].map(s => shownLines(s));
 }
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
 const DOLL = ['w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];

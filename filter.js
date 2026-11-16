@@ -11,6 +11,7 @@
 // Only Show blocks, and only conditions and actions found in a filter that loads in Path of Exile 2 (NeverSink's):
 // before the blocks of another filter it restyles the build's gear and leaves everything else to that filter.
 // No DOM here: loot.js is the screen.
+import { cap } from './i18n.js';
 import { GEM } from './skills.js';
 import { baseOf, basesOf } from './items.js';
 
@@ -93,7 +94,6 @@ const LOOK = {
 // the file is kept to plain ASCII: names come from the game's data, the build's name loses its accents
 const ascii = s => String(s || '').normalize('NFD').replace(/[^\x20-\x7e]/g, '').trim();
 const quoted = l => l.map(x => `"${x}"`).join(' ');
-const cap = s => s[0].toUpperCase() + s.slice(1);
 
 // The filter's text for a plan. min: the lowest rarity marked ('rare', 'magic' or 'normal').
 export function filterText(plan, { name = '', min = 'magic' } = {}) {

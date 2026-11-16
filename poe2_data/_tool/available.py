@@ -313,6 +313,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                     del lv[k]
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
     q = next((quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects'][:1]] if i in quality_tab), {})
+    acts = [active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None]
     skills[g['name']] = {
         **{k: {sid(a): v for a, v in zip(q[s], q[s + 'ValuesPermille'] if k == 'quality' else q['AltStatValuesPermille'])}
            for k, s in (('quality', 'Stats'), ('alt_quality', 'AltStats')) if q.get(s)},
@@ -325,12 +326,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'projectile_range': const.get('projectile_maximum_range_override'),
         'duration_ms': const.get('base_skill_effect_duration'),
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
-        'weapons': next((weapon_req[a['WeaponRequirements']] for a in (active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None)
-                         if a['WeaponRequirements'] is not None), None),
+        'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
     }
     # the skill's own stat texts (Berserk's Rage effect, Virtuous Barrier's Motes): ActiveSkills.StatDescription
-    csd = next((a['StatDescription'] for a in (active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None)
-                if a['StatDescription']), '')
+    csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')
     if 'specific_skill_stat_descriptions' in csd.lower():
         skill_csd.setdefault(csd.lower(), []).append(g['name'])
 ot = text('metadata', 'characters', 'character.ot')

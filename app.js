@@ -306,12 +306,18 @@ $('share').onclick = async () => {
     pob.innerHTML = `<option value="">${t('From Path of Building 2 on this computer…')}</option>` + names.map(n => `<option value="${esc(n)}">${esc(n.replace(/\.xml$/i, ''))}</option>`).join('');
     pob.hidden = false;
   });
-  let named = '';   // the build picked there goes by its file's name, the one it was saved under
+  // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
+  const importXML = (xml, name) => {
+    const { build, warn } = fromXML(xml, shareCtx(), blank);
+    build.gems.forEach(g => Object.assign(g, { shape: 'auto', radius: 0, width: 0 }));
+    if (name) build.name = name;
+    addBuild(build);
+    inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
+  };
   pob.onchange = async () => {
     if (!pob.value) return;
-    d.querySelector('[data-in]').value = await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text();
-    named = pob.value.replace(/\.xml$/i, '');
-    d.querySelector('[data-a="import"]').click();
+    try { importXML(await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text(), pob.value.replace(/\.xml$/i, '')); }
+    catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
   };
   const close = () => { d.remove(); removeEventListener('keydown', key); };
   const key = e => { if (e.key === 'Escape') close(); };
@@ -342,16 +348,10 @@ $('share').onclick = async () => {
     }
     if (a === 'import') {
       let txt = d.querySelector('[data-in]').value.trim();
-      const name = named; named = '';
       if (!txt) return;
       try {
         if (/^https?:\/\/|^[\w.]+\.\w+\//.test(txt)) { inmsg.textContent = t('Downloading…'); txt = await download(txt); }
-        const xml = txt.startsWith('<') ? txt : await decode(txt);
-        const { build, warn } = fromXML(xml, shareCtx(), blank);
-        build.gems.forEach(g => Object.assign(g, { shape: 'auto', radius: 0, width: 0 }));
-        if (name) build.name = name;
-        addBuild(build);
-        inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
+        importXML(txt.startsWith('<') ? txt : await decode(txt));
       } catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
     }
   };

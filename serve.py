@@ -167,7 +167,7 @@ def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
     show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
     comparison stays until its ✕ is clicked, a click lands anywhere else or a key is pressed (both Windows only) or the
-    next one comes; anything else (the item was taken as worn, a notice marked 'brief') goes by itself in a few seconds.
+    next one comes; anything else (the item was taken as worn, a notice of the server's) goes by itself in a few seconds.
     loop() runs the window and has to be called in the thread that called this, the main one"""
     win, back = sys.platform == 'win32', '#12100c'
     if win:   # a new window takes the keyboard on Windows: remember who has it, to give it back below
@@ -194,9 +194,9 @@ def overlay():
     close = tk.Label(head, text='✕', bg=back, fg='#9a8f78', font=(face, 12), cursor='hand2')
     close.pack(side='right', anchor='n', padx=(16, 0))
     body = tk.Frame(box, bg=back)
-    q, timer = queue.Queue(), [None]
-    held = [None]   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
-    idle = [b'']    # keys that do nothing in the game as it is set: they leave the window where it is
+    q, timer = queue.Queue(), None
+    held = None   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
+    idle = b''    # keys that do nothing in the game as it is set: they leave the window where it is
     if win:
         # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
         # can take the keyboard from the game. Hidden, clicks go through it to the game; shown, it takes them (its ✕
@@ -223,9 +223,10 @@ def overlay():
         root.withdraw()
 
     def hide(_=None):
-        if timer[0]:
-            root.after_cancel(timer[0])
-        timer[0] = None
+        nonlocal timer
+        if timer:
+            root.after_cancel(timer)
+        timer = None
         if win:
             root.attributes('-alpha', 0)
             clicks(False)
@@ -234,6 +235,7 @@ def overlay():
     close.bind('<Button-1>', hide)
 
     def draw(v):
+        nonlocal timer, held, idle
         title.config(text=v['title'], fg=TINT.get(v['kind'], '#d8ccb0'))
         for old in body.winfo_children():
             old.destroy()
@@ -259,26 +261,26 @@ def overlay():
         if win:
             root.attributes('-alpha', .95)
             clicks(True)
-            held[0], idle[0] = None, b'' if wasd() else b'WASD'
+            held, idle = None, b'' if wasd() else b'WASD'
         else:
             root.deiconify()
         root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
         root.lift()
-        if timer[0]:
-            root.after_cancel(timer[0])
-        secs = SHOWN if v.get('brief') else 0 if v['kind'] in COMPARED else NOTED
-        timer[0] = root.after(secs * 1000, hide) if secs else None
+        if timer:
+            root.after_cancel(timer)
+        timer = None if v['kind'] in COMPARED else root.after(NOTED * 1000, hide)
 
     def poll():
+        nonlocal held
         if win and float(root.attributes('-alpha')):
             # shown: a click anywhere else closes it, and so does any key the game could take (it moves the character,
             # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
             # or another window. note: keys and mouse are looked at 20 times a second, not hooked (a hook written
             # in Python can slow the pointer in the game); a hook if presses ever get missed
-            keys = {k: user.GetAsyncKeyState(k) for k in watch if k not in idle[0]}   # 0x8000: down, 1: pressed since the last look
+            keys = {k: user.GetAsyncKeyState(k) for k in watch if k not in idle}   # 0x8000: down, 1: pressed since the last look
             down = {k for k, s in keys.items() if s & 0x8000}
-            new = set() if held[0] is None else {k for k, s in keys.items() if s & 1 or k in down and k not in held[0]}
-            held[0] = down
+            new = set() if held is None else {k for k, s in keys.items() if s & 1 or k in down and k not in held}
+            held = down
             px, py = root.winfo_pointerxy()
             away = not (0 <= px - root.winfo_rootx() < root.winfo_width() and 0 <= py - root.winfo_rooty() < root.winfo_height())
             if new & mouse and away or new - mouse and not any(user.GetAsyncKeyState(k) & 0x8000 for k in (0x11, 0x12, 0x5B, 0x5C)):
@@ -321,7 +323,7 @@ def tell(text):
             text = json.load(f).get(text) or text
     except (OSError, ValueError):
         pass
-    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [[(text, '')]], 'brief': True})
+    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [[(text, '')]]})
 
 
 def watch_clipboard():
@@ -353,8 +355,7 @@ def watch_clipboard():
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:]
-SHOWN = 7      # seconds a notice of the server's own stays over the game
-NOTED = 3      # and one of the page's that compares nothing (the item was taken as worn, it has no slot...)
+NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
 TONE = {'up': '#8fe89a', 'down': '#ee8888', 'dim': '#9a8f78'}   # pieces of a line: better, worse, said in passing

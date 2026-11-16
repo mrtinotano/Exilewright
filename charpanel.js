@@ -1,6 +1,6 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
 import { t, tn, fmt, lang as LANG } from './i18n.js';
-import { statLines } from './stats.js';
+import { statLines, shownLines } from './stats.js';
 import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick } from './calc.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -30,7 +30,7 @@ export function renderChar(el, b, sum, { asc, cls, points, pending, classes = []
   const c = character(b, sum), R = c.res;
   const questsOpen = el.querySelector('.cp-quests')?.open;   // drawn anew at every change: stays as it was left
   const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (${t('Not understood: it is not counted')})`)].map(esc).join(' · ');
-  const box =(k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
+  const box = (k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
   const pctOr = (p, raw, what) => p != null ? Math.round(p) + '%' : n(raw);
   const res = (k, label) => `<div class="cp-res ${k}" title="${t('Maximum {0}%', R[k].max)}">${ico(k)}<span>${t(label)}</span><b>${R[k].capped}% <i>(${R[k].value}%)</i></b></div>`;
   const all = { ...sum }; delete all.display_passive_attribute_text;
@@ -71,13 +71,12 @@ const TAGS = { attack: 'Attack', spell: 'Spell', area: 'AoE', projectile: 'Proje
   payoff: 'Payoff', invocation: 'Invocation', meta: 'Meta', herald: 'Herald', companion: 'Companion', shapeshift: 'Shapeshift', barrage: 'Barrage',
   remnant: 'Remnant', detonator: 'Detonator', hazard: 'Hazard', critical: 'Critical', chaining: 'Chaining', mark: 'Mark', stance: 'Stance', storm: 'Storm' };
 const HIDDEN_TAGS = new Set(['grants_active_skill', 'strength', 'dexterity', 'intelligence', 'repeatable', 'support', 'gem']);
-const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;   // stat with no game text: not shown
 
 export function skillTip(G, g, b, sum, geo) {
   const s = skill(g, b, sum), st = s.stats, G2 = geo?.(g) || {};
   const tags = (G.tags || []).filter(t => !HIDDEN_TAGS.has(t)).map(x => TAGS[x] ? t(TAGS[x]) : x.replace(/_/g, ' ')).join(', ');
   const visible = Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_')));
-  const lines = statLines(visible).filter(l => !RAW.test(l));
+  const lines = shownLines(visible, g.name);
   const cost = st._cost && Object.entries(st._cost).map(([k, val]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', val)).join(', ');
   const props = [
     ['Level', st._level],

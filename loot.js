@@ -8,11 +8,11 @@
 // The tab also saves the loot filter of the build (filter.js): what the game itself marks where items drop.
 //   ctx: { build(), id(), rev(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets),
 //          change(fn(b)) (edits the build, saves, redraws) }
-import { t, fmt, tn, lang, locale } from './i18n.js';
+import { t, fmt, tn, lang, locale, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
-import { statLines } from './stats.js';
+import { shownLines } from './stats.js';
 import { diff, impactHtml, impactText } from './impact.js';
 import { filterPlan, filterText, mergeFilter, isFilter, filterFileName, DEFENCES } from './filter.js';
 
@@ -35,7 +35,6 @@ const sgn = (a, z) => { const x = a || 0, y = z || 0; return Math.abs(y - x) <= 
 const mid = v => Array.isArray(v) ? (v[0] + v[1]) / 2 : v || 0;   // a damage range counts by its middle
 const tone = d => d > 0 ? 'up' : d < 0 ? 'down' : '';
 const dir = (text, d) => d ? `<i class="${tone(d)}">${text}</i>` : text;   // better in green, worse in red, the same as it is
-const cap = s => s[0].toUpperCase() + s.slice(1);
 const plain = l => typeof l === 'string' ? l : l.map(s => typeof s === 'string' ? s : s[0]).join('');
 const MODS = 6;   // modifier lines of each list (gained, lost) shown over the game
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
@@ -97,7 +96,7 @@ export function initLoot(el, ctx) {
     if (!marks.some(Boolean)) {   // nothing calculated moves: the modifiers themselves, more of them or fewer
       const x = gearStats(old ? { x: old } : {}), y = gearStats({ x: item }), up = {}, down = {};
       for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) { const d = (y[k] || 0) - (x[k] || 0); if (d > 0) up[k] = d; else if (d < 0) down[k] = -d; }
-      raw = [up, down].map(s => statLines(s).filter(l => !/^[\w+%]+: -?[\d.]+$/.test(l)));   // stats the game has no text for
+      raw = [up, down].map(s => shownLines(s));
       marks = [raw[0].length ? 1 : 0, raw[1].length ? -1 : 0];
     }
     const up = marks.some(m => m > 0), down = marks.some(m => m < 0), kind = up && down ? 'mix' : up ? 'up' : down ? 'down' : 'same';

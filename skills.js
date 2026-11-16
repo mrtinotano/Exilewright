@@ -3,7 +3,7 @@
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, tn, fmt, lang } from './i18n.js';
 import { attributes, skill, reservation } from './calc.js';
-import { statLines } from './stats.js';
+import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
@@ -28,10 +28,9 @@ function matches(expr, types) {
   return st.some(Boolean);
 }
 export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
-const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;   // stat with no game text: not shown
 const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
 // stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
-const shown = (st, name) => statLines(Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_'))), undefined, name).filter(l => !RAW.test(l));
+const shown = (st, name) => shownLines(Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_'))), name);
 function gemLines(name, level) {
   const d = SK.skills[name]; if (!d) return [];
   return shown({ ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {}) }, name);

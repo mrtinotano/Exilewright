@@ -34,6 +34,9 @@ const num = v => +v.toFixed(2);
 const BY = byStat;
 
 export const statLinesEn = stats => statLines(stats, EN);
+// only the lines the game has text for (a stat with none comes out as "id: value")
+const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;
+export const shownLines = (stats, skill) => statLines(stats, BY, skill).filter(l => !RAW.test(l));
 // skill: gem name, for the texts of that skill's own .csd (entries with "skill"; other skills' are skipped)
 export function statLines(stats, byStat = BY, skill) {
   const done = new Set(), out = [];

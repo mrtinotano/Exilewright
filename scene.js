@@ -7,14 +7,14 @@
 // you. Those are the SIM defaults of skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
 // WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset.
 import * as THREE from 'three';
-import { t, fmt } from './i18n.js';
+import { t, fmt, cap } from './i18n.js';
 import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), ease = k => 1 - (1 - k) ** 3, cap = s => s[0].toUpperCase() + s.slice(1);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), ease = k => 1 - (1 - k) ** 3;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function segDist(p, a, b) {
   const vx = b.x - a.x, vz = b.z - a.z, k = clamp(((p.x - a.x) * vx + (p.z - a.z) * vz) / (vx * vx + vz * vz || 1), 0, 1);

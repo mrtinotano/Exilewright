@@ -1,7 +1,7 @@
 // Character sheet and skill damage, from the summed tree + gear stats (app.js treeSum) and the game data.
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
-import { t, tn, fmt } from './i18n.js';
+import { t, tn, fmt, cap } from './i18n.js';
 import { weaponStats, classOf, rowReader } from './items.js';
 import { SK } from './skilldata.js';
 
@@ -294,7 +294,6 @@ function mod(mods, kind, names, has) {
   for (const [n, k, val, flags] of mods) if (k === kind && names.includes(n) && flags.every(has)) m = kind === 'MORE' ? m * (1 + val / 100) : m + val;
   return m;
 }
-const cap = s => s[0].toUpperCase() + s.slice(1);
 // product of the support "more" multipliers ending in <suffix>_final that fit this skill: the stat id may name a damage
 // type, skill tag or minion; if it names one this skill / damage type does not have, it does not apply
 function more(fin, suffix, tags, type) {
