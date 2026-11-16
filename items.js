@@ -224,20 +224,15 @@ export function parseItem(text) {
   const im2 = matchLines(expl, own0.filter(c => !im.found.some(f => f.key === c.key)));
   for (const f of [...im.found, ...im2.found]) item.implicits[f.key] = f.values;
   expl = im2.missed;
-  // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item: the
-  // stats are that modifier's and the number is the line's own (two runes add up in one line). The rest is left out
+  // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item, else
+  // as what the runes themselves give (SoulCoreStats: "32% increased Life and Mana Recovery from Flasks"): the stats are
+  // that one's and the number is the line's own (two runes add up in one line). The rest is left out
   let left = [...tagged.keys()];
-  for (const pool of [a => canRoll(a, base), a => a.domain === base.domain]) {
+  const pool = f => D.affixes.filter(f).map(a => [a.id, a.stats]);
+  for (const sets of [pool(a => canRoll(a, base)), pool(a => a.domain === base.domain), D.runes.map((st, i) => [i, st])]) {
     if (!left.length) break;
-    const m = matchLines(left, D.affixes.filter(pool).flatMap(a => shapes(a.id, a.stats)));
-    for (const f of m.found) AFFIX[f.key].stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
-    left = m.missed;
-  }
-  // ...and what is no modifier's wording, by what the runes themselves give (SoulCoreStats: "32% increased Life and
-  // Mana Recovery from Flasks")
-  if (left.length) {
-    const m = matchLines(left, (D.runes || []).flatMap((st, i) => shapes(i, st)));
-    for (const f of m.found) D.runes[f.key].forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
+    const by = new Map(sets), m = matchLines(left, sets.flatMap(([k, st]) => shapes(k, st)));
+    for (const f of m.found) by.get(f.key).forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
     left = m.missed;
   }
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
@@ -549,7 +544,6 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   return render;
 }
 
-const NL = String.fromCharCode(10);
 // self-check, a rare as the game copies it (detailed text): two plain modifiers, not the two-line one of another tier
 console.assert(parseItem('Rarity: Rare\nWoe Crusher\nOmen Sceptre\n--------\nSpirit: 134 (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Viscount\'s" (Tier: 6) }\n34(33-38)% increased Spirit\n{ Prefix Modifier "Blue" (Tier: 1) — Mana }\n+159(150-164) to maximum Mana')
   ?.item.mods.map(m => m.values).join() === '34,159', 'parseItem: detailed item text');
@@ -560,7 +554,7 @@ console.assert(parseItem('Rarity: Magic\nVitiating Ultimate Life Flask of the Pe
 console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSockets: S\nRune: Greater Desert Rune\nLevelReq: 59\nImplicits: 3\n{enchant}{rune}Bonded: +20 to maximum Life\n{enchant}{rune}Bonded: +20 to maximum Mana\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield')
   ?.item.extra?.['base_fire_damage_resistance_%'] === 18, 'parseItem: a rune in Path of Building text');
 // ...and a rune no modifier is worded like
-console.assert(parseItem('Rarity: Rare'+NL+'Woe Mantle'+NL+'Gold Gloves'+NL+'--------'+NL+'Item Level: 70'+NL+'--------'+NL+'32% increased Life and Mana Recovery from Flasks (rune)')
+console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem Level: 70\n--------\n32% increased Life and Mana Recovery from Flasks (rune)')
   ?.item.extra?.['flask_life_and_mana_to_recover_+%'] === 32, 'parseItem: a rune of its own wording');
 // ...and quality, a multiplier of its own on the item's defences
 { const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && BASE[r.item.base].armour.energy_shield;
