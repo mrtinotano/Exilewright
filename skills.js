@@ -54,6 +54,7 @@ function details(g, b, sum, geo) {
       ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
       ['Total Combined Damage', hits.length ? `${fmt(lo)} – ${fmt(hi)}` : '—'],
       ...hits.map(([k, [a, z]]) => [DTYPE[k], `${fmt(a)} – ${fmt(z)}`]),
+      s.totems > 0 && ['Active totems', s.totems],
       s.rage > 0 && ['Rage (more attack damage)', s.rage],
       s.rage > 0 && s.rageEffect > 0 && ['Increased Rage effect (Berserk)', s.rageEffect + '%'],
     ])}
