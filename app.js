@@ -4,7 +4,7 @@ import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats } from './calc.js';
-import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
+import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
@@ -139,7 +139,7 @@ const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.
 const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
-const sceneCfg = (({ enemy = null, level = 0, attack = null }) => ({ enemy, level, attack }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
+const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null }) => ({ enemy, level, attack, rarity }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
 const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
@@ -273,8 +273,8 @@ $('notes').onchange = edit((e, b) => b.notes = e.target.value);
 $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if (!$('notesBox').hidden) $('notes').focus(); };
 $('sceneSkills').onchange = e => {
   const d = e.target.dataset;
-  if (d.en === 'level' || d.en === 'attack') {  // the enemy of the scene
-    if (d.en === 'attack') sceneCfg.attack = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
+  if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
+    if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();
   } else if (d.i != null) edit((e, b) => b.gems[d.i][d.k] = d.k === 'shape' ? e.target.value : +e.target.value)(e);
 };
@@ -785,7 +785,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
 // ---------- enemy of the 3D scene: searchable list of the game's monsters, its level and attack, and what the numbers say (enemies.js)
 const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg));
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
-const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack);
+const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity);
 const attr = x => esc(x).replace(/"/g, '&quot;');
 $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(ENEMIES.length))}</small></h3>
   <div class="en-pick"><input id="enFind" type="search" placeholder="${attr(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
@@ -804,7 +804,7 @@ function listEnemies() {
 const closeEnemies = () => { enList.hidden = true; enFind.value = enemy(sceneCfg.enemy)?.name || ''; };
 function pickEnemy(id) {
   if (!enemy(id)) return;
-  sceneCfg.enemy = id; sceneCfg.attack = null; saveScene();
+  sceneCfg.enemy = id; sceneCfg.attack = sceneCfg.rarity = null; saveScene();
   enFind.blur(); closeEnemies(); syncEnemy(); renderEnemy();
   scene3d.placing(true);   // the next clicks in the scene place it
 }
@@ -829,8 +829,8 @@ function renderEnemy() {
   const box = $('enDetail'), m = enemy(sceneCfg.enemy);
   if (document.activeElement !== enFind) enFind.value = m?.name || '';
   if (!m) { box.innerHTML = `<p class="note">${t('Pick an enemy and click in the scene to place it. Its life, defences and damage are the game\'s at the level you set: test your damage on it and your defences against its attacks.')}</p>`; return; }
-  const b = B(), c = character(b, treeSum()), L = enemyLevel(), st = enemyStats(m, L);
-  const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key), vp = versusPlayer(atk, st, c);
+  const b = B(), c = character(b, treeSum()), L = enemyLevel(), rar = rarityOf(m, sceneCfg.rarity), st = enemyStats(m, L, rar);
+  const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key, rar), vp = versusPlayer(atk, st, c);
   const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
   const el = (type, text) => `<span class="dm ${type}">${text}</span>`;
   const rng = r => r[0] === r[1] ? fmt(r[0]) : `${fmt(r[0])}–${fmt(r[1])}`;
@@ -861,6 +861,7 @@ function renderEnemy() {
     ${m.areas?.length ? `<p class="note en-areas" title="${attr(m.areas.join('\n'))}">${esc(m.areas.slice(0, 3).join(' · '))}${m.areas.length > 3 ? ' …' : ''}</p>` : ''}
     <div class="sk-set"><label><span>${t('Level')} ${sceneCfg.level ? `<a data-en="mylevel" title="${attr(t('Use the level of your build ({0})', b.level))}">↺</a>` : `<small>${t('yours')}</small>`}</span>
         <input type="number" min="1" max="100" step="1" data-en="level" value="${L}"></label>
+      <label><span>${t('Rarity')}</span><select data-en="rarity">${RARITIES.map(r => `<option value="${r}" ${r === rar ? 'selected' : ''}>${t(r[0].toUpperCase() + r.slice(1))}</option>`).join('')}</select></label>
       <label><span>${t('Attack')}</span><select data-en="attack">${list.map(a => `<option value="${attr(a.key)}" ${a.key === key ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>
     ${atk.description ? `<p class="note">${esc(atk.description)}</p>` : ''}
     <table class="en-t">${stats.join('')}</table>

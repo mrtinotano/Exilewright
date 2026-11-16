@@ -57,7 +57,7 @@ export function initScene(el, api) {
   }).catch(e => console.warn('scene: post-processing unavailable', e));
 
   // ---------- state
-  const tpl = { mon: null, level: 1, attack: null };   // the enemy the next click places
+  const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false };   // your life and energy shield against their attacks
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
@@ -119,8 +119,8 @@ export function initScene(el, api) {
   const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);   // sources the damage of the build does not describe
   const MAXE = 60;
   function arm(d, level, key) {
-    const m = d.mon, list = attacksOf(m), fresh = d.level !== level;
-    d.level = level; d.stat = enemyStats(m, level); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key);
+    const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== tpl.rarity;
+    d.level = level; d.rarity = tpl.rarity; d.stat = enemyStats(m, level, tpl.rarity); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key, tpl.rarity);
     d.col = Object.entries(d.atk.hasHit ? d.atk.hits : d.atk.dot).map(([el, x]) => [el, x[1] ?? x]).sort((x, y) => y[1] - x[1])[0]?.[0] || 'physical';
     d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es;
     if (fresh) { d.life = d.max; d.es = d.maxEs; }
@@ -1339,8 +1339,8 @@ export function initScene(el, api) {
     selected: () => sel,
     reset,
     // the enemy the next click places: { id → monster of enemies.js, level, attack }. The ones of that monster already in the scene follow it.
-    enemy(mon, level, attack) {
-      tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; hudT = 0;
+    enemy(mon, level, attack, rarity) {
+      tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; tpl.rarity = rarity || null; hudT = 0;
       if (!tpl.mon) return setPlacing(false);
       for (const d of dummies) if (d.mon === tpl.mon) arm(d, tpl.level, tpl.attack);
     },

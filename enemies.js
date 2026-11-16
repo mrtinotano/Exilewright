@@ -35,10 +35,12 @@ export function search(q, limit = 80) {
 }
 
 // ---------- stats of a monster at a level (DefaultMonsterStats row × the monster's own multipliers)
-// A boss is a unique monster: its rarity's "more" life, energy shield and damage (Mods MonsterUnique<n>) on top.
-// note: normal monsters taken as normal rarity; a magic / rare choice when the scene needs one (MON.rarity has them)
-export function enemyStats(m, level) {
-  const R = m.boss && MON.rarity?.unique || {}, more = k => 1 + (R[k] || 0) / 100;
+// Its rarity (normal | magic | rare | unique; a boss is unique) adds "more" life, energy shield and damage
+// (Mods MonsterMagic<n>, MonsterRare<n>, MonsterUnique<n>).
+export const RARITIES = ['normal', 'magic', 'rare', 'unique'];
+export const rarityOf = (m, r) => RARITIES.includes(r) ? r : m.boss ? 'unique' : 'normal';
+export function enemyStats(m, level, rarity) {
+  const R = MON.rarity?.[rarityOf(m, rarity)] || {}, more = k => 1 + (R[k] || 0) / 100;
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
   let dmg = Math.floor(row('damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
@@ -49,7 +51,7 @@ export function enemyStats(m, level) {
     accuracy: Math.round(row('accuracy', level)),
     res: Object.fromEntries(TYPES.slice(1).map((el, i) => [el, Math.min(cap, m.res?.[i] || 0)])),
     phys: [Math.floor(dmg * (1 - m.spread)), Math.floor(dmg * (1 + m.spread))],
-    attackTime: m.attack_time, crit: m.crit,
+    attackTime: m.attack_time, crit: m.crit, more: more('damage'),
   };
 }
 
@@ -71,13 +73,13 @@ export function attacksOf(m) {
 
 // Values of one attack of a monster at a level: damage per type before your defences, use interval, crit, and how it
 // reaches you (shape: melee | slam | projectile | area | bolt).
-export function attackOf(m, level, key) {
-  const st = enemyStats(m, level), sk = MON.skills[key] && usable(MON.skills[key]) ? MON.skills[key] : null;
+export function attackOf(m, level, key, rarity) {
+  const st = enemyStats(m, level, rarity), sk = MON.skills[key] && usable(MON.skills[key]) ? MON.skills[key] : null;
   const set = sk?.sets[0] || { flags: ['attack', 'melee'], eff: [1, 0, 0] }, flags = set.flags, attack = flags.includes('attack');
   const L = clamp(Math.round(level) || 1, 1, 100);
   // "effectiveness" values grow with the monster's level; literal values (interpolation 1) are used as they are
   const eff = (K.skill_effectiveness ?? 0) * (set.eff[0] ?? 1) * (1 + set.eff[1] * (L - 1)) * (1 + set.eff[2]) ** (L - 1);
-  const val = (x, interp) => interp === 3 ? x * eff : x;
+  const val = (x, interp) => (interp === 3 ? x * eff : x) * st.more;   // the rarity's more damage on every value
   const hits = {}, dot = {};
   if (set.hit) for (const [el, [lo, hi, i]] of Object.entries(set.hit)) hits[el] = [val(lo, i), val(hi, i)];
   else if (attack) hits.physical = st.phys.map(x => x * (sk?.mult ?? 1));
