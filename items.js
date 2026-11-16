@@ -18,8 +18,7 @@ const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 
 // first spawn tag the base has decides the weight (game rule); weight 0 = cannot roll
-// desecrated: also the desecrated modifiers (Abyss) its tags allow, for reading an item and in the item maker; the gear
-// search (affixLines) only the usual ones: the trade site looks for desecrated ones apart
+// desecrated: also the desecrated modifiers (Abyss) its tags allow (reading an item, the item maker, the gear search)
 const canRoll = (a, base, desecrated) => { if (a.desecrated ? !desecrated : a.domain !== base.domain) return false; const t = a.spawn.find(([tag]) => base.tags.includes(tag)); return !!t && t[1] > 0; };
 
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
@@ -297,6 +296,7 @@ function parts(id, stats) {
 // affix that is one line, on the best base of each kind (a Str helmet rolls Armour, an Int one Energy Shield;
 // `first`: a base to try before the rest).
 // -> [{ hash (the site's stat), text (top roll), local, stats: [ids], roll (the number the site sorts by), tries: [{ bare, item }] }]
+// A desecrated one has no hash (Path of Building's export has none): `en`, its English line, finds it in the site's list.
 // bare = the base alone, item = the base with only this modifier: what the line is worth is the difference.
 export function affixLines(cls, first) {
   const kind = b => b.tags.filter(x => !/_basetype$|^runeforged$|^default$/.test(x)).sort().join(), seen = new Set(), out = new Map();
@@ -310,6 +310,16 @@ export function affixLines(cls, first) {
       const [hash, ...shown] = tr[1], vals = fixVals(a.stats), his = shown.filter((_, i) => i % 2).map(Math.abs);
       const o = out.get(hash) || out.set(hash, { hash, text: statLines(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '),
         local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: his.reduce((x, y) => x + y, 0) / (his.length || 1), tries: [] }).get(hash);
+      const bare = make(base.name);
+      o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
+    }
+    const des = new Map();   // the same for its desecrated modifiers: one line each
+    for (const a of D.affixes) if (a.desecrated && canRoll(a, base, true) && !(des.get(a.family)?.level >= a.level)) des.set(a.family, a);
+    for (const a of des.values()) {
+      const vals = fixVals(a.stats), on = Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]])), en = statLinesEn(on);
+      if (en.length !== 1) continue;
+      const o = out.get('d:' + en[0]) || out.set('d:' + en[0], { hash: null, desecrated: true, en: en[0], text: statLines(on).join(' / ') + ' · ' + t('Desecrated'),
+        local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: vals.reduce((x, y) => x + Math.abs(y), 0) / vals.length, tries: [] }).get('d:' + en[0]);
       const bare = make(base.name);
       o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
     }
@@ -331,7 +341,10 @@ export function tradeItem({ name, base: baseName, lines }) {
   if (imp.length === base.implicits.length) imp.forEach((l, i) => { const st = D.implicits[base.implicits[i]], sc = shapes(i, st)[0].scale, n = nums([l.text]);
     item.implicits[i] = fixVals(st, st.map((s, k) => n[k] === undefined ? undefined : stored(n[k], sc[k] || 1, s))); });
   else imp.forEach(l => missed.add(l.text));
-  const rest = lines.filter(l => l.kind !== 'implicit');
+  // desecrated lines: by their wording, among the desecrated modifiers the base can have (the site gives no hash of ours)
+  const des = lines.filter(l => l.kind === 'desecrated'), rest = lines.filter(l => l.kind !== 'implicit' && l.kind !== 'desecrated');
+  const dm = des.length ? matchLines(des.map(l => l.text), D.affixes.filter(a => a.desecrated && canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family) : { found: [], missed: [] };
+  dm.missed.forEach(l => missed.add(l));
   if (u) {   // a unique has its own modifiers: only their rolls are read
     for (const l of rest) { const m = u.mods.find(m => parts(m.id, m.stats).some(p => p.hash === l.hash)), on = m && item.mods.find(x => x.id === m.id);
       if (on) { read(m.id, m.stats, on.values, l.hash, nums([l.text])); on.values = fixVals(m.stats, on.values); } }
@@ -363,7 +376,7 @@ export function tradeItem({ name, base: baseName, lines }) {
       read(f.a.id, f.a.stats, f.values, l.hash, mine);
     });
   }
-  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: fixVals(f.a.stats, f.values) }));
+  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: fixVals(f.a.stats, f.values) })).concat(dm.found.map(f => ({ id: f.key, values: f.values })));
   return { item, slots: base.slots, missed: [...missed] };
 }
 
@@ -573,3 +586,6 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
   const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
   console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');
 }
+// ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
+console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15
+  && affixLines('Helmets').some(o => o.desecrated && o.en), 'desecrated: trade listing and gear search');

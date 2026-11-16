@@ -77,11 +77,23 @@ export const leagues = () => data('leagues').then(j => j.result.filter(l => l.re
 export const status = () => call('status');   // { session: true } when serve.py was started with the user's trade session
 
 // adds .id (the site's stat) to each line: "explicit.stat_<number>", the number Path of Building's data gives the
-// modifier. When the site's own list can be read, a line it does not have gets none.
+// modifier. When the site's own list can be read, a line it does not have gets none. A desecrated line is found by
+// its wording in the site's "desecrated" list ("+86 to maximum Life" is "# to maximum Life"); none without that list.
+// The site keeps "+#" in some lines and has its own case; it writes some "reduced" lines as "increased": the exact
+// wording first, then that one (the first entry of each wording kept). note: such a line weighs the wrong way in
+// the weighted search (its number is negative there); flip its weight if one ever ranks high
+const shape = (s, loose) => { s = s.replace(/[+-]?\d+(\.\d+)?/g, '#').replace(/\+/g, '').replace(/\bmetres\b/g, 'metre').toLowerCase().trim();
+  return loose ? s.replace(/\breduced\b/g, 'increased') : s; };
 export async function withIds(wants) {
   let known = null;
-  try { known = new Set((await data('stats')).result.flatMap(g => g.entries.map(e => e.id))); } catch (e) { if (!(e instanceof TradeError)) throw e; }
-  return wants.map(w => { const id = 'explicit.stat_' + w.hash; return { ...w, id: !known || known.has(id) ? id : null }; });
+  const des = [new Map(), new Map()];
+  try {
+    const groups = (await data('stats')).result;
+    known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
+    for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.forEach((m, loose) => m.has(shape(e.text, loose)) || m.set(shape(e.text, loose), e.id));
+  } catch (e) { if (!(e instanceof TradeError)) throw e; }
+  return wants.map(w => { const id = w.desecrated ? des[0].get(shape(w.en)) || des[1].get(shape(w.en, 1)) || null : 'explicit.stat_' + w.hash;
+    return { ...w, id: w.desecrated || !known || known.has(id) ? id : null }; });
 }
 
 // the item's own numbers the site can sort by, from the local modifiers worth having
