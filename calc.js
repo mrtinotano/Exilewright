@@ -293,13 +293,16 @@ export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0}
 // Damage types are added per type by the caller, and what is the minions' is not the character's.
 function inc(sum, suffix, tags) {
   let t = 0;
-  for (const [k, val] of Object.entries(sum)) {
+  for (let [k, val] of Object.entries(sum)) {
+    // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word
+    const w = k.match(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/); if (w) k = `${w[2]}_${w[1]}`;
     if (!k.endsWith(suffix)) continue;
     const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand');
     if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += val;
   }
   return t;
 }
+console.assert(inc({ 'damage_+%_with_two_handed_weapons': 40, 'damage_+%_with_bow_skills': 5 }, 'damage_+%', ['attack', 'twohand']) === 40, 'inc: _with_ stats');
 // what the stat ids call the weapon an attack is made with (item base tags; warstaff is the quarterstaff)
 const WEAPON = ['mace', 'bow', 'crossbow', 'spear', 'sword', 'axe', 'dagger', 'flail', 'claw', 'talisman', 'onehand', 'twohand'];
 const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff' : x).filter(x => x === 'quarterstaff' || WEAPON.includes(x));
@@ -420,8 +423,11 @@ export function skill(g, b, treeGear) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
+  // a totem's grenade: "increased Grenade Damage" does not count (the game's window, 16/11: the same 4311-9885 without
+  // two Grenade Damage nodes; Volatile Grenades' fuse is not in it either), the grenade cooldown ones do (10.99 s)
+  const dmgTags = byTotem ? [...tags.filter(x => x !== 'grenade'), 'totem'] : tags;
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * (1 + rage * (100 + rageEffect) / 1e4)
-    * (1 + (inc(sum, 'damage_+%', byTotem ? [...tags, 'totem'] : tags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
+    * (1 + (inc(sum, 'damage_+%', dmgTags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
     if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
