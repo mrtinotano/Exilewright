@@ -1338,7 +1338,7 @@ export function initScene(el, api) {
     select: i => select(i, false),
     selected: () => sel,
     reset,
-    // the enemy the next click places: { id → monster of enemies.js, level, attack }. The ones of that monster already in the scene follow it.
+    // the enemy the next click places: { id → monster of enemies.js, level, attack, rarity }. The ones of that monster already in the scene follow it.
     enemy(mon, level, attack, rarity) {
       tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; tpl.rarity = rarity || null; hudT = 0;
       if (!tpl.mon) return setPlacing(false);
