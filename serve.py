@@ -363,7 +363,6 @@ if FROZEN and sys.stderr is None:   # no console in the executable: the server's
     sys.stdout = sys.stderr = open(os.devnull, 'w')
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
-APP_PORT = 8767
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
@@ -549,14 +548,13 @@ def app_window(url):
     threading.Thread(target=lambda: (edge.wait(), os._exit(0)), daemon=True).start()
 
 
-port = APP_PORT if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
+port = 8767 if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
 try:
     server = Server(('127.0.0.1', port), partial(Handler, directory=HERE))
 except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise
     app_window(f'http://127.0.0.1:{port}/')
-    time.sleep(1)
     sys.exit()
 if 'app' in ARGS:
     app_window(f'http://127.0.0.1:{port}/')
