@@ -174,6 +174,7 @@ export function initLoot(el, ctx) {
     }).join('') : `<p>${t('Copy an item in the game: Ctrl+C over it')}</p>`;
   }
 
+  const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); wornRev++; keep(); };
   // ---------- items coming in
   function add(text, game) {   // game: it is what the game copied, not something pasted here
     text = text.replace(/\r/g, '').trim();
@@ -184,8 +185,7 @@ export function initLoot(el, ctx) {
       list = [{ text, at: Date.now(), r, undo: list.find(e => e.text === text)?.undo }, ...list.filter(e => e.text !== text)].slice(0, MAX);
       keepList();
       // nothing marked as worn yet: start from the build's equipment (an imported character's), not from this item
-      const bi = ctx.build().items || {};
-      if (S.vs !== 'build' && !Object.keys(S.on).length && Object.keys(bi).length) { S.on = structuredClone(bi); wornRev++; keep(); }
+      if (S.vs !== 'build' && !Object.keys(S.on).length) fromBuild();
       // nothing is known to be worn where it goes: this is it (what the character has on is copied first)
       const free = S.vs === 'build' ? null : r.slots.find(s => verdict(list[0]).some(x => x.slot === s && !x.old));
       if (free) { list[0].took = free; put(free, r.item, r.name); }
@@ -285,8 +285,7 @@ export function initLoot(el, ctx) {
       </section>
       <section><h3>${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</h3>
         ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab, and Equip puts them in the build.')}</p>`
-        : gear.length ? '' : `<p class="note">${t('Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.')}</p>
-`}
+        : gear.length ? '' : `<p class="note">${t('Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.')}</p>`}
         ${S.vs !== 'build' && Object.keys(b.items || {}).length ? `<div class="optrow"><button data-do="copy">${t("Start from the build's equipment")}</button></div>` : ''}
         ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
           S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}
@@ -318,7 +317,7 @@ export function initLoot(el, ctx) {
       case 'equip': { const old = gearOf(ctx.build())[slot]; en.undo = { slot, old: old ? structuredClone(old) : null }; put(slot, en.r.item, en.r.name); break; }
       case 'undo': { const old = en.undo?.slot === slot ? en.undo.old : null; en.undo = null; put(slot, old); break; }
       case 'off': put(slot, null); break;
-      case 'copy': S.on = structuredClone(ctx.build().items || {}); wornRev++; keep(); render(); break;
+      case 'copy': fromBuild(); render(); break;
       case 'drop': list.splice(+d.dataset.i, 1); keepList(); render(); break;
       case 'clear': list = []; keepList(); render(); break;
       case 'float': float(); break;
