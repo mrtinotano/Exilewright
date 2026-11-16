@@ -5,6 +5,7 @@ poe2_data/all_files.txt
 poe2_data/schema.json
 poe2_data/failed_tables.txt
 poe2_data/digest/
+docs/
 node_modules/
 __pycache__/
 # Path of Building 2 files downloaded by poe2_data/_tool/pob2.py (re-downloaded when missing or a week old)
