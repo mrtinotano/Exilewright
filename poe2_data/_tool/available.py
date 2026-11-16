@@ -346,6 +346,13 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')
     if 'specific_skill_stat_descriptions' in csd.lower():
         skill_csd.setdefault(csd.lower(), []).append(g['name'])
+        # the radius the game's skill window shows is the one the skill's .csd gives a table_only row ("Orb radius@{0}m"):
+        # the secondary one when only that has a row (Orb of Storms: 3.6 m, its 5.6 m is not shown)
+        if os.path.exists(cp := os.path.join(ROOT, 'files', csd.lower())):
+            rows = {b.split()[1] for b in open(cp, encoding='utf-8', errors='replace').read().split('description')[1:] if 'table_only' in b and b.split()[0] == '1'}
+            area2 = 'active_skill_base_secondary_area_of_effect_radius'
+            if 'active_skill_secondary_area_of_effect_radius' in rows and 'active_skill_area_of_effect_radius' not in rows:
+                skills[g['name']]['radius'] = {lvl: st.get(area2, const.get(area2)) for lvl, st in levels.items() if area2 in st or area2 in const} or None
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
@@ -628,7 +635,7 @@ assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit:
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
-assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
+assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Orb of Storms']['radius'][12] == 36 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))

@@ -19,8 +19,9 @@ function apply(h, v) {
   if (h.startsWith('per_minute_to_per_second')) return v / 60;
   if (h.startsWith('milliseconds_to_seconds')) return v / 1000;
   if (h.startsWith('deciseconds_to_seconds')) return v / 10;
-  const m = h.match(/^divide_by_([a-z_]+?)(_then_double)?_?(\d+dp)?(_and_negate)?_?$/);
-  if (m && DIV[m[1]]) return v / DIV[m[1]] * (m[2] ? 2 : 1) * (m[4] ? -1 : 1);
+  // "divide_by_ten_1dp_if_required": Orb of Storms' "Orb radius is 3.6 metres"
+  const m = h.match(/^divide_by_([a-z_]+?)(_then_double)?(?:_?\d+dp)?(?:_if_required)?(_and_negate)?_?$/);
+  if (m && DIV[m[1]]) return v / DIV[m[1]] * (m[2] ? 2 : 1) * (m[3] ? -1 : 1);
   return v; // note: rare handlers (hashes, indices) left raw
 }
 const inRange = (c, v) => {
