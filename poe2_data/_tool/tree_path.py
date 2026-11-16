@@ -1,5 +1,5 @@
 """Approx min passive points to reach target nodes from a class root (greedy Steiner over the real tree).
-Usage: python -I path.py ROOT_NAME "Node A" "Node B" ...   (ROOT_NAME: WITCH, RANGER, MARAUDER, DUELIST, TEMPLAR, SIX)"""
+Usage: python -I tree_path.py ROOT_NAME "Node A" "Node B" ...   (ROOT_NAME: WITCH, RANGER, MARAUDER, DUELIST, TEMPLAR, SIX)"""
 import json, os, sys
 from collections import deque
 T = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'available', 'passive_tree.json'), encoding='utf8'))

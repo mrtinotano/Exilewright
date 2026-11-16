@@ -1,4 +1,4 @@
-"""Query helper: python -I q.py "Gem Name" [...]  -> constant + level-20 stats of gems, human readable."""
+"""Query helper: python -I gem_stats.py "Gem Name" [...]  -> constant + level-20 stats of gems, human readable."""
 import sys, os
 g = {'__file__': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'digest.py')}
 exec(open(g['__file__'], encoding='utf8').read().split('os.makedirs(OUT')[0], g)
