@@ -88,13 +88,14 @@ function itemParts(it) {
   const impl = base.implicits.flatMap((id, i) => enLines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
   const expl = mods.flatMap(m => enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
-  return { r, base, impl, expl, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? 'Planned Item' : '' };
+  const rune = it.extra ? statLinesEn(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
+  return { r, base, impl, expl, rune, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? 'Planned Item' : '' };
 }
 export function itemText(it) {
   const p = itemParts(it);
   if (!p) return '';
   return ['Rarity: ' + RARITY[p.r], ...p.name ? [p.name] : [], p.base.name,
-    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], 'Implicits: ' + p.impl.length, ...p.impl, ...p.expl].join('\n');
+    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], 'Implicits: ' + (p.rune.length + p.impl.length), ...p.rune.map(l => '{enchant}{rune}' + l), ...p.impl, ...p.expl].join('\n');   // Path of Building lists runes among its implicits
 }
 // the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
@@ -553,6 +554,9 @@ console.assert(parseItem('Rarity: Magic\nVitiating Ultimate Life Flask of the Pe
 // ...and gloves as Path of Building writes them: the rune counts (among its "Implicits"), its Bonded lines do not
 console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSockets: S\nRune: Greater Desert Rune\nLevelReq: 59\nImplicits: 3\n{enchant}{rune}Bonded: +20 to maximum Life\n{enchant}{rune}Bonded: +20 to maximum Mana\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield')
   ?.item.extra?.['base_fire_damage_resistance_%'] === 18, 'parseItem: a rune in Path of Building text');
+// ...and written back the same way (a build exported to Path of Building keeps its runes)
+{ const g = parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nImplicits: 1\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield').item;
+  console.assert(parseItem(itemText(g))?.item.extra?.['base_fire_damage_resistance_%'] === 18 && /^\{enchant\}\{rune\}\+18% to Fire Resistance$/m.test(itemText(g)), 'itemText: runes', itemText(g)); }
 // ...and a rune no modifier is worded like
 console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem Level: 70\n--------\n32% increased Life and Mana Recovery from Flasks (rune)')
   ?.item.extra?.['flask_life_and_mana_to_recover_+%'] === 32, 'parseItem: a rune of its own wording');
