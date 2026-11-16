@@ -24,13 +24,16 @@ console.assert(QUESTS.length && QUESTS.every(q => q.options.every(o => !o.missed
 // skill's own text has it. It holds Motes of each attribute, at most the skill's own number plus one per skill of the
 // build that requires that attribute (two if it requires no other), and each kind of Mote gives its part: life,
 // "Armour, Evasion and Energy Shield" in one line, life and mana regeneration.
+// A meta gem (Mortar Cannon) is not counted: the game's 10 / 5 / 6 Motes of a build with Mortar Cannon and the Cluster
+// Grenade it uses (both Strength and Dexterity) count one of the two. note: the meta gem left out, not the skill in it;
+// a build with a meta gem and its skills of other attributes would tell which.
 // note: every Mote it can hold (a hit takes one away, they come back in seconds)
 const ATTRS = ['strength', 'dexterity', 'intelligence'];
 export function skillStats(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};
   const motes = Object.fromEntries(ATTRS.map(a => [a, c.skill_specific_stat_description_mode || 0]));
-  for (const g of b.gems) { const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
+  for (const g of b.gems) { if (GEM[g.name]?.tags?.includes('meta')) continue; const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
   const per = (id, a) => (c[id] || 0) * motes[a];
   return { 'maximum_life_+%': per('gem_barrier_red_grants_maximum_life_+%', 'strength'),
     'global_armour_evasion_energy_shield_+%': per('gem_barrier_green_grants_evasion_rating_+%', 'dexterity'),
@@ -41,8 +44,8 @@ export function skillStats(b) {
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
-// self-check: 3 Strength Motes of its own and 2 for Berserk, which requires Strength alone, at 2% life each
-console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }] })['maximum_life_+%'] === 10 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
+// self-check: 3 Strength Motes of its own and 2 for Berserk, which requires Strength alone, at 2% life each (none for a meta gem)
+console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }] })['maximum_life_+%'] === 10 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
 const CHAR = SK.character_stats || {};
 const v = (sum, ...ids) => ids.reduce((t, id) => t + (sum[id] || 0), 0);
 const first = (...xs) => xs.find(x => x != null) ?? null;
