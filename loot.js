@@ -5,7 +5,6 @@
 // wand is an upgrade for a spell and nothing for a bow). Without a skill only the defences and the weapon's own damage
 // are judged. What it is compared with is the gear marked here as worn (the build is left alone) or the build's own.
 // The verdict of an item that came from the game also goes to serve.py's /overlay, which shows it over the game.
-// The tab also saves the loot filter of the build (filter.js): what the game itself marks where items drop.
 //   ctx: { build(), id(), rev(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets),
 //          change(fn(b)) (edits the build, saves, redraws) }
 import { t, fmt, tn, lang, locale, cap } from './i18n.js';
@@ -14,7 +13,6 @@ import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactHtml, impactText } from './impact.js';
-import { filterPlan, filterText, mergeFilter, isFilter, filterFileName, DEFENCES } from './filter.js';
 
 const KEY = 'poe2loot', LIST = 'poe2lootlist';
 const MAX = 20;   // items kept in the list
@@ -40,7 +38,7 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, sound: true, notify: false, fmin: 'magic', worn: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, sound: true, notify: false, worn: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
   // the items looked at, newest first: { text, at (time), r (parseItem), undo: { slot, old } once equipped from here,
@@ -49,7 +47,6 @@ export function initLoot(el, ctx) {
   const keepList = () => localStorage.setItem(LIST, JSON.stringify(list.map(e => [e.text, e.at])));
   const tab = document.querySelector('nav button[data-v="loot"]');
   let msg = '', bad = false;     // what the last text given was, when it was no item
-  let fmsg = '', fbad = false;   // what became of the loot filter asked for
   let es = null, live = '';      // the clipboard watch: '' off, 'wait' (connecting), 'on', 'none' (this server has no /clipboard)
   let ac = null, pip = null;     // sound, the floating window
   let over = false, awake = false;   // serve.py has a window to show verdicts over the game; this tab was told to stay awake
@@ -217,61 +214,6 @@ export function initLoot(el, ctx) {
   }
   addEventListener('pointerdown', showLive, { once: true });
 
-  // ---------- the loot filter for the game
-  // the build's own equipment says what it uses; what is worn fills in what the build leaves open
-  const planOf = b => filterPlan({ b, gears: [b.items, S.worn[ctx.id()]], gem: gemOf(b), tree: ctx.sumOf({ ...b, items: {} }), sockets: ctx.sockets().length });
-  // -> the name it was saved under, null when the user backed out. Where the browser lets the user choose the folder
-  // (the game's own, so there is no file to move afterwards) it opens there again the next time; else a download.
-  async function saveText(name, text) {
-    if (window.showSaveFilePicker) {
-      try {
-        const h = await showSaveFilePicker({ id: 'poe2filter', startIn: 'documents', suggestedName: name, types: [{ description: 'Item filter', accept: { 'text/plain': ['.filter'] } }] });
-        const w = await h.createWritable(); await w.write(text); await w.close();
-        return h.name;
-      } catch (e) { if (e.name === 'AbortError') return null; }   // not allowed here or now: a download does it too
-    }
-    const l = document.createElement('a');
-    l.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
-    l.download = name; l.click();
-    return name;
-  }
-  async function saveFilter(other) {   // other: { name, text } of the filter to put ours in front of
-    const b = ctx.build(), ours = filterText(planOf(b), { name: b.name, min: S.fmin });
-    const name = await saveText(filterFileName(b, other?.name), other ? mergeFilter(other.text, ours) : ours);
-    if (name) { fmsg = t('Saved as {0}.', name); fbad = false; render(); }
-  }
-  function pickFilter() {
-    const inp = Object.assign(document.createElement('input'), { type: 'file', accept: '.filter' });
-    inp.onchange = async () => {
-      const f = inp.files[0]; if (!f) return;
-      const text = await f.text();
-      if (!isFilter(text) || text.includes('\uFFFD')) { fmsg = t('That file is not an item filter.'); fbad = true; return render(); }
-      saveFilter({ name: f.name, text });
-    };
-    inp.click();
-  }
-  function filterHtml(b) {
-    const p = planOf(b), names = l => l.map(c => t(c)).join(', '), chip = (k, v, cls = '') => `<span class="${cls}">${k ? esc(k) + ': ' : ''}<b>${esc(v)}</b></span>`;
-    const cut = p.cut.map(d => t(d[0].toUpperCase() + d.slice(1))).join(' / ');
-    const kinds = p.defs.map(d => DEFENCES.filter((_, i) => d[i] !== false).map(x => t(x[2])).join(d.includes(null) ? ' / ' : ' + ')).join(', ');
-    const notes = [!p.weapons.length ? 'No weapon is marked: put the weapon of the build in Equipment.' : p.from.weapons === 'skill' ? 'The weapon is guessed from the skill: put the weapon of the build in Equipment to be exact.' : '',
-      p.defs.length ? '' : 'No armour is marked: the build has no armour pieces, defence passives or skill to tell which kind it wears.',
-      p.uniques.length ? 'A filter cannot tell one unique from another: every unique of those bases is marked.' : ''].filter(Boolean);
-    return `<section><h3>${t('Loot filter for the game')}</h3>
-      <p class="note">${t("A file for the game's own item filter, made from this build: the kind of gear it uses stands out where it drops, with nothing to ask the planner. A filter cannot see an item's modifiers, so it marks what is worth a look: Ctrl+C over the item says whether it is an upgrade.")}</p>
-      <div class="lworn">${p.weapons.length ? chip(t('Weapons'), p.weapons.map(c => t(c) + (p.only[c] ? ` (${t('only the bases that roll {0} spell modifiers', cut)})` : '')).join(', ')) : ''}${
-        p.defs.length ? chip(t('Armour pieces'), `${names(p.armour)} · ${kinds}`) : ''}${chip('', names(p.jewellery))}${p.jewels ? chip('', t('Jewels')) : ''}${
-        p.uniques.length ? chip(t('Uniques of the build'), p.uniques.map(u => u.name).join(', '), 'unique') : ''}</div>
-      ${notes.map(n => `<p class="note">${t(n)}</p>`).join('')}
-      <div class="optrow">
-        <label>${t('Items marked')} <select data-s="fmin">${opt('rare', t('Rare items only'), S.fmin === 'rare')}${opt('magic', t('Magic and rare items'), S.fmin === 'magic')}${opt('normal', t('Items of every rarity'), S.fmin === 'normal')}</select></label>
-        <button data-do="filter">${t('Save the filter')}</button><button data-do="merge">${t('Add it to a filter I already use…')}</button>
-      </div>
-      <p class="note">${t('Save it in Documents/My Games/Path of Exile 2 and pick it in the game: Options → Game → Item Filter. After a change to the build, save it again and load it again in the game.')}</p>
-      ${fmsg ? `<p class="${fbad ? 'opterr' : 'optmsg'}">${esc(fmsg)}</p>` : ''}
-    </section>`;
-  }
-
   // ---------- the tab
   // slot <- item (null empties it): the worn gear kept here, or the build itself
   function put(slot, item, name) {
@@ -343,7 +285,6 @@ export function initLoot(el, ctx) {
         ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
           S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}
       </section>
-      ${filterHtml(b)}
       ${list.length ? `<section><div class="optrow"><h3>${t('Items looked at')}</h3><button data-do="clear">${t('Clear the list')}</button></div>
         <div class="gitems">${list.map(card).join('')}</div></section>` : ''}
     </div>`;
@@ -375,8 +316,6 @@ export function initLoot(el, ctx) {
       case 'drop': list.splice(+d.dataset.i, 1); keepList(); render(); break;
       case 'clear': list = []; keepList(); render(); break;
       case 'float': float(); break;
-      case 'filter': saveFilter(); break;
-      case 'merge': pickFilter(); break;
     }
   };
   fetch('overlay').then(r => r.ok ? r.json() : {}).then(j => { over = !!j.overlay; render(); }).catch(() => {});
