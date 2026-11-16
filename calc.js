@@ -168,8 +168,8 @@ export function recovery(c, sum) {
 
 // Detailed list under the resistances, by section like the in-game character panel.
 // Each row: [label, value text, tooltip?]. Base rates come from character.ot and GameConstants (skills.json character_stats):
-// energy shield recharges 12.5% of max per second after a 4 s delay, mana regenerates 4% of max per second; stun and
-// ailment thresholds start at maximum life.
+// energy shield recharges 12.5% of max per second after a 4 s delay, mana regenerates 4% of max per second; the stun
+// threshold starts at maximum life, the ailment threshold at half of it (PlayerAilmentThresholdLifeFactor).
 export function sheet(b, sum) {
   const c = character(b, sum), at = c.attrs, pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const num = fmt;
@@ -187,7 +187,7 @@ export function sheet(b, sum) {
   // stun / ailment thresholds
   const stun = c.life == null ? null : (c.life + v(sum, 'stun_threshold_+') + at.str * v(sum, 'stun_threshold_+_per_strength') + at.dex * v(sum, 'stun_threshold_+_per_dexterity')
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
-  const ail = c.life == null ? null : (c.life + at.dex * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
+  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + at.dex * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
   const opt = (label, id, unit = '%') => sum[id] ? [[label, num(sum[id], Number.isInteger(sum[id]) ? 0 : 1) + unit]] : [];
   const RES = { fire: 'Fire Resistance', cold: 'Cold Resistance', lightning: 'Lightning Resistance', chaos: 'Chaos Resistance' };

@@ -343,6 +343,7 @@ char_stats = ot_stats(ot)
 # not in character.ot: how long energy shield waits before recharging (GameConstants)
 game = {c['Id']: c['Value'] / c['Divisor'] for c in load('GameConstants')}
 char_stats['energy_shield_delay_ms'] = round(game['BaseShieldRegenCooldownTimeMs'])
+char_stats['ailment_threshold_life_%'] = round(game['PlayerAilmentThresholdLifeFactor'] * 100)   # a player's starts at half its life
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
 # what the campaign leaves on a character: the stats of every permanent quest reward (the table also keeps rewards the
 # campaign no longer gives: which ones count is pob2.py's part; the tally of boss faces is no stat of the character),
@@ -597,7 +598,7 @@ print(f'monsters.json {len(monsters)} monsters ({sum(1 for m in monsters if m.ge
 assert plain('[Knockback|Knocking Back] a [Projectile]') == 'Knocking Back a Projectile'
 assert all(s['levels'] for s in skills.values()), 'a gem without stats per level'
 assert skills['Fireball']['cast_time_ms'] and skills['Fireball']['levels'][20]['spell_minimum_base_fire_damage'] > 0
-assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms')), 'character.ot / GameConstants'
+assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms', 'ailment_threshold_life_%')), 'character.ot / GameConstants'
 assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'BaseMaxMana')), 'Characters base life / mana'
 assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
