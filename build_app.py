@@ -17,8 +17,8 @@ app = os.path.join('dist', 'Exilewright')
 open(os.path.join(app, 'portable'), 'w').close()
 shutil.make_archive(os.path.join('dist', 'Exilewright-portable'), 'zip', 'dist', 'Exilewright')
 os.remove(os.path.join(app, 'portable'))
-iscc = next((p for p in (os.path.join(os.environ.get(v, ''), *sub, 'Inno Setup 6', 'ISCC.exe')
-                         for v, *sub in (('ProgramFiles(x86)',), ('ProgramFiles',), ('LOCALAPPDATA', 'Programs')))
+iscc = next((p for p in map(os.path.expandvars, (r'%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe', r'%ProgramFiles%\Inno Setup 6\ISCC.exe',
+                                                  r'%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe'))
              if os.path.isfile(p)), shutil.which('iscc'))
 if iscc:
     subprocess.run([iscc, '/Q', 'installer.iss'], check=True)
