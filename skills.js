@@ -58,7 +58,8 @@ function details(g, b, sum, geo) {
     ${sec('Speed', [
       !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
       [s.attack ? 'Attacks per second' : 'Uses per second', s.speed ? fmt(s.speed, 2) : '—'],
-      st._cooldown_ms && ['Cooldown time', fmt(st._cooldown_ms / 1000, 2) + ' s'],
+      s.cooldown && ['Cooldown time', fmt(s.cooldown / 1000, 2) + ' s'],
+      s.uses > 1 && ['Cooldown uses', s.uses],
     ])}
     ${sec('Critical Hits', [
       ['Critical hit chance', s.crit != null ? fmt(s.crit, 2) + '%' : '—'],

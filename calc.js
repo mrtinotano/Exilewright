@@ -357,7 +357,14 @@ export function skill(g, b, treeGear) {
   const w = attack ? weaponStats(b.items) : null;
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
-  const tags = w ? [...own, ...weaponTags(w)] : own;   // passives for a weapon type count for attacks made with it
+  // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
+  // Path of Building group comes in) is a ballista's attack: "increased Ballista Damage" counts, and "per active Totem
+  // in your Presence" once, for that totem. Fitted on the game's window (+55%: 45 Ballista, 10 per totem); its 95%
+  // "increased Totem Damage" did not count there. note: the gem before it, a link of its own if a build breaks it
+  const i = (b.gems || []).indexOf(g), meta = i > 0 && b.gems[i - 1], byTotem = meta && GEM[meta.name]?.tags?.includes('meta')
+    && SK.skills[meta.name]?.totem && String(meta.supports || []) === String(g.supports || []) ? SK.skills[meta.name].totem : null;
+  const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
+  const perTotem = byTotem && attack ? v(sum, 'attack_damage_+%_per_active_totem_in_presence') : 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -389,7 +396,7 @@ export function skill(g, b, treeGear) {
     base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot))
-    * (1 + (inc(sum, 'damage_+%', tags) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
+    * (1 + (inc(sum, 'damage_+%', tags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
     if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
@@ -403,7 +410,14 @@ export function skill(g, b, treeGear) {
   const speedMods = (1 + mod(mods, 'INC', ['Speed'], hit) / 100) * mod(mods, 'MORE', ['Speed'], hit);
   if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
-  if (st._cooldown_ms && out.speed) out.speed = Math.min(out.speed, 1000 / st._cooldown_ms);
+  // cooldown: the gem's own (quality), the tree's and gear's for its tags (grenade_skill_cooldown_speed_+%) and the
+  // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
+  // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
+  if (st._cooldown_ms) {
+    out.cooldown = st._cooldown_ms / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100);
+    out.uses = (st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags);
+    if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
+  }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
@@ -419,6 +433,9 @@ export function skill(g, b, treeGear) {
 
 // The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
 // self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)
+// ...and Cluster Grenade's cooldown in the game's window: 10.99 s, 2 uses (quality 16%, Payload, 45% from the tree, +1 use)
+{ const c = skill({ name: 'Cluster Grenade', level: 17, quality: 16, supports: ['Payload'] }, { gems: [], items: {} }, { 'grenade_skill_cooldown_speed_+%': 45, 'grenade_skill_cooldown_count_+': 1 });
+  console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2, 'cooldown and uses', c); }
 console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
 
 export function snapshot(b, sum) {
