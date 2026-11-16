@@ -337,7 +337,9 @@ function more(fin, suffix, tags, type) {
 // Hit, speed, crit and DPS of one gem of the build. Everything null-safe: missing data -> dps null + reason.
 export function skill(g, b, treeGear) {
   const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
-  const { sum, fin, mods } = withSupports(g, treeGear);
+  // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
+  // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
+  const { sum, fin, mods } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [] } : withSupports(g, treeGear);
   const st = gemStats(g, sum);
   const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
@@ -408,6 +410,9 @@ export function skill(g, b, treeGear) {
 }
 
 // The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
+// self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)
+console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
+
 export function snapshot(b, sum) {
   const c = character(b, sum), r = recovery(c, sum), R = c.res;
   return { life: c.life, es: c.es, mana: c.mana, spirit: c.spirit, armour: c.armour, evasion: c.evasion, block: c.block,
