@@ -365,15 +365,17 @@ export function skill(g, b, treeGear) {
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
-  // Path of Building group comes in) is a ballista's attack: "increased Ballista Damage" counts, and "per active Totem
-  // in your Presence" once, for that totem. Fitted on the game's window (+55%: 45 Ballista, 10 per totem); its 95%
-  // "increased Totem Damage" did not count there. note: the gem before it, a link of its own if a build breaks it
+  // Path of Building group comes in) is a totem's ballista attack: "increased Ballista / Totem Damage" count, "per active
+  // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
+  // Mortar Cannon placed, no Rage (16/11): 2.7% under this. note: Rage is not counted; the gem before it, a link of
+  // its own if a build breaks it
   const meta = usedBy(b, (b.gems || []).indexOf(g)), byTotem = meta && SK.skills[meta.name]?.totem || null;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   const perTotem = byTotem && attack ? v(sum, 'attack_damage_+%_per_active_totem_in_presence') : 0;
-  // and the meta gem's own support part slows it (Mortar Cannon: -50% more attack speed; the game's window, 1.79 s,
-  // has it). Its -50% more damage and +100% cooldown recovery are not in that window (damage and 10.99 s fit without)
-  const metaSpeed = byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith('attack_speed_+%_final') ? x : 0), 0) / 100 : 1;
+  // and the meta gem's own support part slows it and lowers its damage (Mortar Cannon: -50% more attack speed and damage;
+  // the game's window, 1.79 s, has them). Its +100% cooldown recovery is not in that window (10.99 s fits without)
+  const metaFinal = end => byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
+  const metaSpeed = metaFinal('attack_speed_+%_final'), metaDmg = metaFinal('ballista_damage_+%_final');
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -404,8 +406,8 @@ export function skill(g, b, treeGear) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot))
-    * (1 + (inc(sum, 'damage_+%', tags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg
+    * (1 + (inc(sum, 'damage_+%', byTotem ? [...tags, 'totem'] : tags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
     if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
