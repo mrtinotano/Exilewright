@@ -31,10 +31,10 @@ The window needs tkinter, which comes with Python. It is made on Windows, and el
 Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
 no page is there to judge it gets an answer too, a line saying so.
 
-As an app of its own (the "PoE2 Planner" executable, or: python serve.py app) the page opens in a window of its own:
-Edge (or Chrome) in app mode, with no tabs or address bar, its profile (where the builds are kept) in the folder
-"profile" next to the executable, and everything stops when that window is closed. It always uses port 8767, as the
-saved builds belong to the page's address.
+As an app of its own (the "PoE2 Planner" executable, or: python serve.py app, which needs pywebview) the page opens
+in a native window: WebView2 embedded, no browser around it. Its data (the builds) goes to %LOCALAPPDATA%/PoE2 Planner,
+or to "profile" next to the executable in the portable version; closing the window stops everything. It always uses
+port 8767, as the saved builds belong to the page's address.
 
 Usage: python3 serve.py [port] [overlay] [app]   (default port 8765)
 """
@@ -371,7 +371,7 @@ LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
-OVER = overlay() if sys.platform == 'win32' or 'overlay' in ARGS else None
+OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -534,18 +534,31 @@ class Server(ThreadingHTTPServer):
     request_queue_size = 128   # a page asks for dozens of files at once; the ones that do not fit in the queue are lost
 
 
-def app_window(url):
-    """the page in a window of its own (Edge or Chrome in app mode, a profile of its own); stops everything when it closes"""
-    names = ['msedge', 'chrome'] + [os.path.join(os.environ.get(v, ''), *p) for v in ('ProgramFiles(x86)', 'ProgramFiles', 'LocalAppData')
-             for p in (('Microsoft', 'Edge', 'Application', 'msedge.exe'), ('Google', 'Chrome', 'Application', 'chrome.exe'))]
-    exe = next((x for x in (shutil.which(n) or n for n in names) if os.path.isfile(x)), None)
-    if not exe:
-        import webbrowser
-        return webbrowser.open(url)
-    profile = os.path.join(os.path.dirname(sys.executable) if FROZEN else HERE, 'profile')
-    edge = subprocess.Popen([exe, '--app=' + url, '--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check',
-                             '--window-size=1500,950'])
-    threading.Thread(target=lambda: (edge.wait(), os._exit(0)), daemon=True).start()
+def profile():
+    """where the app keeps the page's data (the builds): next to the executable in the portable version (a file named
+    "portable" there), else the user's AppData, as an installed program does"""
+    here = os.path.dirname(sys.executable) if FROZEN else HERE
+    if os.path.exists(os.path.join(here, 'portable')) or not FROZEN:
+        return os.path.join(here, 'profile')
+    return os.path.join(os.environ.get('LOCALAPPDATA', here), 'PoE2 Planner')
+
+
+def app(url):
+    """the page in a native window (WebView2, the web engine Windows has, embedded: no browser around it). The window
+    over the game gets a thread of its own, as this one wants the main thread; closing the window stops everything"""
+    import webview
+
+    def over():
+        global OVER
+        OVER = overlay()
+        if OVER:
+            tell('Copy an item in the game: Ctrl+C over it')
+            OVER[1]()
+    if sys.platform == 'win32':
+        threading.Thread(target=over, daemon=True).start()
+    webview.create_window('PoE2 Planner', url, width=1500, height=950, min_size=(900, 600), text_select=True)
+    webview.start(private_mode=False, storage_path=profile())
+    os._exit(0)
 
 
 port = 8767 if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
@@ -554,10 +567,13 @@ try:
 except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise
-    app_window(f'http://127.0.0.1:{port}/')
-    sys.exit()
+    server = None
 if 'app' in ARGS:
-    app_window(f'http://127.0.0.1:{port}/')
+    if server:
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        if CLIP:
+            threading.Thread(target=watch_clipboard, daemon=True).start()
+    app(f'http://127.0.0.1:{port}/')
 if CLIP:
     threading.Thread(target=watch_clipboard, daemon=True).start()
 if OVER:   # the window wants the main thread: the server goes to one of its own
