@@ -101,8 +101,9 @@ if (MON.length) console.assert(evadeChance(13176, 91) === 58 && evadeChance(1820
 // threshold, the resistances and duration the gem sets, and its limit with the build's "+N Totems / Ballista Totems".
 // Armour and evasion: that level's monster ones. note: the x4 armour of a totem whose monster type has Armour 100
 // (MonsterTypes; the rest have 0) is no table's: it fits the game's two windows seen, a level 36 Mortar Cannon (1266 for
-// 317 x 4 = 1268) and a level 16 Shockwave Totem (60, the table's). The game's evasion is 1-2 lower (127 / 304 for 128 /
-// 306), its armour 2-3 lower (Ancestral Warrior Totem's spirit 201 for 204): rules unknown, the table's shown
+// 317 x 4 = 1268) and a level 16 Shockwave Totem (60, the table's). Against five game windows (levels 16-36) armour and
+// evasion are off by up to 3 (1.5%) both ways with no rule found (the x4 ones are within 0.5 of the table before
+// rounding: 1266 / 946 / 697 = 4 x 316.5 / 236.5 / 174.25); PoB2 has no base totem defences to compare: the table's shown
 export function totem(g, sum = {}) {
   const T = SK.skills[g.name]?.totem; if (!T) return null;
   const s = withSupports(g, sum).sum, st = gemStats(g, s), level = SK.minion_level?.[st._level - 1];
