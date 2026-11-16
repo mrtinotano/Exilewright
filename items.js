@@ -236,7 +236,9 @@ export function parseItem(text) {
     }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
-  const quality = raw.map(l => l.match(/^Quality: \+?(\d+)/)?.[1]).find(Boolean);   // the game: "Quality: +20% (augmented)", Path of Building: "Quality: 20"
+  // the game: "Quality: +20% (augmented)" ("Calidad: +20% (augmented)": the only "+N% (augmented)" property, the tag
+  // stays English in every language), Path of Building: "Quality: 20"
+  const quality = raw.map(l => l.match(/^Quality: \+?(\d+)|^[^:]+: \+(\d+)% \(augmented\)$/)?.slice(1).find(Boolean)).find(Boolean);
   if (+quality) item.quality = +quality;
   const own0 = base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])), im = matchLines(impl, own0);
   // the game's detailed text gives implicits no tag: a plain line worded as one of the base's own is it
