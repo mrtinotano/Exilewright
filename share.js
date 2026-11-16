@@ -1,6 +1,7 @@
 // Build sharing: Path of Building 2 build codes, the format pobb.in, poe.ninja, Maxroll and poe2db read and write.
 // A code is base64url( zlib deflate( <PathOfBuilding2> XML ) ), see PoB's src/Classes/ImportTab.lua.
 import { itemText, itemNote, parseItem } from './items.js';
+import { usedBy } from './calc.js';
 
 // Path of Building's own ids (its tree 0_5 "classes" list): not game data, only needed to talk to PoB
 const POB_CLASS = { Ranger: 2, Huntress: 8, Warrior: 6, Mercenary: 9, Druid: 11, Witch: 1, Sorceress: 7, Monk: 10 };
@@ -56,7 +57,8 @@ ${[[1, set1], [2, set2]].filter(([, s]) => s.length).map(([k, s]) => `<WeaponSet
 <Overrides><AttributeOverride strNodes="${attr('str')}" dexNodes="${attr('dex')}" intNodes="${attr('int')}"/></Overrides>
 </Spec></Tree>
 <Skills activeSkillSet="1"><SkillSet id="1">
-${b.gems.map(g => `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).join('\n')}
+${b.gems.map((g, i) => usedBy(b, i) ? null : `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${
+   usedBy(b, i + 1) ? gem(b.gems[i + 1].name, b.gems[i + 1].level ?? 20, b.gems[i + 1].quality) : ''}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).filter(Boolean).join('\n')}
 </SkillSet></Skills>
 <Items activeItemSet="1">
 ${items.map(([s, txt]) => `<Item id="${iid[s]}">${x(txt)}</Item>`).join('\n')}
@@ -129,7 +131,7 @@ export function fromXML(xml, ctx, blank) {
     if (!slot || !text[id]) continue;
     const r = parseItem(text[id]);
     if (!r) { warn.push(text[id].split('\n').map(l => l.trim()).filter(Boolean).slice(1, 3).join(' ')); continue; }
-    b.items[slot] = r.item;
+    b.items[slot] = r.name ? { ...r.item, name: r.name } : r.item;   // a rare's name, written back on export
     warn.push(...r.missed);
   }
   b.notes = kids(root, 'Notes')[0]?.textContent.trim() || '';

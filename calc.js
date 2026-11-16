@@ -31,7 +31,7 @@ console.assert(QUESTS.length && QUESTS.every(q => q.options.every(o => !o.missed
 const ATTRS = ['strength', 'dexterity', 'intelligence'];
 // the meta gem that uses the build's i-th gem: the one before it, with the same supports, for a weapon both use
 // (Mortar Cannon's crossbow grenades; Ancestral Warrior Totem's maces, not the Orb of Storms after it)
-const usedBy = (b, i) => { const m = i > 0 && b.gems[i - 1], ws = m && SK.skills[m.name]?.weapons;
+export const usedBy = (b, i) => { const m = i > 0 && b.gems[i - 1], ws = m && SK.skills[m.name]?.weapons;
   return ws && GEM[m.name]?.tags?.includes('meta') && String(m.supports || []) === String(b.gems[i].supports || [])
     && SK.skills[b.gems[i].name]?.weapons?.some(x => ws.includes(x)) ? m : null; };
 export function skillStats(b) {

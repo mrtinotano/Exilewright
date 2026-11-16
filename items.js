@@ -88,7 +88,7 @@ function itemParts(it) {
   const expl = mods.flatMap(m => enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
   const rune = it.extra ? statLinesEn(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
-  return { r, base, impl, expl, rune, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? 'Planned Item' : '' };
+  return { r, base, impl, expl, rune, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? it.name || 'Planned Item' : '' };
 }
 export function itemText(it) {
   const p = itemParts(it);
@@ -519,7 +519,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
     const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
-    put(items, slot, r.item); sel = slot;
+    put(items, slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
     changed(); render(); msg = '';
   }
