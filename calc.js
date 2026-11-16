@@ -155,9 +155,9 @@ export function character(b, sum) {
   const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
   const mDmg = monster(lvl, 'Damage', 'PhysicalDamage', 'MonsterDamage'), mAcc = monster(lvl, 'Accuracy', 'AccuracyRating');
   // documented game formulas: armour reduces a hit by A / (A + 10·damage), max 90%;
-  // chance to be hit = 1 − 0.95·evasion / (evasion + 4·accuracy), between 5% and 100% (PoB2 CalcDefence monsterHitChance)
+  // chance to evade = 0.95·evasion / (evasion + 4·accuracy), so never 95% (PoB2 CalcDefence monsterHitChance)
   const armourPct = mDmg ? Math.min(90, 100 * armour / (armour + 10 * mDmg)) : null;
-  const evadePct = mAcc ? 100 - Math.min(100, Math.max(5, 100 - 95 * evasion / (evasion + 4 * mAcc))) : null;
+  const evadePct = mAcc ? 95 * evasion / (evasion + 4 * mAcc) : null;
   return {
     level: lvl, attrs: at,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%')),
