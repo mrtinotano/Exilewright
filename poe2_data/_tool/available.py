@@ -625,7 +625,9 @@ for m in mods:
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({
         # index = monster level - 1
-        'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'))},
+        'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'),
+            # % more elemental / chaos damage of a monster at the level (stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level)
+            ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'))},
         'constants': {
             'skill_effectiveness': game['SkillDamageBaseEffectiveness'],
             'monster_crit_bonus': mon_stats.get('base_critical_hit_damage_bonus'), 'monster_max_resistance': mon_stats.get('base_maximum_all_resistances_%'),

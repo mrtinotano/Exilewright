@@ -88,8 +88,11 @@ export function attackOf(m, level, key, rarity) {
     for (const [el, p] of Object.entries(set.convert)) { const k = Math.min(left, p / 100); left -= k; hits[el] = [(hits[el]?.[0] || 0) + lo * k, (hits[el]?.[1] || 0) + hi * k]; }
     hits.physical = [lo * left, hi * left];
   }
-  for (const el of Object.keys(hits)) { hits[el] = hits[el].map(Math.round); if (!hits[el][1]) delete hits[el]; }
-  for (const [el, [x, i]] of Object.entries(set.dot || {})) { const d = val(x, i) / 60; if (d > 0) dot[el] = d; }   // the data is per minute
+  // monsters deal more elemental and chaos damage with their level (DefaultMonsterStats MoreElementalDamage / MoreChaosDamage;
+  // note: read as the stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level by their names)
+  const lv = el => el === 'physical' ? 1 : 1 + row(el === 'chaos' ? 'more_chaos' : 'more_elemental', L) / 100;
+  for (const el of Object.keys(hits)) { hits[el] = hits[el].map(x => Math.round(x * lv(el))); if (!hits[el][1]) delete hits[el]; }
+  for (const [el, [x, i]] of Object.entries(set.dot || {})) { const d = val(x, i) / 60 * lv(el); if (d > 0) dot[el] = d; }   // the data is per minute
   const projectile = flags.includes('projectile') || !sk && !!m.ranged || String(key || '').startsWith('MeleeAtAnimationSpeed') && !!m.ranged;
   const area = !!set.area || flags.includes('area');
   const hasHit = Object.keys(hits).length > 0;
