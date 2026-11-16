@@ -2,6 +2,7 @@
 // A code is base64url( zlib deflate( <PathOfBuilding2> XML ) ), see PoB's src/Classes/ImportTab.lua.
 import { itemText, itemNote, parseItem } from './items.js';
 import { usedBy } from './calc.js';
+import { t } from './i18n.js';
 
 // Path of Building's own ids (its tree 0_5 "classes" list): not game data, only needed to talk to PoB
 const POB_CLASS = { Ranger: 2, Huntress: 8, Warrior: 6, Mercenary: 9, Druid: 11, Witch: 1, Sorceress: 7, Monk: 10 };
@@ -163,12 +164,12 @@ export function toBuildFile(b, ctx) {
     .filter(id => ctx.N[id]?.id).map(id => ({ id: ctx.N[id].id, weapon_set: set[id] || 0 }));
   const skills = b.gems.filter(g => byName[g.name]).map(g => {
     const sup = (g.supports || []).filter(n => byName[n]).map(n => byName[n].id);
-    return { id: byName[g.name].id, additional_text: 'Level ' + (g.level ?? 20), ...sup.length ? { support_skills: sup } : {} };
+    return { id: byName[g.name].id, additional_text: t('Level') + ' ' + (g.level ?? 20), ...sup.length ? { support_skills: sup } : {} };
   });
   const inventory_slots = Object.entries(b.items || {}).filter(([slot]) => INVENTORY[slot])
     .map(([slot, it]) => ({ inventory_id: INVENTORY[slot][0], slot_x: INVENTORY[slot][1], additional_text: itemNote(it) }))
     .filter(s => s.additional_text);
-  return JSON.stringify({ name: b.name || 'Unnamed', ...ascendancy ? { ascendancy } : {}, ...b.notes ? { description: b.notes } : {},
+  return JSON.stringify({ name: b.name || t('Unnamed'), ...ascendancy ? { ascendancy } : {}, ...b.notes ? { description: b.notes } : {},
     passives, skills, inventory_slots }, null, 2);
 }
 export const buildFileName = b => (b.name || 'Unnamed').replace(/[\\/:*?"<>|\x00-\x1f]/g, '-') + ` [${TREE_VERSION}].build`;

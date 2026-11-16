@@ -46,8 +46,7 @@ const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
 const RADIUS = Object.values(D.radius_grant).flatMap(o => Object.entries(o).map(([kind, tpl]) =>
   [kind, new RegExp('^' + tpl.split('{0}').map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(':?\\s*(.+?)\\s*') + '$')]));
 const radLine = l => RADIUS.map(([kind, re]) => [kind, l.match(re)?.[1]]).find(x => x[1]);
-const radLines = (a, lines, en) => !a.radius ? lines : lines.map(l => en ? `${a.radius === 'small' ? 'Small' : 'Notable'} Passive Skills in Radius also grant ${l}`
-  : t(a.radius === 'small' ? 'Small Passive Skills in Radius also grant {0}' : 'Notable Passive Skills in Radius also grant {0}', l));
+const radLines = (a, lines, code = lang) => !a.radius ? lines : lines.map(l => (D.radius_grant[code] || D.radius_grant.en)[a.radius].replace('{0}', l));
 
 // item's own numbers after its local mods: (base + flat) × (1 + increased%) × (1 + quality%), quality on its own as
 // Path of Building 2 has it (Item.lua: armour, evasion, energy shield and a weapon's physical damage)
@@ -98,17 +97,19 @@ export function gearStats(items = {}) {
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
 const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
-const enLines = (stats, vals) => linesIn(statLinesEn, stats, vals);
-function itemParts(it) {
+// en: English, as Path of Building reads it; otherwise the page's language, as the game shows it (the .build notes)
+function itemParts(it, en = true) {
   const base = BASE[it.base];
   if (!base) return null;
+  const say = en ? statLinesEn : statLines, lines = (stats, vals) => linesIn(say, stats, vals);
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
-  const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => enLines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
+  const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => lines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
-  const expl = mods.flatMap(m => radLines(AFFIX[m.id], enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)), true));
+  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)), en ? 'en' : lang));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
-  const rune = it.extra ? statLinesEn(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
-  return { r, base, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? it.name || 'Planned Item' : '' };
+  const rune = it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
+  const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
+  return { r, base: en ? base : { ...base, name: tn(base) || base.name }, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name };
 }
 export function itemText(it) {
   const p = itemParts(it);
@@ -120,7 +121,7 @@ export function itemText(it) {
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
 const RGB = { normal: '200, 200, 200', magic: '136, 136, 255', rare: '255, 255, 119', unique: '175, 96, 37' };
 export function itemNote(it) {
-  const p = itemParts(it);
+  const p = itemParts(it, false);
   if (!p) return '';
   const clean = l => l.replace(/[{}]/g, '');   // braces delimit the markup
   return [`<rgb(${RGB[p.r]})>{<b>{${clean([p.name, p.base.name].filter(Boolean).join('\n'))}}}`,

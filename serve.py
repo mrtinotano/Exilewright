@@ -346,7 +346,7 @@ def watch_clipboard():
             if OVER and LISTEN:
                 ASKED = time.monotonic()
             elif OVER:
-                tell('The planner is not open in the browser: nothing can judge the item')
+                tell('The planner is not open: nothing can judge the item')
         if ASKED and time.monotonic() - ASKED > 3:
             ASKED = 0
             tell("The planner's page is not answering: look at its tab once")
@@ -544,7 +544,6 @@ def app(url):
         global OVER
         OVER = overlay()
         if OVER:
-            tell('Copy an item in the game: Ctrl+C over it')
             OVER[1]()
     if sys.platform == 'win32':
         threading.Thread(target=over, daemon=True).start()
@@ -569,7 +568,6 @@ if 'app' in ARGS:
 if OVER:   # the window wants the main thread: the server goes to one of its own
     signal.signal(signal.SIGINT, signal.SIG_DFL)   # Ctrl+C in the terminal still stops it at once
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    tell('Copy an item in the game: Ctrl+C over it')
     OVER[1]()
 else:
     if sys.platform == 'win32' or 'overlay' in ARGS:

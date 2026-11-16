@@ -663,10 +663,9 @@
  "Remove": "Quitar de la lista",
  "Items looked at": "Objetos mirados",
  "Clear the list": "Vaciar la lista",
- "Copy an item in the game: Ctrl+C over it": "Copia un objeto en el juego: Ctrl+C sobre él",
  "Show the verdict over the game, next to the pointer": "Mostrar el veredicto encima del juego, junto al puntero",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "Para ver el veredicto encima del juego, arranca el servidor con: python3 serve.py overlay",
- "The planner is not open in the browser: nothing can judge the item": "El planificador no está abierto en el navegador: nada puede valorar el objeto",
+ "The planner is not open: nothing can judge the item": "El planificador no está abierto: nada puede juzgar el objeto",
  "The planner's page is not answering: look at its tab once": "La página del planificador no responde: mira su pestaña una vez",
  "Weapons": "Armas",
  "Armour pieces": "Piezas de armadura",
@@ -696,10 +695,11 @@
  "Large": "Grande",
  "Very Large": "Muy grande",
  "Massive": "Enorme",
- "Small Passive Skills in Radius also grant {0}": "Las pasivas pequeñas en el radio también otorgan: {0}",
- "Notable Passive Skills in Radius also grant {0}": "Las pasivas notables en el radio también otorgan: {0}",
  "Totem level": "Nivel del tótem",
  "Totem limit": "Límite de tótems",
  "Totem duration": "Duración del tótem",
- "Elemental Resistances": "Resistencias elementales"
+ "Elemental Resistances": "Resistencias elementales",
+ "Unnamed": "Sin nombre",
+ "Planned Item": "Objeto planificado",
+ "Copy an item in the game: Ctrl+C over it": "Copia un objeto en el juego: Ctrl+C sobre él"
 }
