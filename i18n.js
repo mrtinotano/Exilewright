@@ -5,7 +5,8 @@ const LOCALE = { en: 'en-US', es: 'es-ES', pt: 'pt-BR', fr: 'fr-FR', de: 'de-DE'
 const KEY = 'poe2lang';
 let saved = null;
 try { saved = localStorage.getItem(KEY); } catch {}
-export const lang = LANGS[saved] ? saved : 'en';
+const system = (navigator.language || '').slice(0, 2);   // until one is picked: the language of Windows, if the game has it
+export const lang = LANGS[saved] ? saved : LANGS[system] ? system : 'en';
 export const locale = LOCALE[lang];
 const dict = lang === 'en' ? {} : await fetch(`i18n/${lang}.json`).then(r => r.ok ? r.json() : {}).catch(() => ({}));
 
