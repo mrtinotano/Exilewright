@@ -81,6 +81,14 @@ export function reservation(g, sum = {}) {
 // monster of a given level (DefaultMonsterStats): the character panel rates armour / evasion against it
 const MON = SK.monster_stats || [];
 const monster = (lvl, ...cols) => { const r = MON.find(m => m.level === lvl) || MON[Math.min(lvl, MON.length) - 1]; return r && first(...cols.map(c => r[c])); };
+// The panel's estimates are against a monster of level min(character, 82), likely the highest monster level; 82 is not in the data,
+// fitted on game panels (Deadeye 91, Ritualist 92, Smith of Kitava 87: a monster of their own level misses by 2–8 points).
+const ESTIMATE_LEVEL = 82;
+// "Estimated chance to Evade": chance to be hit = 1 − 0.95·evasion / (evasion + 4·accuracy), shown rounded (PoB2 monsterHitChance)
+const evadeChance = (evasion, lvl) => { const a = monster(Math.min(lvl, ESTIMATE_LEVEL), 'Accuracy', 'AccuracyRating'); return a ? 100 - Math.round(100 - 95 * evasion / (evasion + 4 * a)) : null; };
+// "Estimated Physical Damage Reduction": armour reduces a hit by A / (A + 10·damage), max 90%, shown rounded
+const armourReduction = (armour, lvl) => { const d = monster(Math.min(lvl, ESTIMATE_LEVEL), 'Damage', 'PhysicalDamage', 'MonsterDamage'); return d ? Math.round(Math.min(90, 100 * armour / (armour + 10 * d))) : null; };
+if (MON.length) console.assert(evadeChance(13176, 91) === 58 && evadeChance(182035, 92) === 91 && evadeChance(795, 87) === 8 && armourReduction(2441, 87) === 41, 'defence estimates vs the game panel');
 
 // The totem a skill raises, as the game's details window shows it: a monster of the level its gem gives
 // (MinionGemLevelScaling: 2 per gem level) with that level's ally life (times its variety's multiplier) and ailment
@@ -153,11 +161,8 @@ export function character(b, sum) {
   const defInc = 'global_armour_evasion_energy_shield_+%';
   const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
   const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
-  const mDmg = monster(lvl, 'Damage', 'PhysicalDamage', 'MonsterDamage'), mAcc = monster(lvl, 'Accuracy', 'AccuracyRating');
-  // documented game formulas: armour reduces a hit by A / (A + 10·damage), max 90%;
-  // chance to evade = 0.95·evasion / (evasion + 4·accuracy), so never 95% (PoB2 CalcDefence monsterHitChance)
-  const armourPct = mDmg ? Math.min(90, 100 * armour / (armour + 10 * mDmg)) : null;
-  const evadePct = mAcc ? 95 * evasion / (evasion + 4 * mAcc) : null;
+  const armourPct = armourReduction(armour, lvl);
+  const evadePct = evadeChance(evasion, lvl);
   return {
     level: lvl, attrs: at,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%')),
@@ -238,11 +243,11 @@ export function sheet(b, sum) {
     ]],
     ['Armour', [
       ['Armour', num(c.armour)],
-      ['Estimated Physical Damage Reduction', c.armourPct == null ? '—' : num(c.armourPct) + '%', t('Against a hit from a monster of your level')],
+      ['Estimated Physical Damage Reduction', c.armourPct == null ? '—' : num(c.armourPct) + '%', t('Against a hit from a monster of your level (82 at most)')],
     ]],
     ['Evasion', [
       ['Evasion Rating', num(c.evasion)],
-      ['Estimated Chance to Evade', c.evadePct == null ? '—' : num(c.evadePct) + '%', t('Against an attack from a monster of your level')],
+      ['Estimated Chance to Evade', c.evadePct == null ? '—' : num(c.evadePct) + '%', t('Against an attack from a monster of your level (82 at most)')],
       ...deflect ? [['Deflection Rating', num(deflect)]] : [],
       ...opt('Damage Deflected', 'base_damage_%_deflected'),
     ]],
