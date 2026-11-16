@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "보조 대상 [Curse|저주] [BuffMagnitude|강도] {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "보조 대상 [Curse|저주] [BuffMagnitude|강도] {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15306,6 +15330,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "이 스킬의 기본 소모량이 장착된 스킬들의\\n기본 소모량의 {0}%와 동일",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16125,6 +16163,23 @@
     "t": "마나 [ManaLeech|흡수] 속도 {0}% 감속",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "장착된 [Attack|공격] 시간 {0}%마다 혼백 전사 생성",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16954,6 +17009,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|에너지] 1 획득에 필요한 적의 [Hit|명중] 피해@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "적에게 [Hit|명중]당하면, 받는 피해로 인해 상실한 [EnergyShield|에너지 보호막] {0}당 [Energy|에너지] 1 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17420,6 +17497,277 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Melee|근접] [Hit|명중] 시 적의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 [Hit|명중]시킨 적들의 [Power|위세] 하나당 [Energy|에너지] {0} 획득, 적에게 해당 [Hit|명중]으로 줄 [AilmentThreshold|상태 이상 한계치]의 비율에 따라 조정됨",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Melee|근접] [Hit|명중] 시 적의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 [Hit|명중]시킨 적들의 [Power|위세] 하나당 [Energy|에너지] {0} 획득, 적에게 해당 [Hit|명중]으로 줄 [AilmentThreshold|상태 이상 한계치]의 비율에 따라 조정됨",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Block|막아낼] 시 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Block|막아낼] 시 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Critical|치명타 명중]한 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어의 스킬이 [Critical|치명타 명중]한 적들의\\n[Power|위세] 하나당 [Energy|에너지] {0} 획득, 적에게 치명타 명중으로 준 [AilmentThreshold|상태 이상 한계치]의 비율에 따라 조정됨",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "회피 구르기로 이동한 거리 1미터당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "회피 구르기로 이동한 거리 1미터당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Frozen|동결]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "스킬 [Hit|명중]으로 [Freeze|동결]시킨 적들의\\n[Power|위세] 하나당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Ignite|점화]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 스킬 [Hit|명중]으로 [Ignite|점화]시킨 적들의 [Power|위세] 하나당 [Energy|에너지] {0} 획득, 적에게 [Ignite|점화]로 준 [AilmentThreshold|상태 이상 한계치]의 비율에 따라 조정됨",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|소환수]가 [MinionDeath|처치]되면 기본 [Energy|에너지] 50 획득, [Minion|소환수]의 [Power|위세]에 따라 조정됨",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|소환수]가 [MinionDeath|처치]되면 기본 [Energy|에너지] 50 획득, [Minion|소환수]의 [Power|위세]에 따라 조정됨",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Shock|감전]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "스킬 [Hit|명중]으로 [Shock|감전]시킨 적들의 [Power|위세] 하나당\\n[Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charm|호신부] 사용 시 사용한 충전 1당 [Energy|에너지] 획득@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charm|호신부] 사용 시 사용한 충전 1당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17814,6 +18162,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Frozen|동결]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "스킬 [Hit|명중]으로 [Freeze|동결]시킨 적들의\\n[Power|위세] 하나당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Ignite|점화]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 스킬 [Hit|명중]으로 [Ignite|점화]시킨 적들의 [Power|위세] 하나당 [Energy|에너지] {0} 획득, 적에게 [Ignite|점화]로 준 [AilmentThreshold|상태 이상 한계치]의 비율에 따라 조정됨",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Shock|감전]된 적들의 [Power|위세] 하나당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "스킬 [Hit|명중]으로 [Shock|감전]시킨 적들의 [Power|위세] 하나당\\n[Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17975,6 +18407,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "획득하는 에너지 1당 필요한 마나 사용량@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "사용한 마나 {0}당 [Energy|에너지] 1 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18095,6 +18549,38 @@
      "#"
     ],
     "t": "[Hit|명중] 시 [Rage|격노] {0} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "최대 [Energy|에너지] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "최대 [Energy|에너지] {0}\\n장착된 모든 [Spell|주문]을 발동하고 최대 [Energy|에너지] 도달 시 모든 [Energy|에너지] 상실",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "장착된 모든 [Spell|주문]을 발동하고 최대 [Energy|에너지] 도달 시 모든 [Energy|에너지] 상실",
     "h": []
    }
   ]
@@ -18658,6 +19144,33 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Melee|근접] [Attack|공격]으로 처치하는\\n적의 [Power|위세]당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Melee|근접] [Attack|공격]으로 처치하는\\n적의 [Power|위세]당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18737,6 +19250,20 @@
      "1|#"
     ],
     "t": "[Empowered|강화]된 스킬이 [Projectile|투사체] 2개 추가 발사\\n[Empowered|강화]된 스킬의 [Projectile|투사체] 속도 {0}% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "선대의 전사 토템 {0}개만 활성화 가능",
     "h": []
    }
   ]
@@ -19431,6 +19958,34 @@
     ],
     "t": "[Spell|주문] 명중 시 적 이동 방해",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Spell|주문]의 기본 시전 시간 0.1초당 획득하는 [Energy|에너지]@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "시전하는 [Spell|주문]의 기본 시전 시간\\n0.1초당 [Energy|에너지] {0} 획득",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20703,6 +21258,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "장착된 [Curse|저주] 하나당 [Spirit|정신력] {0} 점유",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21068,6 +21637,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "장착된 서로 다른 스킬 하나당 혼백 그릇이 주는 피해 {0}% 증폭",
+    "h": []
    }
   ]
  },
@@ -107768,6 +108351,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "함성 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "함성 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "적의 [Power|위세 5당 부여되는 [Rage|격노]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "범위 내 적의 [Power|위세] 1당 [Rage|격노] {0} [Gain|획득]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Empowered|강화]된 [Attack|공격]의 [ArmourBreak|방어구 파괴]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Empowered|강화]된 [Attack|공격] [Hit|명중] 시 [Armour|방어구] {0} [ArmourBreak|파괴]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111134,6 +111803,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "상이 플레이어 주위 {0}미터 반경 내에 생성",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "장착된 스킬의 소모량 중 사용하는 비율@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "상 생성 시 장착된 스킬의 소모량 사용",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "상 생성 시 장착된 스킬의 소모량의 {0}% 사용",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|권능 충전]으로 추가 생성되는 상@{0}개",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Charges|권능 충전]을 소모하여 추가 상 {0}개 생성",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Charges|권능 충전]을 소모하여 추가 상 {0}개 생성",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "충격파 반경 {0}미터",
@@ -113477,6 +114230,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "5초마다 적 {0}명에게 장착된 [Mark|징표]를 찍음",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "5초마다 적 {0}명에게 장착된 [Mark|징표]를 찍음",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "{0}미터 내의 적에게 장착된 [Mark|징표]를 찍음",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 내의 적에게 장착된 [Mark|징표]를 찍음",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -119054,6 +119861,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 피해@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당\\n보조 대상 스킬로 주는 피해 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "소모한 [Charges|인내 충전] 하나당 생명력@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "소모한 [Charges|인내 충전] 하나당 [Totem|토템]의 생명력 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "소모한 [Charges|인내 충전] 하나당 지속시간@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "소모한 [Charges|인내 충전] 하나당 [Totem|토템] 지속시간 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123093,6 +123975,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

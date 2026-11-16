@@ -13,8 +13,8 @@ const [gameDir, outDir] = process.argv.slice(2)
 // every game language (folder names under Data/Balance); available.py turns them into name_<code> fields
 const LANGS = Object.fromEntries([['English', 'Data/Balance'], ...['Spanish', 'Portuguese', 'French', 'German', 'Russian', 'Japanese', 'Korean', 'Thai', 'Traditional Chinese'].map(l => [l, 'Data/Balance/' + l])])
 const TEXT_PREFIXES = ['data/statdescriptions/', 'metadata/']
-// stat texts, the passive tree, item bases (tags, parents) and the character's and monsters' base stats
-const TEXT_EXT = /(statdescriptions\/.*\.csd|\.psg|^metadata\/items\/.*\.it|^metadata\/(characters\/character|monsters\/monster)\.ot)$/i
+// stat texts, the passive tree, item bases (tags, parents) and the character's, monsters' and totems' base stats
+const TEXT_EXT = /(statdescriptions\/.*\.csd|\.psg|^metadata\/items\/.*\.it|^metadata\/(characters\/character|monsters\/monster|monsters\/totems\/.*)\.ot)$/i
 
 const bundles = new CachingBundleLoader(new SteamBundleLoader(gameDir))
 const loader = await FileLoader.create(bundles)

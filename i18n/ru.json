@@ -318,5 +318,9 @@
  "No change in the calculated numbers": "Рассчитанные значения не меняются",
  "{0} DPS": "DPS: {0}",
  "What this item adds": "Что даёт этот предмет",
- "This skill cannot be used with the weapon in hand": "Это умение нельзя использовать с оружием в руках"
+ "This skill cannot be used with the weapon in hand": "Это умение нельзя использовать с оружием в руках",
+ "Totem level": "Уровень тотема",
+ "Totem limit": "Лимит тотемов",
+ "Totem duration": "Длительность тотема",
+ "Elemental Resistances": "Сопротивления стихиям"
 }

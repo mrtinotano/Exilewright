@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [Curse|Malédictions] modifiées ont {0}% Davantage d'[BuffMagnitude|Amplitude]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [Curse|Malédictions] modifiées ont {0}% de Perte d'[BuffMagnitude|Amplitude]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15305,6 +15329,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Le coût de base de cette Aptitude est égal à {0}% des coûts de\\nbase des Aptitudes Enchâssées",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16124,6 +16162,23 @@
     "t": "[ManaLeech|Draine] le Mana {0}% plus lentement",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Fait apparaître un guerrier spirituel tous les {0}% du temps d'[Attack|Attaque] de l'Attaque enchâssée",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16951,6 +17006,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Dégâts au [Hit|Toucher] de l'Ennemi requis pour gagner 1 d'[Energy|Énergie]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Lorsqu'un Ennemi vous [Hit|Touche], vous gagnez 1 d'[Energy|Énergie] tous les {0} de [EnergyShield|Bouclier d'énergie] ainsi perdus",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17413,6 +17490,280 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] ennemie en [Hit|Touchant] en [Melee|Mêlée]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Hit|Touchez] avec des [Attack|Attaques] de [Melee|Mêlée], modifié par le pourcentage de [AilmentThreshold|Seuil d'Altération] de l'ennemi qu'infligera la [Hit|Touche]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] ennemie en [Hit|Touchant] en [Melee|Mêlée]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Hit|Touchez] avec des [Attack|Attaques] de [Melee|Mêlée], modifié par le pourcentage de [AilmentThreshold|Seuil d'Altération] de l'ennemi qu'infligera la [Hit|Touche]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énérgie] gagnée en [Block|Bloquant]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] lorsque vous [Block|Bloquez]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis auxquels vous infligez une [Critical|Touche critique]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis auxquels vous infligez une\\n[Critical|Touche critique] avec des Aptitudes, modifié par le pourcentage de [AilmentThreshold|Seuil d'Altération] de l'ennemi qu'infligera la Touche critique",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par mètre parcouru avec la Roulade@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par mètre parcouru avec la Roulade",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Frozen|Gelés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Freeze|Gelez] au\\n[Hit|Toucher] avec les Aptitudes",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Ignite|Embrasés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Ignite|Embrasez] au [Hit|Toucher] avec les Aptitudes, modifiée par le pourcentage du [AilmentThreshold|Seuil d'Altération] de l'ennemi qu'infligera l'[Ignite|Embrasement]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] de base gagnée lorsqu'une [Minion|Créature] est [MinionDeath|Tuée], modifié par la [Power|Puissance] de la [Minion|Créature]@50",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne 50 d'[Energy|Énergie] de base lorsqu'une [Minion|Créature] est [MinionDeath|Tuée], modifié par la [Power|Puissance] de la [Minion|Créature]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Shock|Électrocutés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Shock|Électrocutez] au\\n[Hit|Toucher] avec les Aptitudes",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par Charge utilisée lorsqu'un [Charm|Charme] est utilisé@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par Charge utilisée lorsqu'un [Charm|Charme] est utilisé",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17808,6 +18159,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Frozen|Gelés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Freeze|Gelez] au\\n[Hit|Toucher] avec les Aptitudes",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Ignite|Embrasés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Ignite|Embrasez] au [Hit|Toucher] avec les Aptitudes, modifiée par le pourcentage du [AilmentThreshold|Seuil d'Altération] de l'ennemi qu'infligera l'[Ignite|Embrasement]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] des ennemis [Shock|Électrocutés]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous [Shock|Électrocutez] au\\n[Hit|Toucher] avec les Aptitudes",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17965,6 +18400,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Dépense de Mana requise par gain d'énergie@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne 1 d'[Energy|Énergie] tous les {0} de Mana dépensé",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18086,6 +18543,38 @@
      "#"
     ],
     "t": "Vous gagnez {0} de [Rage|Rage] au [Hit|Toucher]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "Votre [Energy|Énergie] maximale est {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "Votre [Energy|Énergie] maximale est {0}\\nDéclenche tous les [Spell|Sorts] Enchâssés et consomme toute l'[Energy|Énergie] lorsque le maximum d'Énergie est atteint",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "Déclenche tous les [Spell|Sorts] Enchâssés et consomme toute l'[Energy|Énergie] lorsque le maximum d'Énergie est atteint",
     "h": []
    }
   ]
@@ -18646,6 +19135,34 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par [Power|Puissance] ennemie en tuant en [Melee|Mêlée]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par [Power|Puissance] des ennemis que vous\\ntuez avec des [Attack|Attaques] de [Melee|Mêlée]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18725,6 +19242,20 @@
      "1|#"
     ],
     "t": "Les Aptitudes [Empowered|Améliorées] tirent 2 [Projectile|Projectiles] supplémentaires\\nLes Aptitudes [Empowered|Améliorées] ont {0}% d'Augmentation de Vitesse des [Projectile|Projectiles]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous pouvez avoir jusqu'à {0} Totems de Guerrier ancestral actifs",
     "h": []
    }
   ]
@@ -19422,6 +19953,34 @@
     ],
     "t": "Vos [Spell|Sorts] Entravent les Ennemis au Toucher",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Énergie] gagnée par tranche de 0,1 seconde de temps d'incantation de base des [Spell|Sorts]@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gagne {0} d'[Energy|Énergie] par tranche de 0,1 seconde de\\ntemps d'incantation de base des [Spell|Sorts] que vous lancez",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20695,6 +21254,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Réserve {0} d'[Spirit|Esprit] par [Curse|Malédiction] Enchâssée",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21060,6 +21633,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Le Réceptacle spirituel inflige {0}% Davantage de Dégâts par Aptitude différente enchâssée",
+    "h": []
    }
   ]
  },
@@ -107710,6 +108297,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Rayon du Cri de guerre : {0} mètre",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Rayon du Cri de guerre : {0} mètres",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Rage|Rage] octroyée par [Power|Puissance] ennemie@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vous gagnez {0} de [Rage|Rage] par [Power|Puissance] ennemie à portée",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[ArmourBreak|Bris d'Armure] des [Attack|Attaques] [Empowered|Améliorées]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Les [Attack|Attaques] [Empowered|Améliorées] [ArmourBreak|Brisent] {0} d'[Armour|Armure] au [Hit|Toucher]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111085,6 +111758,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Les Images peuvent être créées dans un rayon de {0} mètre autour de vous",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Pourcentage du Coût de l'Aptitude Enchâssée dépensé@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "Créer une Image dépense le Coût de l'Aptitude Enchâssée",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Créer une Image dépense {0}% du Coût de l'Aptitude Enchâssée",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Images supplémentaires créées avec une [Charges|Charge de pouvoir]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Consomme une [Charges|Charge de pouvoir] pour créer {0} Image supplémentaire",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Consomme une [Charges|Charge de pouvoir] pour créer {0} Images supplémentaires",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Rayon d'Onde de choc : {0} mètre",
@@ -113440,6 +114197,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Applique une [Mark|Marque] enchâssée à {0} Ennemi toutes les cinq secondes",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Applique une [Mark|Marque] enchâssée à {0} Ennemis toutes les cinq secondes",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Applique les [Mark|Marques] enchâssées aux Ennemis dans un rayon de {0} mètre",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Applique les [Mark|Marques] enchâssées aux Ennemis dans un rayon de {0} mètres",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -118988,6 +119799,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Davantage de Dégâts par [Charges|Charge de pouvoir] Consommée@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Les Aptitudes Enchâssées ont {0}% Davantage\\nde Dégâts par [Charges|Charge de pouvoir] Consommée",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Davantage de Vie par [Charges|Charge d'endurance] Consommée@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Les [Totem|Totems] ont {0}% Davantage de Vie par [Charges|Charge d'endurance] Consommée",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Davantage de Durée par [Charges|Charge d'endurance] Consommée@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Les [Totem|Totems] ont {0}% Davantage de Durée par [Charges|Charge d'endurance] Consommée",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123028,6 +123914,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Rayon de l'impact : {0} mètre",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Rayon de l'impact : {0} mètres",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

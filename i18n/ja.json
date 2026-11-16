@@ -318,5 +318,9 @@
  "No change in the calculated numbers": "計算値に変化なし",
  "{0} DPS": "{0}のDPS",
  "What this item adds": "このアイテムの効果",
- "This skill cannot be used with the weapon in hand": "このスキルは手にしている武器では使用できません"
+ "This skill cannot be used with the weapon in hand": "このスキルは手にしている武器では使用できません",
+ "Totem level": "トーテムのレベル",
+ "Totem limit": "トーテムの上限",
+ "Totem duration": "トーテムの持続時間",
+ "Elemental Resistances": "元素耐性"
 }

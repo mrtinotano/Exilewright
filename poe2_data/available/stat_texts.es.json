@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Las [Curse|maldiciones] asistidas tienen un {0}% más de [BuffMagnitude|magnitudes]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Las [Curse|maldiciones] asistidas tienen un {0}% menos de [BuffMagnitude|magnitudes]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15307,6 +15331,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "El costo base de esta habilidad es equivalente al {0}%\\nde los costos base de las habilidades engarzadas",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16126,6 +16164,23 @@
     "t": "[ManaLeech|Absorbes] maná un {0}% más despacio",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Conjura un guerrero espíritu cada {0}% del tiempo del [Attack|ataque] engarzado",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16953,6 +17008,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Daño de [Hit|impactos] enemigos requerido para ganar 1 de [Energy|energía]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Cuando te [Hit|impacta] un enemigo, ganas 1 de [Energy|energía] por cada {0} de [EnergyShield|escudo de energía] perdido por haber recibido daño",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17415,6 +17492,280 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos al [Hit|impactarlos] [Melee|cuerpo a cuerpo]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos a los que [Hit|impactas] con [Attack|ataques] [Melee|cuerpo a cuerpo], modificada por el porcentaje del [AilmentThreshold|umbral de estados alterados] de los enemigos que infligirá el [Hit|impacto]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos al [Hit|impactarlos] [Melee|cuerpo a cuerpo]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos a los que [Hit|impactas] con [Attack|ataques] [Melee|cuerpo a cuerpo], modificada por el porcentaje del [AilmentThreshold|umbral de estados alterados] de los enemigos que infligirá el [Hit|impacto]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada al [Block|bloquear]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] cuando [Block|bloqueas]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos a los que infliges un [Critical|impacto crítico]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos a los que les infliges un [Critical|impacto crítico] con habilidades,\\nmodificada por el porcentaje del [AilmentThreshold|umbral de estados alterados] del enemigo que infligirá el impacto crítico",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por metro recorrido rodando@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por metro recorrido mientras esquivas rodando",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Frozen|congelados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Freeze|congelas]\\ncon los [Hit|impactos] de las habilidades",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Ignite|quemados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Ignite|quemas] con los [Hit|impactos] de las habilidades, modificada por el porcentaje del [AilmentThreshold|umbral de estados alterados] del enemigo que infligirá la [Ignite|quemadura]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] base ganada cuando un [Minion|esbirro] [MinionDeath|muere] modificada por el [Power|poder] del [Minion|esbirro]@50",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana 50 de [Energy|energía] base cuando un [Minion|esbirro] [MinionDeath|muere], y este valor se modifica en función del [Power|poder] del [Minion|esbirro]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Shock|electrocutados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Shock|electrocutas]\\ncon los [Hit|impactos] de las habilidades",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por carga utilizada al usar un [Charm|vial]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Cuando se usa un [Charm|vial], gana {0} de [Energy|energía] por cada carga utilizada",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17810,6 +18161,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Frozen|congelados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Freeze|congelas]\\ncon los [Hit|impactos] de las habilidades",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Ignite|quemados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Ignite|quemas] con los [Hit|impactos] de las habilidades, modificada por el porcentaje del [AilmentThreshold|umbral de estados alterados] del enemigo que infligirá la [Ignite|quemadura]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] de los enemigos [Shock|electrocutados]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] de los enemigos que [Shock|electrocutas]\\ncon los [Hit|impactos] de las habilidades",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17966,6 +18401,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Gasto de maná requerido por cada ganancia de energía@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana 1 de [Energy|energía] por cada {0} de maná gastado",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18087,6 +18544,38 @@
      "#"
     ],
     "t": "Gana {0} de [Rage|furia] al [Hit|impactar]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "La [Energy|energía] máxima es {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "La [Energy|energía] máxima es {0}\\nActiva todos los [Spell|hechizos] engarzados y pierde toda la [Energy|energía] al alcanzar el máximo de [Energy|energía]",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "Activa todos los [Spell|hechizos] engarzados y pierde toda la [Energy|energía] al alcanzar el máximo de [Energy|energía]",
     "h": []
    }
   ]
@@ -18646,6 +19135,34 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|Energía] ganada por cada punto de [Power|poder] del enemigo al matar [Melee|cuerpo a cuerpo]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada punto de [Power|poder] que tengan\\nlos enemigos que matas con [Attack|ataques] [Melee|cuerpo a cuerpo]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18725,6 +19242,20 @@
      "1|#"
     ],
     "t": "Las habilidades [Empowered|potenciadas] disparan 2 [Projectile|proyectiles] adicionales\\nLas habilidades [Empowered|potenciadas] tienen la velocidad de los [Projectile|proyectiles] aumentada un {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "No puedes tener más de {0} tótems de guerrero ancestral activos",
     "h": []
    }
   ]
@@ -19422,6 +19953,34 @@
     ],
     "t": "Entumece a los enemigos al impactarlos con [Spell|hechizos]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|energía] ganada por cada 0.1 segundos de tiempo de lanzamiento base de los [Spell|hechizos]@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gana {0} de [Energy|energía] por cada 0.1 segundos de tiempo\\nde lanzamiento base de los [Spell|hechizos] que lanzas",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20695,6 +21254,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Reserva {0} de [Spirit|espíritu] por cada [Curse|maldición] engarzada",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21060,6 +21633,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Recipiente de espíritu inflige un {0}% más de daño por cada habilidad diferente que esté engarzada",
+    "h": []
    }
   ]
  },
@@ -107770,6 +108357,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "El radio del grito de guerra es de {0} metro",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "El radio del grito de guerra es de {0} metros",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Rage|Furia] otorgada por cada punto de [Power|poder] de los enemigos@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Ganas {0} de [Rage|furia] por cada punto de [Power|poder] de los enemigos al alcance",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[ArmourBreak|Rotura de armadura] de los [Attack|ataques] [Empowered|potenciados]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Los [Attack|ataques] [Empowered|potenciados] [ArmourBreak|rompen] {0} de [Armour|armadura] al [Hit|impactar]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111143,6 +111816,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Las imágenes se pueden crear en un radio de {0} m de ti",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Porcentaje gastado del costo de la habilidad engarzada@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "Crear una imagen gasta costo de la habilidad engarzada",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Crear una imagen gasta el {0}% del costo de la habilidad engarzada",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Imágenes adicionales creadas con [Charges|carga de poder]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Consume una [Charges|carga de poder] para crear {0} imagen adicional",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Consume una [Charges|carga de poder] para crear {0} imágenes adicionales",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "El radio de la onda expansiva es de {0} metro",
@@ -113499,6 +114256,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Aplica una [Mark|señal] engarzada a {0} enemigo cada cinco segundos",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Aplica una [Mark|señal] engarzada a {0} enemigos cada cinco segundos",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Aplica [Mark|señales] engarzadas a los enemigos a menos de {0} metro",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Aplica [Mark|señales] engarzadas a los enemigos a menos de {0} metros",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -119080,6 +119891,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Daño por cada [Charges|carga de poder] consumida@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Las habilidades engarzadas infligen un {0}% más de\\ndaño por cada [Charges|carga de poder] consumida",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Vida por cada [Charges|carga de aguante] consumida@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% más de vida de los [Totem|tótems] por cada [Charges|carga de aguante] consumida",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Duración por cada [Charges|carga de aguante] consumida@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% más de duración de los [Totem|tótems] por cada [Charges|carga de aguante] consumida",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123118,6 +124004,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "El radio del choque es de {0} metro",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "El radio del choque es de {0} metros",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "サポートされた[Curse|呪い]は[BuffMagnitude|強度]が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "サポートされた[Curse|呪い]は[BuffMagnitude|強度]が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15304,6 +15328,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "このスキルの基礎コストはソケットされたスキルの基礎コストの{0}%と同量になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16123,6 +16161,23 @@
     "t": "マナ[ManaLeech|リーチ]が{0}%遅くなる",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ソケットされた[Attack|アタック]タイムの{0}%ごとにスピリットウォーリアーを1体呼び出す",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16953,6 +17008,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|エネルギー]を1獲得するのに必要な敵からの[Hit|ヒット]ダメージ@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵による[Hit|ヒット]を受けた時に、受けたダメージにより失った[EnergyShield|エナジーシールド]{0}ごとに[Energy|エネルギー]1を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17415,6 +17492,280 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Melee|近接][Hit|ヒット]時の敵[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Melee|近接][Attack|アタック]で[Hit|ヒット]した敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得し、その数値はその[Hit|ヒット]が与えるであろう敵の[AilmentThreshold|状態異常閾値]のパーセンテージで改変される",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Melee|近接][Hit|ヒット]時の敵[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Melee|近接][Attack|アタック]で[Hit|ヒット]した敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得し、その数値はその[Hit|ヒット]が与えるであろう敵の[AilmentThreshold|状態異常閾値]のパーセンテージで改変される",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Block|ブロック]時の獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Block|ブロック]した時に[Energy|エネルギー]を{0}獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Critical|クリティカルヒット]を与えた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルで[Critical|クリティカルヒット]を与えた敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得し、\\nそのクリティカルヒットが与えた敵の[AilmentThreshold|状態異常閾値]のパーセンテージにより変更される",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ドッジロールの距離ごとに獲得する[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ドッジロール中に1m移動するごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Frozen|凍結]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Freeze|凍結]させた\\n敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Ignite|発火]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Ignite|発火]させた敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得し、\\n[Ignite|発火]が与えた[AilmentThreshold|状態異常閾値]のパーセンテージにより変更される",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Minion|ミニオン][MinionDeath|キル]時に[Minion|ミニオン][Power|パワー]で変更できる獲得基礎[Energy|エネルギー]@50",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|ミニオン]が[MinionDeath|キル]された時に50の基礎[Energy|エネルギー]を獲得し、その数値は[Minion|ミニオン]の[Power|パワー]で変更できる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Shock|感電]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Shock|感電]させた\\n敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charm|チャーム]使用時に使用したチャージごとにいくつの[Energy|エネルギー]を獲得するか@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charm|チャーム]使用時に使用したチャージごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17810,6 +18161,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Frozen|凍結]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Freeze|凍結]させた\\n敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Ignite|発火]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Ignite|発火]させた敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得し、\\n[Ignite|発火]が与えた[AilmentThreshold|状態異常閾値]のパーセンテージにより変更される",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Shock|感電]させた敵の[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Hit|ヒット]によりプレイヤーが[Shock|感電]させた\\n敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17967,6 +18402,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "エネルギーを獲得するのに必要なマナ使用量@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "マナ{0}を使用するごとに[Energy|エネルギー]を1獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18088,6 +18545,38 @@
      "#"
     ],
     "t": "[Hit|ヒット]時に[Rage|憤怒]を{0}獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "[Energy|エネルギー]の最大値は{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "[Energy|エネルギー]の最大値は{0}\\n最大[Energy|エネルギー]に到達すると全てのソケットされた[Spell|スペル]をトリガーし全ての[Energy|エネルギー]を失う",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "最大[Energy|エネルギー]に到達すると全てのソケットされた[Spell|スペル]をトリガーし全ての[Energy|エネルギー]を失う",
     "h": []
    }
   ]
@@ -18648,6 +19137,34 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Melee|近接]キル時の敵[Power|パワー]ごとの獲得[Energy|エネルギー]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Melee|近接][Attack|アタック]で倒した\\n敵の[Power|パワー]ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18727,6 +19244,20 @@
      "1|#"
     ],
     "t": "[Empowered|強化]されたスキルは[Projectile|投射物]を追加で2個放つ\\n[Empowered|強化]されたスキルは[Projectile|投射物]スピードが{0}%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アクティブなアンセストラルトーテムを{0}体以上出すことができない",
     "h": []
    }
   ]
@@ -19424,6 +19955,34 @@
     ],
     "t": "[Spell|スペル]によるヒット時に敵を[Hinder|阻害]する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Spell|スペル]の基礎キャストタイム0.1秒ごとの[Energy|エネルギー]獲得量@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーがキャストした[Spell|スペル]の\\n基礎キャストタイム0.1秒ごとに{0}の[Energy|エネルギー]を獲得する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20697,6 +21256,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ソケットされた[Curse|呪い]1個ごとに{0}の[Spirit|スピリット]をリザーブする",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21062,6 +21635,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スプリットヴェセルは異なる種類のソケットされたスキルの数ごとにダメージが{0}%上昇する",
+    "h": []
    }
   ]
  },
@@ -107773,6 +108360,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ウォークライの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ウォークライの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "敵[Power|パワー]ごとに付与される[Rage|憤怒]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "範囲内の敵[Power|パワー]ごとに[Rage|憤怒]を{0}獲得する",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Empowered|強化]された[Attack|アタック]による[ArmourBreak|アーマー破壊]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Empowered|強化]された[Attack|アタック]は[Hit|ヒット]時に{0}の[Armour|アーマー]を[ArmourBreak|アーマー破壊]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111146,6 +111819,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "プレイヤーの{0}m以内に幻影を生成できる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "使用されるソケットされたスキルのコストの割合@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "幻影を生成するとソケットされたスキルのコストを使用する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "幻影を生成するとソケットされたスキルのコストの{0}%を使用する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|パワーチャージ]がある時に生成される追加の幻影@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Charges|パワーチャージ]を消費し幻影を追加で{0}体生成する",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Charges|パワーチャージ]を消費し幻影を追加で{0}体生成する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "ショックウェーブの半径は{0}m",
@@ -113501,6 +114258,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ソケットされた[Mark|呪印]を5秒ごとに{0}体の敵に付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ソケットされた[Mark|呪印]を5秒ごとに{0}体の敵に付与する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ソケットされた[Mark|呪印]を{0}m以内の敵に付与する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ソケットされた[Mark|呪印]を{0}m以内の敵に付与する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -119082,6 +119893,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "消費した[Charges|パワーチャージ]ごとのダメージ@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ソケットされたスキルは消費した[Charges|パワーチャージ]ごとに\\nダメージが{0}%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "消費した[Charges|エンデュランスチャージ]ごとにライフ@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "消費した[Charges|エンデュランスチャージ]ごとに[Totem|トーテム]ライフが{0}%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "消費した[Charges|エンデュランスチャージ]ごとの持続時間@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "消費した[Charges|エンデュランスチャージ]ごとに[Totem|トーテム]の持続時間が{0}%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123120,6 +124006,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

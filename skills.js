@@ -2,7 +2,7 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, tn, fmt, lang } from './i18n.js';
-import { attributes, skill, reservation } from './calc.js';
+import { attributes, skill, reservation, totem } from './calc.js';
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
@@ -47,7 +47,7 @@ function details(g, b, sum, geo) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = shownLines(st, g.name), spirit = reservation(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  const lines = shownLines(st, g.name), spirit = reservation(g, sum), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${descOf(G) ? `<p class="ddesc">${esc(descOf(G))}</p>` : ''}
     ${sec('Damage', [
@@ -70,6 +70,11 @@ function details(g, b, sum, geo) {
       SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
       geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
     ])}
+    ${T ? sec('Totem', [
+      ['Totem level', T.level], T.limit && ['Totem limit', T.limit], T.duration && ['Totem duration', fmt(T.duration, 1) + ' s'],
+      ['Maximum Life', fmt(T.life)], ['Ailment Threshold', fmt(T.ailment)],
+      ['Elemental Resistances', T.elemental + '%'], ['Chaos Resistance', T.chaos + '%'],
+    ]) : ''}
     ${s.reason ? `<p class="note">${esc(t(s.reason))}</p>` : ''}
     <h4>${t('Skill Stats')}</h4>${lines.length ? `<div class="dlines">${lines.map(esc).join('<br>')}</div>` : `<p class="note">—</p>`}
     <h4>${t('Supports')}</h4>${sups.length ? sups.map(n => {

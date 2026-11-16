@@ -318,5 +318,9 @@
  "No change in the calculated numbers": "Sem alteração nos valores calculados",
  "{0} DPS": "DPS de {0}",
  "What this item adds": "O que este item acrescenta",
- "This skill cannot be used with the weapon in hand": "Esta habilidade não pode ser usada com a arma em mãos"
+ "This skill cannot be used with the weapon in hand": "Esta habilidade não pode ser usada com a arma em mãos",
+ "Totem level": "Nível do totem",
+ "Totem limit": "Limite de totens",
+ "Totem duration": "Duração do totem",
+ "Elemental Resistances": "Resistências elementais"
 }

@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "На {0}% больше [BuffMagnitude|силы] усиленных [Curse|проклятий]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "На {0}% меньше [BuffMagnitude|силы] усиленных [Curse|проклятий]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15307,6 +15331,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Базовая стоимость этого умения равна {0}% от\\nбазовой стоимости размещенных умений",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16126,6 +16164,23 @@
     "t": "[ManaLeech|Похищает] ману на {0}% медленнее",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Создает призрачного воина каждые {0}% от времени [Attack|атаки] размещенного умения",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16953,6 +17008,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Количество урона от [Hit|удара] врага, требуемое для получения 1 [Energy|энергии]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При получении [Hit|удара] от врага, получает 1 [Energy|энергии] за каждые {0} [EnergyShield|энергетического щита], утраченные из-за полученного урона",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17416,6 +17493,280 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждый [Power|уровень угрозы] при нанесении [Hit|удара] в [Melee|ближнем бою]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов, по которым вы наносите [Hit|удар] [Attack|атаками] в [Melee|ближнем бою]. Количество полученной энергии зависит от процентного соотношения наносимого [Hit|ударом] урона к [AilmentThreshold|порогу состояния] врага.",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждый [Power|уровень угрозы] при нанесении [Hit|удара] в [Melee|ближнем бою]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов, по которым вы наносите [Hit|удар] [Attack|атаками] в [Melee|ближнем бою]. Количество полученной энергии зависит от процентного соотношения наносимого [Hit|ударом] урона к [AilmentThreshold|порогу состояния] врага.",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] при [Block|блоке]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] когда вы [Block|блокируете] удар",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждый [Power|уровень угрозы] получивших критический удар врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов, по которым вы наносите [Critical|критический] умениями\\nКоличество полученной энергии зависит от процентного соотношения наносимого критическим ударом урона к [AilmentThreshold|порогу состояния] врага",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получаемое количество [Energy|энергии] за каждый пройденный метр во время кувырка@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует {0} [Energy|энергии] за каждый пройденный метр во время кувырка",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждую единицу [Power|уровня угрозы] [Frozen|замороженных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждую единицу [Power|уровня угрозы] врагов, которых вы [Freeze|замораживаете]\\n[Hit|ударами] умений",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждый [Power|уровень угрозы] [Ignite|подожженных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов, которых вы [Ignite|поджигаете] [Hit|ударами] умений\\nКоличество полученной энергии зависит от процентного соотношения наносимого [Ignite|поджогом] урона к [AilmentThreshold|порогу состояния] врага",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Базовое количество получаемой [Energy|энергии] при [MinionDeath|смерти]\\n[Minion|приспешника], изменяемое [Power|силой] [Minion|приспешника]@50",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует 50 базовой [Energy|энергии] при [MinionDeath|смерти] [Minion|приспешника], это значение зависит от [Power|силы] [Minion|приспешника]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждую единицу [Power|уровня угрозы] [Shock|шокированных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждую единицу [Power|уровня угрозы] врагов, на которых вы накладываете [Shock|шок]\\n[Hit|ударами] умений",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Количество получаемой [Energy|энергии] за каждый использованный заряд [Charm|оберега] при его использовании{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При использовании [Charm|оберега] дарует {0} [Energy|энергии] за каждый использованный заряд",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17811,6 +18162,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждую единицу [Power|уровня угрозы] [Frozen|замороженных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждую единицу [Power|уровня угрозы] врагов, которых вы [Freeze|замораживаете]\\n[Hit|ударами] умений",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждый [Power|уровень угрозы] [Ignite|подожженных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов, которых вы [Ignite|поджигаете] [Hit|ударами] умений\\nКоличество полученной энергии зависит от процентного соотношения наносимого [Ignite|поджогом] урона к [AilmentThreshold|порогу состояния] врага",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за каждую единицу [Power|уровня угрозы] [Shock|шокированных] врагов@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждую единицу [Power|уровня угрозы] врагов, на которых вы накладываете [Shock|шок]\\n[Hit|ударами] умений",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17968,6 +18403,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Требуемое количество затрачиваемой маны для получения энергии@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает 1 [Energy|энергии] за каждые {0} потраченной маны",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18089,6 +18546,38 @@
      "#"
     ],
     "t": "Дарует {0} [Rage|свирепости] при нанесении [Hit|удара]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "Максимум [Energy|энергии]: {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "Максимум [Energy|энергии]: {0}\\nВызывает срабатывание всех размещенных [Spell|чар] и теряет всю [Energy|энергию] при достижении максимума [Energy|энергии]",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "Вызывает срабатывание всех размещенных [Spell|чар] и теряет всю [Energy|энергию] при достижении максимума [Energy|энергии]",
     "h": []
    }
   ]
@@ -18649,6 +19138,34 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получение [Energy|энергии] за уровень [Power|угрозы] врага при убийстве в [Melee|ближнем бою]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждый [Power|уровень угрозы] врагов,\\nкоторых вы убиваете атаками в ближнем бою",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18728,6 +19245,20 @@
      "1|#"
     ],
     "t": "[Empowered|Улучшенные] умения выпускают 2 дополнительных [Projectile|снаряда]\\n[Empowered|Улучшенные] умения имеют {0}% повышение скорости [Projectile|снарядов]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Не может имень более {0} активных тотемов воина предков",
     "h": []
    }
   ]
@@ -19425,6 +19956,34 @@
     ],
     "t": "[Hinder|Сковывает] врагов при нанесении удара [Spell|чарами]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Получаемая [Energy|энергия] за каждые 0.1 секунды базового времени сотворения [Spell|чар]@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Получает {0} [Energy|энергии] за каждые 0.1 секунды базового времени сотворяемых вами [Spell|чар]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20698,6 +21257,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Удерживает {0} [Spirit|духа] за каждое размещенное [Curse|проклятье]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21063,6 +21636,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Духовный сосуд наносит на {0}% больше урона за каждое отдельное размещенное умение",
+    "h": []
    }
   ]
  },
@@ -107768,6 +108355,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Радиус боевого клича - {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Радиус боевого клича - {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Даруемая [Rage|свирепость] за [Power|уровень угрозы] врага@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Дарует {0} [Rage|свирепости] за [Power|уровень угрозы] врага в радиусе",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[ArmourBreak|Разрушение брони] [Empowered|улучшенной] [Attack|атакой]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Empowered|Улучшенные] [Attack|атаки] [ArmourBreak|разрушают] {0} [Armour|брони] при нанесении [Hit|удара]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111141,6 +111814,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Образы могут быть созданы в радиусе {0} м от вас",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Процент расходуемых размещенным умением ресурсов@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "Создание образа расходует стоимость размещенного умения",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Создание образа расходует {0}% стоимости размещенного умения",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Создает дополнительных образов с [Charges|зарядом энергии]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Создает дополнительных образов при поглощении [Charges|заряда энергии]: {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Создает дополнительных образов при поглощении [Charges|заряда энергии]: {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Радиус ударной волны равен {0} м",
@@ -113497,6 +114254,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Накладывает размещенную [Mark|метку] на {0} врага каждые пять секунд",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Накладывает размещенную [Mark|метку] на {0} врагов каждые пять секунд",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Накладывает размещенные [Mark|метки] на врагов в радиусе {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Накладывает размещенные [Mark|метки] на врагов в радиусе {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -119078,6 +119889,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Урон за поглощенный [Charges|заряд энергии]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Размещенные умения наносят на {0}% больше урона за каждый поглощенный [Charges|заряд энергии]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Поглощаемое здоровье за [Charges|заряд выносливости]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "На {0}% больше здоровья [Totem|тотема] за каждый поглощенный [Charges|заряд выносливости]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Длительность за каждый поглощенный [Charges|заряд выносливости]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "На {0}% больше длительности [Totem|тотема] за каждый поглощенный [Charges|заряд энергии]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123111,6 +123997,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Радиус удара - {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Радиус удара - {0} м",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

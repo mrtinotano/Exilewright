@@ -1231,6 +1231,30 @@
  },
  {
   "stats": [
+   "support_blasphemy_curse_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse|คำสาป]ที่เสริม มี[BuffMagnitude|จำนวนค่า] เพิ่มขึ้น อีก {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse|คำสาป]ที่เสริม มี[BuffMagnitude|จำนวนค่า] ลดลง อีก {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_bloodlust_melee_physical_damage_+%_final_vs_bleeding_enemies"
   ],
   "rows": [
@@ -15304,6 +15328,20 @@
  },
  {
   "stats": [
+   "meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ค่าใช้งานพื้นฐานของสกิลนี้ เท่ากับ {0}%\\nของ ค่าใช้งานพื้นฐานของสกิลที่ใส่",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
   ],
   "rows": [
@@ -16123,6 +16161,23 @@
     "t": "[ManaLeech|ดูด]มานา ช้าลง {0}%",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_warrior_totem_total_use_time_%_as_idle_after_animation"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เรียกวิญญาณนักรบ ทุก {0}% ของ เวลา[Attack|โจมตี]ที่ใส่",
+    "h": [
+     "multiplicative_damage_modifier",
      "1"
     ]
    }
@@ -16950,6 +17005,28 @@
  },
  {
   "stats": [
+   "barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ความเสียหาย [Hit|ปะทะ] ที่ต้องรับจากศัตรู ในการรับ[Energy|พลังงาน] 1@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อถูก[Hit|ปะทะ]จากศัตรู ได้รับ[Energy|พลังงาน] 1 ต่อการ สูญเสีย[EnergyShield|โล่พลังงาน] {0} จากความเสียหายที่ได้รับ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_additional_damage_from_distance_+%_final",
    "quality_display_spear_puncture_is_gem"
   ],
@@ -17413,6 +17490,280 @@
  },
  {
   "stats": [
+   "cast_fire_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรู เมื่อ[Hit|ปะทะ] [Melee|ประชิด]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณ [Hit|ปะทะ]ด้วย การ[Attack|โจมตี][Melee|ประชิด] ซึ่งถูกเปลี่ยนแปลงตามเปอร์เซ็นต์ของความเสียหาย [Hit|ปะทะ] เมื่อเทียบกับ [AilmentThreshold|ความยากในการติดสถานะเจ็บป่วย]ของศัตรู",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรู เมื่อ[Hit|ปะทะ] [Melee|ประชิด]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณ [Hit|ปะทะ]ด้วย การ[Attack|โจมตี][Melee|ประชิด] ซึ่งถูกเปลี่ยนแปลงตามเปอร์เซ็นต์ของความเสียหาย [Hit|ปะทะ] เมื่อเทียบกับ [AilmentThreshold|ความยากในการติดสถานะเจ็บป่วย]ของศัตรู",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_block_gain_X_centienergy_on_block"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ เมื่อ[Block|บล็อค]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} เมื่อคุณ[Block|บล็อค]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณ[Critical|ปะทะคริติคอล]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณ[Critical|ปะทะคริติคอล]ด้วยสกิล\\nซึ่งถูกเปลี่ยนแปลงตามเปอร์เซ็นต์ของความเสียหายของการ ปะทะคริติคอล เมื่อเทียบกับ [AilmentThreshold|ความยากในการติดสถานะเจ็บป่วย]ของศัตรู",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อ 1 เมตรที่กลิ้งหลบ@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวนเมตรที่คุณเดินทางขณะ กลิ้งหลบ",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Frozen|แช่แข็ง]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ\\n[Freeze|แช่แข็ง] ด้วยการ[Hit|ปะทะ]จากสกิล",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Ignite|ลุกไหม้]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ [Ignite|ลุกไหม้] ด้วยการ[Hit|ปะทะ]จากสกิล ซึ่งถูกเปลี่ยนแปลงตามเปอร์เซ็นต์ของความเสียหายของสถานะ [Ignite|ลุกไหม้] เมื่อเทียบกับ [AilmentThreshold|ความยากในการติดสถานะเจ็บป่วย]ของศัตรู",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]พื้นฐานที่ได้รับ เมื่อ[Minion|มิเนียน][MinionDeath|ถูกสังหาร] เปลี่ยนแปลงตาม [Power|พลัง]ของ[Minion|มิเนียน]@50",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน]พื้นฐาน 50 เมื่อ[Minion|มิเนียน][MinionDeath|ถูกสังหาร] ซึ่งถูกเปลี่ยนแปลงตาม [Power|พลัง]ของ[Minion|มิเนียน]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Shock|ช็อค]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ\\n[Shock|ช็อค] ด้วยการ[Hit|ปะทะ]จากสกิล",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวนชาร์จที่ใช้ เมื่อใช้[Charm|ของขลัง]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใช้[Charm|ของขลัง] ได้รับ[Energy|พลังงาน] {0} ต่อจำนวนชาร์จที่ใช้",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17808,6 +18159,90 @@
  },
  {
   "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_freeze"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Frozen|แช่แข็ง]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ\\n[Freeze|แช่แข็ง] ด้วยการ[Hit|ปะทะ]จากสกิล",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Ignite|ลุกไหม้]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ [Ignite|ลุกไหม้] ด้วยการ[Hit|ปะทะ]จากสกิล ซึ่งถูกเปลี่ยนแปลงตามเปอร์เซ็นต์ของความเสียหายของสถานะ [Ignite|ลุกไหม้] เมื่อเทียบกับ [AilmentThreshold|ความยากในการติดสถานะเจ็บป่วย]ของศัตรู",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "elemental_invocation_gain_X_centienergy_per_monster_power_on_shock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรูที่ติดสถานะ [Shock|ช็อค]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]ของศัตรูที่คุณสร้างสถานะ\\n[Shock|ช็อค] ด้วยการ[Hit|ปะทะ]จากสกิล",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ember_fusillade_damage_+%_final_per_ember_fired",
    "quality_display_ember_fusilade_is_gem"
   ],
@@ -17965,6 +18400,28 @@
  },
  {
   "stats": [
+   "feral_invocation_gain_1_energy_per_X_mana_spent"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "มานาที่ต้องจ่ายเพื่อรับพลังงาน 1@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] 1 ต่อ มานา {0} ที่จ่ายไป",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18086,6 +18543,38 @@
      "#"
     ],
     "t": "ได้รับสถานะ [Rage|คลั่ง] {0} ระดับ เมื่อ[Hit|ปะทะ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "generic_ongoing_trigger_maximum_energy",
+   "generic_ongoing_trigger_triggers_at_maximum_energy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "!0",
+     "0"
+    ],
+    "t": "[Energy|พลังงาน]สูงสุด {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "!0"
+    ],
+    "t": "[Energy|พลังงาน]สูงสุด {0}\\nทริกเกอร์ [Spell|เวท]ที่ใส่ทั้งหมด และสูญเสีย[Energy|พลังงาน]ทั้งหมด เมื่อ[Energy|พลังงาน]เต็ม",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "!0"
+    ],
+    "t": "ทริกเกอร์ [Spell|เวท]ที่ใส่ทั้งหมด และสูญเสีย[Energy|พลังงาน]ทั้งหมด เมื่อ[Energy|พลังงาน]เต็ม",
     "h": []
    }
   ]
@@ -18646,6 +19135,34 @@
  },
  {
   "stats": [
+   "melee_kill_invocation_gain_X_centienergy_per_monster_power_on_melee_kill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อจำนวน[Power|พลัง]ของศัตรู เมื่อสังหาร [Melee|ประชิด]@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อจำนวน[Power|พลัง]\\nของศัตรูที่คุณสังหารด้วย การ[Attack|โจมตี][Melee|ประชิด]",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -18725,6 +19242,20 @@
      "1|#"
     ],
     "t": "สกิลที่ถูก[Empowered|เสริมฤทธิ์]จะยิง[Projectile|โพรเจกไทล์] เพิ่มเติม 2 ลูก\\nสกิลที่ถูก[Empowered|เสริมฤทธิ์]จะเพิ่มความเร็ว [Projectile|โพรเจกไทล์] เพิ่มขึ้น {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_modifiable_totem_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ไม่สามารถมี โทเทมนักรบบรรพชน ได้มากกว่า {0} เสา",
     "h": []
    }
   ]
@@ -19422,6 +19953,34 @@
     ],
     "t": "สร้างสถานะ [Hinder|ขัดขวาง] ต่อศัตรู เมื่อปะทะด้วย[Spell|เวท]​",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Energy|พลังงาน]ที่ได้รับ ต่อ 0.1 วินาทีของเวลาร่ายพื้นฐานของ[Spell|เวท]@{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Energy|พลังงาน] {0} ต่อเวลาร่ายพื้นฐาน 0.1 วินาทีของ[Spell|เวท]ที่คุณร่าย",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ]
  },
@@ -20695,6 +21254,20 @@
  },
  {
   "stats": [
+   "blasphemy_base_spirit_reservation_per_socketed_curse"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สำรอง[Spirit|พลังวิญญาณ] {0} ต่อจำนวน [Curse|คำสาป]ที่ใส่",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "empower_barrage_base_number_of_barrage_repeats",
    "empower_barrage_number_of_barrage_repeats_per_frenzy_charge"
   ],
@@ -21060,6 +21633,20 @@
      "divide_by_one_hundred_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_vessel_damage_+%_final_per_skill_socketed_in_meta_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ร่างทรงวิญญาณ สร้างความเสียหาย เพิ่มขึ้น อีก {0}% ต่อจำนวนสกิลแตกต่างกันที่ใส่",
+    "h": []
    }
   ]
  },
@@ -107771,6 +108358,92 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "การคำราม มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การคำราม มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "bear_warcry_gain_X_centirage_per_enemy_power"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "สถานะ [Rage|คลั่ง] ที่ได้รับ ต่อจำนวน[Power|พลัง]ศัตรู@{0}",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ได้รับสถานะ [Rage|คลั่ง] {0} ระดับ ต่อจำนวน[Power|พลัง]ศัตรูที่อยู่ในระยะ",
+    "h": [
+     "divide_by_one_hundred_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
+   "warcry_grant_break_X_armour_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "การ[ArmourBreak|หักเกราะ] ของการ[Attack|โจมตี]ที่ถูก[Empowered|เสริมฤทธิ์]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Attack|โจมตี]ที่ถูก[Empowered|เสริมฤทธิ์] [ArmourBreak|หัก][Armour|เกราะ] {0} เมื่อ[Hit|ปะทะ]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ferocious Roar"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -111144,6 +111817,90 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "สร้างภาพลวงตาได้ในรัศมี {0} เมตร ของคุณ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_cloned_skill_mana_cost_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "เปอเซ็นต์ที่ใช้ไปของค่าใช้งานสกิลที่ใส่@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100"
+    ],
+    "t": "การสร้างภาพลวงตาต้องจ่ายค่าใช้งานสกิลที่ใส่ไว้",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การสร้างภาพลวงตาต้องจ่าย {0}% ของค่าใช้งานสกิลที่ใส่ไว้",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "mantra_of_illusions_bonus_illusions_when_consuming_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ภาพลวงตาเพิ่มเติมจาก [Charges|Power Charge]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "กลืนกิน [Charges|Power Charge] 1 ลูก เพื่อสร้างภาพลวงตา เพิ่มเติม {0} ร่าง",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "กลืนกิน [Charges|Power Charge] 1 ลูก เพื่อสร้างภาพลวงตา เพิ่มเติม {0} ร่าง",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Hollow Form"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "คลื่นกระแทก มีรัศมี {0} เมตร",
@@ -113501,6 +114258,60 @@
   ],
   "skill": [
    "Mantra of Destruction"
+  ]
+ },
+ {
+  "stats": [
+   "deadeye_meta_marks_number_of_enemies_to_mark"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สร้าง[Mark|คำแช่ง]ที่ใส่ ต่อศัตรู {0} ตัวทุก 5 วินาที",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "สร้าง[Mark|คำแช่ง]ที่ใส่ ต่อศัตรู {0} ตัวทุก 5 วินาที",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Called Shots"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "สร้าง[Mark|คำแช่ง]ที่ใส่ ต่อศัตรูในระยะ {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สร้าง[Mark|คำแช่ง]ที่ใส่ ต่อศัตรูในระยะ {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Called Shots"
   ]
  },
  {
@@ -119082,6 +119893,81 @@
  },
  {
   "stats": [
+   "spell_totem_damage_+%_final_per_power_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ความเสียหาย ที่เพิ่มขึ้น ต่อจำนวน [Charges|Power Charge] ที่กลืนกิน@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สกิลที่ใส่ สร้างความเสียหาย เพิ่มขึ้น อีก {0}% ต่อจำนวน [Charges|Power Charge] ที่กลืนกิน",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_maximum_life_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "พลังชีวิต ต่อจำนวน [Charges|Endurance Charge] ที่กลืนกิน@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เพิ่มพลังชีวิตของ [Totem|โทเทม] อีก {0}% ต่อจำนวน [Charges|Endurance Charge] ที่กลืนกิน",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "spell_totem_totem_duration_+%_final_per_endurance_charge_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ระยะเวลา ที่เพิ่มขึ้น อีก ต่อจำนวน [Charges|Endurance Charge] ที่กลืนกิน@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เพิ่มระยะเวลาของ [Totem|โทเทม] อีก {0}% ต่อจำนวน [Charges|Endurance Charge] ที่กลืนกิน",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
    "tangmazu_raven_added_to_your_flock_every_x_msec_a_rare_or_unique_enemy_is_in_your_presence"
   ],
   "rows": [
@@ -123121,6 +124007,36 @@
   ],
   "skill": [
    "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
   ]
  },
  {

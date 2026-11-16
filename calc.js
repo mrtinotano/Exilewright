@@ -82,6 +82,29 @@ export function reservation(g, sum = {}) {
 const MON = SK.monster_stats || [];
 const monster = (lvl, ...cols) => { const r = MON.find(m => m.level === lvl) || MON[Math.min(lvl, MON.length) - 1]; return r && first(...cols.map(c => r[c])); };
 
+// The totem a skill raises, as the game's details window shows it: a monster of the level its gem gives
+// (MinionGemLevelScaling: 2 per gem level) with that level's ally life (times its variety's multiplier) and ailment
+// threshold, the resistances and duration the gem sets, and its limit with the build's "+N Totems / Ballista Totems".
+// note: its armour and evasion are left out: the game shows 1266 / 304 for a level 36 Mortar Cannon and no table
+// gives them (the monster table has 317 / 306 at that level; Path of Building 2 does not show them either)
+export function totem(g, sum = {}) {
+  const T = SK.skills[g.name]?.totem; if (!T) return null;
+  const s = withSupports(g, sum).sum, st = gemStats(g, s), level = SK.minion_level?.[st._level - 1];
+  if (!level) return null;
+  return {
+    level,
+    life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + v(s, 'totem_life_+%') / 100)),
+    ailment: monster(level, 'AilmentThreshold'),
+    elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
+    duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
+    limit: (st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
+      + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0),
+  };
+}
+// self-check: Mortar Cannon at gem level 18 is a level 36 totem with 2091 life and 1123 ailment threshold, as in the game
+{ const m = totem({ name: 'Mortar Cannon', level: 18 }), ok = !SK.minion_level || m && m.level === 36 && m.life === 2091 && m.ailment === 1123 && m.elemental === 55 && m.chaos === 25;
+  console.assert(ok, 'Mortar Cannon totem', m); }
+
 // attribute total: class base + flat stats from tree/gear, then % increased
 export function attributes(sum, ascName) {
   const base = ASCS.find(a => a.name === ascName)?.attrs || { str: 0, dex: 0, int: 0 }, out = {};

@@ -318,5 +318,9 @@
  "No change in the calculated numbers": "計算數值沒有變化",
  "{0} DPS": "{0} DPS",
  "What this item adds": "此物品帶來的變化",
- "This skill cannot be used with the weapon in hand": "此技能無法搭配手上的武器使用"
+ "This skill cannot be used with the weapon in hand": "此技能無法搭配手上的武器使用",
+ "Totem level": "圖騰等級",
+ "Totem limit": "圖騰上限",
+ "Totem duration": "圖騰持續時間",
+ "Elemental Resistances": "元素抗性"
 }

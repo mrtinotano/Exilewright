@@ -261,9 +261,13 @@ weapon_req = [[classes[wieldable[c]['ItemClass']]['Name'] for c in r['WieldableC
 # what a gem's quality gives, per 1000 quality: "quality" always, "alt_quality" only for who has "Gem Quality grants
 # Socketed Skills an additional effect" (Gemling Legionnaire)
 quality_tab = {r['GrantedEffect']: r for r in load('GrantedEffectQualityStats')}
+# a totem is a monster: ActiveSkills.SkillTotemId -> SkillTotemVariations -> MonsterVarieties (its life multiplier)
+totem_variety, varieties = {}, load('MonsterVarieties')
+for r in load('SkillTotemVariations'):
+    totem_variety.setdefault(r['SkillTotemsKey'], varieties[r['MonsterVarietiesKey']])
 skills, skill_csd = {}, {}
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
-    if g['kind'] not in ('active', 'support'):   # supports too: their stat lines describe them in the picker
+    if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
         continue
     fx = gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]
     e = ge_tab[fx['GrantedEffect']]
@@ -328,6 +332,9 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
     }
+    totem = next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
+    if totem and 'is_totem' in implicit:   # the totem's life: a monster of its level times its variety's multiplier
+        skills[g['name']]['totem'] = {'life_mult': totem['LifeMultiplier'] / 100, 'ballista': 'is_ranged_attack_totem' in implicit}
     # the skill's own stat texts (Berserk's Rage effect, Virtuous Barrier's Motes): ActiveSkills.StatDescription
     csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')
     if 'specific_skill_stat_descriptions' in csd.lower():
@@ -356,7 +363,9 @@ try:
     monster_stats = [{'level': int(r.get('DisplayLevel') or i + 1), **{k: v for k, v in r.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}} for i, r in enumerate(load('DefaultMonsterStats'))]
 except FileNotFoundError:
     monster_stats = []
-save('skills.json', {'monster_stats': monster_stats, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+# the level of a minion or totem by its gem's level (2 per level)
+minion_level = [r['MinionLevel'] for r in sorted(load('MinionGemLevelScaling'), key=lambda r: r['GemLevel'])]
+save('skills.json', {'monster_stats': monster_stats, 'minion_level': minion_level, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
@@ -603,6 +612,7 @@ assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'Ba
 assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
+assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
