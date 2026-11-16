@@ -365,6 +365,9 @@ export function skill(g, b, treeGear) {
     && SK.skills[meta.name]?.totem && String(meta.supports || []) === String(g.supports || []) ? SK.skills[meta.name].totem : null;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   const perTotem = byTotem && attack ? v(sum, 'attack_damage_+%_per_active_totem_in_presence') : 0;
+  // and the meta gem's own support part slows it (Mortar Cannon: -50% more attack speed; the game's window, 1.79 s,
+  // has it). Its -50% more damage and +100% cooldown recovery are not in that window (damage and 10.99 s fit without)
+  const metaSpeed = byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith('attack_speed_+%_final') ? x : 0), 0) / 100 : 1;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -407,15 +410,20 @@ export function skill(g, b, treeGear) {
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   // uses per second
-  const speedMods = (1 + mod(mods, 'INC', ['Speed'], hit) / 100) * mod(mods, 'MORE', ['Speed'], hit);
-  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods;
-  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%')) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
+  // fired by a totem, its speed counts what totems' attacks get (Totem Attack Speed, Urgent Totems): the game's 1.79 s
+  // of Mortar Cannon's grenade is 1.40 x (1 - 5% + 14% ballista + 4% totem + 20% Urgent) x 0.75 x 0.8 x 0.5
+  const spTags = byTotem ? [...tags, 'totem'] : tags, spHit = byTotem ? f => f === 'totem' || hit(f) : hit;
+  // a support's "increased Speed" adds to the tree's and gear's (Urgent Totems' 20% with the tree's 13%: the game's 1.79 s)
+  const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
+  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
+  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   // cooldown: the gem's own (quality), the tree's and gear's for its tags (grenade_skill_cooldown_speed_+%) and the
   // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
   if (st._cooldown_ms) {
     out.cooldown = st._cooldown_ms / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100);
     out.uses = (st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags);
+    out.useTime = out.speed && 1 / out.speed;   // the game's "Attack time", apart from the cooldown
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base

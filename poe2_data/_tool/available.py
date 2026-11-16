@@ -336,6 +336,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'duration_ms': const.get('base_skill_effect_duration'),
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
+        # what a meta gem does to the skill it uses: its own support part (GemEffects.AdditionalGrantedEffects named
+        # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
+        'meta_support': {sid(a): v for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Support')
+                         for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])} or None,
     }
     totem = next((art_variety[k[10:]] for k in implicit | set(const) if k.startswith('totem_has_') and k[10:] in art_variety), None) \
         or next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
@@ -635,6 +639,7 @@ assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and re
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
+assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'
 assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'

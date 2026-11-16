@@ -98,8 +98,9 @@ function geo(g) {
   const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) / 10;
   return {
     radiusFromData: base != null,
-    // area modifiers scale area, so radius scales with the square root
-    radius: base != null ? base / 10 * Math.sqrt(Math.max(0, 1 + inc(sum, 'area_of_effect_+%', tags) / 100)) : g.radius || 0,
+    // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
+    // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
+    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, 1 + inc(sum, 'area_of_effect_+%', tags) / 100))) / 10 : g.radius || 0,
     width: g.width || 0,
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)

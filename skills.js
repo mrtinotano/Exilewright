@@ -57,6 +57,7 @@ function details(g, b, sum, geo) {
     ])}
     ${sec('Speed', [
       !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
+      s.attack && s.useTime && ['Attack time', fmt(s.useTime, 2) + ' s'],
       [s.attack ? 'Attacks per second' : 'Uses per second', s.speed ? fmt(s.speed, 2) : '—'],
       s.cooldown && ['Cooldown time', fmt(s.cooldown / 1000, 2) + ' s'],
       s.uses > 1 && ['Cooldown uses', s.uses],
