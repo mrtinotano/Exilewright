@@ -180,7 +180,7 @@ export function initLoot(el, ctx) {
       const v = verdict(list[0])[0];
       if (v) { if (v.kind === 'up' || v.kind === 'mix') notify(list[0], v); if (v.kind === 'up' && el.hidden) tab?.classList.add('new'); }
       if (game) say(told(list[0], v));
-    } else if (game) say({ kind: 'none', title: 'PoE2 Planner', lines: [msg] });
+    } else if (game) say({ kind: 'none', title: 'Exilewright', lines: [msg] });
     render();
   }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)

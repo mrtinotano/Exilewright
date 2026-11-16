@@ -31,8 +31,8 @@ The window needs tkinter, which comes with Python. It is made on Windows, and el
 Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
 no page is there to judge it gets an answer too, a line saying so.
 
-As an app of its own (the "PoE2 Planner" executable, or: python serve.py app, which needs pywebview) the page opens
-in a native window: WebView2 embedded, no browser around it. Its data (the builds) goes to %LOCALAPPDATA%/PoE2 Planner,
+As an app of its own (the "Exilewright" executable, or: python serve.py app, which needs pywebview) the page opens
+in a native window: WebView2 embedded, no browser around it. Its data (the builds) goes to %LOCALAPPDATA%/Exilewright,
 or to "profile" next to the executable in the portable version; closing the window stops everything. It always uses
 port 8767, as the saved builds belong to the page's address.
 
@@ -69,7 +69,7 @@ DOWNLOAD = [  # link pattern -> raw build code url
     (r'pastebin\.com/(?:raw/)?(\w+)', 'https://pastebin.com/raw/{}'),
     (r'rentry\.co/(?:paste/)?(\w+)', 'https://rentry.co/paste/{}/raw'),
 ]
-UA = {'User-Agent': 'POE2-Builder (local build planner)'}
+UA = {'User-Agent': 'Exilewright (local build planner)'}
 # note: where Path of Building 2 keeps its builds on Windows by default, and only the ones not in a folder of
 # their own; its "buildPath" setting if someone keeps them elsewhere
 POB = os.path.join(os.path.expanduser('~'), 'Documents', 'Path of Building (PoE2)', 'Builds')
@@ -328,7 +328,7 @@ def tell(text):
             text = json.load(f).get(text) or text
     except (OSError, ValueError):
         pass
-    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [[(text, '')]]})
+    OVER[0]({'kind': '', 'title': 'Exilewright', 'name': '', 'lines': [[(text, '')]]})
 
 
 def watch_clipboard():
@@ -540,7 +540,7 @@ def profile():
     here = os.path.dirname(sys.executable) if FROZEN else HERE
     if os.path.exists(os.path.join(here, 'portable')) or not FROZEN:
         return os.path.join(here, 'profile')
-    return os.path.join(os.environ.get('LOCALAPPDATA', here), 'PoE2 Planner')
+    return os.path.join(os.environ.get('LOCALAPPDATA', here), 'Exilewright')
 
 
 def app(url):
@@ -556,7 +556,7 @@ def app(url):
             OVER[1]()
     if sys.platform == 'win32':
         threading.Thread(target=over, daemon=True).start()
-    webview.create_window('PoE2 Planner', url, width=1500, height=950, min_size=(900, 600), text_select=True)
+    webview.create_window('Exilewright', url, width=1500, height=950, min_size=(900, 600), text_select=True)
     webview.start(private_mode=False, storage_path=profile())
     os._exit(0)
 

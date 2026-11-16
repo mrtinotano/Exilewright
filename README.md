@@ -1,4 +1,4 @@
-# POE 2 Builder
+# Exilewright
 
 Personal Path of Exile 2 build planner: passive tree, equipment, skills/supports and a 3D scene.
 Every number comes from the game's own data (see `poe2_data/README.md`).
@@ -7,8 +7,8 @@ Every number comes from the game's own data (see `poe2_data/README.md`).
 Double-click `start.cmd` (or `python serve.py`) and open http://127.0.0.1:8765
 
 As a native app (a window of its own with WebView2, the web engine of Windows, embedded: no browser): `build_app.py`
-makes `dist/PoE2 Planner/PoE2 Planner.exe`, a portable zip (keeps its data in the folder's `profile`) and, with Inno
-Setup 6, an installer (`installer.iss`; the installed app keeps its data in `%LOCALAPPDATA%/PoE2 Planner`). Closing the
+makes `dist/Exilewright/Exilewright.exe`, a portable zip (keeps its data in the folder's `profile`) and, with Inno
+Setup 6, an installer (`installer.iss`; the installed app keeps its data in `%LOCALAPPDATA%/Exilewright`). Closing the
 window stops it. Builds made in the browser are not there: bring them over with Share (copy the code, import it).
 
 **Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
