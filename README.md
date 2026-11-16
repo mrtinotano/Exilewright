@@ -1,18 +1,28 @@
 # Exilewright
 
-Personal Path of Exile 2 build planner: passive tree, equipment, skills/supports and a 3D scene.
+Path of Exile 2 build planner for Windows: passive tree, equipment, skills/supports and a 3D scene.
 Every number comes from the game's own data (see `poe2_data/README.md`).
 
 Fan-made, not affiliated with or endorsed by Grinding Gear Games. Path of Exile, its data and images are (c)
 Grinding Gear Games; support stat readings come from Path of Building Community (MIT). See `LICENSE`.
 
-## Run
-Double-click `start.cmd` (or `python serve.py`) and open http://127.0.0.1:8765
+## Install
+Download it from [Releases](https://github.com/mrtinotano/Exilewright/releases/latest):
+- **Exilewright-setup.exe**: installs it (no admin rights needed) and adds it to the Start menu. Your builds are kept
+  in `%LOCALAPPDATA%\Exilewright`.
+- **Exilewright-portable.zip**: unzip it anywhere and open `Exilewright.exe`. Your builds are kept in the `profile`
+  folder next to it.
 
-As a native app (a window of its own with WebView2, the web engine of Windows, embedded: no browser): `build_app.py`
-makes `dist/Exilewright/Exilewright.exe`, a portable zip (keeps its data in the folder's `profile`) and, with Inno
-Setup 6, an installer (`installer.iss`; the installed app keeps its data in `%LOCALAPPDATA%/Exilewright`). Closing the
-window stops it. Builds made in the browser are not there: bring them over with Share (copy the code, import it).
+It opens in a window of its own (WebView2, part of Windows); closing the window closes it. Windows may warn that
+the app is not recognised, because it is not signed: "More info" → "Run anyway".
+
+## Run from source (developers)
+`python serve.py` (or double-click `start.cmd`) serves the planner at http://127.0.0.1:8765 for a browser;
+`python serve.py app` opens it in its own window (needs `pip install pywebview`). Builds made in the browser stay in
+the browser: bring them over with Share (copy the code, import it).
+
+`build_app.py` makes the release files: `dist/Exilewright/Exilewright.exe`, the portable zip and, with Inno Setup 6,
+the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top of `build_app.py`).
 
 **Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
 pastebin and rentry to import) through `serve.py`, plus JSON files, and imports the builds saved in Path of
@@ -37,7 +47,7 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
 - *Support gems*: tries every support the skill can take, alone and together, within the game's rules (skill types,
   one support of each family, support capacity from attributes).
 - *Gear on the trade site*: works out what each modifier of a slot is worth to the objective, searches the official
-  trade site through `serve.py` (`/trade/*`, so the app has to be opened from `serve.py`), puts each listed item on
+  trade site (the app's own server passes the calls on: `serve.py`, `/trade/*`), puts each listed item on
   the build and ranks them by what they change. Without a login the site only takes simple searches, so the app asks
   for the items with the most of each of the best modifiers; the weighted search Path of Building makes opens on the
   site with one link (it runs there when you are logged in).
@@ -49,9 +59,9 @@ The game puts the item's text in the clipboard, `serve.py` passes it to the page
 item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
 decide what counts. Without a skill in the build only defences and the weapon's own damage are judged.
 - *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, so there
-  is nothing to paste and no need to look at the planner. It only has to stay open in the browser, started from
-  `serve.py`. The window is made on Windows (`start.cmd`); elsewhere start the server with `python3 serve.py overlay`.
-  It needs a Python with tkinter, and the game in windowed full screen: nothing draws over exclusive full screen.
+  is nothing to paste and no need to look at the planner: it only has to stay open. It needs the game in windowed
+  full screen (nothing draws over exclusive full screen). From source it needs a Python with tkinter; outside
+  Windows start the server with `python3 serve.py overlay`.
 - *What the character wears*: the planner cannot read it from the game. **Equip** on an item of the Loot tab tells it
   you put that item on; or compare with the build's own Equipment instead.
 - One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
@@ -60,7 +70,7 @@ decide what counts. Without a skill in the build only defences and the weapon's 
   Modifiers `calc.js` does not calculate are listed as not counted.
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
-so the app works right after cloning.
+so it runs from source right after cloning.
 
 ## Regenerate data after a game patch (needs PoE2 installed)
 ```
