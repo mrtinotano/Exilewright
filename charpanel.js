@@ -75,8 +75,7 @@ const HIDDEN_TAGS = new Set(['grants_active_skill', 'strength', 'dexterity', 'in
 export function skillTip(G, g, b, sum, geo) {
   const s = skill(g, b, sum), st = s.stats, G2 = geo?.(g) || {};
   const tags = (G.tags || []).filter(t => !HIDDEN_TAGS.has(t)).map(x => TAGS[x] ? t(TAGS[x]) : x.replace(/_/g, ' ')).join(', ');
-  const visible = Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_')));
-  const lines = shownLines(visible, g.name);
+  const lines = shownLines(st, g.name);
   const cost = st._cost && Object.entries(st._cost).map(([k, val]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', val)).join(', ');
   const props = [
     ['Level', st._level],

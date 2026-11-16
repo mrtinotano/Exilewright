@@ -30,10 +30,9 @@ function matches(expr, types) {
 export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
 const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
 // stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
-const shown = (st, name) => shownLines(Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_'))), name);
 function gemLines(name, level) {
   const d = SK.skills[name]; if (!d) return [];
-  return shown({ ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {}) }, name);
+  return shownLines({ ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {}) }, name);
 }
 const descOf = G => G['description_' + lang] || G.description || '';
 // what a support does in words: the game's description, else Path of Building's reading of its stats (English)
@@ -48,7 +47,7 @@ function details(g, b, sum, geo) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = shown(st, g.name), spirit = reservation(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  const lines = shownLines(st, g.name), spirit = reservation(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${descOf(G) ? `<p class="ddesc">${esc(descOf(G))}</p>` : ''}
     ${sec('Damage', [
