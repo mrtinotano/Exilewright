@@ -865,7 +865,7 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onS
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum) }; } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
-  items => snap({ ...B(), items }));
+  items => snap({ ...B(), items }), () => treeSum().keystone_giants_blood);
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });

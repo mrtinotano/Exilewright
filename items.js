@@ -411,7 +411,7 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 // snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
-export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
+export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -493,6 +493,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
+  // what goes in one hand frees the other where the two cannot be held together (a two-handed weapon and anything in the
+  // off hand; a quiver without a bow), as the Loot tab does
+  function put(items, slot, it) {
+    items[slot] = it;
+    if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant?.())) delete items[slot === 'weapon' ? 'offhand' : 'weapon'];
+  }
   // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
   function paste(text) {
     const r = parseItem(text);
@@ -500,7 +506,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
     const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
-    items[slot] = r.item; sel = slot;
+    put(items, slot, r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
     changed(); render(); msg = '';
   }
@@ -508,7 +514,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
   function equip(slot, name) {
     const it = make(name);
     if (!it) return;
-    (getBuild().items ||= {})[slot] = it;
+    put(getBuild().items ||= {}, slot, it);
     changed(); render();
   }
   el.addEventListener('change', e => {
