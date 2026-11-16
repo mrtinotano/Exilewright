@@ -5,7 +5,7 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
-import { initItems, gearStats } from './items.js';
+import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -77,6 +77,17 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const [k, v] of Object.entries(skillStats(b))) sum[k] = (sum[k] || 0) + v;
   for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id, b))) sum[k] = (sum[k] || 0) + v;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
+  // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
+  // radius of the socket (tree units). note: attribute passives counted as small ones (they are no notables)
+  for (const [slot, it] of Object.entries(b.items || {})) {
+    const J = slot.startsWith('jewel:') && b.nodes.some(n => 'jewel:' + n === slot) && N[slot.slice(6)], R = J && radiusOf(it);
+    if (!R) continue;
+    const n = { small: 0, notable: 0 };
+    for (const id of new Set([...b.nodes, ...setOf(b, b.wset || 1)])) { const x = N[id];
+      const k = x && (x.type === 'notable' ? 'notable' : x.type === 'small' || x.type === 'attribute' ? 'small' : null);
+      if (k && !x.ascendancy && Math.hypot(x.x - J.x, x.y - J.y) <= R.r) n[k]++; }
+    for (const k of ['small', 'notable']) for (const [s, v] of Object.entries(R[k])) sum[s] = (sum[s] || 0) + v * n[k];
+  }
   return sum;
 }
 const treeSum = () => sumOf(B());

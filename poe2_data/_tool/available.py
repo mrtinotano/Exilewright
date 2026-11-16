@@ -486,13 +486,18 @@ rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValue
 assert any(x[0][0] == 'base_fire_damage_resistance_%' for x in rune_sets), 'SoulCoreStats'
 save('items.json', {
     'runes': rune_sets,
+    # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
+    'jewel_radii': {r['Radius']: re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', r['ID']) for r in load('PassiveJewelRadii')},
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
     'affixes': [{'id': m['Id'], 'name': m['Name'], **tr(mods_tr, i), 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
                  'level': m['Level'], 'domain': m['Domain'], 'family': m['Families'][0] if m['Families'] else None, 'stats': mod_stats(m),
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])],
-                 **({'desecrated': True} if m['Domain'] == 28 else {})}
+                 **({'desecrated': True} if m['Domain'] == 28 else {}),
+                 # a radius jewel's modifier is given by the passives in its radius (Mods.RadiusJewelType: 1 small ones,
+                 # 2 notable ones; "Small Passive Skills in Radius also grant ...")
+                 **({'radius': {1: 'small', 2: 'notable'}[m['RadiusJewelType']]} if m.get('RadiusJewelType') in (1, 2) else {})}
                 # desecrated modifiers (Abyss: "Ulaman's", "of Kurgal"...) are AbyssMod* of domain 28, for any item their tags fit
                 for i, m in enumerate(mods) if (m['Domain'] in (1, 2, 11) or m['Domain'] == 28 and m['Id'].startswith('AbyssMod'))
                 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
@@ -642,6 +647,7 @@ assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit:
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
+assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJewelType'] == 1, 'Mods.RadiusJewelType: 1 = small passives'
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'
 assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'

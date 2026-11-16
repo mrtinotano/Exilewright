@@ -3762,6 +3762,16 @@
    ]
   ]
  ],
+ "jewel_radii": {
+  "800": "Very Small",
+  "1000": "Small",
+  "1075": "Medium Small",
+  "1150": "Medium",
+  "1225": "Medium Large",
+  "1300": "Large",
+  "1500": "Very Large",
+  "2400": "Massive"
+ },
  "bases": [
   {
    "name": "Warlord Cuirass",
@@ -136306,7 +136316,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusAilmentChance",
@@ -136344,7 +136355,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusAilmentEffect",
@@ -136382,7 +136394,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusAilmentThreshold",
@@ -136416,7 +136429,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusAreaofEffect",
@@ -136454,7 +136468,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusArmour",
@@ -136488,7 +136503,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusArmourBreak",
@@ -136522,7 +136538,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusArmourBreakDuration",
@@ -136556,7 +136573,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusAttackCriticalChance",
@@ -136590,7 +136608,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusAttackCriticalDamage",
@@ -136624,7 +136643,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusAttackDamage",
@@ -136662,7 +136682,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusAttackSpeed",
@@ -136696,7 +136717,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusBleedingChance",
@@ -136730,7 +136752,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBleedingDuration",
@@ -136764,7 +136787,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusBlindEffect",
@@ -136798,7 +136822,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusBlindonHit",
@@ -136832,7 +136857,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBlock",
@@ -136866,7 +136892,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusDamageVsRareOrUnique",
@@ -136900,7 +136927,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBowAccuracyRating",
@@ -136934,7 +136962,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBowDamage",
@@ -136968,7 +136997,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBowSpeed",
@@ -137002,7 +137032,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCastSpeed",
@@ -137036,7 +137067,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusChainFromTerrain",
@@ -137070,7 +137102,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCharmDuration",
@@ -137104,7 +137137,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCharmChargesGained",
@@ -137138,7 +137172,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCharmDamageWhileUsing",
@@ -137172,7 +137207,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusChaosDamage",
@@ -137206,7 +137242,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusChillDuration",
@@ -137240,7 +137277,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusColdDamage",
@@ -137274,7 +137312,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusColdPenetration",
@@ -137308,7 +137347,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCooldownSpeed",
@@ -137342,7 +137382,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCorpses",
@@ -137376,7 +137417,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCriticalAilmentEffect",
@@ -137414,7 +137456,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCriticalChance",
@@ -137448,7 +137491,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCriticalDamage",
@@ -137482,7 +137526,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSpellCriticalDamage",
@@ -137516,7 +137561,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCrossbowDamage",
@@ -137550,7 +137596,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCrossbowReloadSpeed",
@@ -137584,7 +137631,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCrossbowSpeed",
@@ -137618,7 +137666,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCurseArea",
@@ -137652,7 +137701,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCurseDuration",
@@ -137686,7 +137736,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCurseEffect",
@@ -137720,7 +137771,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusDamagefromMana",
@@ -137754,7 +137806,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusDamagevsArmourBrokenEnemies",
@@ -137788,7 +137841,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusDamagingAilmentDuration",
@@ -137826,7 +137880,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusDazeBuildup",
@@ -137860,7 +137915,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusDebuffExpiry",
@@ -137898,7 +137954,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusElementalAilmentDuration",
@@ -137932,7 +137989,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusElementalDamage",
@@ -137974,7 +138032,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusEmpoweredAttackDamage",
@@ -138008,7 +138067,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusEnergy",
@@ -138042,7 +138102,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusEnergyShield",
@@ -138076,7 +138137,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusEnergyShieldDelay",
@@ -138110,7 +138172,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusEvasion",
@@ -138144,7 +138207,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusFasterAilments",
@@ -138182,7 +138246,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusFireDamage",
@@ -138216,7 +138281,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusFirePenetration",
@@ -138250,7 +138316,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusFlaskChargesGained",
@@ -138284,7 +138351,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusFlaskDuration",
@@ -138318,7 +138386,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusFocusEnergyShield",
@@ -138352,7 +138421,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusForkingProjectiles",
@@ -138386,7 +138456,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusFreezeAmount",
@@ -138420,7 +138491,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusFreezeThreshold",
@@ -138454,7 +138526,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusHeraldDamage",
@@ -138488,7 +138561,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusIgniteChance",
@@ -138526,7 +138600,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusIgniteEffect",
@@ -138564,7 +138639,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusIncreasedDuration",
@@ -138602,7 +138678,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusKnockback",
@@ -138636,7 +138713,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLifeCost",
@@ -138670,7 +138748,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLifeFlaskRecovery",
@@ -138704,7 +138783,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusLifeFlaskChargeGen",
@@ -138738,7 +138818,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLifeLeech",
@@ -138772,7 +138853,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusLifeonKill",
@@ -138806,7 +138888,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLifeRecoup",
@@ -138840,7 +138923,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLifeRegeneration",
@@ -138874,7 +138958,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusLightningDamage",
@@ -138908,7 +138993,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusLightningPenetration",
@@ -138942,7 +139028,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMaceDamage",
@@ -138976,7 +139063,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMaceStun",
@@ -139010,7 +139098,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusManaFlaskRecovery",
@@ -139044,7 +139133,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusManaFlaskChargeGen",
@@ -139078,7 +139168,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusManaLeech",
@@ -139112,7 +139203,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusManaonKill",
@@ -139146,7 +139238,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusManaRegeneration",
@@ -139180,7 +139273,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMarkCastSpeed",
@@ -139214,7 +139308,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMarkDuration",
@@ -139248,7 +139343,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMarkEffect",
@@ -139282,7 +139378,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMaximumRage",
@@ -139316,7 +139413,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMeleeDamage",
@@ -139350,7 +139448,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMinionArea",
@@ -139384,7 +139483,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMinionAttackandCastSpeed",
@@ -139418,7 +139518,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMinionChaosResistance",
@@ -139452,7 +139553,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMinionCriticalChance",
@@ -139486,7 +139588,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMinionCriticalMultiplier",
@@ -139520,7 +139623,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusMinionDamage",
@@ -139554,7 +139658,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMinionLife",
@@ -139588,7 +139693,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMinionPhysicalDamageReduction",
@@ -139622,7 +139728,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMinionResistances",
@@ -139656,7 +139763,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMovementSpeed",
@@ -139690,7 +139798,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusOfferingDuration",
@@ -139724,7 +139833,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusOfferingLife",
@@ -139758,7 +139868,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusPhysicalDamage",
@@ -139792,7 +139903,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusPiercingProjectiles",
@@ -139826,7 +139938,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusPinBuildup",
@@ -139860,7 +139973,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusPoisonChance",
@@ -139894,7 +140008,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusPoisonDamage",
@@ -139928,7 +140043,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusPoisonDuration",
@@ -139962,7 +140078,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusProjectileDamage",
@@ -139996,7 +140113,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusProjectileSpeed",
@@ -140030,7 +140148,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusQuarterstaffDamage",
@@ -140064,7 +140183,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusQuarterstaffFreezeBuildup",
@@ -140102,7 +140222,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusQuarterstaffSpeed",
@@ -140136,7 +140257,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusQuiverEffect",
@@ -140170,7 +140292,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusRageonHit",
@@ -140204,7 +140327,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusRagewhenHit",
@@ -140238,7 +140362,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusShieldDefences",
@@ -140272,7 +140397,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusShockChance",
@@ -140310,7 +140436,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusShockDuration",
@@ -140348,7 +140475,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusShockEffect",
@@ -140386,7 +140514,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSlowEffectOnSelf",
@@ -140420,7 +140549,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSpearAttackSpeed",
@@ -140454,7 +140584,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSpearCriticalDamage",
@@ -140488,7 +140619,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSpearDamage",
@@ -140522,7 +140654,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusSpellCriticalChance",
@@ -140556,7 +140689,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusSpellDamage",
@@ -140590,7 +140724,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusStunBuildup",
@@ -140624,7 +140759,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusStunThreshold",
@@ -140658,7 +140794,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusStunThresholdfromEnergyShield",
@@ -140692,7 +140829,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusAilmentThresholdfromEnergyShield",
@@ -140726,7 +140864,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusStunThresholdIfNotStunnedRecently",
@@ -140760,7 +140899,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBleedingEffect",
@@ -140794,7 +140934,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusThorns",
@@ -140828,7 +140969,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusTotemDamage",
@@ -140862,7 +141004,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusTotemLife",
@@ -140896,7 +141039,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusTotemPlacementSpeed",
@@ -140930,7 +141074,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusTriggeredSpellDamage",
@@ -140964,7 +141109,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusWarcryCooldown",
@@ -140998,7 +141144,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusWarcryDamage",
@@ -141032,7 +141179,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusWarcrySpeed",
@@ -141066,7 +141214,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusWitheredEffect",
@@ -141100,7 +141249,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusProjectileDamageIfMeleeHitRecently",
@@ -141134,7 +141284,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusMeleeDamageIfProjectileHitRecently",
@@ -141168,7 +141319,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusParryDamage",
@@ -141202,7 +141354,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusParriedDebuffDuration",
@@ -141236,7 +141389,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusStunThresholdDuringParry",
@@ -141270,7 +141424,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusCompanionDamage",
@@ -141304,7 +141459,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusCompanionLife",
@@ -141338,7 +141494,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusHazardDamage",
@@ -141372,7 +141529,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusIncisionChance",
@@ -141406,7 +141564,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBannerValourGained",
@@ -141440,7 +141599,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusBannerArea",
@@ -141474,7 +141634,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusBannerDuration",
@@ -141508,7 +141669,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusPresenceRadius",
@@ -141546,7 +141708,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "FishingLineStrength",
@@ -142131,7 +142294,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixDamageTakenRecoupMana",
@@ -142174,7 +142338,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixPercentMaximumMana",
@@ -142217,7 +142382,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixPercentMaximumLife",
@@ -142260,7 +142426,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixGlobalDefences",
@@ -142303,7 +142470,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixDamageTakenFromManaBeforeLife",
@@ -142346,7 +142514,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixRegeneratePercentLifePerSecond",
@@ -142389,7 +142558,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixManaCostEfficiency",
@@ -142432,7 +142602,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixReducedCriticalHitChanceAgainstYou",
@@ -142475,7 +142646,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixManaFlaskChargesPerSecond",
@@ -142518,7 +142690,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixLifeFlaskChargesPerSecond",
@@ -142561,7 +142734,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModRadiusJewelPrefixCharmChargesPerSecond",
@@ -142604,7 +142778,8 @@
      0
     ]
    ],
-   "desecrated": true
+   "desecrated": true,
+   "radius": "notable"
   },
   {
    "id": "AbyssModJewelPrefixSpellDamageArmour",
@@ -152401,7 +152576,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "notable"
   },
   {
    "id": "JewelRadiusShapeshiftDamage",
@@ -152439,7 +152615,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelRadiusPlantDamage",
@@ -152481,7 +152658,8 @@
      "default",
      0
     ]
-   ]
+   ],
+   "radius": "small"
   },
   {
    "id": "JewelShapeshiftSpeed",

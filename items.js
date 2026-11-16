@@ -25,10 +25,26 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
   base.implicits.forEach((id, i) => add(D.implicits[id], item.implicits?.[i]));
-  for (const m of item.mods || []) if (AFFIX[m.id]) add(AFFIX[m.id].stats, m.values);
+  for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, m.values);
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return out;
 }
+// A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius, tree units: PassiveJewelRadii "Small" is
+// 1000) and what each small / notable passive allocated in it also grants -> { r, small: {stat: value}, notable }, or null
+export function radiusOf(item) {
+  const base = BASE[item?.base], r = base && rolled(item).local_jewel_effect_base_radius;
+  if (!r) return null;
+  const out = { r, small: {}, notable: {} };
+  for (const m of item.mods || []) { const a = AFFIX[m.id]; if (a?.radius) a.stats.forEach(([id], k) => { out[a.radius][id] = (out[a.radius][id] || 0) + (m.values?.[k] ?? 0); }); }
+  return out;
+}
+// the implicit that is a radius jewel's radius reads as the game shows it: "Radius: Small" (PassiveJewelRadii)
+const radiusOnly = st => st.length === 1 && st[0][0] === 'local_jewel_effect_base_radius';
+const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
+// how the game words a radius modifier: the passives' part before the modifier's own line
+const RADIUS = /^(Small|Notable) Passive Skills in Radius also grant:?\s*/;
+const radLines = (a, lines, en) => !a.radius ? lines : lines.map(l => en ? `${a.radius === 'small' ? 'Small' : 'Notable'} Passive Skills in Radius also grant ${l}`
+  : t(a.radius === 'small' ? 'Small Passive Skills in Radius also grant {0}' : 'Notable Passive Skills in Radius also grant {0}', l));
 
 // item's own numbers after its local mods: (base + flat) × (1 + increased%) × (1 + quality%), quality on its own as
 // Path of Building 2 has it (Item.lua: armour, evasion, energy shield and a weapon's physical damage)
@@ -84,17 +100,18 @@ function itemParts(it) {
   const base = BASE[it.base];
   if (!base) return null;
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
-  const impl = base.implicits.flatMap((id, i) => enLines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
-  const expl = mods.flatMap(m => enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)));
+  const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => enLines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
+  const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
+  const expl = mods.flatMap(m => radLines(AFFIX[m.id], enLines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)), true));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
   const rune = it.extra ? statLinesEn(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
-  return { r, base, impl, expl, rune, ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? it.name || 'Planned Item' : '' };
+  return { r, base, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name: r === 'unique' ? it.unique : r === 'rare' ? it.name || 'Planned Item' : '' };
 }
 export function itemText(it) {
   const p = itemParts(it);
   if (!p) return '';
   return ['Rarity: ' + RARITY[p.r], ...p.name ? [p.name] : [], p.base.name,
-    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], 'Implicits: ' + (p.rune.length + p.impl.length), ...p.rune.map(l => '{enchant}{rune}' + l), ...p.impl, ...p.expl].join('\n');   // Path of Building lists runes among its implicits
+    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], ...p.radius ? ['Radius: ' + p.radius] : [], 'Implicits: ' + (p.rune.length + p.impl.length), ...p.rune.map(l => '{enchant}{rune}' + l), ...p.impl, ...p.expl].join('\n');   // Path of Building lists runes among its implicits
 }
 // the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
@@ -239,7 +256,11 @@ export function parseItem(text) {
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
   // a flask: no modifier ends in one) are not modifiers
   const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l) || /[.。]$/.test(l);
+  const rad = expl.filter(l => RADIUS.test(l)).map(l => { const kind = l.match(RADIUS)[1].toLowerCase(), line = l.replace(RADIUS, '').replace(/\bGlobal /, '');
+    return matchLines([line], D.affixes.filter(a => a.radius === kind && canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats))).found[0] || l; });
+  expl = expl.filter(l => !RADIUS.test(l));
   let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+  if (ex) { ex.found.push(...rad.filter(f => typeof f !== 'string')); ex.missed.push(...rad.filter(f => typeof f === 'string')); }
   // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of
   // this base (two at least) among them
   if (ex?.missed.some(l => !noise(l)) && head.length > 1) u = UNIQUES.filter(x => x.base === base.name)
@@ -400,8 +421,8 @@ export function itemView(it) {
     props: [['Physical Damage', l.physical], ['Fire Damage', l.fire], ['Cold Damage', l.cold], ['Lightning Damage', l.lightning],
       ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
       ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
-    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
-      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => say(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)))] };
+    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
+      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values))))] };
 }
 export const propText = ([, v, dec = 0, unit = '']) => Array.isArray(v) ? `${fmt(v[0])}–${fmt(v[1])}` : fmt(v, dec) + unit;
 // what changes hands when `item` takes the place of `old` (null: nothing was there): [lines gained, lines lost] in the
@@ -462,15 +483,15 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
       (base.armour || base.weapon) && prop('Quality', `<input type="number" min="0" step="1" class="qual" data-slot="${slot}" data-act="quality" value="${it.quality || 0}">%`),
       l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),
     ].filter(Boolean).join('');
-    const impl = base.implicits.map((id, i) => `<div class="mod">${text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
-    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${text(a.stats, fixVals(a.stats, m.values))} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
+    const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
+    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
-          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi]))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
+          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
   }
 
@@ -586,6 +607,10 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
   const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
   console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');
 }
+// ...and a radius jewel as the game copies it: its line read as a small passives' modifier, not one of its own
+{ const j = parseItem('Item Class: Jewels\nRarity: Magic\nSharpened Time-Lost Ruby\n--------\nRadius: Small\n--------\nItem Level: 62\n--------\nSmall Passive Skills in Radius also grant 2(1-2)% increased Global Physical Damage');
+  console.assert(!j.missed.length && radiusOf(j.item)?.r === 1000 && radiusOf(j.item).small['physical_damage_+%'] === 2 && !gearStats({ 'jewel:1': j.item })['physical_damage_+%']
+    && /^Small Passive Skills in Radius also grant 2% increased Physical Damage$/m.test(itemText(j.item)), 'radius jewel', j); }
 // ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
 console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15
   && affixLines('Helmets').some(o => o.desecrated && o.en), 'desecrated: trade listing and gear search');
