@@ -568,14 +568,12 @@ except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise
     server = None
+if CLIP and server:
+    threading.Thread(target=watch_clipboard, daemon=True).start()
 if 'app' in ARGS:
     if server:
         threading.Thread(target=server.serve_forever, daemon=True).start()
-        if CLIP:
-            threading.Thread(target=watch_clipboard, daemon=True).start()
     app(f'http://127.0.0.1:{port}/')
-if CLIP:
-    threading.Thread(target=watch_clipboard, daemon=True).start()
 if OVER:   # the window wants the main thread: the server goes to one of its own
     signal.signal(signal.SIGINT, signal.SIG_DFL)   # Ctrl+C in the terminal still stops it at once
     threading.Thread(target=server.serve_forever, daemon=True).start()

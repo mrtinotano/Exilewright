@@ -11,7 +11,6 @@ OutputDir=dist
 OutputBaseFilename=PoE2-Planner-setup
 SetupIconFile=icon.ico
 UninstallDisplayIcon={app}\PoE2 Planner.exe
-Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 

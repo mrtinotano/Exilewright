@@ -14,11 +14,9 @@ data = ['index.html', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob
 PyInstaller.__main__.run(['serve.py', '--name', 'PoE2 Planner', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
                           *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
 app = os.path.join('dist', 'PoE2 Planner')
-port = os.path.join('build', 'portable', 'PoE2 Planner')
-shutil.rmtree(port, ignore_errors=True)
-shutil.copytree(app, port)
-open(os.path.join(port, 'portable'), 'w').close()
-shutil.make_archive(os.path.join('dist', 'PoE2-Planner-portable'), 'zip', os.path.dirname(port), 'PoE2 Planner')
+open(os.path.join(app, 'portable'), 'w').close()
+shutil.make_archive(os.path.join('dist', 'PoE2-Planner-portable'), 'zip', 'dist', 'PoE2 Planner')
+os.remove(os.path.join(app, 'portable'))
 iscc = next((p for p in (os.path.join(os.environ.get(v, ''), 'Inno Setup 6', 'ISCC.exe') for v in ('ProgramFiles(x86)', 'ProgramFiles', 'LOCALAPPDATA'))
              if os.path.isfile(p)), shutil.which('iscc'))
 if iscc:
