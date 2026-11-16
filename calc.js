@@ -372,6 +372,7 @@ export function skill(g, b, treeGear) {
   const meta = usedBy(b, (b.gems || []).indexOf(g)), byTotem = meta && SK.skills[meta.name]?.totem || null;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   const perTotem = byTotem && attack ? v(sum, 'attack_damage_+%_per_active_totem_in_presence') : 0;
+  const perTotemSpeed = byTotem && attack ? v(sum, 'totems_attack_speed_+%_per_active_totem') : 0;
   // and the meta gem's own support part slows it and lowers its damage (Mortar Cannon: -50% more attack speed and damage;
   // the game's window, 1.79 s, has them). Its +100% cooldown recovery is not in that window (10.99 s fits without)
   const metaFinal = end => byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
@@ -434,9 +435,12 @@ export function skill(g, b, treeGear) {
   // fired by a totem, its speed counts what totems' attacks get (Totem Attack Speed, Urgent Totems): the game's 1.79 s
   // of Mortar Cannon's grenade is 1.40 x (1 - 5% + 14% ballista + 4% totem + 20% Urgent) x 0.75 x 0.8 x 0.5
   const spTags = byTotem ? [...tags, 'totem'] : tags, spHit = byTotem ? f => f === 'totem' || hit(f) : hit;
-  // a support's "increased Speed" adds to the tree's and gear's (Urgent Totems' 20% with the tree's 13%: the game's 1.79 s)
+  // a support's "increased Speed" adds to the tree's and gear's (Urgent Totems' 20% with the tree's 13%: the game's 1.79 s);
+  // with one totem placed, "Totems have X% increased Attack Speed per active Totem" once (Ancestral Unity's 4%: 1.74 s,
+  // the game's window 1.75 s, 16/11; 3% would give it).
+  // note: "on placing a Totem" buffs (Carved Earth's 6%: the game's 1.67 s right after placing one) not counted
   const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
-  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
+  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   // cooldown: the gem's own (quality), the tree's and gear's for its tags (grenade_skill_cooldown_speed_+%) and the
   // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
