@@ -38,7 +38,9 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, sound: true, notify: false, worn: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, sound: true, notify: false, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
+  if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
   // the items looked at, newest first: { text, at (time), r (parseItem), undo: { slot, old } once equipped from here,
@@ -55,7 +57,7 @@ export function initLoot(el, ctx) {
   // ---------- the build and what the item is compared with
   const skills = b => b.gems.filter(g => GEM[g.name] && GEM[g.name].kind !== 'support');
   const gemOf = b => { const l = skills(b); return l[S.gem[ctx.id()] || 0] || l[0] || null; };   // the skill picked for this build
-  const gearOf = b => S.vs === 'build' ? b.items || {} : S.worn[ctx.id()] || {};
+  const gearOf = b => S.vs === 'build' ? b.items || {} : S.on;
   const slotName = slot => slot.startsWith('jewel:') ? `${t('Jewel')} (${ctx.sockets().find(j => 'jewel:' + j.id === slot)?.label || '?'})` : t(SLOTS[slot]);
   const nameOf = it => { const v = itemView(it); return it.name || (v ? v.name || v.base : it.base); };   // it.name: the one the game gave a worn item
   const numOf = (v, key) => { const o = OBJECTIVES[key] || { skill: true }; return v == null ? '—' : fmt(v, o.dec ?? (o.skill && Math.abs(v) < 100 ? 1 : 0)) + (o.unit || ''); };
@@ -218,7 +220,7 @@ export function initLoot(el, ctx) {
   // slot <- item (null empties it): the worn gear kept here, or the build itself
   function put(slot, item, name) {
     if (S.vs === 'build') return ctx.change(b => { const it = b.items ||= {}; if (item) it[slot] = structuredClone(item); else delete it[slot]; });
-    const w = S.worn[ctx.id()] ||= {};
+    const w = S.on;
     if (item) w[slot] = { ...structuredClone(item), ...(name && { name }) }; else delete w[slot];
     wornRev++; keep(); render();
   }
@@ -312,7 +314,7 @@ export function initLoot(el, ctx) {
       case 'equip': { const old = gearOf(ctx.build())[slot]; en.undo = { slot, old: old ? structuredClone(old) : null }; put(slot, en.r.item, en.r.name); break; }
       case 'undo': { const old = en.undo?.slot === slot ? en.undo.old : null; en.undo = null; put(slot, old); break; }
       case 'off': put(slot, null); break;
-      case 'copy': S.worn[ctx.id()] = structuredClone(ctx.build().items || {}); wornRev++; keep(); render(); break;
+      case 'copy': S.on = structuredClone(ctx.build().items || {}); wornRev++; keep(); render(); break;
       case 'drop': list.splice(+d.dataset.i, 1); keepList(); render(); break;
       case 'clear': list = []; keepList(); render(); break;
       case 'float': float(); break;
