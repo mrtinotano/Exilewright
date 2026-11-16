@@ -380,7 +380,7 @@
  "Power": "권능",
  "Projectiles of {1} fired through {0} gain fire": "{0}을(를) 통과해 발사된 {1}의 투사체가 화염을 얻음",
  "Reset the scene": "장면 초기화",
- "Right-drag: orbit · Wheel: zoom · Space: roll": "우클릭 드래그: 회전 · 휠: 확대/축소 · Space: 구르기",
+ "Right-drag: orbit · Wheel: zoom · {0}: roll": "우클릭 드래그: 회전 · 휠: 확대/축소 · {0}: 구르기",
  "Shock": "감전",
  "Shocked Ground": "감전 지대",
  "Spends {0} charges": "{0} 충전 소비",
@@ -447,7 +447,7 @@
  "Beast": "야수",
  "Blocked": "막음",
  "Boss": "보스",
- "C: corpse at the cursor · G: fill charges · F: refill life · R: reset": "C: 커서 위치에 시신 · G: 충전 채우기 · F: 생명력 회복 · R: 초기화",
+ "{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset": "{0}: 커서 위치에 시신 · {1}: 충전 채우기 · {2}: 생명력 회복 · {3}: 초기화",
  "Chance to hit": "명중 확률",
  "Chance to hit you": "나를 명중할 확률",
  "Click: place {0} · Esc: stop placing": "클릭: {0} 배치 · Esc: 배치 중지",
@@ -701,5 +701,6 @@
  "Elemental Resistances": "원소 저항",
  "Unnamed": "이름 없음",
  "Planned Item": "계획된 아이템",
- "Copy an item in the game: Ctrl+C over it": "게임에서 아이템 복사: 마우스를 올리고 Ctrl+C"
+ "Copy an item in the game: Ctrl+C over it": "게임에서 아이템 복사: 마우스를 올리고 Ctrl+C",
+ "Space": "스페이스"
 }

@@ -5,12 +5,14 @@
 // each mitigated with the game's own formulas.
 // Not in the game data: ailment chance and build-up, the combo multipliers, fuse times, and how an enemy attack looks and reaches
 // you. Those are the SIM defaults of skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
-// WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset.
+// WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset
+// (those five can be changed in Settings: settings.js).
 import * as THREE from 'three';
 import { t, fmt, cap } from './i18n.js';
 import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
+import { settings, keyName } from './settings.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -962,16 +964,17 @@ export function initScene(el, api) {
   addEventListener('keydown', e => {
     if (el.hidden || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     const c = e.code;
-    if (c === 'Space') e.preventDefault();
+    const K = settings().keys;
+    if (c === K.roll) e.preventDefault();
     keys[c] = true;
     if (e.repeat) return;
     if (/^Digit[1-9]$/.test(c)) { const i = +c[5] - 1; if (api.build().gems[i]) { select(i, true, true); press(i, c); } }
-    else if (c === 'KeyR') reset();
+    else if (c === K.reset) reset();
     else if (c === 'Escape') setPlacing(false);
-    else if (c === 'KeyF') { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
-    else if (c === 'KeyC') { const d = near(cursor, 4); if (d) { d.st.freeze = 0; kill(d, NONE); } }
-    else if (c === 'KeyG') { for (const k in charges) charges[k] = SIM.maxCharges; fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
-    else if (c === 'Space' && !move && rollCd <= 0) {
+    else if (c === K.refill) { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
+    else if (c === K.corpse) { const d = near(cursor, 4); if (d) { d.st.freeze = 0; kill(d, NONE); } }
+    else if (c === K.charges) { for (const k in charges) charges[k] = SIM.maxCharges; fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
+    else if (c === K.roll && !move && rollCd <= 0) {
       const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r);
       const dx = l ? (-sy * f + cy * r) / l : Math.sin(facing), dz = l ? (-cy * f - sy * r) / l : Math.cos(facing);
       move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = null;
@@ -1081,8 +1084,8 @@ export function initScene(el, api) {
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     put(buffEl, b.join(''));
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
-    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('WASD move · 1-9 or click: cast at the cursor (hold to repeat)'), t('Right-drag: orbit · Wheel: zoom · Space: roll'),
-      t('C: corpse at the cursor · G: fill charges · F: refill life · R: reset'),
+    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('WASD move · 1-9 or click: cast at the cursor (hold to repeat)'), t('Right-drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
+      t('{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset', ...['corpse', 'charges', 'refill', 'reset'].map(k => keyName(settings().keys[k]))),
       !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Shift+click: place {0}', tpl.mon.name),
       t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
     if (hud.textContent !== text) hud.textContent = text;

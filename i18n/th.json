@@ -380,7 +380,7 @@
  "Power": "Power",
  "Projectiles of {1} fired through {0} gain fire": "โพรเจกไทล์ของ {1} ที่ยิงผ่าน {0} ได้รับไฟ",
  "Reset the scene": "รีเซ็ตฉาก",
- "Right-drag: orbit · Wheel: zoom · Space: roll": "ลากคลิกขวา: หมุนกล้อง · ล้อเมาส์: ซูม · Space: เอียง",
+ "Right-drag: orbit · Wheel: zoom · {0}: roll": "ลากคลิกขวา: หมุนกล้อง · ล้อเมาส์: ซูม · {0}: กลิ้งหลบ",
  "Shock": "ช็อค",
  "Shocked Ground": "พื้นช็อค",
  "Spends {0} charges": "ใช้ {0} Charge",
@@ -447,7 +447,7 @@
  "Beast": "สัตว์ร้าย",
  "Blocked": "บล็อค",
  "Boss": "บอส",
- "C: corpse at the cursor · G: fill charges · F: refill life · R: reset": "C: ศพที่เคอร์เซอร์ · G: เติม Charge · F: เติมพลังชีวิต · R: รีเซ็ต",
+ "{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset": "{0}: ศพที่เคอร์เซอร์ · {1}: เติม Charge · {2}: เติมพลังชีวิต · {3}: รีเซ็ต",
  "Chance to hit": "โอกาสปะทะ",
  "Chance to hit you": "โอกาสปะทะคุณ",
  "Click: place {0} · Esc: stop placing": "คลิก: วาง {0} · Esc: หยุดวาง",
@@ -701,5 +701,6 @@
  "Elemental Resistances": "ค่าต้านทานธาตุ",
  "Unnamed": "ไม่มีชื่อ",
  "Planned Item": "ไอเทมที่วางแผนไว้",
- "Copy an item in the game: Ctrl+C over it": "คัดลอกไอเทมในเกม: Ctrl+C บนไอเทม"
+ "Copy an item in the game: Ctrl+C over it": "คัดลอกไอเทมในเกม: Ctrl+C บนไอเทม",
+ "Space": "Space"
 }

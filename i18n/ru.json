@@ -380,7 +380,7 @@
  "Power": "Энергия",
  "Projectiles of {1} fired through {0} gain fire": "Снаряды {1}, выпущенные сквозь {0}, получают огонь",
  "Reset the scene": "Сбросить сцену",
- "Right-drag: orbit · Wheel: zoom · Space: roll": "ПКМ + перетаскивание: вращение · Колесо: масштаб · Пробел: кувырок",
+ "Right-drag: orbit · Wheel: zoom · {0}: roll": "ПКМ + перетаскивание: вращение · Колесо: масштаб · {0}: кувырок",
  "Shock": "Шок",
  "Shocked Ground": "Заряженная земля",
  "Spends {0} charges": "Тратит заряды: {0}",
@@ -447,7 +447,7 @@
  "Beast": "Зверь",
  "Blocked": "Заблокировано",
  "Boss": "Босс",
- "C: corpse at the cursor · G: fill charges · F: refill life · R: reset": "C: труп под курсором · G: заполнить заряды · F: восстановить здоровье · R: сброс",
+ "{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset": "{0}: труп под курсором · {1}: заполнить заряды · {2}: восстановить здоровье · {3}: сброс",
  "Chance to hit": "Шанс попадания",
  "Chance to hit you": "Шанс попасть по вам",
  "Click: place {0} · Esc: stop placing": "Клик: разместить {0} · Esc: прекратить размещение",
@@ -701,5 +701,6 @@
  "Elemental Resistances": "Сопротивления стихиям",
  "Unnamed": "Без названия",
  "Planned Item": "Запланированный предмет",
- "Copy an item in the game: Ctrl+C over it": "Скопируйте предмет в игре: Ctrl+C на нём"
+ "Copy an item in the game: Ctrl+C over it": "Скопируйте предмет в игре: Ctrl+C на нём",
+ "Space": "Пробел"
 }

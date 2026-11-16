@@ -321,6 +321,17 @@ function parts(id, stats) {
   }) }));
   return partsOf.set(id, out).get(id);
 }
+// The explicit modifier lines of an item as the trade site searches them (the price check): its stat and, for a line
+// with a positive number, a minimum a little under the item's own (90%), so the same item with a slightly lower roll
+// counts too. note: desecrated lines are left out (the export has no stat number for them)
+export function priceLines(it) {
+  const out = new Map();
+  for (const m of it.mods || []) for (const p of AFFIX[m.id] && !AFFIX[m.id].desecrated ? parts(m.id, AFFIX[m.id].stats) : []) {
+    const a = p.at.find(Boolean), v = a ? m.values[a.k] * a.scale : 0;
+    out.set(p.hash, { id: 'explicit.stat_' + p.hash, ...(v > 0 && { min: Math.floor(v * 0.9) }) });
+  }
+  return [...out.values()];
+}
 // Every modifier line a rare item of class `cls` can roll that the trade site can search for: the best tier of each
 // affix that is one line, on the best base of each kind (a Str helmet rolls Armour, an Int one Energy Shield;
 // `first`: a base to try before the rest).

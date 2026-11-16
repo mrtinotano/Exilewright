@@ -380,7 +380,7 @@
  "Power": "Energie",
  "Projectiles of {1} fired through {0} gain fire": "Projektile von {1}, die durch {0} abgefeuert werden, erhalten Feuer",
  "Reset the scene": "Szene zurücksetzen",
- "Right-drag: orbit · Wheel: zoom · Space: roll": "Rechts ziehen: kreisen · Mausrad: Zoom · Leertaste: rollen",
+ "Right-drag: orbit · Wheel: zoom · {0}: roll": "Rechts ziehen: kreisen · Mausrad: Zoom · {0}: rollen",
  "Shock": "Schock",
  "Shocked Ground": "Schockender Boden",
  "Spends {0} charges": "Verbraucht Ladungen: {0}",
@@ -447,7 +447,7 @@
  "Beast": "Bestie",
  "Blocked": "Geblockt",
  "Boss": "Boss",
- "C: corpse at the cursor · G: fill charges · F: refill life · R: reset": "C: Leiche am Cursor · G: Ladungen auffüllen · F: Leben auffüllen · R: zurücksetzen",
+ "{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset": "{0}: Leiche am Cursor · {1}: Ladungen auffüllen · {2}: Leben auffüllen · {3}: zurücksetzen",
  "Chance to hit": "Trefferchance",
  "Chance to hit you": "Chance, dich zu treffen",
  "Click: place {0} · Esc: stop placing": "Klick: {0} platzieren · Esc: Platzieren beenden",
@@ -701,5 +701,6 @@
  "Elemental Resistances": "Elementarwiderstände",
  "Unnamed": "Unbenannt",
  "Planned Item": "Geplanter Gegenstand",
- "Copy an item in the game: Ctrl+C over it": "Kopiere einen Gegenstand im Spiel: Strg+C darüber"
+ "Copy an item in the game: Ctrl+C over it": "Kopiere einen Gegenstand im Spiel: Strg+C darüber",
+ "Space": "Leertaste"
 }

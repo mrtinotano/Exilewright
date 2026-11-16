@@ -9,6 +9,7 @@ import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
+import { initSettings } from './settings.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
@@ -778,6 +779,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
   if (v === 'opt') renderOpt();
   if (v === 'loot') renderLoot();
+  if (v === 'settings') renderSettings();
   dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
 });
@@ -884,6 +886,7 @@ const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, s
 const renderLoot = initLoot($('loot'), { build: B, id: () => cur, rev: () => rev, sumOf, snap,
   sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
+const renderSettings = initSettings($('settings'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 
 // language picker: changing it reloads the page in the new language

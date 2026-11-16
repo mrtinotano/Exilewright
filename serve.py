@@ -20,6 +20,11 @@ the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot 
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
 here.
 
+/settings (POST, body = {"price_key": "Ctrl+D"}) is the price check shortcut of the Settings tab (settings.js). On
+Windows, that shortcut pressed while the game is the window in use copies the item under the pointer: one Ctrl+C, as
+if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
+{"price": text} instead of text, for the Loot tab to look up what it costs on the trade site.
+
 /overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
 for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
   GET  /overlay   {"overlay": true} when this server has that window
@@ -328,7 +333,7 @@ def tell(text):
 def watch_clipboard():
     """the one reader of the clipboard: item text goes to every page listening. With the window over the game, a line
     in it when no page is there to judge the item, or none answers"""
-    global ASKED
+    global ASKED, PRICE_AT
     look, wait = CLIP
     seen, idle = None, True
     while True:
@@ -341,6 +346,9 @@ def watch_clipboard():
             continue
         seen, text = look(seen)
         if text and len(text) < 8000 and re.search(r'\n-{8}\r?\n', text):
+            if PRICE_AT and time.monotonic() - PRICE_AT < 2:   # copied by the price check shortcut
+                text = {'price': text}
+            PRICE_AT = 0
             for q in list(LISTEN):
                 q.put(text)
             if OVER and LISTEN:
@@ -352,17 +360,63 @@ def watch_clipboard():
             tell("The planner's page is not answering: look at its tab once")
 
 
+def combo(text):
+    """'Ctrl+Shift+D' -> ([modifier keys], key) as Windows numbers them, None when it is no shortcut the app takes:
+    Ctrl and/or Alt (Shift too) with a letter, a digit or F1-F12"""
+    *mods, key = str(text).split('+')
+    vk = {'Ctrl': 0x11, 'Shift': 0x10, 'Alt': 0x12}
+    if not {'Ctrl', 'Alt'} & set(mods) or any(m not in vk for m in mods):
+        return None
+    k = ord(key) if re.fullmatch('[A-Z0-9]', key) else 0x6F + int(key[1:]) if re.fullmatch('F([1-9]|1[0-2])', key) else None
+    return k and ([vk[m] for m in mods], k)
+
+
+assert combo('Ctrl+D') == ([0x11], 0x44) and combo('Alt+F5') == ([0x12], 0x74) and combo('Shift+D') is None, 'combo'
+
+
+def watch_price_key():
+    """Windows: the price check shortcut pressed while the game is the window in use. The game copies the item under the
+    pointer with Ctrl+C: that is sent once (the keys of the shortcut that are not Ctrl are let go first, so the game
+    sees Ctrl+C alone), and the copy that follows is marked as a price check (watch_clipboard)"""
+    global PRICE_AT
+    user = ctypes.windll.user32
+    user.GetForegroundWindow.restype = ctypes.c_void_p
+    user.GetWindowTextW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_int]
+    was = False
+    while True:
+        time.sleep(.03)
+        keys = combo(PRICE_KEY)
+        if not keys:
+            continue
+        mods, key = keys
+        down = all(user.GetAsyncKeyState(k) & 0x8000 for k in (*mods, key))
+        if down and not was:
+            title = ctypes.create_unicode_buffer(64)
+            user.GetWindowTextW(user.GetForegroundWindow(), title, 64)
+            if title.value.startswith('Path of Exile 2'):
+                PRICE_AT = time.monotonic()
+                up, ctrl = 2, 0x11 in mods   # KEYEVENTF_KEYUP
+                for k in (0x10, 0x12):
+                    if k in mods:
+                        user.keybd_event(k, 0, up, 0)
+                for k, how in ((0x11, 0), (0x43, 0), (0x43, up)) + (() if ctrl else ((0x11, up),)):
+                    user.keybd_event(k, 0, how, 0)
+        was = down
+
+
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
     sys.stdout = sys.stderr = open(os.devnull, 'w')
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
-COMPARED = {'up', 'mix', 'same', 'down'}   # kinds of verdict with a comparison to read: they stay until they are closed
+COMPARED = {'up', 'mix', 'same', 'down', 'price'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
 TONE = {'up': '#8fe89a', 'down': '#ee8888', 'dim': '#9a8f78'}   # pieces of a line: better, worse, said in passing
 LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
+PRICE_KEY = 'Ctrl+D'   # the price check shortcut (Settings), as the page last said
+PRICE_AT = 0   # when the price check shortcut sent Ctrl+C to the game
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
 OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
@@ -481,6 +535,19 @@ class Handler(SimpleHTTPRequestHandler):
                      'lines': [[piece(p) for p in (x if isinstance(x, list) else [x])[:6]] for x in (lines if isinstance(lines, list) else [])[:30]]})
         self.reply(200, 'ok')
 
+    def do_settings(self, body):
+        global PRICE_KEY
+        if not self.mine():
+            return self.reply(403, 'local only')
+        try:
+            key = json.loads(body).get('price_key') if len(body) < 1000 else None
+        except (ValueError, AttributeError):
+            key = None
+        if not combo(key):
+            return self.reply(400, 'not a shortcut')
+        PRICE_KEY = key
+        self.reply(200, 'ok')
+
     def do_GET(self):
         u = urlparse(self.path)
         if u.path.startswith('/trade/'):
@@ -509,6 +576,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_trade(u, self.rfile.read(int(self.headers.get('Content-Length', 0))))
         if u.path == '/overlay':
             return self.do_overlay(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        if u.path == '/settings':
+            return self.do_settings(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         site = UPLOAD.get(parse_qs(u.query).get('site', [''])[0])
         if u.path != '/share/upload' or not site:
             return self.reply(404, 'not found')
@@ -561,6 +630,8 @@ except OSError:   # the app is open already: one more window of it
     server = None
 if CLIP and server:
     threading.Thread(target=watch_clipboard, daemon=True).start()
+    if sys.platform == 'win32':
+        threading.Thread(target=watch_price_key, daemon=True).start()
 if 'app' in ARGS:
     if server:
         threading.Thread(target=server.serve_forever, daemon=True).start()

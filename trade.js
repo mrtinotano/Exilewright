@@ -6,7 +6,7 @@
 // the items with the most of each of the best modifiers (or the best damage / defence of the item) and reads those;
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
-import { affixLines, tradeItem } from './items.js';
+import { affixLines, tradeItem, priceLines } from './items.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
 // item class (items.json) -> the trade site's category
@@ -145,6 +145,24 @@ export function readListing(r) {
     extra: ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
     item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [] };
+}
+
+// ---------- the price check: what the same item costs
+// A unique by its name; anything else by its base and its explicit lines (priceLines), all of them first and then a few
+// fewer while nothing is listed. -> { total, matched (lines asked for), of (lines it has), prices: [{ amount, currency }]
+// cheapest first (the first 10), link (the search on the site) }
+export async function priceOf({ league, item, state = 'available' }) {
+  const lines = item.unique ? [] : priceLines(item).slice(0, 8), n = lines.length;
+  const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
+  for (const need of n ? [...new Set([n, n - 1, Math.ceil(n / 2)])].filter(x => x > 0) : [0]) {
+    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.map(l => ({ id: l.id, ...(l.min && { value: { min: l.min } }) })) }] : [];
+    const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats }, sort: { price: 'asc' } });
+    if (!s.total) continue;
+    const ids = (s.result || []).slice(0, 10);
+    const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
+    return { total: s.total, matched: need, of: n, prices: got.map(r => r?.listing?.price).filter(Boolean), link: siteLink(league, s.id) };
+  }
+  return { total: 0, matched: 0, of: n, prices: [], link: '' };
 }
 
 // ---------- the search

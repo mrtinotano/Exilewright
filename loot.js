@@ -13,6 +13,8 @@ import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactHtml, impactText } from './impact.js';
+import { priceOf, leagues, TradeError } from './trade.js';
+import { settings } from './settings.js';
 
 const KEY = 'poe2loot', LIST = 'poe2lootlist';
 const MAX = 20;   // items kept in the list
@@ -183,6 +185,29 @@ export function initLoot(el, ctx) {
     } else if (game) say({ kind: 'none', title: 'Exilewright', lines: [msg] });
     render();
   }
+  // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
+  // judged nor kept in the list
+  async function priceCheck(text) {
+    const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), ...v }) }).catch(() => {}); };
+    const r = parseItem(text.replace(/\r/g, '').trim());
+    if (!r || r.unidentified) return show({ lines: [t(r ? 'That item is not identified yet: identify it and copy it again.' : 'That is not item text, or the planner does not have its base.')] });
+    const name = r.name || nameOf(r.item), s = settings();
+    show({ name, lines: [t('Searching the trade site…')] });
+    try {
+      const league = s.league || (await leagues())[0];
+      const p = await priceOf({ league, item: r.item, state: s.state });
+      if (!p.total) return show({ name, lines: [t('Nothing like it is listed in {0}.', league)] });
+      const counts = {};
+      for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
+      show({ name, lines: [
+        [[t('{0} listed in {1}', p.total, league), 'dim']],
+        ...p.of ? [[[t('With {0} of its {1} modifiers', p.matched, p.of), 'dim']]] : [],
+        [[t('Cheapest') + ': ', ''], [Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'up']]] });
+    } catch (e) {
+      if (!(e instanceof TradeError)) throw e;
+      show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
+    }
+  }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
   function watch() {
     es?.close(); es = null; live = '';
@@ -190,7 +215,7 @@ export function initLoot(el, ctx) {
       const src = es = new EventSource('clipboard?lang=' + lang);
       live = 'wait';
       src.onopen = () => { live = 'on'; showLive(); };
-      src.onmessage = m => { let text; try { text = JSON.parse(m.data); } catch { return; } add(text, true); };
+      src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else add(x, true); };
       // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
       if (!awake) { awake = true; navigator.locks?.request('poe2loot', () => new Promise(() => {})); }
       src.onerror = () => { if (src === es) { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); } };

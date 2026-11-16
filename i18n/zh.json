@@ -380,7 +380,7 @@
  "Power": "暴擊",
  "Projectiles of {1} fired through {0} gain fire": "穿過{0}的{1}投射物獲得火焰",
  "Reset the scene": "重置場景",
- "Right-drag: orbit · Wheel: zoom · Space: roll": "右鍵拖曳：環繞 · 滾輪：縮放 · Space：翻滾",
+ "Right-drag: orbit · Wheel: zoom · {0}: roll": "右鍵拖曳：環繞 · 滾輪：縮放 · {0}：翻滾",
  "Shock": "感電",
  "Shocked Ground": "感電地面",
  "Spends {0} charges": "消耗{0}球",
@@ -447,7 +447,7 @@
  "Beast": "野獸",
  "Blocked": "已格擋",
  "Boss": "頭目",
- "C: corpse at the cursor · G: fill charges · F: refill life · R: reset": "C：在游標處放置屍體 · G：充滿充能球 · F：補滿生命 · R：重置",
+ "{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset": "{0}：在游標處放置屍體 · {1}：充滿充能球 · {2}：補滿生命 · {3}：重置",
  "Chance to hit": "命中機率",
  "Chance to hit you": "命中你的機率",
  "Click: place {0} · Esc: stop placing": "點擊：放置{0} · Esc：停止放置",
@@ -701,5 +701,6 @@
  "Elemental Resistances": "元素抗性",
  "Unnamed": "未命名",
  "Planned Item": "規劃物品",
- "Copy an item in the game: Ctrl+C over it": "在遊戲中複製物品：游標移到物品上按 Ctrl+C"
+ "Copy an item in the game: Ctrl+C over it": "在遊戲中複製物品：游標移到物品上按 Ctrl+C",
+ "Space": "空白鍵"
 }
