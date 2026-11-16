@@ -317,5 +317,6 @@
  "If you remove it": "Если убрать",
  "No change in the calculated numbers": "Рассчитанные значения не меняются",
  "{0} DPS": "DPS: {0}",
- "What this item adds": "Что даёт этот предмет"
+ "What this item adds": "Что даёт этот предмет",
+ "This skill cannot be used with the weapon in hand": "Это умение нельзя использовать с оружием в руках"
 }

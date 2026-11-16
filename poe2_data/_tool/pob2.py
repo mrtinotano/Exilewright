@@ -1,7 +1,8 @@
 """What the game's tables do not say, read from Path of Building 2's data (generated from the same tables -
 "(c) Grinding Gear Games" - plus its own reading of them):
 - ../available/pob2.json: for every support gem, what each of its stats does to the calculation (Damage MORE, Speed
-  INC, a NeverCrit flag...), so calc.js need not guess it from the stat id.
+  INC, a NeverCrit flag...), so calc.js need not guess it from the stat id; and which permanent quest rewards the
+  campaign gives, with the choices among them.
 - ../available/trade_mods.json: for every item modifier of items.json and unique_items.json, its English name and the
   number the official trade site gives each of its lines (the gear search, trade.js).
 Everything else (gems per level, character constants, monsters) comes from the game itself: available.py.
@@ -182,8 +183,21 @@ for path in ('Skills/sup_str.lua', 'Skills/sup_dex.lua', 'Skills/sup_int.lua'):
         mods = [m for stat in list(stats) if stat in own or stat in shared for m in reading(own.get(stat, shared.get(stat)), stats.pop(stat))]
         supports[name] = {k: v for k, v in {'text': s.get('description'), 'stats': stats, 'mods': mods}.items() if v}
 
-dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua) - game data (c) Grinding Gear Games', 'supports': {k: supports[k] for k in sorted(supports)}}, 'pob2.json')
+# ---- campaign rewards -----------------------------------------------------------------------------------------------
+# Which permanent quest rewards the campaign gives today, and which are one choice out of several. The game's table has
+# the stats of each (skills.json quest_rewards, available.py) and of rewards it no longer gives, but not that.
+# key = the name of the reward in a Path of Building 2 build (<Config>), level = its area's, options = as worded there
+# (calc.js meets them with the game's stats line by line); the rewards that are passive points are the tree's business.
+src = get('QuestRewards.lua')
+quests = [{'key': 'quest' + q['Description'] + q['Area'] + q['Info'], 'act': q['Description'], 'area': q['Area'], 'info': q['Info'], 'level': q['AreaLevel'],
+           'options': q.get('Options') or [q['Stat']], **({'pick': 1} if q.get('Options') else {})}
+          for q in Lua(src, src.index('{')).value() if q['useConfig']]
+assert any(q['options'] == ['+30 to Spirit'] for q in quests) and any(q.get('pick') for q in quests), 'QuestRewards.lua'
+
+dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua) - game data (c) Grinding Gear Games',
+      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests}, 'pob2.json')
 print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
+print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')
 
 # The trade site's stat of every modifier line. ModItem.lua / ModItemExclusive.lua, one modifier per row:
 #   ["Strength1"] = { type = "Suffix", affix = "of the Brute", "+(5-8) to Strength", ..., tradeHashes = { [4080418644] = { "+(5-8) to Strength" }, } },

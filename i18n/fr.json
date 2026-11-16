@@ -317,5 +317,6 @@
  "If you remove it": "Si vous le retirez",
  "No change in the calculated numbers": "Aucun changement dans les valeurs calculées",
  "{0} DPS": "DPS de {0}",
- "What this item adds": "Ce que cet objet apporte"
+ "What this item adds": "Ce que cet objet apporte",
+ "This skill cannot be used with the weapon in hand": "Cette aptitude ne peut pas être utilisée avec l'arme en main"
 }

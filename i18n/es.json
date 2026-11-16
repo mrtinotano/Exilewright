@@ -310,6 +310,7 @@
  "Code copied.": "Código copiado.",
  "Path of Building 2 code: paste it in Path of Building (Import/Export Build) or on any of these sites.": "Código de Path of Building 2: pégalo en Path of Building (Import/Export Build) o en cualquiera de estas webs.",
  "Import as a new build": "Importar como build nueva",
+ "From Path of Building 2 on this computer…": "De Path of Building 2 en este equipo…",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "Desde la 0.5 el planificador de builds del juego carga archivos .build: guárdalo en Documentos/My Games/Path of Exile 2/BuildPlanner. Lleva el árbol, la ascendencia y las gemas con sus soportes; los niveles de gema y el equipo van como notas.",
  ".build file for the game": "Archivo .build para el juego",
  "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "Para traer tu equipo, pasa el ratón por un objeto en el juego, pulsa Ctrl+C y pégalo en Equipo. Copiar (⧉) en un objeto da su texto para Path of Building y webs de comercio.",
@@ -636,7 +637,6 @@
  "Close the floating window": "Cerrar la ventana flotante",
  "That item is not identified yet: identify it and copy it again.": "Ese objeto aún no está identificado: identifícalo y cópialo otra vez.",
  "Items are compared with the ones of the Equipment tab, and Equip puts them in the build.": "Los objetos se comparan con los de la pestaña Equipo, y Equipar los pone en el build.",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game) and press Equip on its card: from then on what you find or see in a shop is compared with those. The build is not changed.": "Todavía nada. Copia cada objeto que lleva puesto el personaje (Ctrl+C sobre él en el juego) y pulsa Equipar en su tarjeta: desde entonces lo que encuentres o veas en una tienda se compara con ellos. El build no se cambia.",
  "Start from the build's equipment": "Partir del equipo del build",
  "Take off": "Quitar",
  "Undo": "Deshacer",
@@ -683,5 +683,15 @@
  "Add it to a filter I already use…": "Añadirlo a un filtro que ya uso…",
  "Save it in Documents/My Games/Path of Exile 2 and pick it in the game: Options → Game → Item Filter. After a change to the build, save it again and load it again in the game.": "Guárdalo en Documentos/My Games/Path of Exile 2 y elígelo en el juego: Opciones → Juego → Filtro de objetos. Tras cambiar el build, guárdalo otra vez y vuelve a cargarlo en el juego.",
  "Saved as {0}.": "Guardado como {0}.",
- "That file is not an item filter.": "Ese archivo no es un filtro de objetos."
+ "That file is not an item filter.": "Ese archivo no es un filtro de objetos.",
+ "This skill cannot be used with the weapon in hand": "Esta habilidad no se puede usar con el arma que llevas",
+ "It does not go with the weapon in use": "No va con el arma que usas",
+ "Taken as what the character wears: what you copy next is compared with it": "Tomado como lo que lleva el personaje: lo que copies después se compara con él",
+ "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "Todavía nada. Copia cada objeto que lleva puesto el personaje (Ctrl+C sobre él en el juego): el primero que copies de cada ranura se toma como el que lleva ahí, y lo que encuentres o veas después en una tienda se compara con él. El build no se cambia.",
+ "Area Penalty": "Penalización de zona",
+ "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Las resistencias elementales bajan en las zonas de más nivel: aquí, una zona de tu nivel",
+ "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Escribe el nivel de tu personaje para fijarlo tú; déjalo vacío para que vuelva a seguir al árbol.",
+ "Campaign rewards": "Recompensas de la campaña",
+ "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "Lo que las misiones de la campaña dejan en el personaje para siempre. Se cuentan desde el nivel de la zona de cada una; una elección, solo cuando la haces.",
+ "Quality": "Calidad"
 }

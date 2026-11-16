@@ -255,7 +255,13 @@ for r in load('GrantedEffectsPerLevel'):
     ge_lvl.setdefault(id(ge_tab[r['GrantedEffect']]), []).append(r)
 cost_types = load('CostTypes')
 sid = lambda i: stats[i]['Id']
-skills = {}
+# the weapons a skill is used with: ActiveSkills.WeaponRequirements -> item class names ('' is unarmed)
+classes, wieldable = load('ItemClasses'), load('WieldableClasses')
+weapon_req = [[classes[wieldable[c]['ItemClass']]['Name'] for c in r['WieldableClasses']] for r in load('ActiveSkillWeaponRequirement')]
+# what a gem's quality gives, per 1000 quality: "quality" always, "alt_quality" only for who has "Gem Quality grants
+# Socketed Skills an additional effect" (Gemling Legionnaire)
+quality_tab = {r['GrantedEffect']: r for r in load('GrantedEffectQualityStats')}
+skills, skill_csd = {}, {}
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support'):   # supports too: their stat lines describe them in the picker
         continue
@@ -306,7 +312,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                 for lv in levels.values():
                     del lv[k]
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
+    q = next((quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects'][:1]] if i in quality_tab), {})
     skills[g['name']] = {
+        **{k: {sid(a): v for a, v in zip(q[s], q[s + 'ValuesPermille'] if k == 'quality' else q['AltStatValuesPermille'])}
+           for k, s in (('quality', 'Stats'), ('alt_quality', 'AltStats')) if q.get(s)},
         'cast_time_ms': effects[-1]['CastTime'],
         'constant': const,
         'levels': levels or None,
@@ -316,7 +325,14 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'projectile_range': const.get('projectile_maximum_range_override'),
         'duration_ms': const.get('base_skill_effect_duration'),
         'projectile_collision': p['CollisionRadius'] if p and 'base_is_projectile' in implicit else None,
+        'weapons': next((weapon_req[a['WeaponRequirements']] for a in (active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None)
+                         if a['WeaponRequirements'] is not None), None),
     }
+    # the skill's own stat texts (Berserk's Rage effect, Virtuous Barrier's Motes): ActiveSkills.StatDescription
+    csd = next((a['StatDescription'] for a in (active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None)
+                if a['StatDescription']), '')
+    if 'specific_skill_stat_descriptions' in csd.lower():
+        skill_csd.setdefault(csd.lower(), []).append(g['name'])
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}
@@ -329,12 +345,18 @@ char_stats = ot_stats(ot)
 game = {c['Id']: c['Value'] / c['Divisor'] for c in load('GameConstants')}
 char_stats['energy_shield_delay_ms'] = round(game['BaseShieldRegenCooldownTimeMs'])
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
+# what the campaign leaves on a character: the stats of every permanent quest reward (the table also keeps rewards the
+# campaign no longer gives: which ones count is pob2.py's part; the tally of boss faces is no stat of the character),
+# and the elemental resistance penalty of an area by its level, level 1 first
+quest_rewards = [r for r in ([[stats[s]['Id'], v] for s, v in zip(q['RewardStats'], q['RewardStatsValues']) if stats[s]['Id'] != 'number_of_broken_faces']
+                             for q in load('QuestStaticRewards')) if r]
+res_penalty = [r['Penalty'] for r in sorted(load('ResistancePenaltyPerAreaLevel'), key=lambda r: r['AreaLevel'])]
 # monster stats per level (character panel: armour % against a hit of a monster of your level, evade chance against its accuracy)
 try:
     monster_stats = [{'level': int(r.get('DisplayLevel') or i + 1), **{k: v for k, v in r.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}} for i, r in enumerate(load('DefaultMonsterStats'))]
 except FileNotFoundError:
     monster_stats = []
-save('skills.json', {'monster_stats': monster_stats, 'character_stats': char_stats, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+save('skills.json', {'monster_stats': monster_stats, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
@@ -365,12 +387,20 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
           'stat_descriptions.csd', 'passive_skill_stat_descriptions.csd'):  # later file overrides
     if os.path.exists(os.path.join(sd, f)):
         parse_csd(os.path.join(sd, f), descs)
+skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
-used |= {k for sk in skills.values() for lv in (sk['levels'] or {}).values() for k in lv} | {k for sk in skills.values() for k in sk['constant']}
+used |= {k for sk in skills.values() for k in skill_keys(sk)}
 kept = [d for d in descs.values() if used & set(d['stats'])]
-save('stat_texts.json', [{'stats': d['stats'], 'rows': d['langs']['English']} for d in kept])
+# a skill's own .csd (it includes the general ones and overrides them): entries marked with the skills that use it
+for csd, names in sorted(skill_csd.items()):
+    if os.path.exists(p := os.path.join(ROOT, 'files', csd)):
+        own = {}; parse_csd(p, own)
+        mine = set().union(*(skill_keys(skills[n]) for n in names))
+        kept += [{**d, 'skill': names} for d in own.values() if mine & set(d['stats'])]
+row = lambda d, l: {'stats': d['stats'], 'rows': d['langs'].get(l) or d['langs']['English'], **({'skill': d['skill']} if 'skill' in d else {})}
+save('stat_texts.json', [row(d, 'English') for d in kept])
 for c, l in LANGS.items():
-    save(f'stat_texts.{c}.json', [{'stats': d['stats'], 'rows': d['langs'].get(l) or d['langs']['English']} for d in kept])
+    save(f'stat_texts.{c}.json', [row(d, l) for d in kept])
 
 # --- equipment: bases (with tags inherited through the .it files), implicits and rollable affixes with spawn tags
 def read_it(p, cache={}):
@@ -388,7 +418,7 @@ def read_it(p, cache={}):
         cache[p] = tags + (read_it(parent) if parent else [])
     return cache[p]
 
-classes, tags_tab = load('ItemClasses'), load('Tags')
+tags_tab = load('Tags')
 SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
     'Amulets': ['amulet'], 'Rings': ['ring1', 'ring2'], 'Belts': ['belt'], 'Gloves': ['gloves'], 'Boots': ['boots'],
     'Body Armours': ['body'], 'Helmets': ['helmet'], 'Shields': ['offhand'], 'Foci': ['offhand'], 'Bucklers': ['offhand'], 'Quivers': ['offhand'],
@@ -399,6 +429,7 @@ SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
 armour = {a['BaseItemType']: a for a in load('ArmourTypes')}
 weapon = {w['BaseItemType']: w for w in load('WeaponTypes')}
 flasks = {f['BaseItemType']: f for f in load('Flasks')}
+spirit = {s['BaseItemType']: s['SpiritGranted'] for s in load('ItemSpirit')}   # sceptres: 100
 visual = load('ItemVisualIdentity')
 mods_tr = load_langs('Mods')
 mod_stats = lambda m: [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]
@@ -418,6 +449,7 @@ for i, b in enumerate(load('BaseItemTypes')):
         'size': [b['Width'], b['Height']],
         'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10},
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
+        'spirit': spirit.get(i),
     })
 save('items.json', {
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
@@ -568,4 +600,9 @@ assert all(s['levels'] for s in skills.values()), 'a gem without stats per level
 assert skills['Fireball']['cast_time_ms'] and skills['Fireball']['levels'][20]['spell_minimum_base_fire_damage'] > 0
 assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms')), 'character.ot / GameConstants'
 assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'BaseMaxMana')), 'Characters base life / mana'
+assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
+assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'
+assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
+assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
+assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))

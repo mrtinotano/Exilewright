@@ -4,6 +4,10 @@
 for the page: browsers block those calls from another origin (CORS). Only the sites below are reachable.
 Endpoints are the ones Path of Building 2 uses (src/Modules/BuildSiteTools.lua).
 
+/pob (GET) gives the page the builds saved in Path of Building 2 on this computer, to import one without copying its
+code: their file names, the last saved first, or with ?name=<one of them> its XML. A character of the account gets
+here that way: the game's site hands characters only to programs registered with it, and Path of Building is one.
+
 /trade/... passes the gear search (trade.js) on to the official trade site's API, pathofexile.com/api/trade2:
   GET  /trade/data/<stats|filters|leagues|static>   what can be searched (kept in memory)
   POST /trade/search?league=<name>                   body = the query (JSON) -> ids of the items listed
@@ -21,7 +25,8 @@ here.
 /overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
 for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
   GET  /overlay   {"overlay": true} when this server has that window
-  POST /overlay   body = {kind, title, name, lines} (JSON), shown for a few seconds; null = nothing to show
+  POST /overlay   body = {kind, title, name, lines} (JSON), shown until its ✕ is clicked; null = nothing to show. A line is
+                  text, or a list of pieces of it, each text or [text, tone]: up (green), down (red), dim
 The window needs tkinter, which comes with Python. It is made on Windows, and elsewhere with: python3 serve.py overlay
 Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
 no page is there to judge it gets an answer too, a line saying so.
@@ -60,6 +65,9 @@ DOWNLOAD = [  # link pattern -> raw build code url
     (r'rentry\.co/(?:paste/)?(\w+)', 'https://rentry.co/paste/{}/raw'),
 ]
 UA = {'User-Agent': 'POE2-Builder (local build planner)'}
+# note: where Path of Building 2 keeps its builds on Windows by default, and only the ones not in a folder of
+# their own; its "buildPath" setting if someone keeps them elsewhere
+POB = os.path.join(os.path.expanduser('~'), 'Documents', 'Path of Building (PoE2)', 'Builds')
 
 
 def call(url, body=None):
@@ -157,7 +165,9 @@ def clipboard():
 
 def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
-    show(verdict) puts {kind, title, name, lines} in it, next to the pointer, for a few seconds (from any thread);
+    show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
+    comparison stays until its ✕ is clicked, a click lands anywhere else or a key is pressed (both Windows only) or the
+    next one comes; anything else (the item was taken as worn, a notice marked 'brief') goes by itself in a few seconds.
     loop() runs the window and has to be called in the thread that called this, the main one"""
     win, back = sys.platform == 'win32', '#12100c'
     if win:   # a new window takes the keyboard on Windows: remember who has it, to give it back below
@@ -177,41 +187,64 @@ def overlay():
     box = tk.Frame(root, bg=back, padx=12, pady=8)
     box.pack(padx=1, pady=1)
     face = 'Segoe UI' if win else 'Helvetica'
-    title = tk.Label(box, bg=back, font=(face, 14, 'bold'), justify='left', anchor='w', wraplength=460)
-    body = tk.Label(box, bg=back, fg='#d8ccb0', font=(face, 11), justify='left', anchor='w', wraplength=460)
-    title.pack(fill='x')
+    head = tk.Frame(box, bg=back)
+    head.pack(fill='x')
+    title = tk.Label(head, bg=back, font=(face, 14, 'bold'), justify='left', anchor='w', wraplength=420)
+    title.pack(side='left')
+    close = tk.Label(head, text='✕', bg=back, fg='#9a8f78', font=(face, 12), cursor='hand2')
+    close.pack(side='right', anchor='n', padx=(16, 0))
+    body = tk.Frame(box, bg=back)
     q, timer = queue.Queue(), [None]
+    held = [None]   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
+    idle = [b'']    # keys that do nothing in the game as it is set: they leave the window where it is
     if win:
         # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
-        # can take the keyboard from the game. And clicks go through it, to the game
+        # can take the keyboard from the game. Hidden, clicks go through it to the game; shown, it takes them (its ✕
+        # closes it, and so do a click anywhere else and a key: see poll) but never the keyboard
+        mouse = {1, 2, 4}   # left, right and middle button
+        # what closes the window when pressed: those, the two side buttons and the keys of a keyboard, but Shift,
+        # Ctrl, Alt and Print Screen; W A S D only where the game moves the character with them (idle, below)
+        watch = [k for k in (*mouse, 5, 6, *range(8, 0x5B), *range(0x60, 0x92), *range(0xBA, 0xE3)) if k not in (0x10, 0x11, 0x12, 0x2C)]
         user = ctypes.windll.user32
         user.GetAncestor.restype = ctypes.c_void_p
         user.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
         user.GetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int]
         user.SetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_long]
 
-        def through():   # layered + transparent (to clicks) + tool window + never the window in use
+        def clicks(mine):   # layered + tool window + never the window in use, and transparent to clicks unless they are its own
             h = user.GetAncestor(root.winfo_id(), 2)
-            user.SetWindowLongW(h, -20, user.GetWindowLongW(h, -20) | 0x80000 | 0x20 | 0x80 | 0x08000000)
+            ex = user.GetWindowLongW(h, -20) | 0x80000 | 0x80 | 0x08000000
+            user.SetWindowLongW(h, -20, ex & ~0x20 if mine else ex | 0x20)
         root.update()
-        through()
+        clicks(False)
         user.SetForegroundWindow.argtypes = [ctypes.c_void_p]
         user.SetForegroundWindow(front)
     else:
         root.withdraw()
 
-    def hide():
+    def hide(_=None):
+        if timer[0]:
+            root.after_cancel(timer[0])
         timer[0] = None
         if win:
             root.attributes('-alpha', 0)
+            clicks(False)
         else:
             root.withdraw()
+    close.bind('<Button-1>', hide)
 
     def draw(v):
         title.config(text=v['title'], fg=TINT.get(v['kind'], '#d8ccb0'))
-        text = '\n'.join(filter(None, [v['name'], *v['lines']]))
-        body.config(text=text)
-        if text:
+        for old in body.winfo_children():
+            old.destroy()
+        rows = ([[(v['name'], '')]] if v['name'] else []) + v['lines']
+        for pieces in rows:                           # a line: its pieces side by side, each in its tone
+            row = tk.Frame(body, bg=back)
+            row.pack(fill='x')
+            for text, tone in pieces:
+                tk.Label(row, text=text, bg=back, fg=TONE.get(tone, '#d8ccb0'), font=(face, 11), justify='left', anchor='w',
+                         wraplength=460, padx=0, pady=0, bd=0).pack(side='left')
+        if rows:
             body.pack(fill='x')
         else:
             body.pack_forget()
@@ -225,24 +258,48 @@ def overlay():
         root.update_idletasks()                      # now: on Windows the first move is lost if it waits for the calls below
         if win:
             root.attributes('-alpha', .95)
-            through()
+            clicks(True)
+            held[0], idle[0] = None, b'' if wasd() else b'WASD'
         else:
             root.deiconify()
         root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
         root.lift()
         if timer[0]:
             root.after_cancel(timer[0])
-        timer[0] = root.after(SHOWN * 1000, hide)
+        secs = SHOWN if v.get('brief') else 0 if v['kind'] in COMPARED else NOTED
+        timer[0] = root.after(secs * 1000, hide) if secs else None
 
     def poll():
+        if win and float(root.attributes('-alpha')):
+            # shown: a click anywhere else closes it, and so does any key the game could take (it moves the character,
+            # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
+            # or another window. note: keys and mouse are looked at 20 times a second, not hooked (a hook written
+            # in Python can slow the pointer in the game); a hook if presses ever get missed
+            keys = {k: user.GetAsyncKeyState(k) for k in watch if k not in idle[0]}   # 0x8000: down, 1: pressed since the last look
+            down = {k for k, s in keys.items() if s & 0x8000}
+            new = set() if held[0] is None else {k for k, s in keys.items() if s & 1 or k in down and k not in held[0]}
+            held[0] = down
+            px, py = root.winfo_pointerxy()
+            away = not (0 <= px - root.winfo_rootx() < root.winfo_width() and 0 <= py - root.winfo_rooty() < root.winfo_height())
+            if new & mouse and away or new - mouse and not any(user.GetAsyncKeyState(k) & 0x8000 for k in (0x11, 0x12, 0x5B, 0x5C)):
+                hide()
         try:
             while True:
                 draw(q.get_nowait())
         except queue.Empty:
             pass
-        root.after(100, poll)
-    root.after(100, poll)
+        root.after(50, poll)
+    root.after(50, poll)
     return q.put, root.mainloop
+
+
+def wasd():
+    """the game is set to move the character with W A S D (its own settings file says; False when that cannot be read)"""
+    try:   # note: the Documents folder where Windows has it by default; one moved elsewhere reads as "with the mouse"
+        with open(os.path.join(os.path.expanduser('~'), 'Documents', 'My Games', 'Path of Exile 2', 'poe2_production_Config.ini'), encoding='utf-8-sig') as f:
+            return bool(re.search(r'^use_wasd_to_move=true\s*$', f.read(), re.M))
+    except (OSError, ValueError):
+        return False
 
 
 def tongue():
@@ -264,7 +321,7 @@ def tell(text):
             text = json.load(f).get(text) or text
     except (OSError, ValueError):
         pass
-    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [text]})
+    OVER[0]({'kind': '', 'title': 'PoE2 Planner', 'name': '', 'lines': [[(text, '')]], 'brief': True})
 
 
 def watch_clipboard():
@@ -296,8 +353,11 @@ def watch_clipboard():
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:]
-SHOWN = 7      # seconds a verdict stays over the game
+SHOWN = 7      # seconds a notice of the server's own stays over the game
+NOTED = 3      # and one of the page's that compares nothing (the item was taken as worn, it has no slot...)
+COMPARED = {'up', 'mix', 'same', 'down'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
+TONE = {'up': '#8fe89a', 'down': '#ee8888', 'dim': '#9a8f78'}   # pieces of a line: better, worse, said in passing
 LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
@@ -360,6 +420,21 @@ class Handler(SimpleHTTPRequestHandler):
         host = self.headers.get('Host', '')
         return host.rsplit(':', 1)[0] in ('127.0.0.1', 'localhost') and self.headers.get('Origin') in (None, 'http://' + host)
 
+    def do_pob(self, u):
+        if not self.mine():   # the user's own builds: for the page this server serves only
+            return self.reply(403, 'local only')
+        try:
+            names = sorted((f for f in os.listdir(POB) if f.lower().endswith('.xml')), key=lambda f: -os.path.getmtime(os.path.join(POB, f)))
+        except OSError:   # no Path of Building 2 here
+            names = []
+        name = parse_qs(u.query).get('name', [''])[0]
+        if not name:
+            return self.reply_json(200, json.dumps(names).encode())
+        if name not in names:   # one of the list, never a path of the page's own
+            return self.reply(404, 'no such build')
+        with open(os.path.join(POB, name), 'rb') as f:
+            self.reply(200, f.read())
+
     def do_clipboard(self, u):
         global TONGUE
         if not self.mine():   # the clipboard can hold anything: only item text ever leaves, and only to that page
@@ -394,14 +469,15 @@ class Handler(SimpleHTTPRequestHandler):
         if not OVER or not self.mine():
             return self.reply(403, 'no window to show it in')
         try:
-            v = json.loads(body) if len(body) < 4000 else None
+            v = json.loads(body) if len(body) < 16000 else None
         except ValueError:
             v = None
         ASKED = 0   # the page answered, be it with nothing to show
         if isinstance(v, dict):
             lines = v.get('lines')
+            piece = lambda p: (str(p[0])[:160], str(p[1])) if isinstance(p, list) and len(p) == 2 else (str(p)[:160], '')
             OVER[0]({'kind': str(v.get('kind')), 'title': str(v.get('title', ''))[:120], 'name': str(v.get('name', ''))[:120],
-                     'lines': [str(x)[:160] for x in (lines if isinstance(lines, list) else [])[:8]]})
+                     'lines': [[piece(p) for p in (x if isinstance(x, list) else [x])[:6]] for x in (lines if isinstance(lines, list) else [])[:30]]})
         self.reply(200, 'ok')
 
     def do_GET(self):
@@ -410,6 +486,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_trade(u)
         if u.path == '/clipboard':
             return self.do_clipboard(u)
+        if u.path == '/pob':
+            return self.do_pob(u)
         if u.path == '/overlay':
             return self.do_overlay()
         if u.path != '/share/download':

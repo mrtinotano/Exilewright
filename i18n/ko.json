@@ -317,5 +317,6 @@
  "If you remove it": "제거하면",
  "No change in the calculated numbers": "계산된 수치 변화 없음",
  "{0} DPS": "{0} DPS",
- "What this item adds": "이 아이템의 효과"
+ "What this item adds": "이 아이템의 효과",
+ "This skill cannot be used with the weapon in hand": "이 스킬은 들고 있는 무기로는 사용할 수 없습니다"
 }

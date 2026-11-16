@@ -34,13 +34,14 @@ const num = v => +v.toFixed(2);
 const BY = byStat;
 
 export const statLinesEn = stats => statLines(stats, EN);
-export function statLines(stats, byStat = BY) {
+// skill: gem name, for the texts of that skill's own .csd (entries with "skill"; other skills' are skipped)
+export function statLines(stats, byStat = BY, skill) {
   const done = new Set(), out = [];
   for (const id of Object.keys(stats)) {
     if (done.has(id) || id.endsWith('_no_display')) continue;
-    // the description that covers the most of these stats wins (e.g. min+max damage on one line)
-    const d = (byStat[id] || []).map(d => [d, d.stats.filter(s => s in stats).length])
-      .sort((a, b) => b[1] - a[1] || a[0].stats.length - b[0].stats.length)[0]?.[0];
+    // the description that covers the most of these stats wins (e.g. min+max damage on one line), the skill's own first
+    const d = (byStat[id] || []).filter(d => !d.skill || d.skill.includes(skill)).map(d => [d, d.stats.filter(s => s in stats).length])
+      .sort((a, b) => b[1] - a[1] || !!b[0].skill - !!a[0].skill || a[0].stats.length - b[0].stats.length)[0]?.[0];
     const vals = d ? d.stats.map(s => stats[s] ?? 0) : [];
     const row = d?.rows.find(r => r.c.every((c, i) => inRange(c, vals[i])));
     if (!row || !row.t) { out.push(`${id}: ${stats[id]}`); done.add(id); continue; }

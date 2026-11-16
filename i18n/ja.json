@@ -317,5 +317,6 @@
  "If you remove it": "解除した場合",
  "No change in the calculated numbers": "計算値に変化なし",
  "{0} DPS": "{0}のDPS",
- "What this item adds": "このアイテムの効果"
+ "What this item adds": "このアイテムの効果",
+ "This skill cannot be used with the weapon in hand": "このスキルは手にしている武器では使用できません"
 }

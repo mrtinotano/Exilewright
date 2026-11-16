@@ -2,7 +2,7 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, tn, fmt, lang } from './i18n.js';
-import { attributes, skill } from './calc.js';
+import { attributes, skill, reservation } from './calc.js';
 import { statLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
@@ -31,11 +31,10 @@ export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude,
 const RAW = /^[a-z0-9_%+\-]+: -?[\d.]+$/;   // stat with no game text: not shown
 const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
 // stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
+const shown = (st, name) => statLines(Object.fromEntries(Object.entries(st).filter(([k]) => !k.startsWith('_'))), undefined, name).filter(l => !RAW.test(l));
 function gemLines(name, level) {
   const d = SK.skills[name]; if (!d) return [];
-  const lv = d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {};
-  const st = Object.fromEntries(Object.entries({ ...(d.constant || {}), ...lv }).filter(([k]) => !k.startsWith('_')));
-  return statLines(st).filter(l => !RAW.test(l));
+  return shown({ ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[Object.keys(d.levels || {})[0]] || {}) }, name);
 }
 const descOf = G => G['description_' + lang] || G.description || '';
 // what a support does in words: the game's description, else Path of Building's reading of its stats (English)
@@ -50,8 +49,8 @@ function details(g, b, sum, geo) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = gemLines(g.name, g.level);
-  return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${g.level}</small></div></div>
+  const lines = shown(st, g.name), spirit = reservation(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${descOf(G) ? `<p class="ddesc">${esc(descOf(G))}</p>` : ''}
     ${sec('Damage', [
       ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
@@ -67,7 +66,7 @@ function details(g, b, sum, geo) {
       ['Critical hit chance', s.crit != null ? fmt(s.crit, 2) + '%' : '—'],
       ['Critical Damage Bonus', s.critBonus != null ? '+' + fmt(s.critBonus) + '%' : '—'],
     ])}
-    ${sec('Cost & Reservation', [cost && ['Cost', cost], st._spirit && ['Reservation', t('{0} spirit', st._spirit)]])}
+    ${sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
     ${sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
       SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
@@ -115,7 +114,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
           <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small>${gain(null)}</span></button>` : ''}${opts.map(item).join('')}</div></div>`;
       }
       return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
-        <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <b>${esc(tn(G))}</b>
+        <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <b>${esc(tn(G))}</b>
           <span class="sockn">${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
           <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
         <div class="socks">${sockets}</div>${picker}</div></div>`;

@@ -1,6 +1,6 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
-import { t, tn, lang } from './i18n.js';
+import { t, tn, lang, fmt } from './i18n.js';
 import { statLines, statLinesEn } from './stats.js';
 import { diff, impactHtml, impactLine, impactText } from './impact.js';
 
@@ -25,6 +25,7 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
   base.implicits.forEach((id, i) => add(D.implicits[id], item.implicits?.[i]));
   for (const m of item.mods || []) if (AFFIX[m.id]) add(AFFIX[m.id].stats, m.values);
+  for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return out;
 }
 
@@ -49,6 +50,7 @@ function local(item) {
     r.tags = base.tags;   // mace, bow, onehand...: what kind of weapon it is
   }
   if (base.flask) r.flask = base.flask;
+  if (base.spirit) r.spirit = Math.round(base.spirit * (1 + (s['local_spirit_+%'] || 0) / 100));   // a sceptre's own Spirit
   return r;
 }
 
@@ -67,6 +69,7 @@ export function gearStats(items = {}) {
     add('base_evasion_rating', l.evasion);
     add('base_maximum_energy_shield', l.energy_shield);
     add('base_movement_velocity_+%', l.movement);
+    add('base_spirit_from_equipment', l.spirit);
   }
   return sum;
 }
@@ -126,12 +129,31 @@ function matchLines(lines, cands, family = () => null) {
       if (span.length < c.lines.length || c.lines.some((l, j) => l !== skel(span[j])) || used.has(family(c.key) ?? c.key)) continue;
       const n = nums(span), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
       const off = c.stats.reduce((t, [, lo, hi], k) => t + Math.max(0, Math.min(lo, hi) - values[k], values[k] - Math.max(lo, hi)), 0);
-      if (!best || c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off) best = { c, values, off };
+      // rolls inside the modifier's range first (two plain modifiers also read as one two-line modifier of another
+      // tier, with their numbers far off its range), then the one that takes more lines, then the nearest
+      const out = off > 0, bout = best?.off > 0;
+      if (!best || out < bout || out === bout && (c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off)) best = { c, values, off };
     }
-    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values) }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
+    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values), raw: best.values }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
     else missed.push(lines[i++]);
   }
   return { found, missed };
+}
+// rows of stats as a game table has them ([[stat id, value], ...] each: the quest rewards, calc.js) -> a reader of
+// lines of text worded like those stats: { stats: what the lines give, missed: the lines that are none of them }.
+// A line with another number than the table's is not that stat. The game words a stat that is the character's as
+// "Global ..." where the line could be taken for an item's own ("30% increased Global Armour, Evasion and Energy
+// Shield" is the tree's "30% increased Armour, Evasion and Energy Shield"): read without the word too
+export function rowReader(rows) {
+  const flat = rows.flat(), cands = flat.flatMap(([id, v], i) => shapes(i, [[id, v, v]]));
+  return lines => {
+    const stats = {}, missed = [];
+    for (const l of lines) {
+      const f = matchLines([l], cands).found[0] || matchLines([l.replace(/\bGlobal /, '')], cands).found[0];
+      if (f && f.raw[0] === f.values[0]) stats[flat[f.key][0]] = (stats[flat[f.key][0]] || 0) + f.values[0]; else missed.push(l);
+    }
+    return { stats, missed };
+  };
 }
 // The game's text is in the language the game is played in, so nothing here goes by a label's wording, only by shape:
 // "Label: value" lines, the "--------" lines between blocks, a one word "(tag)" closing a line.
@@ -159,36 +181,57 @@ export function parseItem(text) {
   const base = u ? BASE[u.base] : head.map(n => NAMED.get(strip(n))).find(Boolean)   // a magic item's name has the base's in it
     || [...NAMED].filter(([n]) => head.some(h => h.toLowerCase().includes(n))).sort((a, b) => b[0].length - a[0].length)[0]?.[1];
   if (!base) return null;
-  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^(\{[^}]*\})+/, ''));
+  // "{…}" opens a line in Path of Building (its tags) and is a whole line in the game's detailed text (the modifier's
+  // name and tier), which also gives the range of each roll right after its number: "34(33-38)% increased Spirit", and
+  // a note after a dash where there is one: "Used when you become Frozen — Unscalable Value". Path of Building opens a
+  // rune's line with "{enchant}{rune}": closed by "(rune)" here, as the game's text has it
+  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => rest && /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : rest)
+    .replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').trim()).filter(Boolean);
   let impl = [], expl = [];
-  const skipped = [];
+  const tagged = new Map();   // rune and enchantment lines -> as the text has them
   const pi = body.findIndex(l => /^Implicits: \d+$/.test(l));
-  if (pi >= 0) {   // Path of Building: "Implicits: N", then N implicit lines, then the rest
-    const n = +body[pi].split(' ')[1];
-    impl = body.slice(pi + 1, pi + 1 + n); expl = body.slice(pi + 1 + n);
+  if (pi >= 0) {   // Path of Building: "Implicits: N", then N implicit lines (its runes among them), then the rest
+    const n = +body[pi].split(' ')[1], rune = l => TAGS[l.match(TAG)?.[1]] === 'skip' && !!tagged.set(l.replace(TAG, ''), l);
+    impl = body.slice(pi + 1, pi + 1 + n).filter(l => !rune(l)); expl = body.slice(pi + 1 + n).filter(l => !rune(l));
   } else {
-    // the game: implicits end in "(implicit)", runes and enchantments (not modelled) in "(rune)" / "(enchant)". In
+    // the game: implicits end in "(implicit)", runes and enchantments in "(rune)" / "(enchant)". In
     // another language the tag is another word: a block whose lines all end in the same one is taken for the
     // implicits (the last such block first, as the game lists them last; what is not one of the base's is left out),
     // and a tagged line among plain ones is a modifier like any other (crafted, fractured...)
     const blocks = [[]];
     for (const l of body) if (/^-{4,}$/.test(l)) blocks.push([]); else if (!META.test(l)) blocks.at(-1).push(l);
+    // right under the names is what the item is by itself, in sentences on a flask or a charm ("Recovers 1766 Life over
+    // 3 Seconds", "Currently has 75 Charges"): no modifiers there
+    blocks[/^-{4,}$/.test(body[0]) ? 1 : 0] = [];
     for (const lines of blocks) {
       const tags = lines.map(l => l.match(TAG)?.[1].toLowerCase());
       const own = lines.length > 0 && tags.every(x => x && x === tags[0] && !TAGS[x]), mine = [];
       lines.forEach((l, i) => {
         const kind = own ? 'implicit' : TAGS[tags[i]] || 'explicit', line = tags[i] ? l.replace(TAG, '') : l;
-        if (kind === 'skip') skipped.push(l); else (kind === 'explicit' ? expl : mine).push(line);
+        if (kind === 'skip') tagged.set(line, l); else (kind === 'explicit' ? expl : mine).push(line);
       });
       impl = own ? [...mine, ...impl] : [...impl, ...mine];
     }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
-  const im = matchLines(impl, base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])));
-  im.found.forEach(f => item.implicits[f.key] = f.values);
+  const own0 = base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])), im = matchLines(impl, own0);
+  // the game's detailed text gives implicits no tag: a plain line worded as one of the base's own is it
+  const im2 = matchLines(expl, own0.filter(c => !im.found.some(f => f.key === c.key)));
+  for (const f of [...im.found, ...im2.found]) item.implicits[f.key] = f.values;
+  expl = im2.missed;
+  // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item: the
+  // stats are that modifier's and the number is the line's own (two runes add up in one line). The rest is left out
+  let left = [...tagged.keys()];
+  for (const pool of [a => canRoll(a, base), a => a.domain === base.domain]) {
+    if (!left.length) break;
+    const m = matchLines(left, D.affixes.filter(pool).flatMap(a => shapes(a.id, a.stats)));
+    for (const f of m.found) AFFIX[f.key].stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
+    left = m.missed;
+  }
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
-  // reminder text "(…)" and one word states ("Corrupted" in any language) are not modifiers
-  const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l);
+  // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
+  // a flask: no modifier ends in one) are not modifiers
+  const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l) || /[.。]$/.test(l);
   let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
   // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of
   // this base (two at least) among them
@@ -202,7 +245,7 @@ export function parseItem(text) {
     ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
   } else item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
-  return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...skipped].filter(l => !noise(l)),
+  return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
     name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)) };
 }
 
@@ -215,6 +258,14 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
+// what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
+// bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand
+export function offhandFits(weapon, off, giant) {
+  const w = BASE[weapon?.base], quiver = !!BASE[off?.base]?.tags.includes('quiver');
+  if (!w) return true;
+  if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
+  return !w.tags.includes('twohand') || !!giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class);
+}
 export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
 export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
@@ -324,9 +375,26 @@ export function itemView(it) {
   const hit = ['physical', 'fire', 'cold', 'lightning'].reduce((s, k) => s + (l[k] ? (l[k][0] + l[k][1]) / 2 : 0), 0);
   return { rarity: rarityOf(it), name: it.unique ? tn(UNIQ[it.unique]) || it.unique : '', base: tn(base) || base.name, cls: base.class, img: img(it.unique && D.unique_img[it.unique] || base.img),
     dps: hit * (l.attacks_per_second || 0),   // the weapon's own damage per second
-    props: [['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield]].filter(p => p[1]),
-    mods: [...base.implicits.flatMap((id, i) => say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
+    // its own numbers: [label, number or [from, to], decimals, unit]
+    props: [['Physical Damage', l.physical], ['Fire Damage', l.fire], ['Cold Damage', l.cold], ['Lightning Damage', l.lightning],
+      ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
+      ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
+    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
       ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => say(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)))] };
+}
+export const propText = ([, v, dec = 0, unit = '']) => Array.isArray(v) ? `${fmt(v[0])}–${fmt(v[1])}` : fmt(v, dec) + unit;
+// what changes hands when `item` takes the place of `old` (null: nothing was there): [lines gained, lines lost] in the
+// game's words, every modifier of both counted (the ones that only change the item's own numbers too). A stat both
+// have counts by its difference, worded on the side that has more of it
+export function modDiff(old, item) {
+  const a = old ? rolled(old) : {}, b = rolled(item), gain = {}, lose = {};
+  for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const x = a[k] || 0, y = b[k] || 0;
+    if (x * y < 0) { lose[k] = x; gain[k] = y; }
+    else if (Math.abs(y) > Math.abs(x)) gain[k] = y - x;
+    else if (x !== y) lose[k] = x - y;
+  }
+  return [gain, lose].map(s => statLines(s).filter(l => !/^[\w+%]+: -?[\d.]+$/.test(l)));   // stats the game has no text for
 }
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
 const DOLL = ['w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
@@ -463,4 +531,18 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf) {
     changed(); render();
   });
   return render;
+}
+
+// self-check, a rare as the game copies it (detailed text): two plain modifiers, not the two-line one of another tier
+console.assert(parseItem('Rarity: Rare\nWoe Crusher\nOmen Sceptre\n--------\nSpirit: 134 (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Viscount\'s" (Tier: 6) }\n34(33-38)% increased Spirit\n{ Prefix Modifier "Blue" (Tier: 1) — Mana }\n+159(150-164) to maximum Mana')
+  ?.item.mods.map(m => m.values).join() === '34,159', 'parseItem: detailed item text');
+// ...and a flask: what it is by itself and how to use it are not modifiers nobody understood
+console.assert(parseItem('Rarity: Magic\nVitiating Ultimate Life Flask of the Perpetual\n--------\nRecovers 1766 (augmented) Life over 3 Seconds\nCurrently has 75 Charges\n--------\nItem Level: 65\n--------\n{ Suffix Modifier "of the Perpetual" (Tier: 2) }\n57(55-62)% increased Charges gained\n--------\nRight click to drink. Refill at Wells or by killing monsters.')
+  ?.missed.length === 0, 'parseItem: a flask');
+// ...and gloves as Path of Building writes them: the rune counts (among its "Implicits"), its Bonded lines do not
+console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSockets: S\nRune: Greater Desert Rune\nLevelReq: 59\nImplicits: 3\n{enchant}{rune}Bonded: +20 to maximum Life\n{enchant}{rune}Bonded: +20 to maximum Mana\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield')
+  ?.item.extra?.['base_fire_damage_resistance_%'] === 18, 'parseItem: a rune in Path of Building text');
+{ // ...and the off hand: none next to a crossbow, a quiver next to a bow only
+  const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
+  console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');
 }

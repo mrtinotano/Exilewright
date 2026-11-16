@@ -317,5 +317,6 @@
  "If you remove it": "移除後",
  "No change in the calculated numbers": "計算數值沒有變化",
  "{0} DPS": "{0} DPS",
- "What this item adds": "此物品帶來的變化"
+ "What this item adds": "此物品帶來的變化",
+ "This skill cannot be used with the weapon in hand": "此技能無法搭配手上的武器使用"
 }

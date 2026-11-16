@@ -7,10 +7,19 @@ Every number comes from the game's own data (see `poe2_data/README.md`).
 Double-click `start.cmd` (or `python serve.py`) and open http://127.0.0.1:8765
 
 **Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
-pastebin and rentry to import) through `serve.py`, plus JSON files. Items copied in the game with Ctrl+C can
+pastebin and rentry to import) through `serve.py`, plus JSON files, and imports the builds saved in Path of
+Building 2 on the same computer (how a character of your account gets here: import it there, save it, pick it
+in Share). Items copied in the game with Ctrl+C can
 be pasted in Equipment. **.build file for the game** saves the build for the in-game build planner (0.5+, folder
 `Documents/My Games/Path of Exile 2/BuildPlanner`): tree, ascendancy and gems with supports; gem levels and gear
 travel as notes, since the format has no fields for them (layout as Path of Building 2 writes it).
+
+**Character panel** (left): the level goes up with the tree, one passive point per level; a real character also has
+the passive points quests give, so type its level (a build imported from Path of Building 2 brings its own).
+Elemental resistances carry the game's penalty for the level of the area (`ResistancePenaltyPerAreaLevel`: none at
+first, -60% from level 65), taken to be the character's level. **Campaign rewards** lists what quests leave on a
+character for good (+100 Spirit, resistances, the choices at each shrine...): counted from the level of each one's
+area, a choice only once made; an imported build brings its own.
 
 **Optimizer** (its own tab) works for the build on screen and one objective: damage per second or uses per second
 of a skill, toughness, life, energy shield, armour, evasion, resistances…

@@ -317,5 +317,6 @@
  "If you remove it": "หากนำออก",
  "No change in the calculated numbers": "ค่าที่คำนวณไม่เปลี่ยนแปลง",
  "{0} DPS": "DPS ของ {0}",
- "What this item adds": "สิ่งที่ไอเทมนี้เพิ่มให้"
+ "What this item adds": "สิ่งที่ไอเทมนี้เพิ่มให้",
+ "This skill cannot be used with the weapon in hand": "ไม่สามารถใช้สกิลนี้กับอาวุธที่ถืออยู่ได้"
 }

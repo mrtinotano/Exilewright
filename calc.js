@@ -2,15 +2,79 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt } from './i18n.js';
-import { weaponStats } from './items.js';
+import { weaponStats, classOf, rowReader } from './items.js';
 import { SK } from './skilldata.js';
+
+// Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
+// Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
+// b.quests: reward key -> the option taken (1 the first, 0 none). A reward not set counts from the level of its area
+// on; a choice among several only once made.
+const reward = rowReader(SK.quest_rewards || []);
+export const QUESTS = (SK.quests || []).map(q => ({ ...q, options: q.options.map(text => ({ text, ...reward(text.split('\n').map(l => l.trim()).filter(Boolean)) })) }));
+export const questPick = (b, q) => b.quests?.[q.key] ?? (q.pick || (b.level || 1) < q.level ? 0 : 1);
+export function questStats(b) {
+  const sum = {};
+  for (const q of QUESTS) for (const [k, x] of Object.entries(q.options[questPick(b, q) - 1]?.stats || {})) sum[k] = (sum[k] || 0) + x;
+  return sum;
+}
+// self-check: every reward is worded as stats the game's table has, and those nobody chooses add up (+100 Spirit by the end)
+console.assert(QUESTS.length && QUESTS.every(q => q.options.every(o => !o.missed.length)) && questStats({ level: 100 }).base_spirit === 100 && !questStats({ level: 1 }).base_spirit, 'campaign rewards');
+
+// What the build's own skills give the character while they are on: Virtuous Barrier (Gemling Legionnaire), as the
+// skill's own text has it. It holds Motes of each attribute, at most the skill's own number plus one per skill of the
+// build that requires that attribute (two if it requires no other), and each kind of Mote gives its part: life,
+// "Armour, Evasion and Energy Shield" in one line, life and mana regeneration.
+// note: every Mote it can hold (a hit takes one away, they come back in seconds)
+const ATTRS = ['strength', 'dexterity', 'intelligence'];
+export function skillStats(b) {
+  const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
+  if (!c) return {};
+  const motes = Object.fromEntries(ATTRS.map(a => [a, c.skill_specific_stat_description_mode || 0]));
+  for (const g of b.gems) { const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
+  const per = (id, a) => (c[id] || 0) * motes[a];
+  return { 'maximum_life_+%': per('gem_barrier_red_grants_maximum_life_+%', 'strength'),
+    'global_armour_evasion_energy_shield_+%': per('gem_barrier_green_grants_evasion_rating_+%', 'dexterity'),
+    'life_regeneration_rate_+%': per('gem_barrier_blue_grants_life_regeneration_rate_+%', 'intelligence'),
+    'mana_regeneration_rate_+%': per('gem_barrier_blue_grants_mana_regeneration_rate_+%', 'intelligence') };
+}
 
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
+// self-check: 3 Strength Motes of its own and 2 for Berserk, which requires Strength alone, at 2% life each
+console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }] })['maximum_life_+%'] === 10 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
 const CHAR = SK.character_stats || {};
 const v = (sum, ...ids) => ids.reduce((t, id) => t + (sum[id] || 0), 0);
 const first = (...xs) => xs.find(x => x != null) ?? null;
+
+// A gem as the character uses it: its level with what passives and gear add ("+2 to Level of all Skills with a
+// Strength requirement" is strength_skill_gem_level_+: every word before _skill_gem_level_+ a tag of the gem) and what
+// its quality gives (skills.json quality, and alt_quality for who has "Gem Quality grants Socketed Skills an
+// additional effect": per 1000 quality, whole numbers only). _level and _quality are the ones used.
+// note: levels a support adds to its skill and those for corrupted gems are not counted
+export function gemStats(g, sum = {}) {
+  const d = SK.skills[g.name] || {}, tags = GEM[g.name]?.tags || [], end = '_skill_gem_level_+';
+  const fits = w => w === 'all' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
+  let level = g.level;
+  for (const [k, x] of Object.entries(sum)) if (k.endsWith(end) && k.slice(0, -end.length).split('_').every(fits)) level += x;
+  const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+');
+  const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
+  for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
+    for (const [k, x] of Object.entries(q || {})) st[k] = (st[k] || 0) + Math.trunc(x * quality / 1000);
+  return st;
+}
+// Spirit a gem reserves: its amount over (100% + reservation efficiency), the gem's own (quality) plus what passives
+// and gear give every skill or those of one of its tags (reservation_efficiency_+%_of_herald_skills).
+// note: rounded to the nearest, as Path of Building 2 does
+export function reservation(g, sum = {}) {
+  const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
+  const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
+  return Math.round((st._spirit || 0) * 100 / (100 + eff));
+}
+// self-check: Eternal Rage (100 spirit, 0.75% efficiency per quality as its second effect) with 6% quality and +2 levels
+{ const g = { name: 'Eternal Rage', level: 15 }, sum = { 'all_skill_gem_quality_+': 6, ascendancy_gemling_enable_thaumaturgy_quality_stats: 1, 'strength_skill_gem_level_+': 2, 'spell_skill_gem_level_+': 3 };
+  console.assert(reservation(g) === 100 && reservation(g, sum) === 96 && gemStats(g, sum)._level === 17 && reservation({ ...g, quality: 20 }) === 100, 'gem level and quality'); }
+
 // monster of a given level (DefaultMonsterStats): the character panel rates armour / evasion against it
 const MON = SK.monster_stats || [];
 const monster = (lvl, ...cols) => { const r = MON.find(m => m.level === lvl) || MON[Math.min(lvl, MON.length) - 1]; return r && first(...cols.map(c => r[c])); };
@@ -21,7 +85,7 @@ export function attributes(sum, ascName) {
   const ids = { str: 'strength', dex: 'dexterity', int: 'intelligence' };
   const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
   for (const [k, id] of Object.entries(ids)) {
-    const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', ...pair[k].map(p => 'additional_' + p));
+    const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', ...pair[k].flatMap(p => ['additional_' + p, 'base_' + p]));
     out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%') / 100));
   }
   return out;
@@ -45,9 +109,14 @@ export function character(b, sum) {
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const res = {};
+  // the game lowers elemental resistances by the level of the area (ResistancePenaltyPerAreaLevel: none at first,
+  // -60% from level 65 on). note: the area is taken to be of the character's level, like the monster the panel
+  // rates armour against; an area level of its own if a character must be looked at somewhere else
+  const penalty = SK.resistance_penalty?.[Math.min(lvl, SK.resistance_penalty.length) - 1] || 0;
   for (const [k, others] of Object.entries({ fire: ['cold', 'lightning', 'chaos'], cold: ['fire', 'lightning', 'chaos'], lightning: ['fire', 'cold', 'chaos'], chaos: ['fire', 'cold', 'lightning'] })) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
-    const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%']));
+    const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%']))
+      + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']));
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
@@ -63,13 +132,14 @@ export function character(b, sum) {
     level: lvl, attrs: at,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%')),
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%')),
-    spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit')) * pct('spirit_+%')),
-    // spirit reserved by the build's persistent skills (gem data, per level)
-    reserved: (b.gems || []).reduce((t, g) => { const d = SK.skills[g.name]; return t + (first(d?.levels?.[g.level]?._spirit, d?.constant?._spirit) || 0); }, 0),
+    // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
+    spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
+    // spirit reserved by the build's persistent skills
+    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum), 0),
     es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%')),
     armour, evasion, armourPct, evadePct,
     block: v(sum, 'additional_block_%', 'block_%'),
-    res,
+    res, penalty,
     move: v(sum, 'base_movement_velocity_+%'),
     attackSpeed: v(sum, 'attack_speed_+%', 'attack_and_cast_speed_+%'),
     castSpeed: v(sum, 'base_cast_speed_+%', 'attack_and_cast_speed_+%'),
@@ -146,7 +216,8 @@ export function sheet(b, sum) {
       ...deflect ? [['Deflection Rating', num(deflect)]] : [],
       ...opt('Damage Deflected', 'base_damage_%_deflected'),
     ]],
-    ['Resistances', Object.entries(RES).map(([k, label]) => [label, `${c.res[k].capped}% (${t('max. {0}%', c.res[k].max)})`, c.res[k].value !== c.res[k].capped ? t('Uncapped: {0}%', c.res[k].value) : ''])],
+    ['Resistances', [...Object.entries(RES).map(([k, label]) => [label, `${c.res[k].capped}% (${t('max. {0}%', c.res[k].max)})`, c.res[k].value !== c.res[k].capped ? t('Uncapped: {0}%', c.res[k].value) : '']),
+      ...c.penalty ? [['Area Penalty', c.penalty + '%', t('Elemental resistances are lower in areas of a higher level: here, an area of your level')]] : []]],
     ['Block', [
       ...c.block ? [['Block Chance', num(c.block) + '%']] : [],
       ...opt('Life gained on Block', 'life_gained_on_block', ''), ...opt('Mana gained on Block', 'mana_gained_on_block', ''), ...opt('Energy Shield gained on Block', 'energy_shield_gained_on_block', ''),
@@ -242,13 +313,15 @@ function more(fin, suffix, tags, type) {
 export function skill(g, b, treeGear) {
   const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
   const { sum, fin, mods } = withSupports(g, treeGear);
-  const st = { ...(d.constant || {}), ...(d.levels?.[g.level] || {}) };
+  const st = gemStats(g, sum);
   const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
   const out = { attack, spell, stats: st, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
   const w = attack ? weaponStats(b.items) : null;
+  // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
+  if (w && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   const tags = w ? [...own, ...weaponTags(w)] : own;   // passives for a weapon type count for attacks made with it
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';

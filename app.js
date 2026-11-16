@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy } from './enemies.js';
 import { initItems, gearStats } from './items.js';
 import { initSkills } from './skills.js';
@@ -72,8 +72,9 @@ function cycleAttr(id) {
   b.attrs[id] = NEXT[b.attrs[id]];
   save(); renderSide(); drawTree();
 }
-function sumOf(b) {   // every stat of a build's passives (with the weapon set in use) and gear
-  const sum = {};
+function sumOf(b) {   // every stat of a build's passives (with the weapon set in use), gear, campaign rewards and buffs of its own
+  const sum = questStats(b);
+  for (const [k, v] of Object.entries(skillStats(b))) sum[k] = (sum[k] || 0) + v;
   for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id, b))) sum[k] = (sum[k] || 0) + v;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
   return sum;
@@ -109,10 +110,13 @@ function geo(g) {
 }
 const playerSpeed = () => SK.player_base_speed * (1 + (treeSum()['base_movement_velocity_+%'] || 0) / 100) / 10;
 function renderStats() {
-  const b = B(), sum = treeSum();
+  const b = B();
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them
   const points = Math.max(0, b.nodes.length - 1);  // the class start node is free
-  b.level = Math.min(100, 1 + points);  // one passive point per level
+  // the level typed in the panel or imported with the build; else one passive point per level.
+  // note: that reads the 24 points quests give as levels too, so a character with them needs its level typed
+  b.level = b.lvl || Math.min(100, 1 + points);
+  const sum = treeSum();   // after the level: the campaign rewards counted by default go by it
   renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
   renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, pending, picking,
     classes: CLASSES, ascOptions: ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name),
@@ -205,7 +209,12 @@ $('delBuild').onclick = async () => {
   save(); select(Object.keys(builds)[0]);
 };
 // character panel: name, base class and ascendancy are edited in place
-$('charPanel').onchange = e => { if (e.target.dataset.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e); };
+$('charPanel').onchange = e => {
+  const d = e.target.dataset;
+  if (d.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e);
+  if (d.act === 'level') edit((e, b) => { const v = Math.round(+e.target.value); if (v >= 1) b.lvl = Math.min(100, v); else delete b.lvl; })(e);
+  if (d.quest) edit((e, b) => (b.quests ||= {})[d.quest] = e.target.type === 'checkbox' ? +e.target.checked : +e.target.value)(e);
+};
 $('charPanel').onclick = async e => {
   const t = e.target.closest('[data-pick], [data-cls], [data-asc]'); if (!t) return;
   if (t.dataset.pick) { picking = picking === t.dataset.pick ? null : t.dataset.pick; renderStats(); return; }
@@ -267,7 +276,7 @@ $('sceneSkills').onclick = e => {
 };
 const markCard = i => { document.querySelectorAll('#sceneSkills .sk-card').forEach(c => c.classList.toggle('on', +c.dataset.card === i)); renderEnemy(); };
 // ---------- share: Path of Building 2 code, build sites, JSON file
-const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5 });
+const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5, quests: QUESTS, questPick });
 const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
 $('share').onclick = async () => {
   const d = document.createElement('div');
@@ -282,13 +291,28 @@ $('share').onclick = async () => {
     <div class="msg" data-out></div>
     <h3>${t('Import')}</h3>
     <textarea rows="3" data-in placeholder="${t('Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)')}"></textarea>
-    <div class="row"><button data-a="import">${t('Import as a new build')}</button><button data-a="file">${t('JSON file')}</button></div>
+    <div class="row"><button data-a="import">${t('Import as a new build')}</button><button data-a="file">${t('JSON file')}</button><select data-pob hidden></select></div>
     <div class="msg" data-inmsg></div>
     <h3>${t('The game')}</h3>
     <p class="note">${t('Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.')}</p>
     <div class="row"><button data-a="game">${t('.build file for the game')}</button></div>
     <p class="note">${t('To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.')}</p></div>`;
   const out = d.querySelector('[data-out]'), inmsg = d.querySelector('[data-inmsg]');
+  // the builds saved in Path of Building 2 on this computer (serve.py lists them): picking one imports it. That is how a
+  // character of the account gets here, the game's site hands them to registered programs only
+  const pob = d.querySelector('[data-pob]');
+  fetch('pob').then(r => r.ok ? r.json() : []).catch(() => []).then(names => {
+    if (!names.length) return;
+    pob.innerHTML = `<option value="">${t('From Path of Building 2 on this computer…')}</option>` + names.map(n => `<option value="${esc(n)}">${esc(n.replace(/\.xml$/i, ''))}</option>`).join('');
+    pob.hidden = false;
+  });
+  let named = '';   // the build picked there goes by its file's name, the one it was saved under
+  pob.onchange = async () => {
+    if (!pob.value) return;
+    d.querySelector('[data-in]').value = await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text();
+    named = pob.value.replace(/\.xml$/i, '');
+    d.querySelector('[data-a="import"]').click();
+  };
   const close = () => { d.remove(); removeEventListener('keydown', key); };
   const key = e => { if (e.key === 'Escape') close(); };
   addEventListener('keydown', key);
@@ -318,12 +342,14 @@ $('share').onclick = async () => {
     }
     if (a === 'import') {
       let txt = d.querySelector('[data-in]').value.trim();
+      const name = named; named = '';
       if (!txt) return;
       try {
         if (/^https?:\/\/|^[\w.]+\.\w+\//.test(txt)) { inmsg.textContent = t('Downloading…'); txt = await download(txt); }
         const xml = txt.startsWith('<') ? txt : await decode(txt);
         const { build, warn } = fromXML(xml, shareCtx(), blank);
         build.gems.forEach(g => Object.assign(g, { shape: 'auto', radius: 0, width: 0 }));
+        if (name) build.name = name;
         addBuild(build);
         inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
       } catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }

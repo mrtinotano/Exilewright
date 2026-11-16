@@ -45,7 +45,7 @@ export function toXML(b, ctx) {
   const items = Object.entries(b.items || {}).map(([slot, it]) => [slot, itemText(it)]).filter(([, txt]) => txt);
   const iid = Object.fromEntries(items.map(([slot], i) => [slot, i + 1]));
   const byName = Object.fromEntries(ctx.gems.map(g => [g.name, g]));
-  const gem = (name, level) => `<Gem nameSpec="${x(name)}"${byName[name] ? ` gemId="${x(byName[name].id)}"` : ''} level="${level}" quality="0" enabled="true"/>`;
+  const gem = (name, level, quality = 0) => `<Gem nameSpec="${x(name)}"${byName[name] ? ` gemId="${x(byName[name].id)}"` : ''} level="${level}" quality="${quality}" enabled="true"/>`;
   const jewels = items.filter(([s]) => s.startsWith('jewel:'));
   return `<?xml version="1.0" encoding="UTF-8"?>
 <PathOfBuilding2>
@@ -56,13 +56,17 @@ ${[[1, set1], [2, set2]].filter(([, s]) => s.length).map(([k, s]) => `<WeaponSet
 <Overrides><AttributeOverride strNodes="${attr('str')}" dexNodes="${attr('dex')}" intNodes="${attr('int')}"/></Overrides>
 </Spec></Tree>
 <Skills activeSkillSet="1"><SkillSet id="1">
-${b.gems.map(g => `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20)}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).join('\n')}
+${b.gems.map(g => `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).join('\n')}
 </SkillSet></Skills>
 <Items activeItemSet="1">
 ${items.map(([s, txt]) => `<Item id="${iid[s]}">${x(txt)}</Item>`).join('\n')}
 <ItemSet id="1">${items.filter(([s]) => POB_SLOT[s]).map(([s]) => `<Slot name="${POB_SLOT[s]}" itemId="${iid[s]}"/>`).join('')}</ItemSet>
 </Items>
 <Notes>${x(b.notes)}</Notes>
+<Config activeConfigSet="1"><ConfigSet id="1" title="Default">${(ctx.quests || []).map(q => {
+    const n = ctx.questPick(b, q);   // as PoB keeps them: a reward is on unless it says false, a choice is its option's own text
+    return q.pick ? n ? `<Input name="${x(q.key)}" string="${x(q.options[n - 1].text)}"/>` : '' : n ? '' : `<Input name="${x(q.key)}" boolean="false"/>`;
+  }).join('')}</ConfigSet></Config>
 </PathOfBuilding2>`;
 }
 
@@ -106,11 +110,13 @@ export function fromXML(xml, ctx, blank) {
     const gs = kids(sk, 'Gem').map(e => {
       const g = byId[e.getAttribute('gemId')] || byName[(e.getAttribute('nameSpec') || '').toLowerCase()];
       if (!g) warn.push(e.getAttribute('nameSpec') || e.getAttribute('gemId'));
-      return g && { g, level: +e.getAttribute('level') || 20 };
+      return g && { g, level: +e.getAttribute('level') || 20, quality: +e.getAttribute('quality') || 0 };
     }).filter(Boolean);
     const sup = gs.filter(o => o.g.kind === 'support').map(o => o.g.name).slice(0, ctx.maxSockets);
-    for (const o of gs.filter(o => o.g.kind !== 'support'))
-      b.gems.push({ name: o.g.name, level: o.level, sockets: Math.max(2, sup.length), supports: [...sup] });
+    // a skill the tree or an item grants comes twice from an imported character: as the game lists it, and as PoB adds it
+    const again = sk.getAttribute('source') ? b.gems.map(g => g.name) : [];
+    for (const o of gs.filter(o => o.g.kind !== 'support' && !again.includes(o.g.name)))
+      b.gems.push({ name: o.g.name, level: o.level, ...o.quality ? { quality: o.quality } : {}, sockets: Math.max(2, sup.length), supports: [...sup] });
   }
   // items: the active item set's slots, and the tree's jewel sockets
   const itemsEl = kids(root, 'Items')[0], text = {};
@@ -127,6 +133,13 @@ export function fromXML(xml, ctx, blank) {
     warn.push(...r.missed);
   }
   b.notes = kids(root, 'Notes')[0]?.textContent.trim() || '';
+  // the level is the build's own, and so are its campaign rewards (the active <ConfigSet>, written as in toXML)
+  b.lvl = b.level;
+  const config = kids(root, 'Config')[0], sets = kids(config, 'ConfigSet'), flat = s => (s || '').replace(/\s+/g, ' ').trim();
+  const input = Object.fromEntries(kids(sets.find(s => s.getAttribute('id') === config.getAttribute('activeConfigSet')) || sets[0] || config, 'Input').map(e => [e.getAttribute('name'), e]));
+  b.quests = {};
+  for (const q of ctx.quests || []) b.quests[q.key] = q.pick ? q.options.findIndex(o => flat(o.text) === flat(input[q.key]?.getAttribute('string'))) + 1
+    : +(input[q.key]?.getAttribute('boolean') !== 'false');
   return { build: b, warn };
 }
 

@@ -1,7 +1,7 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
 import { t, tn, fmt, lang as LANG } from './i18n.js';
 import { statLines } from './stats.js';
-import { character, sheet, skill, DMG_NAME } from './calc.js';
+import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick } from './calc.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const n = x => fmt(x == null ? x : Math.round(x));
@@ -28,7 +28,9 @@ const ico = k => `<svg class="cp-ico ${k}" viewBox="0 0 24 24" fill="none" strok
 // editable in place: name (input), base class and ascendancy (each row opens its list); level follows the tree
 export function renderChar(el, b, sum, { asc, cls, points, pending, classes = [], ascOptions = [], picking = null, ascLabel = x => x, clsLabel = x => x }) {
   const c = character(b, sum), R = c.res;
-  const box = (k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
+  const questsOpen = el.querySelector('.cp-quests')?.open;   // drawn anew at every change: stays as it was left
+  const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (${t('Not understood: it is not counted')})`)].map(esc).join(' · ');
+  const box =(k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
   const pctOr = (p, raw, what) => p != null ? Math.round(p) + '%' : n(raw);
   const res = (k, label) => `<div class="cp-res ${k}" title="${t('Maximum {0}%', R[k].max)}">${ico(k)}<span>${t(label)}</span><b>${R[k].capped}% <i>(${R[k].value}%)</i></b></div>`;
   const all = { ...sum }; delete all.display_passive_attribute_text;
@@ -38,7 +40,7 @@ export function renderChar(el, b, sum, { asc, cls, points, pending, classes = []
       <div class="cp-id">
         <button class="cp-pick${picking === 'cls' ? ' open' : ''}" data-pick="cls" title="${t('Base class')}">${esc(cls ? clsLabel(cls) : '—')}</button>
         <button class="cp-pick${picking === 'asc' ? ' open' : ''}" data-pick="asc" title="${t('Ascendancy')}">${esc(asc ? ascLabel(asc) : '—')}</button>
-        <div title="${t('Goes up on its own as you allocate tree points: {0} passive points (1 per level)', points)}">${t('Level {0}', c.level)}</div>
+        <div title="${t('Goes up on its own as you allocate tree points: {0} passive points (1 per level)', points)}. ${t('Type your character\'s level to set it yourself; leave it empty to follow the tree again.')}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}</div>
       </div>
       <div class="cp-portrait" title="${esc(asc ? ascLabel(asc) : '')}">${esc((asc ? ascLabel(asc) : '?')[0])}</div>
       <div class="cp-id cp-attr"><div class="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div></div>
@@ -51,6 +53,12 @@ export function renderChar(el, b, sum, { asc, cls, points, pending, classes = []
     <div class="cp-list">${sheet(b, sum).map(([h, rows]) => `<details${rows.length ? ' open' : ''}><summary>${t(h)}</summary>${rows.map(([k, val, tip]) => `<div${tip ? ` title="${esc(tip)}"` : ''}><span>${t(k)}</span><b>${val}</b></div>`).join('')}</details>`).join('')}</div>
     ${pending ? `<p class="cp-note">${t('{0} attributes not chosen (right click on the tree).', pending)}</p>` : ''}
     ${c.missingBase ? `<p class="cp-note">${t(NO_BASE)}.</p>` : ''}
+    <details class="cp-quests"${questsOpen ? ' open' : ''}><summary title="${t('What the quests of the campaign leave on the character for good. Counted from the level of each one\'s area; a choice only once you make it.')}">${t('Campaign rewards')}</summary>${QUESTS.map(q => {
+      const on = questPick(b, q), key = esc(q.key);
+      return `<label title="${esc(`${q.act}: ${q.area} — ${q.info}`)}">` + (q.pick
+        ? `<select data-quest="${key}"><option value="0">—</option>${q.options.map((o, i) => `<option value="${i + 1}"${on === i + 1 ? ' selected' : ''}>${reward(o)}</option>`).join('')}</select>`
+        : `<input type="checkbox" data-quest="${key}"${on ? ' checked' : ''}> ${reward(q.options[0])}`) + '</label>';
+    }).join('')}</details>
     <details><summary>${t('All modifiers')}</summary><div class="cp-all">${statLines(all).sort().map(esc).join('<br>') || '—'}</div></details>
   </div>`;
 }
@@ -72,9 +80,10 @@ export function skillTip(G, g, b, sum, geo) {
   const lines = statLines(visible).filter(l => !RAW.test(l));
   const cost = st._cost && Object.entries(st._cost).map(([k, val]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', val)).join(', ');
   const props = [
-    ['Level', g.level],
+    ['Level', st._level],
+    st._quality && ['Quality', st._quality + '%'],
     cost && ['Cost', cost],
-    st._spirit && ['Reservation', t('{0} spirit', st._spirit)],
+    st._spirit && ['Reservation', t('{0} spirit', reservation(g, sum))],
     s.attack ? st._base_multiplier && ['Attack damage', t('{0}% of base damage', f(st._base_multiplier / 100, 0))] : null,
     !s.attack && G.types?.includes('Spell') && ['Cast time', s.castTime ? f(s.castTime / 1000) + ' s' : '—'],
     s.crit != null && ['Critical hit chance', f(s.crit) + '%'],
