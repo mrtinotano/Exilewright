@@ -6,6 +6,11 @@ Every number comes from the game's own data (see `poe2_data/README.md`).
 ## Run
 Double-click `start.cmd` (or `python serve.py`) and open http://127.0.0.1:8765
 
+As an app with a window of its own (no browser tabs or address bar): `python serve.py app`, or the portable executable
+`dist/PoE2 Planner/PoE2 Planner.exe` that `build_app.py` makes (see its first lines). Copy that whole folder anywhere;
+the window is Edge (or Chrome) in app mode, its builds are kept in the folder's `profile`, and closing the window stops
+it. Builds made in the browser are not there: bring them over with Share (copy the code in one, import it in the other).
+
 **Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
 pastebin and rentry to import) through `serve.py`, plus JSON files, and imports the builds saved in Path of
 Building 2 on the same computer (how a character of your account gets here: import it there, save it, pick it

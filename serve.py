@@ -31,7 +31,12 @@ The window needs tkinter, which comes with Python. It is made on Windows, and el
 Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
 no page is there to judge it gets an answer too, a line saying so.
 
-Usage: python3 serve.py [port] [overlay]   (default port 8765)
+As an app of its own (the "PoE2 Planner" executable, or: python serve.py app) the page opens in a window of its own:
+Edge (or Chrome) in app mode, with no tabs or address bar, its profile (where the builds are kept) in the folder
+"profile" next to the executable, and everything stops when that window is closed. It always uses port 8767, as the
+saved builds belong to the page's address.
+
+Usage: python3 serve.py [port] [overlay] [app]   (default port 8765)
 """
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -353,8 +358,12 @@ def watch_clipboard():
             tell("The planner's page is not answering: look at its tab once")
 
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-ARGS = sys.argv[1:]
+FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
+if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
+    sys.stdout = sys.stderr = open(os.devnull, 'w')
+HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
+ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
+APP_PORT = 8767
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
@@ -526,7 +535,31 @@ class Server(ThreadingHTTPServer):
     request_queue_size = 128   # a page asks for dozens of files at once; the ones that do not fit in the queue are lost
 
 
-server = Server(('127.0.0.1', next((int(a) for a in ARGS if a.isdigit()), 8765)), partial(Handler, directory=HERE))
+def app_window(url):
+    """the page in a window of its own (Edge or Chrome in app mode, a profile of its own); stops everything when it closes"""
+    names = ['msedge', 'chrome'] + [os.path.join(os.environ.get(v, ''), *p) for v in ('ProgramFiles(x86)', 'ProgramFiles', 'LocalAppData')
+             for p in (('Microsoft', 'Edge', 'Application', 'msedge.exe'), ('Google', 'Chrome', 'Application', 'chrome.exe'))]
+    exe = next((x for x in (shutil.which(n) or n for n in names) if os.path.isfile(x)), None)
+    if not exe:
+        import webbrowser
+        return webbrowser.open(url)
+    profile = os.path.join(os.path.dirname(sys.executable) if FROZEN else HERE, 'profile')
+    edge = subprocess.Popen([exe, '--app=' + url, '--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check',
+                             '--window-size=1500,950'])
+    threading.Thread(target=lambda: (edge.wait(), os._exit(0)), daemon=True).start()
+
+
+port = APP_PORT if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
+try:
+    server = Server(('127.0.0.1', port), partial(Handler, directory=HERE))
+except OSError:   # the app is open already: one more window of it
+    if 'app' not in ARGS:
+        raise
+    app_window(f'http://127.0.0.1:{port}/')
+    time.sleep(1)
+    sys.exit()
+if 'app' in ARGS:
+    app_window(f'http://127.0.0.1:{port}/')
 if CLIP:
     threading.Thread(target=watch_clipboard, daemon=True).start()
 if OVER:   # the window wants the main thread: the server goes to one of its own
