@@ -232,7 +232,7 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   if (s.total && (!from || !to)) {
     const prices = await pricesOf(s), key = x => x.amount + ' ' + x.currency;
     from ||= prices.find(x => !x.more) || prices[0] || null;
-    to ||= from && (prices.find(x => key(x) !== key(from) && prices.indexOf(x) > prices.indexOf(from)) || (await pricesOf(await search(k, pct, { over: from })))[0]) || from;
+    to ||= from && (prices.slice(prices.indexOf(from) + 1).find(x => key(x) !== key(from)) || (await pricesOf(await search(k, pct, { over: from })))[0]) || from;
   }
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };

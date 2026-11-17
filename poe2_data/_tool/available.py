@@ -199,7 +199,7 @@ for gid, conns in graph.items():
         'type': 'keystone' if p['IsKeystone'] else 'notable' if p['IsNotable'] else 'jewel' if p['IsJewelSocket']
                 else 'attribute' if p['IsAttribute'] else 'small',
         'ascendancy': a, 'ascendancy_start': p['IsAscendancyStartingNode'],
-        'option': p['IsMultipleChoiceOption'],   # one of a multiple choice notable's options: picking it costs no point
+        **({'option': True} if p['IsMultipleChoiceOption'] else {}),   # one of a multiple choice notable's options: picking it costs no point
         'stats': {stats[s]['Id']: v for s, v in zip(p['Stats'], vals)},
         'grants_skill': bases[skill_gems[p['GrantedSkill']]['BaseItemType']]['Name'] if p['GrantedSkill'] is not None else None,
         'icon': p.get('Icon_DDSFile') or None,
