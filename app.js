@@ -375,13 +375,16 @@ const openShare = async exporting => {
     const el = e.target, a = el.dataset.a;
     if (el === d || a === 'close') return close();
     if (a === 'copy') { await navigator.clipboard.writeText(code); out.textContent = t('Code copied.'); }
-    const save = (text, name) => {
+    // the planner's server writes the file (the app's window cannot download); a page without it downloads it
+    const save = async (text, name, kind) => {
+      const r = await fetch('save', { method: 'POST', body: JSON.stringify({ kind, name, text }) }).catch(() => null);
+      if (r?.ok) { out.textContent = t('Saved: {0}', await r.text()); return; }
       const l = document.createElement('a');
       l.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
       l.download = name; l.click();
     };
-    if (a === 'json') save(JSON.stringify(B(), null, 1), B().name.replace(/[^\w-]+/g, '_') + '.json');
-    if (a === 'game') save(toBuildFile(B(), shareCtx()), buildFileName(B()));
+    if (a === 'json') await save(JSON.stringify(B(), null, 1), B().name.replace(/[^\w-]+/g, '_') + '.json', 'json');
+    if (a === 'game') await save(toBuildFile(B(), shareCtx()), buildFileName(B()), 'game');
     if (a === 'file') $('importFile').click();
     if (el.dataset.up) {
       const s = SITES.find(s => s.id === el.dataset.up);

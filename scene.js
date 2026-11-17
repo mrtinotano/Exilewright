@@ -972,7 +972,11 @@ export function initScene(el, api) {
     else if (c === K.reset) reset();
     else if (c === 'Escape') setPlacing(false);
     else if (c === K.refill) { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
-    else if (c === K.corpse) { const d = near(cursor, 4); if (d) { d.st.freeze = 0; kill(d, NONE); } }
+    else if (c === K.corpse) {   // the enemy at the cursor becomes a corpse, for the skills that need one
+      const d = near(cursor, 4);
+      if (d) { d.st.freeze = 0; kill(d, NONE); say(t('Corpse made: skills that need a corpse can use it'), 'gold'); }
+      else toast(t('Point at an enemy to turn it into a corpse'));
+    }
     else if (c === K.charges) { for (const k in charges) charges[k] = SIM.maxCharges; fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
     else if (c === K.roll && !move && rollCd <= 0) {
       const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r);

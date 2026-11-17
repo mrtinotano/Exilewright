@@ -820,5 +820,11 @@
  "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)",
  "Redo (Ctrl+Y)": "やり直す (Ctrl+Y)",
  "Socketed in": "装着先",
- "Uses the supports of {0}": "{0}のサポートを使用"
+ "Uses the supports of {0}": "{0}のサポートを使用",
+ "Your own…": "自分のファイル…",
+ "Listen": "再生",
+ "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "自分の音声ファイル (.mp3、.wav、.ogg): ゲームのフォルダーにコピーされます",
+ "It could not be played": "再生できませんでした",
+ "Corpse made: skills that need a corpse can use it": "死体を作成: 死体が必要なスキルで使えます",
+ "Point at an enemy to turn it into a corpse": "敵にカーソルを合わせると死体に変わります"
 }

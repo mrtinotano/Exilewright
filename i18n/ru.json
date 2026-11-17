@@ -820,5 +820,11 @@
  "Undo (Ctrl+Z)": "Отменить (Ctrl+Z)",
  "Redo (Ctrl+Y)": "Повторить (Ctrl+Y)",
  "Socketed in": "Вставлена в",
- "Uses the supports of {0}": "Использует поддержки {0}"
+ "Uses the supports of {0}": "Использует поддержки {0}",
+ "Your own…": "Свой…",
+ "Listen": "Прослушать",
+ "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "Свой звуковой файл (.mp3, .wav или .ogg): он копируется в папку игры",
+ "It could not be played": "Не удалось воспроизвести",
+ "Corpse made: skills that need a corpse can use it": "Труп создан: умения, которым он нужен, могут его использовать",
+ "Point at an enemy to turn it into a corpse": "Наведите на врага, чтобы превратить его в труп"
 }

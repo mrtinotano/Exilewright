@@ -20,6 +20,10 @@ the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot 
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
 here.
 
+/filtersound?name=<file> (POST, body = the sound) copies a sound of the user's own (.mp3, .wav, .ogg) into the game's
+folder for the Filter tab; GET plays it from there. Local only.
+/save (POST, body = {"kind": "game" | "json", "name", "text"}) saves a build as a file: a .build in the game's
+BuildPlanner folder, or JSON in Downloads; 200 with the file's path. Local only.
 /filter (POST, body = {"name", "text", "overwrite"}) saves the Filter tab's .filter in the game's folder (Documents/My
 Games/Path of Exile 2): 409 when that file is there and overwrite is not set, else 200 with the file's path. Local only.
 /settings (GET) -> {"app": the window can go to the notification area, "tray", "startup": it can open with Windows (the
@@ -386,6 +390,18 @@ def watch_clipboard():
             tell("The planner's page is not answering: look at its tab once")
 
 
+def watch_game():
+    """the clipboard and, on Windows, the price check shortcut. Only one running copy of the app watches them (two, e.g.
+    the installed app and one started from the folder, would each put their window over the game for one Ctrl+D):
+    the first; another waits and takes over when it closes (the system hands the mutex on)"""
+    if sys.platform == 'win32':
+        k = ctypes.windll.kernel32
+        k.CreateMutexW.restype = ctypes.c_void_p
+        k.WaitForSingleObject(ctypes.c_void_p(k.CreateMutexW(None, False, r'Local\ExilewrightGameWatch')), 0xFFFFFFFF)
+        threading.Thread(target=watch_price_key, daemon=True).start()
+    watch_clipboard()
+
+
 def combo(text):
     """'Ctrl+Shift+D' -> ([modifier keys], key) as Windows numbers them, None when it is no shortcut the app takes:
     Ctrl and/or Alt (Shift too) with a letter, a digit or F1-F12"""
@@ -440,6 +456,7 @@ if FROZEN and sys.stderr is None:   # no console in the executable: the server's
     sys.stdout = sys.stderr = open(os.devnull, 'w')
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
+SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down', 'price'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
@@ -610,6 +627,55 @@ class Handler(SimpleHTTPRequestHandler):
             f.write(text)
         self.reply(200, path)
 
+    def do_sound(self, u, body=None):
+        """a sound of the user's own for the Filter tab (CustomAlertSound): POST copies it into the game's folder, where
+        the game looks for it; GET plays it back from there"""
+        if not self.mine():
+            return self.reply(403, 'local only')
+        name = parse_qs(u.query).get('name', [''])[0]
+        kind = {'.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg'}.get(os.path.splitext(name)[1].lower())
+        if not kind or not re.fullmatch(r'[^<>:"/\\|?*]{1,80}', name) or not name.isprintable() or name.strip(' .') != name:
+            return self.reply(400, 'not a sound file')
+        path = os.path.join(game_folder(), name)
+        if body is not None:
+            if not body or len(body) > SOUND_MAX:
+                return self.reply(413, 'too big')
+            os.makedirs(game_folder(), exist_ok=True)
+            with open(path, 'wb') as f:
+                f.write(body)
+            return self.reply(200, path)
+        try:
+            with open(path, 'rb') as f:
+                data = f.read()
+        except OSError:
+            return self.reply(404, 'no such sound')
+        self.send_response(200)
+        self.send_header('Content-Type', kind)
+        self.send_header('Content-Length', str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_save(self, body):
+        """a build saved as a file: for the game's build planner (kind "game": a .build in its BuildPlanner folder, where
+        the game reads them) or as JSON (kind "json": the Downloads folder). The app's window cannot download files the
+        way a browser does"""
+        if not self.mine():
+            return self.reply(403, 'local only')
+        try:
+            x = json.loads(body)
+            ext, name, text = {'game': '.build', 'json': '.json'}[x['kind']], x['name'], x['text']
+        except (ValueError, KeyError, TypeError):
+            return self.reply(400, 'not a build')
+        if not isinstance(name, str) or not re.fullmatch(r'[^<>:"/\\|?*]{1,80}', name) or not name.isprintable() or name.strip(' .') != name or not isinstance(text, str):
+            return self.reply(400, 'not a file name')
+        # note: Downloads where Windows has it by default (a moved one is not looked up)
+        folder = os.path.join(game_folder(), 'BuildPlanner') if ext == '.build' else os.path.join(os.path.expanduser('~'), 'Downloads')
+        path = os.path.join(folder, name if name.endswith(ext) else name + ext)
+        os.makedirs(folder, exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(text)
+        self.reply(200, path)
+
     def do_update(self, post=False):
         if post and not self.mine():
             return self.reply(403, 'local only')
@@ -661,6 +727,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_clipboard(u)
         if u.path == '/pob':
             return self.do_pob(u)
+        if u.path == '/filtersound':
+            return self.do_sound(u)
         if u.path == '/overlay':
             return self.do_overlay()
         if u.path == '/update':
@@ -691,6 +759,10 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_settings(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         if u.path == '/filter':
             return self.do_filter(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        if u.path == '/filtersound':
+            return self.do_sound(u, self.rfile.read(min(int(self.headers.get('Content-Length', 0)), SOUND_MAX + 1)))
+        if u.path == '/save':
+            return self.do_save(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         site = UPLOAD.get(parse_qs(u.query).get('site', [''])[0])
         if u.path != '/share/upload' or not site:
             return self.reply(404, 'not found')
@@ -831,9 +903,7 @@ except OSError:   # the app is open already: one more window of it
         raise
     server = None
 if CLIP and server:
-    threading.Thread(target=watch_clipboard, daemon=True).start()
-    if sys.platform == 'win32':
-        threading.Thread(target=watch_price_key, daemon=True).start()
+    threading.Thread(target=watch_game, daemon=True).start()
 if 'app' in ARGS:
     if server:
         threading.Thread(target=server.serve_forever, daemon=True).start()

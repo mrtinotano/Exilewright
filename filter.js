@@ -40,7 +40,8 @@ export function filterText({ name, rules, rest }) {
     if (r.text) out.push(`\tSetTextColor ${rgb(r.text)}`);
     if (r.border) out.push(`\tSetBorderColor ${rgb(r.border)}`);
     if (r.bg) out.push(`\tSetBackgroundColor ${rgb(r.bg)}`);
-    if (r.sound) out.push(`\tPlayAlertSound ${r.sound} ${r.volume}`);
+    if (r.sound === 'own' && r.own) out.push(`\tCustomAlertSound ${q(r.own)} ${r.volume}`);   // a file in the game's folder
+    else if (r.sound && r.sound !== 'own') out.push(`\tPlayAlertSound ${r.sound} ${r.volume}`);
     if (r.effect) out.push(`\tPlayEffect ${r.effect}${r.temp ? ' Temp' : ''}`);
     if (r.icon) out.push(`\tMinimapIcon ${r.icon.size} ${r.icon.colour} ${r.icon.shape}`);
     out.push('');
@@ -83,7 +84,9 @@ export function initFilter(el) {
       <div class="optrow"><span class="fk">${t('Look')}</span>${colour('text', r)}${colour('border', r)}${colour('bg', r)}
         <label>${t('Text size')} <input type="number" min="18" max="45" data-f="size" value="${r.size}" placeholder="32"></label></div>
       <div class="optrow"><span class="fk">${t('Drop')}</span>
-        <label>${t('Sound')} <select data-f="sound"><option value="">${t('None')}</option>${Array.from({ length: 16 }, (_, k) => opt(k + 1, k + 1, +r.sound === k + 1)).join('')}</select></label>
+        <label>${t('Sound')} <select data-f="sound"><option value="">${t('None')}</option>${Array.from({ length: 16 }, (_, k) => opt(k + 1, k + 1, +r.sound === k + 1)).join('')}${opt('own', t('Your own…'), r.sound === 'own')}</select></label>
+        ${r.sound === 'own' ? `<label class="fown">${r.own ? `<b>${esc(r.own)}</b> <button data-do="play" title="${t('Listen')}">▶</button>` : ''}
+          <input type="file" accept=".mp3,.wav,.ogg" data-own title="${esc(t('A sound file of yours (.mp3, .wav or .ogg): it is copied into the game\'s folder'))}"></label>` : ''}
         <label>${t('Volume')} <input type="number" min="0" max="300" data-f="volume" value="${r.volume}"></label>
         <label>${t('Light beam')} <select data-f="effect"><option value="">${t('None')}</option>${COLOURS.map(c => opt(c, t(c), r.effect === c)).join('')}</select></label>
         <label><input type="checkbox" data-f="temp"${r.temp ? ' checked' : ''}> ${t('Only while it falls')}</label></div>
@@ -128,6 +131,10 @@ export function initFilter(el) {
       case 'copy': S.rules.splice(i + 1, 0, structuredClone(r)); break;
       case 'up': case 'down': { const j = i + (d.dataset.do === 'up' ? -1 : 1); [S.rules[i], S.rules[j]] = [S.rules[j], S.rules[i]]; break; }
       case 'write': msg = ''; return write(false);
+      case 'play': {   // as the game will play it: the copy in its folder, at the rule's volume (300 the loudest)
+        const a = new Audio('filtersound?name=' + encodeURIComponent(r.own)); a.volume = Math.min(1, (+r.volume || 0) / 300);
+        a.play().catch(() => { msg = t('It could not be played'); err = true; render(); }); return;
+      }
       case 'download': {
         const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([filterText(S)])), download: S.name + '.filter' });
         a.click(); URL.revokeObjectURL(a.href); return;
@@ -139,6 +146,7 @@ export function initFilter(el) {
     const x = e.target, ds = x.dataset, r = ruleOf(e);
     if (ds.s) { S[ds.s] = ds.s === 'rest' ? x.value === '1' : x.value.replace(/[<>:"/\\|?*]/g, '').trim() || 'Exilewright'; return done(); }
     if (!r) return;
+    if ('own' in ds) return own(r, x.files[0]);
     if (ds.add === 'classes' && x.value) r.classes.push(x.value);
     else if (ds.add === 'bases') return;
     else if (ds.rar) r.rarity = RARITIES.filter(k => k === ds.rar ? x.checked : r.rarity.includes(k));
@@ -148,6 +156,15 @@ export function initFilter(el) {
     else if (ds.f) r[ds.f] = x.type === 'checkbox' ? x.checked : ds.f === 'show' ? x.value === '1' : x.type === 'number' ? (x.value === '' ? '' : +x.value) : x.value;
     done();
   };
+  // a sound of the user's own: copied into the game's folder (serve.py /filtersound), where CustomAlertSound finds it
+  async function own(r, file) {
+    if (!file) return;
+    const res = await fetch('filtersound?name=' + encodeURIComponent(file.name), { method: 'POST', body: file }).catch(() => null);
+    err = !res?.ok;
+    msg = res?.ok ? t('Saved: {0}', await res.text()) : t('It could not be saved: {0}', (res && await res.text()) || t('the planner is not running'));
+    if (res?.ok) r.own = file.name;
+    done();
+  }
   el.onkeydown = e => {
     if (e.key !== 'Enter' || e.target.dataset.add !== 'bases' || !e.target.value.trim()) return;
     const r = ruleOf(e), b = baseOf(e.target.value);
