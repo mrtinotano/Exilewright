@@ -31,6 +31,8 @@ The extraction takes a while (ten languages).
 - `img/tree/` (`images.py`) — the passive tree's own art: node frames per state (normal, can allocate, allocated)
   and group backgrounds, as `PassiveSkillTreeUIArt` / `PassiveSkillTreeNodeFrameArt` name them for the character tree
   and the ascendancies.
+- `img/faces/` (`images.py`) — each ascendancy's face for the character panel, cut from its illustration
+  (`Ascendancy.PassiveTreeImage`) where `FACES` says (measured by eye): the game draws its own from the 3D model.
 - `uniques.json` — uniques registered in the Unique Stash Tab (`hidden_in_stash_tab` = suspicious) plus those GGG's
   trade list has with no place in that tab (tablets, relics, the newest ones). The name is the one the game shows
   (`Words.Text2`, also the translated column; `Text` is the internal name).

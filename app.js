@@ -44,8 +44,10 @@ if (!Object.keys(builds).length) builds[Date.now()] = blank();
 // ---------- top bar (build, name, level, class, ascendancy) and side panel (character sheet)
 const CLASSES = [...new Set(ascs.map(a => a.class))];
 let picking = null;  // 'cls' | 'asc': which list is open in the character panel
-// the face the game's character panel shows: the base class's, whatever the ascendancy (images.py cuts it from the UI atlas)
-const portraitOf = asc => ascs.find(a => a.class === clsOf(asc))?.portrait?.toLowerCase().concat('.webp') || '';
+// the character panel's face: an ascendancy's, cut from its illustration (images.py FACES; the game draws its own from
+// the 3D model); the base class's from the UI atlas
+const faceOf = a => a?.tree_image && 'faces/' + a.tree_image.toLowerCase().split('/').pop().replace(/\.dds$/, '.webp');
+const portraitOf = asc => faceOf(ascs.find(a => a.name === asc)) || ascs.find(a => a.class === clsOf(asc))?.portrait?.toLowerCase().concat('.webp') || '';
 const clsOf = asc => ascs.find(a => a.name === asc)?.class || (CLASSES.includes(asc) ? asc : undefined);
 
 function renderSide() {
