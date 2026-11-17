@@ -183,8 +183,8 @@ def clipboard():
 def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
     show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
-    comparison stays until its ✕ is clicked, a click lands anywhere else or a key is pressed (both Windows only) or the
-    next one comes; anything else (the item was taken as worn, a notice of the server's) goes by itself in a few seconds.
+    comparison stays until its ✕ is clicked, a click lands anywhere else, a key is pressed or another window comes to
+    the front (all Windows only) or the next one comes; anything else (the item was taken as worn, a notice of the server's) goes by itself in a few seconds.
     loop() runs the window and has to be called in the thread that called this, the main one"""
     win, back = sys.platform == 'win32', '#12100c'
     if win:   # a new window takes the keyboard on Windows: remember who has it, to give it back below
@@ -214,6 +214,7 @@ def overlay():
     q, timer = queue.Queue(), None
     held = None   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
     idle = b''    # keys that do nothing in the game as it is set: they leave the window where it is
+    over = gone = None   # the window in front when it came up; the one it was over when another came to the front
     if win:
         # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
         # can take the keyboard from the game. Hidden, clicks go through it to the game; shown, it takes them (its ✕
@@ -252,7 +253,12 @@ def overlay():
     close.bind('<Button-1>', hide)
 
     def draw(v):
-        nonlocal timer, held, idle
+        nonlocal timer, held, idle, over, gone
+        if win:   # what comes soon after the user went to another window (a search's answer) is dropped, unless that one is back
+            now = user.GetForegroundWindow()
+            if gone and now != gone[0] and time.monotonic() - gone[1] < 90:
+                return
+            over, gone = now, None
         title.config(text=v['title'], fg=TINT.get(v['kind'], '#d8ccb0'))
         for old in body.winfo_children():
             old.destroy()
@@ -305,6 +311,9 @@ def overlay():
             px, py = root.winfo_pointerxy()
             away = not (0 <= px - root.winfo_rootx() < root.winfo_width() and 0 <= py - root.winfo_rooty() < root.winfo_height())
             if new & mouse and away or new - mouse and not any(user.GetAsyncKeyState(k) & 0x8000 for k in (0x11, 0x12, 0x5B, 0x5C)):
+                hide()
+            elif user.GetForegroundWindow() != over:   # Alt+Tab, the taskbar, another window: it stays with the one it came over
+                gone = over, time.monotonic()
                 hide()
         try:
             while True:

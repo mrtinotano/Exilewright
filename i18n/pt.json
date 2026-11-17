@@ -831,5 +831,7 @@
  "{0} of its modifiers searched up to {1}% to find any": "{0} de seus modificadores buscados até {1}% para encontrar algum",
  "Thorough search": "Busca exaustiva",
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "Se nada aparecer dentro do %: busca cada modificador separadamente até 30% e depois sem um deles. Faz mais buscas (e demora mais).",
- "Between {0} and {1}": "Entre {0} e {1}"
+ "Between {0} and {1}": "Entre {0} e {1}",
+ "Searching the trade site (thorough search: it can take longer)…": "Buscando no site de comércio (busca exaustiva: pode demorar mais)…",
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Dica: ative «Busca exaustiva» nas Configurações do Exilewright para buscar mais a fundo."
 }

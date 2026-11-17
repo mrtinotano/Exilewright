@@ -192,11 +192,12 @@ export function initLoot(el, ctx) {
     const r = parseItem(text.replace(/\r/g, '').trim());
     if (!r || r.unidentified) return show({ lines: [t(r ? 'That item is not identified yet: identify it and copy it again.' : 'That is not item text, or the planner does not have its base.')] });
     const name = r.name || nameOf(r.item), s = settings();
-    show({ name, lines: [t('Searching the trade site…')] });
+    show({ name, lines: [t(s.deep ? 'Searching the trade site (thorough search: it can take longer)…' : 'Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
       const p = await priceOf({ league, item: r.item, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
-      if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
+      if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
+        ...s.deep ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const counts = {}, cost = x => `${x.amount} ${t(x.currency)}`;
       for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
       show({ name, link, lines: [

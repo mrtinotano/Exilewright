@@ -831,5 +831,7 @@
  "{0} of its modifiers searched up to {1}% to find any": "見つけるために{0}個の修正値を{1}%まで広げて検索",
  "Thorough search": "徹底検索",
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "%内に何もない場合：各修正値を個別に30%まで広げ、その後1つ外して検索します。検索回数（と時間）が増えます。",
- "Between {0} and {1}": "{0}～{1}"
+ "Between {0} and {1}": "{0}～{1}",
+ "Searching the trade site (thorough search: it can take longer)…": "トレードサイトを検索中（徹底検索：時間がかかる場合があります）…",
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "ヒント：Exilewright の設定で「徹底検索」をオンにすると、さらに探します。"
 }
