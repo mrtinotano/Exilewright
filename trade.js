@@ -157,13 +157,14 @@ export function readListing(r) {
 // damage per second or armour / evasion / energy shield (propsOf: from the copied text, quality and runes included, as
 // the site counts them) stand for the lines that make them (local ones); every other line (priceLines; a unique's only
 // those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike. All of them
-// within 10%, then 20% and 35% while fewer than ENOUGH are listed; then a line fewer (not for a unique, whose lines it
-// always has). The site sorts the listings by what they are worth whatever the currency, so the middle one of the
+// within 10% (never more, and not rounded: "+1 to …" stays 0.9-1.1), all of them: one it lacks is not alike.
+// Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the middle one of the
 // cheapest MANY is the estimate, in the currency its seller asked: no exchange rate is needed.
-// -> { total, near (the tolerance; null: only the name and base), matched (lines asked for), of (lines it has),
+// -> { total, near (the tolerance; null: only the name and base),
 //      prices: [{ amount, currency }] cheapest first, estimate: { amount, currency }, id (the search, siteLink opens it) }
-const ENOUGH = 3, MANY = 10;
-const around = (v, near) => v && near ? { min: Math.floor(v - Math.abs(v) * near), max: Math.max(Math.ceil(v + Math.abs(v) * near), Math.floor(v - Math.abs(v) * near) + 1) } : null;
+const MANY = 10;
+const NEAR = .1, around = v => v ? { min: +(v - Math.abs(v) * NEAR).toFixed(2), max: +(v + Math.abs(v) * NEAR).toFixed(2) } : null;
+console.assert(around(1).min > 0 && around(-43).max < 0, 'around');
 // the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
 export function propsOf(text) {
   const avg = re => [...(text.match(re)?.[1] || '').matchAll(/(\d+)-(\d+)/g)].reduce((s, m) => s + (+m[1] + +m[2]) / 2, 0);
@@ -180,23 +181,15 @@ export async function priceOf({ league, item, text = '', state = 'available' }) 
     .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  let tries = [.1, .2, .35].map(near => [n, near]);
-  if (!item.unique) for (let k = n - 1; k >= Math.ceil(n / 2) && k > 0; k--) tries.push([k, .2]);
-  if (!n && !Object.keys(props).length) tries = [[0, null]];
-  let best = null;
-  for (const [need, near] of tries) {
-    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.flatMap(l => l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } }))) }] : [];
-    const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)]).filter(([, r]) => r));
-    const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
-    const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
-    if (s.total) best = { s, need, near };
-    if (s.total >= ENOUGH) break;
-  }
-  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null };
-  const ids = (best.s.result || []).slice(0, MANY);
-  const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(best.s.id)}`)).result || [] : [];
+  // a line asked as normal, crafted, fractured or desecrated counts once: one of its ids is enough
+  const stats = lines.map(l => ({ type: 'count', value: { min: 1 }, filters: l.ids.map(id => ({ id, ...around(l.value) && { value: around(l.value) } })) }));
+  const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v)]));
+  const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
+  const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
+  const ids = (s.result || []).slice(0, MANY);
+  const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
   const prices = got.map(r => r?.listing?.price).filter(Boolean);
-  return { total: best.s.total, near: best.near, matched: best.need, of: n, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: best.s.id };
+  return { total: s.total, near: n || Object.keys(own).length ? NEAR : null, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: s.id };
 }
 
 // ---------- the search
