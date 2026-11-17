@@ -41,7 +41,18 @@ export function initOpt(el, ctx) {
 
   // ---------- the build and the objective
   const skills = b => b.gems.filter(g => GEM[g.name] && GEM[g.name].kind !== 'support');
-  const gemOf = b => { const list = skills(b); return list[S.gem[ctx.id()] || 0] || list[0] || null; };   // the skill picked for this build
+  // the skill picked for this build; none picked yet: the one that does the most damage (the first skill is often an aura
+  // or a buff, and nothing raises the damage of a skill that does none)
+  let main = null;
+  const gemOf = b => {
+    const list = skills(b);
+    if (S.gem[ctx.id()] != null) return list[S.gem[ctx.id()]] || list[0] || null;
+    if (main?.rev !== ctx.rev() || main.id !== ctx.id()) {
+      const sum = ctx.sumOf(b), dps = list.map(g => rate('dps', b, g, sum) || 0);
+      main = { rev: ctx.rev(), id: ctx.id(), g: list[dps.indexOf(Math.max(0, ...dps))] || list[0] || null };
+    }
+    return main.g;
+  };
   const rate = (key, b, g, sum = ctx.sumOf(b)) => whyNot(key, b, sum, g) ? null : score(key, b, sum, g);
   const num = (v, key) => { const o = OBJECTIVES[key]; return v == null ? '—' : fmt(v, o.dec ?? (o.skill && Math.abs(v) < 100 ? 1 : 0)) + (o.unit || ''); };
   // the objective as text ("balanced" is a product: its two numbers say more)
