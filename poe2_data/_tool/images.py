@@ -15,6 +15,21 @@ ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), enco
 paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
 ui = {a.get('portrait') for a in ascs if a.get('portrait')}   # character panel faces: UIImages names
+# the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
+# frames), saved whole as ../available/img/tree/<role>.webp: the node frames per state and the group backgrounds
+def table(t):
+    return json.load(open(os.path.join(ROOT, 'tables', 'English', t + '.json'), encoding='utf8'))
+uiart, frames = {r['Id']: r for r in table('PassiveSkillTreeUIArt')}, table('PassiveSkillTreeNodeFrameArt')
+TREE = {}
+for prefix, row, kinds in (('', uiart['Character'], ('Passive', 'Notable', 'Keystone', 'Jewel')), ('asc_', uiart['Ascendancy'], ('Passive', 'Notable'))):
+    for kind in kinds:
+        for state, col in (('normal', 'Normal'), ('can', 'CanAllocate'), ('active', 'Active')):
+            TREE[f'{prefix}{kind.lower()}_{state}'] = frames[row[kind + 'Frame']][col]
+for state, col in (('normal', 'Normal'), ('active', 'Active')):
+    TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
+for size in ('Small', 'Medium', 'Large'):
+    TREE['group_' + size.lower()] = uiart['Character']['GroupBackground' + size]
+ui |= set(TREE.values())
 atlas = {}
 if ui:
     index = os.path.join(ROOT, 'files', 'art', 'uiimages1.txt')
@@ -42,7 +57,16 @@ for p in paths:
         im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((p, str(e)))
+for role, name in TREE.items():   # each is a picture of its own: whole, full size (they are drawn large when zoomed in)
+    out = os.path.join(ROOT, 'available', 'img', 'tree', role + '.webp')
+    try:
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        Image.open(os.path.join(ROOT, 'files', atlas[name.lower()][0])).save(out, 'WEBP', quality=90)
+    except Exception as e:
+        bad.append((role, str(e)))
 for name, (file, (x1, y1, x2, y2)) in atlas.items():
+    if name in {v.lower() for v in TREE.values()}:
+        continue
     out = os.path.join(ROOT, 'available', 'img', name + '.webp')
     try:
         im = Image.open(os.path.join(ROOT, 'files', file)).convert('RGBA').crop((x1, y1, x2 + 1, y2 + 1))

@@ -384,10 +384,10 @@ $('importFile').onchange = async e => {
 
 // ---------- passive tree (canvas 2D), drawn like the in-game tree
 const cv = $('treeCanvas'), ctx = cv.getContext('2d');
-const R = { keystone: 58, notable: 40, jewel: 40, attribute: 24, small: 24, root: 52 };
+const R = { keystone: 116, notable: 82, jewel: 82, attribute: 56, small: 56, root: 104 };   // half the size of the game's frame of each (img/tree), in world units
 const ORBIT = tree.orbit_radii || [], GROUPS = tree.groups || [];
 const CENTRE_R = 1330;   // empty middle of the tree (class roots sit at ~1450): the chosen ascendancy is drawn there
-// The data has no node icons yet: tint each node by the theme of its stats instead
+// a node with no icon (no game art yet) is tinted by the theme of its stats instead
 const HUES = [[/fire|ignite|burn/, '#e0682c'], [/cold|freeze|chill/, '#62b6ea'], [/lightning|shock|electro/, '#e6d24c'], [/chaos|poison|wither/, '#a064d4'],
   [/minion|companion|totem|ally/, '#52c49c'], [/energy_shield|mana|spell|cast|intelligence/, '#5c82e2'],
   [/evasion|deflection|projectile|accuracy|movement|dexterity|bow|dodge/, '#70c464'],
@@ -412,8 +412,8 @@ const ascStart = a => (ASC[a] || []).find(i => N[i].ascendancy_start);
 const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
 // every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
-const BACKDROPS = new Map();   // small node clusters get a faint round backdrop, like the game's group art
-for (const id of main) { const n = N[id]; if (n.group != null && ORBIT[n.orbit] <= 335) BACKDROPS.set(n.group, Math.max(BACKDROPS.get(n.group) || 0, ORBIT[n.orbit])); }
+const BACKDROPS = new Map();   // node clusters (not lone nodes) up to orbit 3 get the game's group art, by their widest orbit
+for (const id of main) { const n = N[id]; if (n.group != null && ORBIT[n.orbit] > 0 && ORBIT[n.orbit] <= 335) BACKDROPS.set(n.group, Math.max(BACKDROPS.get(n.group) || 0, ORBIT[n.orbit])); }
 const visible = () => [...main, ...(ASC[B().asc] || [])];
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
@@ -554,14 +554,42 @@ const IMG = {};
 function art(p) {
   if (!p) return null;
   const k = p.toLowerCase();
-  if (!(k in IMG)) { IMG[k] = null; const im = new Image(); im.onload = () => { IMG[k] = im; redraw(); }; im.src = 'poe2_data/available/img/' + k.replace(/\.dds$/, '.webp'); }
+  if (!(k in IMG)) { IMG[k] = null; const im = new Image(); im.onload = () => { IMG[k] = im; redraw(); }; im.src = 'poe2_data/available/img/' + k.replace(/\.dds$/, '') + '.webp'; }
   return IMG[k];
 }
+// the game's node frames (images.py: img/tree/<frame>_<normal|can|active>.webp) and how much of each is the hole the
+// icon shows through (measured on those pictures); an ascendancy frame has a backing, so its icon goes on top
+const LINK = {
+  normal: [['#5e5846', 11], ['#0c0b05', 7], ['#2c200e', 3]],
+  can: [['#b8a458', 11], ['#483e06', 9], ['#dacc7d', 7], ['#fbf9ef', 3]],
+  active: [['rgba(159,129,74,.3)', 37], ['rgba(159,129,74,.6)', 20], ['#ffd786', 13], ['#5f4509', 9], ['#f2e4b8', 7], ['#ffffff', 3]],
+};
+const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keystone: 'keystone', jewel: 'jewel' };
+const HOLE = { passive: .607, notable: .562, keystone: .561, asc_passive: .62, asc_notable: .56 };
 function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint: weapon set colour
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
   const frame = tint || state === 'on' ? tint || '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
   if (r < 3) { ctx.fillStyle = lit ? frame : type === 'keystone' || type === 'notable' ? '#8a7650' : '#4a4236'; ctx.beginPath(); ctx.arc(x, y, Math.max(1.2, r), 0, 7); ctx.fill(); return; }
+  const kind = n.ascendancy_start ? 'asc_start' : n.ascendancy ? (type === 'notable' ? 'asc_notable' : 'asc_passive') : FRAME[type];
+  const pic = kind && !isRoot(id) && art(`tree/${kind}_${state === 'on' ? 'active' : state === 'path' && kind !== 'asc_start' ? 'can' : 'normal'}`);
+  if (pic) {
+    // a frame is drawn one pixel a world unit, like the game's links; its icon fills the hole
+    const f = r / R[type], w = pic.width * f, h = pic.height * f, ir = (HOLE[kind] || 0) * w / 2;
+    const icon = ir > 3 && art(n.icon);
+    const drawIcon = () => {
+      if (!icon) return;
+      ctx.save(); ctx.globalAlpha = lit ? 1 : .55; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7); ctx.clip();
+      ctx.drawImage(icon, x - ir, y - ir, ir * 2, ir * 2); ctx.restore();
+    };
+    if (!n.ascendancy) drawIcon();
+    ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
+    if (n.ascendancy) drawIcon();
+    const ring = (rr, wd, c) => { ctx.strokeStyle = c; ctx.lineWidth = wd; ctx.beginPath(); ctx.arc(x, y, rr, 0, 7); ctx.stroke(); };
+    if (tint) ring(w / 2, Math.max(1.5, w * .06), tint);   // a weapon set's passive: its colour round the frame
+    if (id === hover) ring(w / 2 + 2, 1.5, '#fff6d8');
+    return;
+  }
   if (state === 'on') { ctx.shadowColor = tint || '#f0b84a'; ctx.shadowBlur = r * .9; }
   // icon disc
   const g = ctx.createRadialGradient(x - r * .25, y - r * .3, r * .05, x, y, r);
@@ -648,14 +676,21 @@ function drawTree() {
   // background
   ctx.setTransform(D, 0, 0, D, 0, 0);
   const bg = ctx.createRadialGradient(sx(0), sy(0), 0, sx(0), sy(0), 14000 * s + Math.max(W, H));
-  bg.addColorStop(0, '#1a1712'); bg.addColorStop(.5, '#0d0c0a'); bg.addColorStop(1, '#050505');
+  bg.addColorStop(0, '#111830'); bg.addColorStop(.5, '#0b1022'); bg.addColorStop(1, '#060914');   // the game's night blue
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
   // world-space layers
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
-  // faint group backdrops
-  ctx.fillStyle = 'rgba(200,170,110,0.03)';
-  for (const [g, r] of BACKDROPS) { ctx.beginPath(); ctx.arc(...GROUPS[g], r + 60, 0, 7); ctx.fill(); }
+  // the game's group backgrounds (images.py: img/tree/group_*), one pixel a world unit like its links; the large one
+  // is half a circle, drawn again upside down
+  for (const [g, r] of BACKDROPS) {
+    const pic = art('tree/group_' + (r <= 162 ? 'small' : r <= 251 ? 'medium' : 'large'));
+    if (!pic) continue;
+    const [x, y] = GROUPS[g];
+    if (r <= 251) { ctx.drawImage(pic, x - pic.width / 2, y - pic.height / 2); continue; }
+    ctx.drawImage(pic, x - pic.width / 2, y - pic.height);
+    ctx.save(); ctx.translate(x, y); ctx.scale(1, -1); ctx.drawImage(pic, -pic.width / 2, -pic.height); ctx.restore();
+  }
   // central ascendancy disc
   const disc = ctx.createRadialGradient(0, 0, CENTRE_R * .2, 0, 0, CENTRE_R);
   disc.addColorStop(0, '#221d16'); disc.addColorStop(1, '#0b0a08');
@@ -682,16 +717,16 @@ function drawTree() {
   }
   const px = v => v / s;   // screen pixels -> world units
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#3d3427'; ctx.lineWidth = Math.max(px(1.2), 9); ctx.stroke(off);
-  ctx.strokeStyle = '#a8905e'; ctx.lineWidth = Math.max(px(2), 12); ctx.stroke(path);
-  ctx.shadowColor = '#f0b040'; ctx.shadowBlur = 10 * D;
-  ctx.strokeStyle = '#e8bf62'; ctx.lineWidth = Math.max(px(2.5), 16); ctx.stroke(lit);
-  ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#fff0c0'; ctx.lineWidth = Math.max(px(.8), 5); ctx.stroke(lit);
-  for (const [c, p] of Object.entries(setLit)) {
-    ctx.shadowColor = c; ctx.shadowBlur = 10 * D; ctx.strokeStyle = c; ctx.lineWidth = Math.max(px(2.5), 16); ctx.stroke(p);
-  }
-  ctx.shadowBlur = 0;
+  // each kind of link as the game's own (PassiveSkillScreenCurves*Together.dds: its colours across the line, outside
+  // in, one pixel a world unit), never thinner on screen than `least` pixels
+  const stroke = (p, layers, least) => {
+    const k = Math.max(1, px(least) / layers[0][1]);
+    for (const [c, w] of layers) { ctx.strokeStyle = c; ctx.lineWidth = w * k; ctx.stroke(p); }
+  };
+  stroke(off, LINK.normal, 1.2);
+  stroke(path, LINK.can, 1.6);
+  stroke(lit, LINK.active, 2.4);
+  for (const [c, p] of Object.entries(setLit)) stroke(p, [[c + '55', 37], [c, 13], ['#ffffff', 3]], 2.4);
 
   // nodes (screen space so they stay crisp)
   ctx.setTransform(D, 0, 0, D, 0, 0);
@@ -708,7 +743,7 @@ function drawTree() {
   for (const id of vis) {
     const n = N[id];
     if (isRoot(id)) continue;
-    if (!(n.type === 'keystone' && s > .045 || n.type === 'notable' && s > .11)) continue;
+    if (!(n.type === 'keystone' && s > .08 || n.type === 'notable' && s > .3)) continue;
     const [wx, wy] = WP[id], x = sx(wx), y = sy(wy);
     if (x < -100 || y < -40 || x > W + 100 || y > H + 40) continue;
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
