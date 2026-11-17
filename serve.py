@@ -20,6 +20,8 @@ the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot 
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
 here.
 
+/filter (POST, body = {"name", "text", "overwrite"}) saves the Filter tab's .filter in the game's folder (Documents/My
+Games/Path of Exile 2): 409 when that file is there and overwrite is not set, else 200 with the file's path. Local only.
 /settings (POST, body = {"price_key": "Ctrl+D"}) is the price check shortcut of the Settings tab (settings.js). On
 Windows, that shortcut pressed while the game is the window in use copies the item under the pointer: one Ctrl+C, as
 if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
@@ -532,6 +534,24 @@ class Handler(SimpleHTTPRequestHandler):
                      'lines': [[piece(p) for p in (x if isinstance(x, list) else [x])[:6]] for x in (lines if isinstance(lines, list) else [])[:30]]})
         self.reply(200, 'ok')
 
+    def do_filter(self, body):
+        if not self.mine():
+            return self.reply(403, 'local only')
+        try:
+            x = json.loads(body)
+            name, text = x['name'], x['text']
+        except (ValueError, KeyError, TypeError):
+            return self.reply(400, 'not a filter')
+        if not isinstance(name, str) or not re.fullmatch(r'[^<>:"/\\|?*]{1,60}', name) or not name.isprintable() or name.strip(' .') != name or not isinstance(text, str):
+            return self.reply(400, 'not a file name')
+        path = os.path.join(game_folder(), name + '.filter')
+        if os.path.exists(path) and not x.get('overwrite'):
+            return self.reply(409, path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8', newline='\r\n') as f:
+            f.write(text)
+        self.reply(200, path)
+
     def do_settings(self, body):
         global PRICE_KEY
         if not self.mine():
@@ -575,6 +595,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_overlay(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         if u.path == '/settings':
             return self.do_settings(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        if u.path == '/filter':
+            return self.do_filter(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         site = UPLOAD.get(parse_qs(u.query).get('site', [''])[0])
         if u.path != '/share/upload' or not site:
             return self.reply(404, 'not found')
@@ -586,6 +608,17 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply(200, prefix + call(post, (field + code).encode()).decode().strip())
         except Exception as e:
             self.reply(502, str(e))
+
+
+def game_folder():
+    """Documents/My Games/Path of Exile 2, where the game looks for .filter files (Documents as Windows has it, which may
+    be moved to OneDrive)"""
+    docs = os.path.expanduser('~/Documents')
+    if sys.platform == 'win32':
+        buf = ctypes.create_unicode_buffer(260)
+        if ctypes.windll.shell32.SHGetFolderPathW(None, 5, None, 0, buf) == 0:   # 5: CSIDL_PERSONAL (Documents)
+            docs = buf.value
+    return os.path.join(docs, 'My Games', 'Path of Exile 2')
 
 
 class Server(ThreadingHTTPServer):

@@ -308,7 +308,12 @@
   .mod input { width:56px; padding:1px; } .mod button { padding:0 4px; margin-left:4px; }
   .note { color:#888; font-size:12px; }
   /* Optimizer tab: one card per search (passive tree, support gems, gear on the trade site) */
-  #opt, #settings { overflow:auto; padding:10px; }
+  #opt, #settings, #filter { overflow:auto; padding:10px; }
+  .frule { border:1px solid #333; border-radius:4px; padding:4px 10px; } .frule.off { opacity:.5; } .frule .optrow { margin:3px 0; }
+  .fk { color:#e8d8a8; font-size:12px; min-width:90px; } .fgrow { flex:1; }
+  .fchip { background:#2a2a2a; border-radius:3px; padding:1px 2px 1px 6px; font-size:12px; } .fchip button { border:0; background:none; color:#aaa; cursor:pointer; padding:0 4px; }
+  .flabel { border:2px solid; padding:1px 8px; font-family:Fontin, Georgia, serif; } .frule input[type=number] { width:54px; } .frule input[type=color] { width:34px; height:22px; padding:0; }
+  .ftext { max-height:300px; overflow:auto; font-size:11px; background:#111; padding:6px; }
   .settings section { border:1px solid #333; border-radius:4px; padding:8px 12px; } .settings h3 { margin:0 0 4px; }
   .keys { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:6px 14px; margin:6px 0; }
   .keys label { display:flex; justify-content:space-between; gap:8px; align-items:center; color:#aaa; font-size:12px; }
@@ -383,13 +388,14 @@
   <div id="sceneSkills" hidden><div id="sceneEnemy"></div><div id="sceneList"></div></div>
 </aside>
 <main>
-  <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="loot" data-t>Loot</button><button data-v="scene" data-t>3D scene</button><button data-v="settings" data-t>Settings</button></nav>
+  <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="loot" data-t>Loot</button><button data-v="filter" data-t>Loot filter</button><button data-v="scene" data-t>3D scene</button><button data-v="settings" data-t>Settings</button></nav>
   <div class="view" id="tree"><canvas id="treeCanvas"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
   <div class="view" id="items" hidden></div>
   <div class="view" id="skills" hidden></div>
   <div class="view" id="opt" hidden></div>
   <div class="view" id="loot" hidden></div>
   <div class="view" id="scene" hidden><div id="hud"></div></div>
+  <div class="view" id="filter" hidden></div>
   <div class="view" id="settings" hidden></div>
 </main>
 </div>

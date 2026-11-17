@@ -509,6 +509,20 @@ save('items.json', {
                 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
 })
 
+# --- the loot filter creator (filter.js): every item class and base the trade list has, with the names each language
+# shows (a .filter file names them in English)
+classes_tr = load_langs('ItemClasses')
+seen, fbases, fclasses = set(), [], {}
+for i, b in enumerate(load('BaseItemTypes')):
+    c = b['ItemClass']
+    cls = classes[c]['Name'] if c is not None else ''
+    if not cls or not ok(b['Name']) or b['Name'] not in trade_types or (cls, b['Name']) in seen:
+        continue
+    seen.add((cls, b['Name']))
+    fclasses.setdefault(cls, c)
+    fbases.append({'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'level': b['DropLevel']})
+save('filter.json', {'classes': [{'name': n, **tr(classes_tr, c)} for n, c in sorted(fclasses.items())], 'bases': fbases})
+
 # --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
 # per-level tables that turn the multipliers into life, armour, evasion, accuracy and damage
 ELEMENTS = ('physical', 'fire', 'cold', 'lightning', 'chaos')
