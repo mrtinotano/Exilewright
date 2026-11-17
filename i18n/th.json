@@ -821,10 +821,11 @@
  "Redo (Ctrl+Y)": "ทำซ้ำ (Ctrl+Y)",
  "Socketed in": "ใส่ใน",
  "Uses the supports of {0}": "ใช้เจมสนับสนุนของ {0}",
- "Your own…": "ของคุณเอง…",
  "Listen": "ฟัง",
  "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "ไฟล์เสียงของคุณ (.mp3, .wav หรือ .ogg): จะถูกคัดลอกไปยังโฟลเดอร์ของเกม",
  "It could not be played": "ไม่สามารถเล่นได้",
  "Corpse made: skills that need a corpse can use it": "สร้างศพแล้ว: สกิลที่ต้องใช้ศพใช้ได้",
- "Point at an enemy to turn it into a corpse": "ชี้ไปที่ศัตรูเพื่อเปลี่ยนเป็นศพ"
+ "Point at an enemy to turn it into a corpse": "ชี้ไปที่ศัตรูเพื่อเปลี่ยนเป็นศพ",
+ "Your own sound…": "เสียงของคุณ…",
+ "The game's sounds are not in the app yet": "เสียงของเกมยังไม่มีในแอป"
 }

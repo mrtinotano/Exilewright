@@ -184,6 +184,26 @@ def clipboard():
     return look, .4 if copies else 1
 
 
+def spot(w, h, px, py, sw, sh):
+    """where the window over the game goes: under the pointer (the game describes the item above it); with no room
+    there, over it; with none there either, beside it. On the main screen it is kept whole (the size of the others is
+    not known)"""
+    x, y = px - w // 2, py + 28
+    if 0 <= px < sw and 0 <= py < sh:
+        x = min(max(x, 8), max(sw - w - 8, 8))
+        if y + h > sh - 8:
+            y = py - 28 - h
+            if y < 8:
+                y = min(max(py - h // 2, 8), max(sh - h - 8, 8))
+                x = px + 40 if px + 40 + w <= sw - 8 else max(px - 40 - w, 8)
+    return x, y
+
+
+assert spot(400, 100, 500, 300, 1920, 1080) == (300, 328), 'spot: under'
+assert spot(400, 300, 500, 900, 1920, 1080) == (300, 572), 'spot: over'
+assert spot(460, 700, 1500, 500, 1920, 1080) == (1000, 150), 'spot: beside, to the left near the right edge'
+
+
 def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
     show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
@@ -284,9 +304,7 @@ def overlay():
         root.update_idletasks()
         w, h, (px, py) = root.winfo_reqwidth(), root.winfo_reqheight(), root.winfo_pointerxy()
         sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-        x, y = px - w // 2, py + 28                  # under the pointer: the game describes the item above it
-        if 0 <= px < sw and 0 <= py < sh:            # on the main screen it is kept whole (the size of the others is not known)
-            x, y = min(max(x, 8), max(sw - w - 8, 8)), y if y + h < sh - 8 else py - 28 - h
+        x, y = spot(w, h, px, py, sw, sh)
         root.geometry(f'+{x}+{y}')
         root.update_idletasks()                      # now: on Windows the first move is lost if it waits for the calls below
         if win:

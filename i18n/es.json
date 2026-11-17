@@ -821,10 +821,11 @@
  "Redo (Ctrl+Y)": "Rehacer (Ctrl+Y)",
  "Socketed in": "Engarzada en",
  "Uses the supports of {0}": "Usa los soportes de {0}",
- "Your own…": "Uno tuyo…",
  "Listen": "Escuchar",
  "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "Un archivo de sonido tuyo (.mp3, .wav u .ogg): se copia en la carpeta del juego",
  "It could not be played": "No se ha podido reproducir",
  "Corpse made: skills that need a corpse can use it": "Cadáver creado: las habilidades que necesitan uno pueden usarlo",
- "Point at an enemy to turn it into a corpse": "Apunta a un enemigo para convertirlo en cadáver"
+ "Point at an enemy to turn it into a corpse": "Apunta a un enemigo para convertirlo en cadáver",
+ "Your own sound…": "Sonido propio…",
+ "The game's sounds are not in the app yet": "Los sonidos del juego aún no están en la app"
 }

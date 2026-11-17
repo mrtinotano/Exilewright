@@ -821,10 +821,11 @@
  "Redo (Ctrl+Y)": "다시 실행 (Ctrl+Y)",
  "Socketed in": "장착 위치",
  "Uses the supports of {0}": "{0}의 보조를 사용",
- "Your own…": "내 파일…",
  "Listen": "듣기",
  "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "내 사운드 파일 (.mp3, .wav, .ogg): 게임 폴더에 복사됩니다",
  "It could not be played": "재생할 수 없습니다",
  "Corpse made: skills that need a corpse can use it": "시체 생성: 시체가 필요한 스킬이 사용할 수 있습니다",
- "Point at an enemy to turn it into a corpse": "적을 가리키면 시체로 바뀝니다"
+ "Point at an enemy to turn it into a corpse": "적을 가리키면 시체로 바뀝니다",
+ "Your own sound…": "내 사운드…",
+ "The game's sounds are not in the app yet": "게임 사운드가 아직 앱에 없습니다"
 }

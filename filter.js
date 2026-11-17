@@ -84,9 +84,9 @@ export function initFilter(el) {
       <div class="optrow"><span class="fk">${t('Look')}</span>${colour('text', r)}${colour('border', r)}${colour('bg', r)}
         <label>${t('Text size')} <input type="number" min="18" max="45" data-f="size" value="${r.size}" placeholder="32"></label></div>
       <div class="optrow"><span class="fk">${t('Drop')}</span>
-        <label>${t('Sound')} <select data-f="sound"><option value="">${t('None')}</option>${Array.from({ length: 16 }, (_, k) => opt(k + 1, k + 1, +r.sound === k + 1)).join('')}${opt('own', t('Your own…'), r.sound === 'own')}</select></label>
-        ${r.sound === 'own' ? `<label class="fown">${r.own ? `<b>${esc(r.own)}</b> <button data-do="play" title="${t('Listen')}">▶</button>` : ''}
-          <input type="file" accept=".mp3,.wav,.ogg" data-own title="${esc(t('A sound file of yours (.mp3, .wav or .ogg): it is copied into the game\'s folder'))}"></label>` : ''}
+        <label>${t('Sound')} <select data-f="sound"><option value="">${t('None')}</option>${Array.from({ length: 16 }, (_, k) => opt(k + 1, k + 1, +r.sound === k + 1)).join('')}${r.own ? opt('own', r.own, r.sound === 'own') : ''}</select></label>
+        <button data-do="play" title="${t('Listen')}"${r.sound ? '' : ' disabled'}>▶</button>
+        <label class="fown" title="${esc(t("A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder"))}">${t('Your own sound…')}<input type="file" accept=".mp3,.wav,.ogg" data-own hidden></label>
         <label>${t('Volume')} <input type="number" min="0" max="300" data-f="volume" value="${r.volume}"></label>
         <label>${t('Light beam')} <select data-f="effect"><option value="">${t('None')}</option>${COLOURS.map(c => opt(c, t(c), r.effect === c)).join('')}</select></label>
         <label><input type="checkbox" data-f="temp"${r.temp ? ' checked' : ''}> ${t('Only while it falls')}</label></div>
@@ -132,8 +132,9 @@ export function initFilter(el) {
       case 'up': case 'down': { const j = i + (d.dataset.do === 'up' ? -1 : 1); [S.rules[i], S.rules[j]] = [S.rules[j], S.rules[i]]; break; }
       case 'write': msg = ''; return write(false);
       case 'play': {   // as the game will play it: the copy in its folder, at the rule's volume (300 the loudest)
-        const a = new Audio('filtersound?name=' + encodeURIComponent(r.own)); a.volume = Math.min(1, (+r.volume || 0) / 300);
-        a.play().catch(() => { msg = t('It could not be played'); err = true; render(); }); return;
+        // the game's own: extracted by _tool/sounds.py (poe2_data/available/sounds), when it was run
+        const a = new Audio(r.sound === 'own' ? 'filtersound?name=' + encodeURIComponent(r.own) : `poe2_data/available/sounds/alert_${String(r.sound).padStart(2, '0')}.ogg`); a.volume = Math.min(1, (+r.volume || 0) / 300);
+        a.play().catch(() => { msg = t(r.sound === 'own' ? 'It could not be played' : "The game's sounds are not in the app yet"); err = true; render(); }); return;
       }
       case 'download': {
         const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([filterText(S)])), download: S.name + '.filter' });
@@ -162,7 +163,7 @@ export function initFilter(el) {
     const res = await fetch('filtersound?name=' + encodeURIComponent(file.name), { method: 'POST', body: file }).catch(() => null);
     err = !res?.ok;
     msg = res?.ok ? t('Saved: {0}', await res.text()) : t('It could not be saved: {0}', (res && await res.text()) || t('the planner is not running'));
-    if (res?.ok) r.own = file.name;
+    if (res?.ok) { r.own = file.name; r.sound = 'own'; }
     done();
   }
   el.onkeydown = e => {

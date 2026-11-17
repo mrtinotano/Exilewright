@@ -821,10 +821,11 @@
  "Redo (Ctrl+Y)": "Wiederholen (Strg+Y)",
  "Socketed in": "Eingesetzt in",
  "Uses the supports of {0}": "Nutzt die Unterstützungen von {0}",
- "Your own…": "Eigener…",
  "Listen": "Anhören",
  "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "Eine eigene Sounddatei (.mp3, .wav oder .ogg): Sie wird in den Spielordner kopiert",
  "It could not be played": "Konnte nicht abgespielt werden",
  "Corpse made: skills that need a corpse can use it": "Leiche erzeugt: Fertigkeiten, die eine brauchen, können sie nutzen",
- "Point at an enemy to turn it into a corpse": "Zeige auf einen Gegner, um ihn in eine Leiche zu verwandeln"
+ "Point at an enemy to turn it into a corpse": "Zeige auf einen Gegner, um ihn in eine Leiche zu verwandeln",
+ "Your own sound…": "Eigener Sound…",
+ "The game's sounds are not in the app yet": "Die Sounds des Spiels sind noch nicht in der App"
 }

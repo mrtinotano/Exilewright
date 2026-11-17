@@ -821,10 +821,11 @@
  "Redo (Ctrl+Y)": "重做 (Ctrl+Y)",
  "Socketed in": "鑲嵌於",
  "Uses the supports of {0}": "使用{0}的輔助",
- "Your own…": "自訂…",
  "Listen": "試聽",
  "A sound file of yours (.mp3, .wav or .ogg): it is copied into the game's folder": "你自己的音效檔 (.mp3、.wav 或 .ogg)：會複製到遊戲資料夾",
  "It could not be played": "無法播放",
  "Corpse made: skills that need a corpse can use it": "已產生屍體：需要屍體的技能可以使用",
- "Point at an enemy to turn it into a corpse": "指向敵人即可將其變成屍體"
+ "Point at an enemy to turn it into a corpse": "指向敵人即可將其變成屍體",
+ "Your own sound…": "自訂音效…",
+ "The game's sounds are not in the app yet": "應用程式中還沒有遊戲音效"
 }
