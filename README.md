@@ -24,17 +24,17 @@ opens again on its own), the portable one opens the release page. Settings → U
 ## Run from source (developers)
 `python serve.py` (or double-click `start.cmd`) serves the planner at http://127.0.0.1:8765 for a browser;
 `python serve.py app` opens it in its own window (needs `pip install pywebview`). Builds made in the browser stay in
-the browser: bring them over with Share (copy the code, import it).
+the browser: bring them over with Export and Import (copy the code, import it).
 
 `build_app.py` makes the release files: `dist/Exilewright/Exilewright.exe`, the portable zip and, with Inno Setup 6,
 the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top of `build_app.py`). The version is
 `VERSION` in `serve.py`: the window title, the update check and the installer take it from there.
 
-**Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
-pastebin and rentry to import) through `serve.py`, plus JSON files, and imports the builds saved in Path of
-Building 2 on the same computer (how a character of your account gets here: import it there, save it, pick it
-in Share). Items copied in the game with Ctrl+C can
-be pasted in Equipment. **.build file for the game** saves the build for the in-game build planner (0.5+, folder
+**Import** and **Export** (top bar) take in and give out Path of Building 2 codes and links (pobb.in, poe.ninja,
+Maxroll, poe2db; pastebin and rentry to import) through `serve.py`, plus JSON files; Import also takes the builds saved
+in Path of Building 2 on the same computer (how a character of your account gets here: import it there, save it, pick
+it in Import). Items copied in the game with Ctrl+C can
+be pasted in Equipment. **.build file for the game** (in Export) saves the build for the in-game build planner (0.5+, folder
 `Documents/My Games/Path of Exile 2/BuildPlanner`): tree, ascendancy and gems with supports; gem levels and gear
 travel as notes, since the format has no fields for them (layout as Path of Building 2 writes it).
 

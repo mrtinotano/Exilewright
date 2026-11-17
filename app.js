@@ -295,30 +295,32 @@ const markCard = i => { document.querySelectorAll('#sceneSkills .sk-card').forEa
 // ---------- share: Path of Building 2 code, build sites, JSON file
 const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5, quests: QUESTS, questPick });
 const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
-$('share').onclick = async () => {
+// one panel, with what the header button asked for: taking a build in, or giving this one out
+const openShare = async exporting => {
+  document.getElementById('sharePanel')?.remove();
   const d = document.createElement('div');
   d.className = 'ask'; d.id = 'sharePanel';
-  const code = await encode(toXML(B(), shareCtx()));
-  d.innerHTML = `<div><button class="close" data-a="close">✕</button>
+  const code = exporting ? await encode(toXML(B(), shareCtx())) : '';
+  d.innerHTML = `<div><button class="close" data-a="close">✕</button>${exporting ? `
     <h3>${t('Export')}</h3>
     <p class="note">${t('Path of Building 2 code: paste it in Path of Building (Import/Export Build) or on any of these sites.')}</p>
     <textarea rows="3" readonly data-code>${code}</textarea>
     <div class="row"><button data-a="copy">${t('Copy code')}</button>${SITES.map(s => `<button data-up="${s.id}">${t('Link on {0}', s.name)}</button>`).join('')}
       <button data-a="json">${t('JSON file')}</button></div>
     <div class="msg" data-out></div>
+    <h3>${t('The game')}</h3>
+    <p class="note">${t('Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.')}</p>
+    <div class="row"><button data-a="game">${t('.build file for the game')}</button></div>` : `
     <h3>${t('Import')}</h3>
     <textarea rows="3" data-in placeholder="${t('Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)')}"></textarea>
     <div class="row"><button data-a="import">${t('Import as a new build')}</button><button data-a="file">${t('JSON file')}</button><select data-pob hidden></select></div>
     <div class="msg" data-inmsg></div>
-    <h3>${t('The game')}</h3>
-    <p class="note">${t('Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.')}</p>
-    <div class="row"><button data-a="game">${t('.build file for the game')}</button></div>
-    <p class="note">${t('To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.')}</p></div>`;
+    <p class="note">${t('To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.')}</p>`}</div>`;
   const out = d.querySelector('[data-out]'), inmsg = d.querySelector('[data-inmsg]');
   // the builds saved in Path of Building 2 on this computer (serve.py lists them): picking one imports it. That is how a
   // character of the account gets here, the game's site hands them to registered programs only
   const pob = d.querySelector('[data-pob]');
-  fetch('pob').then(r => r.ok ? r.json() : []).catch(() => []).then(names => {
+  if (pob) fetch('pob').then(r => r.ok ? r.json() : []).catch(() => []).then(names => {
     if (!names.length) return;
     pob.innerHTML = `<option value="">${t('From Path of Building 2 on this computer…')}</option>` + names.map(n => `<option value="${esc(n)}">${esc(n.replace(/\.xml$/i, ''))}</option>`).join('');
     pob.hidden = false;
@@ -331,7 +333,7 @@ $('share').onclick = async () => {
     addBuild(build);
     inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
   };
-  pob.onchange = async () => {
+  if (pob) pob.onchange = async () => {
     if (!pob.value) return;
     try { importXML(await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text(), pob.value.replace(/\.xml$/i, '')); }
     catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
@@ -374,6 +376,8 @@ $('share').onclick = async () => {
   };
   document.body.append(d);
 };
+$('importBtn').onclick = () => openShare(false);
+$('exportBtn').onclick = () => openShare(true);
 $('importFile').onchange = async e => {
   addBuild({ ...blank(), ...JSON.parse(await e.target.files[0].text()) });
   e.target.value = ''; document.getElementById('sharePanel')?.remove();
