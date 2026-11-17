@@ -48,8 +48,7 @@ export async function update(ask, quiet) {
 export function initSettings(el, ask) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let wait = null, msg = '', list = null, upd = '', version = '';
-  fetch('update').then(r => r.json()).then(u => { version = u.version || ''; render(); }, () => {});   // the shortcut being set ('price' or a scene key); the leagues of the trade site
+  let wait = null, msg = '', list = null, upd = '';   // the shortcut being set ('price' or a scene key); the leagues of the trade site; what the update check said
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
   function render() {
@@ -71,7 +70,7 @@ export function initSettings(el, ask) {
         <div class="optrow"><select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></div>
       </section>
       <section><h3>${t('Updates')}</h3>
-        <div class="optrow">${version ? `<span>${t('Version {0}', esc(version))}</span>` : ''}<button data-do="update">${t('Check for updates')}</button></div>
+        <div class="optrow"><button data-do="update">${t('Check for updates')}</button></div>
         ${upd ? `<p class="note">${esc(upd)}</p>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
