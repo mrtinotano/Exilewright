@@ -64,8 +64,9 @@ for role, name in TREE.items():   # each is a picture of its own: whole, full si
         Image.open(os.path.join(ROOT, 'files', atlas[name.lower()][0])).save(out, 'WEBP', quality=90)
     except Exception as e:
         bad.append((role, str(e)))
+skip = {v.lower() for v in TREE.values()}
 for name, (file, (x1, y1, x2, y2)) in atlas.items():
-    if name in {v.lower() for v in TREE.values()}:
+    if name in skip:
         continue
     out = os.path.join(ROOT, 'available', 'img', name + '.webp')
     try:
