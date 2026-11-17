@@ -684,7 +684,7 @@ def profile():
 def app(url):
     """the page in a native window (WebView2, the web engine Windows has, embedded: no browser around it). The window
     over the game gets a thread of its own, as this one wants the main thread; closing the window stops everything.
-    The window opens at the size, place and maximized or not it had when it was last closed (window.json in the profile)"""
+    The window opens at the size, place and maximized or not it last had (window.json in the profile)"""
     import webview
 
     def over():
@@ -712,25 +712,26 @@ def app(url):
             return not (ctypes.windll.user32.IsZoomed(ctypes.c_void_p(h)) or ctypes.windll.user32.IsIconic(ctypes.c_void_p(h)))
         return not s['maximized']
 
-    def size(width, height):
-        if normal():
-            s.update(width=width, height=height)
+    timer = None
 
-    def place(x, y):
-        if normal() and x > -10000:   # a minimized window is moved far off the screen
-            s.update(x=x, y=y)
+    def keep(**change):   # written half a second after the last change: an update or a killed app never says it is closing
+        nonlocal timer
+        s.update(change)
+        if timer:
+            timer.cancel()
+        timer = threading.Timer(.5, write)
+        timer.start()
 
-    def keep():
+    def write():
         try:
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(s, f)
         except OSError:
             pass
-    w.events.resized += size
-    w.events.moved += place
-    w.events.maximized += lambda: s.update(maximized=True)
-    w.events.restored += lambda: s.update(maximized=False)
-    w.events.closing += keep
+    w.events.resized += lambda width, height: normal() and keep(width=width, height=height)
+    w.events.moved += lambda x, y: normal() and x > -10000 and keep(x=x, y=y)   # a minimized window is moved far off the screen
+    w.events.maximized += lambda: keep(maximized=True)
+    w.events.restored += lambda: keep(maximized=False)
     webview.start(private_mode=False, storage_path=profile())
     os._exit(0)
 
