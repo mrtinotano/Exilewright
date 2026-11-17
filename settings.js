@@ -7,7 +7,7 @@ import { STATUS, leagues } from './trade.js';
 const KEY = 'exwSettings';
 // the 3D scene's own keys (moving is W A S D and skills 1-9, as in the game)
 const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyR' };
-const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the scene' };
+const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
 const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available' };
@@ -61,7 +61,7 @@ export function initSettings(el, ask) {
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label></div>
         <p class="note">${t(NEEDS)}</p>
       </section>
-      <section><h3>${t('3D scene keys')}</h3>
+      <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
         <div class="keys">${Object.keys(SCENE_KEYS).map(k => `<label>${t(SCENE_LABEL[k])} ${cap(k, keyName(S.keys[k]))}</label>`).join('')}</div>
         <div class="optrow"><button data-do="defaults">${t('Default keys')}</button></div>

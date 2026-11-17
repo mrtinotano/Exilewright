@@ -876,7 +876,7 @@ function renderEnemy() {
     <table class="en-t">${theirs.join('')}</table>
     ${yours}
     <div class="en-btns"><button data-en="place" class="${placing ? 'on' : ''}">${placing ? t('Placing: click in the scene') : t('Place with a click')}</button>
-      <button data-en="clear">${t('Remove enemies')}</button><button data-en="reset" title="R">${t('Reset the scene')}</button></div>
+      <button data-en="clear">${t('Remove enemies')}</button><button data-en="reset" title="R">${t('Reset the simulator')}</button></div>
     <p class="note">${t('Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.')}</p>`;
 }
 

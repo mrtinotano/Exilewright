@@ -1,6 +1,6 @@
 # Exilewright
 
-Path of Exile 2 build planner & simulator for Windows: passive tree, equipment, skills/supports and a 3D scene,
+Path of Exile 2 build planner & simulator for Windows: passive tree, equipment, skills/supports and a 3D simulator,
 plus an in-game price check and a loot filter creator.
 Every number comes from the game's own data (see `poe2_data/README.md`).
 
@@ -86,7 +86,7 @@ item/area level, quality, stack size, waystone tier; text, border and background
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
-**Settings** (its own tab): the price check shortcut, its league and seller, the keys of the 3D scene, the language and the updates.
+**Settings** (its own tab): the price check shortcut, its league and seller, the keys of the Simulator, the language and the updates.
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so it runs from source right after cloning.
@@ -102,7 +102,7 @@ python images.py "C:/Program Files (x86)/Steam/steamapps/common/Path of Exile 2"
 python -I pob2.py
 ```
 Everything comes from the game's own tables, in its ten languages: gems with their stats per level, items, uniques,
-the passive tree, and the monsters of the 3D scene. `available.py` ends with a self-check that fails if a patch renames
+the passive tree, and the monsters of the Simulator. `available.py` ends with a self-check that fails if a patch renames
 a column it needs. `pob2.py` needs no install: it reads from Path of Building 2 the two things the tables do not say,
 what each support's stats do to the calculation (`pob2.json`) and the trade-site number of every item modifier
 (`trade_mods.json`, what the gear search matches by).
