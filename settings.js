@@ -73,7 +73,7 @@ export function initSettings(el, ask, loot) {
         <div class="keys">${Object.keys(SCENE_KEYS).map(k => `<label>${t(SCENE_LABEL[k])} ${cap(k, keyName(S.keys[k]))}</label>`).join('')}</div>
         <div class="optrow"><button data-do="defaults">${t('Default keys')}</button></div>
       </section>
-      <section><h3>Exilewright</h3>
+      <section><h3>${t('General')}</h3>
         ${win.app || win.startup ? `<div class="optrow">
           ${win.startup ? check('on', 'Open with Windows') : ''}
           ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}

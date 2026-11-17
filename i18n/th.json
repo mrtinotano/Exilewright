@@ -815,5 +815,6 @@
  "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
  "More than {0}": "มากกว่า {0}",
  "Equipment comparison": "เปรียบเทียบอุปกรณ์",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ"
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ",
+ "General": "ทั่วไป"
 }
