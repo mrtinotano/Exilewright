@@ -818,5 +818,7 @@
  "Saved items": "ไอเทมที่เก็บไว้",
  "Items you replace or take off are kept here, to wear them again.": "ไอเทมที่เปลี่ยนหรือถอดออกจะถูกเก็บไว้ที่นี่เพื่อสวมใส่อีกครั้ง",
  "Undo (Ctrl+Z)": "เลิกทำ (Ctrl+Z)",
- "Redo (Ctrl+Y)": "ทำซ้ำ (Ctrl+Y)"
+ "Redo (Ctrl+Y)": "ทำซ้ำ (Ctrl+Y)",
+ "Socketed in": "ใส่ใน",
+ "Uses the supports of {0}": "ใช้เจมสนับสนุนของ {0}"
 }

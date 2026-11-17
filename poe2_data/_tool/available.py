@@ -174,6 +174,11 @@ for i, g in enumerate(skill_gems):
         gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'],
                         # text for the skill's info window (ActiveSkills.Description, per language)
                         description=plain(a.get('Description')), **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description'))
+        # a meta gem (Mortar Cannon, Ancestral Warrior Totem...): the skills its sockets take are those its own support
+        # part (GemEffects.AdditionalGrantedEffects named Support...) can support, as a support gem's require / exclude
+        part = next((grants[x] for x in gem_effects[g['GemEffects'][0]]['AdditionalGrantedEffects'] if grants[x]['Id'].startswith('Support')), None)
+        if 'meta' in tags and part:
+            gems[-1]['holds'] = {'require': types(part['AllowedActiveSkillTypes']), 'exclude': types(part['ExcludedActiveSkillTypes'])}
 save('gems.json', gems)
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)

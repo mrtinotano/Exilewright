@@ -818,5 +818,7 @@
  "Saved items": "Objetos guardados",
  "Items you replace or take off are kept here, to wear them again.": "Los objetos que sustituyes o te quitas se guardan aquí para volver a ponértelos.",
  "Undo (Ctrl+Z)": "Deshacer (Ctrl+Z)",
- "Redo (Ctrl+Y)": "Rehacer (Ctrl+Y)"
+ "Redo (Ctrl+Y)": "Rehacer (Ctrl+Y)",
+ "Socketed in": "Engarzada en",
+ "Uses the supports of {0}": "Usa los soportes de {0}"
 }

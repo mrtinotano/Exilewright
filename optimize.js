@@ -159,7 +159,8 @@ export function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2,
   if (capacity) {
     const at = attributes(sum, b.asc), per = SK.support_capacity_per_attribute || 5;
     cap = Object.fromEntries(Object.keys(ATTR).map(k => [k, Math.floor(at[k] / per)]));
-    for (const o of b.gems || []) if (o !== g) for (const n of o.supports || []) { const c = n && GEM[n] && colour(GEM[n]); if (c) cap[c]--; }
+    for (const o of b.gems || []) if (o !== g && !o.meta && o.name !== g.meta) for (const n of o.supports || []) {   // a skill in a meta gem: its supports are the meta gem's
+      const c = n && GEM[n] && colour(GEM[n]); if (c) cap[c]--; }
   }
   // every valid combination of up to `sockets` of them
   const combos = [], names = [], used = new Set(), need = { str: 0, dex: 0, int: 0 };

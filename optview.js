@@ -283,7 +283,9 @@ export function initOpt(el, ctx) {
     if (what === 'useSup' && U) {
       const names = U.r.combos[+btn.dataset.i]?.names, i = skills(b).indexOf(gemOf(b)); if (!names) return;
       msg.sup = t('Supports changed: {0}.', names.map(n => tn(GEM[n])).join(', '));
-      ctx.change(b => { const g = skills(b)[i]; g.sockets = Math.max(g.sockets ?? 2, names.length); g.supports = [...names]; });
+      ctx.change(b => { const g = skills(b)[i], m = g.meta && b.gems.find(x => x.name === g.meta);   // in a meta gem: the supports go in its sockets
+        const to = m || g, held = m ? b.gems.filter(x => x.meta === m.name).length : 0;
+        to.sockets = Math.max(to.sockets ?? 2, names.length + held); to.supports = [...names]; });
     }
     if (what === 'equip') {
       const sel = gearSel(b), item = G[gearKey(b, sel)]?.res.found[+btn.dataset.i]?.item; if (!item) return;

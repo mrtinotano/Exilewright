@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
@@ -38,6 +38,7 @@ const hist = {}, HIST_MAX = 100;
 let shown = '', stepAt = 0;
 const store = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
 const save = () => {
+  if (B()) linkMetas(B());
   const now = JSON.stringify(B() ?? null), h = hist[cur] ||= { undo: [], redo: [] };
   if (now !== shown && shown) {
     if (Date.now() - stepAt > 1000 || !h.undo.length || !document.activeElement?.matches('textarea, input:not([type]), input[type=text], input[type=number]')) { h.undo.push(shown); if (h.undo.length > HIST_MAX) h.undo.shift(); }
@@ -62,7 +63,7 @@ addEventListener('keydown', e => {   // Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z); a text b
   if (k === 'z' || k === 'y') { e.preventDefault(); step(k === 'z' && !e.shiftKey); }
 });
 function select(id) {
-  cur = id; rev++; localStorage.setItem(KEY + ':last', id); shown = JSON.stringify(B() ?? null); undoBtns();
+  cur = id; rev++; localStorage.setItem(KEY + ':last', id); if (B()) linkMetas(B()); shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }

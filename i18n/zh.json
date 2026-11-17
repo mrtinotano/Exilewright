@@ -818,5 +818,7 @@
  "Saved items": "保存的物品",
  "Items you replace or take off are kept here, to wear them again.": "替換或卸下的物品會保存在這裡，以便再次裝備。",
  "Undo (Ctrl+Z)": "復原 (Ctrl+Z)",
- "Redo (Ctrl+Y)": "重做 (Ctrl+Y)"
+ "Redo (Ctrl+Y)": "重做 (Ctrl+Y)",
+ "Socketed in": "鑲嵌於",
+ "Uses the supports of {0}": "使用{0}的輔助"
 }

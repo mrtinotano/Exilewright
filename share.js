@@ -59,7 +59,7 @@ ${[[1, set1], [2, set2]].filter(([, s]) => s.length).map(([k, s]) => `<WeaponSet
 </Spec></Tree>
 <Skills activeSkillSet="1"><SkillSet id="1">
 ${b.gems.map((g, i) => usedBy(b, i) ? null : `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${
-   usedBy(b, i + 1) ? gem(b.gems[i + 1].name, b.gems[i + 1].level ?? 20, b.gems[i + 1].quality) : ''}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).filter(Boolean).join('\n')}
+   b.gems.filter((x, k) => usedBy(b, k) === g).map(x => gem(x.name, x.level ?? 20, x.quality)).join('')}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).filter(Boolean).join('\n')}
 </SkillSet></Skills>
 <Items activeItemSet="1">
 ${items.map(([s, txt]) => `<Item id="${iid[s]}">${x(txt)}</Item>`).join('\n')}
@@ -118,8 +118,11 @@ export function fromXML(xml, ctx, blank) {
     const sup = gs.filter(o => o.g.kind === 'support').map(o => o.g.name).slice(0, ctx.maxSockets);
     // a skill the tree or an item grants comes twice from an imported character: as the game lists it, and as PoB adds it
     const again = sk.getAttribute('source') ? b.gems.map(g => g.name) : [];
-    for (const o of gs.filter(o => o.g.kind !== 'support' && !again.includes(o.g.name)))
-      b.gems.push({ name: o.g.name, level: o.level, ...o.quality ? { quality: o.quality } : {}, sockets: Math.max(2, sup.length), supports: [...sup] });
+    // a meta gem and the skills in it are one group (Mortar Cannon and its Cluster Grenade): those skills go in it
+    const act = gs.filter(o => o.g.kind !== 'support' && !again.includes(o.g.name)), meta = act.find(o => o.g.tags?.includes('meta'));
+    for (const o of act)
+      b.gems.push({ name: o.g.name, level: o.level, ...o.quality ? { quality: o.quality } : {}, sockets: Math.min(ctx.maxSockets, Math.max(2, sup.length + (o === meta ? act.length - 1 : 0))),
+        supports: [...sup], ...meta && o !== meta && { meta: meta.g.name } });
   }
   // items: the active item set's slots, and the tree's jewel sockets
   const itemsEl = kids(root, 'Items')[0], text = {};

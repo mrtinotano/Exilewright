@@ -818,5 +818,7 @@
  "Saved items": "Gespeicherte Gegenstände",
  "Items you replace or take off are kept here, to wear them again.": "Ersetzte oder abgelegte Gegenstände bleiben hier, um sie wieder anzulegen.",
  "Undo (Ctrl+Z)": "Rückgängig (Strg+Z)",
- "Redo (Ctrl+Y)": "Wiederholen (Strg+Y)"
+ "Redo (Ctrl+Y)": "Wiederholen (Strg+Y)",
+ "Socketed in": "Eingesetzt in",
+ "Uses the supports of {0}": "Nutzt die Unterstützungen von {0}"
 }

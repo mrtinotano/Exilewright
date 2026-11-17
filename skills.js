@@ -2,7 +2,8 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, tn, fmt, lang } from './i18n.js';
-import { attributes, skill, reservation, totem } from './calc.js';
+import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport } from './calc.js';
+export { canSupport };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
@@ -16,18 +17,6 @@ const ATTRS = { str: [t('Str'), 'strength', '#c44'], dex: [t('Dex'), 'dexterity'
 // a support uses capacity of its main attribute (the requirement % the game gives it)
 export const colour = g => { const a = Object.entries(g.attr).sort((x, y) => y[1] - x[1])[0]; return a[1] ? a[0] : null; };
 
-// same evaluation as the game's support type expressions (RPN): any true value left on the stack = match
-function matches(expr, types) {
-  const st = [];
-  for (const t of expr) {
-    if (t === 'OR') { const o = st.pop(); st[st.length - 1] = st.at(-1) || o; }
-    else if (t === 'AND') { const o = st.pop(); st[st.length - 1] = st.at(-1) && o; }
-    else if (t === 'NOT') st[st.length - 1] = !st.at(-1);
-    else st.push(types.has(t));
-  }
-  return st.some(Boolean);
-}
-export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
 const num = (x, d = 0) => x == null ? '—' : fmt(x, d);
 // stat lines of a gem at a level (constants + that level), hidden helper keys (_cost, _spirit…) left out
 function gemLines(name, level) {
@@ -97,22 +86,29 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
   let sel = 0;      // skill shown in the details panel
   function render() {
     const b = getBuild(), sum = getSum(), attrs = attributes(sum, b.asc), used = { str: 0, dex: 0, int: 0 };
+    linkMetas(b);
     const rows = b.gems.map((g, gi) => {
       const G = GEM[g.name];
       if (!G || G.kind === 'support') return '';
       g.sockets ??= 2; g.supports ??= [];
-      g.supports = g.supports.slice(0, g.sockets);
+      const holder = usedBy(b, gi), metas = metasFor(b, g), held = b.gems.filter((x, i) => usedBy(b, i) === g);
+      const room = held.length ? Math.max(0, g.sockets - held.length) : g.sockets;   // a meta gem's sockets also hold its skills
+      g.supports = g.supports.slice(0, room);
       const sups = g.supports.map(n => n && GEM[n]);
-      sups.forEach(s => s && colour(s) && used[colour(s)]++);
-      const types = new Set([...(G.types || []), ...sups.flatMap(s => s?.adds || [])]);
-      const sockets = G.cannot_be_supported ? `<small class="note">${t('Cannot be supported')}</small>` : Array.from({ length: g.sockets }, (_, si) => {
+      if (!holder) sups.forEach(s => s && colour(s) && used[colour(s)]++);
+      const own = held[0] || g;   // a meta gem's supports are for the skill in it: its types say which fit
+      const types = new Set([...(GEM[own.name].types || []), ...sups.flatMap(s => s?.adds || [])]);
+      // a skill put in a meta gem (Mortar Cannon's Cluster Grenade): the meta gem's sockets and supports are its own
+      const inMeta = metas.length ? `<label class="smeta">${t('Socketed in')} <select data-gi="${gi}" data-k="meta"><option value="">${t('None')}</option>${metas.map(m => `<option value="${esc(m.name)}"${holder === m ? ' selected' : ''}>${esc(tn(GEM[m.name]))}</option>`).join('')}</select></label>` : '';
+      const heldHtml = held.map(x => `<span class="sockw"><button class="sock held" data-pick="${b.gems.indexOf(x)}" title="${esc(tn(GEM[x.name]))}"><img src="${img(GEM[x.name].icon)}" alt=""></button></span>`).join('');
+      const sockets = holder ? `<small class="note">${t('Uses the supports of {0}', esc(tn(GEM[holder.name])))}</small>` : G.cannot_be_supported ? `<small class="note">${t('Cannot be supported')}</small>` : heldHtml + Array.from({ length: room }, (_, si) => {
         const s = sups[si];
         return `<span class="sockw"><button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(tn(s)) + ' — ' + t('right click to remove') : t('Empty support socket')}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>${s ? `<button class="sockx" data-unsup="${gi}:${si}" title="${t('Remove support')}">✕</button>` : ''}</span>`;
       }).join('');
       const d = skill(g, b, sum);
       let picker = '';
       if (open?.[0] === gi) {   // only supports this skill can take, with icon, what they do and what they would do to its DPS
-        const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(d.dps, skill({ ...g, supports }, b, sum).dps)); };
+        const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(skill(own, b, sum).dps, skill({ ...own, supports }, b, sum).dps)); };
         const fams = new Set(sups.flatMap((s, i) => s && i !== open[1] ? s.family : []));
         const opts = SUPPORTS.filter(s => canSupport(s, types) && !s.family.some(f => fams.has(f)))
           .sort((x, y) => tn(x).localeCompare(tn(y)));
@@ -127,7 +123,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
       }
       return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
         <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level"> <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <b>${esc(tn(G))}</b>
-          <span class="sockn">${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
+          ${inMeta}<span class="sockn"${holder ? ' hidden' : ''}>${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
           <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
         <div class="socks">${sockets}</div>${picker}</div></div>`;
     }).join('');
@@ -141,7 +137,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
       <br><small class="note">${t('{0} attribute = 1 capacity. Attributes: Str {1}, Dex {2}, Int {3}. Sockets: whatever your gem has (Jeweller\'s Orbs, max {4}).', per, attrs.str, attrs.dex, attrs.int, SK.max_support_sockets)}</small></div></div>`;
   }
   // remove a support: ✕ on the socket or in the details panel, or right click on the socket
-  const unsup = (gi, si) => { const g = getBuild().gems[gi]; if (!g?.supports?.[si]) return false; g.supports[si] = null; open = null; changed(); render(); return true; };
+  const unsup = (gi, si) => { const b = getBuild(), g = usedBy(b, gi) || b.gems[gi]; if (!g?.supports?.[si]) return false; g.supports[si] = null; open = null; changed(); render(); return true; };
   side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number)); });
   el.addEventListener('contextmenu', e => { const s = e.target.closest('.sock'); if (s && unsup(+s.dataset.gi, +s.dataset.si)) e.preventDefault(); });
   el.addEventListener('click', e => {
@@ -151,6 +147,8 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
     if (del) { getBuild().gems.splice(del.dataset.del, 1); open = null; if (sel >= +del.dataset.del) sel = Math.max(0, sel - 1); changed(); render(); return; }
     const opt = e.target.closest('[data-sup]');
     if (opt) { const g = getBuild().gems[open[0]]; g.supports[open[1]] = opt.dataset.sup || null; open = null; changed(); render(); return; }
+    const pk = e.target.closest('[data-pick]');   // a skill in a meta gem's socket: show that skill
+    if (pk) { sel = +pk.dataset.pick; open = null; render(); return; }
     const t = e.target.closest('.sock');
     if (!t) {   // anywhere else on a skill row (not its inputs) shows it in the details panel
       const row = e.target.closest('[data-sel]');
@@ -165,7 +163,12 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
     if (e.target.id === 'gemSearch') { if (addGem(e.target.value)) el.querySelector('#gemSearch')?.focus(); return; }
     const t = e.target, g = getBuild().gems[t.dataset.gi]; if (!g) return;
     if (!t.dataset.k) return;
-    g[t.dataset.k] = +t.value;
+    if (t.dataset.k === 'meta') {   // in a meta gem: one of its sockets; out of it: its own sockets, empty
+      const m = getBuild().gems.find(x => x.name === t.value);
+      if (m) m.sockets = Math.min(SK.max_support_sockets, Math.max(m.sockets ?? 2, (m.supports || []).filter(Boolean).length + 1 + getBuild().gems.filter(x => x !== g && x.meta === m.name).length));
+      else { g.supports = []; g.sockets = 2; }
+      g.meta = t.value;
+    } else g[t.dataset.k] = +t.value;
     changed(); render();
   });
   el.addEventListener('input', e => {   // filter the support list in place (keeps the focus in the box)

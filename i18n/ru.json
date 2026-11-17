@@ -818,5 +818,7 @@
  "Saved items": "Сохранённые предметы",
  "Items you replace or take off are kept here, to wear them again.": "Заменённые или снятые предметы хранятся здесь, чтобы надеть их снова.",
  "Undo (Ctrl+Z)": "Отменить (Ctrl+Z)",
- "Redo (Ctrl+Y)": "Повторить (Ctrl+Y)"
+ "Redo (Ctrl+Y)": "Повторить (Ctrl+Y)",
+ "Socketed in": "Вставлена в",
+ "Uses the supports of {0}": "Использует поддержки {0}"
 }

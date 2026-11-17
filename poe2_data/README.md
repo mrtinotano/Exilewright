@@ -24,6 +24,8 @@ The extraction takes a while (ten languages).
   (no source in the tables but in GGG's trade list). Gems not in the current patch (no source and not in the trade
   list, or cuttable/lineage ones no longer in it) are left out: the official list `api/trade2/data/items` is
   downloaded on every run.
+  A meta gem has `holds`: the skill types its sockets take (its own support part's require / exclude, the same
+  expressions as a support gem's): Mortar Cannon takes grenades.
 - `passive_tree.json` — only nodes in the real tree graph (passiveskillgraph.psg), no unused ascendancies; with
   connections (`links`) to work out paths.
 - `ascendancies.json` — the 23 playable ascendancies with their class; `portrait` is the class's face in the game's

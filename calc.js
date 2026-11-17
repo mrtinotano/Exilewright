@@ -29,11 +29,43 @@ console.assert(QUESTS.length && QUESTS.every(q => q.options.every(o => !o.missed
 // meta gem counted, not the skill in it; a build with a meta gem and its skills of other attributes would tell which.
 // note: every Mote it can hold (a hit takes one away, they come back in seconds)
 const ATTRS = ['strength', 'dexterity', 'intelligence'];
-// the meta gem that uses the build's i-th gem: the one before it, with the same supports, for a weapon both use
-// (Mortar Cannon's crossbow grenades; Ancestral Warrior Totem's maces, not the Orb of Storms after it)
-export const usedBy = (b, i) => { const m = i > 0 && b.gems[i - 1], ws = m && SK.skills[m.name]?.weapons;
-  return ws && GEM[m.name]?.tags?.includes('meta') && String(m.supports || []) === String(b.gems[i].supports || [])
-    && SK.skills[b.gems[i].name]?.weapons?.some(x => ws.includes(x)) ? m : null; };
+// same evaluation as the game's support type expressions (RPN): any true value left on the stack = match
+function matches(expr, types) {
+  const st = [];
+  for (const t of expr) {
+    if (t === 'OR') { const o = st.pop(); st[st.length - 1] = st.at(-1) || o; }
+    else if (t === 'AND') { const o = st.pop(); st[st.length - 1] = st.at(-1) && o; }
+    else if (t === 'NOT') st[st.length - 1] = !st.at(-1);
+    else st.push(types.has(t));
+  }
+  return st.some(Boolean);
+}
+export const canSupport = (s, types) => !(s.exclude.length && matches(s.exclude, types)) && (!s.require.length || matches(s.require, types));
+const isMeta = g => !!GEM[g?.name]?.tags?.includes('meta');
+// the build's meta gems skill g can go in: those whose sockets take its types (gems.json `holds`: Mortar Cannon takes
+// grenades; Ancestral Warrior Totem, attacks a totem can use)
+export const metasFor = (b, g) => { const types = new Set(GEM[g?.name]?.types || []);
+  return isMeta(g) || GEM[g?.name]?.kind === 'support' ? [] : (b.gems || []).filter(m => m !== g && GEM[m.name]?.holds && canSupport(GEM[m.name].holds, types)); };
+// the meta gem that uses the build's i-th gem: the one it was put in (g.meta, as in the game: the skill sits in one of
+// the meta gem's sockets). A build from before that field: the gem before it, with the same supports.
+export const usedBy = (b, i) => { const g = b.gems?.[i]; if (!g) return null;
+  if ('meta' in g) return g.meta && metasFor(b, g).find(m => m.name === g.meta) || null;
+  const m = i > 0 && b.gems[i - 1];
+  return m && String(m.supports || []) === String(g.supports || []) && metasFor(b, g).includes(m) ? m : null; };
+// what a meta gem holds, as the game has it: its sockets hold the skills put in it and the supports, and those
+// supports are the skills' (each skill in it keeps a copy, which the calculation reads). Run before every save.
+export function linkMetas(b) {
+  const inside = new Map();
+  for (const [i, g] of (b.gems || []).entries()) {
+    const m = usedBy(b, i);
+    if (m) { g.meta = m.name; inside.set(m, [...inside.get(m) || [], g]); } else if (g.meta) g.meta = '';
+  }
+  for (const [m, list] of inside) {
+    const n = Math.max(0, (m.sockets ?? 2) - list.length);
+    m.supports = (m.supports || []).slice(0, n);
+    for (const g of list) { g.sockets = n; g.supports = [...m.supports]; }
+  }
+}
 export function skillStats(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};

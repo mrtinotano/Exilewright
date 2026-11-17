@@ -818,5 +818,7 @@
  "Saved items": "Objets gardés",
  "Items you replace or take off are kept here, to wear them again.": "Les objets que vous remplacez ou retirez sont gardés ici pour les reporter.",
  "Undo (Ctrl+Z)": "Annuler (Ctrl+Z)",
- "Redo (Ctrl+Y)": "Rétablir (Ctrl+Y)"
+ "Redo (Ctrl+Y)": "Rétablir (Ctrl+Y)",
+ "Socketed in": "Sertie dans",
+ "Uses the supports of {0}": "Utilise les soutiens de {0}"
 }
