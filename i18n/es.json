@@ -826,5 +826,6 @@
  "Numbers within (±%)": "Números a ±%",
  "Window": "Ventana",
  "Open with Windows": "Abrir al iniciar Windows",
- "Only in the notification area (click its icon to open the window)": "Solo en la bandeja de iconos (haz clic en su icono para abrir la ventana)"
+ "Only in the notification area (click its icon to open the window)": "Solo en la bandeja de iconos (haz clic en su icono para abrir la ventana)",
+ "With {0} of its {1} modifiers": "Con {0} de sus {1} modificadores"
 }

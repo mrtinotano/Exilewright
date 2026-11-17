@@ -826,5 +826,6 @@
  "Numbers within (±%)": "ค่าตัวเลขต่างได้ (±%)",
  "Window": "หน้าต่าง",
  "Open with Windows": "เปิดเมื่อเริ่ม Windows",
- "Only in the notification area (click its icon to open the window)": "แสดงเฉพาะในพื้นที่แจ้งเตือน (คลิกไอคอนเพื่อเปิดหน้าต่าง)"
+ "Only in the notification area (click its icon to open the window)": "แสดงเฉพาะในพื้นที่แจ้งเตือน (คลิกไอคอนเพื่อเปิดหน้าต่าง)",
+ "With {0} of its {1} modifiers": "ตรงกับม็อด {0} จาก {1}"
 }

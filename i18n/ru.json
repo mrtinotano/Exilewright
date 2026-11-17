@@ -826,5 +826,6 @@
  "Numbers within (±%)": "Значения в пределах ±%",
  "Window": "Окно",
  "Open with Windows": "Запускать вместе с Windows",
- "Only in the notification area (click its icon to open the window)": "Только в области уведомлений (щёлкните значок, чтобы открыть окно)"
+ "Only in the notification area (click its icon to open the window)": "Только в области уведомлений (щёлкните значок, чтобы открыть окно)",
+ "With {0} of its {1} modifiers": "С {0} из {1} модификаторов"
 }

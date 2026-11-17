@@ -826,5 +826,6 @@
  "Numbers within (±%)": "Valeurs à ±%",
  "Window": "Fenêtre",
  "Open with Windows": "Ouvrir au démarrage de Windows",
- "Only in the notification area (click its icon to open the window)": "Seulement dans la zone de notification (cliquez sur son icône pour ouvrir la fenêtre)"
+ "Only in the notification area (click its icon to open the window)": "Seulement dans la zone de notification (cliquez sur son icône pour ouvrir la fenêtre)",
+ "With {0} of its {1} modifiers": "Avec {0} de ses {1} modificateurs"
 }

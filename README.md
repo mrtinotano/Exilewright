@@ -80,7 +80,7 @@ decide what counts. Without a skill in the build only defences and the weapon's 
 use, sends the game one Ctrl+C, as if you pressed it, and the page searches the official trade site for items like
 yours: the same base or unique with its modifiers (crafted, fractured and desecrated ones too) and its weapon damage
 or defences within 10% (Settings: "Numbers within"; a number never goes past 1 towards 0, so a "+1" line is always asked for), every one of them (a
-unique: the lines that can roll otherwise). Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest
+unique: the lines that can roll otherwise); when nothing like that is listed, any one of them fewer, and so on. Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest
 alike, as the site ranks them whatever the currency), those listings and a button that opens the same search on the
 trade site. Again one key press, one item.
 

@@ -826,5 +826,6 @@
  "Numbers within (±%)": "数値の範囲（±%）",
  "Window": "ウィンドウ",
  "Open with Windows": "Windows の起動時に開く",
- "Only in the notification area (click its icon to open the window)": "通知領域のみに表示（アイコンをクリックするとウィンドウを開きます）"
+ "Only in the notification area (click its icon to open the window)": "通知領域のみに表示（アイコンをクリックするとウィンドウを開きます）",
+ "With {0} of its {1} modifiers": "{1}個の修正値のうち{0}個が一致"
 }

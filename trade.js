@@ -161,7 +161,7 @@ export function readListing(r) {
 // all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the middle one of the
 // cheapest MANY is the estimate, in the currency its seller asked: no exchange rate is needed.
-// -> { total, near (the tolerance; null: only the name and base),
+// -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines),
 //      prices: [{ amount, currency }] cheapest first, estimate: { amount, currency }, id (the search, siteLink opens it) }
 const MANY = 10;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
@@ -183,15 +183,21 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  // a line asked as normal, crafted, fractured or desecrated counts once: one of its ids is enough
-  const stats = lines.map(l => ({ type: 'count', value: { min: 1 }, filters: l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } })) }));
   const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)]));
   const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
-  const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
+  // its lines, each as normal, crafted, fractured or desecrated (an item has one of them): all of them first, then
+  // any one fewer each time nothing is listed (better something alike than nothing), down to one
+  const all = lines.flatMap(l => l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } })));
+  let s, k = n;
+  for (; ; k--) {
+    const stats = k ? [{ type: 'count', value: { min: k }, filters: all }] : [];
+    s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
+    if (s.total || k <= 1) break;
+  }
   const ids = (s.result || []).slice(0, MANY);
   const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
   const prices = got.map(r => r?.listing?.price).filter(Boolean);
-  return { total: s.total, near: n || Object.keys(own).length ? near : null, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: s.id };
+  return { total: s.total, near: n || Object.keys(own).length ? near : null, within: k, of: n, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: s.id };
 }
 
 // ---------- the search

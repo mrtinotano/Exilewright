@@ -202,6 +202,7 @@ export function initLoot(el, ctx) {
       show({ name, link, lines: [
         ...p.estimate ? [[[t('It may be worth') + ': ', ''], [`~${p.estimate.amount} ${t(p.estimate.currency)}`, 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
+        ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         [[t('Cheapest') + ': ' + Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'dim']]] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;

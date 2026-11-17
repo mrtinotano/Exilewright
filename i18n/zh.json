@@ -826,5 +826,6 @@
  "Numbers within (±%)": "數值範圍（±%）",
  "Window": "視窗",
  "Open with Windows": "Windows 啟動時開啟",
- "Only in the notification area (click its icon to open the window)": "僅在通知區域顯示（點擊圖示開啟視窗）"
+ "Only in the notification area (click its icon to open the window)": "僅在通知區域顯示（點擊圖示開啟視窗）",
+ "With {0} of its {1} modifiers": "符合 {1} 個詞綴中的 {0} 個"
 }
