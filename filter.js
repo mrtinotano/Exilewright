@@ -133,7 +133,7 @@ export function initFilter(el) {
       case 'write': msg = ''; return write(false);
       case 'play': {   // as the game will play it: the copy in its folder, at the rule's volume (300 the loudest)
         // the game's own: extracted by _tool/sounds.py (poe2_data/available/sounds), when it was run
-        const a = new Audio(r.sound === 'own' ? 'filtersound?name=' + encodeURIComponent(r.own) : `poe2_data/available/sounds/alert_${String(r.sound).padStart(2, '0')}.ogg`); a.volume = Math.min(1, (+r.volume || 0) / 300);
+        const a = new Audio(r.sound === 'own' ? 'filtersound?name=' + encodeURIComponent(r.own) : `poe2_data/available/sounds/alert_${String(r.sound).padStart(2, '0')}.wav`); a.volume = Math.min(1, (+r.volume || 0) / 300);
         a.play().catch(() => { msg = t(r.sound === 'own' ? 'It could not be played' : "The game's sounds are not in the app yet"); err = true; render(); }); return;
       }
       case 'download': {
