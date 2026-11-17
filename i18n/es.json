@@ -827,5 +827,6 @@
  "Window": "Ventana",
  "Open with Windows": "Abrir al iniciar Windows",
  "Only in the notification area (click its icon to open the window)": "Solo en la bandeja de iconos (haz clic en su icono para abrir la ventana)",
- "With {0} of its {1} modifiers": "Con {0} de sus {1} modificadores"
+ "With {0} of its {1} modifiers": "Con {0} de sus {1} modificadores",
+ "{0} of its modifiers searched up to {1}% to find any": "{0} de sus modificadores buscados hasta el {1} % para encontrar alguno"
 }

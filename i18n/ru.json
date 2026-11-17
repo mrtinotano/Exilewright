@@ -827,5 +827,6 @@
  "Window": "Окно",
  "Open with Windows": "Запускать вместе с Windows",
  "Only in the notification area (click its icon to open the window)": "Только в области уведомлений (щёлкните значок, чтобы открыть окно)",
- "With {0} of its {1} modifiers": "С {0} из {1} модификаторов"
+ "With {0} of its {1} modifiers": "С {0} из {1} модификаторов",
+ "{0} of its modifiers searched up to {1}% to find any": "{0} модификаторов искали в пределах до {1}%, чтобы что-то найти"
 }

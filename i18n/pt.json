@@ -827,5 +827,6 @@
  "Window": "Janela",
  "Open with Windows": "Abrir ao iniciar o Windows",
  "Only in the notification area (click its icon to open the window)": "Somente na área de notificação (clique no ícone para abrir a janela)",
- "With {0} of its {1} modifiers": "Com {0} de seus {1} modificadores"
+ "With {0} of its {1} modifiers": "Com {0} de seus {1} modificadores",
+ "{0} of its modifiers searched up to {1}% to find any": "{0} de seus modificadores buscados até {1}% para encontrar algum"
 }

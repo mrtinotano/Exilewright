@@ -827,5 +827,6 @@
  "Window": "Fenster",
  "Open with Windows": "Mit Windows starten",
  "Only in the notification area (click its icon to open the window)": "Nur im Infobereich (Klick auf das Symbol öffnet das Fenster)",
- "With {0} of its {1} modifiers": "Mit {0} seiner {1} Modifikatoren"
+ "With {0} of its {1} modifiers": "Mit {0} seiner {1} Modifikatoren",
+ "{0} of its modifiers searched up to {1}% to find any": "{0} seiner Modifikatoren bis {1} % gesucht, um welche zu finden"
 }

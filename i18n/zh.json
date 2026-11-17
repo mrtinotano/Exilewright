@@ -827,5 +827,6 @@
  "Window": "視窗",
  "Open with Windows": "Windows 啟動時開啟",
  "Only in the notification area (click its icon to open the window)": "僅在通知區域顯示（點擊圖示開啟視窗）",
- "With {0} of its {1} modifiers": "符合 {1} 個詞綴中的 {0} 個"
+ "With {0} of its {1} modifiers": "符合 {1} 個詞綴中的 {0} 個",
+ "{0} of its modifiers searched up to {1}% to find any": "為了找到結果，{0} 個詞綴放寬到 {1}% 搜尋"
 }

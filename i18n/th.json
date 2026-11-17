@@ -827,5 +827,6 @@
  "Window": "หน้าต่าง",
  "Open with Windows": "เปิดเมื่อเริ่ม Windows",
  "Only in the notification area (click its icon to open the window)": "แสดงเฉพาะในพื้นที่แจ้งเตือน (คลิกไอคอนเพื่อเปิดหน้าต่าง)",
- "With {0} of its {1} modifiers": "ตรงกับม็อด {0} จาก {1}"
+ "With {0} of its {1} modifiers": "ตรงกับม็อด {0} จาก {1}",
+ "{0} of its modifiers searched up to {1}% to find any": "ขยายการค้นหาม็อด {0} รายการถึง {1}% เพื่อให้พบ"
 }
