@@ -633,8 +633,6 @@
  "connecting…": "подключение…",
  "this needs the planner's own server: python3 serve.py": "нужен собственный сервер планировщика: python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "Этот предмет ещё не опознан: опознайте его и скопируйте снова.",
- "Start from the build's equipment": "Начать со снаряжения билда",
- "Take off": "Снять",
  "Upgrade": "Улучшение",
  "Trade-off": "Компромисс",
  "About the same": "Примерно то же",
@@ -648,7 +646,6 @@
  "loses": "теряете",
  "Not understood: it is not counted": "Не распознано: не учитывается",
  "Remove": "Убрать",
- "Show the verdict over the game, next to the pointer": "Показывать вердикт поверх игры, рядом с курсором",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "Чтобы видеть вердикт поверх игры, запустите сервер командой: python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "Планировщик не открыт: оценить предмет нечем",
  "The planner's page is not answering: look at its tab once": "Страница планировщика не отвечает: переключитесь на её вкладку",
@@ -819,9 +816,6 @@
  "Less than {0}": "Меньше {0}",
  "The dearer one has modifiers yours does not have.": "У более дорогого есть модификаторы, которых нет у вашего.",
  "More than {0}": "Больше {0}",
- "What it is compared with": "С чем сравнивается",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "Каждый скопированный предмет сравнивается с предметом здесь в той же ячейке. Заполняется само: первый скопированный предмет ячейки считается надетым на персонаже (✕ снимает его, и его место займёт следующий скопированный). Билд не меняется.",
  "Equipment comparison": "Сравнение снаряжения",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Наведите курсор на предмет в игре (найденный и опознанный, из инвентаря или продаваемый торговцем) и нажмите Ctrl+C: рядом с курсором вы увидите, лучше он или хуже того, что надет на персонажа. Предмет примеряется в каждую ячейку, куда подходит, и билд рассчитывается с ним и без него: что важно, решают пассивные умения и умения билда.",
- "Items are compared with the ones of the Equipment tab.": "Предметы сравниваются с предметами вкладки «Снаряжение»."
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Наведите курсор на предмет в игре (найденный и опознанный, из инвентаря или продаваемый торговцем) и нажмите Ctrl+C: рядом с курсором вы увидите, лучше он или хуже того, что надет на персонажа. Предмет примеряется в каждую ячейку, куда подходит, и билд рассчитывается с ним и без него: что важно, решают пассивные умения и умения билда."
 }

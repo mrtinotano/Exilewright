@@ -3,7 +3,7 @@
 // merchant's shop), picked up by serve.py's /clipboard while the game is the window in use. It is tried in every slot it fits and the
 // build is worked out with and without it, so the build's passives and skills decide what counts (spell damage on a
 // wand is an upgrade for a spell and nothing for a bow). Without a skill only the defences and the weapon's own damage
-// are judged. What it is compared with is the gear marked here as worn (the build is left alone) or the build's own.
+// are judged. It is compared with the gear kept here as worn (the build is left alone) or the build's own.
 // The verdict goes to serve.py's /overlay, which shows it over the game: there is nothing else to see.
 //   ctx: { build(), id(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
 import { t, fmt, tn, lang, cap } from './i18n.js';
@@ -29,7 +29,7 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, over: true, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
   if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
@@ -114,7 +114,7 @@ export function initLoot(el, ctx) {
     return { kind: v?.kind || 'none', title: `${icon} ${t(word)}` + (v ? ' · ' + slotName(v.slot) : ''), name: pair ? `${t('Equipped')}: ${nameOf(v.old)} → ${name}` : name, lines };
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
-  const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(S.over ? v : null) }).catch(() => {}); };
+  const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(v) }).catch(() => {}); };
 
   const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); keep(); };
   // ---------- items coming in
@@ -177,14 +177,10 @@ export function initLoot(el, ctx) {
   }
 
   // ---------- the section
-  // slot <- item (null empties it) in the worn gear kept here
-  function put(slot, item, name) {
-    if (item) S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; else delete S.on[slot];
-    keep(); render();
-  }
+  // slot <- item in the worn gear kept here
+  function put(slot, item, name) { S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; keep(); }
   function render() {
-    const b = ctx.build(), g = gemOf(b), own = skills(b), gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
-    const wornOpen = el.querySelector('.lworn-box')?.open;   // folded: only needed to put it right; stays as it was left
+    const b = ctx.build(), g = gemOf(b), own = skills(b);
     el.innerHTML = `<h3>${t('Equipment comparison')}</h3>
         <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
         <div class="optrow">
@@ -194,16 +190,8 @@ export function initLoot(el, ctx) {
         </div>
         ${g ? '' : `<p class="note">${t("The build has no skill: damage cannot be judged, only the defences and the weapon's own damage.")}</p>`}
         <div class="optrow">
-          ${over ? `<label><input type="checkbox" data-c="over"${S.over ? ' checked' : ''}> ${t('Show the verdict over the game, next to the pointer')}</label><span class="llive"></span>`
-          : `<span class="note">${t('To see the verdict over the game, start the server with: python3 serve.py overlay')}</span>`}
-        </div>
-      <details class="lworn-box"${wornOpen ? ' open' : ''}><summary><b>${t('What it is compared with')}: ${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</b> (${gear.length})</summary>
-        ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab.')}</p>`
-        : `<p class="note">${t('Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.')}</p>`}
-        ${S.vs !== 'build' && Object.keys(b.items || {}).length ? `<div class="optrow"><button data-do="copy">${t("Start from the build's equipment")}</button></div>` : ''}
-        ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
-          S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}
-      </details>`;
+          ${over ? '<span class="llive"></span>' : `<span class="note">${t('To see the verdict over the game, start the server with: python3 serve.py overlay')}</span>`}
+        </div>`;
     showLive();
   }
 
@@ -211,15 +199,8 @@ export function initLoot(el, ctx) {
     const d = e.target.dataset;
     if (d.s) S[d.s] = e.target.value;
     else if ('gem' in d) S.gem[ctx.id()] = +e.target.value;
-    else if (d.c) S[d.c] = e.target.checked;
     else return;
     keep(); render();
-  };
-  el.onclick = e => {
-    const d = e.target.closest('[data-do]');
-    if (!d) return;
-    if (d.dataset.do === 'off') put(d.dataset.slot, null);
-    else { fromBuild(); render(); }   // copy
   };
   fetch('overlay').then(r => r.ok ? r.json() : {}).then(j => { over = !!j.overlay; render(); }).catch(() => {});
   watch();

@@ -633,8 +633,6 @@
  "connecting…": "接続中…",
  "this needs the planner's own server: python3 serve.py": "プランナー自身のサーバーが必要です: python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "このアイテムはまだ未識別です: 識別してからもう一度コピーしてください。",
- "Start from the build's equipment": "ビルドの装備から開始",
- "Take off": "外す",
  "Upgrade": "アップグレード",
  "Trade-off": "一長一短",
  "About the same": "ほぼ同じ",
@@ -648,7 +646,6 @@
  "loses": "損失",
  "Not understood: it is not counted": "解釈できません: 計算されません",
  "Remove": "リストから削除",
- "Show the verdict over the game, next to the pointer": "判定をゲーム上のカーソル横に表示",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "ゲーム上に判定を表示するには、次のコマンドでサーバーを起動してください: python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "プランナーが開いていません: アイテムを判定できません",
  "The planner's page is not answering: look at its tab once": "プランナーのページが応答しません: そのタブを一度表示してください",
@@ -819,9 +816,6 @@
  "Less than {0}": "{0}未満",
  "The dearer one has modifiers yours does not have.": "高い方にはあなたの装備にない修正値があります。",
  "More than {0}": "{0}超",
- "What it is compared with": "比較対象",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "コピーしたアイテムは、ここにある同じ部位のアイテムと比較されます。自動で埋まります：各部位で最初にコピーしたアイテムがキャラクターの装備中のものとして扱われます（✕で外すと、次にコピーしたものがその場所に入ります）。ビルドは変わりません。",
  "Equipment comparison": "装備の比較",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にポインターを合わせて Ctrl+C を押すと、キャラクターが装備しているものより良いか悪いかがポインターの横に表示されます。アイテムは装備できるすべての部位で試され、ビルドはそれがある場合とない場合で計算されます。何が重要かはビルドのパッシブとスキルが決めます。",
- "Items are compared with the ones of the Equipment tab.": "アイテムは装備タブのものと比較されます。"
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にポインターを合わせて Ctrl+C を押すと、キャラクターが装備しているものより良いか悪いかがポインターの横に表示されます。アイテムは装備できるすべての部位で試され、ビルドはそれがある場合とない場合で計算されます。何が重要かはビルドのパッシブとスキルが決めます。"
 }

@@ -633,8 +633,6 @@
  "connecting…": "conectando…",
  "this needs the planner's own server: python3 serve.py": "isto precisa do servidor próprio do planejador: python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "Esse item ainda não foi identificado: identifique-o e copie de novo.",
- "Start from the build's equipment": "Começar do equipamento da build",
- "Take off": "Retirar",
  "Upgrade": "Melhoria",
  "Trade-off": "Prós e contras",
  "About the same": "Quase igual",
@@ -648,7 +646,6 @@
  "loses": "perde",
  "Not understood: it is not counted": "Não entendido: não é contado",
  "Remove": "Remover",
- "Show the verdict over the game, next to the pointer": "Mostrar o veredito sobre o jogo, ao lado do ponteiro",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "Para ver o veredito sobre o jogo, inicie o servidor com: python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "O planejador não está aberto: nada pode avaliar o item",
  "The planner's page is not answering: look at its tab once": "A página do planejador não está respondendo: olhe a aba dela uma vez",
@@ -819,9 +816,6 @@
  "Less than {0}": "Menos de {0}",
  "The dearer one has modifiers yours does not have.": "O mais caro tem modificadores que o seu não tem.",
  "More than {0}": "Mais de {0}",
- "What it is compared with": "Com o que se compara",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "Cada item que você copiar é comparado com o que está aqui no espaço dele. Preenche-se sozinho: o primeiro item copiado de cada espaço é tomado como o que o personagem está usando (✕ o tira, e o próximo copiado ocupa o lugar). A build não muda.",
  "Equipment comparison": "Comparador de equipamento",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Passe o mouse sobre um item no jogo (um que você encontrou e identificou, um do inventário ou um que um mercador vende) e pressione Ctrl+C: ao lado do ponteiro você vê se ele é melhor ou pior que o que o personagem usa. O item é testado em cada espaço em que cabe e a build é calculada com e sem ele: as passivas e habilidades da build decidem o que conta.",
- "Items are compared with the ones of the Equipment tab.": "Os itens são comparados com os da aba Equipamento."
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Passe o mouse sobre um item no jogo (um que você encontrou e identificou, um do inventário ou um que um mercador vende) e pressione Ctrl+C: ao lado do ponteiro você vê se ele é melhor ou pior que o que o personagem usa. O item é testado em cada espaço em que cabe e a build é calculada com e sem ele: as passivas e habilidades da build decidem o que conta."
 }

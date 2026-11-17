@@ -633,8 +633,6 @@
  "connecting…": "연결 중…",
  "this needs the planner's own server: python3 serve.py": "플래너 전용 서버가 필요합니다: python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "아직 감정되지 않은 아이템입니다: 감정한 뒤 다시 복사하세요.",
- "Start from the build's equipment": "빌드의 장비에서 시작",
- "Take off": "벗기",
  "Upgrade": "업그레이드",
  "Trade-off": "장단점 있음",
  "About the same": "비슷함",
@@ -648,7 +646,6 @@
  "loses": "잃음",
  "Not understood: it is not counted": "이해하지 못함: 계산되지 않음",
  "Remove": "제거",
- "Show the verdict over the game, next to the pointer": "포인터 옆, 게임 위에 판정 표시",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "게임 위에 판정을 표시하려면 다음으로 서버를 시작하세요: python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "플래너가 열려 있지 않습니다: 아이템을 판단할 수 없습니다",
  "The planner's page is not answering: look at its tab once": "플래너 페이지가 응답하지 않습니다: 해당 탭을 한 번 확인하세요",
@@ -819,9 +816,6 @@
  "Less than {0}": "{0} 미만",
  "The dearer one has modifiers yours does not have.": "더 비싼 쪽에는 내 장비에 없는 옵션이 있습니다.",
  "More than {0}": "{0} 초과",
- "What it is compared with": "비교 대상",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "복사한 아이템은 여기 있는 같은 부위의 아이템과 비교됩니다. 자동으로 채워집니다: 부위마다 처음 복사한 아이템을 캐릭터가 착용 중인 것으로 봅니다 (✕로 빼면 다음에 복사한 것이 그 자리를 차지합니다). 빌드는 바뀌지 않습니다.",
  "Equipment comparison": "장비 비교",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "게임에서 아이템(찾아서 감정한 것, 인벤토리에 있는 것, 상인이 파는 것)에 포인터를 올리고 Ctrl+C를 누르면 캐릭터가 착용한 것보다 좋은지 나쁜지가 포인터 옆에 표시됩니다. 아이템은 들어갈 수 있는 모든 슬롯에서 시험되고 빌드는 아이템이 있을 때와 없을 때로 계산됩니다. 무엇이 중요한지는 빌드의 패시브와 스킬이 결정합니다.",
- "Items are compared with the ones of the Equipment tab.": "아이템은 장비 탭의 아이템과 비교됩니다."
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "게임에서 아이템(찾아서 감정한 것, 인벤토리에 있는 것, 상인이 파는 것)에 포인터를 올리고 Ctrl+C를 누르면 캐릭터가 착용한 것보다 좋은지 나쁜지가 포인터 옆에 표시됩니다. 아이템은 들어갈 수 있는 모든 슬롯에서 시험되고 빌드는 아이템이 있을 때와 없을 때로 계산됩니다. 무엇이 중요한지는 빌드의 패시브와 스킬이 결정합니다."
 }

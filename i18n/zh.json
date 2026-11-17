@@ -633,8 +633,6 @@
  "connecting…": "連線中…",
  "this needs the planner's own server: python3 serve.py": "這需要規劃器自己的伺服器：python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "該物品尚未鑑定：請鑑定後再複製一次。",
- "Start from the build's equipment": "從配置的裝備開始",
- "Take off": "卸下",
  "Upgrade": "升級",
  "Trade-off": "有得有失",
  "About the same": "差不多",
@@ -648,7 +646,6 @@
  "loses": "失去",
  "Not understood: it is not counted": "無法解析：不計入",
  "Remove": "移除",
- "Show the verdict over the game, next to the pointer": "在遊戲畫面上、游標旁顯示評判結果",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "要在遊戲畫面上看到評判結果，請以此指令啟動伺服器：python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "規劃器未開啟：無法評判物品",
  "The planner's page is not answering: look at its tab once": "規劃器頁面沒有回應：請切換到它的分頁一次",
@@ -819,9 +816,6 @@
  "Less than {0}": "低於 {0}",
  "The dearer one has modifiers yours does not have.": "較貴的那件帶有你的裝備沒有的詞綴。",
  "More than {0}": "高於 {0}",
- "What it is compared with": "比較對象",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "你複製的每件物品都會與這裡同一欄位的物品比較。會自動填入：每個欄位第一件複製的物品視為角色正穿著的（✕ 可卸下，下一件複製的會取代它）。不會改變 build。",
  "Equipment comparison": "裝備比較",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "在遊戲中將游標移到物品上（你找到並已鑑定的、背包中的或商人販售的）並按 Ctrl+C：游標旁會顯示它比角色身上穿的更好還是更差。物品會在每個可裝備的欄位中試用，並計算有它和沒有它時的配置：由配置的天賦和技能決定什麼重要。",
- "Items are compared with the ones of the Equipment tab.": "物品會與「裝備」分頁中的物品比較。"
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "在遊戲中將游標移到物品上（你找到並已鑑定的、背包中的或商人販售的）並按 Ctrl+C：游標旁會顯示它比角色身上穿的更好還是更差。物品會在每個可裝備的欄位中試用，並計算有它和沒有它時的配置：由配置的天賦和技能決定什麼重要。"
 }

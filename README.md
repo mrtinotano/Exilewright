@@ -68,8 +68,8 @@ decide what counts. Without a skill in the build only defences and the weapon's 
   place it shows: the planner only has to stay open. It needs the game in windowed
   full screen (nothing draws over exclusive full screen). From source it needs a Python with tkinter; outside
   Windows start the server with `python3 serve.py overlay`.
-- *What the character wears*: the planner cannot read it from the game, so the first item copied for each slot is
-  taken as the one worn (folded under the section: ✕ takes one off); or compare with the build's own Equipment instead.
+- *What the character wears*: the planner cannot read it from the game, so it starts from the build's equipment and
+  the first item copied for an empty slot is taken as the one worn; or compare with the build's own Equipment instead.
 - One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
   and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one
   read of the clipboard per manual key press and nothing automatic, so there is no scan of the whole inventory.

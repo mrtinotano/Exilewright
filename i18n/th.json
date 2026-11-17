@@ -633,8 +633,6 @@
  "connecting…": "กำลังเชื่อมต่อ…",
  "this needs the planner's own server: python3 serve.py": "ต้องใช้เซิร์ฟเวอร์ของตัววางแผน: python3 serve.py",
  "That item is not identified yet: identify it and copy it again.": "ไอเทมนี้ยังไม่ได้ระบุ: ระบุแล้วคัดลอกอีกครั้ง",
- "Start from the build's equipment": "เริ่มจากอุปกรณ์ของบิลด์",
- "Take off": "ถอด",
  "Upgrade": "อัปเกรด",
  "Trade-off": "ได้อย่างเสียอย่าง",
  "About the same": "พอๆ กัน",
@@ -648,7 +646,6 @@
  "loses": "เสีย",
  "Not understood: it is not counted": "ไม่เข้าใจ: ไม่ได้นับ",
  "Remove": "นำออกจากรายการ",
- "Show the verdict over the game, next to the pointer": "แสดงผลการตัดสินบนเกม ข้างตัวชี้เมาส์",
  "To see the verdict over the game, start the server with: python3 serve.py overlay": "หากต้องการดูผลการตัดสินบนเกม ให้เริ่มเซิร์ฟเวอร์ด้วย: python3 serve.py overlay",
  "The planner is not open: nothing can judge the item": "ตัววางแผนไม่ได้เปิดอยู่: ไม่มีสิ่งใดตัดสินไอเทมได้",
  "The planner's page is not answering: look at its tab once": "หน้าของตัววางแผนไม่ตอบสนอง: เปิดดูแท็บนั้นสักครั้ง",
@@ -819,9 +816,6 @@
  "Less than {0}": "น้อยกว่า {0}",
  "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
  "More than {0}": "มากกว่า {0}",
- "What it is compared with": "เปรียบเทียบกับ",
- "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "ไอเทมทุกชิ้นที่คัดลอกจะถูกเปรียบเทียบกับชิ้นที่อยู่ที่นี่ในช่องเดียวกัน ช่องนี้เติมเอง: ไอเทมแรกที่คัดลอกของแต่ละช่องจะถือว่าเป็นของที่ตัวละครสวมอยู่ (✕ ถอดออก แล้วชิ้นถัดไปที่คัดลอกจะเข้ามาแทน) บิลด์ไม่เปลี่ยน",
  "Equipment comparison": "เปรียบเทียบอุปกรณ์",
- "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ",
- "Items are compared with the ones of the Equipment tab.": "ไอเทมจะถูกเปรียบเทียบกับไอเทมในแท็บอุปกรณ์"
+ "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ"
 }
