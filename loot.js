@@ -198,14 +198,17 @@ export function initLoot(el, ctx) {
       const p = await priceOf({ league, item: r.item, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
         ...s.deep ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
-      const counts = {}, cost = x => `${x.amount} ${t(x.currency)}`;
-      for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
+      const cost = x => `${x.amount} ${t(x.currency)}`;
+      const list = xs => Object.entries(xs.reduce((c, x) => (c[cost(x)] = (c[cost(x)] || 0) + 1, c), {})).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · ');
+      const same = p.prices.filter(x => !x.more), better = p.prices.filter(x => x.more);
+      const worth = p.low && p.high && cost(p.low) !== cost(p.high) ? t('Between {0} and {1}', cost(p.low), cost(p.high)) : p.estimate ? '~' + cost(p.estimate) : p.under && t('Less than {0}', cost(p.under));
       show({ name, link, lines: [
-        ...p.estimate ? [[[t('It may be worth') + ': ', ''], [p.low && p.high && cost(p.low) !== cost(p.high) ? t('Between {0} and {1}', cost(p.low), cost(p.high)) : '~' + cost(p.estimate), 'up']]] : [],
+        ...worth ? [[[t('It may be worth') + ': ', ''], [worth, 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
-        [[t('Cheapest') + ': ' + Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'dim']]] });
+        ...same.length ? [[[t('Cheapest') + ': ' + list(same), 'dim']]] : [],
+        ...better.length ? [[[t('With modifiers yours does not have') + ': ' + list(better), 'dim']]] : []] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;
       show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });

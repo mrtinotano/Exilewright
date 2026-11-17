@@ -833,5 +833,7 @@
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "Si rien n’est trouvé dans le % : cherche chaque modificateur seul jusqu’à 30 %, puis sans l’un d’eux. Plus de recherches (et plus long).",
  "Between {0} and {1}": "Entre {0} et {1}",
  "Searching the trade site (thorough search: it can take longer)…": "Recherche sur le site d’échange (recherche approfondie : cela peut prendre plus de temps)…",
- "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Astuce : activez « Recherche approfondie » dans les Paramètres d’Exilewright pour chercher plus loin."
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Astuce : activez « Recherche approfondie » dans les Paramètres d’Exilewright pour chercher plus loin.",
+ "Less than {0}": "Moins de {0}",
+ "With modifiers yours does not have": "Avec des modificateurs que le vôtre n’a pas"
 }

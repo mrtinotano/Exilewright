@@ -833,5 +833,7 @@
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "% 안에 아무것도 없으면: 옵션을 하나씩 30%까지 넓혀 검색하고, 그다음 하나를 빼고 검색합니다. 검색이 더 많아집니다(시간도).",
  "Between {0} and {1}": "{0}~{1}",
  "Searching the trade site (thorough search: it can take longer)…": "거래 사이트 검색 중 (정밀 검색: 더 오래 걸릴 수 있음)…",
- "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "팁: Exilewright 설정에서 「정밀 검색」을 켜면 더 넓게 찾습니다."
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "팁: Exilewright 설정에서 「정밀 검색」을 켜면 더 넓게 찾습니다.",
+ "Less than {0}": "{0} 미만",
+ "With modifiers yours does not have": "내 장비에 없는 옵션 포함"
 }

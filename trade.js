@@ -163,8 +163,9 @@ export function readListing(r) {
 // middle one of the cheapest MANY is a price, in the currency its seller asked: no exchange rate is needed. Once
 // something alike is listed, the same search twice more: every number at or under its own (low), and at or over (high).
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
-//      prices: [{ amount, currency }] cheapest first, low, high, estimate: { amount, currency } (low / high: from the
-//      worse / better ones, null when none is listed; estimate: from all of them), id (the search, siteLink opens it) }
+//      prices: [{ amount, currency, more }] cheapest first, low, high, estimate: { amount, currency } (low / high: from the
+//      worse / better ones, null when none is listed; estimate: from all of them; all three only from listings with no
+//      modifier it lacks), under (the cheapest listing with one: yours is worth less), id (the search, siteLink opens it) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
@@ -209,14 +210,19 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     if (Object.keys(wide).length) s = await search(n, pct = i => wide[i] || near);
     else if (n > 1) s = await search(k = n - 1, pct);
   }
+  // a listing with a modifier this one does not have (by the site's stat number) is a better item: its price is only
+  // a ceiling (`more`: how many such lines), never the price
+  const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
+  const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
+    .filter(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1])).length;
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
-    return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).map(r => r?.listing?.price).filter(Boolean) : []; };
-  const middle = p => p[(p.length - 1) >> 1] || null, sided = n || Object.keys(props).length;
+    return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
+  const middle = p => (p = p.filter(x => !x.more))[(p.length - 1) >> 1] || null, sided = n || Object.keys(props).length;
   const prices = await pricesOf(s);
   const [low, high] = s.total && sided ? [middle(await pricesOf(await search(k, pct, -1))), middle(await pricesOf(await search(k, pct, 1)))] : [null, null];
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised),
-    prices, low, high, estimate: middle(prices), id: s.id };
+    prices, low, high, estimate: middle(prices), under: prices.find(x => x.more) || null, id: s.id };
 }
 
 // ---------- the search

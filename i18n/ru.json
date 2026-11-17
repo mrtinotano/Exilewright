@@ -833,5 +833,7 @@
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "Если в пределах % ничего нет: каждый модификатор отдельно до 30%, затем без одного из них. Больше запросов (и дольше).",
  "Between {0} and {1}": "От {0} до {1}",
  "Searching the trade site (thorough search: it can take longer)…": "Поиск на торговом сайте (тщательный поиск: может занять больше времени)…",
- "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Совет: включите «Тщательный поиск» в настройках Exilewright, чтобы искать шире."
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Совет: включите «Тщательный поиск» в настройках Exilewright, чтобы искать шире.",
+ "Less than {0}": "Меньше {0}",
+ "With modifiers yours does not have": "С модификаторами, которых нет у вашего"
 }

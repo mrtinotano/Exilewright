@@ -833,5 +833,7 @@
  "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "ถ้าไม่พบในช่วง %: ค้นหาม็อดแต่ละตัวแยกกันถึง 30% แล้วค้นหาโดยตัดออกหนึ่งตัว ใช้การค้นหามากขึ้น (และนานขึ้น)",
  "Between {0} and {1}": "ระหว่าง {0} ถึง {1}",
  "Searching the trade site (thorough search: it can take longer)…": "กำลังค้นหาในเว็บซื้อขาย (ค้นหาอย่างละเอียด: อาจใช้เวลานานขึ้น)…",
- "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม"
+ "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม",
+ "Less than {0}": "น้อยกว่า {0}",
+ "With modifiers yours does not have": "มีม็อดที่ของคุณไม่มี"
 }
