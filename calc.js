@@ -1,7 +1,7 @@
 // Character sheet and skill damage, from the summed tree + gear stats (app.js treeSum) and the game data.
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
-import { t, tn, fmt, cap } from './i18n.js';
+import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader } from './items.js';
 import { SK } from './skilldata.js';
 
@@ -218,6 +218,7 @@ export function sheet(b, sum) {
   const num = fmt;
   const NO_LIFE = t('Needs the class base life (regenerate the data on Windows)'), NO_MANA = t('Needs the class base mana (regenerate the data on Windows)');
   const { lifeRegen, esRate, esDelay, esRecharge } = recovery(c, sum);
+  const esRegen = v(sum, 'base_energy_shield_regeneration_rate_per_minute') / 60 * pct('energy_shield_regeneration_rate_+%', 'energy_shield_recovery_rate_+%');
   // mana: inherent 4%/s unless a keystone removes it, plus "mana equal to X% of life"
   const manaBase = sum.no_inherent_mana_regeneration ? 0 : CHAR['character_inherent_mana_regeneration_rate_per_minute_%'] / 100 / 60;   // 240/min = 4%/s
   const manaLife = v(sum, 'regenerate_mana_equal_to_x%_of_life_per_minute');
@@ -232,9 +233,9 @@ export function sheet(b, sum) {
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
   const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + at.dex * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
-  const opt = (label, id, unit = '%') => sum[id] ? [[label, num(sum[id], Number.isInteger(sum[id]) ? 0 : 1) + unit]] : [];
+  const used = new Set(), opt = (label, id, unit = '%') => used.add(id) && sum[id] ? [[label, num(sum[id], Number.isInteger(sum[id]) ? 0 : 1) + unit]] : [];
   const RES = { fire: 'Fire Resistance', cold: 'Cold Resistance', lightning: 'Lightning Resistance', chaos: 'Chaos Resistance' };
-  return [
+  const own = [
     ['Life', [
       ['Maximum Life', num(c.life), c.life == null ? NO_LIFE : ''],
       ['Total Life Recovery per second', num(lifeRegen, 1)],
@@ -286,6 +287,38 @@ export function sheet(b, sum) {
       ...opt('Damage taken to Life over 4 seconds', 'damage_taken_goes_to_life_over_4_seconds_%'),
     ]],
   ];
+  return panel(own, sum, used, {
+    'energy_shield_recovery_per_minute': (esRecharge + esRegen) * 60, 'total_energy_shield_recovery_per_minute_from_recharge': esRecharge * 60,
+    'total_energy_shield_recovery_per_minute_from_regeneration': esRegen * 60, 'mana_recovery_per_minute': manaRegen * 60,
+  });
+}
+
+// The rest of the game's character panel (char_panel.json, from its CharacterPanelStats table), in its order and
+// words: a row is shown when its stat is one of `derived` or the tree and gear give it, as it is or as its base_ /
+// non-virtual_ stat. note: the game also adds buffs and conditions to those stats; the planner leaves them out.
+const PANEL = await fetch('poe2_data/available/char_panel.json').then(r => r.json()).catch(() => ({ sections: [], rows: [] }));
+const SHOWN = new Set(['FlatValue', 'PercentageValue', 'PercentModifier', 'PercentModifierFinal', 'Seconds']);
+function panel(own, sum, used, derived) {
+  const value = r => {
+    const id = r.stat;
+    if (id in derived) return derived[id];
+    const bare = id.replace(/^(virtual|combined)_/, '');
+    // a total (Maximum Life...) is not the sum of its modifiers: only a % row looks under the base_ / non-virtual_ name
+    const k = (r.mode.startsWith('Percent') ? [id, 'base_' + id, bare, 'base_' + bare] : [id]).find(k => sum[k] && !used.has(k));
+    return k && sum[k];
+  };
+  const text = (r, x) => {
+    for (const f of r.fn) x = f === 'PerMinuteToPerSecond' ? x / 60 : f === 'Negate' ? -x : f === 'DivideByOneHundred1dp' ? x / 100 : f.startsWith('Milliseconds') ? x / 1000 : x;
+    const [pos, neg] = PANEL.formats[r.mode][lang] || PANEL.formats[r.mode].en;
+    const less = r.mode === 'PercentModifierFinal' && x < 0;
+    return (less ? neg : pos).replace(/\{0(:\+d)?\}/, (m, sign) => (sign && x > 0 ? '+' : '') + fmt(less ? -x : x, Number.isInteger(x) ? 0 : 1));
+  };
+  const out = PANEL.sections.map(s => {
+    const mine = own.find(([h]) => h === s.name);
+    const rows = PANEL.rows.filter(r => r.section === s.id && SHOWN.has(r.mode)).map(r => [r, value(r)]).filter(([, x]) => x).map(([r, x]) => [tn(r), text(r, x)]);
+    return mine ? [mine[0], [...mine[1], ...rows]] : rows.length && [tn(s), rows];
+  }).filter(Boolean);
+  return [...out, ...own.filter(([h]) => !PANEL.sections.some(s => s.name === h))];
 }
 
 const DMG = ['physical', 'fire', 'cold', 'lightning', 'chaos'];

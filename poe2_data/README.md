@@ -38,6 +38,9 @@ The extraction takes a while (ten languages).
   and, for those not in it yet, their own page); the base is the trade list's one.
 - `skills.json` — per gem: cast time, constant and per-level stats (damage, cost, spirit, cooldown…), plus the
   character constants (`character.ot`, `GameConstants`) and the monster table per level.
+- `char_panel.json` — the game's character panel list (`CharacterPanelStats`, `CharacterPanelTabs`,
+  `CharacterPanelDescriptionModes`), its own sections Life to Miscellaneous: per row its section, stat, display mode,
+  handlers and text in every language; the character sheet shows the rows the planner can work out.
 - `monsters.json` — the enemies of the 3D scene, from `MonsterVarieties`, `MonsterTypes`, `GrantedEffects*`,
   `DefaultMonsterStats`, `MonsterPacks`, `WorldAreas` and `EndGameMaps`: 1846 monsters (364 bosses) with life,
   damage, armour and evasion multipliers, resistances, attack time, critical, areas (by name, as Path of Building 2

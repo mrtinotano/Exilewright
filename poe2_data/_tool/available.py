@@ -434,6 +434,23 @@ save('stat_texts.json', [row(d, 'English') for d in kept])
 for c, l in LANGS.items():
     save(f'stat_texts.{c}.json', [row(d, l) for d in kept])
 
+# --- the character panel's list (CharacterPanelStats: the character's own sections, Life to Miscellaneous): each row's
+# section, text, stat (the first of StatsKeys1; the other columns are conditions), how it is shown and its handlers
+cp_tabs, cp_modes, cp_fns = load('CharacterPanelTabs'), load('CharacterPanelDescriptionModes'), load('StatDescriptionFunctions')
+cp_langs, cp_tab_langs, cp_mode_langs = load_langs('CharacterPanelStats'), load_langs('CharacterPanelTabs'), load_langs('CharacterPanelDescriptionModes')
+CP_TABS = ('Life', 'EnergyShield', 'Mana', 'Armour', 'Evasion', 'Deflection', 'Resistances', 'Blocking', 'Ward', 'Rage', 'Thorns',
+           'Stun', 'Ailments', 'DamageTaken', 'DamageRedirect', 'Flasks', 'Charms', 'Charges', 'Infusions', 'Misc')
+char_panel = {
+    'sections': [{'id': t['Id'], 'name': plain(t['Text']), **tr(cp_tab_langs, t['_index'], 'Text')} for t in cp_tabs if t['Id'] in CP_TABS],
+    'formats': {m['Id']: {'en': [m['FormatString_Positive'], m['FormatString_Negative']],
+                          **{c: [rows[m['_index']]['FormatString_Positive'], rows[m['_index']]['FormatString_Negative']] for c, rows in cp_mode_langs.items()}} for m in cp_modes},
+    'rows': [{'section': cp_tabs[r['CharacterPanelTabsKey']]['Id'], 'id': r['Id'], 'stat': stats[r['StatsKeys1'][0]]['Id'],
+              'mode': cp_modes[r['CharacterPanelDescriptionModesKey']]['Id'], 'fn': [cp_fns[i]['Id'] for i in r['StatDescriptionFunctions']],
+              **{k: re.sub(r'<[^>]*>\{(.*)\}', r'\1', v) for k, v in {'name': plain(r['Text']), **tr(cp_langs, r['_index'], 'Text')}.items()}}   # "<size:22>{text}": a smaller font
+             for r in load('CharacterPanelStats') if cp_tabs[r['CharacterPanelTabsKey']]['Id'] in CP_TABS and r['StatsKeys1'] and r['Text']],
+}
+save('char_panel.json', char_panel)
+
 # --- equipment: bases (with tags inherited through the .it files), implicits and rollable affixes with spawn tags
 def read_it(p, cache={}):
     """tags + parent of a metadata/items/*.it file, following 'extends'."""
