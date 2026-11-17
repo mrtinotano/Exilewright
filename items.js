@@ -113,7 +113,7 @@ export function flaskRecovery(items = {}, sum = {}) {
     if (!s.local_flask_always_drinking && !(k === 'life' && !it.unique && g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you'))) continue;
     const amount = base.flask[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
       * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1);
-    out[k] += amount / base.flask.recovery_s * (1 + (g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
+    out[k] += amount / base.flask.recovery_s * (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
   }
   return out;
 }

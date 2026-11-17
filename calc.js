@@ -258,13 +258,10 @@ export function sheet(b, sum) {
     ['Evasion', [
       ['Evasion Rating', num(c.evasion)],
       ['Estimated Chance to Evade', c.evadePct == null ? '—' : num(c.evadePct) + '%', t('Against an attack from a monster of your level (82 at most)')],
-      ...deflect ? [['Deflection Rating', num(deflect)]] : [],
-      ...opt('Damage Deflected', 'base_damage_%_deflected'),
     ]],
     ['Resistances', [...Object.entries(RES).map(([k, label]) => [label, `${c.res[k].capped}% (${t('max. {0}%', c.res[k].max)})`, c.res[k].value !== c.res[k].capped ? t('Uncapped: {0}%', c.res[k].value) : '']),
       ...c.penalty ? [['Area Penalty', c.penalty + '%', t('Elemental resistances are lower in areas of a higher level: here, an area of your level')]] : []]],
     ['Block', [
-      ...c.block ? [['Block Chance', num(c.block) + '%']] : [],
       ...opt('Life gained on Block', 'life_gained_on_block', ''), ...opt('Mana gained on Block', 'mana_gained_on_block', ''), ...opt('Energy Shield gained on Block', 'energy_shield_gained_on_block', ''),
     ]],
     ['Thorns', thorns[1] ? [['Total Thorns Damage', `${num(thorns[0])} – ${num(thorns[1])}`], ['Physical Thorns Damage', `${num(thorns[0])} – ${num(thorns[1])}`],
@@ -278,14 +275,8 @@ export function sheet(b, sum) {
       ...opt('Ailment Duration on you', 'base_all_ailment_duration_on_self_+%'),
     ]],
     ['Damage Taken', [
-      ...opt('Physical Damage taken Recouped as Life', 'physical_damage_taken_recouped_as_life_%'),
-      ...opt('Elemental Damage taken Recouped as Life', 'elemental_damage_taken_%_recouped_as_life'),
       ...opt('Elemental Damage taken Recouped as Energy Shield', 'recoup_%_elemental_damage_as_energy_shield'),
       ...opt('Damage taken while on Low Life', 'damage_taken_+%_on_low_life'),
-    ]],
-    ['Damage Redirection', [
-      ...opt('Damage taken from Mana before Life', 'damage_taken_goes_to_mana_%'),
-      ...opt('Damage taken to Life over 4 seconds', 'damage_taken_goes_to_life_over_4_seconds_%'),
     ]],
   ];
   const flask = flaskRecovery(b.items, sum), esFlask = sum.life_recovery_from_flasks_also_recovers_energy_shield ? flask.life : 0;
@@ -296,6 +287,23 @@ export function sheet(b, sum) {
   const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
   const rage = rageGen || sum.maximum_rage ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (berserk ? gemStats(berserk, sum)['berserk_maximum_rage_granted_+'] || 0 : 0) : 0;
   const most = (base, ...ids) => (CHAR[base] || 0) + v(sum, ...ids);
+  // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
+  const applies = { fire: v(sum, 'base_armour_%_applies_to_fire_damage'), cold: v(sum, 'base_armour_%_applies_to_cold_damage'), lightning: v(sum, 'base_armour_%_applies_to_lightning_damage', 'base_armour_applies_to_lightning_damage') };
+  const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
+  const vs = Object.fromEntries([...Object.entries(applies).map(([e, x]) => [e, Math.round(c.armour * (x + ele) / 100)]),
+    ['chaos', Math.round(c.armour * v(sum, 'base_armour_%_applies_to_chaos_damage', 'body_armour_grants_base_armour_applies_to_chaos_damage') / 100)]]);
+  const asOne = vs.fire === vs.cold && vs.cold === vs.lightning;   // the game shows one "Elemental" row then
+  const lvl = Math.min(b.level || 1, 82);
+  const cut = x => x ? armourReduction(x, lvl) : 0;
+  // block: its cap is character.ot's 50% plus "maximum Block chance"
+  const blockMax = (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%');
+  // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
+  const ward = (v(sum, 'base_maximum_ward') + (c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%');
+  // ailment durations on you: the ailment's own, the elemental ones' and all ailments' ("reduced" stats count down)
+  const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
+  const selfDur = e => v(sum, `base_self_${e}_duration_-%`) + eleAil - allAil;
+  const bypass = v(sum, 'base_all_damage_bypass_energy_shield_%'), fromMana = v(sum, 'elemental_damage_removed_from_mana_before_life_%');
+  const manaFirst = v(sum, 'base_damage_removed_from_mana_before_life_%');
   return panel(own, sum, used, {
     // note: the game's totals, 17/11: Energy Shield's is its flasks' (421.3) without the recharge, Life's and Mana's are
     // their regeneration alone, without their constantly applied flasks
@@ -309,15 +317,33 @@ export function sheet(b, sum) {
     'virtual_maximum_endurance_charges': most('max_endurance_charges', 'max_endurance_charges'),
     ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [`virtual_maximum_${e}_infusion_stacks`, most('base_maximum_infusions', `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
     'movement_velocity_+permyriad': c.move * 100,
-  });
+    'display_armour_applying_to_fire': vs.fire, 'display_armour_applying_to_cold': vs.cold, 'display_armour_applying_to_lightning': vs.lightning,
+    'display_armour_applying_to_chaos': vs.chaos, 'display_estimated_maximum_chaos_damage_reduction_against_hits_%': cut(vs.chaos),
+    ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [`display_estimated_maximum_${e}_damage_reduction_against_hits_%`, cut(vs[e])])),
+    // note: the chance to deflect is worked out like the chance to evade, the deflection rating against the attacker's
+    // accuracy (the game's own description of Deflection); a deflected hit takes GameConstants' 40% less, plus modifiers
+    'deflection_rating': Math.round(deflect), 'chance_to_deflect_%_estimate': deflect && evadeChance(deflect, lvl),
+    'damage_%_deflected': deflect && (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected'),
+    'block_%': c.block && [c.block, blockMax], 'maximum_ward': ward,
+    'combined_bleeding_duration_on_self_+%': v(sum, 'self_bleed_duration_+%') + allAil, 'combined_poison_duration_on_self_+%': v(sum, 'self_poison_duration_+%') + allAil,
+    'display_self_ignite_duration': selfDur('ignite'), 'display_self_freeze_duration': selfDur('freeze'), 'display_self_shock_duration': selfDur('shock'),
+    'self_chill_duration_-%': v(sum, 'base_self_chill_duration_-%') + eleAil - allAil,
+    ...Object.fromEntries(['physical', 'fire', 'cold', 'lightning', 'chaos'].map(e => [`${e}_damage_bypass_energy_shield_%`, bypass + v(sum, `base_${e}_damage_bypass_energy_shield_%`)])),
+    // from Mana before Life: each type's is the general one plus its own (the game shows the general row alone when they match)
+    ...Object.fromEntries(['physical', 'fire', 'cold', 'lightning', 'chaos'].map(e => [`${e}_damage_removed_from_mana_before_life_%`, manaFirst + (e === 'physical' || e === 'chaos' ? 0 : fromMana)])),
+    // presence: character.ot's radius, its area scaled as an area of effect (the radius grows with the square root)
+    'presence_radius': sum['presence_area_+%'] && Math.round(CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%'))),
+    'self_critical_strike_multiplier_+%': -v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%'),
+  }, new Set([...fromMana ? [] : ['PhysicalDamageRemovedFromManaBeforeLife', 'FireDamageRemovedFromManaBeforeLife', 'ColdDamageRemovedFromManaBeforeLife',
+    'LightningDamageRemovedFromManaBeforeLife', 'ChaosDamageRemovedFromManaBeforeLife'], ...asOne ? ['ArmourVsFire', 'ArmourVsCold', 'ArmourVsLightning', 'EstimateFireReductionVsHits', 'EstimateColdReductionVsHits', 'EstimateLightningReductionVsHits'] : ['ArmourVsElemental', 'EstimateElementalReductionVsHits']]));
 }
 
 // The rest of the game's character panel (char_panel.json, from its CharacterPanelStats table), in its order and
 // words: a row is shown when its stat is one of `derived` or the tree and gear give it, as it is or as its base_ /
 // non-virtual_ stat. note: the game also adds buffs and conditions to those stats; the planner leaves them out.
 const PANEL = await fetch('poe2_data/available/char_panel.json').then(r => r.json()).catch(() => ({ sections: [], rows: [] }));
-const SHOWN = new Set(['FlatValue', 'PercentageValue', 'PercentModifier', 'PercentModifierFinal', 'Seconds']);
-function panel(own, sum, used, derived) {
+const SHOWN = new Set(['FlatValue', 'PercentageValue', 'PercentModifier', 'PercentModifierFinal', 'Seconds', 'PercentageValueWithMax']);
+function panel(own, sum, used, derived, hide) {
   const value = r => {
     const id = r.stat;
     if (id in derived) return derived[id];
@@ -326,15 +352,16 @@ function panel(own, sum, used, derived) {
     const k = (r.mode.startsWith('Percent') ? [id, 'base_' + id, bare, 'base_' + bare] : [id]).find(k => sum[k] && !used.has(k));
     return k && sum[k];
   };
-  const text = (r, x) => {
+  const text = (r, both) => {   // both: the value, or [value, second value] ("{0}% (max {1}%)")
+    let [x, y] = Array.isArray(both) ? both : [both];
     for (const f of r.fn) x = f === 'PerMinuteToPerSecond' ? x / 60 : f === 'Negate' ? -x : f === 'DivideByOneHundred1dp' ? x / 100 : f.startsWith('Milliseconds') ? x / 1000 : x;
     const [pos, neg] = PANEL.formats[r.mode][lang] || PANEL.formats[r.mode].en;
     const less = r.mode === 'PercentModifierFinal' && x < 0;
-    return (less ? neg : pos).replace(/\{0(:\+d)?\}/, (m, sign) => (sign && x > 0 ? '+' : '') + fmt(less ? -x : x, r.fn.some(f => f.endsWith('1dp')) || !Number.isInteger(x) ? 1 : 0));
+    return (less ? neg : pos).replace('{1}', fmt(y)).replace(/\{0(:\+d)?\}/, (m, sign) => (sign && x > 0 ? '+' : '') + fmt(less ? -x : x, r.fn.some(f => f.endsWith('1dp')) || !Number.isInteger(x) ? 1 : 0));
   };
   const out = PANEL.sections.map(s => {
     const mine = own.find(([h]) => h === s.name);
-    const rows = PANEL.rows.filter(r => r.section === s.id && SHOWN.has(r.mode)).map(r => [r, value(r)]).filter(([, x]) => x).map(([r, x]) => [tn(r), text(r, x)]);
+    const rows = PANEL.rows.filter(r => r.section === s.id && SHOWN.has(r.mode) && !hide.has(r.id)).map(r => [r, value(r)]).filter(([, x]) => x).map(([r, x]) => [tn(r), text(r, x)]);
     return mine ? [mine[0], [...mine[1], ...rows]] : [tn(s), rows];
   }).filter(([, rows]) => rows.length);   // as the game: a section with nothing to show is left out
   return [...out, ...own.filter(([h]) => !PANEL.sections.some(s => s.name === h))];

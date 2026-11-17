@@ -376,6 +376,7 @@ char_stats['ignite_duration_s'] = game['BaseIgniteDuration']
 char_stats['base_maximum_rage'] = game['BaseMaximumRage']   # 30; passives add maximum_rage
 char_stats['rage_loss_delay_ms'], char_stats['rage_loss_per_minute'] = game['BaseRageLossDelayMs'], game['BaseRageLossPerMinute']
 char_stats['base_maximum_infusions'] = game['BaseMaximumInfusionCount']
+char_stats['damage_%_deflected'] = game['BasePercentDamageDeflected']   # a deflected hit takes 40% less
 attr_text = {k: cs.get(k + 'Description') for k in ('Strength', 'Dexterity', 'Intelligence')}  # what 1 point of each gives
 # what the campaign leaves on a character: the stats of every permanent quest reward (the table also keeps rewards the
 # campaign no longer gives: which ones count is pob2.py's part; the tally of boss faces is no stat of the character),
