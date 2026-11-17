@@ -14,7 +14,7 @@ Download it from [Releases](https://github.com/mrtinotano/Exilewright/releases/l
 - **Exilewright-portable.zip**: unzip it anywhere and open `Exilewright.exe`. Your builds are kept in the `profile`
   folder next to it.
 
-It opens in a window of its own (WebView2, part of Windows), with the size and place it had when it was last closed;
+It opens in a window of its own (WebView2, part of Windows), maximized the first time and then with the size and place it last had;
 closing the window closes it. Windows may warn that the app is not recognised, because it is not signed: "More info"
 → "Run anyway".
 

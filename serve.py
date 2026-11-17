@@ -695,7 +695,7 @@ def app(url):
     if sys.platform == 'win32':
         threading.Thread(target=over, daemon=True).start()
     path = os.path.join(profile(), 'window.json')
-    s = {'width': 1500, 'height': 950, 'x': None, 'y': None, 'maximized': False}
+    s = {'width': 1500, 'height': 950, 'x': None, 'y': None, 'maximized': True}   # the first time: maximized
     try:
         with open(path, encoding='utf-8') as f:
             s.update(json.load(f))
