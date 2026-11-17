@@ -147,7 +147,7 @@ export function initLoot(el, ctx) {
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
         ...s.deep ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const cost = x => `${x.amount} ${t(x.currency)}`;
-      const worth = p.from && (cost(p.from) === cost(p.to) ? cost(p.to) : t('Between {0} and {1}', cost(p.from), cost(p.to)));
+      const worth = p.from && t('Between {0} and {1}', cost(p.from), cost(p.to));
       show({ name, link, lines: [
         ...worth ? [[[t('It may be worth') + ': ', ''], [worth, 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],

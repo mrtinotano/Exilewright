@@ -223,17 +223,22 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
   let from = null, to = null;
+  const key = x => x.amount + ' ' + x.currency;
   if (s.total && sided) {
     to = (await pricesOf(await search(k, pct, { side: 1 })))[0] || null;   // then a worse one never dearer than it (one asking too much)
-    from = (await pricesOf(await search(k, pct, { side: -1, desc: true, upTo: to }))).find(x => !x.more) || null;
+    const worse = (await pricesOf(await search(k, pct, { side: -1, desc: true, upTo: to }))).filter(x => !x.more);
+    from = (to && worse.find(x => key(x) !== key(to))) || worse[0] || null;   // one asking less than the better one, if any does
   }
   // a side without one (no worse one as cheap as the better one, nothing better listed...): the cheapest alike, and the
-  // first dearer one (once more with the site's price filter when the cheapest all cost the same). Always two ends
+  // first dearer one (once more with the site's price filter when the cheapest all cost the same)
   if (s.total && (!from || !to)) {
-    const prices = await pricesOf(s), key = x => x.amount + ' ' + x.currency;
+    const prices = await pricesOf(s);
     from ||= prices.find(x => !x.more) || prices[0] || null;
-    to ||= from && (prices.slice(prices.indexOf(from) + 1).find(x => key(x) !== key(from)) || (await pricesOf(await search(k, pct, { over: from })))[0]) || from;
+    to ||= from && prices.slice(prices.indexOf(from) + 1).find(x => key(x) !== key(from)) || null;
   }
+  // always two prices when the site has two: the ends asking the same, the next dearer alike is the top one
+  if (from && (!to || key(from) === key(to))) to = (await pricesOf(await search(k, pct, { over: from })))[0] || to || from;
+  if (from && key(from) === key(to)) from = (await pricesOf(s)).find(x => key(x) !== key(to)) || from;   // none dearer: the cheapest alike
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };
 }
