@@ -828,5 +828,8 @@
  "Open with Windows": "Abrir al iniciar Windows",
  "Only in the notification area (click its icon to open the window)": "Solo en la bandeja de iconos (haz clic en su icono para abrir la ventana)",
  "With {0} of its {1} modifiers": "Con {0} de sus {1} modificadores",
- "{0} of its modifiers searched up to {1}% to find any": "{0} de sus modificadores buscados hasta el {1} % para encontrar alguno"
+ "{0} of its modifiers searched up to {1}% to find any": "{0} de sus modificadores buscados hasta el {1} % para encontrar alguno",
+ "Thorough search": "Búsqueda exhaustiva",
+ "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "Si no sale nada dentro del %: busca cada modificador por separado hasta el 30 % y después quitando uno de ellos. Hace más búsquedas (y tarda más).",
+ "Between {0} and {1}": "Entre {0} y {1}"
 }

@@ -50,10 +50,10 @@ function waitFor(kind, now = Date.now()) {   // seconds until one more call of t
 }
 const rules = h => (h || '').split(',').map(x => x.split(':').slice(0, 2).map(Number)).filter(([n, secs]) => n > 0 && secs > 0);
 let last = 0;
-// one call at a time, spaced out
-async function call(path, body) {
+// one call at a time, spaced out; a wait longer than `patience` seconds is told instead
+async function call(path, body, patience = 8) {
   const kind = kindOf(path);
-  if (kind) { const w = waitFor(kind); if (w > 8) throw new TradeError('rate limit', 'wait', Math.ceil(w)); if (w > 0) await sleep(w * 1000); }
+  if (kind) { const w = waitFor(kind); if (w > patience) throw new TradeError('rate limit', 'wait', Math.ceil(w)); if (w > 0) await sleep(w * 1000); }
   const gap = last + 1100 - Date.now(); if (gap > 0) await sleep(gap);
   last = Date.now();
   let r;
@@ -159,13 +159,17 @@ export function readListing(r) {
 // those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike. All of them
 // within `near` % (Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any %),
 // all of them: one it lacks is not alike.
-// Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the middle one of the
-// cheapest MANY is the estimate, in the currency its seller asked: no exchange rate is needed.
+// Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the
+// middle one of the cheapest MANY is a price, in the currency its seller asked: no exchange rate is needed. Once
+// something alike is listed, the same search twice more: every number at or under its own (low), and at or over (high).
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
-//      prices: [{ amount, currency }] cheapest first, estimate: { amount, currency }, id (the search, siteLink opens it) }
+//      prices: [{ amount, currency }] cheapest first, low, high, estimate: { amount, currency } (low / high: from the
+//      worse / better ones, null when none is listed; estimate: from all of them), id (the search, siteLink opens it) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
+// side -1: only from the % under it up to it; 1: from it up to the % over it
+const range = (v, near, side) => { const r = around(v, near); return r && side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r; };
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
 export function propsOf(text) {
@@ -176,24 +180,24 @@ export function propsOf(text) {
   return Object.fromEntries(Object.entries(p).filter(([, v]) => v > 0).map(([k, v]) => [k, Math.round(v * 10) / 10]));
 }
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
-export async function priceOf({ league, item, text = '', state = 'available', near = 10 }) {
+export async function priceOf({ league, item, text = '', state = 'available', near = 10, deep = false }) {
   const props = propsOf(text);
   const { known, desecrated } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
     .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)]));
-  const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
+  const own = side => Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)]));
+  const filters = side => Object.keys(props).length ? { equipment_filters: { filters: own(side) } } : {};
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
-  // within pct(i) %
-  const search = (k, pct) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters,
-    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...around(l.value, pct(i)) && { value: around(l.value, pct(i)) } }))) }] : [] }, sort: { price: 'asc' } });
-  // all of them within the %; nothing: one line at a time, its % alone raised 5 by 5 up to WIDE (asked at WIDE first:
-  // a line nothing is found with at all costs one search), then every line at the % it found something with. Still
-  // nothing: any one line left out. Then there is none.
-  let s = await search(n, () => near), k = n, wide = {};
-  if (!s.total && n) {
+  // within pct(i) % (on that side of its number)
+  const search = (k, pct, side = 0) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters: filters(side),
+    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i), side) && { value: range(l.value, pct(i), side) } }))) }] : [] }, sort: { price: 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
+  // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE
+  // (asked at WIDE first: a line nothing is found with at all costs one search), then every line at the % it found
+  // something with. Still nothing: any one line left out. Then there is none.
+  let s = await search(n, () => near), k = n, wide = {}, pct = () => near;
+  if (!s.total && n && deep) {
     for (const [i, l] of lines.entries()) {
       if (!around(l.value, near) || near >= WIDE) continue;
       const at = async p => (await search(n, j => j === i ? p : near)).total;
@@ -202,15 +206,17 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
       do p = Math.min(p + 5, WIDE); while (p < WIDE && !await at(p));
       wide[i] = p;
     }
-    if (Object.keys(wide).length) s = await search(n, i => wide[i] || near);
-    else if (n > 1) s = await search(k = n - 1, () => near);
+    if (Object.keys(wide).length) s = await search(n, pct = i => wide[i] || near);
+    else if (n > 1) s = await search(k = n - 1, pct);
   }
-  const ids = (s.result || []).slice(0, MANY);
-  const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
-  const prices = got.map(r => r?.listing?.price).filter(Boolean);
-  const raised = Object.values(wide), plain = k === n && !raised.length;   // not alike in full: the cheapest is the price
-  return { total: s.total, near: n || Object.keys(own).length ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised),
-    prices, estimate: (plain ? prices[(prices.length - 1) >> 1] : prices[0]) || null, id: s.id };
+  const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
+    return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).map(r => r?.listing?.price).filter(Boolean) : []; };
+  const middle = p => p[(p.length - 1) >> 1] || null, sided = n || Object.keys(props).length;
+  const prices = await pricesOf(s);
+  const [low, high] = s.total && sided ? [middle(await pricesOf(await search(k, pct, -1))), middle(await pricesOf(await search(k, pct, 1)))] : [null, null];
+  const raised = Object.values(wide);
+  return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised),
+    prices, low, high, estimate: middle(prices), id: s.id };
 }
 
 // ---------- the search

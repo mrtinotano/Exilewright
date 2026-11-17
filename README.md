@@ -80,10 +80,11 @@ decide what counts. Without a skill in the build only defences and the weapon's 
 use, sends the game one Ctrl+C, as if you pressed it, and the page searches the official trade site for items like
 yours: the same base or unique with its modifiers (crafted, fractured and desecrated ones too) and its weapon damage
 or defences within 10% (Settings: "Numbers within"; a number never goes past 1 towards 0, so a "+1" line is always asked for), every one of them (a
-unique: the lines that can roll otherwise). When nothing like that is listed, it goes line by line raising that one's
-% alone (5 by 5, up to 30%) and searches with each at the % that found something, else with any one line left out;
-those show the cheapest as the price. Still nothing: there is none. Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest
-alike, as the site ranks them whatever the currency), those listings and a button that opens the same search on the
+unique: the lines that can roll otherwise). It searches again with every number at or under its own and at or over
+it, and shows "between" what the worse and the better ones ask. With "Thorough search" (Settings), when nothing like
+that is listed, it goes line by line raising that one's % alone (5 by 5, up to 30%) and searches with each at the %
+that found something, else with any one line left out. Still nothing: there is none. Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest
+of each side, as the site ranks them whatever the currency), those listings and a button that opens the same search on the
 trade site. Again one key press, one item.
 
 **Loot filter** (its own tab): build a filter rule by rule (item classes and bases from the game's data, rarity,

@@ -828,5 +828,8 @@
  "Open with Windows": "Windows 시작 시 열기",
  "Only in the notification area (click its icon to open the window)": "알림 영역에만 표시 (아이콘을 클릭하면 창이 열림)",
  "With {0} of its {1} modifiers": "옵션 {1}개 중 {0}개 일치",
- "{0} of its modifiers searched up to {1}% to find any": "찾기 위해 옵션 {0}개를 {1}%까지 넓혀 검색"
+ "{0} of its modifiers searched up to {1}% to find any": "찾기 위해 옵션 {0}개를 {1}%까지 넓혀 검색",
+ "Thorough search": "정밀 검색",
+ "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "% 안에 아무것도 없으면: 옵션을 하나씩 30%까지 넓혀 검색하고, 그다음 하나를 빼고 검색합니다. 검색이 더 많아집니다(시간도).",
+ "Between {0} and {1}": "{0}~{1}"
 }

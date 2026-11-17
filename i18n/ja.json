@@ -828,5 +828,8 @@
  "Open with Windows": "Windows の起動時に開く",
  "Only in the notification area (click its icon to open the window)": "通知領域のみに表示（アイコンをクリックするとウィンドウを開きます）",
  "With {0} of its {1} modifiers": "{1}個の修正値のうち{0}個が一致",
- "{0} of its modifiers searched up to {1}% to find any": "見つけるために{0}個の修正値を{1}%まで広げて検索"
+ "{0} of its modifiers searched up to {1}% to find any": "見つけるために{0}個の修正値を{1}%まで広げて検索",
+ "Thorough search": "徹底検索",
+ "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "%内に何もない場合：各修正値を個別に30%まで広げ、その後1つ外して検索します。検索回数（と時間）が増えます。",
+ "Between {0} and {1}": "{0}～{1}"
 }

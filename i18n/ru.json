@@ -828,5 +828,8 @@
  "Open with Windows": "Запускать вместе с Windows",
  "Only in the notification area (click its icon to open the window)": "Только в области уведомлений (щёлкните значок, чтобы открыть окно)",
  "With {0} of its {1} modifiers": "С {0} из {1} модификаторов",
- "{0} of its modifiers searched up to {1}% to find any": "{0} модификаторов искали в пределах до {1}%, чтобы что-то найти"
+ "{0} of its modifiers searched up to {1}% to find any": "{0} модификаторов искали в пределах до {1}%, чтобы что-то найти",
+ "Thorough search": "Тщательный поиск",
+ "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "Если в пределах % ничего нет: каждый модификатор отдельно до 30%, затем без одного из них. Больше запросов (и дольше).",
+ "Between {0} and {1}": "От {0} до {1}"
 }

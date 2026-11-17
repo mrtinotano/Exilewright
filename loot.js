@@ -195,12 +195,12 @@ export function initLoot(el, ctx) {
     show({ name, lines: [t('Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = await priceOf({ league, item: r.item, text, state: s.state, near: +s.near }), link = p.id ? siteLink(league, p.id) : '';
+      const p = await priceOf({ league, item: r.item, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
-      const counts = {};
+      const counts = {}, cost = x => `${x.amount} ${t(x.currency)}`;
       for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
       show({ name, link, lines: [
-        ...p.estimate ? [[[t('It may be worth') + ': ', ''], [`~${p.estimate.amount} ${t(p.estimate.currency)}`, 'up']]] : [],
+        ...p.estimate ? [[[t('It may be worth') + ': ', ''], [p.low && p.high && cost(p.low) !== cost(p.high) ? t('Between {0} and {1}', cost(p.low), cost(p.high)) : '~' + cost(p.estimate), 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],

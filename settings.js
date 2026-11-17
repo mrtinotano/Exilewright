@@ -10,7 +10,7 @@ const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'Ke
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available', near: 10 };   // near: the price check's ±% (trade.js priceOf)
+const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
@@ -62,7 +62,9 @@ export function initSettings(el, ask) {
         <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label>
-          <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label></div>
+          <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label>
+          <label><input type="checkbox" data-s="deep"${S.deep ? ' checked' : ''}> ${t('Thorough search')}</label></div>
+        <p class="note">${t('When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).')}</p>
         <p class="note">${t(NEEDS)}</p>
       </section>
       ${win.app || win.startup ? `<section><h3>${t('Window')}</h3><div class="optrow">
@@ -108,7 +110,7 @@ export function initSettings(el, ask) {
     if ('lang' in e.target.dataset) return setLang(e.target.value);
     if (e.target.dataset.w) return winSet({ [e.target.dataset.w]: e.target.checked });
     const k = e.target.dataset.s;
-    if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.value; save(); render(); }
+    if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.type === 'checkbox' ? e.target.checked : e.target.value; save(); render(); }
   };
   return render;
 }

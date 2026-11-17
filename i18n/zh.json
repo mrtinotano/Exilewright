@@ -828,5 +828,8 @@
  "Open with Windows": "Windows 啟動時開啟",
  "Only in the notification area (click its icon to open the window)": "僅在通知區域顯示（點擊圖示開啟視窗）",
  "With {0} of its {1} modifiers": "符合 {1} 個詞綴中的 {0} 個",
- "{0} of its modifiers searched up to {1}% to find any": "為了找到結果，{0} 個詞綴放寬到 {1}% 搜尋"
+ "{0} of its modifiers searched up to {1}% to find any": "為了找到結果，{0} 個詞綴放寬到 {1}% 搜尋",
+ "Thorough search": "深入搜尋",
+ "When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).": "若 % 內找不到：逐一將各詞綴放寬到 30% 搜尋，再去掉其中一個搜尋。搜尋次數（與時間）較多。",
+ "Between {0} and {1}": "介於 {0} 與 {1} 之間"
 }
