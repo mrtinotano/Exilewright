@@ -185,7 +185,7 @@ export function initOpt(el, ctx) {
   const errText = e => e.kind === 'offline' ? t('The gear search needs the planner\'s own server: start it with "python3 serve.py" and open the page it prints.')
     : e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message);
   function found(b, g, sel, hit) {
-    const { res, league } = hit, key = hit.key || S.key, items = b.items || {}, value = valueOf(b, g, key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
+    const { res, league } = hit, key = gk(), items = b.items || {}, value = valueOf(b, g, key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
     // only what raises the stat over what the character wears (an empty slot: anything that counts)
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
       .filter(x => x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
