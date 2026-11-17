@@ -148,30 +148,55 @@ export function readListing(r) {
 }
 
 // ---------- the price check: what an item like this one is worth
-// Looks for listed items like it: the same base (a unique: the same unique) whose lines (priceLines; a unique's that can
-// roll otherwise) are near its own numbers, within 10% and, while fewer than ENOUGH are listed, 20%; then a line
-// fewer (not for a unique, whose lines it always has). The site sorts the listings by what they are worth whatever
-// the currency, so the middle one of the cheapest MANY is the estimate, in the currency its seller asked: no exchange
-// rate is needed. -> { total, near (the tolerance, 0.1 / 0.2; null: only the lines), matched (lines asked for),
-// of (lines it has), prices: [{ amount, currency }] cheapest first, estimate: { amount, currency } }
-const ENOUGH = 5, MANY = 10;
+// Looks for listed items like it: the same base (a unique: the same unique) whose numbers are near its own. Its own
+// damage per second or armour / evasion / energy shield (propsOf: from the copied text, quality and runes included, as
+// the site counts them) stand for the lines that make them (local ones); every other line (priceLines; a unique's only
+// those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike. All of them
+// within 10%, then 20% and 35% while fewer than ENOUGH are listed; then a line fewer (not for a unique, whose lines it
+// always has). The site sorts the listings by what they are worth whatever the currency, so the middle one of the
+// cheapest MANY is the estimate, in the currency its seller asked: no exchange rate is needed.
+// -> { total, near (the tolerance; null: only the name and base), matched (lines asked for), of (lines it has),
+//      prices: [{ amount, currency }] cheapest first, estimate: { amount, currency }, id (the search, siteLink opens it) }
+const ENOUGH = 3, MANY = 10;
 const around = (v, near) => v && near ? { min: Math.floor(v - Math.abs(v) * near), max: Math.max(Math.ceil(v + Math.abs(v) * near), Math.floor(v - Math.abs(v) * near) + 1) } : null;
-export async function priceOf({ league, item, state = 'available' }) {
-  const lines = priceLines(item).filter(l => l.varies).slice(0, 8), n = lines.length;
+// the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
+export function propsOf(text) {
+  const avg = re => [...(text.match(re)?.[1] || '').matchAll(/(\d+)-(\d+)/g)].reduce((s, m) => s + (+m[1] + +m[2]) / 2, 0);
+  const one = re => +(text.match(re)?.[1] || 0), aps = one(/^Attacks per Second: ([\d.]+)/m);
+  const p = { pdps: avg(/^Physical Damage: (.+)$/m) * aps, edps: avg(/^Elemental Damage: (.+)$/m) * aps,
+    ar: one(/^Armour: (\d+)/m), ev: one(/^Evasion Rating: (\d+)/m), es: one(/^Energy Shield: (\d+)/m) };
+  return Object.fromEntries(Object.entries(p).filter(([, v]) => v > 0).map(([k, v]) => [k, Math.round(v * 10) / 10]));
+}
+console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
+export async function priceOf({ league, item, text = '', state = 'available' }) {
+  const props = propsOf(text);
+  let known = null; const des = new Map();
+  try {
+    const groups = (await data('stats')).result;
+    known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
+    for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.has(shape(e.text)) || des.set(shape(e.text), e.id);
+  } catch (e) { if (!(e instanceof TradeError)) throw e; }
+  const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
+    .map(l => ({ ...l, ids: l.en ? [des.get(shape(l.en))].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
+    .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  const tries = n ? [[n, .1], [n, .2], ...item.unique ? [] : [[n - 1, .2], [Math.ceil(n / 2), .2]]].filter(([k]) => k > 0) : [[0, null]];
+  const tries = [.1, .2, .35].map(near => [n, near]);
+  if (!item.unique) for (let k = n - 1; k >= Math.ceil(n / 2) && k > 0; k--) tries.push([k, .2]);
+  if (!n && !Object.keys(props).length) tries.splice(0, tries.length, [0, null]);
   let best = null;
   for (const [need, near] of tries) {
-    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.map(l => ({ id: l.id, ...around(l.value, near) && { value: around(l.value, near) } })) }] : [];
-    const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats }, sort: { price: 'asc' } });
+    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.flatMap(l => l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } }))) }] : [];
+    const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)]).filter(([, r]) => r));
+    const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
+    const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
     if (s.total) best = { s, need, near };
     if (s.total >= ENOUGH) break;
   }
-  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null };
+  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null, id: null };
   const ids = (best.s.result || []).slice(0, MANY);
   const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(best.s.id)}`)).result || [] : [];
   const prices = got.map(r => r?.listing?.price).filter(Boolean);
-  return { total: best.s.total, near: best.need ? best.near : null, matched: best.need, of: n, prices, estimate: prices[(prices.length - 1) >> 1] || null };
+  return { total: best.s.total, near: best.near, matched: best.need, of: n, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: best.s.id };
 }
 
 // ---------- the search

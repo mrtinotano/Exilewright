@@ -78,9 +78,11 @@ decide what counts. Without a skill in the build only defences and the weapon's 
 **Price check over the game** (Settings): hold the pointer over an item in the game and press the shortcut
 (Ctrl+D unless you change it; it always takes Ctrl or Alt). `serve.py` sees the key while the game is the window in
 use, sends the game one Ctrl+C, as if you pressed it, and the page searches the official trade site for items like
-yours: the same base or unique with its numbers within 10% (20% when few are listed; a unique by the lines that can
-roll otherwise). Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest alike, as
-the site ranks them whatever the currency) and those listings. Again one key press, one item.
+yours: the same base or unique with its modifiers (crafted, fractured and desecrated ones too) and its weapon damage
+or defences within 10% (20%, then 35% when few are listed, then with fewer of its modifiers; a unique by the lines
+that can roll otherwise). Next to the pointer it shows what yours may be worth (the middle one of the ten cheapest
+alike, as the site ranks them whatever the currency), those listings and a button that opens the same search on the
+trade site. Again one key press, one item.
 
 **Loot filter** (its own tab): build a filter rule by rule (item classes and bases from the game's data, rarity,
 item/area level, quality, stack size, waystone tier; text, border and background colours, text size, drop sound,

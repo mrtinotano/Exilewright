@@ -36,7 +36,8 @@ if pressed (GGG's rule for tools: one action per key press, nothing automatic), 
 /overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
 for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
   GET  /overlay   {"overlay": true} when this server has that window
-  POST /overlay   body = {kind, title, name, lines} (JSON), shown until its ✕ is clicked; null = nothing to show. A line is
+  POST /overlay   body = {kind, title, name, lines, link, open} (JSON), shown until its ✕ is clicked; null = nothing to show.
+                  link: a search on the official trade site, opened in the browser by a button that says `open`. A line is
                   text, or a list of pieces of it, each text or [text, tone]: up (green), down (red), dim
 The window needs tkinter, which comes with Python. It is made on Windows, and elsewhere with: python3 serve.py overlay
 Without it the clipboard is only looked at while a page is listening. With it, from the start: an item copied while
@@ -65,6 +66,7 @@ import subprocess
 import sys
 import threading
 import time
+import webbrowser
 
 UPLOAD = {  # site -> (post url, form field prefix, prefix added to the reply to make the link)
     'maxroll': ('https://maxroll.gg/poe2/api/pob', 'pobCode=', 'https://maxroll.gg/poe2/pob/'),
@@ -258,7 +260,11 @@ def overlay():
             for text, tone in pieces:
                 tk.Label(row, text=text, bg=back, fg=TONE.get(tone, '#d8ccb0'), font=(face, 11), justify='left', anchor='w',
                          wraplength=460, padx=0, pady=0, bd=0).pack(side='left')
-        if rows:
+        if v.get('link'):                             # a button that opens the search on the trade site in the browser
+            go = tk.Label(body, text=v.get('open') or 'Open', bg='#2a2418', fg='#e8d8b0', font=(face, 10), cursor='hand2', padx=8, pady=3)
+            go.pack(anchor='w', pady=(6, 0))
+            go.bind('<Button-1>', lambda _, url=v['link']: (webbrowser.open(url), hide()))
+        if rows or v.get('link'):
             body.pack(fill='x')
         else:
             body.pack_forget()
@@ -544,7 +550,10 @@ class Handler(SimpleHTTPRequestHandler):
         if isinstance(v, dict):
             lines = v.get('lines')
             piece = lambda p: (str(p[0])[:160], str(p[1])) if isinstance(p, list) and len(p) == 2 else (str(p)[:160], '')
+            link = str(v.get('link') or '')   # only a search on the official trade site is ever opened
             OVER[0]({'kind': str(v.get('kind')), 'title': str(v.get('title', ''))[:120], 'name': str(v.get('name', ''))[:120],
+                     'link': link if re.fullmatch(r'https://www\.pathofexile\.com/trade2/search/poe2/[\w%.-]+/[\w-]+', link) else '',
+                     'open': str(v.get('open', ''))[:60],
                      'lines': [[piece(p) for p in (x if isinstance(x, list) else [x])[:6]] for x in (lines if isinstance(lines, list) else [])[:30]]})
         self.reply(200, 'ok')
 

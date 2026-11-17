@@ -13,7 +13,7 @@ import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactHtml, impactText } from './impact.js';
-import { priceOf, leagues, TradeError } from './trade.js';
+import { priceOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings } from './settings.js';
 
 const KEY = 'poe2loot', LIST = 'poe2lootlist';
@@ -188,18 +188,18 @@ export function initLoot(el, ctx) {
   // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
   // judged nor kept in the list
   async function priceCheck(text) {
-    const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), ...v }) }).catch(() => {}); };
+    const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
     const r = parseItem(text.replace(/\r/g, '').trim());
     if (!r || r.unidentified) return show({ lines: [t(r ? 'That item is not identified yet: identify it and copy it again.' : 'That is not item text, or the planner does not have its base.')] });
     const name = r.name || nameOf(r.item), s = settings();
     show({ name, lines: [t('Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = await priceOf({ league, item: r.item, state: s.state });
-      if (!p.total) return show({ name, lines: [t('Nothing like it is listed in {0}.', league)] });
+      const p = await priceOf({ league, item: r.item, text, state: s.state }), link = p.id ? siteLink(league, p.id) : '';
+      if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
       const counts = {};
       for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
-      show({ name, lines: [
+      show({ name, link, lines: [
         ...p.estimate ? [[[t('It may be worth') + ': ', ''], [`~${p.estimate.amount} ${t(p.estimate.currency)}`, 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, Math.round(p.near * 100)) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.near && p.matched < p.of ? [[[t('With {0} of its {1} modifiers', p.matched, p.of), 'dim']]] : [],

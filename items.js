@@ -323,14 +323,24 @@ function parts(id, stats) {
 }
 // The explicit modifier lines of an item as the trade site searches them (the price check): its stat, the item's own
 // number as the site keeps it (value, with the stat's own sign: "43% less" is -43 there, under "#% more"; 0 when the
-// line has none) and whether that number can roll otherwise (varies:
-// a unique's fixed lines say nothing about how good this copy is). note: desecrated lines are left out (the export
-// has no stat number for them)
+// line has none), whether that number can roll otherwise (varies:
+// a unique's fixed lines say nothing about how good this copy is) and whether it changes the item's own damage or
+// defence (local). A desecrated line has no stat number of ours (the export has none): `en`, its English wording, finds
+// it in the site's list.
 export function priceLines(it) {
   const out = new Map();
-  for (const m of it.mods || []) for (const p of AFFIX[m.id] && !AFFIX[m.id].desecrated ? parts(m.id, AFFIX[m.id].stats) : []) {
-    const a = p.at.find(Boolean), v = a ? m.values[a.k] * Math.abs(a.scale) : 0, s = a && AFFIX[m.id].stats[a.k];
-    out.set(p.hash, { id: 'explicit.stat_' + p.hash, value: v, varies: !it.unique || !!s && s[1] !== s[2] });
+  for (const m of it.mods || []) {
+    const A = AFFIX[m.id]; if (!A) continue;
+    const local = A.stats.some(([id]) => id.startsWith('local_'));
+    if (A.desecrated) {
+      const en = statLinesEn(Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]])));
+      if (en.length === 1) out.set('d:' + en[0], { en: en[0], value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
+      continue;
+    }
+    for (const p of parts(m.id, A.stats)) {
+      const a = p.at.find(Boolean), v = a ? m.values[a.k] * Math.abs(a.scale) : 0, s = a && A.stats[a.k];
+      out.set(p.hash, { hash: p.hash, value: v, varies: !it.unique || !!s && s[1] !== s[2], local });
+    }
   }
   return [...out.values()];
 }
