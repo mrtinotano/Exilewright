@@ -834,7 +834,6 @@
  "Searching the trade site (thorough search: it can take longer)…": "거래 사이트 검색 중 (정밀 검색: 더 오래 걸릴 수 있음)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "팁: Exilewright 설정에서 「정밀 검색」을 켜면 더 넓게 찾습니다.",
  "Less than {0}": "{0} 미만",
- "From {0}": "{0}부터",
  "The dearer one has modifiers yours does not have.": "더 비싼 쪽에는 내 장비에 없는 옵션이 있습니다.",
- "Every one listed has modifiers yours does not have.": "올라온 것은 모두 내 장비에 없는 옵션이 있습니다."
+ "More than {0}": "{0} 초과"
 }

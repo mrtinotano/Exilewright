@@ -834,7 +834,6 @@
  "Searching the trade site (thorough search: it can take longer)…": "Поиск на торговом сайте (тщательный поиск: может занять больше времени)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Совет: включите «Тщательный поиск» в настройках Exilewright, чтобы искать шире.",
  "Less than {0}": "Меньше {0}",
- "From {0}": "От {0}",
  "The dearer one has modifiers yours does not have.": "У более дорогого есть модификаторы, которых нет у вашего.",
- "Every one listed has modifiers yours does not have.": "У всех выставленных есть модификаторы, которых нет у вашего."
+ "More than {0}": "Больше {0}"
 }

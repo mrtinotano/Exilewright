@@ -80,9 +80,9 @@ decide what counts. Without a skill in the build only defences and the weapon's 
 use, sends the game one Ctrl+C, as if you pressed it, and the page searches the official trade site for items like
 yours: the same base or unique with its modifiers (crafted, fractured and desecrated ones too) and its weapon damage
 or defences within 10% (Settings: "Numbers within"; a number never goes past 1 towards 0, so a "+1" line is always asked for), every one of them (a
-unique: the lines that can roll otherwise). It shows it is worth "between" the cheapest one alike and the next dearer
-one. A listing with a modifier yours does not have is a better item: it is only the dearer one when no other is, and
-when every one listed has such a modifier yours is worth "less than" the cheapest. With "Thorough search" (Settings), when nothing like
+unique: the lines that can roll otherwise). It shows it is worth "between" what it would sit between in the shop: the
+dearest worse one (every number at or under yours, never dearer than the next) and the cheapest better one (every
+number at or over yours, or a modifier yours does not have); "less than" / "more than" when there is only one. With "Thorough search" (Settings), when nothing like
 that is listed, it goes line by line raising that one's % alone (5 by 5, up to 30%) and searches with each at the %
 that found something, else with any one line left out. Still nothing: there is none. Next to the pointer it shows what yours may be worth (as the site ranks the listings whatever
 the currency) and a button that opens the same search on the trade site. Again one key press, one item.

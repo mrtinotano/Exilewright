@@ -160,14 +160,17 @@ export function readListing(r) {
 // within `near` % (Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any %),
 // all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the
-// order is the price's: no exchange rate is needed. Its worth is between the cheapest one alike (from) and the next
-// dearer one (to; a listing with a modifier it lacks only when no other is dearer).
+// order is the price's: no exchange rate is needed. In the shop it would sit between the dearest worse one (from:
+// every number at or under its own, no modifier it lacks, not dearer than `to`) and the cheapest better one (to: every number at or over its
+// own, or a modifier it lacks). With neither (alike ones with some numbers over and some under): between the cheapest
+// alike and the next dearer one.
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
-//      prices: [{ amount, currency, more }] cheapest first, from, to: { amount, currency } (null when there is none),
-//      under (the cheapest listing with a modifier it lacks, when none without: it is worth less), id (the search) }
+//      from, to: { amount, currency, more (to: it has modifiers this one lacks) } (null when there is none), id (the search) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
+// side -1: from the % under it up to it (worse); 1: from it up to the % over it (better)
+const range = (v, near, side) => { const r = around(v, near); return r && side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r; };
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
 export function propsOf(text) {
@@ -185,12 +188,13 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  const filters = Object.keys(props).length ? { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)])) } } : {};
+  const filters = side => Object.keys(props).length ? { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)])) } } : {};
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
-  // within pct(i) %
-  const search = (k, pct, over) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
-    filters: { ...filters, ...over && { trade_filters: { filters: { price: { min: +over.amount + .01, option: over.currency } } } } },
-    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...around(l.value, pct(i)) && { value: around(l.value, pct(i)) } }))) }] : [] }, sort: { price: 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
+  // within pct(i) % (on that side of its number); over / upTo: only dearer than / at most that price; desc: dearest first
+  const search = (k, pct, { side = 0, over, upTo, desc } = {}) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
+    filters: { ...filters(side), ...(over || upTo) && { trade_filters: { filters: { price: over ? { min: +over.amount + .01, option: over.currency } : { max: +upTo.amount, option: upTo.currency } } } } },
+    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i), side) && { value: range(l.value, pct(i), side) } }))) }] : [] },
+    sort: { price: desc ? 'desc' : 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
   // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE
   // (asked at WIDE first: a line nothing is found with at all costs one search), then every line at the % it found
   // something with. Still nothing: any one line left out. Then there is none.
@@ -214,14 +218,19 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     .filter(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1])).length;
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
-  const prices = await pricesOf(s), same = prices.filter(x => !x.more), key = x => x.amount + ' ' + x.currency, from = same[0] || null;
-  const dearer = x => key(x) !== key(from) && prices.indexOf(x) > prices.indexOf(from);
-  // all of the cheapest at the same price: the same search once more, only dearer than it (the site's price filter)
-  let to = from && same.find(dearer);
-  if (from && !to) { const next = await pricesOf(await search(k, pct, from)); to = next.find(x => !x.more) || prices.find(dearer) || next[0]; }
+  const sided = n || Object.keys(props).length;
+  let from = null, to = null;
+  if (s.total && sided) {
+    to = (await pricesOf(await search(k, pct, { side: 1 })))[0] || null;   // then a worse one never dearer than it (one asking too much)
+    from = (await pricesOf(await search(k, pct, { side: -1, desc: true, upTo: to }))).find(x => !x.more) || null;
+  }
+  if (s.total && !from && !to) {   // the cheapest alike, and the first dearer one (once more with the site's price filter when the cheapest all cost the same)
+    const prices = await pricesOf(s), key = x => x.amount + ' ' + x.currency;
+    from = prices.find(x => !x.more) || null;
+    to = from ? prices.find(x => key(x) !== key(from) && prices.indexOf(x) > prices.indexOf(from)) || (await pricesOf(await search(k, pct, { over: from })))[0] || null : prices[0] || null;
+  }
   const raised = Object.values(wide);
-  return { total: s.total, near: n || Object.keys(props).length ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised),
-    prices, from, to: to || null, under: from ? null : prices[0] || null, id: s.id };
+  return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };
 }
 
 // ---------- the search

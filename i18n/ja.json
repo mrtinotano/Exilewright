@@ -834,7 +834,6 @@
  "Searching the trade site (thorough search: it can take longer)…": "トレードサイトを検索中（徹底検索：時間がかかる場合があります）…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "ヒント：Exilewright の設定で「徹底検索」をオンにすると、さらに探します。",
  "Less than {0}": "{0}未満",
- "From {0}": "{0}から",
  "The dearer one has modifiers yours does not have.": "高い方にはあなたの装備にない修正値があります。",
- "Every one listed has modifiers yours does not have.": "出品されているものはすべて、あなたの装備にない修正値があります。"
+ "More than {0}": "{0}超"
 }

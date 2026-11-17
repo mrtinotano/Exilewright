@@ -834,7 +834,6 @@
  "Searching the trade site (thorough search: it can take longer)…": "กำลังค้นหาในเว็บซื้อขาย (ค้นหาอย่างละเอียด: อาจใช้เวลานานขึ้น)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม",
  "Less than {0}": "น้อยกว่า {0}",
- "From {0}": "ตั้งแต่ {0}",
  "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
- "Every one listed has modifiers yours does not have.": "ทุกชิ้นที่ขายมีม็อดที่ของคุณไม่มี"
+ "More than {0}": "มากกว่า {0}"
 }

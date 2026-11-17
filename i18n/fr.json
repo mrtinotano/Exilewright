@@ -834,7 +834,6 @@
  "Searching the trade site (thorough search: it can take longer)…": "Recherche sur le site d’échange (recherche approfondie : cela peut prendre plus de temps)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Astuce : activez « Recherche approfondie » dans les Paramètres d’Exilewright pour chercher plus loin.",
  "Less than {0}": "Moins de {0}",
- "From {0}": "À partir de {0}",
  "The dearer one has modifiers yours does not have.": "Le plus cher a des modificateurs que le vôtre n’a pas.",
- "Every one listed has modifiers yours does not have.": "Tous ceux en vente ont des modificateurs que le vôtre n’a pas."
+ "More than {0}": "Plus de {0}"
 }
