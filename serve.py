@@ -433,7 +433,7 @@ def watch_price_key():
         was = down
 
 
-VERSION = '0.9'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
+VERSION = '0.10'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
