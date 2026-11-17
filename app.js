@@ -673,11 +673,10 @@ function drawTree() {
   const vis = visible(), visSet = new Set(vis);
   const sx = x => (x - view.x) * s + W / 2, sy = y => (y - view.y) * s + H / 2;
 
-  // background
+  // background: one colour, the one of the game's passive screen (measured on a screenshot of it; the game's shader
+  // takes its texture from the executable)
   ctx.setTransform(D, 0, 0, D, 0, 0);
-  const bg = ctx.createRadialGradient(sx(0), sy(0), 0, sx(0), sy(0), 14000 * s + Math.max(W, H));
-  bg.addColorStop(0, '#111830'); bg.addColorStop(.5, '#0b1022'); bg.addColorStop(1, '#060914');   // the game's night blue
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#080c12'; ctx.fillRect(0, 0, W, H);
 
   // world-space layers
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
