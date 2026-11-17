@@ -415,7 +415,7 @@ def watch_price_key():
         was = down
 
 
-VERSION = '0.2'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
+VERSION = '0.3'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
@@ -667,6 +667,9 @@ def game_folder():
 
 class Server(ThreadingHTTPServer):
     request_queue_size = 128   # a page asks for dozens of files at once; the ones that do not fit in the queue are lost
+    # on Windows that option lets a second server take the port of one already running, instead of failing: the app
+    # opened twice would run two servers (two clipboard watchers), and a page could reach the older one
+    allow_reuse_address = allow_reuse_port = sys.platform != 'win32'
 
 
 def profile():
