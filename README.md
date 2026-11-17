@@ -92,9 +92,9 @@ item/area level, quality, stack size, waystone tier; text, border and background
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
-**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the window (open with Windows; only an
-icon in the notification area, no taskbar button: a click on it opens the window), the keys of the Simulator, the
-language and the updates.
+**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and the app itself
+(open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the
+language; the updates).
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so it runs from source right after cloning.

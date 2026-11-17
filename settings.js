@@ -68,20 +68,17 @@ export function initSettings(el, ask, loot) {
         <p class="note">${t('When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).')}</p>
         <p class="note">${t(NEEDS)}</p>
       </section>
-      ${win.app || win.startup ? `<section><h3>${t('Window')}</h3><div class="optrow">
-        ${win.startup ? check('on', 'Open with Windows') : ''}
-        ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>
-      </section>` : ''}
       <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
         <div class="keys">${Object.keys(SCENE_KEYS).map(k => `<label>${t(SCENE_LABEL[k])} ${cap(k, keyName(S.keys[k]))}</label>`).join('')}</div>
         <div class="optrow"><button data-do="defaults">${t('Default keys')}</button></div>
       </section>
-      <section><h3>${t('Language')}</h3>
-        <div class="optrow"><select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></div>
-      </section>
-      <section><h3>${t('Updates')}</h3>
-        <div class="optrow"><button data-do="update">${t('Check for updates')}</button></div>
+      <section><h3>Exilewright</h3>
+        ${win.app || win.startup ? `<div class="optrow">
+          ${win.startup ? check('on', 'Open with Windows') : ''}
+          ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}
+        <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label>
+          <button data-do="update">${t('Check for updates')}</button></div>
         ${upd ? `<p class="note">${esc(upd)}</p>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
