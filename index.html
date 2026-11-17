@@ -18,6 +18,7 @@
   #top input, #top select { width:auto; } #top #name { width:170px; } #top #level { width:56px; } #top #buildList { max-width:180px; }
   #top .grow { flex:1; }
   #top button { background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; }
+  #top button:disabled { opacity:.4; cursor:default; } #undo, #redo { font-size:15px; line-height:1; padding:2px 8px; }
   #top button:hover { background:#3a3225; }
   #notesBox { position:absolute; right:10px; top:100%; z-index:5; width:360px; padding:8px; background:#16130f; border:1px solid #5a4a30; box-shadow:0 6px 20px #000; }
   #notesBox[hidden] { display:none; }
@@ -297,6 +298,10 @@
   .picklist li { display:flex; align-items:center; gap:8px; padding:3px 6px; cursor:pointer; border-bottom:1px solid #1c1a17; }
   .picklist li:hover { background:#221d16; }
   .picklist img { width:34px; height:34px; object-fit:contain; flex:none; }
+  .stash { display:flex; flex-direction:column; gap:2px; max-width:470px; max-height:320px; overflow-y:auto; border:1px solid #3a342c; background:#0b0b0b; }
+  .stashit { display:flex; align-items:center; gap:8px; padding:3px 6px; border-bottom:1px solid #1c1a17; font-size:12px; } .stashit > span { flex:1; display:flex; flex-direction:column; }
+  .stashit img { width:34px; height:34px; object-fit:contain; flex:none; } .stashit small { color:#888; } .stashit button { cursor:pointer; padding:2px 8px; }
+  .stashit.magic b { color:#8888ff; } .stashit.rare b { color:#ffff77; } .stashit.unique b { color:#af6025; }
   .picklist span { display:flex; flex-direction:column; color:#c8c8c8; }
   .picklist small { color:#7f7f7f; font-size:11px; }
   .picklist li.unique span { color:#af6025; }
@@ -348,10 +353,11 @@
   .ghead small { color:#888; font-size:11px; }
   .gitem.magic .ghead { color:#8888ff; background:#1a1a33; } .gitem.rare .ghead { color:#ffff77; background:#332e10; } .gitem.unique .ghead { color:#af6025; background:#2b1a0d; }
   .gmods { padding:5px 6px; text-align:center; font-size:12px; flex:1; }
-  .gfoot { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; padding:4px 6px; border-top:1px solid #2a2a2a; font-size:12px; }
-  .gfoot button { margin-left:auto; cursor:pointer; padding:2px 10px; } .gfoot > .note { margin-left:auto; } .gprice { color:#ddd; }
+  .gfoot { display:flex; flex-direction:column; gap:5px; align-items:center; text-align:center; padding:6px; border-top:1px solid #2a2a2a; font-size:13px; }
+  .gfoot .gval b { font-size:15px; } .gprice { color:#ddd; font-size:14px; display:flex; align-items:center; gap:5px; } .gprice img { width:26px; height:26px; object-fit:contain; }
+  .gbtns { display:flex; gap:8px; justify-content:center; } .gbtns button { cursor:pointer; padding:3px 12px; }
   .impv { padding:0 6px 5px; font-size:12px; text-align:center; }
-  .gfoot a.gsite { background:#222; color:var(--txt); border:1px solid var(--line); padding:2px 10px; text-decoration:none; }
+  .gfoot a.gsite { background:#222; color:var(--txt); border:1px solid var(--line); padding:3px 12px; text-decoration:none; }
   /* the equipment comparison (Settings) */
   .llive { font-size:12px; }
   #stats { white-space:pre; font-family:monospace; font-size:11px; color:#aaa; }
@@ -362,6 +368,8 @@
   <select id="buildList" title="Saved builds" data-t></select>
   <button id="newBuild" data-t>New build</button>
   <button id="delBuild" data-t>Delete</button>
+  <button id="undo" title="Undo (Ctrl+Z)" data-t disabled>↶</button>
+  <button id="redo" title="Redo (Ctrl+Y)" data-t disabled>↷</button>
   <span class="grow"></span>
   <button id="notesBtn">Notes</button>
   <button id="importBtn" data-t>Import</button>

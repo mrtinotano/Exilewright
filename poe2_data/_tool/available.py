@@ -545,6 +545,31 @@ for i, b in enumerate(load('BaseItemTypes')):
     fbases.append({'name': b['Name'], **tr(bases_tr, i), 'class': cls})
 save('filter.json', {'classes': [{'name': n, **tr(classes_tr, c)} for n, c in sorted(fclasses.items())], 'bases': fbases})
 
+# --- currency the trade site prices items in: its id there (api/trade2/data/static, downloaded like the trade list)
+# -> the game's name in every language and its art (BaseItemTypes, by the English name); `price` is the order of the
+# trade site's price filter (api/trade2/data/filters), whose first option (no currency) is "Exalted Orb Equivalent"
+def trade_data(what):
+    path = os.path.join(ROOT, 'poe2db_cache', f'trade2_{what}.json')
+    try:
+        req = urllib.request.Request('https://www.pathofexile.com/api/trade2/data/' + what, headers={'User-Agent': 'Mozilla/5.0 (personal build planner)'})
+        data = urllib.request.urlopen(req, timeout=30).read()
+        json.loads(data)['result']
+        open(path, 'wb').write(data)
+    except Exception as e:
+        print(f'trade {what} download failed, using cached copy:', e)
+    return json.load(open(path, encoding='utf8'))['result']
+by_name, bit = {}, load('BaseItemTypes')
+for i, b in enumerate(bit):
+    if classes[b['ItemClass']]['Name'] == 'Stackable Currency' and ok(b['Name']):
+        by_name.setdefault(b['Name'], i)
+cur_out = {}
+for e in next(g for g in trade_data('static') if g['id'] == 'Currency')['entries']:
+    i = by_name.get(e['text'])
+    if i is not None:
+        cur_out[e['id']] = {'name': bit[i]['Name'], **tr(bases_tr, i), 'img': visual[bit[i]['ItemVisualIdentity']]['DDSFile']}
+price_opts = next(f for g in trade_data('filters') for f in g['filters'] if f['id'] == 'price')['option']['options']
+save('currency.json', {'price': [o['id'] or '' for o in price_opts if not o['id'] or o['id'] in cur_out or o['id'] == 'exalted_divine'], 'currency': cur_out})
+
 # --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
 # per-level tables that turn the multipliers into life, armour, evasion, accuracy and damage
 ELEMENTS = ('physical', 'fire', 'cold', 'lightning', 'chaos')

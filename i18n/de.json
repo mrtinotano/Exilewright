@@ -811,5 +811,12 @@
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Halte den Mauszeiger im Spiel über einen Gegenstand (einen gefundenen und identifizierten, einen aus dem Inventar oder einen, den ein Händler verkauft) und drücke Strg+C: Neben dem Mauszeiger siehst du, ob er besser oder schlechter ist als der, den der Charakter trägt. Der Gegenstand wird in jedem Platz ausprobiert, in den er passt, und der Build wird mit und ohne ihn berechnet: Die Passiven und Fertigkeiten des Builds entscheiden, was zählt.",
  "General": "Allgemein",
  "Stat to improve": "Zu verbessernder Wert",
- "None of the items found improves the current gear.": "Keiner der gefundenen Gegenstände verbessert die aktuelle Ausrüstung."
+ "None of the items found improves the current gear.": "Keiner der gefundenen Gegenstände verbessert die aktuelle Ausrüstung.",
+ "Open on the web": "Auf der Website öffnen",
+ "Exalted Orb Equivalent": "Gegenwert in Erhabenen Kugeln",
+ "Exalted or Divine Orbs": "Erhabene oder Göttliche Kugeln",
+ "Saved items": "Gespeicherte Gegenstände",
+ "Items you replace or take off are kept here, to wear them again.": "Ersetzte oder abgelegte Gegenstände bleiben hier, um sie wieder anzulegen.",
+ "Undo (Ctrl+Z)": "Rückgängig (Strg+Z)",
+ "Redo (Ctrl+Y)": "Wiederholen (Strg+Y)"
 }

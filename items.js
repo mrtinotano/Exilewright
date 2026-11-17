@@ -326,6 +326,21 @@ export function offhandFits(weapon, off, giant) {
   if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
   return !w.tags.includes('twohand') || !!giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class);
 }
+// The build's saved items (b.stash), like Path of Building's item list: what leaves a slot goes there, so nothing
+// equipped over is lost, and any of them can be worn again
+export function keep(b, it) {
+  if (!it) return;
+  const list = b.stash ||= [], k = JSON.stringify(it);
+  if (!list.some(x => JSON.stringify(x) === k)) list.push(structuredClone(it));
+}
+// `it` in `slot` (taken out of the saved items if it was there); what was there, and a weapon or off hand that cannot be
+// held with it (a two-handed weapon and anything in the off hand; a quiver without a bow), go to the saved items
+export function wear(b, slot, it, giant) {
+  const items = b.items ||= {}, k = JSON.stringify(it);
+  b.stash = (b.stash || []).filter(x => JSON.stringify(x) !== k);
+  keep(b, items[slot]); items[slot] = it;
+  if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant)) { const o = slot === 'weapon' ? 'offhand' : 'weapon'; keep(b, items[o]); delete items[o]; }
+}
 export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
 export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
@@ -551,6 +566,19 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
   }
 
   let sel = 'weapon', msg = '';
+  // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
+  const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
+    return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
+  function stashHtml() {
+    const list = getBuild().stash || [];
+    return `<h3>${t('Saved items')}</h3>${list.length ? `<div class="stash">${list.map((it, i) => {
+      const base = BASE[it.base], u = it.unique && UNIQ[it.unique], to = base && whereTo(it);
+      return base ? `<div class="stashit ${rarityOf(it)}"><img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">
+        <span><b>${esc(it.name || tn(u || base))}</b><small>${esc(it.name || u ? tn(base) : base.class)}</small>${to ? impactLine(gain(to, it, 'stash' + i), 3) : ''}</span>
+        <button data-act="wear" data-i="${i}"${to ? '' : ' disabled'} title="${esc(to ? t(SLOTS[slotType(to)] || 'Jewel') : t('Select an allocated jewel socket first.'))}">${t('Equip')}</button>
+        <button data-act="drop" data-i="${i}" title="${t('Remove')}">✕</button></div>` : '';
+    }).join('')}</div>` : `<p class="note">${t('Items you replace or take off are kept here, to wear them again.')}</p>`}`;
+  }
   function render() {
     const items = getBuild().items ||= {};
     for (const [slot, it] of Object.entries(items)) {  // data can change between patches: drop what no longer exists
@@ -573,7 +601,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
       <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || `<p class="note">${t('Allocate jewel sockets on the tree to add jewels.')}</p>`}</div>
       <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p>
       <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
-      <p class="note" data-msg>${msg}</p></div>
+      <p class="note" data-msg>${msg}</p>${stashHtml()}</div>
       <div class="editor">${card(sel, names[sel], items[sel])}</div></div>`;
   }
 
@@ -582,12 +610,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
-  // what goes in one hand frees the other where the two cannot be held together (a two-handed weapon and anything in the
-  // off hand; a quiver without a bow), as the Compare tab does
-  function put(items, slot, it) {
-    items[slot] = it;
-    if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant?.())) delete items[slot === 'weapon' ? 'offhand' : 'weapon'];
-  }
+  const put = (slot, it) => wear(getBuild(), slot, it, giant?.());
   // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
   function paste(text) {
     const r = parseItem(text);
@@ -595,7 +618,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
     const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
-    put(items, slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
+    put(slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
     changed(); render(); msg = '';
   }
@@ -603,7 +626,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
   function equip(slot, name) {
     const it = make(name);
     if (!it) return;
-    put(getBuild().items ||= {}, slot, it);
+    put(slot, it);
     changed(); render();
   }
   el.addEventListener('change', e => {
@@ -632,7 +655,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
     if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
-    if (t.dataset.act === 'clear') delete items[t.dataset.slot];
+    if (t.dataset.act === 'clear') { keep(getBuild(), items[t.dataset.slot]); delete items[t.dataset.slot]; }
+    else if (t.dataset.act === 'wear') { const it = getBuild().stash?.[+t.dataset.i], to = it && whereTo(it); if (!to) return; put(to, it); sel = to; }
+    else if (t.dataset.act === 'drop') getBuild().stash.splice(+t.dataset.i, 1);
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
     else return;
     changed(); render();

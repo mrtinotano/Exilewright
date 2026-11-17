@@ -32,9 +32,37 @@ const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.
 // asc: the ascendancy, or the base class's name while none is chosen
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].class, gems: [], nodes: [], ascNodes: [], notes: '' });
 let rev = 0;   // goes up with every change to the builds: what is worked out from the build is kept until then
-const save = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
+// undo / redo, per build: every save() keeps the build as it was (what is typed in a text box less than a second apart
+// is one step)
+const hist = {}, HIST_MAX = 100;
+let shown = '', stepAt = 0;
+const store = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
+const save = () => {
+  const now = JSON.stringify(B() ?? null), h = hist[cur] ||= { undo: [], redo: [] };
+  if (now !== shown && shown) {
+    if (Date.now() - stepAt > 1000 || !h.undo.length || !document.activeElement?.matches('textarea, input:not([type]), input[type=text], input[type=number]')) { h.undo.push(shown); if (h.undo.length > HIST_MAX) h.undo.shift(); }
+    h.redo = []; stepAt = Date.now();
+  }
+  shown = now; store(); undoBtns();
+};
+function step(back) {
+  const h = hist[cur], from = back ? h?.undo : h?.redo;
+  if (!from?.length) return;
+  (back ? h.redo : h.undo).push(shown);
+  shown = from.pop(); stepAt = 0;
+  builds[cur] = JSON.parse(shown); store();
+  select(cur); document.querySelector('nav button.on')?.click();
+}
+function undoBtns() { const h = hist[cur]; $('undo').disabled = !h?.undo.length; $('redo').disabled = !h?.redo.length; }
+$('undo').onclick = () => step(true);
+$('redo').onclick = () => step(false);
+addEventListener('keydown', e => {   // Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z); a text box keeps its own
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || e.target.closest?.('input, textarea, [contenteditable]')) return;
+  const k = e.key.toLowerCase();
+  if (k === 'z' || k === 'y') { e.preventDefault(); step(k === 'z' && !e.shiftKey); }
+});
 function select(id) {
-  cur = id; rev++; localStorage.setItem(KEY + ':last', id);
+  cur = id; rev++; localStorage.setItem(KEY + ':last', id); shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }

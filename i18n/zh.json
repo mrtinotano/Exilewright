@@ -811,5 +811,12 @@
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "在遊戲中將游標移到物品上（你找到並已鑑定的、背包中的或商人販售的）並按 Ctrl+C：游標旁會顯示它比角色身上穿的更好還是更差。物品會在每個可裝備的欄位中試用，並計算有它和沒有它時的配置：由配置的天賦和技能決定什麼重要。",
  "General": "一般",
  "Stat to improve": "要提升的數值",
- "None of the items found improves the current gear.": "找到的物品都沒有比目前的裝備更好。"
+ "None of the items found improves the current gear.": "找到的物品都沒有比目前的裝備更好。",
+ "Open on the web": "在網站上開啟",
+ "Exalted Orb Equivalent": "崇高石等值",
+ "Exalted or Divine Orbs": "崇高石或神聖石",
+ "Saved items": "保存的物品",
+ "Items you replace or take off are kept here, to wear them again.": "替換或卸下的物品會保存在這裡，以便再次裝備。",
+ "Undo (Ctrl+Z)": "復原 (Ctrl+Z)",
+ "Redo (Ctrl+Y)": "重做 (Ctrl+Y)"
 }

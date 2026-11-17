@@ -7,9 +7,9 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
-import { SLOTS, classOf, slotClasses } from './items.js';
+import { SLOTS, classOf, slotClasses, wear } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
-import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, wanted, withIds, findGear, leagues, weighted, siteQuery } from './trade.js';
+import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, leagues, weighted, siteQuery } from './trade.js';
 
 const KEY = 'poe2opt';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -24,7 +24,7 @@ const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>
 const chk = (k, on, text, tip = '') => `<label class="chk" title="${esc(tip)}"><input type="checkbox" data-c="${k}"${on ? ' checked' : ''}> ${esc(text)}</label>`;
 
 export function initOpt(el, ctx) {
-  const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: 'exalted',
+  const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: '',
     ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   if (!OBJECTIVES[S.key]) S.key = 'dps';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
@@ -156,7 +156,11 @@ export function initOpt(el, ctx) {
   const levelFor = b => Math.max(0, Math.min(100, typed.lvl ?? (b.level > 1 ? b.level : 0)));
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
-  const priceNow = () => ({ max: +S.max || 0, currency: CURRENCY.includes(S.currency) ? S.currency : CURRENCY[0] });
+  const priceNow = () => ({ max: +S.max || 0, currency: CURRENCY.includes(S.currency) ? S.currency : '' });
+  const moneyName = c => c === '' ? t('Exalted Orb Equivalent') : c === 'exalted_divine' ? t('Exalted or Divine Orbs') : tn(MONEY.currency[c]) || c;
+  // a price as the game shows it: the amount and the currency's art (its name when the art is missing)
+  const priceHtml = p => { const m = MONEY.currency[p.currency];
+    return `<b>${esc(fmt(p.amount, p.amount % 1 ? 2 : 0))}</b> ${m ? `<img src="${img(m.img)}" alt="" title="${esc(tn(m))}"> ${esc(tn(m))}` : esc(p.currency)}`; };
   const gk = () => OBJECTIVES[S.gear] ? S.gear : S.key;   // what the gear search raises (Stat to improve; none picked: the objective)
   const gearKey = (b, sel) => [ctx.id(), sel.slot, sel.cls, gk(), skills(b).indexOf(gemOf(b))].join('|');
   function wantsFor(b, g, sel) {   // what a top roll of each modifier the slot can have adds, best first (kept while nothing changes)
@@ -192,15 +196,16 @@ export function initOpt(el, ctx) {
       .sort((x, y) => y.v - x.v).slice(0, SHOWN);
     // the item itself on the site: its base (a unique: and its name), its seller and its price
     const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
-      filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
+      filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
     const card = ({ l, i, v }) => {
       const off = new Set(l.missed);
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
         <div class="gmods">${l.mods.map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
         ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
-        <div class="gfoot"><span class="optval">${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</span>
-          <span class="gprice">${l.price ? esc(`${l.price.amount} ${l.price.currency}`) : t('no price')}${l.seller ? ` · <span class="note">${esc(l.seller)}</span>` : ''}</span>
-          <button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Open on the trade site')}</a></div></div>`;
+        <div class="gfoot"><div class="gval">${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</div>
+          <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
+          ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}
+          <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Open on the web')}</a></div></div></div>`;
     };
     const w = weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, level: hit.level, state: hit.state });
     return `<div class="optres">${res.errors.map(e => `<p class="opterr">${esc(errText(e))}</p>`).join('')}
@@ -221,7 +226,7 @@ export function initOpt(el, ctx) {
         <label>${t('League')} <select data-s="league">${leagueList().map(l => opt(l, l, l === leagueNow())).join('')}</select></label>
         <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === (STATUS[S.state] ? S.state : 'securable'))).join('')}</select></label></div>
       <div class="optrow"><label>${t('Price up to')} <input type="number" min="0" value="${esc(S.max)}" data-s="max" placeholder="—"></label>
-        <select data-s="currency" title="${esc(t('Currency of the price'))}">${CURRENCY.map(c => opt(c, t(c), c === priceNow().currency)).join('')}</select>
+        <select data-s="currency" title="${esc(t('Currency of the price'))}">${CURRENCY.map(c => opt(c, moneyName(c), c === priceNow().currency)).join('')}</select>
         <label title="${esc(t('Leaves out what the character cannot wear yet. Empty: any level.'))}">${t('Required level up to')} <input type="number" min="0" max="100" value="${levelFor(b) || ''}" data-n="lvl" placeholder="—"></label>
         <button class="optgo" data-do="gear"${blocked || busy || !wants.length || !net?.leagues ? ' disabled' : ''}>${t('Search')}</button></div>
       ${net?.offline ? `<p class="opterr">${esc(errText({ kind: 'offline' }))}</p>` : ''}
@@ -282,7 +287,7 @@ export function initOpt(el, ctx) {
     }
     if (what === 'equip') {
       const sel = gearSel(b), item = G[gearKey(b, sel)]?.res.found[+btn.dataset.i]?.item; if (!item) return;
-      ctx.change(b => { (b.items ||= {})[sel.slot] = structuredClone(item); });
+      ctx.change(b => wear(b, sel.slot, structuredClone(item), ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
     }
   };
   return render;

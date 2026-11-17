@@ -811,5 +811,12 @@
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Наведите курсор на предмет в игре (найденный и опознанный, из инвентаря или продаваемый торговцем) и нажмите Ctrl+C: рядом с курсором вы увидите, лучше он или хуже того, что надет на персонажа. Предмет примеряется в каждую ячейку, куда подходит, и билд рассчитывается с ним и без него: что важно, решают пассивные умения и умения билда.",
  "General": "Общие",
  "Stat to improve": "Что улучшить",
- "None of the items found improves the current gear.": "Ни один из найденных предметов не улучшает текущее снаряжение."
+ "None of the items found improves the current gear.": "Ни один из найденных предметов не улучшает текущее снаряжение.",
+ "Open on the web": "Открыть на сайте",
+ "Exalted Orb Equivalent": "Эквивалент в сферах возвышения",
+ "Exalted or Divine Orbs": "Сферы возвышения или божественные",
+ "Saved items": "Сохранённые предметы",
+ "Items you replace or take off are kept here, to wear them again.": "Заменённые или снятые предметы хранятся здесь, чтобы надеть их снова.",
+ "Undo (Ctrl+Z)": "Отменить (Ctrl+Z)",
+ "Redo (Ctrl+Y)": "Повторить (Ctrl+Y)"
 }

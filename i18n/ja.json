@@ -811,5 +811,12 @@
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にポインターを合わせて Ctrl+C を押すと、キャラクターが装備しているものより良いか悪いかがポインターの横に表示されます。アイテムは装備できるすべての部位で試され、ビルドはそれがある場合とない場合で計算されます。何が重要かはビルドのパッシブとスキルが決めます。",
  "General": "一般",
  "Stat to improve": "向上させるステータス",
- "None of the items found improves the current gear.": "見つかったアイテムで現在の装備より良いものはありません。"
+ "None of the items found improves the current gear.": "見つかったアイテムで現在の装備より良いものはありません。",
+ "Open on the web": "サイトで開く",
+ "Exalted Orb Equivalent": "エクザルテッドオーブ相当",
+ "Exalted or Divine Orbs": "エクザルテッドかディヴァインオーブ",
+ "Saved items": "保存したアイテム",
+ "Items you replace or take off are kept here, to wear them again.": "付け替えたり外したアイテムはここに保存され、再び装備できます。",
+ "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)",
+ "Redo (Ctrl+Y)": "やり直す (Ctrl+Y)"
 }

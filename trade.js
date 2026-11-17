@@ -20,7 +20,10 @@ export const CATEGORY = {
 };
 export const SEARCH_SLOTS = ['weapon', 'offhand', 'helmet', 'body', 'gloves', 'boots', 'amulet', 'ring1', 'ring2', 'belt'];
 export const STATUS = { securable: 'Instant buyout', available: 'Instant buyout or in person', any: 'Any' };
-export const CURRENCY = ['exalted', 'divine', 'chaos'];
+// the currencies the site prices in: the game's names and art (available.py: currency.json); `price` is the site's price
+// filter, whose first option ('': no currency) is any currency worth the same in Exalted Orbs
+export const MONEY = await fetch('poe2_data/available/currency.json').then(r => r.ok ? r.json() : null).catch(() => null) || { price: ['', 'exalted', 'divine', 'chaos'], currency: {} };
+export const CURRENCY = MONEY.price;
 
 // ---------- what to look for
 // The modifier lines an item of class `cls` can roll, each with what its best roll adds to the build's number.
@@ -108,7 +111,7 @@ const propOf = w => { if (!w.local) return null; for (const [re, key] of PROP) i
 // level: the character's, to leave out what it cannot wear yet
 const filters = (cls, price, level) => ({ type_filters: { filters: { category: { option: CATEGORY[cls] } } },
   ...(level > 0 && { req_filters: { filters: { lvl: { max: +level } } } }),
-  ...(price?.max > 0 && { trade_filters: { filters: { price: { max: +price.max, option: price.currency } } } }) });
+  ...(price?.max > 0 && { trade_filters: { filters: { price: { max: +price.max, ...(price.currency && { option: price.currency }) } } } }) });
 // The searches an anonymous visitor can make, best first (at most `n`): the most of one good modifier (with at least
 // one more of the others), or the highest damage / defence of the item when its local modifiers are what counts.
 export function plans({ cls, wants, price, level, state = 'securable', n = 3 }) {

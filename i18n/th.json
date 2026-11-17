@@ -811,5 +811,12 @@
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ",
  "General": "ทั่วไป",
  "Stat to improve": "ค่าที่ต้องการเพิ่ม",
- "None of the items found improves the current gear.": "ไม่มีไอเทมที่พบซึ่งดีกว่าอุปกรณ์ปัจจุบัน"
+ "None of the items found improves the current gear.": "ไม่มีไอเทมที่พบซึ่งดีกว่าอุปกรณ์ปัจจุบัน",
+ "Open on the web": "เปิดบนเว็บ",
+ "Exalted Orb Equivalent": "เทียบเท่า Exalted Orb",
+ "Exalted or Divine Orbs": "Exalted หรือ Divine Orb",
+ "Saved items": "ไอเทมที่เก็บไว้",
+ "Items you replace or take off are kept here, to wear them again.": "ไอเทมที่เปลี่ยนหรือถอดออกจะถูกเก็บไว้ที่นี่เพื่อสวมใส่อีกครั้ง",
+ "Undo (Ctrl+Z)": "เลิกทำ (Ctrl+Z)",
+ "Redo (Ctrl+Y)": "ทำซ้ำ (Ctrl+Y)"
 }
