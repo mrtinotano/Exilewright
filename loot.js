@@ -5,7 +5,7 @@
 // wand is an upgrade for a spell and nothing for a bow). Without a skill only the defences and the weapon's own damage
 // are judged. What it is compared with is the gear marked here as worn (the build is left alone) or the build's own.
 // The verdict goes to serve.py's /overlay, which shows it over the game: there is nothing else to see.
-//   ctx: { build(), id(), rev(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
+//   ctx: { build(), id(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
 import { t, fmt, tn, lang, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
@@ -36,7 +36,6 @@ export function initLoot(el, ctx) {
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
   let live = 'wait';             // the clipboard watch: 'wait' (connecting), 'on', 'none' (this server has no /clipboard)
   let over = false;              // serve.py has a window to show verdicts over the game
-  let wornRev = 0;               // goes up with every change to the worn gear
 
   // ---------- the build and what the item is compared with
   const skills = b => b.gems.filter(g => GEM[g.name] && GEM[g.name].kind !== 'support');
@@ -90,16 +89,11 @@ export function initLoot(el, ctx) {
   }
   // an item in every slot it fits, the best slot first (none: a jewel with no socket allocated)
   function verdict(e) {
-    const b = ctx.build(), g = gemOf(b), stamp = [ctx.id(), ctx.rev(), S.vs, S.key, g ? b.gems.indexOf(g) : -1, wornRev].join();
-    if (e.stamp !== stamp) {
-      const gear = gearOf(b), giant = ctx.sumOf(b).keystone_giants_blood;
-      // with no skill to say which weapons the build uses, a weapon is only compared with one of its own kind
-      const fits = s => s === 'offhand' ? offhandFits(gear.weapon, e.r.item, giant) : s !== 'weapon' || g || !gear.weapon || classOf(gear.weapon) === classOf(e.r.item);
-      const slots = e.r.slots.includes('jewel') ? ctx.sockets().map(j => 'jewel:' + j.id) : e.r.slots.filter(s => SLOTS[s] && fits(s));
-      e.stamp = stamp;
-      e.v = slots.map(slot => rate(b, g, gear, slot, e.r.item)).sort((p, q) => RANK[q.kind] - RANK[p.kind] || q.gain - p.gain);
-    }
-    return e.v;
+    const b = ctx.build(), g = gemOf(b), gear = gearOf(b), giant = ctx.sumOf(b).keystone_giants_blood;
+    // with no skill to say which weapons the build uses, a weapon is only compared with one of its own kind
+    const fits = s => s === 'offhand' ? offhandFits(gear.weapon, e.r.item, giant) : s !== 'weapon' || g || !gear.weapon || classOf(gear.weapon) === classOf(e.r.item);
+    const slots = e.r.slots.includes('jewel') ? ctx.sockets().map(j => 'jewel:' + j.id) : e.r.slots.filter(s => SLOTS[s] && fits(s));
+    return slots.map(slot => rate(b, g, gear, slot, e.r.item)).sort((p, q) => RANK[q.kind] - RANK[p.kind] || q.gain - p.gain);
   }
 
   // ---------- telling: the window over the game
@@ -122,7 +116,7 @@ export function initLoot(el, ctx) {
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
   const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(S.over ? v : null) }).catch(() => {}); };
 
-  const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); wornRev++; keep(); };
+  const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); keep(); };
   // ---------- items coming in
   function add(text) {
     text = text.replace(/\r/g, '').trim();
@@ -186,7 +180,7 @@ export function initLoot(el, ctx) {
   // slot <- item (null empties it) in the worn gear kept here
   function put(slot, item, name) {
     if (item) S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; else delete S.on[slot];
-    wornRev++; keep(); render();
+    keep(); render();
   }
   function render() {
     const b = ctx.build(), g = gemOf(b), own = skills(b), gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));

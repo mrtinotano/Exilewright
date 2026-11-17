@@ -891,7 +891,7 @@ const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save();
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
-const renderLoot = initLoot(lootEl, { build: B, id: () => cur, rev: () => rev, sumOf, snap,
+const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
   sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
 const renderSettings = initSettings($('settings'), ask, lootEl);
 update(ask, true);   // a newer version: asked once, when the app opens
