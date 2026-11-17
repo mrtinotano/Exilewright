@@ -6,8 +6,9 @@ import { STATUS, leagues } from './trade.js';
 
 const KEY = 'exwSettings';
 // the 3D scene's own keys (moving is W A S D and skills 1-9, as in the game)
-export const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyR' };
+const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyR' };
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the scene' };
+const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
 const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available' };
 const S = (() => {
@@ -41,7 +42,7 @@ export function initSettings(el) {
         <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label></div>
-        <p class="note">${t('The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.')}</p>
+        <p class="note">${t(NEEDS)}</p>
       </section>
       <section><h3>${t('3D scene keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
@@ -60,7 +61,7 @@ export function initSettings(el) {
     if (/^(Control|Shift|Alt|Meta)/.test(e.code)) return;   // a modifier alone: wait for the key that comes with it
     msg = '';
     if (e.code !== 'Escape') {
-      if (wait === 'price') { const c = comboOf(e); if (c) { S.priceKey = c; save(); } else msg = t('The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.'); }
+      if (wait === 'price') { const c = comboOf(e); if (c) { S.priceKey = c; save(); } else msg = t(NEEDS); }
       else if (FIXED.test(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: W A S D, 1-9 and Esc stay as they are.');
       else { const other = Object.keys(S.keys).find(k => k !== wait && S.keys[k] === e.code); if (other) S.keys[other] = S.keys[wait]; S.keys[wait] = e.code; save(); }
     }

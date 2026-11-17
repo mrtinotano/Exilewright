@@ -160,9 +160,9 @@ export async function priceOf({ league, item, state = 'available' }) {
     if (!s.total) continue;
     const ids = (s.result || []).slice(0, 10);
     const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
-    return { total: s.total, matched: need, of: n, prices: got.map(r => r?.listing?.price).filter(Boolean), link: siteLink(league, s.id) };
+    return { total: s.total, matched: need, of: n, prices: got.map(r => r?.listing?.price).filter(Boolean) };
   }
-  return { total: 0, matched: 0, of: n, prices: [], link: '' };
+  return { total: 0, matched: 0, of: n, prices: [] };
 }
 
 // ---------- the search

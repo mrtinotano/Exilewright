@@ -385,10 +385,7 @@ def watch_price_key():
     was = False
     while True:
         time.sleep(.03)
-        keys = combo(PRICE_KEY)
-        if not keys:
-            continue
-        mods, key = keys
+        mods, key = PRICE_KEY
         down = all(user.GetAsyncKeyState(k) & 0x8000 for k in (*mods, key))
         if down and not was:
             title = ctypes.create_unicode_buffer(64)
@@ -415,7 +412,7 @@ TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
 TONE = {'up': '#8fe89a', 'down': '#ee8888', 'dim': '#9a8f78'}   # pieces of a line: better, worse, said in passing
 LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
-PRICE_KEY = 'Ctrl+D'   # the price check shortcut (Settings), as the page last said
+PRICE_KEY = combo('Ctrl+D')   # the price check shortcut (Settings) as ([modifier keys], key), as the page last said
 PRICE_AT = 0   # when the price check shortcut sent Ctrl+C to the game
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
@@ -545,7 +542,7 @@ class Handler(SimpleHTTPRequestHandler):
             key = None
         if not combo(key):
             return self.reply(400, 'not a shortcut')
-        PRICE_KEY = key
+        PRICE_KEY = combo(key)
         self.reply(200, 'ok')
 
     def do_GET(self):
