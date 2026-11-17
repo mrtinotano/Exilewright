@@ -211,13 +211,15 @@ attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(
 save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
 
 # --- ascendancies / classes
-chars, chars_tr, asc_tr = load('Characters'), load_langs('Characters'), load_langs('Ascendancy')
+chars, chars_tr, asc_tr, portraits = load('Characters'), load_langs('Characters'), load_langs('Ascendancy'), load('NPCPortraits')
 save('ascendancies.json', [{'name': a['Name'], **tr(asc_tr, ai), 'class': chars[a['Character']]['Name'] if a['Character'] is not None else None,
                             # the class name per language, as {name, name_es, ...} (app: tn(class_names))
                             'class_names': {'name': chars[a['Character']]['Name'], **tr(chars_tr, a['Character'])} if a['Character'] is not None else None,
                             # art for the tree's central circle: the ascendancy's own, else its class's
                             'tree_image': a.get('PassiveTreeImage') or None,
                             'class_tree_image': chars[a['Character']].get('PassiveTreeImage') or None if a['Character'] is not None else None,
+                            # the class's face in the game's character panel (a UIImages name: images.py cuts it from its atlas)
+                            'portrait': portraits[chars[a['Character']]['Portrait']]['PortraitFile'] if a['Character'] is not None and chars[a['Character']].get('Portrait') is not None else None,
                             # every number of the class row (base life/mana... whatever this patch's Characters has)
                             'class_base': {k: v for k, v in chars[a['Character']].items() if type(v) in (int, float)} if a['Character'] is not None else None,
                             'attrs': {'str': chars[a['Character']]['BaseStrength'], 'dex': chars[a['Character']]['BaseDexterity'], 'int': chars[a['Character']]['BaseIntelligence']}

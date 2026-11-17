@@ -26,7 +26,8 @@ The extraction takes a while (ten languages).
   downloaded on every run.
 - `passive_tree.json` — only nodes in the real tree graph (passiveskillgraph.psg), no unused ascendancies; with
   connections (`links`) to work out paths.
-- `ascendancies.json` — the 23 playable ascendancies with their class.
+- `ascendancies.json` — the 23 playable ascendancies with their class; `portrait` is the class's face in the game's
+  character panel (`Characters.Portrait` → `NPCPortraits`), which `images.py` cuts from the UI atlas around the head.
 - `uniques.json` — uniques registered in the Unique Stash Tab (`hidden_in_stash_tab` = suspicious) plus those GGG's
   trade list has with no place in that tab (tablets, relics, the newest ones). The name is the one the game shows
   (`Words.Text2`, also the translated column; `Text` is the internal name).
