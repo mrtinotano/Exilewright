@@ -823,5 +823,8 @@
  "mirror": "Espejo de Kalandra",
  "hinekoras-lock": "Mechón de Hinekora",
  "Open on the trade site": "Abrir en la web de comercio",
- "Numbers within (±%)": "Números a ±%"
+ "Numbers within (±%)": "Números a ±%",
+ "Window": "Ventana",
+ "Open with Windows": "Abrir al iniciar Windows",
+ "Only in the notification area (click its icon to open the window)": "Solo en la bandeja de iconos (haz clic en su icono para abrir la ventana)"
 }

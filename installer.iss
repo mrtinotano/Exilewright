@@ -40,5 +40,9 @@ Name: "{group}\Exilewright"; Filename: "{app}\Exilewright.exe"
 Name: "{group}\{cm:UninstallProgram,Exilewright}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\Exilewright"; Filename: "{app}\Exilewright.exe"; Tasks: desktopicon
 
+[Registry]
+; "Open with Windows" (Settings) writes this value; uninstalling takes it away
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "Exilewright"; Flags: uninsdeletevalue dontcreatekey
+
 [Run]
 Filename: "{app}\Exilewright.exe"; Description: "{cm:LaunchProgram,Exilewright}"; Flags: nowait postinstall

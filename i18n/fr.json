@@ -823,5 +823,8 @@
  "mirror": "Miroir de Kalandra",
  "hinekoras-lock": "Mèche de cheveux d'Hinekora",
  "Open on the trade site": "Ouvrir sur le site d’échange",
- "Numbers within (±%)": "Valeurs à ±%"
+ "Numbers within (±%)": "Valeurs à ±%",
+ "Window": "Fenêtre",
+ "Open with Windows": "Ouvrir au démarrage de Windows",
+ "Only in the notification area (click its icon to open the window)": "Seulement dans la zone de notification (cliquez sur son icône pour ouvrir la fenêtre)"
 }

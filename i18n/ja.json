@@ -823,5 +823,8 @@
  "mirror": "カランドラの鏡",
  "hinekoras-lock": "ヒネコラの髪束",
  "Open on the trade site": "トレードサイトで開く",
- "Numbers within (±%)": "数値の範囲（±%）"
+ "Numbers within (±%)": "数値の範囲（±%）",
+ "Window": "ウィンドウ",
+ "Open with Windows": "Windows の起動時に開く",
+ "Only in the notification area (click its icon to open the window)": "通知領域のみに表示（アイコンをクリックするとウィンドウを開きます）"
 }

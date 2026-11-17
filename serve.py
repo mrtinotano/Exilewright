@@ -22,7 +22,10 @@ here.
 
 /filter (POST, body = {"name", "text", "overwrite"}) saves the Filter tab's .filter in the game's folder (Documents/My
 Games/Path of Exile 2): 409 when that file is there and overwrite is not set, else 200 with the file's path. Local only.
-/settings (POST, body = {"price_key": "Ctrl+D"}) is the price check shortcut of the Settings tab (settings.js). On
+/settings (GET) -> {"app": the window can go to the notification area, "tray", "startup": it can open with Windows (the
+installed or portable executable), "on": it does}. POST, local only, any of: {"tray": true} only the icon in the
+notification area (no taskbar button; a click on the icon opens the window, minimizing hides it there), {"on": true}
+opens it with Windows (HKCU Run), {"price_key": "Ctrl+D"} the price check shortcut of the Settings tab (settings.js). On
 Windows, that shortcut pressed while the game is the window in use copies the item under the pointer: one Ctrl+C, as
 if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
 {"price": text} instead of text, for the Loot tab to look up what it costs on the trade site.
@@ -439,6 +442,29 @@ PRICE_AT = 0   # when the price check shortcut sent Ctrl+C to the game
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
 OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
+TRAY = None    # app(): set_tray(on), and whether it is on
+RUN = r'Software\Microsoft\Windows\CurrentVersion\Run'
+
+
+def at_startup(on=None):
+    """whether Windows opens the app when the user logs in (it is told to when on is True or False): the executable
+    only, with "startup" (it opens minimized, or only in the notification area)"""
+    if not (FROZEN and sys.platform == 'win32'):
+        return None
+    import winreg
+    cmd = f'"{sys.executable}" startup'
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, RUN) as k:
+        if on:
+            winreg.SetValueEx(k, 'Exilewright', 0, winreg.REG_SZ, cmd)
+        elif on is False:
+            try:
+                winreg.DeleteValue(k, 'Exilewright')
+            except FileNotFoundError:
+                pass
+        try:
+            return winreg.QueryValueEx(k, 'Exilewright')[0] == cmd
+        except FileNotFoundError:
+            return False
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -601,18 +627,22 @@ class Handler(SimpleHTTPRequestHandler):
         self.reply(200, 'ok')
         threading.Timer(.5, os._exit, (0,)).start()   # once the page has its answer: the installer replaces these files
 
-    def do_settings(self, body):
+    def do_settings(self, body=None):
         global PRICE_KEY
         if not self.mine():
             return self.reply(403, 'local only')
         try:
-            key = json.loads(body).get('price_key') if len(body) < 1000 else None
-        except (ValueError, AttributeError):
-            key = None
-        if not combo(key):
-            return self.reply(400, 'not a shortcut')
-        PRICE_KEY = combo(key)
-        self.reply(200, 'ok')
+            v = json.loads(body) if body and len(body) < 1000 else {}
+        except ValueError:
+            v = None
+        if not isinstance(v, dict) or ('price_key' in v and not combo(v['price_key'])):
+            return self.reply(400, 'not a setting')
+        if 'price_key' in v:
+            PRICE_KEY = combo(v['price_key'])
+        if 'tray' in v and TRAY:
+            TRAY[0](bool(v['tray']))
+        on = at_startup(bool(v['on']) if 'on' in v else None)
+        self.reply_json(200, json.dumps({'app': bool(TRAY), 'tray': bool(TRAY and TRAY[1]()), 'startup': on is not None, 'on': bool(on)}).encode())
 
     def do_GET(self):
         u = urlparse(self.path)
@@ -626,6 +656,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_overlay()
         if u.path == '/update':
             return self.do_update()
+        if u.path == '/settings':
+            return self.do_settings()
         if u.path != '/share/download':
             return super().do_GET()
         link = parse_qs(u.query).get('url', [''])[0]
@@ -693,7 +725,8 @@ def profile():
 def app(url):
     """the page in a native window (WebView2, the web engine Windows has, embedded: no browser around it). The window
     over the game gets a thread of its own, as this one wants the main thread; closing the window stops everything.
-    The window opens at the size, place and maximized or not it last had (window.json in the profile)"""
+    The window opens at the size, place and maximized or not it last had (window.json in the profile, with "tray": only
+    an icon in the notification area, no taskbar button). Opened by Windows ("startup"): minimized, or only the icon"""
     import webview
 
     def over():
@@ -704,7 +737,7 @@ def app(url):
     if sys.platform == 'win32':
         threading.Thread(target=over, daemon=True).start()
     path = os.path.join(profile(), 'window.json')
-    s = {'width': 1500, 'height': 950, 'x': None, 'y': None, 'maximized': True}   # the first time: maximized
+    s = {'width': 1500, 'height': 950, 'x': None, 'y': None, 'maximized': True, 'tray': False}   # the first time: maximized
     try:
         with open(path, encoding='utf-8') as f:
             s.update(json.load(f))
@@ -713,7 +746,8 @@ def app(url):
     if s['x'] is not None and not any(m.x <= s['x'] + 100 <= m.x + m.width and m.y <= s['y'] + 20 <= m.y + m.height for m in webview.screens):
         s['x'] = s['y'] = None   # its place is on a screen that is not there any more
     w = webview.create_window(f'Exilewright {VERSION}', url, width=s['width'], height=s['height'], x=s['x'], y=s['y'],
-                              maximized=s['maximized'], min_size=(900, 600), text_select=True)
+                              maximized=s['maximized'], min_size=(900, 600), text_select=True,
+                              hidden='startup' in ARGS and s['tray'], minimized='startup' in ARGS and not s['tray'])
 
     def normal():   # maximizing moves the window before it says it is maximized: Windows itself is asked
         if sys.platform == 'win32':
@@ -739,9 +773,44 @@ def app(url):
             pass
     w.events.resized += lambda width, height: normal() and keep(width=width, height=height)
     w.events.moved += lambda x, y: normal() and x > -10000 and keep(x=x, y=y)   # a minimized window is moved far off the screen
+    icon = None
+
+    def set_tray(on):   # on the window's thread: the taskbar button goes, the icon comes (or the other way round)
+        nonlocal icon
+        f = w.native
+        if f.InvokeRequired:
+            from System import Action
+            return f.Invoke(Action(lambda: set_tray(on)))
+        if on and not icon:
+            from System.Drawing import Icon
+            from System.Windows.Forms import NotifyIcon
+            icon = NotifyIcon()
+            icon.Icon, icon.Text = Icon.ExtractAssociatedIcon(sys.executable), f'Exilewright {VERSION}'
+            icon.MouseClick += lambda *_: come_back()
+        if icon:
+            icon.Visible = on
+        if f.ShowInTaskbar == on:
+            f.ShowInTaskbar = not on
+        if s['tray'] != on:
+            keep(tray=on)
+
+    def come_back():   # a click on the icon: the window as it was, in front
+        from System.Windows.Forms import FormWindowState
+        f = w.native
+        f.Show()
+        if f.WindowState == FormWindowState.Minimized:
+            f.WindowState = FormWindowState.Maximized if s['maximized'] else FormWindowState.Normal
+        f.Activate()
+    if sys.platform == 'win32':
+        global TRAY
+        TRAY = (set_tray, lambda: s['tray'])
+        w.events.before_show += lambda: s['tray'] and set_tray(True)   # before the window has a taskbar button
+        w.events.minimized += lambda: s['tray'] and w.hide()   # with no taskbar button, minimized is hidden: the icon brings it back
     w.events.maximized += lambda: keep(maximized=True)
     w.events.restored += lambda: keep(maximized=False)
     webview.start(private_mode=False, storage_path=profile())
+    if icon:
+        icon.Dispose()   # else it stays in the notification area until the pointer goes over it
     os._exit(0)
 
 

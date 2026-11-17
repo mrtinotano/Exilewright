@@ -823,5 +823,8 @@
  "mirror": "Spiegel von Kalandra",
  "hinekoras-lock": "Hinekoras Locke",
  "Open on the trade site": "Auf der Handelsseite öffnen",
- "Numbers within (±%)": "Werte innerhalb ±%"
+ "Numbers within (±%)": "Werte innerhalb ±%",
+ "Window": "Fenster",
+ "Open with Windows": "Mit Windows starten",
+ "Only in the notification area (click its icon to open the window)": "Nur im Infobereich (Klick auf das Symbol öffnet das Fenster)"
 }

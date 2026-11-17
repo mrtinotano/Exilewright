@@ -823,5 +823,8 @@
  "mirror": "Espelho de Kalandra",
  "hinekoras-lock": "Trança de Hinekora",
  "Open on the trade site": "Abrir no site de comércio",
- "Numbers within (±%)": "Números a ±%"
+ "Numbers within (±%)": "Números a ±%",
+ "Window": "Janela",
+ "Open with Windows": "Abrir ao iniciar o Windows",
+ "Only in the notification area (click its icon to open the window)": "Somente na área de notificação (clique no ícone para abrir a janela)"
 }

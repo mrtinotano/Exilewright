@@ -823,5 +823,8 @@
  "mirror": "卡蘭德的魔鏡",
  "hinekoras-lock": "悉妮蔻拉的髮絲",
  "Open on the trade site": "在交易網站開啟",
- "Numbers within (±%)": "數值範圍（±%）"
+ "Numbers within (±%)": "數值範圍（±%）",
+ "Window": "視窗",
+ "Open with Windows": "Windows 啟動時開啟",
+ "Only in the notification area (click its icon to open the window)": "僅在通知區域顯示（點擊圖示開啟視窗）"
 }

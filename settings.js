@@ -1,5 +1,5 @@
 // The Settings tab: the shortcuts (the price check over the game, the keys of the 3D scene), what the price check
-// searches for, the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
+// searches for, the app's window (serve.py /settings: with Windows, only in the notification area), the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
 // since it is the one that sees the keyboard while the game is the window in use.
 import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
@@ -48,8 +48,11 @@ export async function update(ask, quiet) {
 export function initSettings(el, ask) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let wait = null, msg = '', list = null, upd = '';   // the shortcut being set ('price' or a scene key); the leagues of the trade site; what the update check said
+  let wait = null, msg = '', list = null, upd = '', win = {};   // the shortcut being set ('price' or a scene key); the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
+  const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
+  winSet();
+  const check = (k, text) => `<label><input type="checkbox" data-w="${k}"${win[k] ? ' checked' : ''}> ${t(text)}</label>`;
   const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
   function render() {
     const leagueList = list?.length ? list : [S.league || 'Standard'];
@@ -62,6 +65,10 @@ export function initSettings(el, ask) {
           <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label></div>
         <p class="note">${t(NEEDS)}</p>
       </section>
+      ${win.app || win.startup ? `<section><h3>${t('Window')}</h3><div class="optrow">
+        ${win.startup ? check('on', 'Open with Windows') : ''}
+        ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>
+      </section>` : ''}
       <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
         <div class="keys">${Object.keys(SCENE_KEYS).map(k => `<label>${t(SCENE_LABEL[k])} ${cap(k, keyName(S.keys[k]))}</label>`).join('')}</div>
@@ -99,6 +106,7 @@ export function initSettings(el, ask) {
   };
   el.onchange = e => {
     if ('lang' in e.target.dataset) return setLang(e.target.value);
+    if (e.target.dataset.w) return winSet({ [e.target.dataset.w]: e.target.checked });
     const k = e.target.dataset.s;
     if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.value; save(); render(); }
   };
