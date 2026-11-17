@@ -1,5 +1,6 @@
 // The Settings tab: the shortcuts (the price check over the game, the keys of the 3D scene), what the price check
-// searches for, the app's window (serve.py /settings: with Windows, only in the notification area), the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
+// searches for, the equipment comparison (loot.js draws it: `loot`, put after the price check),
+// the app's window (serve.py /settings: with Windows, only in the notification area), the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
 // since it is the one that sees the keyboard while the game is the window in use.
 import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
@@ -45,7 +46,7 @@ export async function update(ask, quiet) {
   return '';
 }
 
-export function initSettings(el, ask) {
+export function initSettings(el, ask, loot) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
   let wait = null, msg = '', list = null, upd = '', win = {};   // the shortcut being set ('price' or a scene key); the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
@@ -85,6 +86,7 @@ export function initSettings(el, ask) {
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
+    el.querySelector('section').after(loot);
   }
   addEventListener('keydown', e => {
     if (!wait || el.hidden) return;

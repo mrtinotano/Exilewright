@@ -59,17 +59,17 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   site with one link (it runs there when you are logged in).
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
-**Compare** (its own tab) says whether an item is better than what the character wears: hold the pointer over an item in
+**Equipment comparison** (Settings) says whether an item is better than what the character wears: hold the pointer over an item in
 the game (one you found and identified, one in the inventory or the stash, one a merchant sells) and press Ctrl+C.
 The game puts the item's text in the clipboard, `serve.py` passes it to the page (`/clipboard`), and the page puts the
 item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
 decide what counts. Without a skill in the build only defences and the weapon's own damage are judged.
-- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, so there
-  is nothing to paste and no need to look at the planner: it only has to stay open. It needs the game in windowed
+- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, and that is the only
+  place it shows: the planner only has to stay open. It needs the game in windowed
   full screen (nothing draws over exclusive full screen). From source it needs a Python with tkinter; outside
   Windows start the server with `python3 serve.py overlay`.
-- *What the character wears*: the planner cannot read it from the game. **Equip** on an item of the Compare tab tells it
-  you put that item on; or compare with the build's own Equipment instead.
+- *What the character wears*: the planner cannot read it from the game, so the first item copied for each slot is
+  taken as the one worn (folded under the section: ✕ takes one off); or compare with the build's own Equipment instead.
 - One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
   and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one
   read of the clipboard per manual key press and nothing automatic, so there is no scan of the whole inventory.
@@ -92,7 +92,7 @@ item/area level, quality, stack size, waystone tier; text, border and background
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
-**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the window (open with Windows; only an
+**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the window (open with Windows; only an
 icon in the notification area, no taskbar button: a click on it opens the window), the keys of the Simulator, the
 language and the updates.
 

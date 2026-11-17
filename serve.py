@@ -15,7 +15,7 @@ here that way: the game's site hands characters only to programs registered with
 The site's answers, errors and rate limit headers go back as they come. No login: weighted searches open on the
 official site instead.
 
-/clipboard?lang=<code> (GET, a stream of server-sent events) tells the Compare tab (loot.js) about the items copied in
+/clipboard?lang=<code> (GET, a stream of server-sent events) tells the equipment comparison (loot.js, in Settings) about the items copied in
 the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
 here.

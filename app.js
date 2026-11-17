@@ -60,7 +60,7 @@ function renderSide() {
   renderSceneSkills();
   renderSkills?.();
   if (!$('opt').hidden) renderOpt();   // its numbers are the build's
-  if (!$('loot').hidden) renderLoot();
+  if (!$('settings').hidden) renderLoot();   // the equipment comparison's skills are the build's
 }
 const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t('Grants: {0}', n.grants_skill) : '');
 
@@ -785,8 +785,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   $('sceneSkills').hidden = v !== 'scene';
   if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
   if (v === 'opt') renderOpt();
-  if (v === 'loot') renderLoot();
-  if (v === 'settings') renderSettings();
+  if (v === 'settings') { renderSettings(); renderLoot(); }
   if (v === 'filter') renderFilter();
   dispatchEvent(new Event('resize'));  // canvas / 3D renderer follow the new width
   drawTree();
@@ -891,10 +890,10 @@ const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
-const renderLoot = initLoot($('loot'), { build: B, id: () => cur, rev: () => rev, sumOf, snap,
-  sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
-  change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
-const renderSettings = initSettings($('settings'), ask);
+const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
+const renderLoot = initLoot(lootEl, { build: B, id: () => cur, rev: () => rev, sumOf, snap,
+  sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
+const renderSettings = initSettings($('settings'), ask, lootEl);
 update(ask, true);   // a newer version: asked once, when the app opens
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);

@@ -1,57 +1,41 @@
-// The Compare tab: is an item of the game better than the one in use, for this build? The item comes as the text the
-// game copies with Ctrl+C over it (found and identified, in the inventory or in a merchant's shop): pasted here, or
-// picked up by serve.py's /clipboard while the game is the window in use. It is tried in every slot it fits and the
+// The equipment comparison (a section of Settings): is an item of the game better than the one in use, for this build?
+// The item comes as the text the game copies with Ctrl+C over it (found and identified, in the inventory or in a
+// merchant's shop), picked up by serve.py's /clipboard while the game is the window in use. It is tried in every slot it fits and the
 // build is worked out with and without it, so the build's passives and skills decide what counts (spell damage on a
 // wand is an upgrade for a spell and nothing for a bow). Without a skill only the defences and the weapon's own damage
 // are judged. What it is compared with is the gear marked here as worn (the build is left alone) or the build's own.
-// The verdict of an item that came from the game also goes to serve.py's /overlay, which shows it over the game.
-//   ctx: { build(), id(), rev(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets),
-//          change(fn(b)) (edits the build, saves, redraws) }
-import { t, fmt, tn, lang, locale, cap } from './i18n.js';
+// The verdict goes to serve.py's /overlay, which shows it over the game: there is nothing else to see.
+//   ctx: { build(), id(), rev(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
+import { t, fmt, tn, lang, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
-import { diff, impactHtml, impactText } from './impact.js';
+import { diff, impactText } from './impact.js';
 import { priceOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings } from './settings.js';
 
-const KEY = 'poe2loot', LIST = 'poe2lootlist';
-const MAX = 20;   // items kept in the list
+const KEY = 'poe2loot';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-const chk = (k, on, text) => `<label class="chk"><input type="checkbox" data-c="${k}"${on ? ' checked' : ''}> ${esc(text)}</label>`;
 const BADGE = { up: ['▲', 'Upgrade'], mix: ['⇄', 'Trade-off'], same: ['≈', 'About the same'], down: ['▼', 'Worse'], on: ['✓', 'Equipped'], none: ['–', 'No slot for it'] };
 const RANK = { on: 4, up: 3, mix: 2, same: 1, down: 0 };
-const FLOAT_CSS = `body{margin:0;padding:6px;background:#0c0a08;color:#d8ccb0;font:13px/1.35 sans-serif}
-.c{padding:5px 8px;margin-bottom:5px;border-left:4px solid #666;background:#1c1c1c}.c:first-child{font-size:15px}
-.c b{white-space:nowrap}.c small{display:block;color:#aaa;font-size:11px}p{color:#888;text-align:center}
-.up{background:#12301a;border-color:#5fd06a}.up b{color:#8fe89a}.mix{background:#33290f;border-color:#e0b040}.mix b{color:#f0cc66}
-.down{background:#301414;border-color:#c05050}.down b{color:#e88}`;
 
 // a difference under half a percent is no difference; a number there was none of before counts as all gained
 const sgn = (a, z) => { const x = a || 0, y = z || 0; return Math.abs(y - x) <= Math.max(Math.abs(x), Math.abs(y)) * .005 ? 0 : y > x ? 1 : -1; };
 const mid = v => Array.isArray(v) ? (v[0] + v[1]) / 2 : v || 0;   // a damage range counts by its middle
 const tone = d => d > 0 ? 'up' : d < 0 ? 'down' : '';
-const dir = (text, d) => d ? `<i class="${tone(d)}">${text}</i>` : text;   // better in green, worse in red, the same as it is
 const MODS = 6;   // modifier lines of each list (gained, lost) shown over the game
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, over: true, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
   if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
-  // the items looked at, newest first: { text, at (time), r (parseItem), undo: { slot, old } once equipped from here,
-  // v + stamp (the verdict, kept while nothing it depends on changes) }
-  let list = JSON.parse(localStorage.getItem(LIST) || '[]').map(([text, at]) => ({ text, at, r: parseItem(text) })).filter(e => e.r);
-  const keepList = () => localStorage.setItem(LIST, JSON.stringify(list.map(e => [e.text, e.at])));
-  const tab = document.querySelector('nav button[data-v="loot"]');
-  let msg = '', bad = false;     // what the last text given was, when it was no item
-  let es = null, live = '';      // the clipboard watch: '' off, 'wait' (connecting), 'on', 'none' (this server has no /clipboard)
-  let pip = null;               // the floating window
-  let over = false, awake = false;   // serve.py has a window to show verdicts over the game; this tab was told to stay awake
+  let live = 'wait';             // the clipboard watch: 'wait' (connecting), 'on', 'none' (this server has no /clipboard)
+  let over = false;              // serve.py has a window to show verdicts over the game
   let wornRev = 0;               // goes up with every change to the worn gear
 
   // ---------- the build and what the item is compared with
@@ -62,7 +46,6 @@ export function initLoot(el, ctx) {
   const nameOf = it => { const v = itemView(it); return it.name || (v ? v.name || v.base : it.base); };   // it.name: the one the game gave a worn item
   const numOf = (v, key) => { const o = OBJECTIVES[key] || { skill: true }; return v == null ? '—' : fmt(v, o.dec ?? (o.skill && Math.abs(v) < 100 ? 1 : 0)) + (o.unit || ''); };
   const share = (a, z) => !(a > 0) || z == null ? '' : (z >= a ? '+' : '') + fmt((z / a - 1) * 100, 1) + '%';
-  const pct = (a, z) => { const s = share(a, z); return s && `<i class="${z > a * (1 + 1e-9) ? 'up' : z < a * (1 - 1e-9) ? 'down' : ''}">${s}</i>`; };
 
   // ---------- the verdict
   // the item in one slot: { slot, old (what is there), kind (up, mix, same, down; on: it is the one there), nums: the
@@ -105,7 +88,7 @@ export function initLoot(el, ctx) {
     const own = !old ? [] : [...new Set([...now, ...was].map(p => p[0]))].map(k => { const x = was.find(p => p[0] === k), y = now.find(p => p[0] === k); return [k, x, y, sgn(mid(x?.[1]), mid(y?.[1]))]; });
     return { slot, old, kind, nums, rows, raw, lean, why, own, mods: modDiff(old, item), gain: nums.reduce((s, [, x, y]) => s + rel(x, y), 0) };
   }
-  // an item of the list in every slot it fits, the best slot first (none: a jewel with no socket allocated)
+  // an item in every slot it fits, the best slot first (none: a jewel with no socket allocated)
   function verdict(e) {
     const b = ctx.build(), g = gemOf(b), stamp = [ctx.id(), ctx.rev(), S.vs, S.key, g ? b.gems.indexOf(g) : -1, wornRev].join();
     if (e.stamp !== stamp) {
@@ -119,7 +102,7 @@ export function initLoot(el, ctx) {
     return e.v;
   }
 
-  // ---------- telling: the window over the game, the floating window and a dot on the tab
+  // ---------- telling: the window over the game
   const noSlot = e => t(e.r.slots.includes('jewel') ? 'Allocate a jewel socket in the tree first' : 'It does not go with the weapon in use');
   // the verdict in a few lines: plain text, or pieces of it each with its tone ([text, 'up' | 'down' | 'dim'])
   function told(e, v) {
@@ -138,49 +121,26 @@ export function initLoot(el, ctx) {
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
   const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(S.over ? v : null) }).catch(() => {}); };
-  // a small window that stays over the others (the game too, unless it runs in exclusive full screen)
-  async function float() {
-    if (pip) return pip.close();
-    try { pip = await documentPictureInPicture.requestWindow({ width: 340, height: 300 }); } catch { return; }
-    pip.document.title = t('Compare');
-    pip.document.head.append(Object.assign(pip.document.createElement('style'), { textContent: FLOAT_CSS }));
-    pip.addEventListener('pagehide', () => { pip = null; render(); });
-    render();
-  }
-  function drawFloat() {
-    if (!pip) return;
-    pip.document.body.innerHTML = list.length ? list.slice(0, 4).map(e => {
-      const v = verdict(e)[0], [icon, word] = BADGE[v?.kind || 'none'];
-      return `<div class="c ${v?.kind || ''}"><b>${icon} ${t(word)}</b> <span>${esc(e.r.name || nameOf(e.r.item))}</span>
-        <small>${v ? esc(slotName(v.slot)) : ''}${(v?.nums || []).map(([label, x, y]) => { const s = share(x, y); return s ? ` · ${esc(t(label))} ${s}` : ''; }).join('')}</small></div>`;
-    }).join('') : `<p>${t('Copy an item in the game: Ctrl+C over it')}</p>`;
-  }
 
   const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); wornRev++; keep(); };
   // ---------- items coming in
-  function add(text, game) {   // game: it is what the game copied, not something pasted here
+  function add(text) {
     text = text.replace(/\r/g, '').trim();
     const r = parseItem(text);
-    msg = !r ? t('That is not item text, or the planner does not have its base.') : r.unidentified ? t('That item is not identified yet: identify it and copy it again.')
+    const msg = !r ? t('That is not item text, or the planner does not have its base.') : r.unidentified ? t('That item is not identified yet: identify it and copy it again.')
       // modifiers are read in English and in the page's language only
       : lang === 'en' && !/^Rarity:/m.test(text) ? t('The game is in another language: set the planner to the same one (Settings) to read its modifiers.') : '';
-    bad = !!msg;
-    if (!msg) {   // the same item copied again goes back to the top
-      list = [{ text, at: Date.now(), r, undo: list.find(e => e.text === text)?.undo }, ...list.filter(e => e.text !== text)].slice(0, MAX);
-      keepList();
-      // nothing marked as worn yet: start from the build's equipment (an imported character's), not from this item
-      if (S.vs !== 'build' && !Object.keys(S.on).length) fromBuild();
-      // nothing is known to be worn where it goes: this is it (what the character has on is copied first)
-      const free = S.vs === 'build' ? null : r.slots.find(s => verdict(list[0]).some(x => x.slot === s && !x.old));
-      if (free) { list[0].took = free; put(free, r.item, r.name); }
-      const v = verdict(list[0])[0];
-      if (v?.kind === 'up' && el.hidden) tab?.classList.add('new');
-      if (game) say(told(list[0], v));
-    } else if (game) say({ kind: 'none', title: 'Exilewright', lines: [msg] });
-    render();
+    if (msg) return say({ kind: 'none', title: 'Exilewright', lines: [msg] });
+    const e = { r };
+    // nothing marked as worn yet: start from the build's equipment (an imported character's), not from this item
+    if (S.vs !== 'build' && !Object.keys(S.on).length) fromBuild();
+    // nothing is known to be worn where it goes: this is it (what the character has on is copied first)
+    const free = S.vs === 'build' ? null : r.slots.find(s => verdict(e).some(x => x.slot === s && !x.old));
+    if (free) { e.took = free; put(free, r.item, r.name); }
+    say(told(e, verdict(e)[0]));
   }
   // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
-  // judged nor kept in the list
+  // judged
   async function priceCheck(text) {
     const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
     const r = parseItem(text.replace(/\r/g, '').trim());
@@ -207,17 +167,12 @@ export function initLoot(el, ctx) {
   }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
   function watch() {
-    es?.close(); es = null; live = '';
-    if (S.watch) {
-      const src = es = new EventSource('clipboard?lang=' + lang);
-      live = 'wait';
-      src.onopen = () => { live = 'on'; showLive(); };
-      src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else add(x, true); };
-      // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
-      if (!awake) { awake = true; navigator.locks?.request('poe2loot', () => new Promise(() => {})); }
-      src.onerror = () => { if (src === es) { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); } };
-    }
-    showLive();
+    const src = new EventSource('clipboard?lang=' + lang);
+    src.onopen = () => { live = 'on'; showLive(); };
+    src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else add(x); };
+    src.onerror = () => { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); };
+    // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
+    navigator.locks?.request('poe2loot', () => new Promise(() => {}));
   }
   function showLive() {
     const s = el.querySelector('.llive');
@@ -227,49 +182,17 @@ export function initLoot(el, ctx) {
       : live === 'wait' ? t('connecting…') : live === 'none' ? t("this needs the planner's own server: python3 serve.py") : '';
   }
 
-  // ---------- the tab
-  // slot <- item (null empties it): the worn gear kept here, or the build itself
+  // ---------- the section
+  // slot <- item (null empties it) in the worn gear kept here
   function put(slot, item, name) {
-    if (S.vs === 'build') return ctx.change(b => { const it = b.items ||= {}; if (item) it[slot] = structuredClone(item); else delete it[slot]; });
-    const w = S.on;
-    if (item) w[slot] = { ...structuredClone(item), ...(name && { name }) }; else delete w[slot];
+    if (item) S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; else delete S.on[slot];
     wornRev++; keep(); render();
   }
-  function card(e, i) {
-    const vs = verdict(e), v = vs[0], it = itemView(e.r.item), [icon, word] = BADGE[v?.kind || 'none'], name = e.r.name || it.name;
-    const judged = v && v.kind !== 'on';
-    const where = !v ? noSlot(e) : v.kind === 'on' ? slotName(v.slot)
-      : `${slotName(v.slot)} · ${v.old ? t('instead of {0}', nameOf(v.old)) : t('the slot is empty')}`;
-    const nums = !judged ? '' : `<div class="lnums">${v.nums.map(([label, x, y, key]) => `<div><span>${esc(t(label))}</span><b>${numOf(x, key)} → ${dir(numOf(y, key), sgn(x, y))}</b>${pct(x, y)}</div>`).join('')}${
-      v.own.map(([k, x, y, d]) => `<div><span>${esc(t(k))}</span><b>${x ? propText(x) : '—'} → ${dir(y ? propText(y) : '—', d)}</b></div>`).join('')}${
-      v.lean == null ? '' : `<div><span>${t('Damage × toughness')}</span>${pct(1, 1 + v.lean)}</div>`}</div>${v.why ? `<p class="note">${esc(t(v.why))}</p>` : ''}`;
-    // the modifiers that change hands with the one it replaces
-    const swap = !judged || !v.old || !(v.mods[0].length + v.mods[1].length) ? '' : `<div class="imp"><div class="imph">${esc(cap(t('instead of {0}', nameOf(v.old))))}</div>${
-      v.mods.map((lines, k) => lines.map(l => `<div class="${k ? 'down' : 'up'}"><span>${esc(l)}</span><b>${k ? t('loses') : t('gains')}</b></div>`).join('')).join('')}</div>`;
-    const changes = !judged ? '' : !v.raw ? v.rows.length ? impactHtml(t('What changes with it on'), v.rows) : ''
-      : swap || !v.raw[0].length && !v.raw[1].length ? impactHtml(t('What changes with it on'), [])
-      : `<div class="imp"><div class="imph">${t('The calculated numbers stay the same. Not counted by the planner:')}</div>${
-        v.raw.map((lines, k) => lines.map(l => `<div class="${k ? 'down' : 'up'}"><span>${esc(l)}</span><b>${k ? t('loses') : t('gains')}</b></div>`).join('')).join('')}</div>`;
-    const buttons = !v ? '' : v.kind === 'on' ? `<button data-do="undo" data-i="${i}" data-slot="${esc(v.slot)}">${e.undo?.slot === v.slot ? t('Undo') : t('Take off')}</button>`
-      : vs.map(x => `<button class="${x.kind}" data-do="equip" data-i="${i}" data-slot="${esc(x.slot)}" title="${esc(t(BADGE[x.kind][1]))}">${vs.length > 1 ? esc(t('Equip: {0}', slotName(x.slot))) : t('Equip')}</button>`).join('');
-    return `<div class="gitem ${it.rarity}${v?.kind === 'up' ? ' lup' : ''}">
-      <div class="lverd ${v?.kind || ''}"><b>${icon} ${t(word)}</b><span>${esc(where)}</span><button data-do="drop" data-i="${i}" title="${t('Remove')}">✕</button></div>
-      <div class="ghead">${it.img ? `<img src="${esc(it.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<b>${esc(name || it.base)}</b>${name ? `<span>${esc(it.base)}</span>` : ''}</div>
-      ${nums}
-      <div class="gmods">${it.props.map(p => `<div class="prop">${t(p[0])}: <span>${propText(p)}</span></div>`).join('')}${it.dps ? `<div class="prop">${t("Weapon's damage per second")}: <span>${fmt(it.dps, 1)}</span></div>` : ''}${
-        it.mods.map(m => `<div class="mod">${esc(m)}</div>`).join('')}${e.r.missed.map(m => `<div class="mod off" title="${t('Not understood: it is not counted')}">${esc(m)}</div>`).join('')}</div>
-      ${changes}${swap}
-      <div class="gfoot"><small class="note">${new Date(e.at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}</small><span class="lbtns">${buttons}</span></div></div>`;
-  }
   function render() {
-    drawFloat();
-    if (el.hidden) return;
-    tab?.classList.remove('new');
-    const b = ctx.build(), g = gemOf(b), own = skills(b), top = el.scrollTop, gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
+    const b = ctx.build(), g = gemOf(b), own = skills(b), gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
     const wornOpen = el.querySelector('.lworn-box')?.open;   // folded: only needed to put it right; stays as it was left
-    el.innerHTML = `<div class="opt loot">
-      <section class="opthead"><h3>${t('Compare')}</h3>
-        <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
+    el.innerHTML = `<h3>${t('Equipment comparison')}</h3>
+        <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
         <div class="optrow">
           <label>${t('Compare with')} <select data-s="vs">${opt('worn', t('What the character wears'), S.vs !== 'build')}${opt('build', t("The build's equipment"), S.vs === 'build')}</select></label>
           <label>${t('Judge by')} <select data-s="key">${opt('', t('Damage and defence, each on its own'), !S.key)}${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), S.key === k)).join('')}</select></label>
@@ -277,29 +200,16 @@ export function initLoot(el, ctx) {
         </div>
         ${g ? '' : `<p class="note">${t("The build has no skill: damage cannot be judged, only the defences and the weapon's own damage.")}</p>`}
         <div class="optrow">
-          ${chk('watch', S.watch, t('Watch for items copied in the game'))}<span class="llive"></span>
-        </div>
-        <div class="optrow">
-          ${over ? chk('over', S.over, t('Show the verdict over the game, next to the pointer'))
+          ${over ? `<label><input type="checkbox" data-c="over"${S.over ? ' checked' : ''}> ${t('Show the verdict over the game, next to the pointer')}</label><span class="llive"></span>`
           : `<span class="note">${t('To see the verdict over the game, start the server with: python3 serve.py overlay')}</span>`}
         </div>
-        <div class="optrow">
-          ${'documentPictureInPicture' in window ? `<button data-do="float">${pip ? t('Close the floating window') : t('Floating window')}</button>` : ''}
-        </div>
-        <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
-        ${msg ? `<p class="${bad ? 'opterr' : 'optmsg'}">${esc(msg)}</p>` : ''}
-      </section>
       <details class="lworn-box"${wornOpen ? ' open' : ''}><summary><b>${t('What it is compared with')}: ${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</b> (${gear.length})</summary>
-        ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab, and Equip puts them in the build.')}</p>`
+        ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab.')}</p>`
         : `<p class="note">${t('Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.')}</p>`}
         ${S.vs !== 'build' && Object.keys(b.items || {}).length ? `<div class="optrow"><button data-do="copy">${t("Start from the build's equipment")}</button></div>` : ''}
         ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
           S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}
-      </details>
-      ${list.length ? `<section><div class="optrow"><h3>${t('Items looked at')}</h3><button data-do="clear">${t('Clear the list')}</button></div>
-        <div class="gitems">${list.map(card).join('')}</div></section>` : ''}
-    </div>`;
-    el.scrollTop = top;
+      </details>`;
     showLive();
   }
 
@@ -307,28 +217,17 @@ export function initLoot(el, ctx) {
     const d = e.target.dataset;
     if (d.s) S[d.s] = e.target.value;
     else if ('gem' in d) S.gem[ctx.id()] = +e.target.value;
-    else if (d.c) {
-      S[d.c] = e.target.checked;
-      if (d.c === 'watch') watch();
-    } else return;
+    else if (d.c) S[d.c] = e.target.checked;
+    else return;
     keep(); render();
   };
-  el.addEventListener('input', e => { const x = e.target; if (x.dataset.act === 'paste' && x.value.trim()) { const text = x.value; x.value = ''; add(text); } });
   el.onclick = e => {
     const d = e.target.closest('[data-do]');
     if (!d) return;
-    const en = list[+d.dataset.i], slot = d.dataset.slot;
-    switch (d.dataset.do) {
-      case 'equip': { const old = gearOf(ctx.build())[slot]; en.undo = { slot, old: old ? structuredClone(old) : null }; put(slot, en.r.item, en.r.name); break; }
-      case 'undo': { const old = en.undo?.slot === slot ? en.undo.old : null; en.undo = null; put(slot, old); break; }
-      case 'off': put(slot, null); break;
-      case 'copy': fromBuild(); render(); break;
-      case 'drop': list.splice(+d.dataset.i, 1); keepList(); render(); break;
-      case 'clear': list = []; keepList(); render(); break;
-      case 'float': float(); break;
-    }
+    if (d.dataset.do === 'off') put(d.dataset.slot, null);
+    else { fromBuild(); render(); }   // copy
   };
   fetch('overlay').then(r => r.ok ? r.json() : {}).then(j => { over = !!j.overlay; render(); }).catch(() => {});
-  if (S.watch) watch();
+  watch();
   return render;
 }
