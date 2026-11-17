@@ -2449,7 +2449,10 @@
   "ailment_threshold_life_%": 50,
   "ignite_%_per_second": 20.0,
   "ignite_duration_s": 4.0,
-  "base_maximum_rage": 30.0
+  "base_maximum_rage": 30.0,
+  "rage_loss_delay_ms": 4000.0,
+  "rage_loss_per_minute": 300.0,
+  "base_maximum_infusions": 3.0
  },
  "quest_rewards": [
   [

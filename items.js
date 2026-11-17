@@ -94,6 +94,30 @@ export function gearStats(items = {}) {
   return sum;
 }
 
+// The armour, evasion and energy shield of the equipped armour pieces (the character panel's "Item Armour"...)
+export function armourItems(items = {}) {
+  const out = { armour: 0, evasion: 0, energy_shield: 0, movement: 0 };   // movement: their base's movement speed penalty, %
+  for (const it of Object.values(items)) if (BASE[it?.base]?.armour) { const l = local(it); for (const k in out) out[k] += l[k] || 0; }
+  return out;
+}
+// Recovery per second of the flasks that apply their effect constantly (their own "applies its Effect constantly", or a
+// body armour's "Non-Unique Life Flasks apply their Effects constantly"): amount x (1 + its own increased) x quality x
+// (1 + the character's increased) x more / less, over its duration sped up by the recovery rate. Matched to the game's
+// character panel, 17/11: Ultimate Life Flask with 92% increased, 25% + 32% from tree and rune, 43% less, 20% slower
+// 421.3 per second there (421.6 here: note: the game's rounding of each step isn't in the data); Lavianga's Spirits 37.5
+export function flaskRecovery(items = {}, sum = {}) {
+  const out = { life: 0, mana: 0 }, g = id => sum[id] || 0;
+  for (const it of Object.values(items)) {
+    const base = BASE[it?.base]; if (!base?.flask) continue;
+    const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana';
+    if (!s.local_flask_always_drinking && !(k === 'life' && !it.unique && g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you'))) continue;
+    const amount = base.flask[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
+      * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1);
+    out[k] += amount / base.flask.recovery_s * (1 + (g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
+  }
+  return out;
+}
+
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
 const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));

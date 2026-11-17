@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, classOf, rowReader } from './items.js';
+import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
 import { SK } from './skilldata.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
@@ -183,7 +183,8 @@ export function character(b, sum) {
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     block: v(sum, 'additional_block_%', 'block_%'),
     res, penalty,
-    move: v(sum, 'base_movement_velocity_+%'),
+    // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
+    move: (1 + (v(sum, 'base_movement_velocity_+%') - armourItems(b.items).movement) / 100) * (1 + armourItems(b.items).movement / 100) * 100 - 100,
     attackSpeed: v(sum, 'attack_speed_+%', 'attack_and_cast_speed_+%'),
     castSpeed: v(sum, 'base_cast_speed_+%', 'attack_and_cast_speed_+%'),
     critInc: v(sum, 'critical_strike_chance_+%'),
@@ -287,9 +288,27 @@ export function sheet(b, sum) {
       ...opt('Damage taken to Life over 4 seconds', 'damage_taken_goes_to_life_over_4_seconds_%'),
     ]],
   ];
+  const flask = flaskRecovery(b.items, sum), esFlask = sum.life_recovery_from_flasks_also_recovers_energy_shield ? flask.life : 0;
+  const worn = armourItems(b.items);
+  // Rage: once the build has some (a gem that regenerates it, or more maximum Rage): GameConstants' 30, loss delay and
+  // loss per minute, plus maximum Rage and Berserk's Gemling quality (the game's panel, 17/11: 30 + 14 + 2 = 46)
+  const berserk = (b.gems || []).find(x => SK.skills[x.name]?.quality?.['skill_base_rage_effect_+%_to_apply']);
+  const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
+  const rage = rageGen || sum.maximum_rage ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (berserk ? gemStats(berserk, sum)['berserk_maximum_rage_granted_+'] || 0 : 0) : 0;
+  const most = (base, ...ids) => (CHAR[base] || 0) + v(sum, ...ids);
   return panel(own, sum, used, {
-    'energy_shield_recovery_per_minute': (esRecharge + esRegen) * 60, 'total_energy_shield_recovery_per_minute_from_recharge': esRecharge * 60,
-    'total_energy_shield_recovery_per_minute_from_regeneration': esRegen * 60, 'mana_recovery_per_minute': manaRegen * 60,
+    // note: the game's totals, 17/11: Energy Shield's is its flasks' (421.3) without the recharge, Life's and Mana's are
+    // their regeneration alone, without their constantly applied flasks
+    'energy_shield_recovery_per_minute': (esRegen + esFlask) * 60, 'mana_recovery_per_minute': manaRegen * 60,
+    'total_energy_shield_recovery_per_minute_from_regeneration': esRegen * 60, 'total_energy_shield_recovery_per_minute_from_flasks': esFlask * 60,
+    'total_life_recovery_per_minute_from_flasks': flask.life * 60, 'total_mana_recovery_per_minute_from_flasks': flask.mana * 60,
+    'base_armour_on_equipped_armour_items': worn.armour, 'base_evasion_rating_on_equipped_armour_items': worn.evasion,
+    'base_maximum_energy_shield_on_equipped_armour_items': worn.energy_shield,
+    'virtual_maximum_rage': rage, 'virtual_rage_loss_delay_ms': rage && CHAR.rage_loss_delay_ms, 'virtual_inherent_rage_loss_per_minute': rage && CHAR.rage_loss_per_minute,
+    'virtual_maximum_power_charges': most('max_power_charges', 'max_power_charges'), 'virtual_maximum_frenzy_charges': most('max_frenzy_charges', 'max_frenzy_charges'),
+    'virtual_maximum_endurance_charges': most('max_endurance_charges', 'max_endurance_charges'),
+    ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [`virtual_maximum_${e}_infusion_stacks`, most('base_maximum_infusions', `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
+    'movement_velocity_+permyriad': c.move * 100,
   });
 }
 
@@ -311,13 +330,13 @@ function panel(own, sum, used, derived) {
     for (const f of r.fn) x = f === 'PerMinuteToPerSecond' ? x / 60 : f === 'Negate' ? -x : f === 'DivideByOneHundred1dp' ? x / 100 : f.startsWith('Milliseconds') ? x / 1000 : x;
     const [pos, neg] = PANEL.formats[r.mode][lang] || PANEL.formats[r.mode].en;
     const less = r.mode === 'PercentModifierFinal' && x < 0;
-    return (less ? neg : pos).replace(/\{0(:\+d)?\}/, (m, sign) => (sign && x > 0 ? '+' : '') + fmt(less ? -x : x, Number.isInteger(x) ? 0 : 1));
+    return (less ? neg : pos).replace(/\{0(:\+d)?\}/, (m, sign) => (sign && x > 0 ? '+' : '') + fmt(less ? -x : x, r.fn.some(f => f.endsWith('1dp')) || !Number.isInteger(x) ? 1 : 0));
   };
   const out = PANEL.sections.map(s => {
     const mine = own.find(([h]) => h === s.name);
     const rows = PANEL.rows.filter(r => r.section === s.id && SHOWN.has(r.mode)).map(r => [r, value(r)]).filter(([, x]) => x).map(([r, x]) => [tn(r), text(r, x)]);
-    return mine ? [mine[0], [...mine[1], ...rows]] : rows.length && [tn(s), rows];
-  }).filter(Boolean);
+    return mine ? [mine[0], [...mine[1], ...rows]] : [tn(s), rows];
+  }).filter(([, rows]) => rows.length);   // as the game: a section with nothing to show is left out
   return [...out, ...own.filter(([h]) => !PANEL.sections.some(s => s.name === h))];
 }
 
