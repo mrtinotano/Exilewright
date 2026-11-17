@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "キャラクターがまだ装備できないものを除外します。空欄: すべてのレベル。",
  "Required level up to": "要求レベル上限",
  "Search": "検索",
- "Worth the most here (a top roll of each)": "ここで最も価値が高いもの (各最大ロール)",
  "No modifier this slot can roll raises this objective.": "このスロットに付与されうるモディファイアでこの目標を上げるものはありません。",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "トレードのセッションがないとサイトは単純な検索しか受け付けないため、プランナーは最良のモディファイアそれぞれが最も高いアイテムを取得して比較します。",
  "Searching the trade site ({0} of {1})…": "トレードサイトを検索中 ({0}/{1})…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "装備検索にはプランナー自身のサーバーが必要です: \"python3 serve.py\" で起動し、表示されるページを開いてください。",
  "The trade site asks to wait {0} seconds before searching again.": "トレードサイトから再検索まで{0}秒待つよう求められました。",
  "The trade site answered: {0}": "トレードサイトの応答: {0}",
- "Highest {0} of the item": "アイテムの{0}が最も高い",
- "Most of: {0}": "最多: {0}",
- "damage per second": "秒間ダメージ",
- "physical damage per second": "秒間物理ダメージ",
- "elemental damage per second": "秒間元素ダメージ",
  "Item level {0}": "アイテムレベル {0}",
  "no price": "価格なし",
  "Equipped": "装備中",
  "Equip": "装備",
- "{0} items read. Searches made (they open on the trade site):": "{0}個のアイテムを読み込みました。実行した検索 (トレードサイトで開きます):",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "出品アイテム{0}個を除外しました: プランナーにベースがないか、別のスロットのアイテムです。",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "該当する出品がありません。別のリーグ、高い価格、または出品者「すべて」を試してください。",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "各アイテムをビルドに装備して評価。品質、ルーン、エンチャント、灰色の行は含みません。要求値は確認しません。",
@@ -816,5 +809,7 @@
  "More than {0}": "{0}超",
  "Equipment comparison": "装備の比較",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にポインターを合わせて Ctrl+C を押すと、キャラクターが装備しているものより良いか悪いかがポインターの横に表示されます。アイテムは装備できるすべての部位で試され、ビルドはそれがある場合とない場合で計算されます。何が重要かはビルドのパッシブとスキルが決めます。",
- "General": "一般"
+ "General": "一般",
+ "Stat to improve": "向上させるステータス",
+ "None of the items found improves the current gear.": "見つかったアイテムで現在の装備より良いものはありません。"
 }

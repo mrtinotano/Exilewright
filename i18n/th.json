@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "ตัดสิ่งที่ตัวละครยังสวมใส่ไม่ได้ออก เว้นว่าง: ทุกเลเวล",
  "Required level up to": "เลเวลที่ต้องการไม่เกิน",
  "Search": "ค้นหา",
- "Worth the most here (a top roll of each)": "มีค่าที่สุดที่นี่ (ค่าสุ่มสูงสุดของแต่ละตัว)",
  "No modifier this slot can roll raises this objective.": "ไม่มีม็อดที่ช่องนี้สุ่มได้ซึ่งเพิ่มเป้าหมายนี้",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "หากไม่มีเซสชันเทรด เว็บจะรับเฉพาะการค้นหาแบบง่าย ตัววางแผนจึงขอไอเทมที่มีม็อดดีที่สุดแต่ละตัวมากที่สุดแล้วนำมาเปรียบเทียบ",
  "Searching the trade site ({0} of {1})…": "กำลังค้นหาบนเว็บเทรด ({0} จาก {1})…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "การค้นหาอุปกรณ์ต้องใช้เซิร์ฟเวอร์ของตัววางแผน: เริ่มด้วย «python3 serve.py» แล้วเปิดหน้าที่แสดง",
  "The trade site asks to wait {0} seconds before searching again.": "เว็บเทรดขอให้รอ {0} วินาทีก่อนค้นหาอีกครั้ง",
  "The trade site answered: {0}": "เว็บเทรดตอบกลับ: {0}",
- "Highest {0} of the item": "{0} ของไอเทมสูงสุด",
- "Most of: {0}": "มากที่สุด: {0}",
- "damage per second": "ความเสียหายต่อวินาที",
- "physical damage per second": "ความเสียหายกายภาพต่อวินาที",
- "elemental damage per second": "ความเสียหายธาตุต่อวินาที",
  "Item level {0}": "เลเวลไอเทม {0}",
  "no price": "ไม่มีราคา",
  "Equipped": "สวมใส่อยู่",
  "Equip": "สวมใส่",
- "{0} items read. Searches made (they open on the trade site):": "อ่านไอเทมแล้ว {0} ชิ้น การค้นหาที่ทำ (เปิดบนเว็บเทรด):",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "ไอเทมที่ลงขาย {0} ชิ้นถูกตัดออก: ตัววางแผนไม่มีเบสของมันหรือมันใส่ในช่องอื่น",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "ไม่มีของที่ลงขายตรงกัน ลองลีกอื่น ราคาสูงขึ้น หรือผู้ขาย «ทั้งหมด»",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "ประเมินโดยใส่แต่ละไอเทมในบิลด์ ไม่นับ: ค่าคุณภาพ อักขระ เอนแชนต์ และบรรทัดสีเทา ไม่ได้ตรวจสอบความต้องการ",
@@ -816,5 +809,7 @@
  "More than {0}": "มากกว่า {0}",
  "Equipment comparison": "เปรียบเทียบอุปกรณ์",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ",
- "General": "ทั่วไป"
+ "General": "ทั่วไป",
+ "Stat to improve": "ค่าที่ต้องการเพิ่ม",
+ "None of the items found improves the current gear.": "ไม่มีไอเทมที่พบซึ่งดีกว่าอุปกรณ์ปัจจุบัน"
 }

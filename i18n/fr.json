@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "Écarte ce que le personnage ne peut pas encore porter. Vide : tout niveau.",
  "Required level up to": "Niveau requis jusqu'à",
  "Search": "Chercher",
- "Worth the most here (a top roll of each)": "Ce qui vaut le plus ici (le meilleur jet de chacun)",
  "No modifier this slot can roll raises this objective.": "Aucun modificateur possible sur cet emplacement n'augmente cet objectif.",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "Sans session d'échange, le site n'accepte que des recherches simples : le planificateur demande les objets ayant le plus de chacun des meilleurs modificateurs et les compare.",
  "Searching the trade site ({0} of {1})…": "Recherche sur le site d'échange ({0} sur {1})…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "La recherche d'équipement a besoin du serveur du planificateur : lancez-le avec « python3 serve.py » et ouvrez la page qu'il affiche.",
  "The trade site asks to wait {0} seconds before searching again.": "Le site d'échange demande d'attendre {0} secondes avant de chercher à nouveau.",
  "The trade site answered: {0}": "Le site d'échange a répondu : {0}",
- "Highest {0} of the item": "{0} le plus élevé de l'objet",
- "Most of: {0}": "Le plus de : {0}",
- "damage per second": "dégâts par seconde",
- "physical damage per second": "dégâts physiques par seconde",
- "elemental damage per second": "dégâts élémentaires par seconde",
  "Item level {0}": "Niveau d'objet {0}",
  "no price": "sans prix",
  "Equipped": "Équipé",
  "Equip": "Équiper",
- "{0} items read. Searches made (they open on the trade site):": "{0} objets lus. Recherches effectuées (elles s'ouvrent sur le site d'échange) :",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "{0} objets en vente ont été écartés : le planificateur ne connaît pas leur base ou ils vont dans un autre emplacement.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Rien en vente ne correspond. Essayez une autre ligue, un prix plus élevé ou le vendeur « Tous ».",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Évalués avec chaque objet placé sur le build. Non comptés : qualité, runes, enchantements et lignes en gris. Les prérequis ne sont pas vérifiés.",
@@ -816,5 +809,7 @@
  "More than {0}": "Plus de {0}",
  "Equipment comparison": "Comparateur d'équipement",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Placez le pointeur sur un objet dans le jeu (un objet trouvé et identifié, un de l'inventaire ou un qu'un marchand vend) et appuyez sur Ctrl+C : à côté du pointeur, vous voyez s'il est meilleur ou moins bon que celui que porte le personnage. L'objet est essayé dans chaque emplacement où il va et le build est calculé avec et sans lui : les passifs et les compétences du build décident de ce qui compte.",
- "General": "Général"
+ "General": "Général",
+ "Stat to improve": "Statistique à améliorer",
+ "None of the items found improves the current gear.": "Aucun des objets trouvés n'améliore l'équipement actuel."
 }

@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "Исключает то, что персонаж пока не может надеть. Пусто: любой уровень.",
  "Required level up to": "Требуемый уровень до",
  "Search": "Искать",
- "Worth the most here (a top roll of each)": "Здесь ценится больше всего (лучшее значение каждого)",
  "No modifier this slot can roll raises this objective.": "Ни один модификатор этой ячейки не повышает эту цель.",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "Без торговой сессии сайт принимает только простые запросы, поэтому планировщик ищет предметы с наибольшим значением каждого из лучших модификаторов и сравнивает их.",
  "Searching the trade site ({0} of {1})…": "Поиск на торговом сайте ({0} из {1})…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "Для поиска снаряжения нужен собственный сервер планировщика: запустите его командой \"python3 serve.py\" и откройте страницу, которую он выведет.",
  "The trade site asks to wait {0} seconds before searching again.": "Торговый сайт просит подождать {0} с перед новым поиском.",
  "The trade site answered: {0}": "Ответ торгового сайта: {0}",
- "Highest {0} of the item": "Наибольшее значение «{0}» у предмета",
- "Most of: {0}": "Больше всего: {0}",
- "damage per second": "урон в секунду",
- "physical damage per second": "физический урон в секунду",
- "elemental damage per second": "урон от стихий в секунду",
  "Item level {0}": "Уровень предмета {0}",
  "no price": "без цены",
  "Equipped": "Надето",
  "Equip": "Надеть",
- "{0} items read. Searches made (they open on the trade site):": "Прочитано предметов: {0}. Выполненные поиски (открываются на торговом сайте):",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "Пропущено выставленных предметов: {0} — у планировщика нет их базы или они идут в другую ячейку.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Ничего подходящего не выставлено. Попробуйте другую лигу, более высокую цену или продавца «Любой».",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Оценено с каждым предметом на билде. Не учитываются: качество, руны, зачарования и строки серым. Требования не проверяются.",
@@ -816,5 +809,7 @@
  "More than {0}": "Больше {0}",
  "Equipment comparison": "Сравнение снаряжения",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Наведите курсор на предмет в игре (найденный и опознанный, из инвентаря или продаваемый торговцем) и нажмите Ctrl+C: рядом с курсором вы увидите, лучше он или хуже того, что надет на персонажа. Предмет примеряется в каждую ячейку, куда подходит, и билд рассчитывается с ним и без него: что важно, решают пассивные умения и умения билда.",
- "General": "Общие"
+ "General": "Общие",
+ "Stat to improve": "Что улучшить",
+ "None of the items found improves the current gear.": "Ни один из найденных предметов не улучшает текущее снаряжение."
 }

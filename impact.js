@@ -41,6 +41,8 @@ const brief = r => `${r.dps && r.pct != null ? share(r) : signed(r.d, r.dec, r.u
 export const impactHtml = (title, rows) => `<div class="imp"><div class="imph">${esc(title)}</div>${rows.length
   ? rows.map(r => `<div class="${cls(r)}"><span>${esc(r.label)}</span><b>${signed(r.d, r.dec, r.unit)}${r.pct != null ? ` <small>${share(r)}</small>` : ''}</b></div>`).join('')
   : `<p>${t('No change in the calculated numbers')}</p>`}</div>`;
+// every change, one per line, gains first (empty when nothing changes)
+export const impactList = rows => rows.length ? `<div class="impv">${[...rows].sort((p, q) => (q.d > 0) - (p.d > 0)).map(r => `<div class="${cls(r)}">${esc(brief(r))}</div>`).join('')}</div>` : '';
 // the biggest changes on one line, for list entries (empty when nothing changes)
 export const impactLine = (rows, max = 3) => rows.length ? `<small class="impl">${rows.slice(0, max).map(r => `<i class="${cls(r)}">${esc(brief(r))}</i>`).join('')}${rows.length > max ? '<i>…</i>' : ''}</small>` : '';
 // the same as plain text (select options)

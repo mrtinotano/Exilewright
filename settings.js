@@ -77,8 +77,8 @@ export function initSettings(el, ask, loot) {
         ${win.app || win.startup ? `<div class="optrow">
           ${win.startup ? check('on', 'Open with Windows') : ''}
           ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}
-        <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label>
-          <button data-do="update">${t('Check for updates')}</button></div>
+        <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label></div>
+        <div class="optrow"><button data-do="update">${t('Check for updates')}</button></div>
         ${upd ? `<p class="note">${esc(upd)}</p>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}

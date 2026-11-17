@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "캐릭터가 아직 착용할 수 없는 것은 제외합니다. 비워두면 모든 레벨.",
  "Required level up to": "최대 요구 레벨",
  "Search": "검색",
- "Worth the most here (a top roll of each)": "여기서 가장 가치 있는 것 (각각 최고 수치)",
  "No modifier this slot can roll raises this objective.": "이 슬롯에 붙을 수 있는 옵션 중 이 목표를 올리는 것이 없습니다.",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "거래 세션이 없으면 사이트는 간단한 검색만 받으므로, 플래너는 가장 좋은 옵션별로 수치가 가장 높은 아이템을 요청해 비교합니다.",
  "Searching the trade site ({0} of {1})…": "거래 사이트 검색 중 ({0}/{1})…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "장비 검색에는 플래너 전용 서버가 필요합니다: \"python3 serve.py\"로 실행하고 출력된 페이지를 여세요.",
  "The trade site asks to wait {0} seconds before searching again.": "거래 사이트에서 {0}초 후 다시 검색하라고 합니다.",
  "The trade site answered: {0}": "거래 사이트 응답: {0}",
- "Highest {0} of the item": "아이템의 {0} 최고치",
- "Most of: {0}": "가장 많은 것: {0}",
- "damage per second": "초당 피해",
- "physical damage per second": "초당 물리 피해",
- "elemental damage per second": "초당 원소 피해",
  "Item level {0}": "아이템 레벨 {0}",
  "no price": "가격 없음",
  "Equipped": "장착됨",
  "Equip": "장착",
- "{0} items read. Searches made (they open on the trade site):": "아이템 {0}개 읽음. 수행한 검색 (거래 사이트에서 열림):",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "매물 {0}개 제외됨: 플래너에 베이스가 없거나 다른 슬롯에 들어갑니다.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "일치하는 매물이 없습니다. 다른 리그, 더 높은 가격 또는 \"전체\" 판매자로 시도하세요.",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "각 아이템을 빌드에 장착한 상태로 평가합니다. 제외: 퀄리티, 룬, 인챈트, 회색 줄. 요구 사항은 확인하지 않습니다.",
@@ -816,5 +809,7 @@
  "More than {0}": "{0} 초과",
  "Equipment comparison": "장비 비교",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "게임에서 아이템(찾아서 감정한 것, 인벤토리에 있는 것, 상인이 파는 것)에 포인터를 올리고 Ctrl+C를 누르면 캐릭터가 착용한 것보다 좋은지 나쁜지가 포인터 옆에 표시됩니다. 아이템은 들어갈 수 있는 모든 슬롯에서 시험되고 빌드는 아이템이 있을 때와 없을 때로 계산됩니다. 무엇이 중요한지는 빌드의 패시브와 스킬이 결정합니다.",
- "General": "일반"
+ "General": "일반",
+ "Stat to improve": "향상할 능력치",
+ "None of the items found improves the current gear.": "찾은 아이템 중 현재 장비보다 나은 것이 없습니다."
 }

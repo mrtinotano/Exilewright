@@ -8,14 +8,13 @@ import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimiz
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { SLOTS, classOf, slotClasses } from './items.js';
-import { diff, impactHtml, impactLine } from './impact.js';
-import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, wanted, withIds, findGear, leagues, weighted, siteLink, siteQuery } from './trade.js';
+import { diff, impactHtml, impactList } from './impact.js';
+import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, wanted, withIds, findGear, leagues, weighted, siteQuery } from './trade.js';
 
 const KEY = 'poe2opt';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const ATTR = { str: ['Strength', '#c44'], dex: ['Dexterity', '#4a4'], int: ['Intelligence', '#48c'] };
-const PROPS = { dps: 'damage per second', pdps: 'physical damage per second', edps: 'elemental damage per second', ar: 'Armour', ev: 'Evasion', es: 'Energy Shield' };
 const NOTES = {
   mix: 'Balanced: damage per second × toughness, so neither is given up for the other.',
   tough: 'Toughness: how many hits of a normal monster of your level it takes to bring the character down. Evasion, block, armour and resistances count; recovery does not.',
@@ -158,10 +157,11 @@ export function initOpt(el, ctx) {
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
   const priceNow = () => ({ max: +S.max || 0, currency: CURRENCY.includes(S.currency) ? S.currency : CURRENCY[0] });
-  const gearKey = (b, sel) => [ctx.id(), sel.slot, sel.cls, S.key, skills(b).indexOf(gemOf(b))].join('|');
+  const gk = () => OBJECTIVES[S.gear] ? S.gear : S.key;   // what the gear search raises (Stat to improve; none picked: the objective)
+  const gearKey = (b, sel) => [ctx.id(), sel.slot, sel.cls, gk(), skills(b).indexOf(gemOf(b))].join('|');
   function wantsFor(b, g, sel) {   // what a top roll of each modifier the slot can have adds, best first (kept while nothing changes)
     const key = ctx.rev() + '|' + gearKey(b, sel);
-    if (wantMemo.key !== key) { wantMemo.key = key; wantMemo.list = wanted({ cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, S.key) }); }
+    if (wantMemo.key !== key) { wantMemo.key = key; wantMemo.list = wanted({ cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()) }); }
     return wantMemo.list;
   }
   function netStart(again) {
@@ -176,7 +176,7 @@ export function initOpt(el, ctx) {
     render();
     try {
       const wants = await withIds(wantsFor(b, g, sel));
-      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, S.key), wants, price, level, state,
+      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()), wants, price, level, state,
         tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
       G[id] = { res, wants, league, price, level, state, cls: sel.cls };
       if (res.errors.some(e => e.kind === 'offline')) netStart(true);   // the server may be up the next time
@@ -184,35 +184,39 @@ export function initOpt(el, ctx) {
   }
   const errText = e => e.kind === 'offline' ? t('The gear search needs the planner\'s own server: start it with "python3 serve.py" and open the page it prints.')
     : e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message);
-  const planText = p => p.prop ? t('Highest {0} of the item', t(PROPS[p.prop])) : t('Most of: {0}', p.by.text);
   function found(b, g, sel, hit) {
-    const { res, league } = hit, items = b.items || {}, value = valueOf(b, g, S.key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
-    const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) })).sort((x, y) => (y.v ?? -Infinity) - (x.v ?? -Infinity)).slice(0, SHOWN);
+    const { res, league } = hit, key = hit.key || S.key, items = b.items || {}, value = valueOf(b, g, key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
+    // only what raises the stat over what the character wears (an empty slot: anything that counts)
+    const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
+      .filter(x => x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
+      .sort((x, y) => y.v - x.v).slice(0, SHOWN);
+    // the item itself on the site: its base (a unique: and its name), its seller and its price
+    const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
+      filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
     const card = ({ l, i, v }) => {
-      const on = JSON.stringify(l.item) === mine, off = new Set(l.missed);
+      const off = new Set(l.missed);
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
         <div class="gmods">${l.mods.map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
-        <div class="gfoot"><span class="optval">${S.key === 'mix' ? '' : `<b>${num(v, S.key)}</b> `}${on ? '' : pct(cur, v)}</span>
+        ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
+        <div class="gfoot"><span class="optval">${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</span>
           <span class="gprice">${l.price ? esc(`${l.price.amount} ${l.price.currency}`) : t('no price')}${l.seller ? ` · <span class="note">${esc(l.seller)}</span>` : ''}</span>
-          ${on ? `<span class="note">${t('Equipped')}</span>` : `<button data-do="equip" data-i="${i}">${t('Equip')}</button>`}</div>
-        ${on ? '' : impactLine(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })), 4)}</div>`;
+          <button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Open on the trade site')}</a></div></div>`;
     };
     const w = weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, level: hit.level, state: hit.state });
     return `<div class="optres">${res.errors.map(e => `<p class="opterr">${esc(errText(e))}</p>`).join('')}
-      ${res.searches.length ? `<p class="note">${t('{0} items read. Searches made (they open on the trade site):', res.found.length)}
-        ${res.searches.map(s => `<a href="${esc(siteLink(league, s.id))}" target="_blank" rel="noopener">${esc(planText(s.plan))}</a> (${fmt(s.total)})`).join(' · ')}</p>` : ''}
       ${res.unread ? `<p class="note">${t('{0} listed items were left out: the planner does not have their base or they go in another slot.', res.unread)}</p>` : ''}
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
+      ${res.found.length && !list.length ? `<p class="note">${t('None of the items found improves the current gear.')}</p>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
       ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.')}</p>` : ''}
       ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
   }
   function gearCard(b, g) {
-    const sel = gearSel(b), blocked = OBJECTIVES[S.key].skill && !g, wants = blocked ? [] : wantsFor(b, g, sel), cur = blocked ? null : valueOf(b, g, S.key)(b.items || {}), hit = G[gearKey(b, sel)];
-    const gain = w => cur > 0 ? `+${fmt(w.gain / cur * 100, 1)}%` : '+' + num(w.gain, S.key);
+    const sel = gearSel(b), blocked = OBJECTIVES[gk()].skill && !g, wants = blocked ? [] : wantsFor(b, g, sel), hit = G[gearKey(b, sel)];
     return `<section><h3>${t('Gear on the trade site')}</h3>
       <p class="note">${t('Works out what each modifier the slot can roll is worth to the objective, looks for items listed on the official trade site that have the best ones, puts each on the build and ranks them by what they really change.')}</p>
-      <div class="optrow"><label>${t('Slot')} <select data-s="slot">${SEARCH_SLOTS.map(s => opt(s, t(SLOTS[s]), s === sel.slot)).join('')}</select></label>
+      <div class="optrow"><label>${t('Stat to improve')} <select data-s="gear">${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), k === gk())).join('')}</select></label>
+        <label>${t('Slot')} <select data-s="slot">${SEARCH_SLOTS.map(s => opt(s, t(SLOTS[s]), s === sel.slot)).join('')}</select></label>
         ${sel.classes.length > 1 ? `<label>${t('Type')} <select data-cls>${sel.classes.map(c => opt(c, t(c), c === sel.cls)).join('')}</select></label>` : ''}
         <label>${t('League')} <select data-s="league">${leagueList().map(l => opt(l, l, l === leagueNow())).join('')}</select></label>
         <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === (STATUS[S.state] ? S.state : 'securable'))).join('')}</select></label></div>
@@ -221,8 +225,7 @@ export function initOpt(el, ctx) {
         <label title="${esc(t('Leaves out what the character cannot wear yet. Empty: any level.'))}">${t('Required level up to')} <input type="number" min="0" max="100" value="${levelFor(b) || ''}" data-n="lvl" placeholder="—"></label>
         <button class="optgo" data-do="gear"${blocked || busy || !wants.length || !net?.leagues ? ' disabled' : ''}>${t('Search')}</button></div>
       ${net?.offline ? `<p class="opterr">${esc(errText({ kind: 'offline' }))}</p>` : ''}
-      ${blocked ? '' : wants.length ? `<div class="optlist"><span class="note">${t('Worth the most here (a top roll of each)')}:</span> ${wants.slice(0, 8).map(w => `<span>${esc(w.text)} <i class="up">${gain(w)}</i></span>`).join(' · ')}</div>`
-        : `<p class="note">${t('No modifier this slot can roll raises this objective.')}</p>`}
+      ${blocked || wants.length ? '' : `<p class="note">${t('No modifier this slot can roll raises this objective.')}</p>`}
       ${net && !net.offline && net.leagues ? `<p class="note">${t('Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.')}</p>` : ''}
       ${busy ? `<p class="optrun"><span id="optBusy">${esc(busy.text)}</span></p>` : hit ? found(b, g, sel, hit) : ''}</section>`;
   }
@@ -247,7 +250,7 @@ export function initOpt(el, ctx) {
     const x = e.target, d = x.dataset;
     let other = false;   // the tree search in progress is for something else now
     msg = {};
-    if (d.s) { S[d.s] = x.value; if (d.s === 'mode') delete typed.points; if (d.s === 'key' || d.s === 'mode' || d.s === 'pref') { T = null; other = true; } if (d.s === 'key') U = null; }
+    if (d.s) { S[d.s] = x.value; if (d.s === 'mode') delete typed.points; if (d.s === 'key' || d.s === 'mode' || d.s === 'pref') { T = null; other = true; } if (d.s === 'key') { U = null; delete S.gear; } }
     else if (d.n) { if (x.value === '') delete typed[d.n]; else typed[d.n] = +x.value; if (d.n === 'lvl' && x.value === '') typed.lvl = 0; if (d.n === 'sockets') U = null; if (d.n === 'points') { T = null; other = true; } }
     else if (d.c) { S[d.c] = x.checked; U = null; }
     else if ('gem' in d) { S.gem[ctx.id()] = +x.value; delete typed.sockets; T = U = null; other = true; }

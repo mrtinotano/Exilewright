@@ -572,7 +572,6 @@
  "Leaves out what the character cannot wear yet. Empty: any level.": "排除角色目前還無法裝備的物品。留空：不限等級。",
  "Required level up to": "需求等級上限",
  "Search": "搜尋",
- "Worth the most here (a top roll of each)": "此處最有價值（各取最高數值）",
  "No modifier this slot can roll raises this objective.": "此欄位可出現的詞綴都無法提升此目標。",
  "Without a trade session the site only takes simple searches, so the planner asks for the items with the most of each of the best modifiers and compares them.": "沒有交易工作階段時，網站只接受簡單搜尋，因此規劃器會搜尋每項最佳詞綴數值最高的物品並加以比較。",
  "Searching the trade site ({0} of {1})…": "正在搜尋交易網站（{0} / {1}）…",
@@ -580,16 +579,10 @@
  "The gear search needs the planner's own server: start it with \"python3 serve.py\" and open the page it prints.": "裝備搜尋需要規劃器自己的伺服器：以 \"python3 serve.py\" 啟動，並開啟它顯示的網頁。",
  "The trade site asks to wait {0} seconds before searching again.": "交易網站要求等待 {0} 秒後再搜尋。",
  "The trade site answered: {0}": "交易網站回應：{0}",
- "Highest {0} of the item": "物品的最高{0}",
- "Most of: {0}": "最多：{0}",
- "damage per second": "每秒傷害",
- "physical damage per second": "每秒物理傷害",
- "elemental damage per second": "每秒元素傷害",
  "Item level {0}": "物品等級 {0}",
  "no price": "無價格",
  "Equipped": "已裝備",
  "Equip": "裝備",
- "{0} items read. Searches made (they open on the trade site):": "已讀取 {0} 件物品。已進行的搜尋（會在交易網站上開啟）：",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "已略過 {0} 件上架物品：規劃器沒有其基底，或它們屬於其他欄位。",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "沒有符合的上架物品。請嘗試其他聯盟、更高的價格或「任何」賣家。",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "以每件物品裝在配置上的結果評分。未計入：品質、符文、附魔與灰色詞綴。不檢查需求。",
@@ -816,5 +809,7 @@
  "More than {0}": "高於 {0}",
  "Equipment comparison": "裝備比較",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "在遊戲中將游標移到物品上（你找到並已鑑定的、背包中的或商人販售的）並按 Ctrl+C：游標旁會顯示它比角色身上穿的更好還是更差。物品會在每個可裝備的欄位中試用，並計算有它和沒有它時的配置：由配置的天賦和技能決定什麼重要。",
- "General": "一般"
+ "General": "一般",
+ "Stat to improve": "要提升的數值",
+ "None of the items found improves the current gear.": "找到的物品都沒有比目前的裝備更好。"
 }
