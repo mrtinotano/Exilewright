@@ -1,8 +1,9 @@
 ; Inno Setup 6 script for the installer (build_app.py runs it): installs dist\Exilewright for the current user,
-; no admin rights needed. The app keeps its data in %LOCALAPPDATA%\Exilewright, which uninstalling leaves alone.
+; no admin rights needed. The version comes from serve.py (VERSION), which build_app.py passes as /DAppVersion.
+; The app keeps its data in %LOCALAPPDATA%\Exilewright, which uninstalling leaves alone.
 [Setup]
 AppName=Exilewright
-AppVersion=0.2
+AppVersion={#AppVersion}
 AppPublisher=mrtinotano
 DefaultDirName={autopf}\Exilewright
 DefaultGroupName=Exilewright
@@ -40,4 +41,4 @@ Name: "{group}\{cm:UninstallProgram,Exilewright}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\Exilewright"; Filename: "{app}\Exilewright.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\Exilewright.exe"; Description: "{cm:LaunchProgram,Exilewright}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Exilewright.exe"; Description: "{cm:LaunchProgram,Exilewright}"; Flags: nowait postinstall

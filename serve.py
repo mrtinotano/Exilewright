@@ -27,6 +27,12 @@ Windows, that shortcut pressed while the game is the window in use copies the it
 if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
 {"price": text} instead of text, for the Loot tab to look up what it costs on the trade site.
 
+/update tells the page whether there is a newer version (the latest release on GitHub, RELEASES):
+  GET  /update   {"version", "latest", "newer", "page" (the release's page), "install" (this is the installed app and the
+                 release has its installer), "app" (this runs as the app)}
+  POST /update   downloads that installer, starts it (silent: it shows its progress and opens the app again) and closes
+                 the app, so its files can be replaced. Only from the page this server serves.
+
 /overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
 for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
   GET  /overlay   {"overlay": true} when this server has that window
@@ -373,6 +379,12 @@ def combo(text):
     return k and ([vk[m] for m in mods], k)
 
 
+def number(version):
+    """'0.10' -> (0, 10), to compare versions"""
+    return tuple(int(n) for n in re.findall(r'\d+', version))
+
+
+assert number('0.10') > number('0.9') > number('0.2') and not number('0.2') > number('0.2'), 'number'
 assert combo('Ctrl+D') == ([0x11], 0x44) and combo('Alt+F5') == ([0x12], 0x74) and combo('Shift+D') is None, 'combo'
 
 
@@ -403,6 +415,8 @@ def watch_price_key():
         was = down
 
 
+VERSION = '0.2'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
+RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
     sys.stdout = sys.stderr = open(os.devnull, 'w')
@@ -552,6 +566,32 @@ class Handler(SimpleHTTPRequestHandler):
             f.write(text)
         self.reply(200, path)
 
+    def do_update(self, post=False):
+        if post and not self.mine():
+            return self.reply(403, 'local only')
+        try:
+            r = json.loads(call(f'https://api.github.com/repos/{RELEASES}/releases/latest'))
+            latest = r['tag_name'].lstrip('v')
+            setup = next((a['browser_download_url'] for a in r['assets'] if a['name'] == 'Exilewright-setup.exe'), None)
+        except Exception as e:
+            return self.reply_json(502, json.dumps({'error': str(e)}).encode())
+        installed = FROZEN and not os.path.exists(os.path.join(os.path.dirname(sys.executable), 'portable'))
+        newer = number(latest) > number(VERSION)
+        if not post:
+            return self.reply_json(200, json.dumps({'version': VERSION, 'latest': latest, 'newer': newer, 'page': r['html_url'],
+                                                    'install': bool(installed and setup), 'app': 'app' in ARGS}).encode())
+        if not (newer and installed and setup and setup.startswith(f'https://github.com/{RELEASES}/releases/download/')):
+            return self.reply(409, 'nothing to install')
+        try:
+            path = os.path.join(os.environ.get('TEMP', profile()), f'Exilewright-setup-{latest}.exe')
+            with open(path, 'wb') as f:
+                f.write(call(setup))
+        except Exception as e:
+            return self.reply(502, str(e))
+        subprocess.Popen([path, '/SILENT', '/SUPPRESSMSGBOXES'], close_fds=True)
+        self.reply(200, 'ok')
+        threading.Timer(.5, os._exit, (0,)).start()   # once the page has its answer: the installer replaces these files
+
     def do_settings(self, body):
         global PRICE_KEY
         if not self.mine():
@@ -575,6 +615,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_pob(u)
         if u.path == '/overlay':
             return self.do_overlay()
+        if u.path == '/update':
+            return self.do_update()
         if u.path != '/share/download':
             return super().do_GET()
         link = parse_qs(u.query).get('url', [''])[0]
@@ -593,6 +635,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_trade(u, self.rfile.read(int(self.headers.get('Content-Length', 0))))
         if u.path == '/overlay':
             return self.do_overlay(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        if u.path == '/update':
+            return self.do_update(post=True)
         if u.path == '/settings':
             return self.do_settings(self.rfile.read(int(self.headers.get('Content-Length', 0))))
         if u.path == '/filter':
@@ -636,7 +680,8 @@ def profile():
 
 def app(url):
     """the page in a native window (WebView2, the web engine Windows has, embedded: no browser around it). The window
-    over the game gets a thread of its own, as this one wants the main thread; closing the window stops everything"""
+    over the game gets a thread of its own, as this one wants the main thread; closing the window stops everything.
+    The window opens at the size, place and maximized or not it had when it was last closed (window.json in the profile)"""
     import webview
 
     def over():
@@ -646,7 +691,43 @@ def app(url):
             OVER[1]()
     if sys.platform == 'win32':
         threading.Thread(target=over, daemon=True).start()
-    webview.create_window('Exilewright', url, width=1500, height=950, min_size=(900, 600), text_select=True)
+    path = os.path.join(profile(), 'window.json')
+    s = {'width': 1500, 'height': 950, 'x': None, 'y': None, 'maximized': False}
+    try:
+        with open(path, encoding='utf-8') as f:
+            s.update(json.load(f))
+    except (OSError, ValueError):
+        pass
+    if s['x'] is not None and not any(m.x <= s['x'] + 100 <= m.x + m.width and m.y <= s['y'] + 20 <= m.y + m.height for m in webview.screens):
+        s['x'] = s['y'] = None   # its place is on a screen that is not there any more
+    w = webview.create_window(f'Exilewright {VERSION}', url, width=s['width'], height=s['height'], x=s['x'], y=s['y'],
+                              maximized=s['maximized'], min_size=(900, 600), text_select=True)
+
+    def normal():   # maximizing moves the window before it says it is maximized: Windows itself is asked
+        if sys.platform == 'win32':
+            h = w.native.Handle.ToInt64()
+            return not (ctypes.windll.user32.IsZoomed(ctypes.c_void_p(h)) or ctypes.windll.user32.IsIconic(ctypes.c_void_p(h)))
+        return not s['maximized']
+
+    def size(width, height):
+        if normal():
+            s.update(width=width, height=height)
+
+    def place(x, y):
+        if normal() and x > -10000:   # a minimized window is moved far off the screen
+            s.update(x=x, y=y)
+
+    def keep():
+        try:
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(s, f)
+        except OSError:
+            pass
+    w.events.resized += size
+    w.events.moved += place
+    w.events.maximized += lambda: s.update(maximized=True)
+    w.events.restored += lambda: s.update(maximized=False)
+    w.events.closing += keep
     webview.start(private_mode=False, storage_path=profile())
     os._exit(0)
 

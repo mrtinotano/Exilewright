@@ -5,6 +5,7 @@
   dist/Exilewright-setup.exe            the installer, when Inno Setup 6 is installed (installer.iss)"""
 import glob
 import os
+import re
 import shutil
 import subprocess
 import PyInstaller.__main__
@@ -21,6 +22,7 @@ iscc = next((p for p in map(os.path.expandvars, (r'%ProgramFiles(x86)%\Inno Setu
                                                   r'%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe'))
              if os.path.isfile(p)), shutil.which('iscc'))
 if iscc:
-    subprocess.run([iscc, '/Q', 'installer.iss'], check=True)
+    version = re.search(r"^VERSION = '([\d.]+)'", open('serve.py', encoding='utf-8').read(), re.M)[1]
+    subprocess.run([iscc, '/Q', f'/DAppVersion={version}', 'installer.iss'], check=True)
 else:
     print('No Inno Setup 6: no installer (the portable zip is there)')

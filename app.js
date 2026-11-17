@@ -9,7 +9,7 @@ import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
-import { initSettings } from './settings.js';
+import { initSettings, update } from './settings.js';
 import { initFilter } from './filter.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
@@ -888,7 +888,8 @@ const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, s
 const renderLoot = initLoot($('loot'), { build: B, id: () => cur, rev: () => rev, sumOf, snap,
   sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
-const renderSettings = initSettings($('settings'));
+const renderSettings = initSettings($('settings'), ask);
+update(ask, true);   // a newer version: asked once, when the app opens
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 

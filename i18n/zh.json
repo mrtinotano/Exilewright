@@ -786,5 +786,17 @@
  "Roll": "翻滾",
  "Corpse at the cursor": "在游標處放置屍體",
  "Fill charges": "充滿充能球",
- "Refill life and energy shield": "補滿生命與能量護盾"
+ "Refill life and energy shield": "補滿生命與能量護盾",
+ "Updates": "更新",
+ "Version {0}": "版本 {0}",
+ "Check for updates": "檢查更新",
+ "Checking…": "檢查中…",
+ "Update": "更新",
+ "Open": "開啟",
+ "Exilewright {0} is the latest version.": "Exilewright {0} 已是最新版本。",
+ "The updates could not be checked ({0}).": "無法檢查更新（{0}）。",
+ "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0} 已推出（目前為 {1}）。要下載並安裝嗎？完成後程式會關閉並重新開啟。",
+ "Downloading and installing Exilewright {0}…": "正在下載並安裝 Exilewright {0}…",
+ "The update could not be downloaded ({0}).": "無法下載更新（{0}）。",
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} 已推出（目前為 {1}）。要開啟下載頁面嗎？"
 }

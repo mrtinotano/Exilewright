@@ -14,8 +14,12 @@ Download it from [Releases](https://github.com/mrtinotano/Exilewright/releases/l
 - **Exilewright-portable.zip**: unzip it anywhere and open `Exilewright.exe`. Your builds are kept in the `profile`
   folder next to it.
 
-It opens in a window of its own (WebView2, part of Windows); closing the window closes it. Windows may warn that
-the app is not recognised, because it is not signed: "More info" → "Run anyway".
+It opens in a window of its own (WebView2, part of Windows), with the size and place it had when it was last closed;
+closing the window closes it. Windows may warn that the app is not recognised, because it is not signed: "More info"
+→ "Run anyway".
+
+When it opens it looks for a newer release: the installed app offers to download and install it (it closes and
+opens again on its own), the portable one opens the release page. Settings → Updates checks again.
 
 ## Run from source (developers)
 `python serve.py` (or double-click `start.cmd`) serves the planner at http://127.0.0.1:8765 for a browser;
@@ -23,7 +27,8 @@ the app is not recognised, because it is not signed: "More info" → "Run anyway
 the browser: bring them over with Share (copy the code, import it).
 
 `build_app.py` makes the release files: `dist/Exilewright/Exilewright.exe`, the portable zip and, with Inno Setup 6,
-the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top of `build_app.py`).
+the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top of `build_app.py`). The version is
+`VERSION` in `serve.py`: the window title, the update check and the installer take it from there.
 
 **Share** (top bar) exports/imports Path of Building 2 codes and links (pobb.in, poe.ninja, Maxroll, poe2db;
 pastebin and rentry to import) through `serve.py`, plus JSON files, and imports the builds saved in Path of
@@ -81,7 +86,7 @@ item/area level, quality, stack size, waystone tier; text, border and background
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
-**Settings** (its own tab): the price check shortcut, its league and seller, the keys of the 3D scene, the language.
+**Settings** (its own tab): the price check shortcut, its league and seller, the keys of the 3D scene, the language and the updates.
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so it runs from source right after cloning.

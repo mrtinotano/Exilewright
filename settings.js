@@ -1,5 +1,5 @@
 // The Settings tab: the shortcuts (the price check over the game, the keys of the 3D scene), what the price check
-// searches for, and the language. Kept in this browser (localStorage); serve.py is told the price check shortcut,
+// searches for, the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
 // since it is the one that sees the keyboard while the game is the window in use.
 import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
@@ -28,10 +28,28 @@ const comboOf = e => {
   return key && (e.ctrlKey || e.altKey) ? [e.ctrlKey && 'Ctrl', e.shiftKey && 'Shift', e.altKey && 'Alt', key].filter(Boolean).join('+') : null;
 };
 
-export function initSettings(el) {
+// a newer version: the installed app offers to download and install it, elsewhere its release page is shown.
+// -> the text to show in Settings ('' when the user was asked)
+export async function update(ask, quiet) {
+  let u;
+  try { const r = await fetch('update'); u = await r.json(); if (!r.ok) throw Error(u.error); }
+  catch (e) { return quiet ? '' : t('The updates could not be checked ({0}).', e.message); }
+  if (!u.newer) return quiet ? '' : t('Exilewright {0} is the latest version.', u.version);
+  if (quiet && !u.app) return '';   // run from the code: no question at every reload
+  if (u.install) {
+    if (await ask(t('Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.', u.latest, u.version), t('Update')) !== 0) return '';
+    const r = await fetch('update', { method: 'POST' }).catch(e => ({ ok: false, statusText: e.message }));
+    return r.ok ? t('Downloading and installing Exilewright {0}…', u.latest) : t('The update could not be downloaded ({0}).', r.statusText || r.status);
+  }
+  if (await ask(t('Exilewright {0} is out (you have {1}). Open its page to download it?', u.latest, u.version), t('Open')) === 0) open(u.page, '_blank', 'noopener');
+  return '';
+}
+
+export function initSettings(el, ask) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let wait = null, msg = '', list = null;   // the shortcut being set ('price' or a scene key); the leagues of the trade site
+  let wait = null, msg = '', list = null, upd = '', version = '';
+  fetch('update').then(r => r.json()).then(u => { version = u.version || ''; render(); }, () => {});   // the shortcut being set ('price' or a scene key); the leagues of the trade site
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
   function render() {
@@ -51,6 +69,10 @@ export function initSettings(el) {
       </section>
       <section><h3>${t('Language')}</h3>
         <div class="optrow"><select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></div>
+      </section>
+      <section><h3>${t('Updates')}</h3>
+        <div class="optrow">${version ? `<span>${t('Version {0}', esc(version))}</span>` : ''}<button data-do="update">${t('Check for updates')}</button></div>
+        ${upd ? `<p class="note">${esc(upd)}</p>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
@@ -72,6 +94,7 @@ export function initSettings(el) {
     if (!d) return;
     if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
+    else if (d.dataset.do === 'update') { upd = t('Checking…'); update(ask).then(m => { upd = m; render(); }); }
     render();
   };
   el.onchange = e => {

@@ -786,5 +786,17 @@
  "Roll": "Rouler",
  "Corpse at the cursor": "Cadavre au curseur",
  "Fill charges": "Remplir les charges",
- "Refill life and energy shield": "Remplir la vie et le bouclier d'énergie"
+ "Refill life and energy shield": "Remplir la vie et le bouclier d'énergie",
+ "Updates": "Mises à jour",
+ "Version {0}": "Version {0}",
+ "Check for updates": "Rechercher des mises à jour",
+ "Checking…": "Recherche…",
+ "Update": "Mettre à jour",
+ "Open": "Ouvrir",
+ "Exilewright {0} is the latest version.": "Exilewright {0} est la dernière version.",
+ "The updates could not be checked ({0}).": "Impossible de rechercher des mises à jour ({0}).",
+ "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0} est disponible (vous avez la {1}). La télécharger et l'installer ? L'application se ferme et se rouvre une fois terminé.",
+ "Downloading and installing Exilewright {0}…": "Téléchargement et installation d'Exilewright {0}…",
+ "The update could not be downloaded ({0}).": "Impossible de télécharger la mise à jour ({0}).",
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} est disponible (vous avez la {1}). Ouvrir sa page pour la télécharger ?"
 }
