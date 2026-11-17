@@ -125,9 +125,11 @@ export function totem(g, sum = {}) {
     && totem({ name: 'Ancestral Warrior Totem', level: 15, quality: 6 }, { ascendancy_gemling_enable_thaumaturgy_quality_stats: 1 })?.life === 1807;
   console.assert(ok, 'Mortar Cannon totem', m); }
 
+// an ascendancy, or the first of a base class that has none chosen: what they give (attributes, class_base) is the class's
+const ascOf = name => ASCS.find(a => a.name === name) || ASCS.find(a => a.class === name) || {};
 // attribute total: class base + flat stats from tree/gear, then % increased
 export function attributes(sum, ascName) {
-  const base = ASCS.find(a => a.name === ascName)?.attrs || { str: 0, dex: 0, int: 0 }, out = {};
+  const base = ascOf(ascName).attrs || { str: 0, dex: 0, int: 0 }, out = {};
   const ids = { str: 'strength', dex: 'dexterity', int: 'intelligence' };
   const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
   for (const [k, id] of Object.entries(ids)) {
@@ -148,7 +150,7 @@ function perAttr(attr) {
 }
 
 export function character(b, sum) {
-  const A = ASCS.find(a => a.name === b.asc) || {}, cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
+  const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
   const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0);
   // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];

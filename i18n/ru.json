@@ -797,5 +797,6 @@
  "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Вышла Exilewright {0} (у вас {1}). Скачать и установить? Приложение закроется и откроется снова по завершении.",
  "Downloading and installing Exilewright {0}…": "Скачивание и установка Exilewright {0}…",
  "The update could not be downloaded ({0}).": "Не удалось скачать обновление ({0}).",
- "Exilewright {0} is out (you have {1}). Open its page to download it?": "Вышла Exilewright {0} (у вас {1}). Открыть страницу для загрузки?"
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Вышла Exilewright {0} (у вас {1}). Открыть страницу для загрузки?",
+ "No ascendancy": "Без Восхождения"
 }

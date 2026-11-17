@@ -797,5 +797,6 @@
  "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0} が公開されました（現在 {1}）。ダウンロードしてインストールしますか？完了するとアプリが閉じて再び開きます。",
  "Downloading and installing Exilewright {0}…": "Exilewright {0} をダウンロードしてインストールしています…",
  "The update could not be downloaded ({0}).": "アップデートをダウンロードできませんでした（{0}）。",
- "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} が公開されました（現在 {1}）。ダウンロードページを開きますか？"
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} が公開されました（現在 {1}）。ダウンロードページを開きますか？",
+ "No ascendancy": "アセンダンシーなし"
 }

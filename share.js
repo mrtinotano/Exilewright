@@ -51,7 +51,7 @@ export function toXML(b, ctx) {
   const jewels = items.filter(([s]) => s.startsWith('jewel:'));
   return `<?xml version="1.0" encoding="UTF-8"?>
 <PathOfBuilding2>
-<Build level="${b.level}" targetVersion="0_1" className="${x(cls)}" ascendClassName="${x(b.asc)}" mainSocketGroup="1" viewMode="TREE">${playerStats(ctx.stats?.(b))}</Build>
+<Build level="${b.level}" targetVersion="0_1" className="${x(cls)}" ascendClassName="${x(b.asc === cls ? 'None' : b.asc)}" mainSocketGroup="1" viewMode="TREE">${playerStats(ctx.stats?.(b))}</Build>
 <Tree activeSpec="1"><Spec title="${x(b.name)}" treeVersion="0_5" classInternalId="${POB_CLASS[cls] ?? ''}" ascendancyInternalId="${POB_ASC[b.asc] ?? ''}" nodes="${nodes.join(',')}" masteryEffects="">
 ${[[1, set1], [2, set2]].filter(([, s]) => s.length).map(([k, s]) => `<WeaponSet${k} nodes="${s.join(',')}"/>`).join('')}
 <Sockets>${jewels.map(([s]) => `<Socket nodeId="${s.slice(6)}" itemId="${iid[s]}"/>`).join('')}</Sockets>
@@ -83,10 +83,10 @@ export function fromXML(xml, ctx, blank) {
   const build = kids(root, 'Build')[0], tree = kids(root, 'Tree')[0];
   b.level = Math.min(100, Math.max(1, +build?.getAttribute('level') || 1));
   const specs = kids(tree, 'Spec'), spec = specs[(+tree?.getAttribute('activeSpec') || 1) - 1] || specs[0];
-  // ascendancy: PoB's internal id, else the names; a build without one keeps the class's first ascendancy
+  // ascendancy: PoB's internal id, else the names; a build without one has the base class alone
   const asc = ASC_OF[spec?.getAttribute('ascendancyInternalId')] || build?.getAttribute('ascendClassName');
   const cls = CLASS_OF[spec?.getAttribute('classInternalId')] || build?.getAttribute('className');
-  b.asc = ctx.ascs.find(a => a.name === asc)?.name || ctx.ascs.find(a => a.class === cls)?.name || b.asc;
+  b.asc = ctx.ascs.find(a => a.name === asc)?.name || ctx.ascs.find(a => a.class === cls)?.class || b.asc;
   b.name = spec?.getAttribute('title') || b.asc;
   if (spec) {
     const sets = [1, 2].map(k => new Set(ids(kids(spec, 'WeaponSet' + k)[0]?.getAttribute('nodes'))));

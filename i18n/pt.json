@@ -797,5 +797,6 @@
  "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0} já saiu (você tem a {1}). Baixar e instalar? O app fecha e abre de novo ao terminar.",
  "Downloading and installing Exilewright {0}…": "Baixando e instalando Exilewright {0}…",
  "The update could not be downloaded ({0}).": "Não foi possível baixar a atualização ({0}).",
- "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} já saiu (você tem a {1}). Abrir a página para baixá-la?"
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} já saiu (você tem a {1}). Abrir a página para baixá-la?",
+ "No ascendancy": "Sem Ascensão"
 }

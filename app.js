@@ -29,7 +29,8 @@ let cur;
 const SHAPES = { auto: 'Auto (game data)', circle: 'Circle (cursor)', nova: 'Nova (on you)', cone: 'Cone', line: 'Line', projectile: 'Projectile', aura: 'Aura (follows you)' };
 const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.includes('projectile') ? 'projectile' : t.includes('aura') || t.includes('persistent') ? 'aura'
   : t.includes('slam') || t.includes('strike') ? 'cone' : 'circle';
-const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].name, gems: [], nodes: [], ascNodes: [], notes: '' });
+// asc: the ascendancy, or the base class's name while none is chosen
+const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].class, gems: [], nodes: [], ascNodes: [], notes: '' });
 let rev = 0;   // goes up with every change to the builds: what is worked out from the build is kept until then
 const save = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
 function select(id) {
@@ -43,7 +44,9 @@ if (!Object.keys(builds).length) builds[Date.now()] = blank();
 // ---------- top bar (build, name, level, class, ascendancy) and side panel (character sheet)
 const CLASSES = [...new Set(ascs.map(a => a.class))];
 let picking = null;  // 'cls' | 'asc': which list is open in the character panel
-const clsOf = asc => ascs.find(a => a.name === asc)?.class;
+// the game's illustration of the ascendancy, or of the base class without one
+const portraitOf = asc => (ascs.find(a => a.name === asc)?.tree_image || ascs.find(a => a.class === clsOf(asc))?.class_tree_image || '').toLowerCase().replace(/\.dds$/, '.webp');
+const clsOf = asc => ascs.find(a => a.name === asc)?.class || (CLASSES.includes(asc) ? asc : undefined);
 
 function renderSide() {
   const b = B();
@@ -133,8 +136,8 @@ function renderStats() {
   const sum = treeSum();   // after the level: the campaign rewards counted by default go by it
   renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
   renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, pending, picking,
-    classes: CLASSES, ascOptions: ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name),
-    ascLabel: x => tn(ascs.find(a => a.name === x)) || x, clsLabel: x => tn(ascs.find(a => a.class === x)?.class_names) || x });
+    classes: CLASSES, ascOptions: [clsOf(b.asc), ...ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name)], portrait: portraitOf(b.asc),
+    ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel: x => tn(ascs.find(a => a.class === x)?.class_names) || x });
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
@@ -240,7 +243,7 @@ $('charPanel').onclick = async e => {
   }
   const cls = t.dataset.cls;
   if (cls === clsOf(b.asc)) { renderStats(); return; }
-  const asc = ascs.find(a => a.class === cls).name, root = classRoot(asc);
+  const asc = cls, root = classRoot(cls);   // a new class starts without an ascendancy
   renderStats();  // close the list while asking
   let nodes = [];
   if (b.nodes.length > 1 && root === b.nodes[0]) nodes = b.nodes;   // same start node: the tree stays valid
@@ -654,7 +657,7 @@ function drawTree() {
   const disc = ctx.createRadialGradient(0, 0, CENTRE_R * .2, 0, 0, CENTRE_R);
   disc.addColorStop(0, '#221d16'); disc.addColorStop(1, '#0b0a08');
   ctx.fillStyle = disc; ctx.beginPath(); ctx.arc(0, 0, CENTRE_R, 0, 7); ctx.fill();
-  const A = ascs.find(a => a.name === b.asc), centreArt = art(A?.tree_image) || art(A?.class_tree_image);
+  const A = ascs.find(a => a.name === b.asc), centreArt = art(A?.tree_image) || art(ascs.find(a => a.class === clsOf(b.asc))?.class_tree_image);
   if (centreArt) {
     const k = 2 * CENTRE_R / Math.max(centreArt.width, centreArt.height);
     ctx.save(); ctx.clip(); ctx.globalAlpha = .55;

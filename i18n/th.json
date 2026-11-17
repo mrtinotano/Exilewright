@@ -797,5 +797,6 @@
  "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0} ออกแล้ว (คุณใช้ {1}) ดาวน์โหลดและติดตั้งเลยไหม? แอปจะปิดและเปิดใหม่เมื่อเสร็จ",
  "Downloading and installing Exilewright {0}…": "กำลังดาวน์โหลดและติดตั้ง Exilewright {0}…",
  "The update could not be downloaded ({0}).": "ดาวน์โหลดอัปเดตไม่ได้ ({0})",
- "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} ออกแล้ว (คุณใช้ {1}) เปิดหน้าดาวน์โหลดไหม?"
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0} ออกแล้ว (คุณใช้ {1}) เปิดหน้าดาวน์โหลดไหม?",
+ "No ascendancy": "ไม่มี Ascendancy"
 }

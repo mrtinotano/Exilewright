@@ -797,5 +797,6 @@
  "Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.": "Exilewright {0}이(가) 나왔습니다(현재 {1}). 다운로드하여 설치하시겠습니까? 완료되면 앱이 닫혔다가 다시 열립니다.",
  "Downloading and installing Exilewright {0}…": "Exilewright {0} 다운로드 및 설치 중…",
  "The update could not be downloaded ({0}).": "업데이트를 다운로드할 수 없습니다({0}).",
- "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0}이(가) 나왔습니다(현재 {1}). 다운로드 페이지를 여시겠습니까?"
+ "Exilewright {0} is out (you have {1}). Open its page to download it?": "Exilewright {0}이(가) 나왔습니다(현재 {1}). 다운로드 페이지를 여시겠습니까?",
+ "No ascendancy": "전직 없음"
 }
