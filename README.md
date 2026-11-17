@@ -1,6 +1,7 @@
 # Exilewright
 
-Path of Exile 2 build planner for Windows: passive tree, equipment, skills/supports and a 3D scene.
+Path of Exile 2 build planner & simulator for Windows: passive tree, equipment, skills/supports and a 3D scene,
+plus an in-game price check and a loot filter creator.
 Every number comes from the game's own data (see `poe2_data/README.md`).
 
 Fan-made, not affiliated with or endorsed by Grinding Gear Games. Path of Exile, its data and images are (c)
@@ -68,6 +69,19 @@ decide what counts. Without a skill in the build only defences and the weapon's 
   and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one
   read of the clipboard per manual key press and nothing automatic, so there is no scan of the whole inventory.
   Modifiers `calc.js` does not calculate are listed as not counted.
+
+**Price check over the game** (Settings): hold the pointer over an item in the game and press the shortcut
+(Ctrl+D unless you change it; it always takes Ctrl or Alt). `serve.py` sees the key while the game is the window in
+use, sends the game one Ctrl+C, as if you pressed it, and the page searches the official trade site for the same item
+(a unique by name, anything else by its modifiers) and shows the cheapest listings next to the pointer. Again one key
+press, one item.
+
+**Loot filter** (its own tab): build a filter rule by rule (item classes and bases from the game's data, rarity,
+item/area level, quality, stack size, waystone tier; text, border and background colours, text size, drop sound,
+light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
+game: Options, Game, Item Filter.
+
+**Settings** (its own tab): the price check shortcut, its league and seller, the keys of the 3D scene, the language.
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so it runs from source right after cloning.

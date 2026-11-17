@@ -2,7 +2,7 @@
 ; no admin rights needed. The app keeps its data in %LOCALAPPDATA%\Exilewright, which uninstalling leaves alone.
 [Setup]
 AppName=Exilewright
-AppVersion=1.1
+AppVersion=1.2
 AppPublisher=mrtinotano
 DefaultDirName={autopf}\Exilewright
 DefaultGroupName=Exilewright
