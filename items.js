@@ -321,14 +321,16 @@ function parts(id, stats) {
   }) }));
   return partsOf.set(id, out).get(id);
 }
-// The explicit modifier lines of an item as the trade site searches them (the price check): its stat and, for a line
-// with a positive number, a minimum a little under the item's own (90%), so the same item with a slightly lower roll
-// counts too. note: desecrated lines are left out (the export has no stat number for them)
+// The explicit modifier lines of an item as the trade site searches them (the price check): its stat, the item's own
+// number as the site keeps it (value, with the stat's own sign: "43% less" is -43 there, under "#% more"; 0 when the
+// line has none) and whether that number can roll otherwise (varies:
+// a unique's fixed lines say nothing about how good this copy is). note: desecrated lines are left out (the export
+// has no stat number for them)
 export function priceLines(it) {
   const out = new Map();
   for (const m of it.mods || []) for (const p of AFFIX[m.id] && !AFFIX[m.id].desecrated ? parts(m.id, AFFIX[m.id].stats) : []) {
-    const a = p.at.find(Boolean), v = a ? m.values[a.k] * a.scale : 0;
-    out.set(p.hash, { id: 'explicit.stat_' + p.hash, ...(v > 0 && { min: Math.floor(v * 0.9) }) });
+    const a = p.at.find(Boolean), v = a ? m.values[a.k] * Math.abs(a.scale) : 0, s = a && AFFIX[m.id].stats[a.k];
+    out.set(p.hash, { id: 'explicit.stat_' + p.hash, value: v, varies: !it.unique || !!s && s[1] !== s[2] });
   }
   return [...out.values()];
 }

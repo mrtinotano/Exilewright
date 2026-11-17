@@ -147,22 +147,31 @@ export function readListing(r) {
     item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [] };
 }
 
-// ---------- the price check: what the same item costs
-// A unique by its name; anything else by its base and its explicit lines (priceLines), all of them first and then a few
-// fewer while nothing is listed. -> { total, matched (lines asked for), of (lines it has), prices: [{ amount, currency }]
-// cheapest first (the first 10), link (the search on the site) }
+// ---------- the price check: what an item like this one is worth
+// Looks for listed items like it: the same base (a unique: the same unique) whose lines (priceLines; a unique's that can
+// roll otherwise) are near its own numbers, within 10% and, while fewer than ENOUGH are listed, 20%; then a line
+// fewer (not for a unique, whose lines it always has). The site sorts the listings by what they are worth whatever
+// the currency, so the middle one of the cheapest MANY is the estimate, in the currency its seller asked: no exchange
+// rate is needed. -> { total, near (the tolerance, 0.1 / 0.2; null: only the lines), matched (lines asked for),
+// of (lines it has), prices: [{ amount, currency }] cheapest first, estimate: { amount, currency } }
+const ENOUGH = 5, MANY = 10;
+const around = (v, near) => v && near ? { min: Math.floor(v - Math.abs(v) * near), max: Math.max(Math.ceil(v + Math.abs(v) * near), Math.floor(v - Math.abs(v) * near) + 1) } : null;
 export async function priceOf({ league, item, state = 'available' }) {
-  const lines = item.unique ? [] : priceLines(item).slice(0, 8), n = lines.length;
+  const lines = priceLines(item).filter(l => l.varies).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  for (const need of n ? [...new Set([n, n - 1, Math.ceil(n / 2)])].filter(x => x > 0) : [0]) {
-    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.map(l => ({ id: l.id, ...(l.min && { value: { min: l.min } }) })) }] : [];
+  const tries = n ? [[n, .1], [n, .2], ...item.unique ? [] : [[n - 1, .2], [Math.ceil(n / 2), .2]]].filter(([k]) => k > 0) : [[0, null]];
+  let best = null;
+  for (const [need, near] of tries) {
+    const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.map(l => ({ id: l.id, ...around(l.value, near) && { value: around(l.value, near) } })) }] : [];
     const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats }, sort: { price: 'asc' } });
-    if (!s.total) continue;
-    const ids = (s.result || []).slice(0, 10);
-    const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
-    return { total: s.total, matched: need, of: n, prices: got.map(r => r?.listing?.price).filter(Boolean) };
+    if (s.total) best = { s, need, near };
+    if (s.total >= ENOUGH) break;
   }
-  return { total: 0, matched: 0, of: n, prices: [] };
+  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null };
+  const ids = (best.s.result || []).slice(0, MANY);
+  const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(best.s.id)}`)).result || [] : [];
+  const prices = got.map(r => r?.listing?.price).filter(Boolean);
+  return { total: best.s.total, near: best.need ? best.near : null, matched: best.need, of: n, prices, estimate: prices[(prices.length - 1) >> 1] || null };
 }
 
 // ---------- the search

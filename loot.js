@@ -200,9 +200,10 @@ export function initLoot(el, ctx) {
       const counts = {};
       for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
       show({ name, lines: [
-        [[t('{0} listed in {1}', p.total, league), 'dim']],
-        ...p.of ? [[[t('With {0} of its {1} modifiers', p.matched, p.of), 'dim']]] : [],
-        [[t('Cheapest') + ': ', ''], [Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'up']]] });
+        ...p.estimate ? [[[t('It may be worth') + ': ', ''], [`~${p.estimate.amount} ${t(p.estimate.currency)}`, 'up']]] : [],
+        [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, Math.round(p.near * 100)) : t('{0} listed in {1}', p.total, league), 'dim']],
+        ...p.near && p.matched < p.of ? [[[t('With {0} of its {1} modifiers', p.matched, p.of), 'dim']]] : [],
+        [[t('Cheapest') + ': ' + Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'dim']]] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;
       show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
