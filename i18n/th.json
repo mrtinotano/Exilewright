@@ -707,7 +707,6 @@
  "Add rule": "เพิ่มกฎ",
  "Add…": "เพิ่ม…",
  "Base type": "เบสไอเทม",
- "Cheapest": "ถูกที่สุด",
  "Default keys": "ปุ่มเริ่มต้น",
  "Download": "ดาวน์โหลด",
  "Drop": "เมื่อดรอป",
@@ -835,5 +834,7 @@
  "Searching the trade site (thorough search: it can take longer)…": "กำลังค้นหาในเว็บซื้อขาย (ค้นหาอย่างละเอียด: อาจใช้เวลานานขึ้น)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม",
  "Less than {0}": "น้อยกว่า {0}",
- "With modifiers yours does not have": "มีม็อดที่ของคุณไม่มี"
+ "From {0}": "ตั้งแต่ {0}",
+ "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
+ "Every one listed has modifiers yours does not have.": "ทุกชิ้นที่ขายมีม็อดที่ของคุณไม่มี"
 }

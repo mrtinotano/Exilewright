@@ -707,7 +707,6 @@
  "Add rule": "Añadir regla",
  "Add…": "Añadir…",
  "Base type": "Tipo base",
- "Cheapest": "Más baratos",
  "Default keys": "Teclas por defecto",
  "Download": "Descargar",
  "Drop": "Al caer",
@@ -835,5 +834,7 @@
  "Searching the trade site (thorough search: it can take longer)…": "Buscando en la web de comercio (búsqueda exhaustiva: puede tardar más)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Consejo: activa «Búsqueda exhaustiva» en los Ajustes de Exilewright para buscar más a fondo.",
  "Less than {0}": "Menos de {0}",
- "With modifiers yours does not have": "Con modificadores que el tuyo no tiene"
+ "From {0}": "Desde {0}",
+ "The dearer one has modifiers yours does not have.": "El más caro tiene modificadores que el tuyo no tiene.",
+ "Every one listed has modifiers yours does not have.": "Todos los que hay a la venta tienen modificadores que el tuyo no tiene."
 }
