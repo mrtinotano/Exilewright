@@ -214,31 +214,31 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     if (Object.keys(wide).length) s = await search(n, pct = i => wide[i] || near);
     else if (n > 1) s = await search(k = n - 1, pct);
   }
-  // a listing with a modifier this one does not have (by the site's stat number) is a better item: its price is only
-  // a ceiling (`more`: how many such lines), never the price
+  // a listing with a modifier this one does not have that makes it many times dearer ("+3 to Level of all Attack
+  // Skills"; by the site's stat number) is no measure of this one: never one of the two prices (`more`: how many such lines)
   const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
+  // note: only skill level lines count ("+3 to Level of all Attack Skills", the site's wording): every rare alike has
+  // some other line, and which other ones raise a price this much is no table's
   const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
-    .filter(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1])).length;
+    .filter(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || '')).length;
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
   let from = null, to = null;
   const key = x => x.amount + ' ' + x.currency;
+  // the top: the cheapest better one. The bottom: the dearest worse one asking less than it (the site's price filter
+  // converts the currencies, so the bottom is always the cheaper one); none, the same with one of its lines fewer, then
+  // the base alone. Neither with a line this one does not have
   if (s.total && sided) {
-    to = (await pricesOf(await search(k, pct, { side: 1 })))[0] || null;   // then a worse one never dearer than it (one asking too much)
-    const worse = (await pricesOf(await search(k, pct, { side: -1, desc: true, upTo: to }))).filter(x => !x.more);
-    from = (to && worse.find(x => key(x) !== key(to))) || worse[0] || null;   // one asking less than the better one, if any does
+    to = (await pricesOf(await search(k, pct, { side: 1 }))).find(x => !x.more) || null;
+    for (const kk of [...new Set([k, k - 1, 0])].filter(x => x >= 0)) {
+      from = (await pricesOf(await search(kk, pct, { side: -1, desc: true, upTo: to }))).find(x => !x.more && (!to || key(x) !== key(to))) || null;
+      if (from) break;
+    }
   }
-  // a side without one (no worse one as cheap as the better one, nothing better listed...): the cheapest alike, and the
-  // first dearer one (once more with the site's price filter when the cheapest all cost the same)
-  if (s.total && (!from || !to)) {
-    const prices = await pricesOf(s);
-    from ||= prices.find(x => !x.more) || prices[0] || null;
-    to ||= from && prices.slice(prices.indexOf(from) + 1).find(x => key(x) !== key(from)) || null;
-  }
-  // always two prices when the site has two: the ends asking the same, the next dearer alike is the top one
-  if (from && (!to || key(from) === key(to))) to = (await pricesOf(await search(k, pct, { over: from })))[0] || to || from;
-  if (from && key(from) === key(to)) from = (await pricesOf(s)).find(x => key(x) !== key(to)) || from;   // none dearer: the cheapest alike
+  if (s.total && !from && !to) from = (await pricesOf(s)).find(x => !x.more) || null;   // nothing to rate it by: the cheapest alike
+  // nothing better listed: the next dearer alike
+  if (from && !to) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };
 }
