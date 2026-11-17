@@ -83,7 +83,8 @@ export const leagues = () => data('leagues').then(j => j.result.filter(l => l.re
 // the weighted search (its number is negative there); flip its weight if one ever ranks high
 const shape = (s, loose) => { s = s.replace(/[+-]?\d+(\.\d+)?/g, '#').replace(/\+/g, '').replace(/\bmetres\b/g, 'metre').toLowerCase().trim();
   return loose ? s.replace(/\breduced\b/g, 'increased') : s; };
-export async function withIds(wants) {
+// -> { known: the site's stat ids (null when it cannot be asked), desecrated(en): the id of that desecrated line }
+async function statIndex() {
   let known = null;
   const des = [new Map(), new Map()];
   try {
@@ -91,7 +92,11 @@ export async function withIds(wants) {
     known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
     for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.forEach((m, loose) => m.has(shape(e.text, loose)) || m.set(shape(e.text, loose), e.id));
   } catch (e) { if (!(e instanceof TradeError)) throw e; }
-  return wants.map(w => { const id = w.desecrated ? des[0].get(shape(w.en)) || des[1].get(shape(w.en, 1)) || null : 'explicit.stat_' + w.hash;
+  return { known, desecrated: en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null };
+}
+export async function withIds(wants) {
+  const { known, desecrated } = await statIndex();
+  return wants.map(w => { const id = w.desecrated ? desecrated(w.en) : 'explicit.stat_' + w.hash;
     return { ...w, id: w.desecrated || !known || known.has(id) ? id : null }; });
 }
 
@@ -170,19 +175,14 @@ export function propsOf(text) {
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
 export async function priceOf({ league, item, text = '', state = 'available' }) {
   const props = propsOf(text);
-  let known = null; const des = new Map();
-  try {
-    const groups = (await data('stats')).result;
-    known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
-    for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.has(shape(e.text)) || des.set(shape(e.text), e.id);
-  } catch (e) { if (!(e instanceof TradeError)) throw e; }
+  const { known, desecrated } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
-    .map(l => ({ ...l, ids: l.en ? [des.get(shape(l.en))].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
+    .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  const tries = [.1, .2, .35].map(near => [n, near]);
+  let tries = [.1, .2, .35].map(near => [n, near]);
   if (!item.unique) for (let k = n - 1; k >= Math.ceil(n / 2) && k > 0; k--) tries.push([k, .2]);
-  if (!n && !Object.keys(props).length) tries.splice(0, tries.length, [0, null]);
+  if (!n && !Object.keys(props).length) tries = [[0, null]];
   let best = null;
   for (const [need, near] of tries) {
     const stats = need ? [{ type: 'count', value: { min: need }, filters: lines.flatMap(l => l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } }))) }] : [];
@@ -192,7 +192,7 @@ export async function priceOf({ league, item, text = '', state = 'available' }) 
     if (s.total) best = { s, need, near };
     if (s.total >= ENOUGH) break;
   }
-  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null, id: null };
+  if (!best) return { total: 0, near: null, matched: 0, of: n, prices: [], estimate: null };
   const ids = (best.s.result || []).slice(0, MANY);
   const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(best.s.id)}`)).result || [] : [];
   const prices = got.map(r => r?.listing?.price).filter(Boolean);
