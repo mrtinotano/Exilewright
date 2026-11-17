@@ -170,8 +170,8 @@ export function toBuildFile(b, ctx) {
     return { id: byName[g.name].id, additional_text: t('Level') + ' ' + (g.level ?? 20), ...sup.length ? { support_skills: sup } : {} };
   });
   const inventory_slots = Object.entries(b.items || {}).filter(([slot]) => INVENTORY[slot])
-    .map(([slot, it]) => ({ inventory_id: INVENTORY[slot][0], slot_x: INVENTORY[slot][1], additional_text: itemNote(it) }))
-    .filter(s => s.additional_text);
+    .map(([slot, it]) => ({ inventory_id: INVENTORY[slot][0], slot_x: INVENTORY[slot][1], ...it.unique && { unique_name: it.unique }, additional_text: itemNote(it) }))
+    .filter(s => s.additional_text || s.unique_name);   // a unique by its name, as the official format has it
   return JSON.stringify({ name: b.name || t('Unnamed'), ...ascendancy ? { ascendancy } : {}, ...b.notes ? { description: b.notes } : {},
     passives, skills, inventory_slots }, null, 2);
 }
