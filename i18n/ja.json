@@ -804,9 +804,7 @@
  "Between {0} and {1}": "{0}～{1}",
  "Searching the trade site (thorough search: it can take longer)…": "トレードサイトを検索中（徹底検索：時間がかかる場合があります）…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "ヒント：Exilewright の設定で「徹底検索」をオンにすると、さらに探します。",
- "Less than {0}": "{0}未満",
  "The dearer one has modifiers yours does not have.": "高い方にはあなたの装備にない修正値があります。",
- "More than {0}": "{0}超",
  "Equipment comparison": "装備の比較",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にポインターを合わせて Ctrl+C を押すと、キャラクターが装備しているものより良いか悪いかがポインターの横に表示されます。アイテムは装備できるすべての部位で試され、ビルドはそれがある場合とない場合で計算されます。何が重要かはビルドのパッシブとスキルが決めます。",
  "General": "一般",
@@ -827,5 +825,6 @@
  "Corpse made: skills that need a corpse can use it": "死体を作成: 死体が必要なスキルで使えます",
  "Point at an enemy to turn it into a corpse": "敵にカーソルを合わせると死体に変わります",
  "Your own sound…": "自分の音…",
- "The game's sounds are not in the app yet": "ゲームの音はまだアプリにありません"
+ "The game's sounds are not in the app yet": "ゲームの音はまだアプリにありません",
+ "With the levels your passives and gear add": "パッシブと装備で追加されるレベルを含む"
 }

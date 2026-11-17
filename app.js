@@ -465,18 +465,20 @@ function fixSets(b) {   // set passives must stay linked to the start through no
     b['set' + k] = b.nodes.length ? prune([...b.nodes, ...own]).filter(n => own.includes(n)) : [];
   }
 }
+// a multiple choice notable's option (Gemling's Implanted Gems: Bolstering Implants) is picked with it, for no point
+const ascPaid = b => b.ascNodes.filter(id => !N[id]?.option).length;
 function renderPoints(b) {
   const box = (label, used, total, m, tip) => `<${m == null ? 'div' : `button data-mode="${m}"`} class="${m === mode ? 'on' : ''}${used > total ? ' over' : ''}" title="${tip}"${m ? ` style="--set:${SET_COL[m]}"` : ''}>${label}<b>${used} / ${total}</b></${m == null ? 'div' : 'button'}>`;
   $('treePts').innerHTML =
     box(t('Tree'), Math.max(0, b.nodes.length - 1), TOTAL.tree, 0, t('Click: allocate normal points (99 from levels + 24 from quests)'))
-    + box(t('Ascendancy'), b.ascNodes.length, TOTAL.asc, null, t('Ascendancy points (4 trials × 2)'))
+    + box(t('Ascendancy'), ascPaid(b), TOTAL.asc, null, t('Ascendancy points (4 trials × 2)'))
     + box(t('Set 1'), setOf(b, 1).length, TOTAL.set, 1, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 1))
     + box(t('Set 2'), setOf(b, 2).length, TOTAL.set, 2, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 2))
     + `<button id="treeReset" title="${t('Remove every allocated passive, ascendancy and weapon set point')}">${t('Reset')}<b>⟲</b></button>`;
 }
 $('treePts').onclick = async e => {
   if (e.target.closest('#treeReset')) {
-    const b = B(), n = Math.max(0, b.nodes.length - 1) + b.ascNodes.length + setOf(b, 1).length + setOf(b, 2).length;
+    const b = B(), n = Math.max(0, b.nodes.length - 1) + ascPaid(b) + setOf(b, 1).length + setOf(b, 2).length;
     if (!n || await ask(t('Reset the whole tree? {0} allocated points will be removed.', n), t('Reset')) !== 0) return;
     return edit((_, b) => { b.ascNodes = []; setNodes(b, []); })(e);
   }

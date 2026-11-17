@@ -804,9 +804,7 @@
  "Between {0} and {1}": "Entre {0} y {1}",
  "Searching the trade site (thorough search: it can take longer)…": "Buscando en la web de comercio (búsqueda exhaustiva: puede tardar más)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Consejo: activa «Búsqueda exhaustiva» en los Ajustes de Exilewright para buscar más a fondo.",
- "Less than {0}": "Menos de {0}",
  "The dearer one has modifiers yours does not have.": "El más caro tiene modificadores que el tuyo no tiene.",
- "More than {0}": "Más de {0}",
  "Equipment comparison": "Comparador de equipo",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Pon el puntero sobre un objeto en el juego (uno que has encontrado e identificado, uno del inventario o uno que vende un mercader) y pulsa Ctrl+C: junto al puntero verás si es mejor o peor que el que lleva el personaje. El objeto se prueba en cada hueco donde va y el build se calcula con y sin él: los pasivos y las habilidades del build deciden qué cuenta.",
  "General": "General",
@@ -827,5 +825,6 @@
  "Corpse made: skills that need a corpse can use it": "Cadáver creado: las habilidades que necesitan uno pueden usarlo",
  "Point at an enemy to turn it into a corpse": "Apunta a un enemigo para convertirlo en cadáver",
  "Your own sound…": "Sonido propio…",
- "The game's sounds are not in the app yet": "Los sonidos del juego aún no están en la app"
+ "The game's sounds are not in the app yet": "Los sonidos del juego aún no están en la app",
+ "With the levels your passives and gear add": "Con los niveles que añaden tus pasivas y tu equipo"
 }

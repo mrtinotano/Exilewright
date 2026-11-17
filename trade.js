@@ -227,10 +227,12 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     to = (await pricesOf(await search(k, pct, { side: 1 })))[0] || null;   // then a worse one never dearer than it (one asking too much)
     from = (await pricesOf(await search(k, pct, { side: -1, desc: true, upTo: to }))).find(x => !x.more) || null;
   }
-  if (s.total && !from && !to) {   // the cheapest alike, and the first dearer one (once more with the site's price filter when the cheapest all cost the same)
+  // a side without one (no worse one as cheap as the better one, nothing better listed...): the cheapest alike, and the
+  // first dearer one (once more with the site's price filter when the cheapest all cost the same). Always two ends
+  if (s.total && (!from || !to)) {
     const prices = await pricesOf(s), key = x => x.amount + ' ' + x.currency;
-    from = prices.find(x => !x.more) || null;
-    to = from ? prices.find(x => key(x) !== key(from) && prices.indexOf(x) > prices.indexOf(from)) || (await pricesOf(await search(k, pct, { over: from })))[0] || null : prices[0] || null;
+    from ||= prices.find(x => !x.more) || prices[0] || null;
+    to ||= from && (prices.find(x => key(x) !== key(from) && prices.indexOf(x) > prices.indexOf(from)) || (await pricesOf(await search(k, pct, { over: from })))[0]) || from;
   }
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };

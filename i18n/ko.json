@@ -804,9 +804,7 @@
  "Between {0} and {1}": "{0}~{1}",
  "Searching the trade site (thorough search: it can take longer)…": "거래 사이트 검색 중 (정밀 검색: 더 오래 걸릴 수 있음)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "팁: Exilewright 설정에서 「정밀 검색」을 켜면 더 넓게 찾습니다.",
- "Less than {0}": "{0} 미만",
  "The dearer one has modifiers yours does not have.": "더 비싼 쪽에는 내 장비에 없는 옵션이 있습니다.",
- "More than {0}": "{0} 초과",
  "Equipment comparison": "장비 비교",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "게임에서 아이템(찾아서 감정한 것, 인벤토리에 있는 것, 상인이 파는 것)에 포인터를 올리고 Ctrl+C를 누르면 캐릭터가 착용한 것보다 좋은지 나쁜지가 포인터 옆에 표시됩니다. 아이템은 들어갈 수 있는 모든 슬롯에서 시험되고 빌드는 아이템이 있을 때와 없을 때로 계산됩니다. 무엇이 중요한지는 빌드의 패시브와 스킬이 결정합니다.",
  "General": "일반",
@@ -827,5 +825,6 @@
  "Corpse made: skills that need a corpse can use it": "시체 생성: 시체가 필요한 스킬이 사용할 수 있습니다",
  "Point at an enemy to turn it into a corpse": "적을 가리키면 시체로 바뀝니다",
  "Your own sound…": "내 사운드…",
- "The game's sounds are not in the app yet": "게임 사운드가 아직 앱에 없습니다"
+ "The game's sounds are not in the app yet": "게임 사운드가 아직 앱에 없습니다",
+ "With the levels your passives and gear add": "패시브와 장비로 추가되는 레벨 포함"
 }

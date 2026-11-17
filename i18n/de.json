@@ -804,9 +804,7 @@
  "Between {0} and {1}": "Zwischen {0} und {1}",
  "Searching the trade site (thorough search: it can take longer)…": "Suche auf der Handelsseite (gründliche Suche: kann länger dauern)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Tipp: Aktiviere „Gründliche Suche“ in den Einstellungen von Exilewright, um weiter zu suchen.",
- "Less than {0}": "Weniger als {0}",
  "The dearer one has modifiers yours does not have.": "Das teurere hat Modifikatoren, die deins nicht hat.",
- "More than {0}": "Mehr als {0}",
  "Equipment comparison": "Ausrüstungsvergleich",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Halte den Mauszeiger im Spiel über einen Gegenstand (einen gefundenen und identifizierten, einen aus dem Inventar oder einen, den ein Händler verkauft) und drücke Strg+C: Neben dem Mauszeiger siehst du, ob er besser oder schlechter ist als der, den der Charakter trägt. Der Gegenstand wird in jedem Platz ausprobiert, in den er passt, und der Build wird mit und ohne ihn berechnet: Die Passiven und Fertigkeiten des Builds entscheiden, was zählt.",
  "General": "Allgemein",
@@ -827,5 +825,6 @@
  "Corpse made: skills that need a corpse can use it": "Leiche erzeugt: Fertigkeiten, die eine brauchen, können sie nutzen",
  "Point at an enemy to turn it into a corpse": "Zeige auf einen Gegner, um ihn in eine Leiche zu verwandeln",
  "Your own sound…": "Eigener Sound…",
- "The game's sounds are not in the app yet": "Die Sounds des Spiels sind noch nicht in der App"
+ "The game's sounds are not in the app yet": "Die Sounds des Spiels sind noch nicht in der App",
+ "With the levels your passives and gear add": "Mit den Stufen, die deine Passiven und deine Ausrüstung hinzufügen"
 }

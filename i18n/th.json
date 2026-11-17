@@ -804,9 +804,7 @@
  "Between {0} and {1}": "ระหว่าง {0} ถึง {1}",
  "Searching the trade site (thorough search: it can take longer)…": "กำลังค้นหาในเว็บซื้อขาย (ค้นหาอย่างละเอียด: อาจใช้เวลานานขึ้น)…",
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม",
- "Less than {0}": "น้อยกว่า {0}",
  "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
- "More than {0}": "มากกว่า {0}",
  "Equipment comparison": "เปรียบเทียบอุปกรณ์",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ไอเทมที่เก็บได้และระบุแล้ว ไอเทมในกระเป๋า หรือไอเทมที่พ่อค้าขาย) แล้วกด Ctrl+C: ข้างตัวชี้จะแสดงว่าดีกว่าหรือแย่กว่าที่ตัวละครสวมอยู่ ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และบิลด์จะถูกคำนวณทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรสำคัญ",
  "General": "ทั่วไป",
@@ -827,5 +825,6 @@
  "Corpse made: skills that need a corpse can use it": "สร้างศพแล้ว: สกิลที่ต้องใช้ศพใช้ได้",
  "Point at an enemy to turn it into a corpse": "ชี้ไปที่ศัตรูเพื่อเปลี่ยนเป็นศพ",
  "Your own sound…": "เสียงของคุณ…",
- "The game's sounds are not in the app yet": "เสียงของเกมยังไม่มีในแอป"
+ "The game's sounds are not in the app yet": "เสียงของเกมยังไม่มีในแอป",
+ "With the levels your passives and gear add": "รวมเลเวลที่ได้จากพาสซีฟและอุปกรณ์ของคุณ"
 }
