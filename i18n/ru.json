@@ -634,8 +634,6 @@
  "watching what the game copies": "слежу за тем, что копирует игра",
  "connecting…": "подключение…",
  "this needs the planner's own server: python3 serve.py": "нужен собственный сервер планировщика: python3 serve.py",
- "Desktop notification on upgrades": "Уведомление на рабочем столе при улучшениях",
- "blocked in the browser": "заблокировано в браузере",
  "Floating window": "Плавающее окно",
  "Close the floating window": "Закрыть плавающее окно",
  "That item is not identified yet: identify it and copy it again.": "Этот предмет ещё не опознан: опознайте его и скопируйте снова.",

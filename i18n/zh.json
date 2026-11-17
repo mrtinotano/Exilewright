@@ -634,8 +634,6 @@
  "watching what the game copies": "正在監看遊戲複製的內容",
  "connecting…": "連線中…",
  "this needs the planner's own server: python3 serve.py": "這需要規劃器自己的伺服器：python3 serve.py",
- "Desktop notification on upgrades": "有升級時顯示桌面通知",
- "blocked in the browser": "已被瀏覽器封鎖",
  "Floating window": "浮動視窗",
  "Close the floating window": "關閉浮動視窗",
  "That item is not identified yet: identify it and copy it again.": "該物品尚未鑑定：請鑑定後再複製一次。",

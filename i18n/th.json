@@ -634,8 +634,6 @@
  "watching what the game copies": "กำลังเฝ้าดูสิ่งที่เกมคัดลอก",
  "connecting…": "กำลังเชื่อมต่อ…",
  "this needs the planner's own server: python3 serve.py": "ต้องใช้เซิร์ฟเวอร์ของตัววางแผน: python3 serve.py",
- "Desktop notification on upgrades": "แจ้งเตือนบนเดสก์ท็อปเมื่อเป็นการอัปเกรด",
- "blocked in the browser": "ถูกบล็อกในเบราว์เซอร์",
  "Floating window": "หน้าต่างลอย",
  "Close the floating window": "ปิดหน้าต่างลอย",
  "That item is not identified yet: identify it and copy it again.": "ไอเทมนี้ยังไม่ได้ระบุ: ระบุแล้วคัดลอกอีกครั้ง",

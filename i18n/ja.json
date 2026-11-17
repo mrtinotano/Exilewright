@@ -634,8 +634,6 @@
  "watching what the game copies": "ゲームのコピーを監視中",
  "connecting…": "接続中…",
  "this needs the planner's own server: python3 serve.py": "プランナー自身のサーバーが必要です: python3 serve.py",
- "Desktop notification on upgrades": "アップグレード時にデスクトップ通知",
- "blocked in the browser": "ブラウザでブロックされています",
  "Floating window": "フローティングウィンドウ",
  "Close the floating window": "フローティングウィンドウを閉じる",
  "That item is not identified yet: identify it and copy it again.": "このアイテムはまだ未識別です: 識別してからもう一度コピーしてください。",

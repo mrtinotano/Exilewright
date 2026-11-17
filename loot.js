@@ -39,7 +39,7 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, notify: false, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, watch: true, over: true, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
   if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';
@@ -120,7 +120,7 @@ export function initLoot(el, ctx) {
     return e.v;
   }
 
-  // ---------- telling: the window over the game, desktop notification, the floating window and a dot on the tab
+  // ---------- telling: the window over the game, the floating window and a dot on the tab
   const noSlot = e => t(e.r.slots.includes('jewel') ? 'Allocate a jewel socket in the tree first' : 'It does not go with the weapon in use');
   // the verdict in a few lines: plain text, or pieces of it each with its tone ([text, 'up' | 'down' | 'dim'])
   function told(e, v) {
@@ -139,11 +139,6 @@ export function initLoot(el, ctx) {
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
   const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(S.over ? v : null) }).catch(() => {}); };
-  function notify(e, v) {
-    if (!S.notify || !('Notification' in window) || Notification.permission !== 'granted' || document.hasFocus()) return;
-    const w = told(e, v);
-    try { new Notification(`${w.title}: ${w.name}`, { tag: 'poe2loot', silent: true, body: w.lines.map(plain).join('\n') }); } catch {}
-  }
   // a small window that stays over the others (the game too, unless it runs in exclusive full screen)
   async function float() {
     if (pip) return pip.close();
@@ -180,7 +175,7 @@ export function initLoot(el, ctx) {
       const free = S.vs === 'build' ? null : r.slots.find(s => verdict(list[0]).some(x => x.slot === s && !x.old));
       if (free) { list[0].took = free; put(free, r.item, r.name); }
       const v = verdict(list[0])[0];
-      if (v) { if (v.kind === 'up' || v.kind === 'mix') notify(list[0], v); if (v.kind === 'up' && el.hidden) tab?.classList.add('new'); }
+      if (v?.kind === 'up' && el.hidden) tab?.classList.add('new');
       if (game) say(told(list[0], v));
     } else if (game) say({ kind: 'none', title: 'Exilewright', lines: [msg] });
     render();
@@ -272,7 +267,6 @@ export function initLoot(el, ctx) {
     if (el.hidden) return;
     tab?.classList.remove('new');
     const b = ctx.build(), g = gemOf(b), own = skills(b), top = el.scrollTop, gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
-    const blocked = 'Notification' in window && Notification.permission === 'denied';
     const wornOpen = el.querySelector('.lworn-box')?.open;   // folded: only needed to put it right; stays as it was left
     el.innerHTML = `<div class="opt loot">
       <section class="opthead"><h3>${t('Compare')}</h3>
@@ -291,7 +285,6 @@ export function initLoot(el, ctx) {
           : `<span class="note">${t('To see the verdict over the game, start the server with: python3 serve.py overlay')}</span>`}
         </div>
         <div class="optrow">
-          ${'Notification' in window ? chk('notify', S.notify, t('Desktop notification on upgrades') + (blocked ? ` (${t('blocked in the browser')})` : '')) : ''}
           ${'documentPictureInPicture' in window ? `<button data-do="float">${pip ? t('Close the floating window') : t('Floating window')}</button>` : ''}
         </div>
         <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
@@ -318,7 +311,6 @@ export function initLoot(el, ctx) {
     else if (d.c) {
       S[d.c] = e.target.checked;
       if (d.c === 'watch') watch();
-      if (d.c === 'notify' && S.notify && Notification.permission === 'default') Notification.requestPermission().then(render);
     } else return;
     keep(); render();
   };

@@ -634,8 +634,6 @@
  "watching what the game copies": "beobachte, was das Spiel kopiert",
  "connecting…": "verbinde…",
  "this needs the planner's own server: python3 serve.py": "dafür braucht es den eigenen Server des Planers: python3 serve.py",
- "Desktop notification on upgrades": "Desktop-Benachrichtigung bei Verbesserungen",
- "blocked in the browser": "im Browser blockiert",
  "Floating window": "Schwebendes Fenster",
  "Close the floating window": "Schwebendes Fenster schließen",
  "That item is not identified yet: identify it and copy it again.": "Dieser Gegenstand ist noch nicht identifiziert: Identifiziere ihn und kopiere ihn erneut.",

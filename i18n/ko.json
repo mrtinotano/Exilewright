@@ -634,8 +634,6 @@
  "watching what the game copies": "게임에서 복사한 내용 감시 중",
  "connecting…": "연결 중…",
  "this needs the planner's own server: python3 serve.py": "플래너 전용 서버가 필요합니다: python3 serve.py",
- "Desktop notification on upgrades": "업그레이드 시 데스크톱 알림",
- "blocked in the browser": "브라우저에서 차단됨",
  "Floating window": "떠 있는 창",
  "Close the floating window": "떠 있는 창 닫기",
  "That item is not identified yet: identify it and copy it again.": "아직 감정되지 않은 아이템입니다: 감정한 뒤 다시 복사하세요.",
