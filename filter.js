@@ -145,7 +145,7 @@ export function initFilter(el) {
     else if (ds.min) r.min[ds.min] = x.value;
     else if (ds.use) r[ds.use] = x.checked ? x.parentElement.querySelector('input[type=color]').value : '';
     else if (ds.icon) r.icon = ds.icon === 'size' ? (x.value === '' ? null : { colour: 'White', shape: 'Circle', ...r.icon, size: +x.value }) : { ...r.icon, [ds.icon]: x.value };
-    else if (ds.f) r[ds.f] = x.type === 'checkbox' ? x.checked : ds.f === 'show' ? x.value === '1' : ds.f === 'sound' ? x.value : x.type === 'number' ? (x.value === '' ? '' : +x.value) : x.value;
+    else if (ds.f) r[ds.f] = x.type === 'checkbox' ? x.checked : ds.f === 'show' ? x.value === '1' : x.type === 'number' ? (x.value === '' ? '' : +x.value) : x.value;
     done();
   };
   el.onkeydown = e => {

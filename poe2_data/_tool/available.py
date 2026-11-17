@@ -520,7 +520,7 @@ for i, b in enumerate(load('BaseItemTypes')):
         continue
     seen.add((cls, b['Name']))
     fclasses.setdefault(cls, c)
-    fbases.append({'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'level': b['DropLevel']})
+    fbases.append({'name': b['Name'], **tr(bases_tr, i), 'class': cls})
 save('filter.json', {'classes': [{'name': n, **tr(classes_tr, c)} for n, c in sorted(fclasses.items())], 'bases': fbases})
 
 # --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
