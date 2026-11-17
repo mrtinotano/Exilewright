@@ -576,11 +576,12 @@ function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint:
   if (pic) {
     // a frame is drawn one pixel a world unit, like the game's links; its icon fills the hole
     const f = r / R[type], w = pic.width * f, h = pic.height * f, ir = (HOLE[kind] || 0) * w / 2;
-    const icon = ir > 3 && art(n.icon);
-    const drawIcon = () => {
-      if (!icon) return;
-      ctx.save(); ctx.globalAlpha = lit ? 1 : .55; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7); ctx.clip();
-      ctx.drawImage(icon, x - ir, y - ir, ir * 2, ir * 2); ctx.restore();
+    const icon = ir > 0 && art(n.icon);
+    const drawIcon = () => {   // its icon at any size; while it loads, the colour of its stats
+      if (!ir) return;
+      ctx.save(); ctx.globalAlpha = lit ? 1 : .55; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7);
+      if (icon) { ctx.clip(); ctx.drawImage(icon, x - ir, y - ir, ir * 2, ir * 2); } else { ctx.fillStyle = col; ctx.fill(); }
+      ctx.restore();
     };
     if (!n.ascendancy) drawIcon();
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);

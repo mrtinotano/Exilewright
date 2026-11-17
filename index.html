@@ -5,6 +5,12 @@
 <title>Exilewright</title>
 <style>
   :root { --bg:#111; --panel:#1b1b1b; --line:#333; --txt:#ddd; --acc:#c8a050; }
+  /* scroll bars in the app's colours: a dark track and a bronze grip, gold under the pointer */
+  ::-webkit-scrollbar { width:10px; height:10px; } ::-webkit-scrollbar-corner { background:#0e0d0b; }
+  ::-webkit-scrollbar-track { background:#0e0d0b; border-left:1px solid #2a2620; }
+  ::-webkit-scrollbar-thumb { background:#4a3f2c; border:2px solid #0e0d0b; border-radius:5px; }
+  ::-webkit-scrollbar-thumb:hover { background:#7a6440; } ::-webkit-scrollbar-thumb:active { background:var(--acc); }
+  ::-webkit-scrollbar-button { display:none; }
   * { box-sizing: border-box; }
   body { margin:0; display:flex; flex-direction:column; height:100vh; background:var(--bg); color:var(--txt); font:13px system-ui, sans-serif; }
   #top { display:flex; align-items:center; gap:8px; padding:6px 10px; background:linear-gradient(#24201a, #17140f); border-bottom:1px solid #4a3f2c; position:relative; flex-wrap:wrap; }
