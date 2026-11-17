@@ -623,7 +623,6 @@
  "Rings": "반지",
  "Sockets": "홈",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "{0} 포인트를 모두 사용했습니다: 트리 전체를 다시 계획하려면 직업 시작 지점부터 시작하세요.",
- "Loot": "전리품",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "게임에서 아이템(찾아서 감정한 것, 인벤토리에 있는 것, 상인이 파는 것)에 포인터를 올리고 Ctrl+C를 누르세요. 아래에 붙여넣거나 플래너가 자동으로 가져오게 하세요. 아이템을 맞는 모든 슬롯에 시험하고 착용 여부에 따라 빌드를 계산합니다: 빌드의 패시브와 스킬이 무엇이 중요한지 결정합니다.",
  "Compare with": "비교 대상",
  "What the character wears": "캐릭터가 착용 중인 것",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "이 스킬은 들고 있는 무기로는 사용할 수 없습니다",
  "It does not go with the weapon in use": "사용 중인 무기와 맞지 않음",
  "Taken as what the character wears: what you copy next is compared with it": "캐릭터가 착용 중인 것으로 간주: 다음에 복사하는 것과 비교됩니다",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "아직 없습니다. 캐릭터가 착용한 아이템을 하나씩 복사하세요 (게임에서 마우스를 올리고 Ctrl+C): 슬롯마다 처음 복사한 아이템을 착용 중인 것으로 간주하고, 이후 찾거나 상점에서 본 것을 그것과 비교합니다. 빌드는 바뀌지 않습니다.",
  "Area Penalty": "지역 페널티",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "높은 레벨 지역에서는 원소 저항이 낮아집니다: 여기서는 캐릭터 레벨의 지역 기준",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "캐릭터 레벨을 직접 입력해 설정하세요. 비워두면 다시 트리를 따릅니다.",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "팁: Exilewright 설정에서 「정밀 검색」을 켜면 더 넓게 찾습니다.",
  "Less than {0}": "{0} 미만",
  "The dearer one has modifiers yours does not have.": "더 비싼 쪽에는 내 장비에 없는 옵션이 있습니다.",
- "More than {0}": "{0} 초과"
+ "More than {0}": "{0} 초과",
+ "Compare": "비교",
+ "What it is compared with": "비교 대상",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "복사한 아이템은 여기 있는 같은 부위의 아이템과 비교됩니다. 자동으로 채워집니다: 부위마다 처음 복사한 아이템을 캐릭터가 착용 중인 것으로 봅니다 (✕로 빼면 다음에 복사한 것이 그 자리를 차지합니다). 빌드는 바뀌지 않습니다."
 }

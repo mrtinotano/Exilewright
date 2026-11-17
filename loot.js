@@ -1,4 +1,4 @@
-// The Loot tab: is an item of the game better than the one in use, for this build? The item comes as the text the
+// The Compare tab: is an item of the game better than the one in use, for this build? The item comes as the text the
 // game copies with Ctrl+C over it (found and identified, in the inventory or in a merchant's shop): pasted here, or
 // picked up by serve.py's /clipboard while the game is the window in use. It is tried in every slot it fits and the
 // build is worked out with and without it, so the build's passives and skills decide what counts (spell damage on a
@@ -148,7 +148,7 @@ export function initLoot(el, ctx) {
   async function float() {
     if (pip) return pip.close();
     try { pip = await documentPictureInPicture.requestWindow({ width: 340, height: 300 }); } catch { return; }
-    pip.document.title = t('Loot');
+    pip.document.title = t('Compare');
     pip.document.head.append(Object.assign(pip.document.createElement('style'), { textContent: FLOAT_CSS }));
     pip.addEventListener('pagehide', () => { pip = null; render(); });
     render();
@@ -274,7 +274,7 @@ export function initLoot(el, ctx) {
     const b = ctx.build(), g = gemOf(b), own = skills(b), top = el.scrollTop, gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
     const blocked = 'Notification' in window && Notification.permission === 'denied';
     el.innerHTML = `<div class="opt loot">
-      <section class="opthead"><h3>${t('Loot')}</h3>
+      <section class="opthead"><h3>${t('Compare')}</h3>
         <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
         <div class="optrow">
           <label>${t('Compare with')} <select data-s="vs">${opt('worn', t('What the character wears'), S.vs !== 'build')}${opt('build', t("The build's equipment"), S.vs === 'build')}</select></label>
@@ -296,9 +296,9 @@ export function initLoot(el, ctx) {
         <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
         ${msg ? `<p class="${bad ? 'opterr' : 'optmsg'}">${esc(msg)}</p>` : ''}
       </section>
-      <section><h3>${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</h3>
+      <section><h3>${t('What it is compared with')}: ${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</h3>
         ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab, and Equip puts them in the build.')}</p>`
-        : gear.length ? '' : `<p class="note">${t('Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.')}</p>`}
+        : `<p class="note">${t('Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.')}</p>`}
         ${S.vs !== 'build' && Object.keys(b.items || {}).length ? `<div class="optrow"><button data-do="copy">${t("Start from the build's equipment")}</button></div>` : ''}
         ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
           S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}

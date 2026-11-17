@@ -623,7 +623,6 @@
  "Rings": "指輪",
  "Sockets": "ソケット",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "{0}ポイントはすべて振り済みです: ツリー全体を計画し直すにはクラスの開始地点から始めてください。",
- "Loot": "戦利品",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ゲーム内でアイテム (拾って識別したもの、インベントリのもの、商人が売っているもの) にカーソルを合わせて Ctrl+C を押します。下に貼り付けるか、プランナーに自動で取得させてください。アイテムは装備できるすべてのスロットで試され、ビルドはそれがある場合とない場合で計算されます: 何が重要かはビルドのパッシブとスキルで決まります。",
  "Compare with": "比較対象",
  "What the character wears": "キャラクターの装備",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "このスキルは手にしている武器では使用できません",
  "It does not go with the weapon in use": "使用中の武器に合いません",
  "Taken as what the character wears: what you copy next is compared with it": "キャラクターの装備として登録: 次にコピーしたものはこれと比較されます",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "まだありません。キャラクターが装備している各アイテムをコピーしてください (ゲーム内でカーソルを合わせて Ctrl+C): スロットごとに最初にコピーしたアイテムがそこに装備中のものとみなされ、その後に拾ったりショップで見たりしたものはそれと比較されます。ビルドは変更されません。",
  "Area Penalty": "エリアペナルティ",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "高レベルのエリアでは元素耐性が下がります: ここでは自分のレベルのエリア",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "キャラクターのレベルを入力して自分で設定します。空欄にするとツリーに従います。",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "ヒント：Exilewright の設定で「徹底検索」をオンにすると、さらに探します。",
  "Less than {0}": "{0}未満",
  "The dearer one has modifiers yours does not have.": "高い方にはあなたの装備にない修正値があります。",
- "More than {0}": "{0}超"
+ "More than {0}": "{0}超",
+ "Compare": "比較",
+ "What it is compared with": "比較対象",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "コピーしたアイテムは、ここにある同じ部位のアイテムと比較されます。自動で埋まります：各部位で最初にコピーしたアイテムがキャラクターの装備中のものとして扱われます（✕で外すと、次にコピーしたものがその場所に入ります）。ビルドは変わりません。"
 }

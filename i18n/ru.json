@@ -623,7 +623,6 @@
  "Rings": "Кольца",
  "Sockets": "Гнёзда",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "Все {0} очков потрачены: начните со старта класса, чтобы спланировать всё дерево заново.",
- "Loot": "Добыча",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Наведите курсор на предмет в игре (найденный и опознанный, в инвентаре или у торговца) и нажмите Ctrl+C. Вставьте его ниже или позвольте планировщику подхватить его самому. Предмет примеряется в каждую подходящую ячейку, и билд рассчитывается с ним и без него: что учитывать, решают пассивные умения и умения билда.",
  "Compare with": "Сравнить с",
  "What the character wears": "Тем, что надето на персонаже",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "Это умение нельзя использовать с оружием в руках",
  "It does not go with the weapon in use": "Не сочетается с используемым оружием",
  "Taken as what the character wears: what you copy next is compared with it": "Принято как надетое на персонаже: следующее скопированное будет сравниваться с ним",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "Пока ничего. Скопируйте каждый предмет, надетый на персонаже (Ctrl+C на нём в игре): первый скопированный предмет для ячейки считается надетым в ней, а найденное или увиденное у торговца потом сравнивается с ним. Билд не меняется.",
  "Area Penalty": "Штраф области",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Сопротивления стихиям ниже в областях более высокого уровня: здесь — область вашего уровня",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Введите уровень персонажа, чтобы задать его вручную; оставьте пустым, чтобы снова следовать дереву.",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Совет: включите «Тщательный поиск» в настройках Exilewright, чтобы искать шире.",
  "Less than {0}": "Меньше {0}",
  "The dearer one has modifiers yours does not have.": "У более дорогого есть модификаторы, которых нет у вашего.",
- "More than {0}": "Больше {0}"
+ "More than {0}": "Больше {0}",
+ "Compare": "Сравнение",
+ "What it is compared with": "С чем сравнивается",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "Каждый скопированный предмет сравнивается с предметом здесь в той же ячейке. Заполняется само: первый скопированный предмет ячейки считается надетым на персонаже (✕ снимает его, и его место займёт следующий скопированный). Билд не меняется."
 }

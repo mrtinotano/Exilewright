@@ -59,7 +59,7 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   site with one link (it runs there when you are logged in).
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
-**Loot** (its own tab) says whether an item is better than what the character wears: hold the pointer over an item in
+**Compare** (its own tab) says whether an item is better than what the character wears: hold the pointer over an item in
 the game (one you found and identified, one in the inventory or the stash, one a merchant sells) and press Ctrl+C.
 The game puts the item's text in the clipboard, `serve.py` passes it to the page (`/clipboard`), and the page puts the
 item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
@@ -68,7 +68,7 @@ decide what counts. Without a skill in the build only defences and the weapon's 
   is nothing to paste and no need to look at the planner: it only has to stay open. It needs the game in windowed
   full screen (nothing draws over exclusive full screen). From source it needs a Python with tkinter; outside
   Windows start the server with `python3 serve.py overlay`.
-- *What the character wears*: the planner cannot read it from the game. **Equip** on an item of the Loot tab tells it
+- *What the character wears*: the planner cannot read it from the game. **Equip** on an item of the Compare tab tells it
   you put that item on; or compare with the build's own Equipment instead.
 - One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
   and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one

@@ -623,7 +623,6 @@
  "Rings": "แหวน",
  "Sockets": "รู",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "ใช้แต้มครบทั้ง {0} แต้มแล้ว: เริ่มจากจุดเริ่มต้นคลาสเพื่อวางแผนทรีใหม่ทั้งหมด",
- "Loot": "ของดรอป",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "ชี้เมาส์ที่ไอเทมในเกม (ที่คุณพบและระบุแล้ว ที่อยู่ในกระเป๋า หรือที่พ่อค้าขาย) แล้วกด Ctrl+C วางด้านล่าง หรือให้ตัววางแผนรับเอง ไอเทมจะถูกลองในทุกช่องที่ใส่ได้ และคำนวณบิลด์ทั้งแบบมีและไม่มีไอเทมนั้น: พาสซีฟและสกิลของบิลด์เป็นตัวตัดสินว่าอะไรนับ",
  "Compare with": "เปรียบเทียบกับ",
  "What the character wears": "สิ่งที่ตัวละครสวมใส่",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "ไม่สามารถใช้สกิลนี้กับอาวุธที่ถืออยู่ได้",
  "It does not go with the weapon in use": "ใช้กับอาวุธที่ใช้อยู่ไม่ได้",
  "Taken as what the character wears: what you copy next is compared with it": "ถือเป็นสิ่งที่ตัวละครสวมใส่: สิ่งที่คุณคัดลอกต่อจากนี้จะถูกเปรียบเทียบกับมัน",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "ยังไม่มี คัดลอกไอเทมแต่ละชิ้นที่ตัวละครสวมใส่ (Ctrl+C บนไอเทมในเกม): ไอเทมแรกที่คัดลอกของแต่ละช่องจะถือเป็นชิ้นที่สวมอยู่ และสิ่งที่คุณพบหรือเห็นในร้านค้าภายหลังจะถูกเปรียบเทียบกับมัน บิลด์จะไม่ถูกเปลี่ยน",
  "Area Penalty": "บทลงโทษของพื้นที่",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "ค่าต้านทานธาตุจะลดลงในพื้นที่เลเวลสูงกว่า: ที่นี่คือพื้นที่เลเวลเดียวกับคุณ",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "พิมพ์เลเวลตัวละครเพื่อกำหนดเอง เว้นว่างไว้เพื่อให้กลับไปตามทรี",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "เคล็ดลับ: เปิด «ค้นหาอย่างละเอียด» ในการตั้งค่าของ Exilewright เพื่อค้นหาเพิ่มเติม",
  "Less than {0}": "น้อยกว่า {0}",
  "The dearer one has modifiers yours does not have.": "ชิ้นที่แพงกว่ามีม็อดที่ของคุณไม่มี",
- "More than {0}": "มากกว่า {0}"
+ "More than {0}": "มากกว่า {0}",
+ "Compare": "เปรียบเทียบ",
+ "What it is compared with": "เปรียบเทียบกับ",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "ไอเทมทุกชิ้นที่คัดลอกจะถูกเปรียบเทียบกับชิ้นที่อยู่ที่นี่ในช่องเดียวกัน ช่องนี้เติมเอง: ไอเทมแรกที่คัดลอกของแต่ละช่องจะถือว่าเป็นของที่ตัวละครสวมอยู่ (✕ ถอดออก แล้วชิ้นถัดไปที่คัดลอกจะเข้ามาแทน) บิลด์ไม่เปลี่ยน"
 }

@@ -623,7 +623,6 @@
  "Rings": "戒指",
  "Sockets": "插槽",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "全部 {0} 點已用完：從職業起點開始以重新規劃整棵天賦樹。",
- "Loot": "戰利品",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "在遊戲中將游標移到物品上（你找到並已鑑定的、背包中的或商人販售的），按 Ctrl+C。貼到下方，或讓規劃器自動擷取。物品會嘗試裝在每個適合的欄位，並計算配置裝上與不裝的差異：由配置的天賦與技能決定什麼有價值。",
  "Compare with": "比較對象",
  "What the character wears": "角色身上的裝備",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "此技能無法搭配手上的武器使用",
  "It does not go with the weapon in use": "不適合目前使用的武器",
  "Taken as what the character wears: what you copy next is compared with it": "視為角色身上的裝備：之後複製的物品會與它比較",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "尚無內容。複製角色身上的每件物品（在遊戲中游標移到物品上按 Ctrl+C）：每個欄位第一件複製的物品會視為該處穿著的裝備，之後找到或在商店看到的物品會與它比較。配置不會被變更。",
  "Area Penalty": "區域懲罰",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "在較高等級的區域中元素抗性會降低：此處以你等級的區域計算",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "輸入角色等級以自行設定；留空則再次依照天賦樹計算。",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "提示：在 Exilewright 的設定中開啟「深入搜尋」以搜尋更多。",
  "Less than {0}": "低於 {0}",
  "The dearer one has modifiers yours does not have.": "較貴的那件帶有你的裝備沒有的詞綴。",
- "More than {0}": "高於 {0}"
+ "More than {0}": "高於 {0}",
+ "Compare": "比較",
+ "What it is compared with": "比較對象",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "你複製的每件物品都會與這裡同一欄位的物品比較。會自動填入：每個欄位第一件複製的物品視為角色正穿著的（✕ 可卸下，下一件複製的會取代它）。不會改變 build。"
 }

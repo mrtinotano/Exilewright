@@ -623,7 +623,6 @@
  "Rings": "Anéis",
  "Sockets": "Encaixes",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "Todos os {0} pontos estão gastos: comece do início da classe para planejar a árvore inteira de novo.",
- "Loot": "Saque",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Passe o mouse sobre um item no jogo (um que você encontrou e identificou, um do inventário ou um que um mercador vende) e pressione Ctrl+C. Cole abaixo, ou deixe o planejador pegá-lo sozinho. O item é testado em cada espaço em que cabe e a build é calculada com e sem ele: as passivas e habilidades da build decidem o que conta.",
  "Compare with": "Comparar com",
  "What the character wears": "O que o personagem veste",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "Esta habilidade não pode ser usada com a arma em mãos",
  "It does not go with the weapon in use": "Não combina com a arma em uso",
  "Taken as what the character wears: what you copy next is compared with it": "Tomado como o que o personagem veste: o que você copiar depois é comparado com ele",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "Nada ainda. Copie cada item que o personagem está usando (Ctrl+C sobre ele no jogo): o primeiro item copiado para um espaço é tomado como o que está equipado ali, e o que você encontrar ou vir numa loja depois é comparado com ele. A build não é alterada.",
  "Area Penalty": "Penalidade de área",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "As resistências elementais são menores em áreas de nível mais alto: aqui, uma área do seu nível",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Digite o nível do seu personagem para defini-lo você mesmo; deixe vazio para voltar a seguir a árvore.",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Dica: ative «Busca exaustiva» nas Configurações do Exilewright para buscar mais a fundo.",
  "Less than {0}": "Menos de {0}",
  "The dearer one has modifiers yours does not have.": "O mais caro tem modificadores que o seu não tem.",
- "More than {0}": "Mais de {0}"
+ "More than {0}": "Mais de {0}",
+ "Compare": "Comparador",
+ "What it is compared with": "Com o que se compara",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "Cada item que você copiar é comparado com o que está aqui no espaço dele. Preenche-se sozinho: o primeiro item copiado de cada espaço é tomado como o que o personagem está usando (✕ o tira, e o próximo copiado ocupa o lugar). A build não muda."
 }

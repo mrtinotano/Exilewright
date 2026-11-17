@@ -15,7 +15,7 @@ here that way: the game's site hands characters only to programs registered with
 The site's answers, errors and rate limit headers go back as they come. No login: weighted searches open on the
 official site instead.
 
-/clipboard?lang=<code> (GET, a stream of server-sent events) tells the Loot tab (loot.js) about the items copied in
+/clipboard?lang=<code> (GET, a stream of server-sent events) tells the Compare tab (loot.js) about the items copied in
 the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
 here.
@@ -28,7 +28,7 @@ notification area (no taskbar button; a click on the icon opens the window, mini
 opens it with Windows (HKCU Run), {"price_key": "Ctrl+D"} the price check shortcut of the Settings tab (settings.js). On
 Windows, that shortcut pressed while the game is the window in use copies the item under the pointer: one Ctrl+C, as
 if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
-{"price": text} instead of text, for the Loot tab to look up what it costs on the trade site.
+{"price": text} instead of text, for the Compare tab to look up what it costs on the trade site.
 
 /update tells the page whether there is a newer version (the latest release on GitHub, RELEASES):
   GET  /update   {"version", "latest", "newer", "page" (the release's page), "install" (this is the installed app and the
@@ -36,7 +36,7 @@ if pressed (GGG's rule for tools: one action per key press, nothing automatic), 
   POST /update   downloads that installer, starts it (silent: it shows its progress and opens the app again) and closes
                  the app, so its files can be replaced. Only from the page this server serves.
 
-/overlay puts the Loot tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
+/overlay puts the Compare tab's verdict in a small window over the game, next to the pointer, the way the overlay tools
 for the game do (the game has to run in windowed full screen: nothing draws over exclusive full screen):
   GET  /overlay   {"overlay": true} when this server has that window
   POST /overlay   body = {kind, title, name, lines, link, open} (JSON), shown until its ✕ is clicked; null = nothing to show.
@@ -844,5 +844,5 @@ if OVER:   # the window wants the main thread: the server goes to one of its own
     OVER[1]()
 else:
     if sys.platform == 'win32' or 'overlay' in ARGS:
-        print('No window over the game: this Python has no tkinter (the Loot tab still works in the browser)')
+        print('No window over the game: this Python has no tkinter (the Compare tab still works in the browser)')
     server.serve_forever()

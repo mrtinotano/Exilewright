@@ -623,7 +623,6 @@
  "Rings": "Ringe",
  "Sockets": "Fassungen",
  "All {0} points are spent: start from the class start to plan the whole tree again.": "Alle {0} Punkte sind verteilt: Starte vom Klassenstart, um den ganzen Baum neu zu planen.",
- "Loot": "Beute",
  "Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.": "Halte den Mauszeiger im Spiel über einen Gegenstand (einen gefundenen und identifizierten, einen im Inventar oder einen, den ein Händler verkauft) und drücke Strg+C. Füge ihn unten ein oder lass den Planer ihn selbst aufnehmen. Der Gegenstand wird in jedem passenden Platz ausprobiert und der Build mit und ohne ihn berechnet: Die Passiven und Fertigkeiten des Builds entscheiden, was zählt.",
  "Compare with": "Vergleichen mit",
  "What the character wears": "Was der Charakter trägt",
@@ -673,7 +672,6 @@
  "This skill cannot be used with the weapon in hand": "Diese Fertigkeit kann mit der geführten Waffe nicht benutzt werden",
  "It does not go with the weapon in use": "Passt nicht zur verwendeten Waffe",
  "Taken as what the character wears: what you copy next is compared with it": "Als das übernommen, was der Charakter trägt: Was du als Nächstes kopierst, wird damit verglichen",
- "Nothing yet. Copy each item the character has on (Ctrl+C over it in the game): the first item copied for a slot is taken as the one worn there, and what you find or see in a shop afterwards is compared with it. The build is not changed.": "Noch nichts. Kopiere jeden Gegenstand, den der Charakter trägt (Strg+C darüber im Spiel): Der erste für einen Platz kopierte Gegenstand gilt als der dort getragene, und was du danach findest oder in einem Laden siehst, wird damit verglichen. Der Build wird nicht verändert.",
  "Area Penalty": "Gebietsmalus",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Elementarwiderstände sind in Gebieten höherer Stufe niedriger: hier ein Gebiet deiner Stufe",
  "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Gib die Stufe deines Charakters ein, um sie selbst festzulegen; lass das Feld leer, damit sie wieder dem Baum folgt.",
@@ -835,5 +833,8 @@
  "Tip: turn on \"Thorough search\" in the Settings of Exilewright to look further.": "Tipp: Aktiviere „Gründliche Suche“ in den Einstellungen von Exilewright, um weiter zu suchen.",
  "Less than {0}": "Weniger als {0}",
  "The dearer one has modifiers yours does not have.": "Das teurere hat Modifikatoren, die deins nicht hat.",
- "More than {0}": "Mehr als {0}"
+ "More than {0}": "Mehr als {0}",
+ "Compare": "Vergleich",
+ "What it is compared with": "Womit verglichen wird",
+ "Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.": "Jeder kopierte Gegenstand wird mit dem hier für seinen Platz verglichen. Es füllt sich selbst: Der erste kopierte Gegenstand eines Platzes gilt als der, den die Figur trägt (✕ nimmt ihn ab, dann nimmt der nächste kopierte seinen Platz ein). Der Build ändert sich nicht."
 }

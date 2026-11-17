@@ -559,7 +559,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
   // what goes in one hand frees the other where the two cannot be held together (a two-handed weapon and anything in the
-  // off hand; a quiver without a bow), as the Loot tab does
+  // off hand; a quiver without a bow), as the Compare tab does
   function put(items, slot, it) {
     items[slot] = it;
     if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant?.())) delete items[slot === 'weapon' ? 'offhand' : 'weapon'];
