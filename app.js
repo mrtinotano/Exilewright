@@ -1,4 +1,4 @@
-import { t, tn, fmt, lang, LANGS, setLang } from './i18n.js';
+import { t, tn, fmt } from './i18n.js';
 import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
@@ -896,6 +896,3 @@ update(ask, true);   // a newer version: asked once, when the app opens
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 
-// language picker: changing it reloads the page in the new language
-$('langPick').innerHTML = Object.entries(LANGS).map(([k, name]) => `<option value="${k}" ${k === lang ? 'selected' : ''}>${name}</option>`).join('');
-$('langPick').onchange = e => setLang(e.target.value);

@@ -169,7 +169,7 @@ export function initLoot(el, ctx) {
     const r = parseItem(text);
     msg = !r ? t('That is not item text, or the planner does not have its base.') : r.unidentified ? t('That item is not identified yet: identify it and copy it again.')
       // modifiers are read in English and in the page's language only
-      : lang === 'en' && !/^Rarity:/m.test(text) ? t('The game is in another language: set the planner to the same one (top right) to read its modifiers.') : '';
+      : lang === 'en' && !/^Rarity:/m.test(text) ? t('The game is in another language: set the planner to the same one (Settings) to read its modifiers.') : '';
     bad = !!msg;
     if (!msg) {   // the same item copied again goes back to the top
       list = [{ text, at: Date.now(), r, undo: list.find(e => e.text === text)?.undo }, ...list.filter(e => e.text !== text)].slice(0, MAX);
