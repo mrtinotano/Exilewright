@@ -214,13 +214,12 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     if (Object.keys(wide).length) s = await search(n, pct = i => wide[i] || near);
     else if (n > 1) s = await search(k = n - 1, pct);
   }
-  // a listing with a modifier this one does not have that makes it many times dearer ("+3 to Level of all Attack
-  // Skills"; by the site's stat number) is no measure of this one: never one of the two prices (`more`: how many such lines)
+  // a listing with a skill level line this one does not have ("+3 to Level of all Attack Skills", by the site's stat
+  // number and wording) can be many times dearer: never one of the two prices. note: only those, as every rare alike
+  // has some other line, and which other ones raise a price this much is no table's
   const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
-  // note: only skill level lines count ("+3 to Level of all Attack Skills", the site's wording): every rare alike has
-  // some other line, and which other ones raise a price this much is no table's
   const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
-    .filter(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || '')).length;
+    .some(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || ''));
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
