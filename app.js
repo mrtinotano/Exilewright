@@ -297,7 +297,6 @@ const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, cl
 const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
 // one panel, with what the header button asked for: taking a build in, or giving this one out
 const openShare = async exporting => {
-  document.getElementById('sharePanel')?.remove();
   const d = document.createElement('div');
   d.className = 'ask'; d.id = 'sharePanel';
   const code = exporting ? await encode(toXML(B(), shareCtx())) : '';
