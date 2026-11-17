@@ -10,7 +10,7 @@ const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'Ke
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available' };
+const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available', near: 10 };   // near: the price check's ±% (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
@@ -58,7 +58,8 @@ export function initSettings(el, ask) {
         <p class="note">${t('Hold the pointer over an item in the game and press the shortcut: the planner copies the item (one Ctrl+C, as if you pressed it) and shows next to the pointer what the same item costs on the official trade site.')}</p>
         <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
-          <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label></div>
+          <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label>
+          <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label></div>
         <p class="note">${t(NEEDS)}</p>
       </section>
       <section><h3>${t('Simulator keys')}</h3>
@@ -99,7 +100,7 @@ export function initSettings(el, ask) {
   el.onchange = e => {
     if ('lang' in e.target.dataset) return setLang(e.target.value);
     const k = e.target.dataset.s;
-    if (k) { S[k] = e.target.value; save(); }
+    if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.value; save(); render(); }
   };
   return render;
 }

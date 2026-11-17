@@ -195,13 +195,13 @@ export function initLoot(el, ctx) {
     show({ name, lines: [t('Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = await priceOf({ league, item: r.item, text, state: s.state }), link = p.id ? siteLink(league, p.id) : '';
+      const p = await priceOf({ league, item: r.item, text, state: s.state, near: +s.near }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
       const counts = {};
       for (const x of p.prices) { const k = `${x.amount} ${t(x.currency)}`; counts[k] = (counts[k] || 0) + 1; }
       show({ name, link, lines: [
         ...p.estimate ? [[[t('It may be worth') + ': ', ''], [`~${p.estimate.amount} ${t(p.estimate.currency)}`, 'up']]] : [],
-        [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, Math.round(p.near * 100)) : t('{0} listed in {1}', p.total, league), 'dim']],
+        [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         [[t('Cheapest') + ': ' + Object.entries(counts).map(([k, n]) => n > 1 ? `${k} ×${n}` : k).join(' · '), 'dim']]] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;

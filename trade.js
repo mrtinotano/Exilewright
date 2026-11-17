@@ -157,14 +157,16 @@ export function readListing(r) {
 // damage per second or armour / evasion / energy shield (propsOf: from the copied text, quality and runes included, as
 // the site counts them) stand for the lines that make them (local ones); every other line (priceLines; a unique's only
 // those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike. All of them
-// within 10% (never more, and not rounded: "+1 to …" stays 0.9-1.1), all of them: one it lacks is not alike.
+// within `near` % (Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any %),
+// all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the middle one of the
 // cheapest MANY is the estimate, in the currency its seller asked: no exchange rate is needed.
 // -> { total, near (the tolerance; null: only the name and base),
 //      prices: [{ amount, currency }] cheapest first, estimate: { amount, currency }, id (the search, siteLink opens it) }
 const MANY = 10;
-const NEAR = .1, around = v => v ? { min: +(v - Math.abs(v) * NEAR).toFixed(2), max: +(v + Math.abs(v) * NEAR).toFixed(2) } : null;
-console.assert(around(1).min > 0 && around(-43).max < 0, 'around');
+const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
+  return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
+console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
 export function propsOf(text) {
   const avg = re => [...(text.match(re)?.[1] || '').matchAll(/(\d+)-(\d+)/g)].reduce((s, m) => s + (+m[1] + +m[2]) / 2, 0);
@@ -174,7 +176,7 @@ export function propsOf(text) {
   return Object.fromEntries(Object.entries(p).filter(([, v]) => v > 0).map(([k, v]) => [k, Math.round(v * 10) / 10]));
 }
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
-export async function priceOf({ league, item, text = '', state = 'available' }) {
+export async function priceOf({ league, item, text = '', state = 'available', near = 10 }) {
   const props = propsOf(text);
   const { known, desecrated } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
@@ -182,14 +184,14 @@ export async function priceOf({ league, item, text = '', state = 'available' }) 
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
   // a line asked as normal, crafted, fractured or desecrated counts once: one of its ids is enough
-  const stats = lines.map(l => ({ type: 'count', value: { min: 1 }, filters: l.ids.map(id => ({ id, ...around(l.value) && { value: around(l.value) } })) }));
-  const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v)]));
+  const stats = lines.map(l => ({ type: 'count', value: { min: 1 }, filters: l.ids.map(id => ({ id, ...around(l.value, near) && { value: around(l.value, near) } })) }));
+  const own = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, around(v, near)]));
   const filters = Object.keys(own).length ? { equipment_filters: { filters: own } } : {};
   const s = await call('search?league=' + encodeURIComponent(league), { query: { ...query, stats, filters }, sort: { price: 'asc' } });
   const ids = (s.result || []).slice(0, MANY);
   const got = ids.length ? (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || [] : [];
   const prices = got.map(r => r?.listing?.price).filter(Boolean);
-  return { total: s.total, near: n || Object.keys(own).length ? NEAR : null, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: s.id };
+  return { total: s.total, near: n || Object.keys(own).length ? near : null, prices, estimate: prices[(prices.length - 1) >> 1] || null, id: s.id };
 }
 
 // ---------- the search
