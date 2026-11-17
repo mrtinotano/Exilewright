@@ -34,7 +34,6 @@ const sgn = (a, z) => { const x = a || 0, y = z || 0; return Math.abs(y - x) <= 
 const mid = v => Array.isArray(v) ? (v[0] + v[1]) / 2 : v || 0;   // a damage range counts by its middle
 const tone = d => d > 0 ? 'up' : d < 0 ? 'down' : '';
 const dir = (text, d) => d ? `<i class="${tone(d)}">${text}</i>` : text;   // better in green, worse in red, the same as it is
-const plain = l => typeof l === 'string' ? l : l.map(s => typeof s === 'string' ? s : s[0]).join('');
 const MODS = 6;   // modifier lines of each list (gained, lost) shown over the game
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
