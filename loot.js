@@ -273,6 +273,7 @@ export function initLoot(el, ctx) {
     tab?.classList.remove('new');
     const b = ctx.build(), g = gemOf(b), own = skills(b), top = el.scrollTop, gear = Object.entries(gearOf(b)).filter(([s, it]) => itemView(it) && (SLOTS[s] || s.startsWith('jewel:')));
     const blocked = 'Notification' in window && Notification.permission === 'denied';
+    const wornOpen = el.querySelector('.lworn-box')?.open;   // folded: only needed to put it right; stays as it was left
     el.innerHTML = `<div class="opt loot">
       <section class="opthead"><h3>${t('Compare')}</h3>
         <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C. Paste it below, or let the planner pick it up by itself. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
@@ -296,13 +297,13 @@ export function initLoot(el, ctx) {
         <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
         ${msg ? `<p class="${bad ? 'opterr' : 'optmsg'}">${esc(msg)}</p>` : ''}
       </section>
-      <section><h3>${t('What it is compared with')}: ${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</h3>
+      <details class="lworn-box"${wornOpen ? ' open' : ''}><summary><b>${t('What it is compared with')}: ${S.vs === 'build' ? t("The build's equipment") : t('What the character wears')}</b> (${gear.length})</summary>
         ${S.vs === 'build' ? `<p class="note">${t('Items are compared with the ones of the Equipment tab, and Equip puts them in the build.')}</p>`
         : `<p class="note">${t('Every item you copy is compared with the one here for its slot. It fills itself: the first item copied for a slot is taken as the one the character has on (✕ takes it off, so the next one copied takes its place). The build is not changed.')}</p>`}
         ${S.vs !== 'build' && Object.keys(b.items || {}).length ? `<div class="optrow"><button data-do="copy">${t("Start from the build's equipment")}</button></div>` : ''}
         ${gear.length ? `<div class="lworn">${gear.map(([s, it]) => `<span class="${itemView(it).rarity}">${esc(slotName(s))}: <b>${esc(nameOf(it))}</b>${
           S.vs === 'build' ? '' : `<button data-do="off" data-slot="${esc(s)}" title="${t('Take off')}">✕</button>`}</span>`).join('')}</div>` : ''}
-      </section>
+      </details>
       ${list.length ? `<section><div class="optrow"><h3>${t('Items looked at')}</h3><button data-do="clear">${t('Clear the list')}</button></div>
         <div class="gitems">${list.map(card).join('')}</div></section>` : ''}
     </div>`;
