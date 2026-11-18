@@ -123,7 +123,7 @@ export function initScene(el, api) {
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
   // What is used by hand gets a slot (calc.js byHand); persistent skills are on while their spirit is reserved, so the
-  // scene keeps them on. note: on whatever spirit they reserve
+  // scene keeps them on. note: all of them, even when they reserve more spirit than the build has
   const always = g => (api.info(g).gem?.types || []).includes('Persistent');
   const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
