@@ -214,6 +214,13 @@ const UNID = /^(Unidentified|Sin identificar|Non identifié|Nicht identifiziert|
 const NAMED = new Map();   // every name the data has for a base (English, then the translations), in lower case
 for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
   for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
+// every modifier of one kind of item (base.domain) and every implicit, as matchLines candidates: made once
+const ANY = new Map();
+const anyOf = domain => ANY.get(domain) || ANY.set(domain, D.affixes.filter(a => a.domain === domain && !a.radius).flatMap(a => shapes(a.id, a.stats))).get(domain);
+const anyImplicit = () => ANY.get('implicit') || ANY.set('implicit', Object.entries(D.implicits).flatMap(([id, st]) => shapes('implicit:' + id, st))).get('implicit');
+// a belt's own charm slots, which no table gives ("Has 3 Charm Slots"): as a stat, in the words of the game
+const charmSlots = () => ANY.get('slots') || ANY.set('slots', [1, 2, 3].flatMap(v => shapes('local_charm_slots', [['local_charm_slots', v, v]]))).get('slots');
+const statsOf = key => AFFIX[key]?.stats || (key.startsWith('implicit:') ? D.implicits[key.slice(9)] : [[key]]);
 // text copied from the game (Ctrl+C on an item) or from Path of Building
 // -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
 export function parseItem(text) {
@@ -305,6 +312,16 @@ export function parseItem(text) {
     ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
   } else item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
+  // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
+  // data does not give the base, "Has 1 Charm Slot") is read as one of any item of its kind: a modifier, or for an
+  // implicit line any base's implicit too, counted as its stats (item.extra, as runes)
+  const toExtra = f => statsOf(f.key).forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
+  const more = matchLines(ex.missed, [...anyOf(base.domain), ...charmSlots()], id => AFFIX[id]?.family);
+  for (const f of more.found) if (AFFIX[f.key]) item.mods.push({ id: f.key, values: f.values }); else toExtra(f);
+  ex.missed = more.missed;
+  const own1 = matchLines(im.missed, [...anyOf(base.domain), ...anyImplicit(), ...charmSlots()]);
+  own1.found.forEach(toExtra);
+  im.missed = own1.missed;
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
     name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)) };
 }
