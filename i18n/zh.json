@@ -834,5 +834,6 @@
  "Electrocution": "觸電",
  "Pinned": "被釘身",
  "{0} cannot curse enemies above level {1}": "{0}無法詛咒等級高於 {1} 的敵人",
- "No skill of the build is used by hand: they are always on.": "该构筑没有需要手动使用的技能：它们始终生效。"
+ "No skill of the build is used by hand: they are always on.": "该构筑没有需要手动使用的技能：它们始终生效。",
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} 保持关闭：需要保留 {1} 点精魂，只剩 {2} 点"
 }

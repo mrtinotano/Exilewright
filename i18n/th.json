@@ -834,5 +834,6 @@
  "Electrocution": "ช็อตประสาท",
  "Pinned": "ตรึง",
  "{0} cannot curse enemies above level {1}": "{0} สาปศัตรูที่เลเวลสูงกว่า {1} ไม่ได้",
- "No skill of the build is used by hand: they are always on.": "ไม่มีสกิลในบิลด์ที่ต้องกดใช้เอง: ทั้งหมดทำงานอยู่ตลอด"
+ "No skill of the build is used by hand: they are always on.": "ไม่มีสกิลในบิลด์ที่ต้องกดใช้เอง: ทั้งหมดทำงานอยู่ตลอด",
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} ยังปิดอยู่: ต้องสำรองพลังวิญญาณ {1} แต่เหลือ {2}"
 }

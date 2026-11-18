@@ -104,8 +104,8 @@ light beam, minimap icon) and save it straight into `Documents/My Games/Path of 
 game: Options, Game, Item Filter.
 
 **Simulator** (its own tab): the build's skills against the game's monsters in a 3D room. The keys 1-9 are the skills used by
-hand; persistent ones (auras, heralds, buffs like Berserk, reserved minions, Cast on X) are always on and the skill placed
-in a meta gem is used by it. Hits deal the skill's own damage
+hand; persistent ones (auras, heralds, buffs like Berserk, reserved minions, Cast on X) are on, in the build's order, while
+the build's Spirit covers them, and the skill placed in a meta gem is used by it. Hits deal the skill's own damage
 after the monster's defences, and ailments follow the game's rules (`GameConstants` and each monster's thresholds per level
 and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
 threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a

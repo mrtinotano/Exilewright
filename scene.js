@@ -52,7 +52,7 @@ const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'pois
 const CHC = { frenzy: 'poison', power: 'arcane', endurance: 'fire' };
 
 // api: { build(), geo(g), playerSpeed(), info(g) → { gem, data, label, icon }, onSelect(i), sheet() → calc.js character() + recovery(),
-//        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i, byHand(i) → gem i is used by hand (calc.js), onPlacing(on) }
+//        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i, byHand(i) → gem i is used by hand, reserve(g) → the spirit gem g reserves (calc.js), onPlacing(on) }
 export function initScene(el, api) {
   // ---------- renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -123,8 +123,8 @@ export function initScene(el, api) {
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
   // What is used by hand gets a slot (calc.js byHand); persistent skills are on while their spirit is reserved, so the
-  // scene keeps them on. note: all of them, even when they reserve more spirit than the build has
-  const always = g => (api.info(g).gem?.types || []).includes('Persistent');
+  // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
+  const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
@@ -1187,7 +1187,13 @@ export function initScene(el, api) {
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
-    gems.forEach((g, i) => { if (always(g) && !tog[g.name]) { const S = mk(i); if (S) K.toggle(S); } });
+    let free = sheet().spirit ?? Infinity;
+    gems.forEach((g, i) => {
+      if (!always(g)) return;
+      const r = api.reserve(g), fits = r <= free;
+      if (fits) { free -= r; unpaid.delete(g.name); if (!tog[g.name]) { const S = mk(i); if (S) K.toggle(S); } }
+      else if (!unpaid.has(g.name)) { unpaid.add(g.name); untoggle(g.name); say(t('{0} stays off: it reserves {1} Spirit and {2} is left', api.info(g).label, r, free), 'dust'); }
+    });
     const list = slots();
     if (!list.includes(sel)) sel = list[0] ?? 0;
     put(bar, list.slice(0, 12).map((i, n) => {
