@@ -833,5 +833,6 @@
  "The updates could not be checked ({0}).": "업데이트를 확인할 수 없습니다({0}).",
  "Electrocution": "전기 처형",
  "Pinned": "고정",
- "{0} cannot curse enemies above level {1}": "{0}은(는) 레벨 {1}을(를) 넘는 적을 저주할 수 없음"
+ "{0} cannot curse enemies above level {1}": "{0}은(는) 레벨 {1}을(를) 넘는 적을 저주할 수 없음",
+ "No skill of the build is used by hand: they are always on.": "이 빌드에는 직접 사용하는 스킬이 없습니다: 모두 항상 활성화되어 있습니다."
 }

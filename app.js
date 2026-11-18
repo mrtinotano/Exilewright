@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy, byHand } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
@@ -184,6 +184,7 @@ function renderSceneSkills() {
   const b = B(), sum = treeSum(), on = scene3d?.selected();
   dmgCache.clear();
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
+  let n = 0; const key = b.gems.map((_, i) => byHand(b, i) ? ++n : 0);   // the scene's 1-9: what is used by hand
   const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
   const cards = list.map(({ g, inf, P }, i) => {
     const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
@@ -194,7 +195,7 @@ function renderSceneSkills() {
       G.duration ? `<span>${t('duration')} <b>${fmt(G.duration, G.duration % 1 ? 1 : 0)} s</b></span>` : '',
     ].join('');
     return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
-      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${i < 9 ? `<i>${i + 1}</i>` : ''}</span>
+      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key[i] && key[i] < 10 ? `<i>${key[i]}</i>` : ''}</span>
         <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
         <b class="sdps">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
@@ -955,7 +956,7 @@ function renderEnemy() {
     <p class="note">${t('Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.')}</p>`;
 }
 
-scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j),
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j),
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum) }; } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),

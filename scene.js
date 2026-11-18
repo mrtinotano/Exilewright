@@ -52,7 +52,7 @@ const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'pois
 const CHC = { frenzy: 'poison', power: 'arcane', endurance: 'fire' };
 
 // api: { build(), geo(g), playerSpeed(), info(g) → { gem, data, label, icon }, onSelect(i), sheet() → calc.js character() + recovery(),
-//        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i (calc.js), onPlacing(on) }
+//        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i, byHand(i) → gem i is used by hand (calc.js), onPlacing(on) }
 export function initScene(el, api) {
   // ---------- renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -122,6 +122,10 @@ export function initScene(el, api) {
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
+  // What is used by hand gets a slot (calc.js byHand); persistent skills are on while their spirit is reserved, so the
+  // scene keeps them on. note: on whatever spirit they reserve
+  const always = g => (api.info(g).gem?.types || []).includes('Persistent');
+  const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
@@ -1049,7 +1053,7 @@ export function initScene(el, api) {
   // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
   const useTime = b => b.dmg?.speed > 0 ? clamp(1 / b.dmg.speed, .15, 3) : SIM.castTime;
   function press(i, key) {
-    const b = base(i); if (!b || move) return;
+    const b = api.byHand(i) && base(i); if (!b || move) return;
     held = null;
     if (b.P.stages && b.P.channel) { charge = { i, s: 0 }; held = { i, key }; return; }   // charge while held, release to fire
     if (b.P.toggle || b.kind === 'field') { use(i); return; }
@@ -1090,7 +1094,7 @@ export function initScene(el, api) {
     if (c === K.roll) e.preventDefault();
     keys[c] = true;
     if (e.repeat) return;
-    if (/^Digit[1-9]$/.test(c)) { const i = +c[5] - 1; if (api.build().gems[i]) { select(i, true, true); press(i, c); } }
+    if (/^Digit[1-9]$/.test(c)) { const i = slots()[+c[5] - 1]; if (i != null) { select(i, true, true); press(i, c); } }
     else if (c === K.reset) reset();
     else if (c === 'Escape') setPlacing(false);
     else if (c === K.refill) { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
@@ -1183,11 +1187,13 @@ export function initScene(el, api) {
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
-    if (sel >= gems.length) sel = Math.max(0, gems.length - 1);
-    put(bar, gems.slice(0, 12).map((g, i) => {
-      const inf = api.info(g), P = prof(g, inf);
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" title="${esc(inf.label)}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${i < 9 ? `<b>${i + 1}</b>` : ''}</button>`;
-    }).join('') || `<span class="note">${t('Add skills in the Skills tab.')}</span>`);
+    gems.forEach((g, i) => { if (always(g) && !tog[g.name]) { const S = mk(i); if (S) K.toggle(S); } });
+    const list = slots();
+    if (!list.includes(sel)) sel = list[0] ?? 0;
+    put(bar, list.slice(0, 12).map((i, n) => {
+      const g = gems[i], inf = api.info(g), P = prof(g, inf);
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" title="${esc(inf.label)}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${n < 9 ? `<b>${n + 1}</b>` : ''}</button>`;
+    }).join('') || `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`);
     const S = peek();
     if (S) {
       const G = S.G, P = S.P, rows = [];

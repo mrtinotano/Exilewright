@@ -833,5 +833,6 @@
  "The updates could not be checked ({0}).": "Impossible de rechercher des mises à jour ({0}).",
  "Electrocution": "Foudroiement",
  "Pinned": "Verrouillé",
- "{0} cannot curse enemies above level {1}": "{0} ne peut pas maudire les ennemis au-delà du niveau {1}"
+ "{0} cannot curse enemies above level {1}": "{0} ne peut pas maudire les ennemis au-delà du niveau {1}",
+ "No skill of the build is used by hand: they are always on.": "Aucune compétence du build ne s'utilise à la main : elles sont toujours actives."
 }

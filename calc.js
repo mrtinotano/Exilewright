@@ -53,6 +53,9 @@ export const usedBy = (b, i) => { const g = b.gems?.[i]; if (!g) return null;
   if ('meta' in g) return g.meta && metasFor(b, g).find(m => m.name === g.meta) || null;
   const m = i > 0 && b.gems[i - 1];
   return m && String(m.supports || []) === String(g.supports || []) && metasFor(b, g).includes(m) ? m : null; };
+// a gem used by hand: not a persistent skill (auras, heralds, persistent buffs and minions, Cast on X: on while their
+// spirit is reserved) nor one placed in a meta gem (Mortar Cannon's grenade: the meta gem uses it)
+export const byHand = (b, i) => { const g = b.gems?.[i]; return !!g && !(GEM[g.name]?.types || []).includes('Persistent') && !usedBy(b, i); };
 // what a meta gem holds, as the game has it: its sockets hold the skills put in it and the supports, and those
 // supports are the skills' (each skill in it keeps a copy, which the calculation reads). Run before every save.
 export function linkMetas(b) {
