@@ -175,6 +175,17 @@ const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near 
 // side -1: from the % under it up to it (worse); 1: from it up to the % over it (better)
 const range = (v, near, side) => { const r = around(v, near); return r && side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r; };
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
+// the lowest of the steps 5 by 5 over `near` (up to WIDE, which finds something) that finds something: `at` asked
+// about half the steps each time, since a wider % finds all a narrower one does
+async function lowest(near, at) {
+  const steps = [];
+  for (let p = near + 5; p < WIDE; p += 5) steps.push(p);
+  steps.push(WIDE);
+  let lo = 0, hi = steps.length - 1;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (await at(steps[m])) hi = m; else lo = m + 1; }
+  return steps[hi];
+}
+lowest(10, async p => p >= 20).then(p => console.assert(p === 20, 'lowest'));
 // the numbers the site filters weapons and armour by, from the item's text in English (none in another language)
 export function propsOf(text) {
   const avg = re => [...(text.match(re)?.[1] || '').matchAll(/(\d+)-(\d+)/g)].reduce((s, m) => s + (+m[1] + +m[2]) / 2, 0);
@@ -198,18 +209,17 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     filters: { ...filters(side), ...(over || upTo) && { trade_filters: { filters: { price: over ? { min: +over.amount + .01, option: over.currency } : { max: +upTo.amount, option: upTo.currency } } } } },
     stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i), side) && { value: range(l.value, pct(i), side) } }))) }] : [] },
     sort: { price: desc ? 'desc' : 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
-  // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE
-  // (asked at WIDE first: a line nothing is found with at all costs one search), then every line at the % it found
-  // something with. Still nothing: any one line left out. Then there is none.
+  // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE,
+  // then every line at the % it found something with. Still nothing: any one line left out. Then there is none.
+  // Fewer searches (the site lets a few through at a time): all of them at WIDE first (nothing even so: no line alone
+  // finds any), each line at WIDE (nothing: one search spent on it), and its lowest step halving the steps left
   let s = await search(n, () => near), k = n, wide = {}, pct = () => near;
   if (!s.total && n && deep) {
-    for (const [i, l] of lines.entries()) {
-      if (!around(l.value, near) || near >= WIDE) continue;
+    if (near < WIDE && (await search(n, () => WIDE)).total) for (const [i, l] of lines.entries()) {
+      if (!around(l.value, near)) continue;
       const at = async p => (await search(n, j => j === i ? p : near)).total;
-      if (!await at(WIDE)) continue;
-      let p = near;
-      do p = Math.min(p + 5, WIDE); while (p < WIDE && !await at(p));
-      wide[i] = p;
+      if (n > 1 && !await at(WIDE)) continue;   // one line: the search before asked just that
+      wide[i] = await lowest(near, at);
     }
     if (Object.keys(wide).length) s = await search(n, pct = i => wide[i] || near);
     else if (n > 1) s = await search(k = n - 1, pct);
