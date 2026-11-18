@@ -125,3 +125,7 @@ Found a bug, a number that does not match the game, or have an idea? [Open an is
 issue instead.
 
 Working on it with an AI coding assistant? `AGENTS.md` tells it how the project is laid out and its rules.
+
+## Support
+Exilewright is free. If it helps you and you want to thank the work, you can
+[buy me a coffee on Ko-fi](https://ko-fi.com/adriamartin). Thank you!
