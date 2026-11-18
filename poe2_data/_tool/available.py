@@ -222,7 +222,15 @@ for gid, n in nodes.items():
 # what an "Attribute" node turns into when you pick one (hidden passives the game swaps in)
 attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(p['Stats'])}
              for p in passives for k in ('strength', 'dexterity', 'intelligence') if p['Id'].startswith('generic_attribute_' + k)}
-save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
+# the art the game draws behind a group (images.py: img/mastery/<id>): the mastery of its passives (PassiveSkills.MasteryGroup
+# -> PassiveSkillMasteryGroups.Art -> PassiveSkillTreeMasteryArt), the one most of them have
+mastery_groups, mastery_art = load('PassiveSkillMasteryGroups'), load('PassiveSkillTreeMasteryArt')
+group_art = {}
+for gid, n in nodes.items():
+    if by_gid[gid]['MasteryGroup'] is not None:
+        group_art.setdefault(n['group'], []).append(mastery_art[mastery_groups[by_gid[gid]['MasteryGroup']]['Art']]['Id'])
+group_art = {g: max(set(l), key=l.count) for g, l in group_art.items()}
+save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'group_art': group_art, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
 
 # --- ascendancies / classes
 chars, chars_tr, asc_tr, portraits = load('Characters'), load_langs('Characters'), load_langs('Ascendancy'), load('NPCPortraits')

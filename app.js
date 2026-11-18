@@ -448,8 +448,8 @@ const ascStart = a => (ASC[a] || []).find(i => N[i].ascendancy_start);
 const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
 // every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
-const BACKDROPS = new Map();   // node clusters (not lone nodes) up to orbit 3 get the game's group art, by their widest orbit
-for (const id of main) { const n = N[id]; if (n.group != null && ORBIT[n.orbit] > 0 && ORBIT[n.orbit] <= 335) BACKDROPS.set(n.group, Math.max(BACKDROPS.get(n.group) || 0, ORBIT[n.orbit])); }
+const GROUP_ART = Object.entries(tree.group_art || {});   // [group, mastery art id]: what the game draws behind it
+const groupOf = id => String(N[id]?.group);
 const visible = () => [...main, ...(ASC[B().asc] || [])];
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
@@ -719,16 +719,18 @@ function drawTree() {
 
   // world-space layers
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
-  // the game's group backgrounds (images.py: img/tree/group_*), one pixel a world unit like its links; the large one
-  // is half a circle, drawn again upside down
-  for (const [g, r] of BACKDROPS) {
-    const pic = art('tree/group_' + (r <= 162 ? 'small' : r <= 251 ? 'medium' : 'large'));
-    if (!pic) continue;
+  // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
+  // once one of its passives is allocated, faint until then (as the game shows it)
+  // ponytail: the faint 0.3 is by eye from a screenshot of the game; no table says it
+  const taken = new Set([...on].map(groupOf));
+  for (const [g, id] of GROUP_ART) {
+    const pic = art('mastery/' + id);
+    if (!pic || !GROUPS[g]) continue;
     const [x, y] = GROUPS[g];
-    if (r <= 251) { ctx.drawImage(pic, x - pic.width / 2, y - pic.height / 2); continue; }
-    ctx.drawImage(pic, x - pic.width / 2, y - pic.height);
-    ctx.save(); ctx.translate(x, y); ctx.scale(1, -1); ctx.drawImage(pic, -pic.width / 2, -pic.height); ctx.restore();
+    ctx.globalAlpha = taken.has(g) ? 1 : .3;
+    ctx.drawImage(pic, x - pic.width, y - pic.height, pic.width * 2, pic.height * 2);
   }
+  ctx.globalAlpha = 1;
   // central ascendancy disc
   const disc = ctx.createRadialGradient(0, 0, CENTRE_R * .2, 0, 0, CENTRE_R);
   disc.addColorStop(0, '#221d16'); disc.addColorStop(1, '#0b0a08');
