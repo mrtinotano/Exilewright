@@ -256,7 +256,7 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   // lines fewer, then the base alone. Neither with a line this one does not have
   if (s.total && sided) {
     to = (await pricesOf(await search(k, pct, { side: 1 }))).find(x => !x.more) || null;
-    const tries = [...new Set([[k, -1], [k, 0], [k - 1, -1], [0, -1]].filter(([kk]) => kk >= 0).map(String))].map(x => x.split(',').map(Number));
+    const tries = [[k, -1], [k, 0], ...k > 1 ? [[k - 1, -1]] : [], ...k ? [[0, -1]] : []];
     for (const [kk, side] of tries) {
       from = (await pricesOf(await search(kk, pct, { side, desc: true, upTo: to }))).find(x => !x.more && (!to || key(x) !== key(to))) || null;
       if (from) break;
