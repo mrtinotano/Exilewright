@@ -468,8 +468,8 @@ function more(fin, suffix, tags, type) {
 // Hit, speed, crit and DPS of one gem of the build. Everything null-safe: missing data -> dps null + reason.
 // Multishot II says 25% less damage (GrantedEffectStatSets support_multiple_damage_+%_final -25, PoB2 too), but in the
 // game it takes 26% off: Cluster Grenade of Mortar Cannon, one totem, no Berserk (18/11) gives 4306-9367 without it and
-// 3186-6932 with it, x0.740 for every damage type. note: only Multishot II was measured
-const MEASURED_MORE = { 'Multishot II': 0.74 / 0.75 };
+// 3186-6932 with it, x0.740 for every damage type. Multishot I (35% less) the same way: 2756-5995, x0.640
+const MEASURED_MORE = { 'Multishot I': 0.64 / 0.65, 'Multishot II': 0.74 / 0.75 };
 export function skill(g, b, treeGear) {
   const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
