@@ -466,6 +466,10 @@ function more(fin, suffix, tags, type) {
 }
 
 // Hit, speed, crit and DPS of one gem of the build. Everything null-safe: missing data -> dps null + reason.
+// Multishot II says 25% less damage (GrantedEffectStatSets support_multiple_damage_+%_final -25, PoB2 too), but in the
+// game it takes 26% off: Cluster Grenade of Mortar Cannon, one totem, no Berserk (18/11) gives 4306-9367 without it and
+// 3186-6932 with it, x0.740 for every damage type. note: only Multishot II was measured
+const MEASURED_MORE = { 'Multishot II': 0.74 / 0.75 };
 export function skill(g, b, treeGear) {
   const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
@@ -539,7 +543,9 @@ export function skill(g, b, treeGear) {
   // a totem's grenade: "increased Grenade Damage" does not count (the game's window, 16/11: the same 4311-9885 without
   // two Grenade Damage nodes; Volatile Grenades' fuse is not in it either), the grenade cooldown ones do (10.99 s)
   const dmgTags = byTotem ? [...tags.filter(x => x !== 'grenade'), 'totem'] : tags;
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * (1 + rage * (100 + rageEffect) / 1e4)
+  // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
+  const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + (inc(sum, 'damage_+%', dmgTags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
