@@ -181,8 +181,8 @@ const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near 
 // searches; side -1: from the % under it up to it (worse); 1: it or more (better). A negative number keeps both
 // ends: which way is better there is the line's own
 const range = (v, near, side) => { const r = around(v, near); if (!r) return r;
-  if (v < 0) return side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r;
-  return side < 0 ? { min: r.min, max: v } : { min: side ? v : r.min }; };
+  if (side < 0) return { min: r.min, max: v };
+  return v < 0 ? side ? { min: v, max: r.max } : r : { min: side ? v : r.min }; };
 console.assert(JSON.stringify(range(30, 10)) === '{"min":27}' && JSON.stringify(range(30, 10, 1)) === '{"min":30}' && range(30, 10, -1).max === 30 && range(-43, 10).max === -38.7, 'range');
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the lowest of the steps 5 by 5 over `near` (up to WIDE, which finds something) that finds something: `at` asked
