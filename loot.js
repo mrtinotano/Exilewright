@@ -167,7 +167,7 @@ export function initLoot(el, ctx) {
       const worth = p.from && p.to ? t('Between {0} and {1}', cost(p.from), cost(p.to)) : (p.from || p.to) && cost(p.from || p.to);
       show({ name, link, lines: [
         ...worth ? [[[t('It may be worth') + ': ', ''], [worth, 'up']]] : [],
-        [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
+        [[p.near ? t('{0} like it listed in {1}, its numbers at most {2}% under', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
         // note: "few" is a fixed 5 listings, not a measure of how spread the prices are

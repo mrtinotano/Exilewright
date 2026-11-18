@@ -86,16 +86,20 @@ export const leagues = () => data('leagues').then(j => j.result.filter(l => l.re
 // the weighted search (its number is negative there); flip its weight if one ever ranks high
 const shape = (s, loose) => { s = s.replace(/[+-]?\d+(\.\d+)?/g, '#').replace(/\+/g, '').replace(/\bmetres\b/g, 'metre').toLowerCase().trim();
   return loose ? s.replace(/\breduced\b/g, 'increased') : s; };
-// -> { known: the site's stat ids (null when it cannot be asked), desecrated(en): the id of that desecrated line }
+// -> { known: the site's stat ids (null when it cannot be asked), desecrated(en): the id of that desecrated line,
+//      total(hash): the site's total of that stat over every line of an item ("+# total to Dexterity" for
+//      "+# to Dexterity": an attribute or a resistance), when it has one }
 async function statIndex() {
   let known = null;
-  const des = [new Map(), new Map()];
+  const des = [new Map(), new Map()], text = new Map(), totals = new Map();
   try {
     const groups = (await data('stats')).result;
     known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
     for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.forEach((m, loose) => m.has(shape(e.text, loose)) || m.set(shape(e.text, loose), e.id));
+    for (const e of groups.find(g => g.id === 'explicit')?.entries || []) text.set(e.id, shape(e.text));
+    for (const e of groups.find(g => g.id === 'pseudo')?.entries || []) if (/ total to /.test(e.text)) totals.set(shape(e.text.replace(' total to ', ' to ')), e.id);
   } catch (e) { if (!(e instanceof TradeError)) throw e; }
-  return { known, desecrated: en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null };
+  return { known, desecrated: en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null, total: hash => totals.get(text.get('explicit.stat_' + hash)) || null };
 }
 export async function withIds(wants) {
   const { known, desecrated } = await statIndex();
@@ -159,21 +163,27 @@ export function readListing(r) {
 // Looks for listed items like it: the same base (a unique: the same unique) whose numbers are near its own. Its own
 // damage per second or armour / evasion / energy shield (propsOf: from the copied text, quality and runes included, as
 // the site counts them) stand for the lines that make them (local ones); every other line (priceLines; a unique's only
-// those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike. All of them
-// within `near` % (Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any %),
-// all of them: one it lacks is not alike.
+// those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike, an attribute or
+// a resistance as the item's total of it (as Exiled Exchange 2 asks them). All of them at most `near` % under its own
+// and with no top (range; Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any
+// %), all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the
 // order is the price's: no exchange rate is needed. In the shop it would sit between the dearest worse one (from:
 // every number at or under its own, no modifier it lacks, not dearer than `to`) and the cheapest better one (to: every number at or over its
-// own, or a modifier it lacks). With neither (alike ones with some numbers over and some under): between the cheapest
+// own, or a modifier it lacks). With neither (alike ones with some numbers a little under, some over): between the cheapest
 // alike and the next dearer one.
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
 //      from, to: { amount, currency, more (to: it has modifiers this one lacks) } (null when there is none), id (the search) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
-// side -1: from the % under it up to it (worse); 1: from it up to the % over it (better)
-const range = (v, near, side) => { const r = around(v, near); return r && side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r; };
+// at least the % under it, with no top (more of it is no less like it, and can ask less), as Exiled Exchange 2
+// searches; side -1: from the % under it up to it (worse); 1: it or more (better). A negative number keeps both
+// ends: which way is better there is the line's own
+const range = (v, near, side) => { const r = around(v, near); if (!r) return r;
+  if (v < 0) return side ? side < 0 ? { min: r.min, max: v } : { min: v, max: r.max } : r;
+  return side < 0 ? { min: r.min, max: v } : { min: side ? v : r.min }; };
+console.assert(JSON.stringify(range(30, 10)) === '{"min":27}' && JSON.stringify(range(30, 10, 1)) === '{"min":30}' && range(30, 10, -1).max === 30 && range(-43, 10).max === -38.7, 'range');
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the lowest of the steps 5 by 5 over `near` (up to WIDE, which finds something) that finds something: `at` asked
 // about half the steps each time, since a wider % finds all a narrower one does
@@ -197,9 +207,9 @@ export function propsOf(text) {
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
 export async function priceOf({ league, item, text = '', state = 'available', near = 10, deep = false }) {
   const props = propsOf(text);
-  const { known, desecrated } = await statIndex();
+  const { known, desecrated, total } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
-    .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
+    .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)] : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
   const filters = side => Object.keys(props).length ? { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)])) } } : {};

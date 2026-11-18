@@ -75,7 +75,7 @@ export function initSettings(el, loot) {
         <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label>
-          <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label>
+          <label>${t('Numbers down to (% under)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label>
           <label><input type="checkbox" data-s="deep"${S.deep ? ' checked' : ''}> ${t('Thorough search')}</label></div>
         <p class="note">${t('When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).')}</p>
         <p class="note">${t(NEEDS)}</p>
