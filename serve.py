@@ -237,15 +237,15 @@ def overlay():
     body = tk.Frame(box, bg=back)
     q, timer = queue.Queue(), None
     held = None   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
-    idle = b''    # keys that do nothing in the game as it is set: they leave the window where it is
+    keys = None   # the keys that close it: the game's own (game_keys) and Esc; None: any key but W A S D (see watch)
     over = gone = None   # the window in front when it came up; the one it was over when another came to the front
     if win:
         # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
         # can take the keyboard from the game. Hidden, clicks go through it to the game; shown, it takes them (its ✕
         # closes it, and so do a click anywhere else and a key: see poll) but never the keyboard
         mouse = {1, 2, 4}   # left, right and middle button
-        # what closes the window when pressed: those, the two side buttons and the keys of a keyboard, but Shift,
-        # Ctrl, Alt and Print Screen; W A S D only where the game moves the character with them (idle, below)
+        # what closes the window when pressed: those, the two side buttons and the keys the game uses (keys, below), but
+        # Shift, Ctrl, Alt and Print Screen
         watch = [k for k in (*mouse, 5, 6, *range(8, 0x5B), *range(0x60, 0x92), *range(0xBA, 0xE3)) if k not in (0x10, 0x11, 0x12, 0x2C)]
         user = ctypes.windll.user32
         user.GetAncestor.restype = ctypes.c_void_p
@@ -277,7 +277,7 @@ def overlay():
     close.bind('<Button-1>', hide)
 
     def draw(v):
-        nonlocal timer, held, idle, over, gone
+        nonlocal timer, held, keys, over, gone
         if win:   # what comes soon after the user went to another window (a search's answer) is dropped, unless that one is back
             now = user.GetForegroundWindow()
             if gone and now != gone[0] and time.monotonic() - gone[1] < 90:
@@ -310,7 +310,8 @@ def overlay():
         if win:
             root.attributes('-alpha', .95)
             clicks(True)
-            held, idle = None, b'' if wasd() else b'WASD'
+            game = game_keys()
+            held, keys = None, game | {0x1B} if game else None
         else:
             root.deiconify()
         root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
@@ -326,9 +327,9 @@ def overlay():
             # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
             # or another window. note: keys and mouse are looked at 20 times a second, not hooked (a hook written
             # in Python can slow the pointer in the game); a hook if presses ever get missed
-            keys = {k: user.GetAsyncKeyState(k) for k in watch if k not in idle}   # 0x8000: down, 1: pressed since the last look
-            down = {k for k, s in keys.items() if s & 0x8000}
-            new = set() if held is None else {k for k, s in keys.items() if s & 1 or k in down and k not in held}
+            now = {k: user.GetAsyncKeyState(k) for k in watch if k in mouse or k in (5, 6) or (k in keys if keys else k not in b'WASD')}   # 0x8000: down, 1: pressed since the last look
+            down = {k for k, s in now.items() if s & 0x8000}
+            new = set() if held is None else {k for k, s in now.items() if s & 1 or k in down and k not in held}
             held = down
             px, py = root.winfo_pointerxy()
             away = not (0 <= px - root.winfo_rootx() < root.winfo_width() and 0 <= py - root.winfo_rooty() < root.winfo_height())
@@ -347,19 +348,28 @@ def overlay():
     return q.put, root.mainloop
 
 
-def game_setting(key):
-    """-> the value of a setting in the game's own settings file (poe2_production_Config.ini), '' when it cannot be read"""
+def game_config():
+    """the game's own settings file (poe2_production_Config.ini), '' when it cannot be read"""
     try:
         with open(os.path.join(game_folder(), 'poe2_production_Config.ini'), encoding='utf-8-sig') as f:
-            m = re.search(rf'^{key}=(.*?)\s*$', f.read(), re.M)
-            return m.group(1) if m else ''
+            return f.read()
     except (OSError, ValueError):
         return ''
 
 
-def wasd():
-    """the game is set to move the character with W A S D (False when its settings file cannot be read)"""
-    return game_setting('use_wasd_to_move') == 'true'
+def game_setting(key, text=None):
+    """-> the value of a setting in the game's settings file, '' when it is not there"""
+    m = re.search(rf'^{key}=(.*?)\s*$', game_config() if text is None else text, re.M)
+    return m.group(1) if m else ''
+
+
+def game_keys():
+    """-> the Windows key codes the game is set to use ([ACTION_KEYS], or [WASD_ACTION_KEYS] when it moves the character
+    with W A S D: "action=code [modifier]", 0 unbound), mouse buttons left out; None when the file cannot be read"""
+    text = game_config()
+    part = 'WASD_ACTION_KEYS' if game_setting('use_wasd_to_move', text) == 'true' else 'ACTION_KEYS'
+    m = re.search(rf'^\[{part}\]\s*$(.*?)(?=^\[|\Z)', text, re.M | re.S)
+    return {int(c) for c in re.findall(r'^\w+=(\d+)', m.group(1), re.M)} - {0, 1, 2, 4, 5, 6} if m else None
 
 
 def tongue():
@@ -592,8 +602,14 @@ class Handler(SimpleHTTPRequestHandler):
         if not CLIP:
             return self.reply(501, 'no way to read the clipboard on this system')
         code = parse_qs(u.query).get('lang', [''])[0]
-        if re.fullmatch('[a-z]{2}', code):
+        if re.fullmatch('[a-z]{2}', code) and code != TONGUE:
             TONGUE = code
+            try:   # kept for the next start: the window's messages are in it before any page listens
+                os.makedirs(profile(), exist_ok=True)
+                with open(os.path.join(profile(), 'language'), 'w', encoding='utf-8') as f:
+                    f.write(code)
+            except OSError:
+                pass
         q = queue.Queue()
         self.send_response(200)
         self.send_header('Content-Type', 'text/event-stream')
@@ -921,6 +937,13 @@ def app(url):
     os._exit(0)
 
 
+try:   # the language of the page that listened last (do_clipboard), else the system's
+    with open(os.path.join(profile(), 'language'), encoding='utf-8') as f:
+        code = f.read().strip()
+    if re.fullmatch('[a-z]{2}', code):
+        TONGUE = code
+except OSError:
+    pass
 port = 8767 if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
 try:
     server = Server(('127.0.0.1', port), partial(Handler, directory=HERE))
