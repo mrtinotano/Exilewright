@@ -213,6 +213,13 @@ def overlay():
     loop() runs the window and has to be called in the thread that called this, the main one"""
     win, back = sys.platform == 'win32', '#12100c'
     if win:   # a new window takes the keyboard on Windows: remember who has it, to give it back below
+        # the screen in real pixels before the window is made: the app's window (WebView2) turns that on for the whole
+        # program later, and a window made before it measures a scaled screen (1536x864 at 125%) in real pixels, so
+        # under the bottom fifth it was not kept on the screen
+        try:
+            ctypes.windll.shcore.SetProcessDpiAwareness(2)
+        except (AttributeError, OSError):
+            pass
         ctypes.windll.user32.GetForegroundWindow.restype = ctypes.c_void_p
         front = ctypes.windll.user32.GetForegroundWindow()
     try:
