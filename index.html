@@ -19,6 +19,7 @@
   #top .grow { flex:1; }
   #top button { background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; }
   #top button:disabled { opacity:.4; cursor:default; } #undo, #redo { font-size:15px; line-height:1; padding:2px 8px; }
+  #updNote { color:#8fe89a; margin-left:10px; } #updNote button { margin-left:6px; }
   #top button:hover { background:#3a3225; }
   #notesBox { position:absolute; right:10px; top:100%; z-index:5; width:360px; padding:8px; background:#16130f; border:1px solid #5a4a30; box-shadow:0 6px 20px #000; }
   #notesBox[hidden] { display:none; }
@@ -374,6 +375,7 @@
   <button id="delBuild" data-t>Delete</button>
   <button id="undo" title="Undo (Ctrl+Z)" data-t disabled>↶</button>
   <button id="redo" title="Redo (Ctrl+Y)" data-t disabled>↷</button>
+  <span id="updNote" hidden></span>
   <span class="grow"></span>
   <button id="notesBtn">Notes</button>
   <button id="importBtn" data-t>Import</button>

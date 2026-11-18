@@ -22,8 +22,9 @@ It opens in a window of its own (WebView2, part of Windows), maximized the first
 closing the window closes it. Windows may warn that the app is not recognised, because it is not signed: "More info"
 → "Run anyway".
 
-When it opens it looks for a newer release: the installed app offers to download and install it (it closes and
-opens again on its own), the portable one opens the release page. Settings → Updates checks again.
+When it opens, and whenever its window comes back to the front (at most every 10 minutes), it looks for a newer
+release: the top bar then says so, with a button that downloads and installs it in the installed app (it closes and
+opens again on its own) or opens the release page in the portable one.
 
 ## Run from source (developers)
 `python serve.py` (or double-click `start.cmd`) serves the planner at http://127.0.0.1:8765 for a browser;
@@ -102,7 +103,7 @@ game: Options, Game, Item Filter.
 
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the
-language; the updates).
+language).
 
 The generated data the app needs (`poe2_data/available/`, item/gem images included) is in the repo,
 so it runs from source right after cloning.

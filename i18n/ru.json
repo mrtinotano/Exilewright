@@ -833,5 +833,6 @@
  "Your {0} grants {1}: it is not in the build.": "{0} даёт {1}: этого нет в билде.",
  "Add": "Добавить",
  "Area level {0}": "Уровень области {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Уровень области, где находится персонаж: от него зависит штраф к сопротивлениям. Оставьте пустым для области уровня персонажа."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Уровень области, где находится персонаж: от него зависит штраф к сопротивлениям. Оставьте пустым для области уровня персонажа.",
+ "Exilewright {0} is out": "Вышла Exilewright {0}"
 }

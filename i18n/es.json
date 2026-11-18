@@ -833,5 +833,6 @@
  "Your {0} grants {1}: it is not in the build.": "Tu {0} da {1}: no está en el build.",
  "Add": "Añadir",
  "Area level {0}": "Nivel del área {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "El nivel del área donde está el personaje: decide la penalización de resistencias. Déjalo vacío para un área del nivel del personaje."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "El nivel del área donde está el personaje: decide la penalización de resistencias. Déjalo vacío para un área del nivel del personaje.",
+ "Exilewright {0} is out": "Ya está Exilewright {0}"
 }

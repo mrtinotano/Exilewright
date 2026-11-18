@@ -1,6 +1,6 @@
 // The Settings tab: the shortcuts (the price check over the game, the keys of the 3D scene), what the price check
 // searches for, the equipment comparison (loot.js draws it: `loot`, put after the price check),
-// the app's window (serve.py /settings: with Windows, only in the notification area), the language and the updates (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
+// the app's window (serve.py /settings: with Windows, only in the notification area), the language, and the update notice in the top bar (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
 // since it is the one that sees the keyboard while the game is the window in use.
 import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
@@ -35,26 +35,33 @@ const comboOf = e => {
   return key && (e.ctrlKey || e.altKey) ? [e.ctrlKey && 'Ctrl', e.shiftKey && 'Shift', e.altKey && 'Alt', key].filter(Boolean).join('+') : null;
 };
 
-// a newer version: the installed app offers to download and install it, elsewhere its release page is shown.
-// -> the text to show in Settings ('' when the user was asked)
-export async function update(ask, quiet) {
-  let u;
-  try { const r = await fetch('update'); u = await r.json(); if (!r.ok) throw Error(u.error); }
-  catch (e) { return quiet ? '' : t('The updates could not be checked ({0}).', e.message); }
-  if (!u.newer) return quiet ? '' : t('Exilewright {0} is the latest version.', u.version);
-  if (quiet && !u.app) return '';   // run from the code: no question at every reload
-  if (u.install) {
-    if (await ask(t('Exilewright {0} is out (you have {1}). Download and install it? The app closes and opens again when it is done.', u.latest, u.version), t('Update')) !== 0) return '';
-    const r = await fetch('update', { method: 'POST' }).catch(e => ({ ok: false, statusText: e.message }));
-    return r.ok ? t('Downloading and installing Exilewright {0}…', u.latest) : t('The update could not be downloaded ({0}).', r.statusText || r.status);
-  }
-  if (await ask(t('Exilewright {0} is out (you have {1}). Open its page to download it?', u.latest, u.version), t('Open')) === 0) open(u.page, '_blank', 'noopener');
-  return '';
+// a newer version, looked for when the app opens and whenever its window comes back to the front (at most every 10
+// minutes: GitHub answers 60 asks an hour): a line in the top bar with a button that installs it (the installed app)
+// or opens its page (the portable one). Run from the code: nothing
+export function watchUpdates(el) {
+  let last = 0, busy = false;
+  const look = async () => {
+    if (busy || Date.now() - last < 600e3) return;
+    last = Date.now();
+    const u = await fetch('update').then(r => r.ok ? r.json() : null).catch(() => null);
+    if (busy || !u?.newer || !u.app) return;
+    el.hidden = false;
+    el.innerHTML = `${esc(t('Exilewright {0} is out', u.latest))} <button>${t(u.install ? 'Update' : 'Open')}</button>`;
+    el.querySelector('button').onclick = async () => {
+      if (!u.install) return open(u.page, '_blank', 'noopener');
+      busy = true;
+      el.textContent = t('Downloading and installing Exilewright {0}…', u.latest);
+      const r = await fetch('update', { method: 'POST' }).catch(e => ({ ok: false, statusText: e.message }));
+      if (!r.ok) { busy = false; el.textContent = t('The update could not be downloaded ({0}).', r.statusText || r.status); }
+    };
+  };
+  look();
+  addEventListener('focus', look);
 }
 
-export function initSettings(el, ask, loot) {
+export function initSettings(el, loot) {
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let msg = '', list = null, upd = '', win = {};   // the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
+  let msg = '', list = null, win = {};   // the leagues of the trade site; the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
@@ -82,8 +89,6 @@ export function initSettings(el, ask, loot) {
           ${win.startup ? check('on', 'Open with Windows') : ''}
           ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}
         <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label></div>
-        <div class="optrow"><button data-do="update">${t('Check for updates')}</button></div>
-        ${upd ? `<p class="note">${esc(upd)}</p>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
@@ -111,7 +116,6 @@ export function initSettings(el, ask, loot) {
     if (!d) return;
     if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
-    else if (d.dataset.do === 'update') { upd = t('Checking…'); update(ask).then(m => { upd = m; render(); }); }
     render();
   };
   el.onchange = e => {

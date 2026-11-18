@@ -9,7 +9,7 @@ import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
-import { initSettings, update } from './settings.js';
+import { initSettings, watchUpdates } from './settings.js';
 import { initFilter } from './filter.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
@@ -968,8 +968,8 @@ const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, s
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
   sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
-const renderSettings = initSettings($('settings'), ask, lootEl);
-update(ask, true);   // a newer version: asked once, when the app opens
+const renderSettings = initSettings($('settings'), lootEl);
+watchUpdates($('updNote'));
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 
