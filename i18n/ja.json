@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}: 未装備",
  "{0} needs {1} charges and has {2}": "{0}には{1}チャージが必要です (現在{2})",
  "{0} / {1}: life and mana flask": "{0} / {1}: ライフフラスコとマナフラスコ",
- "{0} applies its effect constantly": "{0}は効果を常に適用する"
+ "{0} applies its effect constantly": "{0}は効果を常に適用する",
+ "{0} used": "{0}を使用"
 }

@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}: ไม่ได้สวมใส่",
  "{0} needs {1} charges and has {2}": "{0} ต้องใช้ {1} Charge แต่มี {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: ขวดยาพลังชีวิตและขวดยามานา",
- "{0} applies its effect constantly": "{0} ใช้ผลอย่างต่อเนื่อง"
+ "{0} applies its effect constantly": "{0} ใช้ผลอย่างต่อเนื่อง",
+ "{0} used": "ใช้ {0}"
 }

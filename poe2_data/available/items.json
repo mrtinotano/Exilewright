@@ -33229,6 +33229,13 @@
     "charges": 80,
     "per_use": 80
    },
+   "charm": {
+    "buff": "utility_charm_item_rarity",
+    "stats": {
+     "base_item_found_rarity_+%": 15
+    },
+    "icon": "Art/2DArt/BuffIcons/GoldenCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -40350,6 +40357,13 @@
     "recovery_s": 4.0,
     "charges": 40,
     "per_use": 30
+   },
+   "charm": {
+    "buff": "utility_charm_chaos_resistance",
+    "stats": {
+     "base_chaos_damage_resistance_%": 18
+    },
+    "icon": "Art/2DArt/BuffIcons/AmethystCharmBuff.dds"
    },
    "weapon": null,
    "spirit": null
@@ -51154,6 +51168,11 @@
     "charges": 40,
     "per_use": 30
    },
+   "charm": {
+    "buff": "utility_charm_ignite_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/DousingCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -51196,6 +51215,11 @@
     "recovery_s": 3.0,
     "charges": 40,
     "per_use": 30
+   },
+   "charm": {
+    "buff": "utility_charm_shock_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/GroundingCharmBuff.dds"
    },
    "weapon": null,
    "spirit": null
@@ -54097,6 +54121,11 @@
     "charges": 40,
     "per_use": 20
    },
+   "charm": {
+    "buff": "utility_charm_poison_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/AntidoteCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -55712,6 +55741,11 @@
     "recovery_s": 3.0,
     "charges": 40,
     "per_use": 30
+   },
+   "charm": {
+    "buff": "utility_charm_bleeding_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/StaunchingCharmBuff.dds"
    },
    "weapon": null,
    "spirit": null
@@ -59235,6 +59269,11 @@
     "charges": 40,
     "per_use": 40
    },
+   "charm": {
+    "buff": "utility_charm_freeze_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/ThawingCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -61264,6 +61303,11 @@
     "charges": 40,
     "per_use": 20
    },
+   "charm": {
+    "buff": "utility_charm_slow_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/SilverCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -61801,6 +61845,11 @@
     "recovery_s": 3.0,
     "charges": 40,
     "per_use": 20
+   },
+   "charm": {
+    "buff": "utility_charm_stun_immunity",
+    "stats": {},
+    "icon": "Art/2DArt/BuffIcons/StoneCharmBuff.dds"
    },
    "weapon": null,
    "spirit": null
@@ -62976,6 +63025,13 @@
     "charges": 40,
     "per_use": 20
    },
+   "charm": {
+    "buff": "utility_charm_fire_resistance",
+    "stats": {
+     "base_fire_damage_resistance_%": 25
+    },
+    "icon": "Art/2DArt/BuffIcons/RubyCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -63019,6 +63075,13 @@
     "charges": 40,
     "per_use": 20
    },
+   "charm": {
+    "buff": "utility_charm_cold_resistance",
+    "stats": {
+     "base_cold_damage_resistance_%": 25
+    },
+    "icon": "Art/2DArt/BuffIcons/SapphireCharmBuff.dds"
+   },
    "weapon": null,
    "spirit": null
   },
@@ -63061,6 +63124,13 @@
     "recovery_s": 4.0,
     "charges": 40,
     "per_use": 20
+   },
+   "charm": {
+    "buff": "utility_charm_lightning_resistance",
+    "stats": {
+     "base_lightning_damage_resistance_%": 25
+    },
+    "icon": "Art/2DArt/BuffIcons/TopazCharmBuff.dds"
    },
    "weapon": null,
    "spirit": null

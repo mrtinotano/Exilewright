@@ -126,19 +126,33 @@ export function flaskRecovery(items = {}, sum = {}) {
 // holds and what a use spends (ComponentCharges, with its own and the character's modifiers) and how much more it gains
 // on kill; always: it applies its effect constantly; es: its life recovery also recovers energy shield. null for an item that is not a flask.
 export function flaskOf(it, sum = {}) {
-  const base = BASE[it?.base]; if (!base?.flask) return null;
+  const base = BASE[it?.base]; if (!base?.flask || base.charm) return null;
   const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
   const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
     * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1);
   const time = F.recovery_s / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
-  const max = Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
+  const max = mostCharges(F, s);
   const per = Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('flask_charges_used_+%') + (k === 'mana' ? g('flask_mana_charges_used_+%') : 0)) / 100));
   const gain = 1 + (g('flask_charges_gained_+%') + g(`${k}_flask_charges_gained_+%`)) / 100;
   const always = !!s.local_flask_always_drinking || k === 'life' && !it.unique && !!g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you');
   return { k, amount, time, max, per, gain, always, es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
 }
+const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
+// A charm: what sets it off (on: its implicit "used when...", local_flask_use_on_<on>), what it grants while it lasts (its
+// buff and the buff's stats: UtilityFlaskBuffs) and for how long, the life, mana and guard it gives when used, and its
+// charges as a flask's; null for an item that is not a charm
+export function charmOf(it, sum = {}) {
+  const base = BASE[it?.base]; if (!base?.charm) return null;
+  const s = rolled(it), g = id => sum[id] || 0, F = base.flask;
+  return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), buff: base.charm.buff, stats: base.charm.stats, icon: base.charm.icon,
+    img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%')) / 100),
+    max: mostCharges(F, s), per: Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),
+    gain: 1 + g('charm_charges_gained_+%') / 100, keep: g('charms_%_chance_to_not_consume_charges'),
+    life: s.charm_recover_X_life_when_used || 0, mana: s.charm_recover_X_mana_when_used || 0, guard: s.charm_gain_X_guard_for_duration || 0 };
+}
 // self-check: a Lesser Life Flask recovers 50 life over 3 s with 60 charges, 10 a use
-{ const f = flaskOf({ base: 'Lesser Life Flask' }); console.assert(f.amount === 50 && f.time === 3 && f.max === 60 && f.per === 10 && f.k === 'life', 'flaskOf'); }
+{ const f = flaskOf({ base: 'Lesser Life Flask' }); console.assert(f.amount === 50 && f.time === 3 && f.max === 60 && f.per === 10 && f.k === 'life', 'flaskOf');
+  const c = charmOf({ base: 'Ruby Charm' }); console.assert(c.on === 'fire_damage_taken' && c.stats['base_fire_damage_resistance_%'] === 25 && c.time === 4 && c.max === 40 && c.per === 20 && !flaskOf({ base: 'Ruby Charm' }), 'charmOf'); }
 
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };

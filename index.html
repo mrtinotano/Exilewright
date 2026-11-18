@@ -136,11 +136,13 @@
   .s-bar:empty, .s-buffs:empty { display:none; }
   .s-bar .note { padding:4px 8px; font-size:12px; color:#a89878; }
   .s-slot { position:relative; flex:0 1 58px; width:58px; min-width:26px; aspect-ratio:1; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
-  /* the flasks at the ends of the bar, as the game's: the item's art, darkened above the charges it has */
+  /* the flasks together before the skills, apart from them, as the game's belt: the item's art, darkened above the charges it has */
+  .s-belt { display:flex; gap:4px; margin-right:14px; padding-right:14px; border-right:1px solid #3a3020; }
   .s-flask { position:relative; flex:0 0 32px; width:32px; height:58px; align-self:center; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
   .s-flask img { width:100%; height:100%; object-fit:contain; display:block; }
   .s-flask i { position:absolute; left:0; right:0; top:0; background:#000b; }
   .s-flask b { position:absolute; left:0; right:0; bottom:0; font:bold 11px/15px system-ui, sans-serif; text-align:center; color:#e8dcc0; background:#000b; }
+  .s-charm { flex-basis:30px; width:30px; height:30px; cursor:default; }
   .s-flask.act { border-color:#c9a85a; box-shadow:0 0 6px #c9a85a; }
   .s-flask.low img { filter:grayscale(.8) brightness(.6); }
   .s-slot.none, .s-flask.none { background:radial-gradient(circle, #1a150e, #070605); border-style:dashed; }
@@ -164,7 +166,8 @@
   .s-tip span:first-of-type { color:#c8b890; font-variant:small-caps; font-size:13px; }
   .s-tip small { display:block; margin-top:3px; font-size:11.5px; color:#ffd27a; }
   /* a scene too narrow for the bar between the orbs: the bar along the bottom, the orbs over it */
-  @container (max-width:860px) { .s-orb { width:84px; height:84px; } .s-bar { bottom:8px; max-width:calc(100% - 16px); } .s-life, .s-mana { bottom:82px; } .s-vtxt { font-size:13px; } .s-log { bottom:226px; } }
+  @container (max-width:860px) { .s-orb { width:84px; height:84px; } .s-bar { bottom:8px; max-width:calc(100% - 16px); }
+    .s-belt { margin-right:6px; padding-right:6px; } .s-flask { flex-basis:24px; width:24px; height:46px; } .s-charm { flex-basis:22px; width:22px; height:22px; } .s-life, .s-mana { bottom:82px; } .s-vtxt { font-size:13px; } .s-log { bottom:226px; } }
   .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; white-space:nowrap; }
   .s-toast.on { opacity:1; }
   /* character panel, like the in-game one */

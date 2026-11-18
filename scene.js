@@ -77,7 +77,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, calm: 0, tick: .5, by: null, fl: [null, null], drink: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -195,7 +195,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, fl: [null, null], drink: [] }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -454,6 +454,8 @@ export function initScene(el, api) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
     flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain); });
+    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain); });
+    if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
@@ -1264,11 +1266,11 @@ export function initScene(el, api) {
     });
     const list = slots(), at = barNow();
     if (!list.includes(sel)) sel = at.find(i => i != null) ?? list[0] ?? 0;
-    put(bar, flaskHtml(0) + (list.length ? at.map((i, k) => {
+    put(bar, `<span class="s-belt">${flaskHtml(0)}${flaskHtml(1)}${[0, 1, 2].map(charmHtml).join('')}</span>` + (list.length ? at.map((i, k) => {
       if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
       const g = gems[i], inf = api.info(g), P = prof(g, inf);
       return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span><b>${keyLabel(k)}</b></button>`;
-    }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`) + flaskHtml(1));
+    }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
     keysText();
@@ -1315,6 +1317,7 @@ export function initScene(el, api) {
     for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : '')); }
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(icon(B.name), B.c, B.label, '', B.s));
+    for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span class="s-txt" style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     return b.join('');
   }
@@ -1403,6 +1406,7 @@ export function initScene(el, api) {
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
     if (!me.known) return;   // without the class base life there is no pool to empty: the numbers still show what gets through
+    if (me.guard > 0) { const g = Math.min(me.guard, n), k = 1 - g / n; me.guard -= g; n *= k; chaos *= k; }   // a charm's guard takes it before anything
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const other = n - chaos; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
@@ -1411,7 +1415,7 @@ export function initScene(el, api) {
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
   function struck(d) {
-    const a = d.atk, c = sheet();
+    const a = d.atk, c = withCharms(sheet());
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, c.evasion || 0)) return fx.text(above(), t('Evaded'), GREY, .32);
@@ -1424,7 +1428,9 @@ export function initScene(el, api) {
       total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     hurt(total, chaos, top, crit, d);
-    if (me.safe <= 0) ailed(d, raw);   // not after the hit killed you
+    if (me.safe > 0) return;   // not after the hit killed you
+    ailed(d, raw);
+    for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
   // ailment, freeze and stun thresholds (calc.js ailmentDefence()), with the player's own durations (GameConstants <name>Player),
@@ -1434,6 +1440,7 @@ export function initScene(el, api) {
   const PL = GAME.player || {};
   const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1;
   function suffer(a, s, o = {}) {
+    if (immune(a)) return;
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
     if (o.dot && (fresh || o.dot.dps > (me.burn[a]?.dps || 0))) me.burn[a] = o.dot;
@@ -1441,11 +1448,12 @@ export function initScene(el, api) {
     if (a === 'freeze' || a === 'stun') { held = charge = goal = null; walk = false; }
     if (a === 'freeze') { me.st.chill = 0; fx.emit(22, { p: { x: pp.x, y: 1, z: pp.z }, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); }
     fx.text(above(), t(STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
+    charmUse(a === 'stun' ? 'stunned' : 'affected_by_' + a);
   }
   function ailed(d, raw) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
-    const thr = Math.max(1, D.ail), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !roll(D.avoid[a]);
+    const thr = Math.max(1, D.ail), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
     // freeze and heavy stun build up against their thresholds; once one fills, it is harder to fill again for a while
@@ -1478,7 +1486,7 @@ export function initScene(el, api) {
     const pois = (A['base_chance_to_poison_on_hit_%'] || 0) + (A[d.atk.attack ? 'chance_to_poison_on_hit_with_attacks_%' : 'spells_chance_to_poison_on_hit_%'] || 0);
     if ((x('physical') || x('chaos')) && roll(pois) && can('poison')) suffer('poison', DUR.poison * D.dur.poison, { dot: dot('poison', 'chaos', x('physical') + x('chaos')) });
   }
-  // Flasks, as the game's: the build's life flask and mana flask (items.js flaskOf()), on 1 and 2 and at the ends of the bar.
+  // Flasks, as the game's: the build's life flask and mana flask (items.js flaskOf()), on 1 and 2, together before the skills.
   // One that applies its effect constantly recovers all the time and is not drunk.
   // A drink spends its charges and recovers its amount over its time; drinking again replaces the one in progress (note:
   // the tables do not say what a second drink does). Kills refill them, as the glossary (KeywordPopups Flask, Power) says:
@@ -1500,6 +1508,42 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time };
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
+  }
+  // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
+  // implicit says happens (you become ignited, frozen, stunned..., take fire damage, kill a rare or unique enemy) and it has
+  // the charges, and grants its buff while it lasts: immunity to that ailment (removing it) or its resistance. Kills refill
+  // them with half the monster's power (the glossary's KeywordPopups Charm). note: Silver Charm's slows are not the scene's
+  // chill: nothing slows you here, so it is never used
+  const CHARM_GAIN = .5, IMMUNE_TO = { utility_charm_freeze_immunity: 'freeze', utility_charm_bleeding_immunity: 'bleed', utility_charm_poison_immunity: 'poison',
+    utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun' };
+  const charms = () => sheet().charms || [];
+  const charmLeft = n => { const f = charms()[n]; if (!f) return 0; return me.cc[n] = Math.min(me.cc[n] ?? f.max, f.max); };
+  const immune = a => me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
+  function charmUse(on) {
+    charms().forEach((f, n) => {
+      if (!f || f.on !== on || me.cu[n] || charmLeft(n) < f.per) return;
+      if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
+      me.cu[n] = { c: f, s: f.time };
+      if (f.life) flaskHeal({ k: 'life' }, f.life); if (f.mana) flaskHeal({ k: 'mana' }, f.mana); if (f.guard) me.guard = f.guard;
+      const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
+      say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
+    });
+  }
+  // your resistances with those of the charms in use
+  function withCharms(c) {
+    const add = {};
+    for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
+    if (!Object.keys(add).length || !c.res) return c;
+    const res = { ...c.res };
+    for (const el in add) if (res[el]) { const value = res[el].value + add[el]; res[el] = { ...res[el], value, capped: Math.min(res[el].max, value) }; }
+    return { ...c, res };
+  }
+  // a charm on the belt: its art darkened above its charges, lit while it is in use
+  function charmHtml(n) {
+    const f = charms()[n]; if (!f) return '';
+    const left = charmLeft(n);
+    return `<span class="s-flask s-charm${me.cu[n] ? ' act' : ''}${left < f.per ? ' low' : ''}" title="${esc(f.name)} ${Math.floor(left)}/${f.max}">`
+      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" onerror="this.remove()">` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i></span>`;
   }
   // a flask on the bar: its art darkened above the charges it has, its key under it
   function flaskHtml(n) {
@@ -1583,7 +1627,7 @@ export function initScene(el, api) {
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick
       me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0;
       for (const a in me.burn) if (me.st[a] > 0) {
-        const B = me.burn[a], got = playerTakes(c, B.el, B.dps, false) * .5;
+        const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5;
         n += got; if (B.el === 'chaos') chaos += got; if (got > best) { best = got; worst = B.el; }
       }
       if (n > 0) hurt(n, chaos, worst, false, me.by);
@@ -1607,6 +1651,7 @@ export function initScene(el, api) {
       flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
     });
     for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
+    me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }
     if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);
@@ -1625,7 +1670,7 @@ export function initScene(el, api) {
       if (h.tick > 0) continue;
       h.tick = .5;
       if (me.safe > 0 || dist(h, pp) > h.r) continue;
-      const c = sheet(); let n = 0, chaos = 0;
+      const c = withCharms(sheet()); let n = 0, chaos = 0;
       for (const el in h.dot) { const got = playerTakes(c, el, h.dot[el], false) * .5; n += got; if (el === 'chaos') chaos += got; }
       hurt(n, chaos, h.el, false, h.d);
     }

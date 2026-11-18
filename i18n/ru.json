@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}: ничего не надето",
  "{0} needs {1} charges and has {2}": "{0}: нужно зарядов: {1}, есть: {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: флакон здоровья и флакон маны",
- "{0} applies its effect constantly": "{0}: эффект действует постоянно"
+ "{0} applies its effect constantly": "{0}: эффект действует постоянно",
+ "{0} used": "{0}: использован"
 }

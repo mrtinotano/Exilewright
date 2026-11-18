@@ -8,6 +8,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 items = json.load(open(os.path.join(ROOT, 'available', 'items.json'), encoding='utf8'))
 uniques = json.load(open(os.path.join(ROOT, 'available', 'unique_items.json'), encoding='utf8'))
 paths = {b['img'] for b in items['bases'] if b['img']} | {items['unique_img'][u['name']] for u in uniques if u['name'] in items['unique_img']}
+paths |= {b['charm']['icon'] for b in items['bases'] if b.get('charm', {}).get('icon')}   # a charm's buff, in the simulator
 gems = json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8'))
 paths |= {g['icon'] for g in gems if g.get('icon')} | {g['socket_icon'] for g in gems if g.get('socket_icon')} | {g['buff_icon'] for g in gems if g.get('buff_icon')}
 _sk = json.load(open(os.path.join(ROOT, 'available', 'skills.json'), encoding='utf8'))

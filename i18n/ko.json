@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}: 장착 안 됨",
  "{0} needs {1} charges and has {2}": "{0}에 충전 {1}회가 필요합니다 (현재 {2})",
  "{0} / {1}: life and mana flask": "{0} / {1}: 생명력 플라스크와 마나 플라스크",
- "{0} applies its effect constantly": "{0}의 효과가 상시 적용됩니다"
+ "{0} applies its effect constantly": "{0}의 효과가 상시 적용됩니다",
+ "{0} used": "{0} 사용"
 }

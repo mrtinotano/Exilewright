@@ -5,7 +5,7 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, radiusOf, flaskOf } from './items.js';
+import { initItems, gearStats, radiusOf, flaskOf, charmOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -960,7 +960,8 @@ function renderEnemy() {
 
 scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), ailments: ailmentDefence(c, sum),
-    flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }) }; },
+    flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
+    charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]),
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },

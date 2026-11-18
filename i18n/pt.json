@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}: nada equipado",
  "{0} needs {1} charges and has {2}": "{0} precisa de {1} cargas e tem {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: frasco de vida e frasco de mana",
- "{0} applies its effect constantly": "{0} aplica seu efeito constantemente"
+ "{0} applies its effect constantly": "{0} aplica seu efeito constantemente",
+ "{0} used": "{0}: usado"
 }

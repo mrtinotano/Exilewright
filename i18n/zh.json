@@ -845,5 +845,6 @@
  "{0}: nothing equipped": "{0}：未裝備",
  "{0} needs {1} charges and has {2}": "{0}需要{1}次充能，目前有{2}次",
  "{0} / {1}: life and mana flask": "{0} / {1}：生命藥劑與魔力藥劑",
- "{0} applies its effect constantly": "{0}會持續套用效果"
+ "{0} applies its effect constantly": "{0}會持續套用效果",
+ "{0} used": "已使用{0}"
 }
