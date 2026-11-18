@@ -698,7 +698,7 @@ function minionOf(g, st, sum, fin) {
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
   const a = attackOf(m, level, key, 'normal', true), ms = { ...SK.minion_intrinsic };
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
   const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
   // added damage, then physical converted and gained as other types, as for the character
   const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
