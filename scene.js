@@ -1433,7 +1433,7 @@ export function initScene(el, api) {
     fx.text(above(), t(STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
   }
   function ailed(d, raw) {
-    const D = sheet().ailments, A = d.atk.ail || {}, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
+    const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
     const thr = Math.max(1, D.ail), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
@@ -1606,7 +1606,7 @@ export function initScene(el, api) {
       charge.s += dt; castAt = time; facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
       const b = base(charge.i), h = hand();
       if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
-    } else if (held && !move && cd <= 0 && !frozen()) fire(held.i);
+    } else if (held && !move && cd <= 0) fire(held.i);
 
     // the world
     for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; if ((x.s -= dt) <= 0) { timers.splice(i, 1); x.fn(); } }
