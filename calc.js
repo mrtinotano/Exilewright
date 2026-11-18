@@ -627,8 +627,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     if (m && STATE_OF[m[1]]) vs.push([STATE_OF[m[1]], all(k), m[2] ? m[2] === '_unique' : null, /physical/.test(k)]);
   }
   for (const s of ['freeze', 'shock']) if (F(`base_consume_enemy_${s}_on_hit`)) consume[s] ||= {};
-  const perCharge = c => keys.filter(k => new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`).test(k)).reduce((t, k) => t + all(k), 0);
-  const whenCharge = c => keys.filter(k => new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`).test(k)).reduce((t, k) => t + all(k), 0);
+  const sumOf = re => keys.filter(k => re.test(k)).reduce((t, k) => t + all(k), 0);
   const never = a => F('never_' + a) || F('active_skill_never_freeze_shock_ignite') && ['freeze', 'shock', 'ignite'].includes(a);
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
@@ -665,7 +664,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     pin: F('base_all_damage_can_pin') || keys.some(k => /pins_as_though_dealt_damage/.test(k)) ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0,
     chillDamage: more(/chill_as_though_damage_\+%_final$/),
     consume, vs,
-    charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: perCharge(c), when: whenCharge(c) }])),
+    charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: sumOf(new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`)), when: sumOf(new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`)) }])),
     // Exposure the hits inflict (Primal Strikes, Exposing Cry, Frost Bomb, Oil Grenade) and the supports' on ignite / shock /
     // cold critical hit; its magnitude: the skill's, else the game's default (scene.js), times "increased Exposure effect"
     expo: { hit: all('all_exposure_on_hit_magnitude') || null, hitMs: all('all_exposure_on_hit_for_duration_ms') || null,

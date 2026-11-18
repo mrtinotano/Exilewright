@@ -293,7 +293,7 @@ art_variety = {}
 for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietiesKeys']):
     art_variety.setdefault(r['Id'], varieties[r['MonsterVarietiesKeys'][0]])
 skills, skill_csd = {}, {}
-PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin|cannot_break_armour)')
+PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin)')
 PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
