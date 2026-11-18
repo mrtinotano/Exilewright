@@ -766,20 +766,19 @@ class Handler(SimpleHTTPRequestHandler):
             with urlopen(Request(f'https://github.com/{RELEASES}/releases/latest', method='HEAD', headers=UA), timeout=20) as r:
                 page = r.geturl()
             latest = page.rsplit('/tag/v', 1)[1]
-            setup = f'https://github.com/{RELEASES}/releases/download/v{latest}/Exilewright-setup.exe'   # each release has it
         except Exception as e:
             return self.reply_json(502, json.dumps({'error': str(e)}).encode())
         installed = FROZEN and not os.path.exists(os.path.join(os.path.dirname(sys.executable), 'portable'))
         newer = number(latest) > number(VERSION)
         if not post:
             return self.reply_json(200, json.dumps({'version': VERSION, 'latest': latest, 'newer': newer, 'page': page,
-                                                    'install': bool(installed and setup), 'app': 'app' in ARGS}).encode())
-        if not (newer and installed and setup and setup.startswith(f'https://github.com/{RELEASES}/releases/download/')):
+                                                    'install': installed, 'app': 'app' in ARGS}).encode())
+        if not (newer and installed):
             return self.reply(409, 'nothing to install')
         try:
             path = os.path.join(os.environ.get('TEMP', profile()), f'Exilewright-setup-{latest}.exe')
             with open(path, 'wb') as f:
-                f.write(call(setup))
+                f.write(call(f'https://github.com/{RELEASES}/releases/download/v{latest}/Exilewright-setup.exe'))   # each release has it
         except Exception as e:
             return self.reply(502, str(e))
         subprocess.Popen([path, '/SILENT', '/SUPPRESSMSGBOXES'], close_fds=True)
