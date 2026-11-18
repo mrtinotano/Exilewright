@@ -6,7 +6,7 @@
 // the items with the most of each of the best modifiers (or the best damage / defence of the item) and reads those;
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
-import { affixLines, tradeItem, priceLines } from './items.js';
+import { affixLines, tradeItem, priceLines, classOf } from './items.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
 // item class (items.json) -> the trade site's category
@@ -160,7 +160,8 @@ export function readListing(r) {
 }
 
 // ---------- the price check: what an item like this one is worth
-// Looks for listed items like it: the same base (a unique: the same unique) whose numbers are near its own. Its own
+// Looks for listed items like it: the same base (a unique: the same unique; a rare weapon or armour: the same kind)
+// whose numbers are near its own. Its own
 // damage per second or armour / evasion / energy shield (propsOf: from the copied text, quality and runes included, as
 // the site counts them) stand for the lines that make them (local ones); every other line (priceLines; a unique's only
 // those that can roll otherwise) is asked as a normal, crafted, fractured or desecrated modifier alike, an attribute or
@@ -211,8 +212,12 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
     .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)] : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
-  const query = { status: { option: state }, type: item.base, ...(item.unique && { name: item.unique }) };
-  const filters = side => Object.keys(props).length ? { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)])) } } : {};
+  // a rare weapon or armour whose damage or defence is asked: any base of its kind, as Exiled Exchange 2 asks (the
+  // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
+  const cat = !item.unique && Object.keys(props).length && CATEGORY[classOf(item)];
+  const query = { status: { option: state }, ...(!cat && { type: item.base }), ...(item.unique && { name: item.unique }) };
+  const filters = side => ({ ...cat && { type_filters: { filters: { category: { option: cat } } } },
+    ...Object.keys(props).length && { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)])) } } });
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
   // within pct(i) % (on that side of its number); over / upTo: only dearer than / at most that price; desc: dearest first
   const search = (k, pct, { side = 0, over, upTo, desc } = {}) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
@@ -246,12 +251,14 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   let from = null, to = null;
   const key = x => x.amount + ' ' + x.currency;
   // the top: the cheapest better one. The bottom: the dearest worse one asking less than it (the site's price filter
-  // converts the currencies, so the bottom is always the cheaper one); none, the same with one of its lines fewer, then
-  // the base alone. Neither with a line this one does not have
+  // converts the currencies, so the bottom is always the cheaper one); none, the dearest alike one under the top (some
+  // numbers a little under, some over: as near as it gets with all its lines), then the worse ones with one of its
+  // lines fewer, then the base alone. Neither with a line this one does not have
   if (s.total && sided) {
     to = (await pricesOf(await search(k, pct, { side: 1 }))).find(x => !x.more) || null;
-    for (const kk of [...new Set([k, k - 1, 0])].filter(x => x >= 0)) {
-      from = (await pricesOf(await search(kk, pct, { side: -1, desc: true, upTo: to }))).find(x => !x.more && (!to || key(x) !== key(to))) || null;
+    const tries = [...new Set([[k, -1], [k, 0], [k - 1, -1], [0, -1]].filter(([kk]) => kk >= 0).map(String))].map(x => x.split(',').map(Number));
+    for (const [kk, side] of tries) {
+      from = (await pricesOf(await search(kk, pct, { side, desc: true, upTo: to }))).find(x => !x.more && (!to || key(x) !== key(to))) || null;
       if (from) break;
     }
   }
