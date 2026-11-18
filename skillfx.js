@@ -216,7 +216,7 @@ export function synergies(list) {
     if (b.absorbs && GROUND_EL[a.ground]) add(i, j, '{1} absorbs the {2} left by {0} and gains its element', A.label, B.label, GROUND[a.ground]);
     if (a.kind === 'curse' && hits(b) && a.els.some(e => (b.els.length ? b.els : [b.el]).includes(e))) add(i, j, '{0}: cursed enemies take more damage from {1}', A.label, B.label);
     if (a.kind === 'orb' && a.detonates && hits(b) && b.els.includes(a.el)) add(i, j, '{0} applies exposure with each pulse → {1} hits those enemies harder', A.label, B.label);
-    if (a.kind === 'mark' && a.gain && hits(b)) add(i, j, '{1} consumes {0}: a heavier hit and a {2} charge', A.label, B.label, CHARGE[a.gain]);
+    if (a.kind === 'mark' && a.gain && hits(b)) add(i, j, 'A critical hit of {1} consumes {0}: more critical damage and a {2} charge', A.label, B.label, CHARGE[a.gain]);
     if (a.kind === 'herald' && b.applies.includes(AILMENT[a.el])) add(i, j, '{1} inflicts {2} → kills trigger the explosion of {0}', A.label, B.label, STATE[AILMENT[a.el]]);
     if (a.gain && b.spend.includes(a.gain)) add(i, j, '{0} generates {2} charges → {1} spends them', A.label, B.label, CHARGE[a.gain]);
     if (a.empowers && a.kind === 'warcry' && b.attack && b.melee && hits(b)) add(i, j, '{0} empowers {1}: it repeats as an aftershock', A.label, B.label);

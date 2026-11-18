@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}: ปลุกจากศพ {1} ตัว",
  "{1} absorbs the {2} left by {0} and gains its element": "{1} ดูดซับ {2} ที่ {0} ทิ้งไว้และได้รับธาตุนั้น",
  "{1} cast near a {0} erupts from the projectile": "{1} ที่ร่ายใกล้ {0} จะปะทุจากโพรเจกไทล์",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1} กลืนกิน {0}: ปะทะหนักขึ้นและได้ {2} Charge",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "คริติคอลของ {1} กลืนกิน {0}: ความเสียหายคริติคอลมากขึ้นและได้ {2} Charge",
  "{1} detonates the gas cloud of {0}": "{1} จุดระเบิดกลุ่มแก๊สของ {0}",
  "{1} detonates the grenades of {0} at once": "{1} จุดระเบิดลูกระเบิดของ {0} พร้อมกันทันที",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1} ทำให้ติด {2} → การสังหารจะทริกเกอร์การระเบิดของ {0}",

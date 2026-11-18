@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}: поднято из трупов: {1}",
  "{1} absorbs the {2} left by {0} and gains its element": "{1} поглощает {2}, оставленное {0}, и получает его стихию",
  "{1} cast near a {0} erupts from the projectile": "{1}, применённое рядом с {0}, извергается из снаряда",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1} поглощает {0}: более тяжёлый удар и заряд ({2})",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "Критический удар {1} поглощает {0}: больше критического урона и заряд ({2})",
  "{1} detonates the gas cloud of {0}": "{1} взрывает газовое облако {0}",
  "{1} detonates the grenades of {0} at once": "{1} разом взрывает гранаты {0}",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1} накладывает {2} → убийства вызывают взрыв {0}",

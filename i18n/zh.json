@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}：從屍體召喚了 {1} 個召喚物",
  "{1} absorbs the {2} left by {0} and gains its element": "{1}吸收{0}留下的{2}並獲得其元素",
  "{1} cast near a {0} erupts from the projectile": "在{0}投射物附近施放的{1}會從投射物爆發",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1}消耗{0}：更重的一擊與一顆{2}球",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "{1}的暴擊消耗{0}：更多暴擊傷害與一顆{2}球",
  "{1} detonates the gas cloud of {0}": "{1}引爆{0}的毒氣雲霧",
  "{1} detonates the grenades of {0} at once": "{1}立即引爆{0}的擲彈",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1}施加{2} → 擊殺會觸發{0}的爆炸",

@@ -5,8 +5,9 @@
 // each mitigated with the game's own formulas.
 // Ailments follow the game's rules (GameConstants, each enemy's ailment threshold and poise, the skill's own modifiers: afflict()),
 // and each gem's own chains, projectiles and times (calc.js shape). Consumed states, more damage against a state, charges spent,
-// curses and exposure use the skill's own stats (calc.js ailments() and curseOf()). Not in the game data: what consuming a state
-// does when the skill gives no number for it, and how an enemy attack looks and reaches you. Those are the SIM defaults of
+// curses, marks and exposure use the skill's own stats (calc.js ailments(), curseOf(), markOf()), and totems the damage calc.js
+// gives their attack. Not in the game data: what consuming a state does when the skill gives no number for it, the damage of
+// minions, and how an enemy attack looks and reaches you. Those are the SIM defaults of
 // skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
 // WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset
 // (those five can be changed in Settings: settings.js).
@@ -51,7 +52,7 @@ const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'pois
 const CHC = { frenzy: 'poison', power: 'arcane', endurance: 'fire' };
 
 // api: { build(), geo(g), playerSpeed(), info(g) → { gem, data, label, icon }, onSelect(i), sheet() → calc.js character() + recovery(),
-//        damage(g) → calc.js skill(), onPlacing(on) }
+//        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i (calc.js), onPlacing(on) }
 export function initScene(el, api) {
   // ---------- renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -134,7 +135,8 @@ export function initScene(el, api) {
   }
 
   // ---------- enemies: monsters of the game placed with a click, with their stats at the chosen level (enemies.js)
-  const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);   // sources the damage of the build does not describe
+  // sources the damage of the build does not describe (a totem with its own damage hits as 'totemHit')
+  const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);
   const MAXE = 60;
   function arm(d, level, key) {
     const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== tpl.rarity;
@@ -240,19 +242,21 @@ export function initScene(el, api) {
       else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
     const M = d.mark;
-    if (M && M.gain && !S.src) {   // marks that grant charges are consumed by your next hit
-      d.mark = null; m += 1; fx.ring(d.pos, .3, 1.5, 'mark', .35);
-      say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
-    } else if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; later(.05, () => boom(d.pos, M.R, M.S)); }
+    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; later(.05, () => boom(d.pos, M.R, M.S)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
-      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + (D.critBonus || 0) / 100 : 1;
-      for (const el in D.hits) {
-        const [lo, hi] = D.hits[el], r = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm, got = takes(d, el, r);
-        raw[el] = r; total += got; if (got > best) { best = got; top = el; }
-      }
+      // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
+      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + ((D.critBonus || 0) + (M?.D?.crit || 0)) / 100 : 1, B = buffs.find(b => b.gain)?.gain;
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm; }
+      if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
+      for (const el in raw) { const got = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
+    // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
+    if (M?.gain && d.mark === M && crit && own) {
+      d.mark = null; fx.ring(d.pos, .3, 1.5, 'mark', .35);
+      say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
+    }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     d.by = S; damage(d, total, S);
     if (d.dead) return true;
@@ -291,6 +295,11 @@ export function initScene(el, api) {
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
     if (!fresh) return;
+    const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
+    if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
+      const M = d.mark; d.mark = null; buffs = buffs.filter(b => !b.gain);
+      buffs.push({ label: M.label, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
+    }
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }
@@ -339,10 +348,10 @@ export function initScene(el, api) {
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze, S, A);
+      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze * (1 + (d.mark?.D?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
-    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute, S, A);
+    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
     if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
@@ -410,7 +419,7 @@ export function initScene(el, api) {
       const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];
       if (a && st[a] > 0) later(.1, () => herald(T, p));
     }
-    if (M?.bomb || M?.els.length) later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.bomb ? M.R : SIM.heraldR, M.S); });
+    if (M?.bomb) later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.R, M.S); });
     const sp = d.dots.find(o => o.spread);
     if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it
       const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
@@ -710,7 +719,7 @@ export function initScene(el, api) {
     },
     grenade(S) {
       const P = S.P, c = S.at;
-      lob(fx.orb(S.el, .11), hand(), V(c.x, .15, c.z), .55, 2.6, () => {
+      lob(fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
         if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
           fx.explode(c, S.A, S.el, { soft: true });
           for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, ELEM, expoMag(S)); else inflict(d, 'poison', S); d.wob = .6; }
@@ -785,7 +794,7 @@ export function initScene(el, api) {
     mark(S) {
       const d = near(S.at, SIM.snap); if (!d) return toast(t('No enemy at the cursor'));
       for (const e of dummies) if (e.mark) e.mark = null;   // one mark at a time
-      d.mark = { s: S.P.dur || 8, els: S.P.els, label: S.label, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
+      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
       fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
       say(t('{0} marks the target', S.label), 'mark');
     },
@@ -814,9 +823,14 @@ export function initScene(el, api) {
       for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); minion(S, p, SIM.minionTime); }
       say(t('{0}: {1} raised from corpses', S.label, list.length), S.el);
     },
+    // A totem uses its gem's own attack or spell (Shockwave Totem, Artillery Ballista), or a meta totem the gem in it (Mortar
+    // Cannon's Cluster Grenade), with the damage and speed calc.js gives it as the totem's; up to the build's totem limit.
+    // Without that damage it hits for the scene's share, drawn "~".
     totem(S) {
-      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= 2) mine[0].dead = true;
-      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...S, src: 'totem' }, R = S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
+      const j = api.build().gems.findIndex((_, j) => api.usedBy?.(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
+      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].dead = true;
+      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem' }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
+      const every = real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
@@ -825,10 +839,11 @@ export function initScene(el, api) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime)) { e.dead = true; return; }
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
-          wait = far ? 1 : 1.3; f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z);
-          const k = dist(d.pos, e.pos) || 1;
-          if (far) shoot(TS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 22, range: 13 });
-          else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, { mult: .6 }); }
+          wait = every; f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z);
+          const k = dist(d.pos, e.pos) || 1, a0 = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
+          if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
+          else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
+          else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, real ? {} : { mult: .6 }); }
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       objs.push(e);

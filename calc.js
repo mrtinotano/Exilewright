@@ -478,7 +478,10 @@ export function skill(g, b, treeGear) {
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
   const { sum, fin, mods, finals } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
   const st = gemStats(g, sum);
-  const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
+  // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
+  // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
+  const ownTotem = !own.includes('meta') && d.totem || null, gt = G.types || [];
+  const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
@@ -492,16 +495,16 @@ export function skill(g, b, treeGear) {
   // Mortar Cannon placed, no Rage (16/11): 2.7% under this. note: Rage is not counted; the gem before it, a link of
   // its own if a build breaks it
   // g may be a copy with other supports (the Optimizer's): the build's gem of that name then
-  const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || null;
+  const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || ownTotem;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   // "per active Totem" counts each one: all the build may place (the game's windows, 16/11: one Mortar Cannon x1.0183
   // damage, two x1.0366)
-  const totems = out.totems = byTotem && attack ? (totem(meta, treeGear)?.limit || 1) : 0;
+  const totems = out.totems = byTotem && attack ? (totem(meta || g, treeGear)?.limit || 1) : 0;
   const perTotem = totems * v(sum, 'attack_damage_+%_per_active_totem_in_presence');
   const perTotemSpeed = totems * v(sum, 'totems_attack_speed_+%_per_active_totem');
   // and the meta gem's own support part slows it and lowers its damage (Mortar Cannon: -50% more attack speed and damage;
   // the game's window, 1.79 s, has them). Its +100% cooldown recovery is not in that window (10.99 s fits without)
-  const metaFinal = end => byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
+  const metaFinal = end => meta && byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
   const metaSpeed = metaFinal('attack_speed_+%_final'), metaDmg = metaFinal('ballista_damage_+%_final');
   // Rage: 1% more attack damage per point (measured in the game, 16/11: 44 Rage made every damage type of Cluster Grenade
   // x1.440; the value is in no table, only the stat attack_damage_final_permyriad_from_rage). note: full Rage (30 of
@@ -595,6 +598,7 @@ export function skill(g, b, treeGear) {
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
   out.curse = (G.types || []).includes('AppliesCurse') ? curseOf(st, sum) : null;
+  out.mark = (G.types || []).includes('Mark') ? markOf(st) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. note: no duration modifiers yet
   const sec = k => st[k] ? st[k] / 1000 : null;
@@ -673,6 +677,15 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
       onColdCrit: all('inflict_exposure_for_x_ms_on_cold_crit') || null, effect: 1 + all('exposure_effect_+%') / 100 },
   };
 }
+// A mark on an enemy: more critical damage it takes (Sniper's Mark), more freeze / electrocute buildup against it
+// (Freezing / Voltaic Mark), and the buff you gain when that state fills and consumes it: damage gained as extra
+// cold / lightning for its secondary duration
+function markOf(st) {
+  const k = re => Object.keys(st).find(x => re.test(x)), as = k(/_mark_damage_buff_damage_%_to_gain_as_\w+$/);
+  return { crit: st.enemy_additional_critical_strike_multiplier_against_self || 0,
+    freeze: st[k(/mark_hit_damage_freeze_multiplier_\+%/)] || 0, electrocute: st[k(/mark_hit_damage_electrocute_multiplier_\+%/)] || 0,
+    gain: as && st[as] ? { el: as.match(/_as_(\w+)$/)[1], pct: st[as], time: (st.base_secondary_skill_effect_duration || 0) / 1000 } : null };
+}
 // A curse on an enemy: what its gem's level gives (lower resistances and armour, less damage dealt, slower actions), times
 // "increased Curse effect" of the tree, gear and supports; the scene lowers it on rarer monsters (enemies.js curseEffect)
 function curseOf(st, sum) {
@@ -690,6 +703,9 @@ function curseOf(st, sum) {
 // ...and Elemental Weakness lowers every elemental resistance, not chaos
 { const c = skill({ name: 'Elemental Weakness', level: 10, supports: [] }, { gems: [], items: {} }, {}).curse;
   console.assert(c.res.fire < 0 && c.res.fire === c.res.cold && c.res.chaos === 0 && c.effect === 1, 'curse', c); }
+// ...a totem uses its gem's own spell (Dark Effigy) or attack (Shockwave Totem: an attack, so it needs a weapon)
+{ const e = skill({ name: 'Dark Effigy', level: 10, supports: [] }, { gems: [], items: {} }, {}), w = skill({ name: 'Shockwave Totem', level: 10, supports: [] }, { gems: [], items: {} }, {});
+  console.assert(e.hits.chaos?.[1] > 0 && e.totems === 0 && w.attack && w.reason === 'Equip a weapon to calculate the attack damage', 'totem skills', e, w); }
 
 // The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
 // self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)

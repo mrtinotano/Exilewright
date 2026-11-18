@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}: 死体から{1}体を蘇生",
  "{1} absorbs the {2} left by {0} and gains its element": "{1}が{0}の残した{2}を吸収し、その元素を得る",
  "{1} cast near a {0} erupts from the projectile": "{0}の投射物の近くで発動した{1}がそこから噴出する",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1}が{0}を消費: より重いヒットと{2}チャージ",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "{1}のクリティカルヒットが{0}を消費: クリティカルダメージ増加と{2}チャージ",
  "{1} detonates the gas cloud of {0}": "{1}が{0}のガス雲を起爆",
  "{1} detonates the grenades of {0} at once": "{1}が{0}のグレネードを一斉に起爆",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1}が{2}を付与 → キルで{0}の爆発がトリガーされる",

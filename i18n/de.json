@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}: {1} aus Leichen erweckt",
  "{1} absorbs the {2} left by {0} and gains its element": "{1} absorbiert die {2}, die {0} hinterlässt, und erhält ihr Element",
  "{1} cast near a {0} erupts from the projectile": "{1}, nahe einer {0} gewirkt, bricht aus dem Projektil hervor",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1} verbraucht {0}: ein härterer Treffer und eine Ladung ({2})",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "Ein kritischer Treffer von {1} verbraucht {0}: mehr kritischer Schaden und eine Ladung ({2})",
  "{1} detonates the gas cloud of {0}": "{1} detoniert die Gaswolke von {0}",
  "{1} detonates the grenades of {0} at once": "{1} detoniert die Granaten von {0} auf einmal",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1} verursacht {2} → Tötungen lösen die Explosion von {0} aus",

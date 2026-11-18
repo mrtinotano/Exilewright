@@ -50937,12 +50937,16 @@
     "base_number_of_totems_allowed": 1,
     "cascade_aftershock_angle_offset_override": 35,
     "cascade_aftershock_additional_offset_distance": -5,
-    "console_cast_on_self_custom_range": 15
+    "console_cast_on_self_custom_range": 15,
+    "active_skill_base_area_of_effect_radius": 30,
+    "skill_disabled_unless_cloned": 2,
+    "active_skill_attack_speed_+%_final": -50
    },
    "levels": {
     "1": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 2500,
      "_cost": {
       "Mana": 15
      }
@@ -50950,6 +50954,7 @@
     "2": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 2700,
      "_cost": {
       "Mana": 17
      }
@@ -50957,6 +50962,7 @@
     "3": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 3000,
      "_cost": {
       "Mana": 20
      }
@@ -50964,6 +50970,7 @@
     "4": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 3300,
      "_cost": {
       "Mana": 23
      }
@@ -50971,6 +50978,7 @@
     "5": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 3500,
      "_cost": {
       "Mana": 25
      }
@@ -50978,6 +50986,7 @@
     "6": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 3800,
      "_cost": {
       "Mana": 29
      }
@@ -50985,6 +50994,7 @@
     "7": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 4000,
      "_cost": {
       "Mana": 32
      }
@@ -50992,6 +51002,7 @@
     "8": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 4200,
      "_cost": {
       "Mana": 36
      }
@@ -50999,6 +51010,7 @@
     "9": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 4400,
      "_cost": {
       "Mana": 39
      }
@@ -51006,6 +51018,7 @@
     "10": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 4600,
      "_cost": {
       "Mana": 44
      }
@@ -51013,6 +51026,7 @@
     "11": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 4800,
      "_cost": {
       "Mana": 48
      }
@@ -51020,6 +51034,7 @@
     "12": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 5000,
      "_cost": {
       "Mana": 53
      }
@@ -51027,6 +51042,7 @@
     "13": {
      "totem_elemental_resistance_%": 5,
      "totem_chaos_resistance_%": 0,
+     "_base_multiplier": 5200,
      "_cost": {
       "Mana": 58
      }
@@ -51034,6 +51050,7 @@
     "14": {
      "totem_elemental_resistance_%": 15,
      "totem_chaos_resistance_%": 5,
+     "_base_multiplier": 5400,
      "_cost": {
       "Mana": 63
      }
@@ -51041,6 +51058,7 @@
     "15": {
      "totem_elemental_resistance_%": 25,
      "totem_chaos_resistance_%": 10,
+     "_base_multiplier": 5600,
      "_cost": {
       "Mana": 69
      }
@@ -51048,6 +51066,7 @@
     "16": {
      "totem_elemental_resistance_%": 35,
      "totem_chaos_resistance_%": 15,
+     "_base_multiplier": 5800,
      "_cost": {
       "Mana": 75
      }
@@ -51055,6 +51074,7 @@
     "17": {
      "totem_elemental_resistance_%": 45,
      "totem_chaos_resistance_%": 20,
+     "_base_multiplier": 6000,
      "_cost": {
       "Mana": 81
      }
@@ -51062,6 +51082,7 @@
     "18": {
      "totem_elemental_resistance_%": 55,
      "totem_chaos_resistance_%": 25,
+     "_base_multiplier": 6200,
      "_cost": {
       "Mana": 88
      }
@@ -51069,6 +51090,7 @@
     "19": {
      "totem_elemental_resistance_%": 65,
      "totem_chaos_resistance_%": 30,
+     "_base_multiplier": 6400,
      "_cost": {
       "Mana": 95
      }
@@ -51076,6 +51098,7 @@
     "20": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 6600,
      "_cost": {
       "Mana": 103
      }
@@ -51083,6 +51106,7 @@
     "21": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 6800,
      "_cost": {
       "Mana": 111
      }
@@ -51090,6 +51114,7 @@
     "22": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 7000,
      "_cost": {
       "Mana": 120
      }
@@ -51097,6 +51122,7 @@
     "23": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 7300,
      "_cost": {
       "Mana": 129
      }
@@ -51104,6 +51130,7 @@
     "24": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 7500,
      "_cost": {
       "Mana": 139
      }
@@ -51111,6 +51138,7 @@
     "25": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 7800,
      "_cost": {
       "Mana": 149
      }
@@ -51118,6 +51146,7 @@
     "26": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 8000,
      "_cost": {
       "Mana": 160
      }
@@ -51125,6 +51154,7 @@
     "27": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 8300,
      "_cost": {
       "Mana": 172
      }
@@ -51132,6 +51162,7 @@
     "28": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 8600,
      "_cost": {
       "Mana": 184
      }
@@ -51139,6 +51170,7 @@
     "29": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 8800,
      "_cost": {
       "Mana": 197
      }
@@ -51146,6 +51178,7 @@
     "30": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 9100,
      "_cost": {
       "Mana": 211
      }
@@ -51153,6 +51186,7 @@
     "31": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 9400,
      "_cost": {
       "Mana": 225
      }
@@ -51160,6 +51194,7 @@
     "32": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 9800,
      "_cost": {
       "Mana": 241
      }
@@ -51167,6 +51202,7 @@
     "33": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 10100,
      "_cost": {
       "Mana": 257
      }
@@ -51174,6 +51210,7 @@
     "34": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 10400,
      "_cost": {
       "Mana": 275
      }
@@ -51181,6 +51218,7 @@
     "35": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 10800,
      "_cost": {
       "Mana": 293
      }
@@ -51188,6 +51226,7 @@
     "36": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 11100,
      "_cost": {
       "Mana": 312
      }
@@ -51195,6 +51234,7 @@
     "37": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 11500,
      "_cost": {
       "Mana": 333
      }
@@ -51202,6 +51242,7 @@
     "38": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 11900,
      "_cost": {
       "Mana": 355
      }
@@ -51209,6 +51250,7 @@
     "39": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 12300,
      "_cost": {
       "Mana": 378
      }
@@ -51216,12 +51258,54 @@
     "40": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "_base_multiplier": 12700,
      "_cost": {
       "Mana": 402
      }
     }
    },
-   "radius": null,
+   "radius": {
+    "1": 30,
+    "2": 30,
+    "3": 30,
+    "4": 30,
+    "5": 30,
+    "6": 30,
+    "7": 30,
+    "8": 30,
+    "9": 30,
+    "10": 30,
+    "11": 30,
+    "12": 30,
+    "13": 30,
+    "14": 30,
+    "15": 30,
+    "16": 30,
+    "17": 30,
+    "18": 30,
+    "19": 30,
+    "20": 30,
+    "21": 30,
+    "22": 30,
+    "23": 30,
+    "24": 30,
+    "25": 30,
+    "26": 30,
+    "27": 30,
+    "28": 30,
+    "29": 30,
+    "30": 30,
+    "31": 30,
+    "32": 30,
+    "33": 30,
+    "34": 30,
+    "35": 30,
+    "36": 30,
+    "37": 30,
+    "38": 30,
+    "39": 30,
+    "40": 30
+   },
    "projectile": false,
    "projectile_speed": null,
    "projectile_range": null,
@@ -86749,12 +86833,19 @@
     "movement_speed_+%_final_while_performing_action": -70,
     "movement_speed_acceleration_+%_per_second_while_performing_action": 160,
     "movement_speed_while_performing_action_locked_duration_%": 50,
-    "base_number_of_totems_allowed": 1
+    "base_number_of_totems_allowed": 1,
+    "skill_disabled_unless_cloned": 2,
+    "active_skill_base_area_of_effect_radius": 120,
+    "active_skill_base_secondary_area_of_effect_radius": 12,
+    "number_of_additional_projectiles": 100,
+    "_spell_crit": 700
    },
    "levels": {
     "1": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 2,
+     "spell_maximum_base_chaos_damage": 4,
      "_cost": {
       "Mana": 13
      }
@@ -86762,6 +86853,8 @@
     "2": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 3,
+     "spell_maximum_base_chaos_damage": 6,
      "_cost": {
       "Mana": 15
      }
@@ -86769,6 +86862,8 @@
     "3": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 4,
+     "spell_maximum_base_chaos_damage": 8,
      "_cost": {
       "Mana": 18
      }
@@ -86776,6 +86871,8 @@
     "4": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 6,
+     "spell_maximum_base_chaos_damage": 10,
      "_cost": {
       "Mana": 20
      }
@@ -86783,6 +86880,8 @@
     "5": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 7,
+     "spell_maximum_base_chaos_damage": 13,
      "_cost": {
       "Mana": 24
      }
@@ -86790,6 +86889,8 @@
     "6": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 9,
+     "spell_maximum_base_chaos_damage": 16,
      "_cost": {
       "Mana": 27
      }
@@ -86797,6 +86898,8 @@
     "7": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 10,
+     "spell_maximum_base_chaos_damage": 19,
      "_cost": {
       "Mana": 31
      }
@@ -86804,6 +86907,8 @@
     "8": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 12,
+     "spell_maximum_base_chaos_damage": 23,
      "_cost": {
       "Mana": 35
      }
@@ -86811,6 +86916,8 @@
     "9": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 15,
+     "spell_maximum_base_chaos_damage": 27,
      "_cost": {
       "Mana": 40
      }
@@ -86818,6 +86925,8 @@
     "10": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 17,
+     "spell_maximum_base_chaos_damage": 32,
      "_cost": {
       "Mana": 45
      }
@@ -86825,6 +86934,8 @@
     "11": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 20,
+     "spell_maximum_base_chaos_damage": 37,
      "_cost": {
       "Mana": 51
      }
@@ -86832,6 +86943,8 @@
     "12": {
      "totem_elemental_resistance_%": 0,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 23,
+     "spell_maximum_base_chaos_damage": 43,
      "_cost": {
       "Mana": 57
      }
@@ -86839,6 +86952,8 @@
     "13": {
      "totem_elemental_resistance_%": 5,
      "totem_chaos_resistance_%": 0,
+     "spell_minimum_base_chaos_damage": 27,
+     "spell_maximum_base_chaos_damage": 50,
      "_cost": {
       "Mana": 64
      }
@@ -86846,6 +86961,8 @@
     "14": {
      "totem_elemental_resistance_%": 15,
      "totem_chaos_resistance_%": 5,
+     "spell_minimum_base_chaos_damage": 31,
+     "spell_maximum_base_chaos_damage": 58,
      "_cost": {
       "Mana": 71
      }
@@ -86853,6 +86970,8 @@
     "15": {
      "totem_elemental_resistance_%": 25,
      "totem_chaos_resistance_%": 10,
+     "spell_minimum_base_chaos_damage": 36,
+     "spell_maximum_base_chaos_damage": 66,
      "_cost": {
       "Mana": 80
      }
@@ -86860,6 +86979,8 @@
     "16": {
      "totem_elemental_resistance_%": 35,
      "totem_chaos_resistance_%": 15,
+     "spell_minimum_base_chaos_damage": 41,
+     "spell_maximum_base_chaos_damage": 76,
      "_cost": {
       "Mana": 89
      }
@@ -86867,6 +86988,8 @@
     "17": {
      "totem_elemental_resistance_%": 45,
      "totem_chaos_resistance_%": 20,
+     "spell_minimum_base_chaos_damage": 47,
+     "spell_maximum_base_chaos_damage": 87,
      "_cost": {
       "Mana": 98
      }
@@ -86874,6 +86997,8 @@
     "18": {
      "totem_elemental_resistance_%": 55,
      "totem_chaos_resistance_%": 25,
+     "spell_minimum_base_chaos_damage": 53,
+     "spell_maximum_base_chaos_damage": 99,
      "_cost": {
       "Mana": 109
      }
@@ -86881,6 +87006,8 @@
     "19": {
      "totem_elemental_resistance_%": 65,
      "totem_chaos_resistance_%": 30,
+     "spell_minimum_base_chaos_damage": 61,
+     "spell_maximum_base_chaos_damage": 113,
      "_cost": {
       "Mana": 120
      }
@@ -86888,6 +87015,8 @@
     "20": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 69,
+     "spell_maximum_base_chaos_damage": 128,
      "_cost": {
       "Mana": 133
      }
@@ -86895,6 +87024,8 @@
     "21": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 79,
+     "spell_maximum_base_chaos_damage": 146,
      "_cost": {
       "Mana": 147
      }
@@ -86902,6 +87033,8 @@
     "22": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 89,
+     "spell_maximum_base_chaos_damage": 166,
      "_cost": {
       "Mana": 162
      }
@@ -86909,6 +87042,8 @@
     "23": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 101,
+     "spell_maximum_base_chaos_damage": 188,
      "_cost": {
       "Mana": 178
      }
@@ -86916,6 +87051,8 @@
     "24": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 115,
+     "spell_maximum_base_chaos_damage": 214,
      "_cost": {
       "Mana": 196
      }
@@ -86923,6 +87060,8 @@
     "25": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 131,
+     "spell_maximum_base_chaos_damage": 243,
      "_cost": {
       "Mana": 215
      }
@@ -86930,6 +87069,8 @@
     "26": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 149,
+     "spell_maximum_base_chaos_damage": 276,
      "_cost": {
       "Mana": 236
      }
@@ -86937,6 +87078,8 @@
     "27": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 169,
+     "spell_maximum_base_chaos_damage": 313,
      "_cost": {
       "Mana": 259
      }
@@ -86944,6 +87087,8 @@
     "28": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 192,
+     "spell_maximum_base_chaos_damage": 356,
      "_cost": {
       "Mana": 283
      }
@@ -86951,6 +87096,8 @@
     "29": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 218,
+     "spell_maximum_base_chaos_damage": 405,
      "_cost": {
       "Mana": 310
      }
@@ -86958,6 +87105,8 @@
     "30": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 248,
+     "spell_maximum_base_chaos_damage": 460,
      "_cost": {
       "Mana": 339
      }
@@ -86965,6 +87114,8 @@
     "31": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 282,
+     "spell_maximum_base_chaos_damage": 523,
      "_cost": {
       "Mana": 371
      }
@@ -86972,6 +87123,8 @@
     "32": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 321,
+     "spell_maximum_base_chaos_damage": 595,
      "_cost": {
       "Mana": 405
      }
@@ -86979,6 +87132,8 @@
     "33": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 365,
+     "spell_maximum_base_chaos_damage": 678,
      "_cost": {
       "Mana": 442
      }
@@ -86986,6 +87141,8 @@
     "34": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 416,
+     "spell_maximum_base_chaos_damage": 772,
      "_cost": {
       "Mana": 483
      }
@@ -86993,6 +87150,8 @@
     "35": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 474,
+     "spell_maximum_base_chaos_damage": 881,
      "_cost": {
       "Mana": 526
      }
@@ -87000,6 +87159,8 @@
     "36": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 541,
+     "spell_maximum_base_chaos_damage": 1005,
      "_cost": {
       "Mana": 574
      }
@@ -87007,6 +87168,8 @@
     "37": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 618,
+     "spell_maximum_base_chaos_damage": 1148,
      "_cost": {
       "Mana": 625
      }
@@ -87014,6 +87177,8 @@
     "38": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 707,
+     "spell_maximum_base_chaos_damage": 1312,
      "_cost": {
       "Mana": 680
      }
@@ -87021,6 +87186,8 @@
     "39": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 809,
+     "spell_maximum_base_chaos_damage": 1502,
      "_cost": {
       "Mana": 740
      }
@@ -87028,17 +87195,60 @@
     "40": {
      "totem_elemental_resistance_%": 75,
      "totem_chaos_resistance_%": 35,
+     "spell_minimum_base_chaos_damage": 926,
+     "spell_maximum_base_chaos_damage": 1720,
      "_cost": {
       "Mana": 805
      }
     }
    },
-   "radius": null,
-   "projectile": false,
-   "projectile_speed": null,
+   "radius": {
+    "1": 120,
+    "2": 120,
+    "3": 120,
+    "4": 120,
+    "5": 120,
+    "6": 120,
+    "7": 120,
+    "8": 120,
+    "9": 120,
+    "10": 120,
+    "11": 120,
+    "12": 120,
+    "13": 120,
+    "14": 120,
+    "15": 120,
+    "16": 120,
+    "17": 120,
+    "18": 120,
+    "19": 120,
+    "20": 120,
+    "21": 120,
+    "22": 120,
+    "23": 120,
+    "24": 120,
+    "25": 120,
+    "26": 120,
+    "27": 120,
+    "28": 120,
+    "29": 120,
+    "30": 120,
+    "31": 120,
+    "32": 120,
+    "33": 120,
+    "34": 120,
+    "35": 120,
+    "36": 120,
+    "37": 120,
+    "38": 120,
+    "39": 120,
+    "40": 120
+   },
+   "projectile": true,
+   "projectile_speed": 120.0,
    "projectile_range": null,
    "duration_ms": null,
-   "projectile_collision": null,
+   "projectile_collision": 2,
    "weapons": null,
    "meta_support": null,
    "totem": {

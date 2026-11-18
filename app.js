@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf } from './items.js';
 import { initSkills } from './skills.js';
@@ -955,7 +955,7 @@ function renderEnemy() {
     <p class="note">${t('Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.')}</p>`;
 }
 
-scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg,
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j),
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum) }; } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),

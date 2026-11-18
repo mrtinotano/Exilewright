@@ -111,9 +111,12 @@ while after one), bleeding and poison need a chance from the skill or the build,
 is Fully Broken, Electrocute and Pin build up from the skills that can inflict them. Each skill keeps its own rules: what it
 never or always inflicts, the more damage it deals when it consumes a state or hits one (frozen, shocked, immobilised...),
 against unique enemies or per charge spent. Curses apply their gem's resistances, armour, damage and speed (less on rarer
-monsters, none above the gem's level limit), and Exposure lowers resistances by its source's magnitude. Chains,
-projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a value of the scene and
-not of the game (a consumed state the skill gives no number for, minions, totems) are drawn with "~".
+monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, and marks add their
+critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
+Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
+speed the planner calculates for a totem, up to the build's totem limit. Chains, projectiles, grenade fuses, curse delays
+and totem durations are each gem's own. Numbers that use a value of the scene and not of the game (a consumed state the
+skill gives no number for, minions) are drawn with "~".
 
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the

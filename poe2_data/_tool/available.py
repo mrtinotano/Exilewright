@@ -304,7 +304,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     # ammunition or reserves spirit (crossbow rounds, Black Powder Blitz) under the skill the gem then uses, and the
     # main stat set of a skill made of several parts (Rolling Slam) under its first part that deals damage
     idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
-    effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])]
+    # ...and a totem's own attack over the totem it raises (Shockwave Totem's quake: its damage, speed and area)
+    implicit_of = lambda x: {sid(a) for a in ss_tab[x['StatSet']]['ImplicitStats']}
+    effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])
+                     or 'is_totem' in implicit_of(e) and 'base_skill_is_totemified' in implicit_of(ge_tab[x]) and not ge_tab[x]['Id'].startswith('Support')]
     # ...unless the skill sets that part off by itself (Ancestral Cry's shockwave): then the cry's own cast time, cost and area stay on top
     if 'display_statset_hide_usage_stats' in {sid(a) for a in ss_tab[effects[-1]['StatSet']]['ImplicitStats']}:
         effects.reverse()
@@ -802,6 +805,7 @@ assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJe
 assert all(k in game for k in ('ShockChanceMultiplier', 'IgniteChanceMultiplier', 'BaseShockMagnitude', 'ChillEffectMultiplier', 'ChillMaxEffect', 'BaseChillDuration',
     'BaseShockDuration', 'FreezeDuration', 'FreezeDamageScale', 'FreezeThresholdModifier', 'FreezeModifierDuration', 'HeavyStunDamageScale',
     'HeavyStunThresholdModifier', 'HeavyStunModifierDuration', 'BaseFlammabilityDuration')) and all(mon_stats.get(k) for k in ('base_heavy_stun_duration_ms', 'poise_decay_delay_ms', 'poise_decay_%_per_second')), 'GameConstants / monster.ot: ailment rules'
+assert skills['Shockwave Totem']['levels'][20]['_base_multiplier'] == 6600 and skills['Artillery Ballista']['levels'][20]['_base_multiplier'] == 4000, "a totem's own attack"
 assert skills['Glacial Cascade']['part']['active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final'] > 0 and 'never_freeze' in skills['Glacial Cascade']['flags'], 'other stat sets of a skill'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)

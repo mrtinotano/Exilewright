@@ -437,7 +437,7 @@
  "{0}: {1} raised from corpses": "{0}: 시신에서 {1} 소환",
  "{1} absorbs the {2} left by {0} and gains its element": "{1}이(가) {0}이(가) 남긴 {2}을(를) 흡수해 그 원소를 얻음",
  "{1} cast near a {0} erupts from the projectile": "{0} 근처에서 시전한 {1}이(가) 투사체에서 분출",
- "{1} consumes {0}: a heavier hit and a {2} charge": "{1}이(가) {0}을(를) 소모: 더 강한 타격과 {2} 충전",
+ "A critical hit of {1} consumes {0}: more critical damage and a {2} charge": "{1}의 치명타가 {0}을(를) 소모: 치명타 피해 증가와 {2} 충전",
  "{1} detonates the gas cloud of {0}": "{1}이(가) {0}의 가스 구름을 기폭",
  "{1} detonates the grenades of {0} at once": "{1}이(가) {0}의 유탄을 한꺼번에 기폭",
  "{1} inflicts {2} → kills trigger the explosion of {0}": "{1}이(가) {2} 유발 → 처치 시 {0}의 폭발 발동",
