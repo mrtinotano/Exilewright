@@ -13,7 +13,7 @@ import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, 
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
 import { priceOf, leagues, siteLink, TradeError } from './trade.js';
-import { settings, padCap } from './settings.js';
+import { settings } from './settings.js';
 
 const KEY = 'poe2loot';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -205,7 +205,6 @@ export function initLoot(el, ctx) {
         <div class="optrow">
           <label>${t('Compare with')} <select data-s="vs">${opt('worn', t('What the character wears'), S.vs !== 'build')}${opt('build', t("The build's equipment"), S.vs === 'build')}</select></label>
           <label>${t('Judge by')} <select data-s="key">${opt('', t('Damage and defence, each on its own'), !S.key)}${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), S.key === k)).join('')}</select></label>
-          ${padCap('compare')}
           ${own.length > 1 ? `<label>${t('Skill')} <select data-gem>${own.map((x, i) => opt(i, tn(GEM[x.name]) || x.name, x === g)).join('')}</select></label>` : ''}
         </div>
         ${g ? '' : `<p class="note">${t("The build has no skill: damage cannot be judged, only the defences and the weapon's own damage.")}</p>`}

@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "{0}が{1}を付与しますが、ビルドに入っていません。",
  "Add": "追加",
  "Area level {0}": "エリアレベル {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "キャラクターがいるエリアのレベルです。耐性ペナルティが決まります。空欄ならキャラクターのレベルのエリアになります。",
- "Controller": "コントローラー",
- "Press the buttons on the controller…": "コントローラーのボタンを押してください…",
- "Two buttons or more: one alone is the game's.": "ボタン2つ以上: 1つだけではゲームの操作になります。",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "マウスポインターをアイテムのない場所に置いたまま、コントローラーでアイテムを選んで組み合わせを押すと、ゲームが選んだアイテムをコピーします。ウィンドウは画面上部に表示され、どのボタンでも閉じます。待機中にBackspace: なし。"
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "キャラクターがいるエリアのレベルです。耐性ペナルティが決まります。空欄ならキャラクターのレベルのエリアになります。"
 }

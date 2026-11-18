@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "{0}이(가) {1}을(를) 부여하지만 빌드에 없습니다.",
  "Add": "추가",
  "Area level {0}": "지역 레벨 {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "캐릭터가 있는 지역의 레벨입니다. 저항 페널티를 정합니다. 비워 두면 캐릭터 레벨의 지역이 됩니다.",
- "Controller": "컨트롤러",
- "Press the buttons on the controller…": "컨트롤러의 버튼을 누르세요…",
- "Two buttons or more: one alone is the game's.": "버튼 두 개 이상: 하나만으로는 게임 조작입니다.",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "마우스 포인터를 아이템이 없는 곳에 두고 컨트롤러로 아이템을 선택한 뒤 조합을 누르면 게임이 선택한 아이템을 복사합니다. 창은 화면 위쪽에 나타나며 아무 버튼이나 누르면 닫힙니다. 대기 중 Backspace: 없음."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "캐릭터가 있는 지역의 레벨입니다. 저항 페널티를 정합니다. 비워 두면 캐릭터 레벨의 지역이 됩니다."
 }

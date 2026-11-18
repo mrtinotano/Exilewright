@@ -582,7 +582,7 @@
  "Item level {0}": "เลเวลไอเทม {0}",
  "no price": "ไม่มีราคา",
  "Equipped": "สวมใส่อยู่",
- "Equip": "ติดตั้ง",
+ "Equip": "สวมใส่",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "ไอเทมที่ลงขาย {0} ชิ้นถูกตัดออก: ตัววางแผนไม่มีเบสของมันหรือมันใส่ในช่องอื่น",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "ไม่มีของที่ลงขายตรงกัน ลองลีกอื่น ราคาสูงขึ้น หรือผู้ขาย «ทั้งหมด»",
  "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "ประเมินโดยใส่แต่ละไอเทมในบิลด์ ไม่นับ: ค่าคุณภาพ อักขระ เอนแชนต์ และบรรทัดสีเทา ไม่ได้ตรวจสอบความต้องการ",
@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "{0} ของคุณให้ {1}: ยังไม่อยู่ในบิลด์",
  "Add": "เพิ่ม",
  "Area level {0}": "ด่านเลเวล {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "เลเวลของด่านที่ตัวละครอยู่: กำหนดบทลงโทษค่าต้านทาน เว้นว่างไว้เพื่อใช้ด่านเลเวลเดียวกับตัวละคร",
- "Controller": "คอนโทรลเลอร์",
- "Press the buttons on the controller…": "กดปุ่มบนคอนโทรลเลอร์…",
- "Two buttons or more: one alone is the game's.": "สองปุ่มขึ้นไป: ปุ่มเดียวเป็นของเกม",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "เลือกไอเทมด้วยคอนโทรลเลอร์ โดยให้ตัวชี้เมาส์ไม่อยู่บนไอเทมใด แล้วกดปุ่มผสม: เกมจะคัดลอกไอเทมที่เลือก หน้าต่างจะแสดงที่ด้านบนของจอและปิดได้ด้วยปุ่มใดก็ได้ กด Backspace ระหว่างรอ: ไม่มี"
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "เลเวลของด่านที่ตัวละครอยู่: กำหนดบทลงโทษค่าต้านทาน เว้นว่างไว้เพื่อใช้ด่านเลเวลเดียวกับตัวละคร"
 }

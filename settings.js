@@ -12,21 +12,13 @@ const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fi
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
 const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
-// the controller's combinations ('LB+RB+Y', '' for none): the buttons by the Gamepad API's standard order, named as
-// serve.py PAD_BUTTON takes them
-const PAD_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Menu', 'LS', 'RS', 'Up', 'Down', 'Left', 'Right'];
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
-  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys }, pads: { price: '', compare: '', worn: '', ...s.pads } };
+  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
 })();
 export const settings = () => S;
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-let wait = null;   // the shortcut being set ('price', 'worn', a scene key, or 'pad:' and the controller's one)
-const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t(k.startsWith('pad:') ? 'Press the buttons on the controller…' : 'Press a key…') : esc(shown)}</button>`;
-// a controller's combination, next to the keyboard's shortcut of the same (the comparison's is in loot.js's section)
-export const padCap = k => `<label>${t('Controller')} ${cap('pad:' + k, S.pads[k] || t('None'))}</label>`;
-const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey, ...Object.fromEntries(Object.entries(S.pads).map(([k, v]) => [k + '_pad', v])) }) }).catch(() => {});
+const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey }) }).catch(() => {});
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} tell(); };
 tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
@@ -55,43 +47,29 @@ export async function update(ask, quiet) {
 }
 
 export function initSettings(el, ask, loot) {
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let msg = '', list = null, upd = '', win = {};   // the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
+  let wait = null, msg = '', list = null, upd = '', win = {};   // the shortcut being set ('price', 'worn' or a scene key); the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
   const check = (k, text) => `<label><input type="checkbox" data-w="${k}"${win[k] ? ' checked' : ''}> ${t(text)}</label>`;
-  // a combination of the controller: every button pressed together, taken when they are all let go
-  let pressed = new Set();
-  function padWait() {
-    if (!wait?.startsWith('pad:')) return;
-    const now = [...navigator.getGamepads()].filter(Boolean).flatMap(g => g.buttons.slice(0, 16).flatMap((b, i) => b.pressed ? [PAD_NAMES[i]] : []));
-    now.forEach(n => pressed.add(n));
-    if (pressed.size && !now.length) {
-      const k = wait.slice(4), c = PAD_NAMES.filter(n => pressed.has(n)).join('+');
-      pressed = new Set();
-      if (c.includes('+')) { const other = Object.keys(S.pads).find(o => o !== k && S.pads[o] === c); if (other) S.pads[other] = S.pads[k]; S.pads[k] = c; msg = ''; save(); }
-      else msg = t("Two buttons or more: one alone is the game's.");
-      wait = null; return render();
-    }
-    requestAnimationFrame(padWait);
-  }
+  const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
   function render() {
     const leagueList = list?.length ? list : [S.league || 'Standard'];
     el.innerHTML = `<div class="opt settings">
       <section><h3>${t('Price check over the game')}</h3>
         <p class="note">${t('Hold the pointer over an item in the game and press the shortcut: the planner copies the item (one Ctrl+C, as if you pressed it) and shows next to the pointer what the same item costs on the official trade site.')}</p>
-        <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label> ${padCap('price')}
+        <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label>
           <label>${t('Numbers within (±%)')} <input type="number" data-s="near" min="0" max="100" step="1" value="${+S.near}"></label>
           <label><input type="checkbox" data-s="deep"${S.deep ? ' checked' : ''}> ${t('Thorough search')}</label></div>
         <p class="note">${t('When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).')}</p>
         <p class="note">${t(NEEDS)}</p>
-        <p class="note">${t('Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.')}</p>
       </section>
       <section><p class="note">${t('Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.')}</p>
-        <div class="optrow"><label>${t('Shortcut')} ${cap('worn', S.wornKey)}</label> ${padCap('worn')}</div>
+        <div class="optrow"><label>${t('Shortcut')} ${cap('worn', S.wornKey)}</label></div>
       </section>
       <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
@@ -109,17 +87,10 @@ export function initSettings(el, ask, loot) {
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
     el.querySelector('section').after(loot);
-    const c = loot.querySelector('[data-cap="pad:compare"]');
-    if (c) c.closest('label').outerHTML = padCap('compare');
   }
   addEventListener('keydown', e => {
     if (!wait || el.hidden) return;
     e.preventDefault(); e.stopPropagation();
-    if (wait.startsWith('pad:')) {   // the keyboard only cancels it (Esc) or leaves it with none (Backspace)
-      if (e.code === 'Backspace' || e.code === 'Delete') { S.pads[wait.slice(4)] = ''; save(); }
-      if (/^(Escape|Backspace|Delete)$/.test(e.code)) { wait = null; pressed = new Set(); render(); }
-      return;
-    }
     if (/^(Control|Shift|Alt|Meta)/.test(e.code)) return;   // a modifier alone: wait for the key that comes with it
     msg = '';
     if (e.code !== 'Escape') {
@@ -135,7 +106,7 @@ export function initSettings(el, ask, loot) {
   el.onclick = e => {
     const d = e.target.closest('[data-cap],[data-do]');
     if (!d) return;
-    if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; pressed = new Set(); render(); return padWait(); }
+    if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
     else if (d.dataset.do === 'update') { upd = t('Checking…'); update(ask).then(m => { upd = m; render(); }); }
     render();

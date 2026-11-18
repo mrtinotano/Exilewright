@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "Seu {0} concede {1}: não está na build.",
  "Add": "Adicionar",
  "Area level {0}": "Nível da Área {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "O nível da área onde o personagem está: define a penalidade de resistências. Deixe vazio para uma área do nível do personagem.",
- "Controller": "Controle",
- "Press the buttons on the controller…": "Pressione os botões no controle…",
- "Two buttons or more: one alone is the game's.": "Dois botões ou mais: um só é do jogo.",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "Escolha um item com o controle, com o ponteiro do mouse fora de qualquer item, e pressione a combinação: o jogo copia o item escolhido. A janela aparece no alto da tela e qualquer botão a fecha. Backspace enquanto espera: nenhuma."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "O nível da área onde o personagem está: define a penalidade de resistências. Deixe vazio para uma área do nível do personagem."
 }

@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "{0} даёт {1}: этого нет в билде.",
  "Add": "Добавить",
  "Area level {0}": "Уровень области {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Уровень области, где находится персонаж: от него зависит штраф к сопротивлениям. Оставьте пустым для области уровня персонажа.",
- "Controller": "Контроллер",
- "Press the buttons on the controller…": "Нажмите кнопки на контроллере…",
- "Two buttons or more: one alone is the game's.": "Две кнопки или больше: одна кнопка занята игрой.",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "Выберите предмет контроллером так, чтобы под указателем мыши не было предметов, и нажмите сочетание: игра скопирует выбранный предмет. Окно появится вверху экрана, любая кнопка его закроет. Backspace во время ожидания: без сочетания."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Уровень области, где находится персонаж: от него зависит штраф к сопротивлениям. Оставьте пустым для области уровня персонажа."
 }

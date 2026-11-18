@@ -833,9 +833,5 @@
  "Your {0} grants {1}: it is not in the build.": "你的{0}賦予{1}：它不在配置中。",
  "Add": "新增",
  "Area level {0}": "區域等級 {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "角色所在區域的等級：決定抗性懲罰。留空則為與角色等級相同的區域。",
- "Controller": "控制器",
- "Press the buttons on the controller…": "按下控制器上的按鈕…",
- "Two buttons or more: one alone is the game's.": "兩個以上的按鈕：單一按鈕屬於遊戲。",
- "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "在滑鼠指標下方沒有物品時，用控制器選取物品並按下組合：遊戲會複製選取的物品。視窗顯示在畫面上方，按任何按鈕即可關閉。等待時按 Backspace：無。"
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "角色所在區域的等級：決定抗性懲罰。留空則為與角色等級相同的區域。"
 }

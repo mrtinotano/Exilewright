@@ -91,18 +91,12 @@ that is listed, it goes line by line raising that one's % alone (5 by 5, up to 3
 that found something, else with any one line left out. Still nothing: there is none. Next to the pointer it shows what yours may be worth (as the site ranks the listings whatever
 the currency) and a button that opens the same search on the trade site. Again one key press, one item.
 
-**With a controller** (Settings, Controller): pick a combination of two buttons or more for the price check, the equipment
-comparison and Equip, pressed on the controller. Pick the item with the controller, with the mouse pointer over no item: the
-game copies the item picked. Asked that way, the window shows at the top middle of the screen (the pointer is not by the
-item) and any button of the controller closes it. Controllers are read through XInput (Xbox ones, and the others Steam
-Input passes on as one).
-
 **Loot filter** (its own tab): build a filter rule by rule (item classes and bases from the game's data, rarity,
 item/area level, quality, stack size, waystone tier; text, border and background colours, text size, drop sound,
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
-**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the controller, the keys of the Simulator, and General
+**Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the
 language; the updates).
 
