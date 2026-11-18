@@ -37,8 +37,8 @@ const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fu
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
-const DUR = { ignite: GAME.ignite_duration || SIM.ignite, chill: GC.BaseChillDuration || SIM.chill, shock: GC.BaseShockDuration || SIM.shock, freeze: GC.FreezeDuration || SIM.freeze,
-  poison: GAME.poison_duration || SIM.poison, bleed: GAME.bleed_duration || SIM.bleed, armour: BROKEN.time, stun: (GAME.heavy_stun_ms || 2000) / 1000, expo: EXPO.time };
+const DUR = { ignite: GAME.ignite_duration || SIM.ignite, chill: GC.BaseChillDuration, shock: GC.BaseShockDuration, freeze: GC.FreezeDuration,
+  poison: GAME.poison_duration || SIM.poison, bleed: GAME.bleed_duration || SIM.bleed, armour: BROKEN.time, stun: GAME.heavy_stun_ms / 1000, expo: EXPO.time };
 const GFX = { burning: ['fire', 'patch'], chilled: ['cold', 'patch'], shocked: ['lightning', 'patch'], oil: [0x050403, 'patch', true], gas: ['gas', 'patch'],
   jagged: [0x070605, 'cracks', true], caustic: ['poison', 'patch'], consecrated: ['holy', 'rune'] };
 const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'poison', caustic: 'poison' };
@@ -282,7 +282,7 @@ export function initScene(el, api) {
   }
   const expo = (d, e) => { d.st.expo = DUR.expo; d.expoEl = e; };
   // shocked enemies take more damage from everything (BaseShockMagnitude, or the shock's own)
-  const shocked = d => d.st.shock > 0 ? 1 + (d.mag.shock ?? GC.BaseShockMagnitude ?? 20) / 100 : 1;
+  const shocked = d => d.st.shock > 0 ? 1 + (d.mag.shock ?? GC.BaseShockMagnitude) / 100 : 1;
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
   // physical damage taken), resistance lowered by exposure (less on rarer monsters), and shock
   function takes(d, el, r, isHit = true) { return defence(d, el, r, isHit) * shocked(d); }
@@ -298,36 +298,36 @@ export function initScene(el, api) {
   // poison need a chance of their own; Armour Break, an amount the skill or the build gives.
   // note: freeze buildup is measured against poise, as Path of Building 2 does (the glossary says Ailment Threshold)
   function afflict(d, S, raw) {
-    const A = S.dmg?.ail || {}, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
+    const A = S.dmg.ail, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (x('fire') && S.els.includes('fire')) {   // flammability: each hit adds some for a while, the total is the chance to ignite
-      d.flam.push({ v: x('fire') / thr * (GC.IgniteChanceMultiplier ?? 20) * (A.igniteChance ?? 1), s: GC.BaseFlammabilityDuration ?? 8 });
-      if (roll(d.flam.reduce((t, f) => t + f.v, 0))) inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * (A.igniteTime ?? 1), eff: A.igniteEffect });
+      d.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
+      if (roll(d.flam.reduce((t, f) => t + f.v, 0))) inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect });
     }
-    if (x('lightning') && roll(x('lightning') / thr * (GC.ShockChanceMultiplier ?? 25) * (A.shockChance ?? 1)))
-      inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * (A.shockTime ?? 1), mag: (GC.BaseShockMagnitude ?? 20) * (A.shockEffect ?? 1) });
+    if (x('lightning') && roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance))
+      inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect });
     if (x('cold')) {
-      const mag = Math.min(GC.ChillMaxEffect ?? 50, (GC.ChillEffectMultiplier ?? 100) * x('cold') / thr * (A.chillEffect ?? 1));
-      if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * (A.chillTime ?? 1), mag });
-      build(d, 'freeze', x('cold') * (GC.FreezeDamageScale ?? 2.1) * (A.freeze ?? 1), S, A);
+      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') / thr * A.chillEffect);
+      if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
+      build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze, S, A);
     }
-    const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys ?? 1 : 1), 0);
-    build(d, 'stun', all * (A.stunMelee ?? 1) * (GC.HeavyStunDamageScale ?? .58) * (A.stun ?? 1), S, A);
-    if (x('physical') && roll(A.bleed || 0)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * (A.bleedTime ?? 1), eff: A.bleedEffect });
-    if ((x('physical') || x('chaos')) && roll(A.poison || 0)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * (A.poisonTime ?? 1), eff: A.poisonEffect });
-    const brk = ((A.breakFlat || 0) + x('physical') * (A.breakPct || 0) / 100) * (A.breakMore ?? 1);
+    const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
+    build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun, S, A);
+    if (x('physical') && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
+    if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
+    const brk = (A.breakFlat + x('physical') * A.breakPct / 100) * A.breakMore;
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
-      d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal ?? 1 : d.stat.rarity === 'magic' ? A.breakMagic ?? 1 : 1);
+      d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
       if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); }
     }
   }
   // freeze and heavy stun bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill again for a while
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0) return;
-    const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', hard = d.lock[a] > 0 ? 1 + (GC[G + 'ThresholdModifier'] ?? 500) / 100 : 1;
+    const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', hard = d.lock[a] > 0 ? 1 + (GC[G + 'ThresholdModifier']) / 100 : 1;
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, d.stat.poise) * hard) * 100; d.calm = 0;
     if (d.bar[a] < 100) return;
-    d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'] ?? 14;
-    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * (A.freezeTime ?? 1) : DUR.stun });
+    d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
+    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR.stun });
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
@@ -1179,7 +1179,7 @@ export function initScene(el, api) {
     for (const k in d.lock) d.lock[k] -= dt;
     for (let i = d.flam.length - 1; i >= 0; i--) if ((d.flam[i].s -= dt) <= 0) d.flam.splice(i, 1);
     // the bars empty after a while without buildup (monster.ot poise decay)
-    if ((d.calm += dt) * 1000 > (GAME.poise_decay_delay_ms ?? 8000)) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - (GAME.poise_decay_per_second ?? 5) * dt);
+    if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
     if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) boom(d.pos, M.R, M.S); }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);

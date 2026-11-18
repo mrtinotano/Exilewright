@@ -776,6 +776,9 @@ assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and re
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
 assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJewelType'] == 1, 'Mods.RadiusJewelType: 1 = small passives'
+assert all(k in game for k in ('ShockChanceMultiplier', 'IgniteChanceMultiplier', 'BaseShockMagnitude', 'ChillEffectMultiplier', 'ChillMaxEffect', 'BaseChillDuration',
+    'BaseShockDuration', 'FreezeDuration', 'FreezeDamageScale', 'FreezeThresholdModifier', 'FreezeModifierDuration', 'HeavyStunDamageScale',
+    'HeavyStunThresholdModifier', 'HeavyStunModifierDuration', 'BaseFlammabilityDuration')) and all(mon_stats.get(k) for k in ('base_heavy_stun_duration_ms', 'poise_decay_delay_ms', 'poise_decay_%_per_second')), 'GameConstants / monster.ot: ailment rules'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
