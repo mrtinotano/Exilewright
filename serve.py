@@ -205,6 +205,25 @@ assert spot(400, 300, 500, 900, 1920, 1080) == (300, 572), 'spot: over'
 assert spot(460, 700, 1500, 500, 1920, 1080) == (1000, 150), 'spot: beside, to the left near the right edge'
 
 
+class PadState(ctypes.Structure):   # XInputGetState's
+    _fields_ = [('packet', ctypes.c_uint32), ('buttons', ctypes.c_uint16), ('triggers', ctypes.c_uint8 * 2), ('sticks', ctypes.c_int16 * 4)]
+
+
+def pad_state():
+    """-> what is being done on the controllers plugged in (XInput: Xbox ones, and the others Steam Input passes on as
+    one): buttons held, triggers pulled, sticks pushed well past the middle (a worn stick drifts a little); () off Windows"""
+    if not hasattr(pad_state, 'get'):
+        try:
+            pad_state.get = ctypes.windll.xinput1_4.XInputGetState
+        except (AttributeError, OSError):
+            pad_state.get = None
+    st, out = PadState(), []
+    for i in range(4) if pad_state.get else ():
+        if pad_state.get(i, ctypes.byref(st)) == 0:
+            out.append((st.buttons, *(t > 30 for t in st.triggers), *(int(v / 12000) for v in st.sticks)))
+    return tuple(out)
+
+
 def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
     show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
@@ -313,6 +332,8 @@ def overlay():
         root.update_idletasks()
         w, h, (px, py) = root.winfo_reqwidth(), root.winfo_reqheight(), root.winfo_pointerxy()
         sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
+        if used[1] > used[0]:   # playing with the controller: the game copied the item it picked, the pointer is not by
+            px, py = sw // 2, sh // 4   # it; the window goes to the middle at the top, clear of the game's description
         x, y = spot(w, h, px, py, sw, sh)
         root.geometry(f'+{x}+{y}')
         root.update_idletasks()                      # now: on Windows the first move is lost if it waits for the calls below
@@ -328,6 +349,9 @@ def overlay():
         if timer:
             root.after_cancel(timer)
         timer = None if v['kind'] in COMPARED else root.after(NOTED * 1000, hide)
+
+    # when the mouse and the controller were last used: the window goes by the pointer only when the mouse was the last
+    used, last = [0.0, 0.0], [None, None]
 
     def poll():
         nonlocal held
@@ -352,6 +376,10 @@ def overlay():
                 draw(q.get_nowait())
         except queue.Empty:
             pass
+        now = root.winfo_pointerxy(), pad_state()
+        for i in (0, 1):
+            if now[i] != last[i]:
+                used[i], last[i] = time.monotonic(), now[i]
         root.after(50, poll)
     root.after(50, poll)
     return q.put, root.mainloop

@@ -91,6 +91,10 @@ that is listed, it goes line by line raising that one's % alone (5 by 5, up to 3
 that found something, else with any one line left out. Still nothing: there is none. Next to the pointer it shows what yours may be worth (as the site ranks the listings whatever
 the currency) and a button that opens the same search on the trade site. Again one key press, one item.
 
+**Playing with a controller**: pick the item with the controller, keep the mouse pointer over no item and press Ctrl+C or
+the price check shortcut on the keyboard: the game copies the item picked. When the controller was used after the mouse, the
+window shows at the top middle of the screen, as the pointer is not by the item.
+
 **Loot filter** (its own tab): build a filter rule by rule (item classes and bases from the game's data, rarity,
 item/area level, quality, stack size, waystone tier; text, border and background colours, text size, drop sound,
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
