@@ -6731,7 +6731,7 @@
   "605": "Recovery",
   "606": "MinionOffence",
   "611": "Block",
-  "613": "Caster",
+  "613": "Duration",
   "615": "Accuracy",
   "617": "Life",
   "618": "Accuracy",
@@ -6768,7 +6768,7 @@
   "698": "MinionOffence",
   "704": "Mana",
   "705": "EnergyShield",
-  "707": "ArmourEvasion",
+  "707": "Armour",
   "708": "Attributes",
   "712": "MinionOffence",
   "713": "Attack",
@@ -6890,7 +6890,7 @@
   "1037": "ChargeFrenzy",
   "1038": "Companion",
   "1039": "EnergyShield",
-  "1040": "Mana",
+  "1040": "Attributes",
   "1041": "EvasionEnergyShield",
   "1043": "Fire",
   "1045": "Block",
@@ -9820,7 +9820,8 @@
    "x": -12136,
    "y": -1230,
    "group": 85,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21218": {
    "name": "Bow Damage",
@@ -10374,7 +10375,8 @@
    "x": -11843,
    "y": 817,
    "group": 87,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36025": {
    "name": "Minion Damage",
@@ -10697,7 +10699,8 @@
    "x": -11515,
    "y": -5423,
    "group": 88,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "38320": {
    "name": "Fire Mastery",
@@ -10725,7 +10728,8 @@
    "x": -11505,
    "y": -1807,
    "group": 89,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "28201": {
    "name": "Armour and Block Chance",
@@ -11017,7 +11021,8 @@
    "x": -11381,
    "y": -3346,
    "group": 90,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32845": {
    "name": "Fire Damage",
@@ -11435,7 +11440,8 @@
    "x": -11288,
    "y": -462,
    "group": 92,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "28589": {
    "name": "Armour if Hit",
@@ -11699,7 +11705,8 @@
    "x": -11072,
    "y": 1431,
    "group": 93,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55190": {
    "name": "[Jewel] Socket",
@@ -11845,7 +11852,8 @@
    "x": -10695,
    "y": 165,
    "group": 98,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "47387": {
    "name": "Stormkeeper",
@@ -11902,7 +11910,8 @@
    "x": -10692,
    "y": -176,
    "group": 100,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1200": {
    "name": "Attribute",
@@ -12144,7 +12153,8 @@
    "x": -10735,
    "y": 1907,
    "group": 105,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "3348": {
    "name": "Spirit of the Wolf",
@@ -12469,7 +12479,8 @@
    "x": -10615,
    "y": 3052,
    "group": 109,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "440": {
    "name": "Shield Block",
@@ -12700,7 +12711,8 @@
    "x": -10593,
    "y": -2770,
    "group": 111,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18593": {
    "name": "Lightning Damage",
@@ -13027,7 +13039,8 @@
    "x": -10576,
    "y": -6386,
    "group": 113,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "37113": {
    "name": "Lightning Damage",
@@ -13232,7 +13245,8 @@
    "x": -10440,
    "y": -3663,
    "group": 120,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "20289": {
    "name": "Frozen Claw",
@@ -13565,7 +13579,8 @@
    "x": -10375,
    "y": -5223,
    "group": 124,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "46384": {
    "name": "Wide Barrier",
@@ -14043,7 +14058,8 @@
    "x": -10375,
    "y": -717,
    "group": 130,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "14511": {
    "name": "Melee and Stun",
@@ -14700,7 +14716,8 @@
    "x": -10240,
    "y": 4634,
    "group": 135,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18684": {
    "name": "Avatar of Fire",
@@ -14845,7 +14862,8 @@
    "x": -10129,
    "y": 5640,
    "group": 140,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21291": {
    "name": "Armour and Slow Effect on You",
@@ -14992,7 +15010,8 @@
    "x": -10101,
    "y": 1718,
    "group": 141,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "11656": {
    "name": "Rage when Hit",
@@ -15108,7 +15127,8 @@
    "x": -10171,
    "y": 1201,
    "group": 142,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "37484": {
    "name": "Primal Hunger",
@@ -15252,7 +15272,8 @@
    "x": -10026,
    "y": -1117,
    "group": 144,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39190": {
    "name": "Melee Damage",
@@ -15487,7 +15508,8 @@
    "x": -9335,
    "y": -7894,
    "group": 146,
-   "orbit": 6
+   "orbit": 6,
+   "mastery": true
   },
   "51535": {
    "name": "Life Leech and Slower Leech",
@@ -15633,7 +15655,8 @@
    "x": -9928,
    "y": 2362,
    "group": 147,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9328": {
    "name": "Spirit of the Bear",
@@ -16109,7 +16132,8 @@
    "x": -9765,
    "y": 711,
    "group": 153,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55931": {
    "name": "Armour Applies to Fire Damage Hits",
@@ -16516,7 +16540,8 @@
    "x": -9629,
    "y": 6161,
    "group": 157,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "42710": {
    "name": "Totem Placement Speed",
@@ -16811,7 +16836,8 @@
    "x": -9700,
    "y": -2799,
    "group": 159,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41497": {
    "name": "Minion Life and Chaos Resistance",
@@ -17052,7 +17078,8 @@
    "x": -9313,
    "y": 3421,
    "group": 160,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "21670": {
    "name": "Stun Buildup",
@@ -17138,7 +17165,8 @@
    "x": -9621,
    "y": 3036,
    "group": 161,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "30457": {
    "name": "Armour",
@@ -17255,7 +17283,8 @@
    "x": -9598,
    "y": -543,
    "group": 162,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60274": {
    "name": "Armour",
@@ -17376,7 +17405,8 @@
    "x": -9524,
    "y": -6352,
    "group": 164,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "34490": {
    "name": "Shapeshifted Aftershock Chance",
@@ -17686,7 +17716,8 @@
    "x": -9354,
    "y": -3744,
    "group": 168,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "61942": {
    "name": "Lord of the Wilds",
@@ -17865,7 +17896,8 @@
    "x": -9450,
    "y": 4077,
    "group": 171,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "44952": {
    "name": "Made to Last",
@@ -17895,7 +17927,8 @@
    "x": -9277,
    "y": 4724,
    "group": 171,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "6153": {
    "name": "Life Regeneration",
@@ -18068,7 +18101,8 @@
    "x": -9329,
    "y": -876,
    "group": 175,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "59039": {
    "name": "Critical Damage",
@@ -18394,7 +18428,8 @@
    "x": -9224,
    "y": -4865,
    "group": 176,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41935": {
    "name": "Hide of the Bear",
@@ -18601,7 +18636,8 @@
    "x": -8991,
    "y": -1318,
    "group": 179,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "37846": {
    "name": "Bastion of Light",
@@ -18654,7 +18690,8 @@
    "x": -9065,
    "y": 362,
    "group": 181,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2575": {
    "name": "Ancestral Alacrity",
@@ -18885,7 +18922,8 @@
    "x": -9056,
    "y": -2716,
    "group": 183,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41747": {
    "name": "Flail Critical Chance",
@@ -19203,7 +19241,8 @@
    "x": -9040,
    "y": 6723,
    "group": 185,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33452": {
    "name": "Block",
@@ -19263,7 +19302,8 @@
    "x": -8655,
    "y": 2122,
    "group": 186,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "53823": {
    "name": "Towering Shield",
@@ -19293,7 +19333,8 @@
    "x": -9280,
    "y": 1954,
    "group": 186,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "23192": {
    "name": "Block",
@@ -19527,7 +19568,8 @@
    "x": -8655,
    "y": 1787,
    "group": 186,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "11525": {
    "name": "Flammability and Ignite Magnitude",
@@ -19790,7 +19832,8 @@
    "x": -8860,
    "y": -5419,
    "group": 187,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "10824": {
    "name": "Armour and Energy Shield",
@@ -20035,7 +20078,8 @@
    "x": -8850,
    "y": -2069,
    "group": 188,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "65042": {
    "name": "Rage Mastery",
@@ -20062,7 +20106,8 @@
    "x": -8776,
    "y": -464,
    "group": 189,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "60068": {
    "name": "Rage on Hit",
@@ -20710,7 +20755,8 @@
    "x": -8665,
    "y": -6794,
    "group": 195,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "28981": {
    "name": "Rage when Hit",
@@ -20946,7 +20992,8 @@
    "x": -8647,
    "y": 4651,
    "group": 197,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51832": {
    "name": "Warcry Damage",
@@ -21426,7 +21473,8 @@
    "x": -8763,
    "y": -3461,
    "group": 201,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "8460": {
    "name": "Warcry Mastery",
@@ -21455,7 +21503,8 @@
    "x": -8509,
    "y": -1418,
    "group": 202,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "40328": {
    "name": "Warcry Speed",
@@ -21696,7 +21745,8 @@
    "x": -8483,
    "y": -2228,
    "group": 204,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61404": {
    "name": "Equilibrium",
@@ -22022,7 +22072,8 @@
    "x": -8534,
    "y": 5408,
    "group": 208,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "25300": {
    "name": "Armour Break",
@@ -22201,7 +22252,8 @@
    "x": -8340,
    "y": 2531,
    "group": 211,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "55635": {
    "name": "Damage and Companion Damage",
@@ -22469,7 +22521,8 @@
    "x": -8254,
    "y": -5967,
    "group": 212,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "59945": {
    "name": "Attribute",
@@ -22530,7 +22583,8 @@
    "x": -8263,
    "y": -7987,
    "group": 214,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "28489": {
    "name": "Shapeshifted Skill Effect Duration",
@@ -23004,7 +23058,8 @@
    "x": -8218,
    "y": 6324,
    "group": 215,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38365": {
    "name": "Recover Life on consuming Endurance Charge",
@@ -23122,7 +23177,8 @@
    "x": -8211,
    "y": 2826,
    "group": 216,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32349": {
    "name": "Giant's Blood",
@@ -23294,7 +23350,8 @@
    "x": -8167,
    "y": -4544,
    "group": 219,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20791": {
    "name": "Power Charge Duration and Energy Shield",
@@ -23444,7 +23501,8 @@
    "x": -8622,
    "y": 3279,
    "group": 221,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "17138": {
    "name": "Melee Damage",
@@ -23710,7 +23768,8 @@
    "x": -8141,
    "y": 7642,
    "group": 223,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24801": {
    "name": "Attack Damage and Presence Area",
@@ -23975,7 +24034,8 @@
    "x": -8115,
    "y": -155,
    "group": 225,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60064": {
    "name": "Physical Damage",
@@ -24353,7 +24413,8 @@
    "x": -8102,
    "y": -5349,
    "group": 227,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8272": {
    "name": "Weapon Master",
@@ -24409,7 +24470,8 @@
    "x": -8092,
    "y": 379,
    "group": 229,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "63114": {
    "name": "Attribute",
@@ -24496,7 +24558,8 @@
    "x": -8014,
    "y": -4799,
    "group": 232,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41701": {
    "name": "Endurance Charge Duration and Armour",
@@ -24707,7 +24770,8 @@
    "x": -8142,
    "y": -2761,
    "group": 234,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "54849": {
    "name": "Minion Offence Mastery",
@@ -24733,7 +24797,8 @@
    "x": -7994,
    "y": -746,
    "group": 235,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3723": {
    "name": "Attack and Minion Damage",
@@ -24911,7 +24976,8 @@
    "x": -7990,
    "y": -3653,
    "group": 236,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25014": {
    "name": "Warcry Speed",
@@ -25354,7 +25420,8 @@
    "x": -8048,
    "y": 3991,
    "group": 237,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "49734": {
    "name": "Attribute",
@@ -25507,7 +25574,8 @@
    "x": -7915,
    "y": -3108,
    "group": 239,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "44017": {
    "name": "Resolute Technique",
@@ -25655,7 +25723,8 @@
    "x": -7778,
    "y": 6508,
    "group": 241,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "4621": {
    "name": "Stun and Elemental Threshold",
@@ -26143,7 +26212,8 @@
    "x": -8020,
    "y": -9875,
    "group": 242,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "3446": {
    "name": "Attribute",
@@ -26297,7 +26367,8 @@
    "x": -7735,
    "y": -1428,
    "group": 247,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62757": {
    "name": "Stun Buildup",
@@ -26563,7 +26634,8 @@
    "x": -7588,
    "y": 2016,
    "group": 248,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "58855": {
    "name": "Armour Mastery",
@@ -26591,7 +26663,8 @@
    "x": -7718,
    "y": 1429,
    "group": 249,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "53527": {
    "name": "Shattering Blow",
@@ -26909,7 +26982,8 @@
    "x": -7724,
    "y": -4244,
    "group": 251,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "2946": {
    "name": "Fire Resistance Mastery",
@@ -26935,7 +27009,8 @@
    "x": -7571,
    "y": 8131,
    "group": 252,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "62518": {
    "name": "Fire Resistance",
@@ -27172,7 +27247,8 @@
    "x": -7449,
    "y": -5425,
    "group": 253,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "15913": {
    "name": "Area of Effect and Damage",
@@ -27553,7 +27629,8 @@
    "x": -7564,
    "y": -4584,
    "group": 257,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "43653": {
    "name": "Cold Damage",
@@ -27995,7 +28072,8 @@
    "x": -7472,
    "y": 6134,
    "group": 260,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50616": {
    "name": "Attack Mastery",
@@ -28022,7 +28100,8 @@
    "x": -7470,
    "y": 4967,
    "group": 261,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46665": {
    "name": "Flask Mastery",
@@ -28049,7 +28128,8 @@
    "x": -7470,
    "y": 409,
    "group": 262,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18505": {
    "name": "Crushing Verdict",
@@ -28521,7 +28601,8 @@
    "x": -7438,
    "y": 3624,
    "group": 267,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "52126": {
    "name": "Stun Threshold and Strength",
@@ -28665,7 +28746,8 @@
    "x": -7383,
    "y": -7035,
    "group": 269,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8145": {
    "name": "Fire Penetration",
@@ -28962,7 +29044,8 @@
    "x": -7350,
    "y": -6377,
    "group": 271,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34493": {
    "name": "Sentinels",
@@ -29436,7 +29519,8 @@
    "x": -7297,
    "y": 2336,
    "group": 273,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24430": {
    "name": "Elemental Damage",
@@ -29641,7 +29725,8 @@
    "x": -7241,
    "y": -656,
    "group": 276,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17725": {
    "name": "Bonded Precision",
@@ -29786,7 +29871,8 @@
    "x": -7188,
    "y": -2427,
    "group": 277,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9442": {
    "name": "Warcry Speed",
@@ -29992,7 +30078,8 @@
    "x": -7168,
    "y": -3643,
    "group": 278,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "11087": {
    "name": "Channelling Damage",
@@ -30288,7 +30375,8 @@
    "x": -6894,
    "y": -10010,
    "group": 280,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "35966": {
    "name": "Heart Tissue",
@@ -30493,7 +30581,8 @@
    "x": -7139,
    "y": -4965,
    "group": 281,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "11048": {
    "name": "Minion Damage and Duration",
@@ -30554,7 +30643,8 @@
    "x": -7205,
    "y": -8949,
    "group": 282,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "53444": {
    "name": "Minion Duration",
@@ -30847,7 +30937,8 @@
    "x": -7080,
    "y": -3066,
    "group": 283,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23930": {
    "name": "Elemental Damage",
@@ -31648,7 +31739,8 @@
    "x": -7038,
    "y": -1700,
    "group": 292,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25229": {
    "name": "Endurance Charge Duration",
@@ -31765,7 +31857,8 @@
    "x": -7025,
    "y": 7409,
    "group": 293,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62498": {
    "name": "Attribute",
@@ -32238,7 +32331,8 @@
    "x": -6939,
    "y": -5539,
    "group": 298,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26725": {
    "name": "[Jewel] Socket",
@@ -32470,7 +32564,8 @@
    "x": -6979,
    "y": 2862,
    "group": 300,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "43778": {
    "name": "Bleed Chance",
@@ -33011,7 +33106,8 @@
    "x": -6862,
    "y": 988,
    "group": 303,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21127": {
    "name": "Totem Mastery",
@@ -33038,7 +33134,8 @@
    "x": -6603,
    "y": -7029,
    "group": 304,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "35974": {
    "name": "Totem Life",
@@ -33421,7 +33518,8 @@
    "x": -6847,
    "y": -239,
    "group": 305,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16249": {
    "name": "Watch How I Do It",
@@ -33475,7 +33573,8 @@
    "x": -6814,
    "y": -3552,
    "group": 307,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62303": {
    "name": "Ailment Threshold and Slow Effect on You",
@@ -33651,7 +33750,8 @@
    "x": -6782,
    "y": -4265,
    "group": 310,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "290": {
    "name": "Fire Damage",
@@ -33855,7 +33955,8 @@
    "x": -6671,
    "y": -6209,
    "group": 312,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "25031": {
    "name": "Warcry Mastery",
@@ -33881,7 +33982,8 @@
    "x": -6714,
    "y": 9038,
    "group": 313,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17999": {
    "name": "Warcry Cooldown and Speed",
@@ -34232,7 +34334,8 @@
    "x": -6502,
    "y": -1193,
    "group": 314,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "5800": {
    "name": "Attack Damage and Accuracy",
@@ -34382,7 +34485,8 @@
    "x": -6559,
    "y": 5262,
    "group": 315,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "32560": {
    "name": "Presence Area",
@@ -34560,7 +34664,8 @@
    "x": -6580,
    "y": -8082,
    "group": 318,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51328": {
    "name": "Cold Damage",
@@ -34709,7 +34814,8 @@
    "x": -7030,
    "y": 5468,
    "group": 323,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "40596": {
    "name": "Stun Threshold",
@@ -35004,7 +35110,8 @@
    "x": -6402,
    "y": -5624,
    "group": 326,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "37415": {
    "name": "Cold Damage",
@@ -35207,7 +35314,8 @@
    "x": -6391,
    "y": -308,
    "group": 328,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3663": {
    "name": "Kaom's Blessing",
@@ -35261,7 +35369,8 @@
    "x": -6533,
    "y": 421,
    "group": 330,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "5544": {
    "name": "Thorn Critical Damage",
@@ -35435,7 +35544,8 @@
    "x": -6370,
    "y": -4774,
    "group": 331,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38921": {
    "name": "Block Mastery",
@@ -35461,7 +35571,8 @@
    "x": -6312,
    "y": 4345,
    "group": 332,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "49023": {
    "name": "Shield Block",
@@ -35984,7 +36095,8 @@
    "x": -6354,
    "y": -3108,
    "group": 339,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "17625": {
    "name": "Rage on Hit",
@@ -36305,7 +36417,8 @@
    "x": -6727,
    "y": 3368,
    "group": 340,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "11014": {
    "name": "Totem Mastery",
@@ -36333,7 +36446,8 @@
    "x": -6210,
    "y": 7289,
    "group": 341,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16784": {
    "name": "Totem Life",
@@ -36938,7 +37052,8 @@
    "x": -6324,
    "y": 9297,
    "group": 347,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "29162": {
    "name": "Spirit",
@@ -37170,7 +37285,8 @@
    "x": -6160,
    "y": -9510,
    "group": 349,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3363": {
    "name": "Minion Life",
@@ -37346,7 +37462,8 @@
    "x": -6117,
    "y": -6011,
    "group": 350,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41493": {
    "name": "Attack Area Damage and Area",
@@ -37407,7 +37524,8 @@
    "x": -6073,
    "y": -8397,
    "group": 352,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "35408": {
    "name": "Focus Energy Shield",
@@ -37494,7 +37612,8 @@
    "x": -6052,
    "y": -646,
    "group": 354,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6222": {
    "name": "Shapeshifted Damage",
@@ -37789,7 +37908,8 @@
    "x": -6037,
    "y": -1514,
    "group": 355,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21017": {
    "name": "Critical Chance",
@@ -38024,7 +38144,8 @@
    "x": -6026,
    "y": 1198,
    "group": 356,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14654": {
    "name": "Attribute",
@@ -38203,7 +38324,8 @@
    "x": -5983,
    "y": 2749,
    "group": 362,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38130": {
    "name": "Warcry Cooldown Speed",
@@ -38621,7 +38743,8 @@
    "x": -5919,
    "y": 4066,
    "group": 369,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26638": {
    "name": "Footprints in the Sand",
@@ -39031,7 +39154,8 @@
    "x": -5913,
    "y": -7670,
    "group": 371,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46380": {
    "name": "Energy Shield if Consumed Power Charge",
@@ -39149,7 +39273,8 @@
    "x": -5887,
    "y": -5254,
    "group": 372,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23879": {
    "name": "Shapeshifting Mastery",
@@ -39178,7 +39303,8 @@
    "x": -5885,
    "y": -2365,
    "group": 373,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51743": {
    "name": "Shapeshifting Attack Damage",
@@ -39531,7 +39657,8 @@
    "x": -5842,
    "y": -6866,
    "group": 376,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "42035": {
    "name": "Inevitability",
@@ -39911,7 +40038,8 @@
    "x": -5766,
    "y": -3972,
    "group": 381,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "43128": {
    "name": "Skill Speed and Area of Effect",
@@ -40244,7 +40372,8 @@
    "x": -5695,
    "y": 5052,
    "group": 386,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "7668": {
    "name": "Internal Bleeding",
@@ -40481,7 +40610,8 @@
    "x": -5563,
    "y": 5397,
    "group": 387,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "61471": {
    "name": "Damage and Minion Damage",
@@ -40600,7 +40730,8 @@
    "x": -5914,
    "y": -4607,
    "group": 388,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "58747": {
    "name": "Ultimate Command",
@@ -40795,7 +40926,8 @@
    "x": -5585,
    "y": -1014,
    "group": 395,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "46205": {
    "name": "Totem Damage",
@@ -41123,7 +41255,8 @@
    "x": -5585,
    "y": 8845,
    "group": 396,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "52373": {
    "name": "Maximum Rage",
@@ -41418,7 +41551,8 @@
    "x": -5396,
    "y": 892,
    "group": 401,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "16311": {
    "name": "Life Regeneration",
@@ -41533,7 +41667,8 @@
    "x": -5532,
    "y": 426,
    "group": 402,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20350": {
    "name": "Armour Break",
@@ -41710,7 +41845,8 @@
    "x": -5457,
    "y": 8238,
    "group": 403,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "63259": {
    "name": "Motoric Implants",
@@ -41799,7 +41935,8 @@
    "x": -5458,
    "y": 4362,
    "group": 406,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51702": {
    "name": "Strength",
@@ -41974,7 +42111,8 @@
    "x": -5443,
    "y": 6845,
    "group": 407,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17924": {
    "name": "Damage against Enemies on Low Life",
@@ -42176,7 +42314,8 @@
    "x": -5431,
    "y": -1790,
    "group": 410,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2491": {
    "name": "[Jewel] Socket",
@@ -42698,7 +42837,8 @@
    "x": -5359,
    "y": -5493,
    "group": 416,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8629": {
    "name": "Attack Mastery",
@@ -42725,7 +42865,8 @@
    "x": -5326,
    "y": 2555,
    "group": 417,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16084": {
    "name": "One Handed Damage",
@@ -42990,7 +43131,8 @@
    "x": -5314,
    "y": 3772,
    "group": 423,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "6923": {
    "name": "Two Handed Damage",
@@ -43193,7 +43335,8 @@
    "x": -5312,
    "y": -8795,
    "group": 424,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20015": {
    "name": "Warcry Mastery",
@@ -43220,7 +43363,8 @@
    "x": -5308,
    "y": 7323,
    "group": 425,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20499": {
    "name": "Arcane Surge Effect",
@@ -43365,7 +43509,8 @@
    "x": -5306,
    "y": -3551,
    "group": 426,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2336": {
    "name": "Arcane Surge Effect",
@@ -43716,7 +43861,8 @@
    "x": -4775,
    "y": 5774,
    "group": 434,
-   "orbit": 6
+   "orbit": 6,
+   "mastery": true
   },
   "57846": {
    "name": "Stun Buildup",
@@ -44067,7 +44213,8 @@
    "x": -5141,
    "y": 745,
    "group": 439,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "11641": {
    "name": "Essence of Virtue",
@@ -44240,7 +44387,8 @@
    "x": -5108,
    "y": -6982,
    "group": 441,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1988": {
    "name": "Unleash Hell!",
@@ -44390,7 +44538,8 @@
    "x": -5086,
    "y": -2315,
    "group": 444,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "38313": {
    "name": "Projectile Speed",
@@ -44593,7 +44742,8 @@
    "x": -5081,
    "y": -792,
    "group": 445,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "64042": {
    "name": "Physical Mastery",
@@ -44619,7 +44769,8 @@
    "x": -5307,
    "y": -4743,
    "group": 446,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "55422": {
    "name": "Physical Damage",
@@ -44885,7 +45036,8 @@
    "x": -4914,
    "y": -3552,
    "group": 447,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "51369": {
    "name": "Damage against Burning Enemies",
@@ -45058,7 +45210,8 @@
    "x": -5035,
    "y": 1521,
    "group": 448,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33852": {
    "name": "Flurry",
@@ -45115,7 +45268,8 @@
    "x": -5007,
    "y": -8974,
    "group": 450,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34412": {
    "name": "Shapeshifted Damage",
@@ -45582,7 +45736,8 @@
    "x": -4987,
    "y": 6165,
    "group": 455,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34882": {
    "name": "Skill Gem Quality",
@@ -45793,7 +45948,8 @@
    "x": -5565,
    "y": -8410,
    "group": 460,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "2244": {
    "name": "Arcane Surge on Critical Hit",
@@ -46120,7 +46276,8 @@
    "x": -4876,
    "y": -7653,
    "group": 462,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34990": {
    "name": "Poison Chance",
@@ -46293,7 +46450,8 @@
    "x": -4861,
    "y": -5812,
    "group": 463,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "47316": {
    "name": "Goring",
@@ -46499,7 +46657,8 @@
    "x": -4815,
    "y": 10580,
    "group": 464,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "37258": {
    "name": "Attribute",
@@ -46590,7 +46749,8 @@
    "x": -4802,
    "y": 7673,
    "group": 466,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "26568": {
    "name": "Slow Effect on You and Attack Speed",
@@ -46797,7 +46957,8 @@
    "x": -4747,
    "y": -252,
    "group": 467,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24696": {
    "name": "Totem Damage",
@@ -47056,7 +47217,8 @@
    "x": -4713,
    "y": 5644,
    "group": 470,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23861": {
    "name": "Two Handed Damage and Stun",
@@ -47321,7 +47483,8 @@
    "x": -4695,
    "y": -6482,
    "group": 472,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "292": {
    "name": "Life Mastery",
@@ -47349,7 +47512,8 @@
    "x": -4682,
    "y": -9217,
    "group": 473,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "31419": {
    "name": "Increased Duration",
@@ -47462,7 +47626,8 @@
    "x": -4702,
    "y": 295,
    "group": 474,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "23825": {
    "name": "Life Regeneration Rate",
@@ -47908,7 +48073,8 @@
    "x": -4629,
    "y": -3071,
    "group": 477,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "65226": {
    "name": "Infusion Mastery",
@@ -47935,7 +48101,8 @@
    "x": -4621,
    "y": -10105,
    "group": 478,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38876": {
    "name": "Attribute",
@@ -47993,7 +48160,8 @@
    "x": -4573,
    "y": 9245,
    "group": 480,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4086": {
    "name": "Strategic Embankments",
@@ -48325,7 +48493,8 @@
    "x": -4542,
    "y": 926,
    "group": 483,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14686": {
    "name": "Puppet Master chance",
@@ -48499,7 +48668,8 @@
    "x": -4205,
    "y": -8833,
    "group": 484,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "33978": {
    "name": "Unstoppable Barrier",
@@ -48644,7 +48814,8 @@
    "x": -4507,
    "y": 2159,
    "group": 485,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55536": {
    "name": "Gambler",
@@ -48700,7 +48871,8 @@
    "x": -4433,
    "y": -2172,
    "group": 487,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34308": {
    "name": "Personal Touch",
@@ -49055,7 +49227,8 @@
    "x": -4431,
    "y": -522,
    "group": 489,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "9417": {
    "name": "Totem Life",
@@ -49112,7 +49285,8 @@
    "x": -4584,
    "y": -1472,
    "group": 491,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "10372": {
    "name": "Stun Threshold",
@@ -49374,7 +49548,8 @@
    "x": -4201,
    "y": -4415,
    "group": 492,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "6356": {
    "name": "Physical Damage and Increased Duration",
@@ -49814,7 +49989,8 @@
    "x": -4336,
    "y": 3287,
    "group": 495,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41657": {
    "name": "Armour",
@@ -50354,7 +50530,8 @@
    "x": -4286,
    "y": -6819,
    "group": 502,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14505": {
    "name": "Minion Offence Mastery",
@@ -50385,7 +50562,8 @@
    "x": -4284,
    "y": -11017,
    "group": 503,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3866": {
    "name": "Minion Life",
@@ -50859,7 +51037,8 @@
    "x": -4261,
    "y": -5892,
    "group": 504,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61026": {
    "name": "Crystalline Flesh",
@@ -51299,7 +51478,8 @@
    "x": -4239,
    "y": 4458,
    "group": 507,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62378": {
    "name": "Thorns",
@@ -51412,7 +51592,8 @@
    "x": -4230,
    "y": -790,
    "group": 508,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16725": {
    "name": "Attribute",
@@ -51561,7 +51742,8 @@
    "x": -4209,
    "y": -7738,
    "group": 510,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50104": {
    "name": "Attribute",
@@ -51623,7 +51805,8 @@
    "x": -4166,
    "y": 10953,
    "group": 512,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17417": {
    "name": "Projectile Speed and Physical Damage",
@@ -52063,7 +52246,8 @@
    "x": -4117,
    "y": -8135,
    "group": 516,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32745": {
    "name": "Physical Damage",
@@ -52417,7 +52601,8 @@
    "x": -4110,
    "y": -3556,
    "group": 521,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17762": {
    "name": "Vengeance",
@@ -52532,7 +52717,8 @@
    "x": -4107,
    "y": 6276,
    "group": 522,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46742": {
    "name": "Elemental Equilibrium",
@@ -52615,7 +52801,8 @@
    "x": -4083,
    "y": 287,
    "group": 525,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17411": {
    "name": "Caster Mastery",
@@ -52642,7 +52829,8 @@
    "x": -4077,
    "y": -2692,
    "group": 526,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61444": {
    "name": "Wasting Casts",
@@ -52908,7 +53096,8 @@
    "x": -3824,
    "y": 8460,
    "group": 527,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "13356": {
    "name": "One Handed Damage",
@@ -53057,7 +53246,8 @@
    "x": -3966,
    "y": -9308,
    "group": 530,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "58183": {
    "name": "Blood Tearing",
@@ -53238,7 +53428,8 @@
    "x": -3777,
    "y": 5238,
    "group": 531,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "29372": {
    "name": "Sudden Infuriation",
@@ -53268,7 +53459,8 @@
    "x": -4601,
    "y": 4907,
    "group": 531,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "53989": {
    "name": "Rage on Hit",
@@ -53711,7 +53903,8 @@
    "x": -3979,
    "y": 9587,
    "group": 534,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61179": {
    "name": "Spell Critical Chance",
@@ -53767,7 +53960,8 @@
    "x": -3932,
    "y": 7604,
    "group": 536,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38010": {
    "name": "Glory Generation and Attack Damage",
@@ -54208,7 +54402,8 @@
    "x": -3861,
    "y": -1011,
    "group": 544,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41338": {
    "name": "Shapeshifting Armour applies to Elemental Damage Hits",
@@ -55201,7 +55396,8 @@
    "x": -3759,
    "y": 5938,
    "group": 551,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "56284": {
    "name": "Minion Attack and Cast Speed",
@@ -55259,7 +55455,8 @@
    "x": -3746,
    "y": -5546,
    "group": 553,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "13500": {
    "name": "Mana Recoup",
@@ -55402,7 +55599,8 @@
    "x": -3727,
    "y": 3906,
    "group": 555,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4882": {
    "name": "Totem Damage",
@@ -55697,7 +55895,8 @@
    "x": -3724,
    "y": 1390,
    "group": 556,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "64284": {
    "name": "Melee Damage",
@@ -56052,7 +56251,8 @@
    "x": -3768,
    "y": -581,
    "group": 559,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "8737": {
    "name": "Minion Damage",
@@ -56231,7 +56431,8 @@
    "x": -3605,
    "y": -11358,
    "group": 565,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25570": {
    "name": "Damage",
@@ -56622,7 +56823,8 @@
    "x": -3593,
    "y": -8544,
    "group": 566,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34840": {
    "name": "Attribute",
@@ -56680,7 +56882,8 @@
    "x": -3589,
    "y": 6610,
    "group": 568,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60404": {
    "name": "Perfect Opportunity",
@@ -56918,7 +57121,8 @@
    "x": -3557,
    "y": -338,
    "group": 569,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23364": {
    "name": "Area and Presence",
@@ -57156,7 +57360,8 @@
    "x": -3551,
    "y": -3919,
    "group": 571,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36822": {
    "name": "Attributes",
@@ -57214,7 +57419,8 @@
    "x": -3807,
    "y": 4949,
    "group": 573,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "19802": {
    "name": "Attack Critical Damage",
@@ -57387,7 +57593,8 @@
    "x": -3516,
    "y": -3236,
    "group": 574,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33397": {
    "name": "Fire Damage",
@@ -57478,7 +57685,8 @@
    "x": -3498,
    "y": 322,
    "group": 575,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38292": {
    "name": "Flammability Magnitude",
@@ -57627,7 +57835,8 @@
    "x": -3485,
    "y": 4377,
    "group": 578,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "61935": {
    "name": "Rage on Hit",
@@ -57946,7 +58155,8 @@
    "x": -3480,
    "y": -9845,
    "group": 579,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26697": {
    "name": "Sword Mastery",
@@ -57974,7 +58184,8 @@
    "x": -3462,
    "y": 12166,
    "group": 580,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41511": {
    "name": "Command Skill Damage",
@@ -58030,7 +58241,8 @@
    "x": -3443,
    "y": -4770,
    "group": 582,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1433": {
    "name": "Attribute",
@@ -58268,7 +58480,8 @@
    "x": -3422,
    "y": 11011,
    "group": 584,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "12786": {
    "name": "Aura Mastery",
@@ -58296,7 +58509,8 @@
    "x": -3422,
    "y": -1976,
    "group": 585,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "15374": {
    "name": "Hale Heart",
@@ -58324,7 +58538,8 @@
    "x": -3410,
    "y": 7031,
    "group": 586,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48035": {
    "name": "Life Regeneration",
@@ -58619,7 +58834,8 @@
    "x": -3408,
    "y": 9916,
    "group": 587,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58591": {
    "name": "Enhanced Effectiveness",
@@ -59388,7 +59604,8 @@
    "x": -3286,
    "y": 4891,
    "group": 595,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17655": {
    "name": "Aura Effect",
@@ -59963,7 +60180,8 @@
    "x": -3027,
    "y": 6954,
    "group": 597,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "47168": {
    "name": "Attribute",
@@ -60022,7 +60240,8 @@
    "x": -3224,
    "y": 7913,
    "group": 599,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34671": {
    "name": "Stun Threshold and Strength",
@@ -60345,7 +60564,8 @@
    "x": -3122,
    "y": -1269,
    "group": 605,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "35560": {
    "name": "At your Command",
@@ -60373,7 +60593,8 @@
    "x": -3117,
    "y": -7680,
    "group": 606,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "22045": {
    "name": "Life Regeneration",
@@ -60702,7 +60923,8 @@
    "x": -3067,
    "y": 2529,
    "group": 611,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36629": {
    "name": "Attribute",
@@ -60938,7 +61160,8 @@
    "x": -2969,
    "y": -5751,
    "group": 613,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "12610": {
    "name": "Energy",
@@ -61053,7 +61276,8 @@
    "x": -2924,
    "y": -6109,
    "group": 613,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "39990": {
    "name": "Chronomancy",
@@ -61232,7 +61456,8 @@
    "x": -3044,
    "y": 6253,
    "group": 615,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "56567": {
    "name": "Accuracy",
@@ -61465,7 +61690,8 @@
    "x": -2978,
    "y": 4484,
    "group": 617,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "30219": {
    "name": "Accuracy",
@@ -61523,7 +61749,8 @@
    "x": -2835,
    "y": 3530,
    "group": 618,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "39732": {
    "name": "Accuracy",
@@ -61734,7 +61961,8 @@
    "x": -2789,
    "y": 8969,
    "group": 619,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "1861": {
    "name": "Knight of Tarcus",
@@ -61765,7 +61993,8 @@
    "x": -3443,
    "y": 8591,
    "group": 619,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "9863": {
    "name": "Knight of Izaro",
@@ -61797,7 +62026,8 @@
    "x": -3204,
    "y": 8932,
    "group": 619,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "658": {
    "name": "Armour applies to Elemental Damage and Deflection",
@@ -61977,7 +62207,8 @@
    "x": -2881,
    "y": -1669,
    "group": 622,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19873": {
    "name": "Area of Effect",
@@ -62306,7 +62537,8 @@
    "x": -2905,
    "y": -8890,
    "group": 626,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "64471": {
    "name": "Attribute",
@@ -62462,7 +62694,8 @@
    "x": -2280,
    "y": 9897,
    "group": 630,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "53607": {
    "name": "Fortified Location",
@@ -62491,7 +62724,8 @@
    "x": -2629,
    "y": 9549,
    "group": 630,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "37302": {
    "name": "Kept at Bay",
@@ -62520,7 +62754,8 @@
    "x": -3047,
    "y": 9857,
    "group": 630,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "52860": {
    "name": "Ballista Damage",
@@ -62996,7 +63231,8 @@
    "x": -2750,
    "y": -7108,
    "group": 631,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61615": {
    "name": "Life Recoup Speed",
@@ -63203,7 +63439,8 @@
    "x": -2702,
    "y": -4273,
    "group": 635,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "11184": {
    "name": "Zarokh's Gift",
@@ -63815,7 +64052,8 @@
    "x": -2697,
    "y": -10245,
    "group": 638,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58789": {
    "name": "Stun and Ailment Threshold from Energy Shield",
@@ -64027,7 +64265,8 @@
    "x": -2656,
    "y": -2063,
    "group": 639,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50216": {
    "name": "Mana Regeneration and Skill Speed",
@@ -64882,7 +65121,8 @@
    "x": -2620,
    "y": 7389,
    "group": 644,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "13279": {
    "name": "Attribute",
@@ -65086,7 +65326,8 @@
    "x": -2568,
    "y": 3948,
    "group": 648,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8493": {
    "name": "Attribute",
@@ -65150,7 +65391,8 @@
    "x": -2554,
    "y": 5505,
    "group": 650,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "5049": {
    "name": "Attack Speed and Dexterity",
@@ -65389,7 +65631,8 @@
    "x": -2470,
    "y": -1421,
    "group": 651,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "3332": {
    "name": "Minion Cold Resistance",
@@ -65653,7 +65896,8 @@
    "x": -2495,
    "y": -5247,
    "group": 657,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "15801": {
    "name": "Life Recoup Speed",
@@ -65829,7 +66073,8 @@
    "x": -2481,
    "y": 3402,
    "group": 659,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32523": {
    "name": "Caster Mastery",
@@ -65857,7 +66102,8 @@
    "x": -2461,
    "y": -3490,
    "group": 660,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58930": {
    "name": "Cast Speed",
@@ -66418,7 +66664,8 @@
    "x": -2431,
    "y": -2693,
    "group": 662,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "27992": {
    "name": "Crossbow Mastery",
@@ -66445,7 +66692,8 @@
    "x": -2415,
    "y": 11531,
    "group": 663,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23373": {
    "name": "Grenade Damage",
@@ -66714,7 +66962,8 @@
    "x": -2393,
    "y": 1034,
    "group": 665,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46325": {
    "name": "Melee Damage",
@@ -67159,7 +67408,8 @@
    "x": -2362,
    "y": -9378,
    "group": 668,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38856": {
    "name": "Attribute",
@@ -67367,7 +67617,8 @@
    "x": -2063,
    "y": 8879,
    "group": 670,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "55131": {
    "name": "Light on your Feet",
@@ -67397,7 +67648,8 @@
    "x": -2395,
    "y": 8937,
    "group": 670,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "28950": {
    "name": "Devoted Protector",
@@ -67907,7 +68159,8 @@
    "x": -2188,
    "y": -963,
    "group": 680,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54521": {
    "name": "Attribute",
@@ -68275,7 +68528,8 @@
    "x": -2093,
    "y": 1555,
    "group": 684,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41031": {
    "name": "Attribute",
@@ -68421,7 +68675,8 @@
    "x": -2088,
    "y": 7594,
    "group": 685,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21468": {
    "name": "Life Leech",
@@ -68565,7 +68820,8 @@
    "x": -2087,
    "y": 4208,
    "group": 686,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2864": {
    "name": "Attribute",
@@ -68802,7 +69058,8 @@
    "x": -2076,
    "y": -5363,
    "group": 688,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "1543": {
    "name": "Cast Speed",
@@ -69038,7 +69295,8 @@
    "x": -2012,
    "y": -7643,
    "group": 691,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41646": {
    "name": "Attribute",
@@ -69278,7 +69536,8 @@
    "x": -2181,
    "y": 5214,
    "group": 693,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "52684": {
    "name": "Eroding Chains",
@@ -69307,7 +69566,8 @@
    "x": -1843,
    "y": 5214,
    "group": 693,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "58674": {
    "name": "Elemental Mastery",
@@ -69333,7 +69593,8 @@
    "x": -1901,
    "y": 3923,
    "group": 694,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "17867": {
    "name": "Exposure Effect and Slow Effect",
@@ -69456,7 +69717,8 @@
    "x": -1956,
    "y": 11131,
    "group": 695,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54437": {
    "name": "Attack Damage on Low Life",
@@ -69607,7 +69869,8 @@
    "x": -1945,
    "y": 5524,
    "group": 696,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "53320": {
    "name": "Banner Glory Gained",
@@ -69778,7 +70041,8 @@
    "x": -1941,
    "y": -8386,
    "group": 698,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18160": {
    "name": "Minion Critical Chance",
@@ -70345,7 +70609,8 @@
    "x": -1924,
    "y": -1417,
    "group": 704,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "7424": {
    "name": "Energy Shield",
@@ -70553,7 +70818,8 @@
    "x": -1909,
    "y": -6476,
    "group": 705,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34531": {
    "name": "Hallowed",
@@ -70855,7 +71121,8 @@
    "x": -1528,
    "y": 6665,
    "group": 707,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "18186": {
    "name": "Armour",
@@ -70943,7 +71210,8 @@
    "x": -1863,
    "y": 6665,
    "group": 707,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34433": {
    "name": "Armour and Evasion",
@@ -71091,7 +71359,8 @@
    "x": -2198,
    "y": 6665,
    "group": 707,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "24748": {
    "name": "Evasion",
@@ -71235,7 +71504,8 @@
    "x": -2216,
    "y": 10323,
    "group": 708,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "7628": {
    "name": "Attribute",
@@ -71440,7 +71710,8 @@
    "x": -1839,
    "y": -9105,
    "group": 712,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "32727": {
    "name": "Armour Break",
@@ -72068,7 +72339,8 @@
    "x": -1653,
    "y": 9761,
    "group": 713,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "56388": {
    "name": "Reinforced Rallying",
@@ -72097,7 +72369,8 @@
    "x": -1627,
    "y": 7190,
    "group": 714,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "21096": {
    "name": "Banner Area",
@@ -72306,7 +72579,8 @@
    "x": -1627,
    "y": 7852,
    "group": 714,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1220": {
    "name": "Minion Offence Mastery",
@@ -72333,7 +72607,8 @@
    "x": -1615,
    "y": -5020,
    "group": 715,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6655": {
    "name": "Aggravation",
@@ -72362,7 +72637,8 @@
    "x": -1692,
    "y": 9060,
    "group": 716,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "35015": {
    "name": "Bleeding Damage",
@@ -72690,7 +72966,8 @@
    "x": -1534,
    "y": 3142,
    "group": 720,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "24880": {
    "name": "Attack Speed",
@@ -72867,7 +73144,8 @@
    "x": -1961,
    "y": 2895,
    "group": 720,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "16168": {
    "name": "Attribute",
@@ -73166,7 +73444,8 @@
    "x": -1522,
    "y": -7352,
    "group": 723,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "56956": {
    "name": "Minion Life and Chaos Resistance",
@@ -73375,7 +73654,8 @@
    "x": -1513,
    "y": -2333,
    "group": 724,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39416": {
    "name": "Minion Offence Mastery",
@@ -73402,7 +73682,8 @@
    "x": -1510,
    "y": -10892,
    "group": 725,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58718": {
    "name": "Bleeding Damage",
@@ -73576,7 +73857,8 @@
    "x": -1456,
    "y": 3779,
    "group": 727,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45497": {
    "name": "Elemental Damage",
@@ -73754,7 +74036,8 @@
    "x": -1446,
    "y": -9974,
    "group": 729,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "34058": {
    "name": "Attribute",
@@ -74378,7 +74661,8 @@
    "x": -1367,
    "y": 11595,
    "group": 738,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "44707": {
    "name": "Shield Damage",
@@ -74555,7 +74839,8 @@
    "x": -1350,
    "y": 5224,
    "group": 739,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "17696": {
    "name": "Augmented Flesh",
@@ -74784,7 +75069,8 @@
    "x": -1322,
    "y": -4291,
    "group": 741,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39886": {
    "name": "Attribute",
@@ -75402,7 +75688,8 @@
    "x": -1219,
    "y": -11528,
    "group": 747,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "63814": {
    "name": "Bleeding Chance",
@@ -76030,7 +76317,8 @@
    "x": -983,
    "y": 4006,
    "group": 756,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "315": {
    "name": "Bleeding Duration",
@@ -76088,7 +76376,8 @@
    "x": -928,
    "y": 9060,
    "group": 758,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "13882": {
    "name": "Infusion Mastery",
@@ -76115,7 +76404,8 @@
    "x": -962,
    "y": -7706,
    "group": 759,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18086": {
    "name": "Breath of Ice",
@@ -76439,7 +76729,8 @@
    "x": -949,
    "y": -5546,
    "group": 760,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51194": {
    "name": "Infusion Duration",
@@ -76671,7 +76962,8 @@
    "x": -767,
    "y": 5189,
    "group": 762,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18407": {
    "name": "Attribute",
@@ -77199,7 +77491,8 @@
    "x": -617,
    "y": 6557,
    "group": 766,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "49512": {
    "name": "Attribute",
@@ -77381,7 +77674,8 @@
    "x": -613,
    "y": -8638,
    "group": 769,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "43139": {
    "name": "Stormbreaker",
@@ -77619,7 +77913,8 @@
    "x": -672,
    "y": -10901,
    "group": 771,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "38270": {
    "name": "Lightning Damage",
@@ -77705,7 +78000,8 @@
    "x": -802,
    "y": 9333,
    "group": 772,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "29402": {
    "name": "Electrocute Buildup",
@@ -77822,7 +78118,8 @@
    "x": -610,
    "y": 9928,
    "group": 772,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "63484": {
    "name": "Flammability Magnitude",
@@ -78159,7 +78456,8 @@
    "x": -478,
    "y": -3752,
    "group": 776,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58362": {
    "name": "Elemental Ailment Chance",
@@ -78455,7 +78753,8 @@
    "x": -904,
    "y": 10688,
    "group": 780,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "21721": {
    "name": "Bleeding Chance",
@@ -78544,7 +78843,8 @@
    "x": -954,
    "y": 10314,
    "group": 780,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "19129": {
    "name": "Pin Buildup",
@@ -78899,7 +79199,8 @@
    "x": -467,
    "y": 8827,
    "group": 781,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39476": {
    "name": "Cold Mastery",
@@ -78925,7 +79226,8 @@
    "x": -466,
    "y": -7779,
    "group": 782,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50383": {
    "name": "Infusion Mastery",
@@ -78953,7 +79255,8 @@
    "x": -458,
    "y": -9486,
    "group": 783,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "29391": {
    "name": "Infused Spell Damage",
@@ -79308,7 +79611,8 @@
    "x": -405,
    "y": 3700,
    "group": 786,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "44405": {
    "name": "Lightning Damage",
@@ -79450,7 +79754,8 @@
    "x": -374,
    "y": -2574,
    "group": 789,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "41965": {
    "name": "Spell Damage",
@@ -79570,7 +79875,8 @@
    "x": -771,
    "y": 11312,
    "group": 790,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "34202": {
    "name": "Strength",
@@ -80511,7 +80817,8 @@
    "x": -367,
    "y": -5735,
    "group": 793,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "28510": {
    "name": "Attribute",
@@ -80626,7 +80933,8 @@
    "x": -257,
    "y": 2491,
    "group": 795,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "934": {
    "name": "Natural Immunity",
@@ -80655,7 +80963,8 @@
    "x": -597,
    "y": 7624,
    "group": 796,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "9825": {
    "name": "Ailment Threshold",
@@ -80739,7 +81048,8 @@
    "x": -229,
    "y": -7282,
    "group": 797,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60878": {
    "name": "Lightning Storm",
@@ -81219,7 +81529,8 @@
    "x": -251,
    "y": -10075,
    "group": 806,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "30523": {
    "name": "Dead can Dance",
@@ -81973,7 +82284,8 @@
    "x": 0,
    "y": -3031,
    "group": 816,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54447": {
    "name": "WITCH",
@@ -82495,7 +82807,8 @@
    "x": 0,
    "y": -11370,
    "group": 820,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "40691": {
    "name": "Energy Shield Delay",
@@ -82610,7 +82923,8 @@
    "x": -177,
    "y": -6628,
    "group": 821,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "43576": {
    "name": "Mana Regeneration",
@@ -82667,7 +82981,8 @@
    "x": 178,
    "y": -6628,
    "group": 821,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "1468": {
    "name": "Mana Regeneration",
@@ -83056,7 +83371,8 @@
    "x": 2,
    "y": 2992,
    "group": 826,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "48635": {
    "name": "Attribute",
@@ -83709,7 +84025,8 @@
    "x": 7,
    "y": 11943,
    "group": 832,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54127": {
    "name": "[Jewel] Socket",
@@ -84363,7 +84680,8 @@
    "x": 428,
    "y": 6276,
    "group": 841,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "10694": {
    "name": "Seething Body",
@@ -84512,7 +84830,8 @@
    "x": 614,
    "y": 7624,
    "group": 844,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "40341": {
    "name": "Movement Speed",
@@ -84721,7 +85040,8 @@
    "x": 381,
    "y": 10597,
    "group": 845,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "2461": {
    "name": "Accuracy Mastery",
@@ -84747,7 +85067,8 @@
    "x": 274,
    "y": 2491,
    "group": 846,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34367": {
    "name": "Life Recoup",
@@ -85070,7 +85391,8 @@
    "x": 372,
    "y": -2574,
    "group": 849,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "58090": {
    "name": "Life Recoup",
@@ -85127,7 +85449,8 @@
    "x": 408,
    "y": 3700,
    "group": 851,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48774": {
    "name": "Taut Flesh",
@@ -85299,7 +85622,8 @@
    "x": 419,
    "y": -9235,
    "group": 853,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "517": {
    "name": "Stun and Ailment Threshold from Energy Shield",
@@ -85501,7 +85825,8 @@
    "x": 534,
    "y": -9772,
    "group": 855,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "56216": {
    "name": "Attribute",
@@ -85863,7 +86188,8 @@
    "x": 495,
    "y": -8435,
    "group": 860,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1151": {
    "name": "Freeze Buildup",
@@ -86128,7 +86454,8 @@
    "x": 388,
    "y": 8609,
    "group": 863,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "27492": {
    "name": "Recovery Mastery",
@@ -86155,7 +86482,8 @@
    "x": 539,
    "y": -5918,
    "group": 864,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45576": {
    "name": "Projectile Mastery",
@@ -86182,7 +86510,8 @@
    "x": 719,
    "y": 9387,
    "group": 865,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "51944": {
    "name": "Projectile Damage",
@@ -86769,7 +87098,8 @@
    "x": 616,
    "y": 5035,
    "group": 869,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34813": {
    "name": "All Attributes",
@@ -87006,7 +87336,8 @@
    "x": 765,
    "y": 11309,
    "group": 870,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "13909": {
    "name": "Remnant Pickup Range",
@@ -87238,7 +87569,8 @@
    "x": 729,
    "y": -10884,
    "group": 875,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19223": {
    "name": "Attack Damage",
@@ -87564,7 +87896,8 @@
    "x": 730,
    "y": 7014,
    "group": 876,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50150": {
    "name": "Elemental Damage and Mana Regeneration",
@@ -87974,7 +88307,8 @@
    "x": 776,
    "y": -7489,
    "group": 879,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "27658": {
    "name": "Life Recoup",
@@ -88148,7 +88482,8 @@
    "x": 940,
    "y": -8922,
    "group": 881,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "15083": {
    "name": "Power Conduction",
@@ -88177,7 +88512,8 @@
    "x": 906,
    "y": -11254,
    "group": 882,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25619": {
    "name": "Sand in the Eyes",
@@ -88416,7 +88752,8 @@
    "x": 925,
    "y": 10235,
    "group": 883,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "35653": {
    "name": "Grenade Damage",
@@ -88862,7 +89199,8 @@
    "x": 1073,
    "y": -9541,
    "group": 892,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36639": {
    "name": "Curse Duration",
@@ -89271,7 +89609,8 @@
    "x": 1149,
    "y": -6644,
    "group": 897,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "27853": {
    "name": "Damage vs Immobilised and Buildup",
@@ -89562,7 +89901,8 @@
    "x": 1170,
    "y": 4170,
    "group": 902,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21274": {
    "name": "Attribute",
@@ -89624,7 +89964,8 @@
    "x": 1188,
    "y": 8752,
    "group": 904,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "27859": {
    "name": "Herald Damage",
@@ -89952,7 +90293,8 @@
    "x": 1402,
    "y": 5318,
    "group": 905,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "62677": {
    "name": "Attribute",
@@ -90101,7 +90443,8 @@
    "x": 1250,
    "y": -12361,
    "group": 908,
-   "orbit": 6
+   "orbit": 6,
+   "mastery": true
   },
   "17107": {
    "name": "Spell Area Damage",
@@ -90276,7 +90619,8 @@
    "x": 1354,
    "y": 9646,
    "group": 914,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "65468": {
    "name": "Repeating Explosives",
@@ -90423,7 +90767,8 @@
    "x": 1507,
    "y": -11022,
    "group": 917,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "13828": {
    "name": "Evasion",
@@ -90660,7 +91005,8 @@
    "x": 1424,
    "y": -4184,
    "group": 919,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "47759": {
    "name": "Whispers of Doom",
@@ -90889,7 +91235,8 @@
    "x": 1451,
    "y": 7778,
    "group": 921,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "53996": {
    "name": "Melee Damage",
@@ -91182,7 +91529,8 @@
    "x": 1668,
    "y": -5546,
    "group": 924,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "10909": {
    "name": "Attribute",
@@ -91689,7 +92037,8 @@
    "x": 1570,
    "y": 6132,
    "group": 929,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48401": {
    "name": "Attribute",
@@ -91804,7 +92153,8 @@
    "x": 1431,
    "y": 3530,
    "group": 931,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "9941": {
    "name": "Melee Damage",
@@ -91979,7 +92329,8 @@
    "x": 1538,
    "y": -3568,
    "group": 933,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "58783": {
    "name": "Life Leech, Armour and Evasion while Leeching",
@@ -92155,7 +92506,8 @@
    "x": 1632,
    "y": 4051,
    "group": 934,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48846": {
    "name": "Lightning Damage",
@@ -92210,7 +92562,8 @@
    "x": 1663,
    "y": 10310,
    "group": 936,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6266": {
    "name": "Damage",
@@ -92508,7 +92861,8 @@
    "x": 1713,
    "y": -4987,
    "group": 941,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4203": {
    "name": "Attribute",
@@ -92685,7 +93039,8 @@
    "x": 1738,
    "y": 4778,
    "group": 944,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2732": {
    "name": "Mana Cost Efficiency",
@@ -92975,7 +93330,8 @@
    "x": 1760,
    "y": 1320,
    "group": 946,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "61106": {
    "name": "Movement Speed",
@@ -93215,7 +93571,8 @@
    "x": 1916,
    "y": -10761,
    "group": 948,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "17672": {
    "name": "Attribute",
@@ -93302,7 +93659,8 @@
    "x": 1684,
    "y": -7052,
    "group": 951,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "49088": {
    "name": "Splintering Force",
@@ -93539,7 +93897,8 @@
    "x": 1801,
    "y": -8634,
    "group": 952,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20861": {
    "name": "Invocation Spell Damage",
@@ -94061,7 +94420,8 @@
    "x": 1780,
    "y": -1274,
    "group": 954,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "49220": {
    "name": "Flow Like Water",
@@ -94402,7 +94762,8 @@
    "x": 1827,
    "y": 8676,
    "group": 956,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "7062": {
    "name": "Reusable Ammunition",
@@ -94665,7 +95026,8 @@
    "x": 2040,
    "y": 6826,
    "group": 958,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "19573": {
    "name": "Projectile Pierce",
@@ -95166,7 +95528,8 @@
    "x": 2000,
    "y": -907,
    "group": 961,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "48198": {
    "name": "Step Like Mist",
@@ -95405,7 +95768,8 @@
    "x": 1979,
    "y": -4256,
    "group": 963,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19779": {
    "name": "Chaos Damage",
@@ -95491,7 +95855,8 @@
    "x": 2071,
    "y": -11154,
    "group": 964,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "42999": {
    "name": "Chaos Damage",
@@ -95633,7 +95998,8 @@
    "x": 2013,
    "y": 865,
    "group": 965,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4313": {
    "name": "Projectile Damage",
@@ -95966,7 +96332,8 @@
    "x": 2082,
    "y": -8263,
    "group": 968,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23153": {
    "name": "Ballista Damage",
@@ -96082,7 +96449,8 @@
    "x": 2334,
    "y": 7632,
    "group": 969,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "63828": {
    "name": "Ballista Critical Strike and Damage",
@@ -96230,7 +96598,8 @@
    "x": 2107,
    "y": -9932,
    "group": 972,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48611": {
    "name": "Minion Resistances",
@@ -96411,7 +96780,8 @@
    "x": 2165,
    "y": 11513,
    "group": 975,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "56926": {
    "name": "Minion Defence Mastery",
@@ -96438,7 +96808,8 @@
    "x": 2280,
    "y": -6765,
    "group": 976,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "44255": {
    "name": "Minion Revive Speed",
@@ -96675,7 +97046,8 @@
    "x": 2193,
    "y": 4717,
    "group": 977,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33059": {
    "name": "Back in Action",
@@ -96962,7 +97334,8 @@
    "x": 2392,
    "y": -3149,
    "group": 981,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "16460": {
    "name": "Attribute",
@@ -97353,7 +97726,8 @@
    "x": 2318,
    "y": -5439,
    "group": 988,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "40073": {
    "name": "Drenched",
@@ -97382,7 +97756,8 @@
    "x": 2344,
    "y": -9085,
    "group": 989,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20744": {
    "name": "Projectile Mastery",
@@ -97408,7 +97783,8 @@
    "x": 2460,
    "y": 2987,
    "group": 990,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "33053": {
    "name": "Projectile Damage",
@@ -98055,7 +98431,8 @@
    "x": 2457,
    "y": 3460,
    "group": 994,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26786": {
    "name": "Attribute",
@@ -98148,7 +98525,8 @@
    "x": 2459,
    "y": -3623,
    "group": 996,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "5295": {
    "name": "Lightning Penetration",
@@ -98321,7 +98699,8 @@
    "x": 2498,
    "y": -5053,
    "group": 998,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19288": {
    "name": "Glancing Blows",
@@ -98741,7 +99120,8 @@
    "x": 2592,
    "y": 8872,
    "group": 1002,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "63731": {
    "name": "Attack Damage",
@@ -98977,7 +99357,8 @@
    "x": 2573,
    "y": 1485,
    "group": 1005,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4850": {
    "name": "Shock Effect and Mana Regeneration",
@@ -99533,7 +99914,8 @@
    "x": 2552,
    "y": 6646,
    "group": 1010,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "35896": {
    "name": "Attribute",
@@ -99593,7 +99975,8 @@
    "x": 2642,
    "y": -9309,
    "group": 1012,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "52354": {
    "name": "Attack Damage",
@@ -100036,7 +100419,8 @@
    "x": 2727,
    "y": 2025,
    "group": 1018,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9020": {
    "name": "Giantslayer",
@@ -100242,7 +100626,8 @@
    "x": 2731,
    "y": 11769,
    "group": 1019,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "35503": {
    "name": "Shock Effect and Mana Regeneration",
@@ -100388,7 +100773,8 @@
    "x": 2586,
    "y": -2292,
    "group": 1021,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "31745": {
    "name": "Lockdown",
@@ -100417,7 +100803,8 @@
    "x": 2330,
    "y": 6159,
    "group": 1022,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "3234": {
    "name": "Pin Duration",
@@ -100595,7 +100982,8 @@
    "x": 2756,
    "y": 6163,
    "group": 1022,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "12906": {
    "name": "Sitting Duck",
@@ -100767,7 +101155,8 @@
    "x": 2787,
    "y": -5900,
    "group": 1027,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "12661": {
    "name": "Asceticism",
@@ -101002,7 +101391,8 @@
    "x": 2877,
    "y": 10300,
    "group": 1028,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "65149": {
    "name": "Armour Break Effect",
@@ -101203,7 +101593,8 @@
    "x": 2881,
    "y": 9534,
    "group": 1032,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25281": {
    "name": "Life Mastery",
@@ -101229,7 +101620,8 @@
    "x": 2815,
    "y": -3471,
    "group": 1033,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "10677": {
    "name": "Stun Threshold if not Stunned recently",
@@ -101462,7 +101854,8 @@
    "x": 2898,
    "y": -5489,
    "group": 1036,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "13341": {
    "name": "Frenzy Charge Duration",
@@ -101581,7 +101974,8 @@
    "x": 2900,
    "y": 2851,
    "group": 1037,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62779": {
    "name": "Companion Mastery",
@@ -101607,7 +102001,8 @@
    "x": 2918,
    "y": 7099,
    "group": 1038,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62230": {
    "name": "Patient Barrier",
@@ -101637,7 +102032,8 @@
    "x": 2923,
    "y": -10960,
    "group": 1039,
-   "orbit": 6
+   "orbit": 6,
+   "mastery": true
   },
   "19355": {
    "name": "Energy Shield",
@@ -101725,7 +102121,8 @@
    "x": 2923,
    "y": -10636,
    "group": 1040,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "50816": {
    "name": "Intelligence",
@@ -102140,7 +102537,8 @@
    "x": 2923,
    "y": -9974,
    "group": 1040,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "21336": {
    "name": "Evasion and Energy Shield",
@@ -102230,7 +102628,8 @@
    "x": 3076,
    "y": -1776,
    "group": 1041,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "58182": {
    "name": "Life on Kill",
@@ -102460,7 +102859,8 @@
    "x": 3072,
    "y": 4752,
    "group": 1043,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "44345": {
    "name": "Lightning Damage",
@@ -102577,7 +102977,8 @@
    "x": 2870,
    "y": 8351,
    "group": 1045,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "11980": {
    "name": "Block",
@@ -102963,7 +103364,8 @@
    "x": 3038,
    "y": 11167,
    "group": 1048,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "38614": {
    "name": "Psychic Fragmentation",
@@ -102993,7 +103395,8 @@
    "x": 2759,
    "y": -6586,
    "group": 1049,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "25827": {
    "name": "Additional Spell Projectiles",
@@ -103135,7 +103538,8 @@
    "x": 3053,
    "y": -8724,
    "group": 1050,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "42250": {
    "name": "Attribute",
@@ -103313,7 +103717,8 @@
    "x": 3109,
    "y": 1337,
    "group": 1053,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "22795": {
    "name": "Projectile Damage",
@@ -103553,7 +103958,8 @@
    "x": 3113,
    "y": 7857,
    "group": 1055,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50192": {
    "name": "Life",
@@ -103728,7 +104134,8 @@
    "x": 3284,
    "y": -1099,
    "group": 1058,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "26214": {
    "name": "Dominion",
@@ -104411,7 +104818,8 @@
    "x": 3273,
    "y": -7566,
    "group": 1072,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "29240": {
    "name": "Attribute",
@@ -104559,7 +104967,8 @@
    "x": 3313,
    "y": 4004,
    "group": 1074,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "13411": {
    "name": "Attribute",
@@ -104764,7 +105173,8 @@
    "x": 3386,
    "y": 9913,
    "group": 1076,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16484": {
    "name": "Attribute",
@@ -105045,7 +105455,8 @@
    "x": 3396,
    "y": 6863,
    "group": 1078,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55429": {
    "name": "Projectile Damage",
@@ -105104,7 +105515,8 @@
    "x": 3555,
    "y": 3448,
    "group": 1080,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "60829": {
    "name": "Incision Chance",
@@ -105521,7 +105933,8 @@
    "x": 3513,
    "y": 4752,
    "group": 1086,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20837": {
    "name": "Knockback",
@@ -105734,7 +106147,8 @@
    "x": 3554,
    "y": -5455,
    "group": 1090,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "5564": {
    "name": "Electrocute Buildup",
@@ -106030,7 +106444,8 @@
    "x": 3564,
    "y": -3734,
    "group": 1093,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36997": {
    "name": "Stun Threshold during Parry",
@@ -106353,7 +106768,8 @@
    "x": 3632,
    "y": -2981,
    "group": 1096,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "10671": {
    "name": "Attack Damage",
@@ -106643,7 +107059,8 @@
    "x": 3641,
    "y": -483,
    "group": 1099,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62510": {
    "name": "Elemental Attack Damage",
@@ -106941,7 +107358,8 @@
    "x": 3651,
    "y": 8507,
    "group": 1100,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "49473": {
    "name": "Incision Chance",
@@ -107114,7 +107532,8 @@
    "x": 3739,
    "y": -8257,
    "group": 1102,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "63861": {
    "name": "Critical Mastery",
@@ -107140,7 +107559,8 @@
    "x": 3648,
    "y": -9801,
    "group": 1103,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "55947": {
    "name": "Spell Critical Chance",
@@ -107489,7 +107909,8 @@
    "x": 3771,
    "y": -7095,
    "group": 1105,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "10131": {
    "name": "Attribute",
@@ -107614,7 +108035,8 @@
    "x": 3695,
    "y": 2825,
    "group": 1108,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "61104": {
    "name": "Staggering Wounds",
@@ -107643,7 +108065,8 @@
    "x": 3779,
    "y": 3833,
    "group": 1109,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39280": {
    "name": "Increased Duration",
@@ -107845,7 +108268,8 @@
    "x": 3783,
    "y": -10845,
    "group": 1110,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "11838": {
    "name": "Dreamcatcher",
@@ -107875,7 +108299,8 @@
    "x": 4084,
    "y": -9003,
    "group": 1111,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "10881": {
    "name": "Focus Energy Shield",
@@ -107992,7 +108417,8 @@
    "x": 3625,
    "y": -5036,
    "group": 1112,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "55507": {
    "name": "Elemental Damage",
@@ -108230,7 +108656,8 @@
    "x": 3842,
    "y": -4659,
    "group": 1112,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "5703": {
    "name": "Echoing Thunder",
@@ -108259,7 +108686,8 @@
    "x": 4060,
    "y": -5036,
    "group": 1112,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "5702": {
    "name": "Attribute",
@@ -108556,7 +108984,8 @@
    "x": 4326,
    "y": -5414,
    "group": 1116,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "13379": {
    "name": "Stun Threshold during Parry",
@@ -108647,7 +109076,8 @@
    "x": 3916,
    "y": 4293,
    "group": 1119,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "44612": {
    "name": "Spell Suppression Mastery",
@@ -108674,7 +109104,8 @@
    "x": 3917,
    "y": 3196,
    "group": 1120,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9112": {
    "name": "Ailment Threshold",
@@ -108910,7 +109341,8 @@
    "x": 3918,
    "y": 449,
    "group": 1121,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23961": {
    "name": "Ailment Threshold and Companion Resistance",
@@ -109181,7 +109613,8 @@
    "x": 3927,
    "y": 9717,
    "group": 1122,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38459": {
    "name": "Disorientation",
@@ -109326,7 +109759,8 @@
    "x": 3998,
    "y": 918,
    "group": 1123,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "33751": {
    "name": "Cooldown Recovery Rate",
@@ -109384,7 +109818,8 @@
    "x": 4012,
    "y": 7448,
    "group": 1124,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "12451": {
    "name": "Cooldown Recovery Rate",
@@ -109442,7 +109877,8 @@
    "x": 3946,
    "y": 8994,
    "group": 1125,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18923": {
    "name": "Attribute",
@@ -109535,7 +109971,8 @@
    "x": 3994,
    "y": -486,
    "group": 1127,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55227": {
    "name": "Mana Leech",
@@ -109590,7 +110027,8 @@
    "x": 4032,
    "y": -6355,
    "group": 1128,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "47614": {
    "name": "Triggered Spell Damage",
@@ -110049,7 +110487,8 @@
    "x": 4026,
    "y": 6260,
    "group": 1132,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "5227": {
    "name": "Escape Strategy",
@@ -110166,7 +110605,8 @@
    "x": 4183,
    "y": 6218,
    "group": 1132,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36623": {
    "name": "Convalescence",
@@ -110309,7 +110749,8 @@
    "x": 4184,
    "y": -9861,
    "group": 1133,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "59651": {
    "name": "Offering Duration",
@@ -110427,7 +110868,8 @@
    "x": 4147,
    "y": -7966,
    "group": 1134,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "55872": {
    "name": "Offering Effect",
@@ -110511,7 +110953,8 @@
    "x": 3789,
    "y": 4940,
    "group": 1136,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "47677": {
    "name": "Projectile Speed",
@@ -110745,7 +111188,8 @@
    "x": 4220,
    "y": 5088,
    "group": 1137,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "38703": {
    "name": "Accuracy and Attack Critical Chance",
@@ -110864,7 +111308,8 @@
    "x": 4278,
    "y": 10565,
    "group": 1138,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "53094": {
    "name": "Accuracy",
@@ -110982,7 +111427,8 @@
    "x": 4332,
    "y": -272,
    "group": 1140,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55270": {
    "name": "Pin Buildup",
@@ -111187,7 +111633,8 @@
    "x": 4265,
    "y": 8412,
    "group": 1142,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "53566": {
    "name": "Run and Gun",
@@ -111216,7 +111663,8 @@
    "x": 4633,
    "y": 8330,
    "group": 1142,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "17077": {
    "name": "Attack Damage while Moving",
@@ -111511,7 +111959,8 @@
    "x": 4543,
    "y": 2003,
    "group": 1145,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "55938": {
    "name": "Archon Effect",
@@ -111745,7 +112194,8 @@
    "x": 4228,
    "y": -9197,
    "group": 1146,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "60974": {
    "name": "Additional Remnant Chance",
@@ -111804,7 +112254,8 @@
    "x": 4274,
    "y": -8369,
    "group": 1147,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "60324": {
    "name": "Remnant Pickup Range",
@@ -112102,7 +112553,8 @@
    "x": 4435,
    "y": -1892,
    "group": 1148,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45481": {
    "name": "Mana Regeneration",
@@ -112275,7 +112727,8 @@
    "x": 4438,
    "y": -3101,
    "group": 1149,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24922": {
    "name": "Attribute",
@@ -112512,7 +112965,8 @@
    "x": 4481,
    "y": 3150,
    "group": 1152,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "37644": {
    "name": "Physical Attack Damage",
@@ -112780,7 +113234,8 @@
    "x": 4520,
    "y": -6893,
    "group": 1154,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36298": {
    "name": "Ailment Effect",
@@ -112836,7 +113291,8 @@
    "x": 4537,
    "y": -4968,
    "group": 1156,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4519": {
    "name": "Damage on Critical",
@@ -112985,7 +113441,8 @@
    "x": 4563,
    "y": 4714,
    "group": 1161,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50912": {
    "name": "Imbibed Power",
@@ -113281,7 +113738,8 @@
    "x": 4605,
    "y": 1275,
    "group": 1164,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33979": {
    "name": "Conduit",
@@ -113370,7 +113828,8 @@
    "x": 4758,
    "y": 7289,
    "group": 1167,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "49394": {
    "name": "Critical Bleeding Effect",
@@ -113913,7 +114372,8 @@
    "x": 4750,
    "y": -10827,
    "group": 1172,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "42460": {
    "name": "Ailment Chance",
@@ -114001,7 +114461,8 @@
    "x": 4766,
    "y": 3896,
    "group": 1173,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33838": {
    "name": "Ailment Chance and Duration",
@@ -114088,7 +114549,8 @@
    "x": 4783,
    "y": 9204,
    "group": 1174,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33292": {
    "name": "Lightning Damage",
@@ -114417,7 +114879,8 @@
    "x": 4789,
    "y": 7037,
    "group": 1178,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "35058": {
    "name": "Stun Threshold if no recent Stun",
@@ -114737,7 +115200,8 @@
    "x": 4825,
    "y": -7747,
    "group": 1183,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "7054": {
    "name": "Attack Area Damage and Area",
@@ -115006,7 +115470,8 @@
    "x": 4865,
    "y": -6372,
    "group": 1186,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "27671": {
    "name": "Energy Shield Delay",
@@ -115361,7 +115826,8 @@
    "x": 4875,
    "y": 10455,
    "group": 1188,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "29763": {
    "name": "Lightning Penetration",
@@ -115534,7 +116000,8 @@
    "x": 4919,
    "y": -9036,
    "group": 1191,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9586": {
    "name": "Critical Mastery",
@@ -115561,7 +116028,8 @@
    "x": 5309,
    "y": -4968,
    "group": 1192,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "13367": {
    "name": "Accuracy",
@@ -115682,7 +116150,8 @@
    "x": 4945,
    "y": -2386,
    "group": 1193,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6010": {
    "name": "Accuracy",
@@ -115800,7 +116269,8 @@
    "x": 4954,
    "y": 2136,
    "group": 1194,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "63888": {
    "name": "Attribute",
@@ -116008,7 +116478,8 @@
    "x": 5061,
    "y": 5830,
    "group": 1197,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "43303": {
    "name": "Lightning Damage",
@@ -116539,7 +117010,8 @@
    "x": 5303,
    "y": 7361,
    "group": 1205,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "28142": {
    "name": "Attack Speed and Companion Attack Speed",
@@ -116689,7 +117161,8 @@
    "x": 5312,
    "y": 300,
    "group": 1207,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "37946": {
    "name": "Projectile Stun Buildup",
@@ -116833,7 +117306,8 @@
    "x": 5188,
    "y": -752,
    "group": 1209,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "9782": {
    "name": "Critical Damage",
@@ -117069,7 +117543,8 @@
    "x": 5376,
    "y": -8121,
    "group": 1212,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "63668": {
    "name": "Triggered Spell Damage",
@@ -117893,7 +118368,8 @@
    "x": 5266,
    "y": 5191,
    "group": 1215,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "50498": {
    "name": "Brain Storm",
@@ -118070,7 +118546,8 @@
    "x": 5280,
    "y": 6678,
    "group": 1217,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "240": {
    "name": "Lightning Mastery",
@@ -118096,7 +118573,8 @@
    "x": 5281,
    "y": -9451,
    "group": 1218,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "30456": {
    "name": "High Alert",
@@ -118184,7 +118662,8 @@
    "x": 5579,
    "y": -7243,
    "group": 1220,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "53207": {
    "name": "Lightning Penetration",
@@ -118329,7 +118808,8 @@
    "x": 5457,
    "y": -3755,
    "group": 1221,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "1953": {
    "name": "Shock Effect",
@@ -118478,7 +118958,8 @@
    "x": 5320,
    "y": 2651,
    "group": 1223,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "28021": {
    "name": "Critical Damage",
@@ -118594,7 +119075,8 @@
    "x": 5334,
    "y": -6040,
    "group": 1227,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54198": {
    "name": "Companion Mastery",
@@ -118620,7 +119102,8 @@
    "x": 5357,
    "y": 9935,
    "group": 1228,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "40480": {
    "name": "Harmonic Generator",
@@ -118649,7 +119132,8 @@
    "x": 5369,
    "y": -1843,
    "group": 1229,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46961": {
    "name": "Attack Speed",
@@ -118881,7 +119365,8 @@
    "x": 5399,
    "y": 3723,
    "group": 1231,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24165": {
    "name": "Attribute",
@@ -118968,7 +119453,8 @@
    "x": 5453,
    "y": -10248,
    "group": 1234,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45319": {
    "name": "Spell Damage",
@@ -119413,7 +119899,8 @@
    "x": 5472,
    "y": -8446,
    "group": 1237,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54176": {
    "name": "Shock Chance",
@@ -119713,7 +120200,8 @@
    "x": 5545,
    "y": 8921,
    "group": 1241,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "30663": {
    "name": "Cold Mastery",
@@ -119739,7 +120227,8 @@
    "x": 5545,
    "y": -9271,
    "group": 1242,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14310": {
    "name": "Cold Damage",
@@ -120129,7 +120618,8 @@
    "x": 5582,
    "y": 1347,
    "group": 1246,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "4238": {
    "name": "Versatile Arms",
@@ -120160,7 +120650,8 @@
    "x": 5586,
    "y": 8199,
    "group": 1247,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60173": {
    "name": "One Handed Accuracy",
@@ -120513,7 +121004,8 @@
    "x": 5646,
    "y": 635,
    "group": 1249,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26598": {
    "name": "Attribute",
@@ -120695,7 +121187,8 @@
    "x": 5659,
    "y": 4372,
    "group": 1252,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "49466": {
    "name": "Life Flasks",
@@ -120995,7 +121488,8 @@
    "x": 5834,
    "y": 5464,
    "group": 1260,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "29320": {
    "name": "Stun Threshold during Parry",
@@ -121228,7 +121722,8 @@
    "x": 5891,
    "y": -6838,
    "group": 1261,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45377": {
    "name": "Cold Damage",
@@ -121432,7 +121927,8 @@
    "x": 5975,
    "y": -2827,
    "group": 1264,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "11764": {
    "name": "Debuff Expiry",
@@ -121636,7 +122132,8 @@
    "x": 5944,
    "y": 7225,
    "group": 1265,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23915": {
    "name": "Critical Damage",
@@ -121749,7 +122246,8 @@
    "x": 6030,
    "y": 187,
    "group": 1266,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "60700": {
    "name": "Empowered Attack Freeze Buildup",
@@ -121835,7 +122333,8 @@
    "x": 5965,
    "y": -240,
    "group": 1267,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "25520": {
    "name": "Resonance",
@@ -121894,7 +122393,8 @@
    "x": 5979,
    "y": -1522,
    "group": 1269,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "55463": {
    "name": "Shock Chance",
@@ -122039,7 +122539,8 @@
    "x": 6155,
    "y": 6362,
    "group": 1271,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "6660": {
    "name": "Damage against Ailments",
@@ -122094,7 +122595,8 @@
    "x": 5961,
    "y": -8351,
    "group": 1272,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "30748": {
    "name": "Controlled Chaos",
@@ -122324,7 +122826,8 @@
    "x": 6037,
    "y": 1763,
    "group": 1273,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2516": {
    "name": "Price of Power",
@@ -122411,7 +122914,8 @@
    "x": 6105,
    "y": 8403,
    "group": 1275,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "18568": {
    "name": "Mana Leech and Cold Resistance",
@@ -122710,7 +123214,8 @@
    "x": 6180,
    "y": -5421,
    "group": 1277,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "20820": {
    "name": "Attack Speed",
@@ -122825,7 +123330,8 @@
    "x": 6171,
    "y": -6135,
    "group": 1278,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "42750": {
    "name": "Attack Damage",
@@ -123615,7 +124121,8 @@
    "x": 5974,
    "y": 5029,
    "group": 1280,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "20641": {
    "name": "Caster Mastery",
@@ -123642,7 +124149,8 @@
    "x": 6366,
    "y": -9453,
    "group": 1281,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "14231": {
    "name": "Triggered Spell Damage",
@@ -123995,7 +124503,8 @@
    "x": 6359,
    "y": 2826,
    "group": 1282,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6951": {
    "name": "Poison Damage",
@@ -124054,7 +124563,8 @@
    "x": 6359,
    "y": 2491,
    "group": 1282,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "26565": {
    "name": "Poison Duration",
@@ -124382,7 +124892,8 @@
    "x": 5939,
    "y": 3921,
    "group": 1284,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "17854": {
    "name": "Escape Velocity",
@@ -124412,7 +124923,8 @@
    "x": 6366,
    "y": 3182,
    "group": 1284,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "43044": {
    "name": "Attribute",
@@ -124564,7 +125076,8 @@
    "x": 6225,
    "y": 6071,
    "group": 1286,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "61403": {
    "name": "Attribute",
@@ -124742,7 +125255,8 @@
    "x": 6370,
    "y": -4300,
    "group": 1290,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "28441": {
    "name": "Frantic Swings",
@@ -125327,7 +125841,8 @@
    "x": 6552,
    "y": 877,
    "group": 1296,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45709": {
    "name": "Life Flask Charges",
@@ -125530,7 +126045,8 @@
    "x": 6556,
    "y": -627,
    "group": 1298,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3128": {
    "name": "Cast Speed with Cold Skills",
@@ -125650,7 +126166,8 @@
    "x": 6564,
    "y": -7692,
    "group": 1300,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19722": {
    "name": "Thin Ice",
@@ -125859,7 +126376,8 @@
    "x": 6612,
    "y": -6988,
    "group": 1304,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "65256": {
    "name": "Widespread Coverage",
@@ -125918,7 +126436,8 @@
    "x": 6619,
    "y": 9596,
    "group": 1306,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34845": {
    "name": "Hazard Area",
@@ -126162,7 +126681,8 @@
    "x": 6655,
    "y": 7287,
    "group": 1309,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "50673": {
    "name": "Avoiding Deflection",
@@ -126192,7 +126712,8 @@
    "x": 6320,
    "y": 7622,
    "group": 1309,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "1631": {
    "name": "Charm Duration",
@@ -126281,7 +126802,8 @@
    "x": 6444,
    "y": 372,
    "group": 1310,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "29049": {
    "name": "Charm Duration",
@@ -126545,7 +127067,8 @@
    "x": 6735,
    "y": -5492,
    "group": 1314,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "26268": {
    "name": "Curse Duration",
@@ -126811,7 +127334,8 @@
    "x": 6845,
    "y": -9158,
    "group": 1318,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17602": {
    "name": "Stun and Ailment Threshold from Energy Shield",
@@ -127075,7 +127599,8 @@
    "x": 6846,
    "y": 4801,
    "group": 1319,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54883": {
    "name": "Chaos Damage",
@@ -127431,7 +127956,8 @@
    "x": 7059,
    "y": 5648,
    "group": 1326,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60464": {
    "name": "Fan the Flames",
@@ -127704,7 +128230,8 @@
    "x": 6909,
    "y": -3366,
    "group": 1327,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "28823": {
    "name": "Charm Activation Chance",
@@ -127819,7 +128346,8 @@
    "x": 7077,
    "y": -4648,
    "group": 1329,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "45798": {
    "name": "Volatility on Kill",
@@ -128056,7 +128584,8 @@
    "x": 7089,
    "y": 513,
    "group": 1331,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "42959": {
    "name": "Low Tolerance",
@@ -128298,7 +128827,8 @@
    "x": 7236,
    "y": 5088,
    "group": 1335,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "48974": {
    "name": "Altered Brain Chemistry",
@@ -128505,7 +129035,8 @@
    "x": 7271,
    "y": -1656,
    "group": 1336,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "64601": {
    "name": "Hollow Palm Technique",
@@ -128800,7 +129331,8 @@
    "x": 7300,
    "y": 2712,
    "group": 1339,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "29285": {
    "name": "Movement Speed",
@@ -129180,7 +129712,8 @@
    "x": 6853,
    "y": 2076,
    "group": 1341,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "33245": {
    "name": "Projectile Damage",
@@ -129540,7 +130073,8 @@
    "x": 7129,
    "y": -6471,
    "group": 1342,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "51040": {
    "name": "Deflection and Energy Shield Delay",
@@ -129692,7 +130226,8 @@
    "x": 7213,
    "y": -7151,
    "group": 1343,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "15424": {
    "name": "Stun Threshold",
@@ -129869,7 +130404,8 @@
    "x": 7456,
    "y": -3735,
    "group": 1344,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "24120": {
    "name": "Mental Toughness",
@@ -130014,7 +130550,8 @@
    "x": 7136,
    "y": -380,
    "group": 1345,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "26762": {
    "name": "Withered Effect",
@@ -130311,7 +130848,8 @@
    "x": 7418,
    "y": 6861,
    "group": 1348,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "35380": {
    "name": "Withered Effect",
@@ -130367,7 +130905,8 @@
    "x": 7466,
    "y": -8441,
    "group": 1349,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14724": {
    "name": "Shock Duration",
@@ -130514,7 +131053,8 @@
    "x": 6856,
    "y": 1367,
    "group": 1351,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "44373": {
    "name": "Wither Away",
@@ -130874,7 +131414,8 @@
    "x": 7560,
    "y": 4791,
    "group": 1355,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "1448": {
    "name": "Bond of the Cat",
@@ -130991,7 +131532,8 @@
    "x": 7571,
    "y": 3482,
    "group": 1356,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32301": {
    "name": "Frazzled",
@@ -131020,7 +131562,8 @@
    "x": 7574,
    "y": 5473,
    "group": 1357,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "15301": {
    "name": "Accuracy",
@@ -131310,7 +131853,8 @@
    "x": 7646,
    "y": -7775,
    "group": 1359,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "49130": {
    "name": "Reduced Projectile Speed",
@@ -131454,7 +131998,8 @@
    "x": 7487,
    "y": 1661,
    "group": 1360,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "37813": {
    "name": "Shock Duration",
@@ -131540,7 +132085,8 @@
    "x": 7747,
    "y": -5469,
    "group": 1363,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "34324": {
    "name": "Spectral Ward",
@@ -132026,7 +132572,8 @@
    "x": 7762,
    "y": 6435,
    "group": 1367,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "6330": {
    "name": "Accuracy and Attack Damage",
@@ -132200,7 +132747,8 @@
    "x": 7807,
    "y": -2934,
    "group": 1370,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "33404": {
    "name": "Eternal Youth",
@@ -132643,7 +133191,8 @@
    "x": 7262,
    "y": 8975,
    "group": 1377,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "33463": {
    "name": "Attribute",
@@ -132960,7 +133509,8 @@
    "x": 8000,
    "y": 4153,
    "group": 1385,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "63830": {
    "name": "Marked for Sickness",
@@ -133174,7 +133724,8 @@
    "x": 8014,
    "y": 8181,
    "group": 1386,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36927": {
    "name": "Mark Use Speed",
@@ -133261,7 +133812,8 @@
    "x": 8085,
    "y": 8222,
    "group": 1386,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "55664": {
    "name": "Presence Area and Companion Area",
@@ -133500,7 +134052,8 @@
    "x": 8199,
    "y": 5600,
    "group": 1387,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "17146": {
    "name": "Parry Damage",
@@ -133651,7 +134204,8 @@
    "x": 8122,
    "y": 3085,
    "group": 1388,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "43453": {
    "name": "Sprint Movement Speed",
@@ -133739,7 +134293,8 @@
    "x": 8175,
    "y": -4097,
    "group": 1390,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "39607": {
    "name": "Flask Charges Gained",
@@ -133917,7 +134472,8 @@
    "x": 8255,
    "y": -2462,
    "group": 1393,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "64050": {
    "name": "Marathon Runner",
@@ -133945,7 +134501,8 @@
    "x": 8280,
    "y": 716,
    "group": 1394,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54152": {
    "name": "Sprint Movement Speed",
@@ -134182,7 +134739,8 @@
    "x": 8284,
    "y": -6119,
    "group": 1397,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8456": {
    "name": "Attack Cold Damage and Freeze Buildup",
@@ -134271,7 +134829,8 @@
    "x": 8288,
    "y": 1490,
    "group": 1398,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "5163": {
    "name": "Knockback and Stun Buildup",
@@ -134388,7 +134947,8 @@
    "x": 8295,
    "y": -1450,
    "group": 1399,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16401": {
    "name": "Lightning Damage and Electrocute Buildup",
@@ -134778,7 +135338,8 @@
    "x": 8363,
    "y": 2347,
    "group": 1404,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "7465": {
    "name": "Critical Chance",
@@ -134864,7 +135425,8 @@
    "x": 8365,
    "y": 1770,
    "group": 1405,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "23305": {
    "name": "Mark Use Speed",
@@ -135133,7 +135695,8 @@
    "x": 8282,
    "y": 4200,
    "group": 1406,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "3431": {
    "name": "Skill Speed",
@@ -135220,7 +135783,8 @@
    "x": 8248,
    "y": 6154,
    "group": 1407,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "30077": {
    "name": "Caster Mastery",
@@ -135247,7 +135811,8 @@
    "x": 8390,
    "y": -7635,
    "group": 1408,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "24656": {
    "name": "Evasion and Movement Speed while Sprinting",
@@ -135628,7 +136193,8 @@
    "x": 8445,
    "y": -598,
    "group": 1413,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "12893": {
    "name": "Area Damage and Companion Area of Effect",
@@ -135688,7 +136254,8 @@
    "x": 8465,
    "y": -3633,
    "group": 1415,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "54984": {
    "name": "Attribute",
@@ -135751,7 +136318,8 @@
    "x": 8506,
    "y": -3240,
    "group": 1417,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "47831": {
    "name": "Deflection and Energy Shield Delay",
@@ -135870,7 +136438,8 @@
    "x": 8595,
    "y": -1004,
    "group": 1418,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "52743": {
    "name": "Energy Shield Delay",
@@ -136105,7 +136674,8 @@
    "x": 8636,
    "y": 2713,
    "group": 1419,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "43090": {
    "name": "Electrotherapy",
@@ -136134,7 +136704,8 @@
    "x": 8602,
    "y": -234,
    "group": 1420,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "32672": {
    "name": "Freeze and Chill Resistance",
@@ -136343,7 +136914,8 @@
    "x": 8602,
    "y": -5783,
    "group": 1421,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "8896": {
    "name": "Agile Sprinter",
@@ -136371,7 +136943,8 @@
    "x": 8629,
    "y": 605,
    "group": 1422,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "15814": {
    "name": "Evasion while Sprinting",
@@ -136464,7 +137037,8 @@
    "x": 8692,
    "y": 1153,
    "group": 1425,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "19338": {
    "name": "Dexterity",
@@ -136699,7 +137273,8 @@
    "x": 8732,
    "y": 4438,
    "group": 1427,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60483": {
    "name": "Lightning Damage",
@@ -136931,7 +137506,8 @@
    "x": 9053,
    "y": 2076,
    "group": 1431,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "8560": {
    "name": "Melee Damage",
@@ -137224,7 +137800,8 @@
    "x": 8836,
    "y": 6605,
    "group": 1433,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36071": {
    "name": "Spear Mastery",
@@ -137254,7 +137831,8 @@
    "x": 9420,
    "y": 6741,
    "group": 1434,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "38369": {
    "name": "Spear Critical Chance",
@@ -137759,7 +138337,8 @@
    "x": 8862,
    "y": 5629,
    "group": 1435,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "18717": {
    "name": "Lightning Damage",
@@ -137848,7 +138427,8 @@
    "x": 8922,
    "y": -4178,
    "group": 1438,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "51241": {
    "name": "Charm Charges",
@@ -137966,7 +138546,8 @@
    "x": 8927,
    "y": 4861,
    "group": 1439,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60210": {
    "name": "Poison Mastery",
@@ -137992,7 +138573,8 @@
    "x": 8858,
    "y": -1874,
    "group": 1440,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "6078": {
    "name": "Poison Chance",
@@ -138254,7 +138836,8 @@
    "x": 8971,
    "y": 474,
    "group": 1441,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "15356": {
    "name": "Lightning Penetration",
@@ -138312,7 +138895,8 @@
    "x": 8994,
    "y": -3178,
    "group": 1443,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2334": {
    "name": "Dexterity",
@@ -138760,7 +139344,8 @@
    "x": 9208,
    "y": -759,
    "group": 1451,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "36085": {
    "name": "Serrated Edges",
@@ -138855,7 +139440,8 @@
    "x": 8967,
    "y": -2535,
    "group": 1453,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "58692": {
    "name": "Deflection and Energy Shield Delay",
@@ -138947,7 +139533,8 @@
    "x": 9548,
    "y": -2870,
    "group": 1453,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "60239": {
    "name": "Evasion and Energy Shield",
@@ -139127,7 +139714,8 @@
    "x": 9287,
    "y": 3104,
    "group": 1454,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "43064": {
    "name": "Attack Damage and Companion Damage as Chaos",
@@ -139183,7 +139771,8 @@
    "x": 9330,
    "y": -5015,
    "group": 1456,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "3336": {
    "name": "Critical Damage when consuming a Power Charge",
@@ -139299,7 +139888,8 @@
    "x": 9486,
    "y": -4974,
    "group": 1456,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "37242": {
    "name": "Stun Threshold",
@@ -139478,7 +140068,8 @@
    "x": 9400,
    "y": 4450,
    "group": 1457,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "22927": {
    "name": "Parried Debuff Magnitude and Duration",
@@ -139593,7 +140184,8 @@
    "x": 9438,
    "y": 3692,
    "group": 1459,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "52257": {
    "name": "Conductive Embrace",
@@ -139622,7 +140214,8 @@
    "x": 9456,
    "y": 2571,
    "group": 1460,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "22726": {
    "name": "Storm's Rebuke",
@@ -139793,7 +140386,8 @@
    "x": 9297,
    "y": 4891,
    "group": 1462,
-   "orbit": 4
+   "orbit": 4,
+   "mastery": true
   },
   "62096": {
    "name": "Attack Damage and Companion Damage as Chaos",
@@ -139913,7 +140507,8 @@
    "x": 9049,
    "y": -6712,
    "group": 1466,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "8644": {
    "name": "Trap Damage",
@@ -140358,7 +140953,8 @@
    "x": 9806,
    "y": -341,
    "group": 1469,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "65498": {
    "name": "Armour Break",
@@ -140623,7 +141219,8 @@
    "x": 9590,
    "y": -3479,
    "group": 1470,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "59083": {
    "name": "Ignite Magnitude",
@@ -140768,7 +141365,8 @@
    "x": 9649,
    "y": 5860,
    "group": 1471,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14882": {
    "name": "Poison Damage",
@@ -141156,7 +141754,8 @@
    "x": 9390,
    "y": 580,
    "group": 1474,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "59720": {
    "name": "Beastial Skin",
@@ -141186,7 +141785,8 @@
    "x": 9390,
    "y": 1727,
    "group": 1474,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "41163": {
    "name": "Evasion Mastery",
@@ -141213,7 +141813,8 @@
    "x": 9721,
    "y": 1153,
    "group": 1474,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "62998": {
    "name": "Electrocute Buildup",
@@ -141361,7 +141962,8 @@
    "x": 9755,
    "y": -1887,
    "group": 1477,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "722": {
    "name": "Attribute",
@@ -141542,7 +142144,8 @@
    "x": 9760,
    "y": -5970,
    "group": 1479,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20105": {
    "name": "Spear Accuracy",
@@ -141988,7 +142591,8 @@
    "x": 9861,
    "y": 354,
    "group": 1484,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "20649": {
    "name": "Lightning Damage",
@@ -142193,7 +142797,8 @@
    "x": 9819,
    "y": -2539,
    "group": 1486,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "65290": {
    "name": "Lightning Damage and Resistance",
@@ -142372,7 +142977,8 @@
    "x": 10039,
    "y": -5356,
    "group": 1488,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "14262": {
    "name": "Attribute",
@@ -142606,7 +143212,8 @@
    "x": 10371,
    "y": 5584,
    "group": 1490,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "18624": {
    "name": "Hazard Damage",
@@ -142839,7 +143446,8 @@
    "x": 10083,
    "y": 4866,
    "group": 1491,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "49320": {
    "name": "Dagger Critical Chance",
@@ -143166,7 +143774,8 @@
    "x": 10113,
    "y": -1238,
    "group": 1495,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "2582": {
    "name": "Attribute",
@@ -143318,7 +143927,8 @@
    "x": 9879,
    "y": 1643,
    "group": 1497,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "47514": {
    "name": "Dizzying Hits",
@@ -143348,7 +143958,8 @@
    "x": 10508,
    "y": -356,
    "group": 1498,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "38342": {
    "name": "Stupefy",
@@ -143378,7 +143989,8 @@
    "x": 10074,
    "y": -607,
    "group": 1498,
-   "orbit": 7
+   "orbit": 7,
+   "mastery": true
   },
   "21945": {
    "name": "Damage and Criticals vs Dazed Enemies",
@@ -143671,7 +144283,8 @@
    "x": 10300,
    "y": -3717,
    "group": 1499,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "17792": {
    "name": "Presence Area",
@@ -143819,7 +144432,8 @@
    "x": 10661,
    "y": 366,
    "group": 1500,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "30808": {
    "name": "Attribute",
@@ -143918,7 +144532,8 @@
    "x": 10451,
    "y": 3456,
    "group": 1503,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "60480": {
    "name": "Herald Reservation",
@@ -144122,7 +144737,8 @@
    "x": 10532,
    "y": 3597,
    "group": 1503,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "326": {
    "name": "Quarterstaff Critical Chance",
@@ -144326,7 +144942,8 @@
    "x": 10818,
    "y": 2794,
    "group": 1506,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "632": {
    "name": "Dagger Speed",
@@ -144475,7 +145092,8 @@
    "x": 11256,
    "y": 4218,
    "group": 1509,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "11526": {
    "name": "Sniper",
@@ -144504,7 +145122,8 @@
    "x": 11013,
    "y": 5122,
    "group": 1509,
-   "orbit": 5
+   "orbit": 5,
+   "mastery": true
   },
   "31055": {
    "name": "Bow Speed",
@@ -144590,7 +145209,8 @@
    "x": 11499,
    "y": 4767,
    "group": 1509,
-   "orbit": 6
+   "orbit": 6,
+   "mastery": true
   },
   "21788": {
    "name": "Bow Damage",
@@ -145101,7 +145721,8 @@
    "x": 10704,
    "y": -3596,
    "group": 1512,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "64700": {
    "name": "Quarterstaff Freeze and Daze Buildup",
@@ -145366,7 +145987,8 @@
    "x": 11137,
    "y": -2129,
    "group": 1517,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "8302": {
    "name": "Damage vs Blinded",
@@ -145658,7 +146280,8 @@
    "x": 10867,
    "y": 3187,
    "group": 1520,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "32763": {
    "name": "[Jewel] Socket",
@@ -145801,7 +146424,8 @@
    "x": 10865,
    "y": 1505,
    "group": 1522,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "27048": {
    "name": "Defences and Companion Life",
@@ -145890,7 +146514,8 @@
    "x": 11025,
    "y": -2698,
    "group": 1524,
-   "orbit": 1
+   "orbit": 1,
+   "mastery": true
   },
   "37905": {
    "name": "Flammability Magnitude",
@@ -146300,7 +146925,8 @@
    "x": 11096,
    "y": -798,
    "group": 1527,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "328": {
    "name": "Bow Accuracy Rating",
@@ -146507,7 +147133,8 @@
    "x": 11512,
    "y": -1557,
    "group": 1532,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "29458": {
    "name": "Poison Damage",
@@ -146565,7 +147192,8 @@
    "x": 11355,
    "y": -1850,
    "group": 1532,
-   "orbit": 3
+   "orbit": 3,
+   "mastery": true
   },
   "53595": {
    "name": "Poison Damage",
@@ -146681,7 +147309,8 @@
    "x": 11199,
    "y": -1557,
    "group": 1532,
-   "orbit": 2
+   "orbit": 2,
+   "mastery": true
   },
   "38493": {
    "name": "Critical Damage",
@@ -146947,7 +147576,8 @@
    "x": 11356,
    "y": 617,
    "group": 1533,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "46386": {
    "name": "Companion Damage",
@@ -147063,7 +147693,8 @@
    "x": 11727,
    "y": 2343,
    "group": 1537,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "57933": {
    "name": "Companion Damage",
@@ -147238,7 +147869,8 @@
    "x": 12068,
    "y": 1164,
    "group": 1540,
-   "orbit": 0
+   "orbit": 0,
+   "mastery": true
   },
   "16150": {
    "name": "Inspiring Ally",

@@ -721,7 +721,7 @@ function drawTree() {
   // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
   // once one of its passives is allocated, faint until then (as the game shows it)
   // note: the faint 0.3 is by eye from a screenshot of the game; no table says it
-  const taken = new Set([...on].map(id => String(N[id]?.group)));
+  const taken = new Set([...on].filter(id => N[id]?.mastery).map(id => String(N[id].group)));
   for (const [g, id] of GROUP_ART) {
     const pic = art('mastery/' + id);
     if (!pic || !GROUPS[g]) continue;
