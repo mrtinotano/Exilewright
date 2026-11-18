@@ -833,5 +833,9 @@
  "Your {0} grants {1}: it is not in the build.": "Dein {0} gewährt {1}: Es ist nicht im Build.",
  "Add": "Hinzufügen",
  "Area level {0}": "Gebietsstufe {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Die Gebietsstufe, in der sich der Charakter befindet: Sie bestimmt den Widerstandsabzug. Leer lassen für ein Gebiet der Charakterstufe."
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Die Gebietsstufe, in der sich der Charakter befindet: Sie bestimmt den Widerstandsabzug. Leer lassen für ein Gebiet der Charakterstufe.",
+ "Controller": "Controller",
+ "Press the buttons on the controller…": "Drückt die Tasten am Controller …",
+ "Two buttons or more: one alone is the game's.": "Zwei Tasten oder mehr: eine allein gehört dem Spiel.",
+ "Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.": "Wählt mit dem Controller einen Gegenstand, ohne dass der Mauszeiger über einem Gegenstand ist, und drückt die Kombination: Das Spiel kopiert den gewählten Gegenstand. Das Fenster erscheint oben auf dem Bildschirm und jede Taste schließt es. Rücktaste beim Warten: keine."
 }

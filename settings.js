@@ -11,14 +11,18 @@ const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'Ke
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
+const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };
+// the controller's combinations ('LB+RB+Y', '' for none): the buttons by the Gamepad API's standard order, named as
+// serve.py PAD_BUTTON takes them
+const PAD_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Menu', 'LS', 'RS', 'Up', 'Down', 'Left', 'Right'];
+const PAD_LABEL = { price: 'Price check', compare: 'Equipment comparison', worn: 'Equip' };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
-  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
+  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys }, pads: { price: '', compare: '', worn: '', ...s.pads } };
 })();
 export const settings = () => S;
-const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey }) }).catch(() => {});
+const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey, ...Object.fromEntries(Object.entries(S.pads).map(([k, v]) => [k + '_pad', v])) }) }).catch(() => {});
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} tell(); };
 tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
@@ -54,7 +58,22 @@ export function initSettings(el, ask, loot) {
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
   const check = (k, text) => `<label><input type="checkbox" data-w="${k}"${win[k] ? ' checked' : ''}> ${t(text)}</label>`;
-  const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
+  const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t(k.startsWith('pad:') ? 'Press the buttons on the controller…' : 'Press a key…') : esc(shown)}</button>`;
+  // a combination of the controller: every button pressed together, taken when they are all let go
+  let pressed = new Set();
+  function padWait() {
+    if (!wait?.startsWith('pad:')) return;
+    const now = [...navigator.getGamepads()].filter(Boolean).flatMap(g => g.buttons.slice(0, 16).flatMap((b, i) => b.pressed ? [PAD_NAMES[i]] : []));
+    now.forEach(n => pressed.add(n));
+    if (pressed.size && !now.length) {
+      const k = wait.slice(4), c = PAD_NAMES.filter(n => pressed.has(n)).join('+');
+      pressed = new Set();
+      if (c.includes('+')) { const other = Object.keys(S.pads).find(o => o !== k && S.pads[o] === c); if (other) S.pads[other] = S.pads[k]; S.pads[k] = c; msg = ''; save(); }
+      else msg = t("Two buttons or more: one alone is the game's.");
+      wait = null; return render();
+    }
+    requestAnimationFrame(padWait);
+  }
   function render() {
     const leagueList = list?.length ? list : [S.league || 'Standard'];
     el.innerHTML = `<div class="opt settings">
@@ -70,6 +89,10 @@ export function initSettings(el, ask, loot) {
       </section>
       <section><p class="note">${t('Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.')}</p>
         <div class="optrow"><label>${t('Shortcut')} ${cap('worn', S.wornKey)}</label></div>
+      </section>
+      <section><h3>${t('Controller')}</h3>
+        <p class="note">${t('Pick an item with the controller, with the mouse pointer over no item, and press the combination: the game copies the item picked. The window shows at the top of the screen and any button closes it. Backspace while it waits: none.')}</p>
+        <div class="optrow">${Object.keys(PAD_LABEL).map(k => `<label>${t(PAD_LABEL[k])} ${cap('pad:' + k, S.pads[k] || t('None'))}</label>`).join('')}</div>
       </section>
       <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
@@ -91,6 +114,11 @@ export function initSettings(el, ask, loot) {
   addEventListener('keydown', e => {
     if (!wait || el.hidden) return;
     e.preventDefault(); e.stopPropagation();
+    if (wait.startsWith('pad:')) {   // the keyboard only cancels it (Esc) or leaves it with none (Backspace)
+      if (e.code === 'Backspace' || e.code === 'Delete') { S.pads[wait.slice(4)] = ''; save(); }
+      if (/^(Escape|Backspace|Delete)$/.test(e.code)) { wait = null; pressed = new Set(); render(); }
+      return;
+    }
     if (/^(Control|Shift|Alt|Meta)/.test(e.code)) return;   // a modifier alone: wait for the key that comes with it
     msg = '';
     if (e.code !== 'Escape') {
@@ -106,7 +134,7 @@ export function initSettings(el, ask, loot) {
   el.onclick = e => {
     const d = e.target.closest('[data-cap],[data-do]');
     if (!d) return;
-    if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
+    if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; pressed = new Set(); render(); return padWait(); }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
     else if (d.dataset.do === 'update') { upd = t('Checking…'); update(ask).then(m => { upd = m; render(); }); }
     render();

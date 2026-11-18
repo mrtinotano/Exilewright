@@ -64,6 +64,7 @@ from urllib.parse import urlparse, parse_qs, quote
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 import ctypes
+import ctypes.wintypes
 import json
 import os
 import queue
@@ -286,7 +287,7 @@ def overlay():
     close.bind('<Button-1>', hide)
 
     def draw(v):
-        nonlocal timer, held, keys, over, gone
+        nonlocal timer, held, keys, over, gone, pad_held
         if win:   # what comes soon after the user went to another window (a search's answer) is dropped, unless that one is back
             now = user.GetForegroundWindow()
             if gone and now != gone[0] and time.monotonic() - gone[1] < 90:
@@ -313,6 +314,8 @@ def overlay():
         root.update_idletasks()
         w, h, (px, py) = root.winfo_reqwidth(), root.winfo_reqheight(), root.winfo_pointerxy()
         sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
+        if PAD_AT == (px, py):   # asked with the controller, the pointer not moved since: it is not by the item, so the
+            px, py = sw // 2, sh // 4   # window goes to the middle at the top, clear of the game's own description
         x, y = spot(w, h, px, py, sw, sh)
         root.geometry(f'+{x}+{y}')
         root.update_idletasks()                      # now: on Windows the first move is lost if it waits for the calls below
@@ -321,6 +324,7 @@ def overlay():
             clicks(True)
             game = game_keys()
             held, keys = None, [k for k in watch if k in (*mouse, 5, 6) or (k in game | {0x1B} if game else k not in b'WASD')]
+            pad_held = pads()
         else:
             root.deiconify()
         root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
@@ -329,8 +333,10 @@ def overlay():
             root.after_cancel(timer)
         timer = None if v['kind'] in COMPARED else root.after(NOTED * 1000, hide)
 
+    pad_held = 0   # the controller's buttons held at the last look
+
     def poll():
-        nonlocal held
+        nonlocal held, pad_held
         if win and float(root.attributes('-alpha')):
             # shown: a click anywhere else closes it, and so does any key the game could take (it moves the character,
             # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
@@ -340,9 +346,10 @@ def overlay():
             down = {k for k, s in now.items() if s & 0x8000}
             new = set() if held is None else {k for k, s in now.items() if s & 1 or k in down and k not in held}
             held = down
+            pad, pad_held = pad_held, pads()   # a button of the controller pressed: the same as a key
             px, py = root.winfo_pointerxy()
             away = not (0 <= px - root.winfo_rootx() < root.winfo_width() and 0 <= py - root.winfo_rooty() < root.winfo_height())
-            if new & mouse and away or new - mouse and not any(user.GetAsyncKeyState(k) & 0x8000 for k in (0x11, 0x12, 0x5B, 0x5C)):
+            if new & mouse and away or pad_held & ~pad or new - mouse and not any(user.GetAsyncKeyState(k) & 0x8000 for k in (0x11, 0x12, 0x5B, 0x5C)):
                 hide()
             elif user.GetForegroundWindow() != over:   # Alt+Tab, the taskbar, another window: it stays with the one it came over
                 gone = over, time.monotonic()
@@ -465,6 +472,43 @@ assert number('0.10') > number('0.9') > number('0.2') and not number('0.2') > nu
 assert combo('Ctrl+D') == ([0x11], 0x44) and combo('Alt+F5') == ([0x12], 0x74) and combo('Shift+D') is None, 'combo'
 
 
+# a controller's buttons as XInput numbers them (the names are the ones Settings shows, from the page's Gamepad API)
+PAD_BUTTON = {'Up': 0x1, 'Down': 0x2, 'Left': 0x4, 'Right': 0x8, 'Menu': 0x10, 'View': 0x20, 'LS': 0x40, 'RS': 0x80,
+              'LB': 0x100, 'RB': 0x200, 'A': 0x1000, 'B': 0x2000, 'X': 0x4000, 'Y': 0x8000, 'LT': 0x10000, 'RT': 0x20000}
+
+
+def pad_combo(text):
+    """'LB+RB+Y' -> its buttons as one number, 0 for none; None when it is no combination (two buttons at least: one
+    alone is the game's)"""
+    names = [n for n in str(text).split('+') if n]
+    if not names:
+        return 0
+    return sum(PAD_BUTTON[n] for n in set(names)) if len(set(names)) > 1 and all(n in PAD_BUTTON for n in names) else None
+
+
+assert pad_combo('LB+RB+Y') == 0x8300 and pad_combo('') == 0 and pad_combo('Y') is None and pad_combo('LB+Q') is None, 'pad_combo'
+
+
+class PadState(ctypes.Structure):
+    _fields_ = [('packet', ctypes.c_uint32), ('buttons', ctypes.c_uint16), ('lt', ctypes.c_uint8), ('rt', ctypes.c_uint8),
+                ('sticks', ctypes.c_int16 * 4)]
+
+
+def pads():
+    """-> the buttons held on the controllers (XInput: Xbox ones, and the others Steam Input passes on as one), the
+    triggers as buttons when pulled more than a little; 0 with none or off Windows"""
+    if not hasattr(pads, 'dll'):
+        try:
+            pads.dll = ctypes.windll.xinput1_4.XInputGetState
+        except (AttributeError, OSError):
+            pads.dll = None
+    held, st = 0, PadState()
+    for i in range(4) if pads.dll else ():
+        if pads.dll(i, ctypes.byref(st)) == 0:
+            held |= st.buttons | (0x10000 if st.lt > 30 else 0) | (0x20000 if st.rt > 30 else 0)
+    return held
+
+
 def watch_keys():
     """Windows: a shortcut of KEYS pressed while the game is the window in use. The game copies the item under the
     pointer with Ctrl+C: that is sent once (the keys of the shortcut that are not Ctrl are let go first, so the game
@@ -473,19 +517,36 @@ def watch_keys():
     user = ctypes.windll.user32
     user.GetForegroundWindow.restype = ctypes.c_void_p
     user.GetWindowTextW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_int]
-    was = set()
+    global PAD_AT
+    was, pad_was = set(), set()
+    point = ctypes.wintypes.POINT()
     while True:
         time.sleep(.03)
         down = {name for name, (mods, key) in KEYS.items() if all(user.GetAsyncKeyState(k) & 0x8000 for k in (*mods, key))}
         # Ctrl+Shift+D held also holds Ctrl+D: the shortcut with the most keys is the one pressed
         name = max(down - was, key=lambda n: len(KEYS[n][0]), default=None)
         was = down
+        # the controller's combinations: the same, and "compare" sends the Ctrl+C the keyboard has of its own. The game
+        # copies the item the controller has picked when the pointer is over none
+        held = pads() if any(PADS.values()) else 0
+        pad_down = {n for n, m in PADS.items() if m and held & m == m}
+        pad = max(pad_down - pad_was, key=lambda n: bin(PADS[n]).count('1'), default=None)
+        pad_was = pad_down
+        if pad:
+            name, mods = pad, [0x11]
+        elif name:
+            mods = KEYS[name][0]
         if name:
-            mods, key = KEYS[name]
             title = ctypes.create_unicode_buffer(64)
             user.GetWindowTextW(user.GetForegroundWindow(), title, 64)
             if title.value.startswith('Path of Exile 2'):
-                PRESSED = (name, time.monotonic())
+                user.GetCursorPos(ctypes.byref(point))
+                PAD_AT = (point.x, point.y) if pad else None   # the window goes where the pointer is only when it was used
+                PRESSED = ('' if name == 'compare' else name, time.monotonic())
+                if pad:   # nothing of the keyboard is held: Ctrl goes down for the copy and up after it
+                    for k, how in ((0x11, 0), (0x43, 0), (0x43, 2), (0x11, 2)):
+                        user.keybd_event(k, 0, how, 0)
+                    continue
                 up, ctrl = 2, 0x11 in mods   # KEYEVENTF_KEYUP
                 for k in (0x10, 0x12):
                     if k in mods:
@@ -510,6 +571,8 @@ LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
 KEYS = {'price': combo('Ctrl+D'), 'worn': combo('Alt+D')}   # the shortcuts (Settings) as ([modifier keys], key), as the page last said
 PRESSED = ('', 0)   # which shortcut sent Ctrl+C to the game, and when
+PADS = {'price': 0, 'worn': 0, 'compare': 0}   # the controller's combinations (Settings, pad_combo), 0: none
+PAD_AT = None   # where the pointer was when a controller's combination was used (it says nothing of where the item is)
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
 OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
@@ -761,9 +824,10 @@ class Handler(SimpleHTTPRequestHandler):
             v = json.loads(body) if body and len(body) < 1000 else {}
         except ValueError:
             v = None
-        if not isinstance(v, dict) or any(k + '_key' in v and not combo(v[k + '_key']) for k in KEYS):
+        if not isinstance(v, dict) or any(k + '_key' in v and not combo(v[k + '_key']) for k in KEYS) or                 any(k + '_pad' in v and pad_combo(v[k + '_pad']) is None for k in PADS):
             return self.reply(400, 'not a setting')
         KEYS = {k: combo(v[k + '_key']) if k + '_key' in v else c for k, c in KEYS.items()}
+        PADS.update({k: pad_combo(v[k + '_pad']) for k in PADS if k + '_pad' in v})
         if 'tray' in v and TRAY:
             TRAY[0](bool(v['tray']))
         on = at_startup(bool(v['on']) if 'on' in v else None)
