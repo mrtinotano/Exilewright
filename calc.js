@@ -250,6 +250,34 @@ export function recovery(c, sum) {
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
   };
 }
+// What ailments do to you: your ailment threshold (half your life, PlayerAilmentThresholdLifeFactor, plus what adds to it)
+// and stun threshold, the freeze threshold a monster's cold hits fill, the chance to avoid each one (immunity: 100), how
+// long it lasts on you (the reduced durations, as the panel's) and how strong (increased effect on you).
+// note: the freeze threshold is taken as the stun threshold plus "freeze threshold" modifiers: the tables give none of its own
+const ELEM_AIL = ['ignite', 'chill', 'shock', 'freeze'];
+export function ailmentDefence(c, sum) {
+  const at = c.attrs || {}, pct = (...ids) => 1 + v(sum, ...ids) / 100;
+  const stun = c.life == null ? null : (c.life + v(sum, 'stun_threshold_+') + (at.str || 0) * v(sum, 'stun_threshold_+_per_strength') + (at.dex || 0) * v(sum, 'stun_threshold_+_per_dexterity')
+    + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
+  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
+    + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
+  const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield') / 100) * pct('freeze_threshold_+%');
+  const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
+  const IMMUNE = { ignite: ['immune_to_ignite', 'base_immune_to_ignite'], chill: ['immune_to_chill', 'base_immune_to_chill'], shock: ['immune_to_shock', 'base_immune_to_shock'],
+    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'] };
+  const avoid = {}, dur = {};
+  for (const [a, ids] of Object.entries(IMMUNE)) {
+    const el = ELEM_AIL.includes(a);
+    avoid[a] = ids.some(k => sum[k]) ? 100 : Math.min(100, v(sum, `base_avoid_${a}_%`, `avoid_${a}_%`) + (el ? v(sum, 'avoid_all_elemental_status_%') : 0));
+    dur[a] = el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
+      : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
+  }
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%') };
+  return { stun, ail, freeze, avoid, dur, eff };
+}
+// self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
+{ const a = ailmentDefence({ life: 2000, es: 0, evasion: 0, attrs: {} }, { immune_to_freeze: 1, 'base_avoid_shock_%': 30, 'avoid_all_elemental_status_%': 10, 'self_elemental_status_duration_-%': 50 });
+  console.assert(a.ail === 1000 && a.stun === 2000 && a.freeze === 2000 && a.avoid.freeze === 100 && a.avoid.shock === 40 && a.avoid.poison === 0 && a.dur.chill === .5 && a.dur.bleed === 1, 'ailmentDefence'); }
 // Rage of the build: GameConstants' 30 at most plus "maximum Rage" and what Berserk grants (its Gemling quality), lost at
 // 300 a minute once 4 s pass without gaining any. regen: the gem that regenerates it (Eternal Rage, per second, level
 // and quality counted); berserk: its "increased Rage effect" and the life it costs per Rage per second while Rage is not
@@ -286,10 +314,7 @@ export function sheet(b, sum) {
   // thorns
   const thorns = [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * pct('thorns_damage_+%')));
   // stun / ailment thresholds
-  const stun = c.life == null ? null : (c.life + v(sum, 'stun_threshold_+') + at.str * v(sum, 'stun_threshold_+_per_strength') + at.dex * v(sum, 'stun_threshold_+_per_dexterity')
-    + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
-  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + at.dex * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
-    + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
+  const { stun, ail } = ailmentDefence(c, sum);
   const used = new Set(), opt = (label, id, unit = '%') => used.add(id) && sum[id] ? [[label, num(sum[id], Number.isInteger(sum[id]) ? 0 : 1) + unit]] : [];
   const RES = { fire: 'Fire Resistance', cold: 'Cold Resistance', lightning: 'Lightning Resistance', chaos: 'Chaos Resistance' };
   const own = [

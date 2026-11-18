@@ -4,6 +4,14 @@
   "power": "Art/2DArt/BuffIcons/chargeint.dds",
   "endurance": "Art/2DArt/BuffIcons/chargestr.dds"
  },
+ "ailment_icons": {
+  "ignite": "Art/2DArt/BuffIcons/buffonfire.dds",
+  "chill": "Art/2DArt/BuffIcons/buffchilled.dds",
+  "shock": "Art/2DArt/BuffIcons/buffshocked.dds",
+  "poison": "Art/2DArt/SkillIcons/iconpoisoned.dds",
+  "bleed": "Art/2DArt/BuffIcons/buffbleed.dds",
+  "freeze": "Art/2DArt/BuffIcons/bufffrozen.dds"
+ },
  "monster_stats": [
   {
    "level": 1,

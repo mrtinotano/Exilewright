@@ -458,7 +458,9 @@ minion_level = [r['MinionLevel'] for r in sorted(load('MinionGemLevelScaling'), 
 minion_stats = {sid(r['MinionStat']).replace('virtual_minion_', 'minion_', 1): next(sid(x) for x in r['PlayerStat'] if x != r['MinionStat'])
                 for r in load('MinionStats') if not (r['MinionType'] or r['MinionType2'] or r['CompanionStat']) and any(x != r['MinionStat'] for x in r['PlayerStat'])}
 minion_intrinsic = {sid(r['Stat']): r['Value'] for r in load('PlayerMinionIntrinsicStats')}
-save('skills.json', {'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+save('skills.json', {'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
+                     # the icons of the ailments on you; frozen has no icon of its own (the "frozen" buff shows none): its art bufffrozen
+                     'ailment_icons': {a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('freeze', 'frozen_damage_increase'))}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
@@ -814,6 +816,8 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             # every other ailment rule on a monster, as GameConstants names it (chance multipliers, buildup scales, durations,
             # the harder-to-freeze / stun window after one), plus the monster's own heavy stun length and poise decay (monster.ot)
             'game': {k: v for k, v in game.items() if re.match(r'(Shock|Ignite|MiscAilment|AilmentChance|Chill|Freeze|HeavyStun|Electrocute|Pin|BaseShock|BaseChill|BaseFlammability|CullingStrike|JaggedGround)', k) and not k.endswith('Player')},
+            # the same rules where the game has its own for a player hit by a monster (FreezeDurationPlayer...), without "Player"
+            'player': {k[:-6]: v for k, v in game.items() if k.endswith('Player') and re.match(r'(Freeze|BaseChill|BaseShock|BaseFlammability|HeavyStun|Electrocute|Pin)', k)},
             'heavy_stun_ms': mon_stats.get('base_heavy_stun_duration_ms'), 'poise_decay_delay_ms': mon_stats.get('poise_decay_delay_ms'), 'poise_decay_per_second': mon_stats.get('poise_decay_%_per_second'),
         },
         'monsters': monsters, 'rarity': rarity,
@@ -852,3 +856,4 @@ assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.
 assert skills['Orb of Storms']['levels'][20]['_cost'] == {'Mana': 129} and skills['Runic Tempering']['levels'][20]['_cost'] == {'ManaPerSecond': 19.6}, 'GrantedEffectsPerLevel.CostAmounts'
 assert any(s.get('constant', {}).get('_cost_multiplier') == 120 or any(L.get('_cost_multiplier') == 120 for L in s.get('levels', {}).values()) for s in skills.values()) and '_cost_multiplier' not in str(skills['Mortar Cannon']), 'GrantedEffectsPerLevel.CostMultiplier'
 assert next(g for g in gems if g['name'] == 'Berserk')['buff_icon'] == 'Art/2DArt/BuffIcons/Beserk.dds' and next(g for g in gems if g['name'] == 'Rite of Restoration')['buff_icon'].endswith('HuskOfDreamsBuff.dds'), 'BuffDefinitions / BuffVisuals'
+assert game['FreezeDurationPlayer'] == 2 and game['FreezeDamageScalePlayer'] == 2 and game['BaseChillDurationPlayer'] == 2 and game['BaseShockDurationPlayer'] == 4, 'GameConstants: the player ones'

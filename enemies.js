@@ -113,7 +113,7 @@ export function attackOf(m, level, key, rarity, ally = false) {
     period, interval: Math.max(period, sk?.cooldown || 0), cooldown: sk?.cooldown || 0,
     crit: sk?.crit ?? m.crit ?? 0, critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
-    area, unblockable: !!set.unblockable,
+    area, unblockable: !!set.unblockable, ail: set.const || {},   // the skill's ailment chances and freeze multipliers
     // metres and metres per second, where the game's tables say them (else the scene uses its own)
     radius: (set.const?.active_skill_base_area_of_effect_radius || 0) / 10 || null, projSpeed: (sk?.proj_speed || 0) / 10 || null,
     reach: (m.range || 10) / 10,   // metres, for melee attacks
