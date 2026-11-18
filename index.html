@@ -90,39 +90,53 @@
   .sk-set button { align-self:end; padding:3px 6px; background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; } .sk-set button:hover { background:#3a3225; }
   #sceneSkills p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
   /* 3D scene overlays */
-  #scene { overflow:hidden; background:#07080b; user-select:none; }
+  #scene { overflow:hidden; background:#07080b; user-select:none; container-type:inline-size; }
   #scene canvas { position:absolute; inset:0; cursor:crosshair; }
-  .s-top, .s-bottom, .s-toast { position:absolute; pointer-events:none; font-family:Georgia, serif; }
-  .s-top { left:10px; right:10px; top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:6px; }
-  .s-bottom { left:10px; right:10px; bottom:12px; display:flex; flex-direction:column; align-items:center; gap:6px; }
-  #scene #hud { position:static; flex:0 1 auto; min-width:0; padding:6px 9px; font:11.5px/1.5 system-ui, sans-serif; white-space:pre-wrap; color:#a89878; background:#0b0a08cc; border:1px solid #3a3022; }
-  .s-info { flex:0 1 250px; margin-left:auto; padding:7px 10px 8px; color:#a89878; background:#0b0a08d9; border:1px solid #5a4a30; border-top:2px solid var(--c, #c9a85a); }
-  .s-info[hidden] { display:none; }
-  .s-info b { display:block; font-weight:normal; font-size:16px; color:var(--c, #e8d8a8); margin-bottom:2px; }
-  .s-info span { display:block; font-size:12px; line-height:1.45; }
-  .s-info span:first-of-type { color:#c8b890; font-variant:small-caps; font-size:13px; }
-  .s-info small { display:block; margin-top:3px; font-size:11.5px; color:#ffd27a; }
-  .s-log { align-self:flex-start; width:min(420px, 100%); display:flex; flex-direction:column; gap:2px; }
+  /* the simulator's screen, laid out like the game's: effects top left, orbs in the bottom corners, skills by the mana orb */
+  .s-top, .s-log, .s-life, .s-mana, .s-bar, .s-tip, .s-toast { position:absolute; pointer-events:none; font-family:Georgia, serif; }
+  .s-top { left:10px; right:10px; top:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .s-buffs { display:flex; flex-wrap:wrap; gap:4px; max-width:calc(100% - 40px); }
+  .s-buffs span { padding:3px 8px; font-size:12px; color:var(--c, #e8d8a8); background:#0b0a08d9; border:1px solid var(--c, #5a4a30); white-space:nowrap; }
+  .s-help { pointer-events:auto; flex:none; width:28px; height:28px; margin-left:auto; padding:0; font:bold 15px Georgia, serif; color:#c8b890; background:#0b0a08d9; border:1px solid #5a4a30; border-radius:50%; cursor:pointer; }
+  .s-help:hover, .s-help.on { color:#ffe9b0; border-color:#c9a85a; }
+  #scene #hud { position:absolute; top:44px; right:10px; z-index:2; max-width:calc(100% - 20px); padding:7px 10px; font:11.5px/1.55 system-ui, sans-serif; white-space:pre-wrap; color:#a89878; background:#0b0a08eb; border:1px solid #5a4a30; }
+  #scene #hud[hidden] { display:none; }
+  .s-log { left:14px; bottom:186px; width:min(400px, calc(100% - 28px)); display:flex; flex-direction:column; gap:2px; }
   .s-log div { padding:2px 8px; font-size:12.5px; color:#e8e0cc; background:linear-gradient(90deg, #0b0a08d9, #0b0a0800); border-left:2px solid var(--c, #c9a85a); transition:opacity .8s; }
   .s-log div.old { opacity:.35; }
-  .s-buffs { display:flex; flex-wrap:wrap; justify-content:center; gap:4px; }
-  .s-buffs span { padding:2px 8px; font-size:12px; color:var(--c, #e8d8a8); background:#0b0a08d9; border:1px solid var(--c, #5a4a30); border-radius:10px; white-space:nowrap; }
-  .s-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; max-width:100%; box-sizing:border-box; padding:6px; background:#0b0a08d9; border:1px solid #5a4a30; pointer-events:auto; }
-  .s-bar:empty, .s-buffs:empty, .s-vitals:empty { display:none; }
-  .s-vitals { display:flex; gap:6px; justify-content:center; width:min(440px, 100%); }
-  .s-vitals div { position:relative; flex:1; height:17px; background:#0b0a08d9; border:1px solid #5a4a30; overflow:hidden; }
-  .s-vitals i { position:absolute; inset:0 auto 0 0; background:linear-gradient(#b02a22, #6e1410); transition:width .12s linear; }
-  .s-vitals .es i { background:linear-gradient(#4a8fd0, #23507f); }
-  .s-vitals span { position:relative; display:block; font:11.5px/17px Georgia, serif; text-align:center; color:#f4ecd8; text-shadow:0 1px 2px #000; white-space:nowrap; }
-  .s-vitals .none span { color:#a89878; }
-  .s-slot { position:relative; flex:none; width:52px; height:52px; padding:0; background:#000; border:2px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  .s-life, .s-mana { bottom:10px; display:flex; flex-direction:column; gap:6px; }
+  .s-life { left:12px; align-items:flex-start; }
+  .s-mana { right:12px; align-items:flex-end; }
+  .s-vtxt { display:grid; grid-template-columns:auto auto; column-gap:12px; font-size:15px; line-height:1.25; color:#c8b890; text-shadow:0 1px 3px #000, 0 0 2px #000; }
+  .s-vtxt div { display:contents; }
+  .s-vtxt b { font-weight:normal; color:#f4ecd8; text-align:right; white-space:nowrap; }
+  .s-life .s-vtxt { margin-left:24px; }
+  .s-mana .s-vtxt { margin-right:24px; }
+  .s-orb { position:relative; width:118px; height:118px; border-radius:50%; overflow:hidden; background:radial-gradient(circle at 50% 60%, #15110c, #050403); border:3px solid #5a4a30; box-shadow:0 0 0 2px #1a140c, 0 4px 14px #000c, inset 0 0 18px #000; }
+  .s-orb i { position:absolute; left:0; right:0; bottom:0; transition:height .15s linear; }
+  .s-life .s-orb i { background:radial-gradient(circle at 40% 30%, #e0483a, #8e1610 55%, #3e0806); }
+  .s-mana .s-orb i { background:radial-gradient(circle at 40% 30%, #4f8be8, #1a3f9a 55%, #08164a); }
+  .s-orb::after { content:''; position:absolute; inset:8% 22% 52% 18%; border-radius:50%; background:radial-gradient(ellipse at 50% 30%, #ffffff40, #ffffff00 70%); }
+  /* energy shield: a ring around the life orb, filled as far as it is */
+  .s-orb u { position:absolute; inset:0; border-radius:50%; background:conic-gradient(#7cc0ff var(--p), #7cc0ff26 0); -webkit-mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); }
+  .s-bar { right:152px; bottom:14px; max-width:calc(100% - 304px); box-sizing:border-box; display:flex; justify-content:flex-end; gap:4px; padding:5px; background:linear-gradient(#1a150e, #0b0a08); border:1px solid #5a4a30; box-shadow:0 0 0 1px #000, 0 4px 12px #000a; pointer-events:auto; }
+  .s-bar:empty, .s-buffs:empty { display:none; }
+  .s-bar .note { padding:4px 8px; font-size:12px; color:#a89878; }
+  .s-slot { position:relative; flex:0 1 46px; min-width:24px; aspect-ratio:1; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
   .s-slot img { width:100%; height:100%; display:block; object-fit:cover; }
   .s-slot span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:12px Georgia, serif; color:var(--c, #c8b890); }
   .s-slot img + span { display:none; }
-  .s-slot b { position:absolute; left:2px; top:1px; font:bold 11px system-ui, sans-serif; color:#fff; text-shadow:0 0 3px #000, 0 0 3px #000; }
+  .s-slot b { position:absolute; left:0; right:0; bottom:0; font:bold 10px/13px system-ui, sans-serif; text-align:center; color:#e8dcc0; background:#000a; }
   .s-slot:hover { border-color:#8a7a5c; }
-  .s-slot.on { border-color:var(--c, #c9a85a); box-shadow:0 0 10px var(--c, #c9a85a); }
+  .s-slot.on { border-color:var(--c, #c9a85a); box-shadow:0 0 8px var(--c, #c9a85a); }
   .s-slot.act::after { content:''; position:absolute; inset:0; border:2px solid var(--c, #c9a85a); box-shadow:inset 0 0 12px var(--c, #c9a85a); }
+  .s-tip { z-index:3; width:max-content; max-width:260px; padding:7px 10px 8px; color:#a89878; background:#0b0a08f0; border:1px solid #5a4a30; border-top:2px solid var(--c, #c9a85a); }
+  .s-tip[hidden] { display:none; }
+  .s-tip b { display:block; font-weight:normal; font-size:16px; margin-bottom:2px; }
+  .s-tip span { display:block; font-size:12px; line-height:1.45; }
+  .s-tip span:first-of-type { color:#c8b890; font-variant:small-caps; font-size:13px; }
+  .s-tip small { display:block; margin-top:3px; font-size:11.5px; color:#ffd27a; }
+  @container (max-width:700px) { .s-orb { width:84px; height:84px; } .s-bar { right:108px; max-width:calc(100% - 216px); } .s-vtxt { font-size:13px; } .s-log { bottom:150px; } }
   .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; white-space:nowrap; }
   .s-toast.on { opacity:1; }
   /* character panel, like the in-game one */

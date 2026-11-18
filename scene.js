@@ -87,8 +87,13 @@ export function initScene(el, api) {
   // ---------- HUD
   const hud = el.querySelector('#hud') || el.appendChild(Object.assign(document.createElement('div'), { id: 'hud' }));
   const div = (cls, into = el) => into.appendChild(Object.assign(document.createElement('div'), { className: cls }));
-  const top = div('s-top'), bottom = div('s-bottom'); top.appendChild(hud);   // two flex rows, so nothing overlaps on a narrow scene
-  const infoEl = div('s-info', top), logEl = div('s-log', bottom), buffEl = div('s-buffs', bottom), vitEl = div('s-vitals', bottom), bar = div('s-bar', bottom), toastEl = div('s-toast');
+  // laid out like the game's screen: your effects top left, the keys and statistics behind a button top right, life
+  // (and energy shield) in the left orb and mana in the right one with their numbers over them, the skills by the mana orb
+  const top = div('s-top'), buffEl = div('s-buffs', top), help = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help', textContent: '?' }));
+  help.title = t('Keys and statistics of the simulator'); hud.hidden = true; el.appendChild(hud);
+  help.onclick = () => { hud.hidden = !hud.hidden; help.classList.toggle('on', !hud.hidden); };
+  const logEl = div('s-log'), lifeEl = div('s-life'), manaEl = div('s-mana'), bar = div('s-bar'), tipEl = div('s-tip'), toastEl = div('s-toast');
+  tipEl.hidden = true;
   const shown = new Map(), put = (node, html) => { if (shown.get(node) !== html) { shown.set(node, html); node.innerHTML = html; } };
   const say = (text, c = 'gold') => {
     const l = logs[logs.length - 1];
@@ -1198,10 +1203,23 @@ export function initScene(el, api) {
     if (!list.includes(sel)) sel = list[0] ?? 0;
     put(bar, list.slice(0, 12).map((i, n) => {
       const g = gems[i], inf = api.info(g), P = prof(g, inf);
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" title="${esc(inf.label)}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${n < 9 ? `<b>${n + 1}</b>` : ''}</button>`;
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${n < 9 ? `<b>${n + 1}</b>` : ''}</button>`;
     }).join('') || `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`);
-    const S = peek();
-    if (S) {
+    put(buffEl, effects());
+    put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
+    keysText();
+    // your life and energy shield (the left orb, energy shield as its ring), mana and the Spirit left unreserved (the right
+    // one), as the game shows them. note: the scene spends no mana, its orb stays full
+    const c = sheet(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
+    put(lifeEl, `<div class="s-vtxt">${me.known ? row(t('Life'), short(Math.max(0, Math.ceil(me.life))), short(me.maxL)) : `<div><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`}`
+      + `${me.maxE > 0 ? row(t('Energy Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}</div><div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}</div>`);
+    put(manaEl, `<div class="s-vtxt">${c.mana ? row(t('Mana'), short(c.mana), short(c.mana)) : ''}${c.spirit ? row(t('Spirit'), short(Math.max(0, free)), short(c.spirit)) : ''}</div><div class="s-orb"><i style="height:${c.mana ? 100 : 0}%"></i></div>`);
+    if (!tipEl.hidden && tipEl.dataset.i != null) showTip(+tipEl.dataset.i);
+  }
+  // what the cursor over a skill of the bar shows: its kind and elements, area, projectiles, duration and what it consumes
+  function tipOf(i) {
+    const S = mk(i); if (!S) return '';
+    {
       const G = S.G, P = S.P, rows = [];
       if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
       else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
@@ -1210,29 +1228,34 @@ export function initScene(el, api) {
       const notes = [...P.consumes.map(s => t('Consumes {0}', t(STATE[s]))), ...P.bonus.map(s => t('Payoff: {0}', t(STATE[s])))];
       if (P.corpse) notes.push(t('Needs a corpse'));
       P.spend.forEach(c => notes.push(t('Spends {0} charges', t(CHARGE[c]))));
-      put(infoEl, `<b style="color:${css(S.el)}">${esc(S.label)}</b><span>${t(KIND[S.kind === 'field' ? 'aura' : S.kind] || S.kind)}${P.els.length ? ' · ' + P.els.map(e => t(cap(e))).join(' / ') : ''}</span>`
-        + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : ''));
-    } else put(infoEl, '');
-    infoEl.hidden = !S;
+      return `<b style="color:${css(S.el)}">${esc(S.label)}</b><span>${t(KIND[S.kind === 'field' ? 'aura' : S.kind] || S.kind)}${P.els.length ? ' · ' + P.els.map(e => t(cap(e))).join(' / ') : ''}</span>`
+        + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : '');
+    }
+  }
+  function showTip(i) {
+    const slot = bar.querySelector(`[data-i="${i}"]`); if (!slot) { tipEl.hidden = true; return; }
+    put(tipEl, tipOf(i)); tipEl.dataset.i = i; tipEl.hidden = false;
+    const r = slot.getBoundingClientRect(), box = el.getBoundingClientRect(), w = tipEl.offsetWidth;
+    tipEl.style.left = clamp(r.left - box.left + r.width / 2 - w / 2, 6, box.width - w - 6) + 'px';
+    tipEl.style.bottom = (box.bottom - r.top + 8) + 'px';
+  }
+  bar.addEventListener('mouseover', e => { const b = e.target.closest('[data-i]'); if (b) showTip(+b.dataset.i); });
+  bar.addEventListener('mouseleave', () => { tipEl.hidden = true; delete tipEl.dataset.i; });
+  function effects() {
     const b = [];
     for (const c in charges) if (charges[c]) b.push(`<span style="--c:${css(CHC[c])}">${'●'.repeat(charges[c])}${'○'.repeat(Math.max(0, maxC(c) - charges[c]))} ${t(CHARGE[c])}</span>`);
     for (const k in tog) { const T = tog[k]; b.push(`<span style="--c:${css(T.el)}">${esc(T.label)}${T.kind === 'meta' ? ` ${T.energy}/${T.need}` : ''}</span>`); }
     for (const E of empower) b.push(`<span style="--c:${css(E.el || 'gold')}">▸ ${esc(E.label)}${E.uses > 1 ? ' ×' + E.uses : ''}</span>`);
     for (const B of buffs) b.push(`<span style="--c:${B.c}">${esc(B.label)} ${Math.ceil(B.s)}s</span>`);
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
-    put(buffEl, b.join(''));
-    put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
+    return b.join('');
+  }
+  function keysText() {
     const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('WASD move · 1-9 or click: cast at the cursor (hold to repeat)'), t('Right-drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
       t('{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset', ...['corpse', 'charges', 'refill', 'reset'].map(k => keyName(settings().keys[k]))),
       !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Shift+click: place {0}', tpl.mon.name),
       t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
     if (hud.textContent !== text) hud.textContent = text;
-    // your life and energy shield
-    const pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), bars = [];
-    if (me.known) bars.push(`<div class="life"><i style="width:${pct(me.life, me.maxL)}%"></i><span>${t('Life')} ${short(Math.max(0, Math.ceil(me.life)))} / ${short(me.maxL)}</span></div>`);
-    else if (dummies.length) bars.push(`<div class="life none"><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`);
-    if (me.maxE > 0) bars.push(`<div class="es"><i style="width:${pct(me.es, me.maxE)}%"></i><span>${t('Energy Shield')} ${short(Math.max(0, Math.ceil(me.es)))} / ${short(me.maxE)}</span></div>`);
-    put(vitEl, bars.join(''));
   }
 
   // ---------- frame

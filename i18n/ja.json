@@ -835,5 +835,6 @@
  "Pinned": "足止め",
  "{0} cannot curse enemies above level {1}": "{0}はレベル{1}を超える敵を呪えない",
  "No skill of the build is used by hand: they are always on.": "このビルドに手動で使うスキルはありません：すべて常に有効です。",
- "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} は無効のまま：スピリットを {1} 確保しますが、残りは {2} です"
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} は無効のまま：スピリットを {1} 確保しますが、残りは {2} です",
+ "Keys and statistics of the simulator": "シミュレーターのキーと統計"
 }

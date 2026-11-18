@@ -835,5 +835,6 @@
  "Pinned": "Пригвождение",
  "{0} cannot curse enemies above level {1}": "{0} не может проклинать врагов выше {1} уровня",
  "No skill of the build is used by hand: they are always on.": "Ни одно умение билда не используется вручную: все они всегда активны.",
- "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} остаётся выключенным: резервирует {1} духа, а осталось {2}"
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} остаётся выключенным: резервирует {1} духа, а осталось {2}",
+ "Keys and statistics of the simulator": "Клавиши и статистика симулятора"
 }

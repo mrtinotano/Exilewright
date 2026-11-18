@@ -835,5 +835,6 @@
  "Pinned": "Verrouillé",
  "{0} cannot curse enemies above level {1}": "{0} ne peut pas maudire les ennemis au-delà du niveau {1}",
  "No skill of the build is used by hand: they are always on.": "Aucune compétence du build ne s'utilise à la main : elles sont toujours actives.",
- "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} reste désactivée : elle réserve {1} d'Esprit et il en reste {2}"
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} reste désactivée : elle réserve {1} d'Esprit et il en reste {2}",
+ "Keys and statistics of the simulator": "Touches et statistiques du simulateur"
 }

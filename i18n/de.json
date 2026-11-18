@@ -835,5 +835,6 @@
  "Pinned": "Festgesetzt",
  "{0} cannot curse enemies above level {1}": "{0} kann Gegner über Stufe {1} nicht verfluchen",
  "No skill of the build is used by hand: they are always on.": "Keine Fertigkeit des Builds wird von Hand eingesetzt: Sie sind immer aktiv.",
- "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} bleibt aus: reserviert {1} Wille, übrig sind {2}"
+ "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} bleibt aus: reserviert {1} Wille, übrig sind {2}",
+ "Keys and statistics of the simulator": "Tasten und Statistiken des Simulators"
 }
