@@ -9,21 +9,14 @@ const f = (x, d = 2) => fmt(x, d);
 const sign = x => (x > 0 ? '+' : '') + x;
 const NO_BASE = 'The class base life/mana is missing: it comes from regenerating the data on Windows';
 
-// small line icons standing in for the game's panel art (not in the extracted data yet)
+// the game's panel icons (images.py: img/panel); life, energy shield and mana have none in the files: small line
+// icons stand in for them
 const ICON = {
   life: '<path d="M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z"/>',
   es: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M12 7v10M8 11h8"/>',
   mana: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>',
-  spirit: '<circle cx="12" cy="12" r="3.5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
-  armour: '<path d="M6 4h12l1 6-3 10H8L5 10z"/><path d="M9 4v6h6V4"/>',
-  evasion: '<path d="M4 16c4 0 6-8 10-8M7 20c4 0 7-9 13-9M4 9c3 0 4-4 8-5"/>',
-  block: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M12 3v18"/>',
-  fire: '<path d="M12 21c-4 0-6-3-6-6 0-4 4-6 4-11 3 2 4 5 4 7 1-1 1.5-2 1.5-3 2 2 2.5 4.5 2.5 7 0 3-2 6-6 6z"/>',
-  cold: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/>',
-  lightning: '<path d="M13 2L5 13h6l-1 9 8-12h-6z"/>',
-  chaos: '<path d="M12 12a2 2 0 1 1 2 2 4 4 0 1 1-4-4 6 6 0 1 1 6 6 8 8 0 1 1-8-8"/>',
 };
-const ico = k => `<svg class="cp-ico ${k}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ICON[k]}</svg>`;
+const ico = k => !ICON[k] ? `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${k}.webp" alt="">` : `<svg class="cp-ico ${k}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ICON[k]}</svg>`;
 
 // editable in place: name (input), base class and ascendancy (each row opens its list); level follows the tree
 export function renderChar(el, b, sum, { asc, cls, points, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {

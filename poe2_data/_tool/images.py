@@ -30,7 +30,14 @@ for state, col in (('normal', 'Normal'), ('active', 'Active')):
     TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
 for size in ('Small', 'Medium', 'Large'):
     TREE['group_' + size.lower()] = uiart['Character']['GroupBackground' + size]
-ui |= set(TREE.values())
+# the character panel's icons (UIImages InGame/CharacterPanel, the spirit one from the HUD), saved whole as
+# ../available/img/panel/<role>.webp. note: life, energy shield and mana have none in the files (MainStat* are the old
+# panel's frames, an orb in them): charpanel.js draws those
+PANEL = {k: 'Art/2DArt/UIImages/InGame/' + v for k, v in {
+    'spirit': 'SpiritIcon', 'armour': 'CharacterPanel/IconPhysicalReduction', 'evasion': 'CharacterPanel/IconEvasion',
+    'block': 'CharacterPanel/IconBlock', 'fire': 'CharacterPanel/IconFire', 'cold': 'CharacterPanel/IconCold',
+    'lightning': 'CharacterPanel/IconLightning', 'chaos': 'CharacterPanel/IconChaos'}.items()}
+ui |= set(TREE.values()) | set(PANEL.values())
 atlas = {}
 if ui:
     index = os.path.join(ROOT, 'files', 'art', 'uiimages1.txt')
@@ -61,14 +68,14 @@ for p in paths:
         im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((p, str(e)))
-for role, name in TREE.items():   # each is a picture of its own: whole, full size (they are drawn large when zoomed in)
-    out = os.path.join(ROOT, 'available', 'img', 'tree', role + '.webp')
+for folder, role, name in [('tree', *x) for x in TREE.items()] + [('panel', *x) for x in PANEL.items()]:   # each is a picture of its own: whole, full size (the tree's are drawn large when zoomed in)
+    out = os.path.join(ROOT, 'available', 'img', folder, role + '.webp')
     try:
         os.makedirs(os.path.dirname(out), exist_ok=True)
         Image.open(os.path.join(ROOT, 'files', atlas[name.lower()][0])).save(out, 'WEBP', quality=90)
     except Exception as e:
         bad.append((role, str(e)))
-skip = {v.lower() for v in TREE.values()}
+skip = {v.lower() for v in [*TREE.values(), *PANEL.values()]}
 for name, (file, (x1, y1, x2, y2)) in atlas.items():
     if name in skip:
         continue
