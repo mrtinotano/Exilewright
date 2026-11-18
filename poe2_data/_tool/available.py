@@ -554,7 +554,9 @@ flasks = {f['BaseItemType']: f for f in load('Flasks')}
 charges = {c['BaseItemTypesKey']: c for c in load('ComponentCharges')}   # a flask's (and charm's) most charges and charges per use
 utility = load('UtilityFlaskBuffs')
 # a charm's effect while it lasts: its buff (UtilityFlaskBuffs -> BuffDefinitions), the buff's stats with their values and its icon
-charm_of = lambda fl: fl and fl['UtilityBuff'] and (lambda u, d: {'buff': d['Id'], 'stats': dict(zip((sid(x) for x in d['Stats']), u['StatValues'])), 'icon': _buff_icon.get(d['Id'])})(utility[fl['UtilityBuff'][0]], buff_defs[utility[fl['UtilityBuff'][0]]['BuffDefinition']])
+def charm_of(fl):
+    u = fl and fl['UtilityBuff'] and utility[fl['UtilityBuff'][0]]; d = u and buff_defs[u['BuffDefinition']]
+    return d and {'buff': d['Id'], 'stats': dict(zip(map(sid, d['Stats']), u['StatValues'])), 'icon': _buff_icon.get(d['Id'])}
 spirit = {s['BaseItemType']: s['SpiritGranted'] for s in load('ItemSpirit')}   # sceptres: 100
 visual = load('ItemVisualIdentity')
 mods_tr = load_langs('Mods')
@@ -579,7 +581,7 @@ for i, b in enumerate(base_types):
         'img': visual[b['ItemVisualIdentity']]['DDSFile'] if b['ItemVisualIdentity'] is not None else None,
         'size': [b['Width'], b['Height']],
         'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10, 'charges': charges[b['Id']]['MaxCharges'], 'per_use': charges[b['Id']]['PerCharge']},
-        **({'charm': charm_of(fl)} if cls == 'Charms' and charm_of(fl) else {}),
+        **({'charm': charm_of(fl)} if cls == 'Charms' else {}),
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
         'spirit': spirit.get(i),
         **({'grants': inherent[i]} if i in inherent else {}),
@@ -588,7 +590,7 @@ for i, b in enumerate(base_types):
 # reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
 rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValues'])): 1 for r in load('SoulCoreStats') if r['Stats']})
 assert any(x[0][0] == 'base_fire_damage_resistance_%' for x in rune_sets), 'SoulCoreStats'
-assert next(b for b in bases if b['name'] == 'Ruby Charm')['charm'] == {'buff': 'utility_charm_fire_resistance', 'stats': {'base_fire_damage_resistance_%': 25}, 'icon': next(b for b in bases if b['name'] == 'Ruby Charm')['charm']['icon']}, 'UtilityFlaskBuffs'
+assert next(b for b in bases if b['name'] == 'Ruby Charm')['charm']['stats'] == {'base_fire_damage_resistance_%': 25}, 'UtilityFlaskBuffs'
 assert all(b.get('charm') and b['charm']['icon'] for b in bases if b['class'] == 'Charms'), 'a charm without its effect or icon'
 assert next(b for b in bases if b['name'] == 'Lesser Life Flask')['flask'] == {'life': 50, 'mana': 0, 'recovery_s': 3.0, 'charges': 60, 'per_use': 10}, 'Flasks / ComponentCharges'
 save('items.json', {

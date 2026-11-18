@@ -144,7 +144,7 @@ const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges
 export function charmOf(it, sum = {}) {
   const base = BASE[it?.base]; if (!base?.charm) return null;
   const s = rolled(it), g = id => sum[id] || 0, F = base.flask;
-  return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), buff: base.charm.buff, stats: base.charm.stats, icon: base.charm.icon,
+  return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm,
     img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%')) / 100),
     max: mostCharges(F, s), per: Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),
     gain: 1 + g('charm_charges_gained_+%') / 100, keep: g('charms_%_chance_to_not_consume_charges'),
