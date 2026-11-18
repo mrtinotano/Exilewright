@@ -4,9 +4,10 @@
 // resistances and the damage of their attacks at the chosen level: enemies.js) and the damage and speed of your skills (calc.js),
 // each mitigated with the game's own formulas.
 // Ailments follow the game's rules (GameConstants, each enemy's ailment threshold and poise, the skill's own modifiers: afflict()),
-// and each gem's own chains, projectiles and times (calc.js shape). Not in the game data: the combo multipliers of consumed states
-// and curses, and how an enemy attack looks and reaches you. Those are the SIM defaults of skillfx.js and the shapes of enemies.js;
-// a number that includes one of them is drawn with "~".
+// and each gem's own chains, projectiles and times (calc.js shape). Consumed states, more damage against a state, charges spent,
+// curses and exposure use the skill's own stats (calc.js ailments() and curseOf()). Not in the game data: what consuming a state
+// does when the skill gives no number for it, and how an enemy attack looks and reaches you. Those are the SIM defaults of
+// skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
 // WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset
 // (those five can be changed in Settings: settings.js).
 import * as THREE from 'three';
@@ -30,15 +31,20 @@ const FORCE = { circle: 'area', nova: 'nova', cone: 'cone', line: 'beam', projec
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
 const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
-const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark' };
+const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
+const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
+const IMMUNE = 1;                         // note: keywords.json Consume: a consumed ailment cannot be inflicted again for 1 s
+const GROUND_TIME = { burning: 4, chilled: 6, shocked: 6 };   // note: keywords.json Ignited / Chilled / Shocked Ground, in s
+const ELEM = ['fire', 'cold', 'lightning'];
 const DUR = { ignite: GAME.ignite_duration || SIM.ignite, chill: GC.BaseChillDuration, shock: GC.BaseShockDuration, freeze: GC.FreezeDuration,
-  poison: GAME.poison_duration || SIM.poison, bleed: GAME.bleed_duration || SIM.bleed, armour: BROKEN.time, stun: GAME.heavy_stun_ms / 1000, expo: EXPO.time };
+  poison: GAME.poison_duration || SIM.poison, bleed: GAME.bleed_duration || SIM.bleed, armour: BROKEN.time, stun: GAME.heavy_stun_ms / 1000, expo: EXPO.time,
+  electrocute: GC.ElectrocuteDuration / 1000, pin: GC.PinDuration };
 const GFX = { burning: ['fire', 'patch'], chilled: ['cold', 'patch'], shocked: ['lightning', 'patch'], oil: [0x050403, 'patch', true], gas: ['gas', 'patch'],
   jagged: [0x070605, 'cracks', true], caustic: ['poison', 'patch'], consecrated: ['holy', 'rune'] };
 const GAIL = { burning: 'ignite', chilled: 'chill', shocked: 'shock', gas: 'poison', caustic: 'poison' };
@@ -72,7 +78,7 @@ export function initScene(el, api) {
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false };   // your life and energy shield against their attacks
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
-  const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, tog = {};
+  const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false;
   let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
@@ -109,7 +115,7 @@ export function initScene(el, api) {
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
-    const S = { i, g, P, G, kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
+    const S = { i, g, P, G, kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
     cache.set(i, { g, shape: g.shape, at: time, S }); return S;
   }
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
@@ -143,8 +149,8 @@ export function initScene(el, api) {
     if (dummies.length >= MAXE) { toast(t('The scene holds up to {0} enemies', MAXE)); return null; }
     const fig = makeDummy(fx, { kind: m.category, scale: m.boss ? 1.45 : 1 });
     fig.group.position.set(x, 0, z); fig.group.rotation.y = Math.atan2(pp.x - x, pp.z - z); scene.add(fig.group);
-    const d = { fig, pos: fig.group.position, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], dead: false, corpse: 0, back: 0, fall: 0,
-      flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expoEl: null, wind: null, wait: rnd(.6, 1.2) };
+    const d = { fig, pos: fig.group.position, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], dead: false, corpse: 0, back: 0, fall: 0,
+      flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expo: null, wind: null, wait: rnd(.6, 1.2) };
     arm(d, tpl.level, tpl.attack); dummies.push(d);
     fx.ring(d.pos, 1.3 * d.sc, .3, 'gold', .4, { a: .6 });
     fx.emit(12, { p: { x, y: .2, z }, r: .5, v: 1, up: 1, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
@@ -152,7 +158,7 @@ export function initScene(el, api) {
   }
   const restore = d => {
     const f = d.fig; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
-    d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.mag = {}; d.cut = 0;
+    d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0;
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
@@ -171,7 +177,8 @@ export function initScene(el, api) {
     return best;
   }
   const inside = (c, R) => dummies.filter(d => !d.dead && dist(d.pos, c) <= R + SIM.body * d.sc);
-  const has = (d, s) => s === 'curse' ? !!d.curse : s === 'mark' ? !!d.mark : d.st[s] > 0;
+  const has = (d, s) => s === 'curse' ? !!d.curse : s === 'mark' ? !!d.mark
+    : s === 'immobilised' ? ['freeze', 'stun', 'electrocute', 'pin'].some(k => d.st[k] > 0) : d.st[s] > 0;
   const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
   const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
   const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
@@ -182,8 +189,10 @@ export function initScene(el, api) {
   };
 
   // ---------- combat rules
+  const maxC = c => sheet().charges?.[c] || 0;   // the build's maximum (calc.js character())
   function gainCharge(type, by) {
-    if (charges[type] >= SIM.maxCharges) return;
+    chargeAt[type] = time;   // gaining one refreshes them all
+    if (charges[type] >= maxC(type)) return;
     charges[type]++; fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
   }
@@ -200,44 +209,52 @@ export function initScene(el, api) {
     const c = PIP[s];
     fx.ring(d.pos, .2, 1.6, c, .4); fx.emit(18, { p: chest(d), v: 4, up: 2, life: .5, size: .2, c, c2: 'white', drag: 1.5 });
     fx.text(over(d), (consumed ? '− ' : '+ ') + t(STATE[s]), css(c));
-    say(consumed ? t('{0} consumes {1}: a much bigger hit', S.label, t(STATE[s])) : t('{0} hits harder: {1}', S.label, t(STATE[s])), c);
+    say(consumed ? t('{0} consumes {1}', S.label, t(STATE[s])) : t('{0} hits harder: {1}', S.label, t(STATE[s])), c);
   }
   // One hit of the skill context S on the enemy d. o: { mult, noPay }
   // The number is the skill's own damage (calc.js) rolled between its minimum and maximum, with its crit chance, after the enemy's
-  // armour and resistances. The combo multipliers of the scene (consumed states, shock, exposure, charges...) scale it and mark it
-  // "~", like the hits whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
+  // armour and resistances, times what the skill's stats give: a consumed state, more damage against a state, charges spent.
+  // A multiplier of the scene (stages, channelling, a consumed state the data gives no number for) marks it "~", like the hits
+  // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
   function hit(d, S, o = {}) {
     if (d.dead) return false;
-    const P = S.P, D = S.dmg, own = !APPROX.has(S.src);
-    if (own && (D ? D.attack : P.attack)) {   // attacks roll your accuracy against its evasion; spells always hit
+    const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
+    const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
+    if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       const acc = sheet().accuracy;
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
-    let m = (o.mult ?? 1) * S.mult;
+    // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
+    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
     if (!o.noPay) {
-      for (const s of P.consumes) if (has(d, s)) { clear(d, s); m += SIM.consume; pay(d, S, s, true); }
-      for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
+      const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
+      for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
+        clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true);
+        const c = C[s];
+        if (!c) { m += SIM.consume; continue; }
+        g *= 1 + ((c.any || 0) + (c[uniq ? 'unique' : 'non_unique'] || 0)) / 100; stunX *= 1 + (c.stun || 0) / 100;
+      }
+      if (A) { for (const [s, pct, u, phys] of A.vs) if (has(d, s) && (u == null || u === uniq)) { if (phys) gp *= 1 + pct / 100; else g *= 1 + pct / 100; } }
+      else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
-    if (d.curse && d.curse.els.some(e => S.els.includes(e))) m *= 1 + SIM.curseTaken;
     const M = d.mark;
     if (M && M.gain && !S.src) {   // marks that grant charges are consumed by your next hit
       d.mark = null; m += 1; fx.ring(d.pos, .3, 1.5, 'mark', .35);
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     } else if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; later(.05, () => boom(d.pos, M.R, M.S)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
-    const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
       crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + (D.critBonus || 0) / 100 : 1;
       for (const el in D.hits) {
-        const [lo, hi] = D.hits[el], r = (lo + Math.random() * (hi - lo)) * m * cm, got = takes(d, el, r);
+        const [lo, hi] = D.hits[el], r = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm, got = takes(d, el, r);
         raw[el] = r; total += got; if (got > best) { best = got; top = el; }
       }
-    } else total = (d.max + d.maxEs) / 8 * m * shocked(d);
+    } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     d.by = S; damage(d, total, S);
     if (d.dead) return true;
-    if (real) afflict(d, S, raw); else for (const a of S.ail) inflict(d, a, S);
+    if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S);
     return true;
@@ -252,7 +269,7 @@ export function initScene(el, api) {
   // o (from afflict): the game's duration, magnitude (shock, chill) and effect (damaging ailments) of this one;
   // without it (minions, grounds, skills without damage data) freeze and armour break take the scene's hit counts
   function inflict(d, a, S, k = 1, raw = null, o = null) {
-    if (d.dead) return;
+    if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
     else if (a === 'freeze') {   // freeze builds up over several cold hits
       if (d.st.freeze > 0) return;
@@ -276,58 +293,79 @@ export function initScene(el, api) {
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
+    else if (a === 'electrocute' || a === 'pin') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
     else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
     else if (a === 'ignite') fx.emit(8, { p, r: .25, v: .5, up: 2.2, life: .5, size: .32, c: 'fire', c2: 'ember' });
     event(a, d.pos, S);
   }
-  const expo = (d, e) => { d.st.expo = DUR.expo; d.expoEl = e; };
+  // Exposure lowers the resistances of its elements by its magnitude (the glossary's when the source gives none); the strongest stays
+  const expo = (d, els, mag = EXPO.res, dur = DUR.expo) => {
+    const old = d.st.expo > 0 && d.expo;
+    d.expo = { els: [...new Set([...(old ? old.els : []), ...els])], mag: Math.max(old ? old.mag : 0, Math.abs(mag)) };
+    d.st.expo = Math.max(d.st.expo || 0, dur);
+  };
+  const expoMag = S => (S.dmg?.ail?.expo.skill ?? EXPO.res) * (S.dmg?.ail?.expo.effect ?? 1);   // the skill's own (Oil, Frost Bomb)
   // shocked enemies take more damage from everything (BaseShockMagnitude, or the shock's own)
   const shocked = d => d.st.shock > 0 ? 1 + (d.mag.shock ?? GC.BaseShockMagnitude) / 100 : 1;
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
-  // physical damage taken), resistance lowered by exposure (less on rarer monsters), and shock
+  // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), and shock
   function takes(d, el, r, isHit = true) { return defence(d, el, r, isHit) * shocked(d); }
   function defence(d, el, r, isHit = true) {
-    let st = d.stat;
-    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut) };
-    if (d.st.expo > 0 && el === d.expoEl) st = { ...st, res: { ...st.res, [el]: st.res[el] - EXPO.res * st.expoEffect } };
+    let st = d.stat; const C = d.curse?.C, k = d.curse?.k || 0;
+    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || C?.armour)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - (C?.armour || 0) * k) };
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - (C?.res[el] || 0) * k;
+    if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     return enemyTakes(st, el, r, isHit) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + BROKEN.taken / 100 : 1);
   }
   // What one hit does with ailments, as the game rolls it: its damage before the enemy's mitigation (raw, per type) against the
   // enemy's Elemental Ailment Threshold (chance to shock, flammability for ignite, chill magnitude) and poise (freeze and heavy
   // stun buildup), with GameConstants' rules, the skill's modifiers (calc.js ailments()) and the enemy's rarity. Bleeding and
   // poison need a chance of their own; Armour Break, an amount the skill or the build gives.
+  // The skill's own on / off rules (never / always freeze, shock, ignite, stun...) come first. Electrocute and Pin build up
+  // like freeze, only from skills that say so. o: { crit, stunX } of the hit.
   // note: freeze buildup is measured against poise, as Path of Building 2 does (the glossary says Ailment Threshold)
-  function afflict(d, S, raw) {
-    const A = S.dmg.ail, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
-    if (x('fire') && S.els.includes('fire')) {   // flammability: each hit adds some for a while, the total is the chance to ignite
+  function afflict(d, S, raw, o = {}) {
+    const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
+    const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
+    if (x('fire') && S.els.includes('fire') && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       d.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
-      if (roll(d.flam.reduce((t, f) => t + f.v, 0))) inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect });
+      if (AL.ignite || roll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
     }
-    if (x('lightning') && roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance))
-      inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect });
+    if (x('lightning') && !N.shock && (AL.shock || roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance))) {
+      inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
+    }
     if (x('cold')) {
-      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') / thr * A.chillEffect);
+      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
-      build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze, S, A);
+      if (AL.freeze && !N.freeze) inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime });
+      else if (!N.freeze) build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze, S, A);
+      if (o.crit) ex(['cold'], E.onColdCrit);
     }
+    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute, S, A);
+    const sum = Object.values(raw).reduce((t, v) => t + v, 0);
+    if (A.pin) build(d, 'pin', sum * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
-    build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun, S, A);
-    if (x('physical') && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
+    if (AL.stun && !N.stun) inflict(d, 'stun', S, 1, null, { dur: DUR.stun });
+    else if (!N.stun) build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
+    if (x('physical') && !N.bleed && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
-    const brk = (A.breakFlat + x('physical') * A.breakPct / 100) * A.breakMore;
+    if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
+    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * A.breakPct / 100) * A.breakMore;
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
       if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); }
     }
   }
-  // freeze and heavy stun bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill again for a while
+  // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
+  // again for a while (GameConstants <name>ThresholdModifier / <name>ModifierDuration)
+  const BAR = { freeze: 'Freeze', stun: 'HeavyStun', electrocute: 'Electrocute', pin: 'Pin' };
   function build(d, a, n, S, A) {
-    if (!(n > 0) || d.st[a] > 0) return;
-    const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
+    if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
+    const G = BAR[a], hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, d.stat.poise) * hard) * 100; d.calm = 0;
     if (d.bar[a] < 100) return;
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
-    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR.stun });
+    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
@@ -382,7 +420,7 @@ export function initScene(el, api) {
     }
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) gainCharge(S.P.gain, S.label);
     event('kill', p, S);
-    d.st = {}; d.burn = {}; d.curse = d.mark = null; d.dots = []; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.mag = {}; d.cut = 0; d.sig = ''; d.wind = null; d.life = d.es = 0;
+    d.st = {}; d.burn = {}; d.curse = d.mark = null; d.dots = []; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
     if (frozen) {   // frozen enemies shatter: no corpse
       fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
@@ -431,7 +469,7 @@ export function initScene(el, api) {
         later(.08, () => boom(g, g.r, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' }));
       } else if (g.type === 'oil' && fire) {
         g.dead = true; say(t('{0}: the oil catches fire', S.label), 'fire');
-        fx.explode(g, g.r, 'fire', { soft: true }); ground('burning', g, g.r, SIM.groundTime, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
+        fx.explode(g, g.r, 'fire', { soft: true }); ground('burning', g, g.r, GROUND_TIME.burning, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
       }
     }
   }
@@ -461,7 +499,7 @@ export function initScene(el, api) {
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
-    grounds.push({ type, x: c.x, z: c.z, r, s: dur || SIM.groundTime, tick: .2, S, decal, dead: false });
+    grounds.push({ type, x: c.x, z: c.z, r, s: dur || GROUND_TIME[type] || SIM.groundTime, tick: .2, S, decal, dead: false });
   }
   function groundFx(g) {
     const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;
@@ -668,7 +706,7 @@ export function initScene(el, api) {
       }
       shot(() => {
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
-        boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur || SIM.groundTime, S);
+        boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur, S);
       });
     },
     grenade(S) {
@@ -676,8 +714,8 @@ export function initScene(el, api) {
       lob(fx.orb(S.el, .11), hand(), V(c.x, .15, c.z), .55, 2.6, () => {
         if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
           fx.explode(c, S.A, S.el, { soft: true });
-          for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, 'fire'); else inflict(d, 'poison', S); d.wob = .6; }
-          ground(P.ground, c, S.A, P.dur || SIM.groundTime, S);
+          for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, ELEM, expoMag(S)); else inflict(d, 'poison', S); d.wob = .6; }
+          ground(P.ground, c, S.A, P.dur, S);
           return;
         }
         const m = fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
@@ -701,7 +739,7 @@ export function initScene(el, api) {
         tick(dt, e) {
           m.position.y = 1.3 + Math.sin(e.s * 3) * .08; if (P.detonates) m.userData.core.scale.setScalar(.3 * (1 + e.s / dur * .7));
           if ((tk -= dt) > 0) return;
-          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, S.el === 'ice' ? 'cold' : P.el); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
+          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
           else if (P.chains) { tk = .9; e.zap(); }
           else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
         },
@@ -737,8 +775,12 @@ export function initScene(el, api) {
       later(wait, () => {
         fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
         const list = inside(c, R);
-        for (const d of list) { d.curse = { s: sh(S).duration || SIM.curseTime, els: S.P.els, label: S.label }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
-        if (list.length) say(t('{0}: {1} enemies cursed', S.label, list.length), 'curse');
+        const C = S.dmg?.curse; let n = 0;
+        for (const d of list) {
+          if (C?.maxLevel && d.level > C.maxLevel) { say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); continue; }
+          n++;
+          d.curse = { s: sh(S).duration || SIM.curseTime, label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
+        if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
       });
     },
     mark(S) {
@@ -796,7 +838,7 @@ export function initScene(el, api) {
       const P = S.P, to = S.at, from = { x: pp.x, z: pp.z };
       const land = () => {
         if (S.R || P.attack) boom(to, S.A, S); else fx.ring(to, .2, 1.6, S.el, .4);
-        if (P.ground) ground(P.ground, to, S.A, P.dur || SIM.groundTime, S);
+        if (P.ground) ground(P.ground, to, S.A, P.dur, S);
       };
       if (P.blink && !P.jump) {
         fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
@@ -812,14 +854,14 @@ export function initScene(el, api) {
       fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
       for (const d of inside(c, R)) later(dist(d.pos, c) / R * dur, () => hit(d, S));   // the wave reaches the near ones first
       later(dur * .5, () => touch(c, R, S));
-      if (P.ground) later(dur, () => ground(P.ground, c, R, Math.min(P.dur || SIM.groundTime, 8), S));
+      if (P.ground) later(dur, () => ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 8), S));
     },
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
         boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
-        if (P.ground) ground(P.ground, c, R * 1.15, P.dur || SIM.groundTime, S);
+        if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
         if (P.fan && S.spent) { const a0 = Math.atan2(S.dx, S.dz), n = 1 + S.spent * 2; for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .22; shoot({ ...S, aoe: false, P: { ...P, explodes: false } }, c, Math.sin(a), Math.cos(a), { speed: 20, range: 11 }); } }
       });
@@ -930,7 +972,7 @@ export function initScene(el, api) {
       }
       if (S.R >= 6 && !S.src) c = S.from;
       boom(c, R, S);
-      if (P.ground) ground(P.ground, c, R, Math.min(P.dur || SIM.groundTime, 10), S);
+      if (P.ground) ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 10), S);
     },
     meteor(S) {
       const P = S.P, R = S.A, delay = P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
@@ -959,8 +1001,9 @@ export function initScene(el, api) {
     aim(S, o.at || cursor);
     if (!auto) {
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
-      for (const c of P.spend) if (charges[c]) { S.spent += charges[c]; charges[c] = 0; }
-      if (S.spent) { S.mult += S.spent * SIM.chargeMult; say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
+      const ch = S.dmg?.ail?.charge || {};
+      for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; charges[c] = 0; }
+      if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       if (S.stage != null) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el);
@@ -1041,7 +1084,7 @@ export function initScene(el, api) {
       if (d) { d.st.freeze = 0; kill(d, NONE); say(t('Corpse made: skills that need a corpse can use it'), 'gold'); }
       else toast(t('Point at an enemy to turn it into a corpse'));
     }
-    else if (c === K.charges) { for (const k in charges) charges[k] = SIM.maxCharges; fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
+    else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
     else if (c === K.roll && !move && rollCd <= 0) {
       const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r);
       const dx = l ? (-sy * f + cy * r) / l : Math.sin(facing), dz = l ? (-cy * f - sy * r) / l : Math.cos(facing);
@@ -1145,7 +1188,7 @@ export function initScene(el, api) {
     } else put(infoEl, '');
     infoEl.hidden = !S;
     const b = [];
-    for (const c in charges) if (charges[c]) b.push(`<span style="--c:${css(CHC[c])}">${'●'.repeat(charges[c])}${'○'.repeat(SIM.maxCharges - charges[c])} ${t(CHARGE[c])}</span>`);
+    for (const c in charges) if (charges[c]) b.push(`<span style="--c:${css(CHC[c])}">${'●'.repeat(charges[c])}${'○'.repeat(Math.max(0, maxC(c) - charges[c]))} ${t(CHARGE[c])}</span>`);
     for (const k in tog) { const T = tog[k]; b.push(`<span style="--c:${css(T.el)}">${esc(T.label)}${T.kind === 'meta' ? ` ${T.energy}/${T.need}` : ''}</span>`); }
     for (const E of empower) b.push(`<span style="--c:${css(E.el || 'gold')}">▸ ${esc(E.label)}${E.uses > 1 ? ' ×' + E.uses : ''}</span>`);
     for (const B of buffs) b.push(`<span style="--c:${B.c}">${esc(B.label)} ${Math.ceil(B.s)}s</span>`);
@@ -1177,6 +1220,7 @@ export function initScene(el, api) {
     }
     for (const k in st) if (st[k] > 0) st[k] -= dt;
     for (const k in d.lock) d.lock[k] -= dt;
+    for (const k in d.imm) d.imm[k] -= dt;
     for (let i = d.flam.length - 1; i >= 0; i--) if ((d.flam[i].s -= dt) <= 0) d.flam.splice(i, 1);
     // the bars empty after a while without buildup (monster.ot poise decay)
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
@@ -1248,7 +1292,8 @@ export function initScene(el, api) {
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, c.evasion || 0)) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
-    const crit = Math.random() * 100 < a.crit, cm = crit ? 1 + a.critBonus / 100 : 1;
+    // a curse that lowers their damage (Enfeeble)
+    const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
     let total = 0, chaos = 0, top = d.col, best = 0;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el], got = playerTakes(c, el, (lo + Math.random() * (hi - lo)) * cm);
@@ -1307,8 +1352,10 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
-    if (d.st.freeze > 0 || d.st.stun > 0) { d.wind = null; return; }   // frozen and heavily stunned enemies cannot act
-    if (d.st.chill > 0) dt *= Math.max(SLOW_FLOOR, 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100);   // chill slows everything they do
+    if (d.st.freeze > 0 || d.st.stun > 0 || d.st.electrocute > 0) { d.wind = null; return; }   // frozen, heavily stunned and electrocuted enemies cannot act
+    // chill and a curse's slower actions (Temporal Chains) slow everything they do
+    let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
+    if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     d.wait -= dt;
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
     if (d.wait > 0 || me.safe > 0 || dist(d.pos, pp) > reachOf(d)) return;
@@ -1385,6 +1432,7 @@ export function initScene(el, api) {
       for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S);
     }
     vitals(dt); tickHazards(dt);
+    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME) charges[c] = 0;
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); }
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);

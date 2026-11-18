@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0} может использовать трупы ваших врагов и {1}",
  "{0} casts {1} by itself when it fills its energy": "{0} сам применяет {1}, когда накапливает энергию",
  "{0} consumes {1}": "{0} поглощает {1}",
- "{0} consumes {1}: a much bigger hit": "{0} поглощает {1}: гораздо более сильный удар",
  "{0} detonates {1}": "{0} взрывает {1}",
  "{0} empowers {1}: it repeats as an aftershock": "{0} улучшает {1}: оно повторяется остаточной волной",
  "{0} erupts from {1}": "{0} извергается из {1}",
@@ -831,5 +830,8 @@
  "Check for updates": "Проверить обновления",
  "Checking…": "Проверка…",
  "Exilewright {0} is the latest version.": "Exilewright {0} — последняя версия.",
- "The updates could not be checked ({0}).": "Не удалось проверить обновления ({0})."
+ "The updates could not be checked ({0}).": "Не удалось проверить обновления ({0}).",
+ "Electrocution": "Электризация",
+ "Pinned": "Пригвождение",
+ "{0} cannot curse enemies above level {1}": "{0} не может проклинать врагов выше {1} уровня"
 }

@@ -3600,6 +3600,9 @@
    "duration_ms": 4000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_lightning_damage_can_electrocute"
+   ],
    "meta_support": null
   },
   "His Vile Intrusion": {
@@ -3885,6 +3888,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_bleeding"
+   ],
    "meta_support": null
   },
   "Power Siphon": {
@@ -4430,6 +4436,13 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_lightning_damage_can_electrocute",
+    "never_shock"
+   ],
+   "part": {
+    "electrocute_threshold_+%_final": 100
+   },
    "meta_support": null
   },
   "Flammability": {
@@ -6368,6 +6381,9 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "cannot_inflict_bloodstone_lance"
+   ],
    "meta_support": null
   },
   "Righteous Descent": {
@@ -7633,6 +7649,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "command_skill_consumes_x_stacks_of_tangmazu_raven_to_use": 10
+   },
    "meta_support": null
   },
   "Soulrend": {
@@ -7816,6 +7835,9 @@
    "duration_ms": null,
    "projectile_collision": 2,
    "weapons": null,
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Zarokh's Revolt": {
@@ -8816,6 +8838,9 @@
    "duration_ms": 6000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Atalui's Bloodletting": {
@@ -9083,6 +9108,9 @@
    "duration_ms": 6000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Ruthless": {
@@ -9573,6 +9601,128 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part_levels": {
+    "1": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 40
+    },
+    "2": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 41
+    },
+    "3": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 42
+    },
+    "4": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 43
+    },
+    "5": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 44
+    },
+    "6": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 45
+    },
+    "7": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 46
+    },
+    "8": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 47
+    },
+    "9": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 48
+    },
+    "10": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 49
+    },
+    "11": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 50
+    },
+    "12": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 51
+    },
+    "13": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 52
+    },
+    "14": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 53
+    },
+    "15": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 54
+    },
+    "16": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 55
+    },
+    "17": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 56
+    },
+    "18": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 57
+    },
+    "19": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 58
+    },
+    "20": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 59
+    },
+    "21": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 60
+    },
+    "22": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 61
+    },
+    "23": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 62
+    },
+    "24": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 63
+    },
+    "25": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 64
+    },
+    "26": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 65
+    },
+    "27": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 66
+    },
+    "28": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 67
+    },
+    "29": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 68
+    },
+    "30": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 69
+    },
+    "31": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 70
+    },
+    "32": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 71
+    },
+    "33": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 72
+    },
+    "34": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 73
+    },
+    "35": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 74
+    },
+    "36": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 75
+    },
+    "37": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 76
+    },
+    "38": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 77
+    },
+    "39": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 78
+    },
+    "40": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 79
+    }
+   },
    "meta_support": null
   },
   "Crushing Fear": {
@@ -9838,6 +9988,9 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -10259,6 +10412,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_shock_wet_enemies"
+   ],
    "meta_support": null
   },
   "Cast on Shock": {
@@ -11112,6 +11268,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_chain_from_cursed_enemies"
+   ],
    "meta_support": null
   },
   "Firebolt": {
@@ -11562,6 +11721,10 @@
    "weapons": [
     "Bows"
    ],
+   "part": {
+    "active_skill_ignite_chance_+%_final": 200,
+    "active_skill_ignite_proliferation_radius": 18
+   },
    "meta_support": null
   },
   "Solar Orb": {
@@ -11823,6 +11986,10 @@
    "projectile_collision": null,
    "weapons": [
     "Shields"
+   ],
+   "flags": [
+    "always_light_stun",
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -12331,6 +12498,14 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_lightning_damage_can_electrocute",
+    "cannot_electrocute",
+    "never_shock"
+   ],
+   "part": {
+    "triggered_by_support_electrocute_lineage_%": 100
+   },
    "meta_support": null
   },
   "Energy Barrier": {
@@ -13261,6 +13436,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_ignite"
+   ],
    "meta_support": null
   },
   "Malice": {
@@ -15560,6 +15738,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Life Remnants": {
@@ -15972,6 +16153,9 @@
    "projectile_collision": null,
    "weapons": [
     ""
+   ],
+   "flags": [
+    "never_ignite"
    ],
    "meta_support": null
   },
@@ -16788,6 +16972,13 @@
    "weapons": [
     ""
    ],
+   "flags": [
+    "cannot_poison"
+   ],
+   "part": {
+    "poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison": 150,
+    "poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed": 30
+   },
    "meta_support": null
   },
   "Bleeding Concoction": {
@@ -17509,6 +17700,9 @@
    "duration_ms": 5000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "global_cannot_crit"
+   ],
    "meta_support": null
   },
   "Unbound Avatar": {
@@ -20664,6 +20858,9 @@
    "duration_ms": 3000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Time Snap": {
@@ -22349,6 +22546,9 @@
     "Flails",
     "Talismans"
    ],
+   "flags": [
+    "cannot_consume_power_frenzy_endurance_charges"
+   ],
    "meta_support": {
     "mantra_of_illusions_triggered_skill_attack_speed_+%_final": -30,
     "mantra_of_illusions_triggered_skill_damage_+%_final": -15
@@ -23839,6 +24039,9 @@
     "Spears",
     "Flails"
    ],
+   "flags": [
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Supporting Fire": {
@@ -24503,6 +24706,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Font of Rage": {
@@ -25091,6 +25297,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Sione's Temper": {
@@ -25275,6 +25484,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_ignite"
+   ],
    "meta_support": null
   },
   "Freezefork": {
@@ -25292,6 +25504,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Stormchain": {
@@ -25307,6 +25522,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_chain_from_shocked_enemies",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Rusted Spikes": {
@@ -25388,6 +25607,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_daze"
+   ],
    "meta_support": null
   },
   "Unyielding": {
@@ -25455,6 +25677,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_inflict_elemental_ailments"
+   ],
    "meta_support": null
   },
   "Unbending": {
@@ -26943,6 +27168,10 @@
     "Crossbows",
     "Talismans"
    ],
+   "flags": [
+    "global_always_hit",
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Herald of Thunder": {
@@ -27183,6 +27412,10 @@
     "Crossbows",
     "Talismans"
    ],
+   "flags": [
+    "global_always_hit",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Withering Presence": {
@@ -27359,6 +27592,10 @@
    "projectile_collision": null,
    "weapons": [
     "Bucklers"
+   ],
+   "flags": [
+    "always_light_stun",
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -27830,6 +28067,9 @@
    "duration_ms": 15000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_power_frenzy_endurance_charges"
+   ],
    "meta_support": null
   },
   "Chaotic Surge": {
@@ -28011,6 +28251,9 @@
    "duration_ms": 15000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_power_frenzy_endurance_charges"
+   ],
    "meta_support": null
   },
   "Thundergod's Wrath": {
@@ -28379,6 +28622,9 @@
    "duration_ms": 15000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_power_frenzy_endurance_charges"
+   ],
    "meta_support": null
   },
   "Bursting Fen Toad": {
@@ -28993,6 +29239,9 @@
    "duration_ms": 6000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Pinnacle of Power": {
@@ -30158,6 +30407,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Primal Bounty": {
@@ -31784,6 +32036,13 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point",
+    "never_ignite"
+   ],
+   "part": {
+    "unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage": 30
+   },
    "meta_support": null
   },
   "His Foul Emergence": {
@@ -34852,6 +35111,10 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "always_light_stun",
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Esh's Prowess": {
@@ -35068,6 +35331,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Tul's Avalanche": {
@@ -35249,6 +35515,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "active_skill_hit_damage_stun_multiplier_+%_final": -100
+   },
    "meta_support": null
   },
   "Leylines": {
@@ -36431,6 +36700,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_break_armour"
+   ],
    "meta_support": null
   },
   "Powered by Verisium": {
@@ -40134,6 +40406,9 @@
    "duration_ms": 10000,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "active_skill_hit_damage_freeze_multiplier_+%_final": 50
+   },
    "meta_support": null
   },
   "Verisium Manifestations": {
@@ -41558,6 +41833,9 @@
    "duration_ms": 10000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_lightning_damage_can_electrocute"
+   ],
    "meta_support": null
   },
   "Herald of the Royal Queen": {
@@ -41741,6 +42019,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_bleeding",
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Animus Splinters": {
@@ -42597,6 +42879,10 @@
     "Flails",
     "Crossbows"
    ],
+   "flags": [
+    "base_lightning_damage_can_electrocute",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Healing Runes": {
@@ -43305,6 +43591,9 @@
     "Flails",
     "Crossbows",
     "Talismans"
+   ],
+   "flags": [
+    "base_all_damage_can_pin"
    ],
    "meta_support": null
   },
@@ -44655,6 +44944,9 @@
     "One Hand Maces",
     "Two Hand Maces"
    ],
+   "flags": [
+    "cannot_break_armour"
+   ],
    "meta_support": null
   },
   "Shield Charge": {
@@ -45054,6 +45346,9 @@
    "weapons": [
     "Shields"
    ],
+   "part": {
+    "active_skill_hit_damage_stun_multiplier_+%_final": 50
+   },
    "meta_support": null
   },
   "Detonate Dead": {
@@ -45672,6 +45967,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_miss_against_full_life_enemies"
+   ],
    "meta_support": null
   },
   "Magnified Area I": {
@@ -46457,6 +46755,9 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "flags": [
+    "cannot_gain_power_charges_during_skill"
+   ],
    "meta_support": null
   },
   "Pierce I": {
@@ -46509,6 +46810,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Frost Wall": {
@@ -50258,6 +50562,14 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "flags": [
+    "always_pierce"
+   ],
+   "part": {
+    "lightning_strike_base_number_of_projectiles_per_power_charge": 3,
+    "lightning_strike_damage_+%_final_when_charged": 100,
+    "lightning_strike_damage_+%_final_per_power_charge": 50
+   },
    "meta_support": null
   },
   "Lightning Arrow": {
@@ -50930,6 +51242,9 @@
     "Flails",
     "Crossbows",
     "Talismans"
+   ],
+   "flags": [
+    "cannot_create_jagged_ground"
    ],
    "meta_support": null,
    "totem": {
@@ -54234,6 +54549,9 @@
    "duration_ms": 8000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Ice Bite I": {
@@ -55138,6 +55456,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Orb of Storms": {
@@ -56518,6 +56839,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "global_cannot_crit"
+   ],
    "meta_support": null
   },
   "Sunder": {
@@ -56835,6 +57159,9 @@
    "weapons": [
     "One Hand Maces",
     "Two Hand Maces"
+   ],
+   "flags": [
+    "cannot_break_armour"
    ],
    "meta_support": null
   },
@@ -57182,6 +57509,9 @@
    "duration_ms": 4000,
    "projectile_collision": 2,
    "weapons": null,
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Elemental Focus": {
@@ -57199,6 +57529,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_inflict_elemental_ailments"
+   ],
    "meta_support": null
   },
   "Skeletal Reaver": {
@@ -58189,6 +58522,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_bleeding"
+   ],
    "meta_support": null
   },
   "Poison I": {
@@ -58277,6 +58613,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_ignite"
+   ],
    "meta_support": null
   },
   "Lasting Shock": {
@@ -60008,6 +60347,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Earthshatter": {
@@ -62553,6 +62895,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Volcanic Fissure": {
@@ -63090,6 +63435,9 @@
    "weapons": [
     "Spears"
    ],
+   "part": {
+    "base_chance_to_inflict_bleeding_%": 100
+   },
    "meta_support": null
   },
   "Disengage": {
@@ -63670,6 +64018,134 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "cannot_cause_bleeding"
+   ],
+   "part": {
+    "blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%": 10
+   },
+   "part_levels": {
+    "1": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1
+    },
+    "2": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1
+    },
+    "3": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 2
+    },
+    "4": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 3
+    },
+    "5": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 7
+    },
+    "6": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 12
+    },
+    "7": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 18
+    },
+    "8": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 25
+    },
+    "9": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 37
+    },
+    "10": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 54
+    },
+    "11": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 79
+    },
+    "12": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 113
+    },
+    "13": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 151
+    },
+    "14": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 203
+    },
+    "15": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 223
+    },
+    "16": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 246
+    },
+    "17": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 272
+    },
+    "18": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 302
+    },
+    "19": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 339
+    },
+    "20": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 381
+    },
+    "21": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 429
+    },
+    "22": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 482
+    },
+    "23": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 541
+    },
+    "24": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 608
+    },
+    "25": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 683
+    },
+    "26": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 767
+    },
+    "27": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 862
+    },
+    "28": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 969
+    },
+    "29": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1089
+    },
+    "30": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1223
+    },
+    "31": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1296
+    },
+    "32": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1374
+    },
+    "33": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1457
+    },
+    "34": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1544
+    },
+    "35": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1637
+    },
+    "36": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1735
+    },
+    "37": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1839
+    },
+    "38": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 1949
+    },
+    "39": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 2066
+    },
+    "40": {
+     "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final": 2190
+    }
+   },
    "meta_support": null
   },
   "Whirling Slash": {
@@ -64603,6 +65079,12 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "cannot_pierce"
+   ],
+   "part": {
+    "active_skill_shock_chance_+%_final": 100
+   },
    "meta_support": null
   },
   "Glacial Lance": {
@@ -64997,6 +65479,13 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "always_pierce"
+   ],
+   "part": {
+    "active_skill_hit_damage_freeze_multiplier_+%_final": 50,
+    "active_skill_chill_effect_+%_final": 50
+   },
    "meta_support": null
   },
   "Whirling Assault": {
@@ -65302,6 +65791,9 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
    ],
    "meta_support": null
   },
@@ -65617,6 +66109,9 @@
     "One Hand Maces",
     "Two Hand Maces"
    ],
+   "part": {
+    "active_skill_damage_+%_final_against_heavy_stunned_enemies": 50
+   },
    "meta_support": null
   },
   "Escape Shot": {
@@ -66314,6 +66809,10 @@
    "weapons": [
     "Two Hand Maces"
    ],
+   "part": {
+    "aftershock_radius_+_per_previous_aftershock": 4,
+    "aftershock_delay_ms": 250
+   },
    "meta_support": null
   },
   "Wind Blast": {
@@ -67836,6 +68335,14 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "flags": [
+    "cannot_knockback",
+    "never_freeze"
+   ],
+   "part": {
+    "active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final": 425,
+    "active_skill_consume_enemy_freeze_to_gain_damage_against_non_unique_+%_final": 250
+   },
    "meta_support": null
   },
   "Comet": {
@@ -68582,6 +69089,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "base_all_damage_can_pin"
+   ],
    "meta_support": null,
    "totem": {
     "life_mult": 1.0,
@@ -69091,6 +69601,9 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "flags": [
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Shattering Palm": {
@@ -69439,6 +69952,9 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -72489,6 +73005,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_break_armour"
+   ],
    "meta_support": null
   },
   "Barrier Invocation": {
@@ -75077,6 +75596,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "part": {
+    "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite": 15000
+   },
    "meta_support": null
   },
   "Gas Grenade": {
@@ -75431,6 +75953,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "part": {
+    "number_of_poison_cloud_allowed": 6
+   },
    "meta_support": null
   },
   "Voltaic Grenade": {
@@ -75827,6 +76352,9 @@
    "projectile_collision": null,
    "weapons": [
     "Crossbows"
+   ],
+   "flags": [
+    "base_lightning_damage_can_electrocute"
    ],
    "meta_support": null
   },
@@ -76446,6 +76974,10 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "part": {
+    "active_skill_shock_chance_+%_final": 100,
+    "shock_effect_+%": 100
+   },
    "meta_support": null
   },
   "Staggering Palm": {
@@ -76714,6 +77246,10 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "always_pierce",
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -77020,6 +77556,10 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "part": {
+    "charged_staff_cone_angle": 45,
+    "charged_staff_bonus_width": 15
+   },
    "meta_support": null
   },
   "Siphoning Strike": {
@@ -77286,6 +77826,10 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "base_consume_enemy_shock_on_hit",
+    "never_shock"
    ],
    "meta_support": null
   },
@@ -77641,6 +78185,12 @@
    "weapons": [
     "Quarterstaves"
    ],
+   "flags": [
+    "cannot_damage_bell"
+   ],
+   "part": {
+    "bell_shockwave_cooldown_ms": 300
+   },
    "meta_support": null
   },
   "Frozen Locus": {
@@ -78344,6 +78894,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "bone_spear_power_charged_aoe_+": 7,
+    "bone_spear_power_charged_aoe_+%_final_per_additional_power_charge": 40
+   },
    "meta_support": null
   },
   "Bone Cage": {
@@ -78697,6 +79251,9 @@
    "duration_ms": 1600,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_all_damage_can_pin"
+   ],
    "meta_support": null
   },
   "Neural Overload": {
@@ -80215,6 +80772,9 @@
    "weapons": [
     "Bows"
    ],
+   "part": {
+    "base_chance_to_poison_on_hit_%": 100
+   },
    "meta_support": null
   },
   "Stormcaller Arrow": {
@@ -80485,6 +81045,10 @@
    "weapons": [
     "Bows"
    ],
+   "part": {
+    "active_skill_shock_chance_+%_final": 500,
+    "active_skill_shock_as_though_damage_+%_final": 50
+   },
    "meta_support": null
   },
   "Lightning Rod": {
@@ -81069,6 +81633,9 @@
    "weapons": [
     "Bows"
    ],
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Gas Arrow": {
@@ -81376,6 +81943,9 @@
    "weapons": [
     "Bows"
    ],
+   "part": {
+    "number_of_poison_cloud_allowed": 6
+   },
    "meta_support": null
   },
   "Fireball": {
@@ -81682,6 +82252,9 @@
    "duration_ms": null,
    "projectile_collision": 2,
    "weapons": null,
+   "part": {
+    "active_skill_ignite_chance_+%_final": 100
+   },
    "meta_support": null
   },
   "Electrocuting Arrow": {
@@ -81992,6 +82565,9 @@
    "projectile_collision": 1,
    "weapons": [
     "Bows"
+   ],
+   "flags": [
+    "cannot_pierce"
    ],
    "meta_support": null
   },
@@ -82347,6 +82923,11 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze",
+    "never_ignite",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Perfect Strike": {
@@ -83050,6 +83631,9 @@
    "projectile_collision": null,
    "weapons": [
     "Shields"
+   ],
+   "flags": [
+    "cannot_be_empowered_by_warcries"
    ],
    "meta_support": null
   },
@@ -83823,6 +84407,9 @@
    "weapons": [
     "Bows"
    ],
+   "part": {
+    "poison_vine_arrow_vine_stored_poison_damage_+%_final": -50
+   },
    "meta_support": null
   },
   "Rhoa Mount": {
@@ -83961,6 +84548,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Stormfire": {
@@ -84029,6 +84619,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "base_lightning_damage_can_electrocute",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Raging Spirits": {
@@ -84115,6 +84709,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Biting Frost II": {
@@ -84133,6 +84730,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Elemental Discharge": {
@@ -84148,6 +84748,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "active_skill_never_freeze_shock_ignite"
+   ],
    "meta_support": null
   },
   "Hourglass": {
@@ -84503,6 +85106,9 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Explosive Spear": {
@@ -84813,6 +85419,12 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "always_pierce"
+   ],
+   "part": {
+    "base_ignite_effect_+%": 100
+   },
    "meta_support": null
   },
   "Thunderous Leap": {
@@ -85403,6 +86015,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "support_mana_flare_%_of_current_mana_consumed": 25
+   },
    "meta_support": null
   },
   "Stun I": {
@@ -87876,6 +88491,9 @@
     "One Hand Maces",
     "Two Hand Maces"
    ],
+   "flags": [
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Living Bomb": {
@@ -88541,6 +89159,10 @@
     "One Hand Maces",
     "Two Hand Maces"
    ],
+   "part": {
+    "cascade_aftershock_spacing_area_%_override": 105,
+    "cascade_aftershock_angle_offset_override": 30
+   },
    "meta_support": null
   },
   "Shield Wall": {
@@ -89290,6 +89912,9 @@
    "weapons": [
     "Shields"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "High Velocity Rounds": {
@@ -89567,6 +90192,13 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "cannot_break_armour",
+    "cannot_cancel_skill_before_contact_point"
+   ],
+   "part": {
+    "active_skill_damage_+%_final_vs_unique_enemies": 0
+   },
    "meta_support": null
   },
   "Fragmentation Rounds": {
@@ -89884,6 +90516,11 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "base_consume_enemy_freeze_on_hit",
+    "cannot_cancel_skill_before_contact_point",
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Siege Cascade": {
@@ -90200,6 +90837,9 @@
    "projectile_collision": null,
    "weapons": [
     "Crossbows"
+   ],
+   "flags": [
+    "never_freeze"
    ],
    "meta_support": null
   },
@@ -90833,6 +91473,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Incendiary Shot": {
@@ -91160,6 +91803,9 @@
    "projectile_collision": null,
    "weapons": [
     "Crossbows"
+   ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
    ],
    "meta_support": null
   },
@@ -91748,6 +92394,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Permafrost Bolts": {
@@ -92187,6 +92836,9 @@
    "projectile_collision": null,
    "weapons": [
     "Crossbows"
+   ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
    ],
    "meta_support": null
   },
@@ -92898,6 +93550,128 @@
    "weapons": [
     "Crossbows"
    ],
+   "part_levels": {
+    "1": {
+     "active_skill_chill_as_though_damage_+%_final": 200
+    },
+    "2": {
+     "active_skill_chill_as_though_damage_+%_final": 210
+    },
+    "3": {
+     "active_skill_chill_as_though_damage_+%_final": 220
+    },
+    "4": {
+     "active_skill_chill_as_though_damage_+%_final": 230
+    },
+    "5": {
+     "active_skill_chill_as_though_damage_+%_final": 240
+    },
+    "6": {
+     "active_skill_chill_as_though_damage_+%_final": 250
+    },
+    "7": {
+     "active_skill_chill_as_though_damage_+%_final": 260
+    },
+    "8": {
+     "active_skill_chill_as_though_damage_+%_final": 270
+    },
+    "9": {
+     "active_skill_chill_as_though_damage_+%_final": 280
+    },
+    "10": {
+     "active_skill_chill_as_though_damage_+%_final": 290
+    },
+    "11": {
+     "active_skill_chill_as_though_damage_+%_final": 300
+    },
+    "12": {
+     "active_skill_chill_as_though_damage_+%_final": 310
+    },
+    "13": {
+     "active_skill_chill_as_though_damage_+%_final": 320
+    },
+    "14": {
+     "active_skill_chill_as_though_damage_+%_final": 330
+    },
+    "15": {
+     "active_skill_chill_as_though_damage_+%_final": 340
+    },
+    "16": {
+     "active_skill_chill_as_though_damage_+%_final": 350
+    },
+    "17": {
+     "active_skill_chill_as_though_damage_+%_final": 360
+    },
+    "18": {
+     "active_skill_chill_as_though_damage_+%_final": 370
+    },
+    "19": {
+     "active_skill_chill_as_though_damage_+%_final": 380
+    },
+    "20": {
+     "active_skill_chill_as_though_damage_+%_final": 390
+    },
+    "21": {
+     "active_skill_chill_as_though_damage_+%_final": 400
+    },
+    "22": {
+     "active_skill_chill_as_though_damage_+%_final": 410
+    },
+    "23": {
+     "active_skill_chill_as_though_damage_+%_final": 420
+    },
+    "24": {
+     "active_skill_chill_as_though_damage_+%_final": 430
+    },
+    "25": {
+     "active_skill_chill_as_though_damage_+%_final": 440
+    },
+    "26": {
+     "active_skill_chill_as_though_damage_+%_final": 450
+    },
+    "27": {
+     "active_skill_chill_as_though_damage_+%_final": 460
+    },
+    "28": {
+     "active_skill_chill_as_though_damage_+%_final": 470
+    },
+    "29": {
+     "active_skill_chill_as_though_damage_+%_final": 480
+    },
+    "30": {
+     "active_skill_chill_as_though_damage_+%_final": 490
+    },
+    "31": {
+     "active_skill_chill_as_though_damage_+%_final": 500
+    },
+    "32": {
+     "active_skill_chill_as_though_damage_+%_final": 510
+    },
+    "33": {
+     "active_skill_chill_as_though_damage_+%_final": 520
+    },
+    "34": {
+     "active_skill_chill_as_though_damage_+%_final": 530
+    },
+    "35": {
+     "active_skill_chill_as_though_damage_+%_final": 540
+    },
+    "36": {
+     "active_skill_chill_as_though_damage_+%_final": 550
+    },
+    "37": {
+     "active_skill_chill_as_though_damage_+%_final": 560
+    },
+    "38": {
+     "active_skill_chill_as_though_damage_+%_final": 570
+    },
+    "39": {
+     "active_skill_chill_as_though_damage_+%_final": 580
+    },
+    "40": {
+     "active_skill_chill_as_though_damage_+%_final": 590
+    }
+   },
    "meta_support": null
   },
   "Plasma Blast": {
@@ -93175,6 +93949,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "always_pierce"
+   ],
    "meta_support": null
   },
   "Galvanic Shards": {
@@ -93451,6 +94228,9 @@
    "projectile_collision": null,
    "weapons": [
     "Crossbows"
+   ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
    ],
    "meta_support": null
   },
@@ -94081,6 +94861,9 @@
    "weapons": [
     "Crossbows"
    ],
+   "flags": [
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Raging Cry": {
@@ -94184,6 +94967,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_break_armour"
+   ],
+   "part": {
+    "trigger_on_armour_break_%_chance": 100
+   },
    "meta_support": null
   },
   "Stomping Ground": {
@@ -94811,6 +95600,10 @@
    "weapons": [
     "Bows"
    ],
+   "flags": [
+    "always_pierce_non_shocked_enemies_if_targeting_shocked_enemy",
+    "never_shock"
+   ],
    "meta_support": null
   },
   "Vaulting Impact": {
@@ -95118,6 +95911,9 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "cannot_daze"
    ],
    "meta_support": null
   },
@@ -96145,6 +96941,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_inflict_elemental_ailments"
+   ],
    "meta_support": null
   },
   "Cooldown Recovery I": {
@@ -97823,6 +98622,9 @@
    "projectile_collision": null,
    "weapons": [
     "Quarterstaves"
+   ],
+   "flags": [
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -102225,6 +103027,10 @@
     "Crossbows",
     "Talismans"
    ],
+   "flags": [
+    "cannot_cause_bleeding",
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Ravenous Swarm": {
@@ -103864,6 +104670,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_pin"
+   ],
    "meta_support": null
   },
   "Alignment I": {
@@ -104132,6 +104941,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_break_armour"
+   ],
+   "part": {
+    "active_skill_damage_+%_final_vs_unique_enemies": 50
+   },
    "meta_support": null
   },
   "Abiding Hex": {
@@ -104608,6 +105423,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_inflict_blind"
+   ],
    "meta_support": null
   },
   "Hit and Run": {
@@ -104756,6 +105574,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_bleeding"
+   ],
+   "part": {
+    "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8
+   },
    "meta_support": null
   },
   "Ancestral Call I": {
@@ -105246,6 +106070,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_stun_but_allow_stun_buildup"
+   ],
    "meta_support": null
   },
   "Brink II": {
@@ -105263,6 +106090,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_stun_but_allow_stun_buildup"
+   ],
    "meta_support": null
   },
   "Tireless": {
@@ -105489,6 +106319,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_impale"
+   ],
    "meta_support": null
   },
   "Perfection": {
@@ -105679,6 +106512,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_infusions",
+    "cannot_consume_power_frenzy_endurance_charges"
+   ],
    "meta_support": null
   },
   "Static Shocks": {
@@ -105696,6 +106533,15 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_shock"
+   ],
+   "part": {
+    "triggered_by_grounding_shocks_support_on_shock_%": 100,
+    "maximum_grounding_shocks_allowed": 5,
+    "grounding_shocks_pulse_delay_ms": 650,
+    "grounding_shocks_maximum_targets_per_aoe": 6
+   },
    "meta_support": null
   },
   "Hardy Totems I": {
@@ -106290,6 +107136,13 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "base_consume_enemy_shock_on_hit",
+    "never_shock"
+   ],
+   "part": {
+    "all_exposure_on_hit_magnitude": 50
+   },
    "meta_support": null
   },
   "Cull The Weak": {
@@ -106559,6 +107412,9 @@
    "projectile_collision": null,
    "weapons": [
     "Spears"
+   ],
+   "flags": [
+    "global_always_hit"
    ],
    "meta_support": null
   },
@@ -106907,6 +107763,171 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
+   "part_levels": {
+    "1": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 100,
+     "active_skill_chill_effect_+%_final": 100
+    },
+    "2": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 103,
+     "active_skill_chill_effect_+%_final": 103
+    },
+    "3": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 106,
+     "active_skill_chill_effect_+%_final": 106
+    },
+    "4": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 109,
+     "active_skill_chill_effect_+%_final": 109
+    },
+    "5": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 112,
+     "active_skill_chill_effect_+%_final": 112
+    },
+    "6": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 115,
+     "active_skill_chill_effect_+%_final": 115
+    },
+    "7": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 118,
+     "active_skill_chill_effect_+%_final": 118
+    },
+    "8": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 121,
+     "active_skill_chill_effect_+%_final": 121
+    },
+    "9": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 124,
+     "active_skill_chill_effect_+%_final": 124
+    },
+    "10": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 127,
+     "active_skill_chill_effect_+%_final": 127
+    },
+    "11": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 130,
+     "active_skill_chill_effect_+%_final": 130
+    },
+    "12": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 133,
+     "active_skill_chill_effect_+%_final": 133
+    },
+    "13": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 136,
+     "active_skill_chill_effect_+%_final": 136
+    },
+    "14": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 139,
+     "active_skill_chill_effect_+%_final": 139
+    },
+    "15": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 142,
+     "active_skill_chill_effect_+%_final": 142
+    },
+    "16": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 145,
+     "active_skill_chill_effect_+%_final": 145
+    },
+    "17": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 148,
+     "active_skill_chill_effect_+%_final": 148
+    },
+    "18": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 151,
+     "active_skill_chill_effect_+%_final": 151
+    },
+    "19": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 154,
+     "active_skill_chill_effect_+%_final": 154
+    },
+    "20": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 157,
+     "active_skill_chill_effect_+%_final": 157
+    },
+    "21": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 160,
+     "active_skill_chill_effect_+%_final": 160
+    },
+    "22": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 163,
+     "active_skill_chill_effect_+%_final": 163
+    },
+    "23": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 166,
+     "active_skill_chill_effect_+%_final": 166
+    },
+    "24": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 169,
+     "active_skill_chill_effect_+%_final": 169
+    },
+    "25": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 172,
+     "active_skill_chill_effect_+%_final": 172
+    },
+    "26": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 175,
+     "active_skill_chill_effect_+%_final": 175
+    },
+    "27": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 178,
+     "active_skill_chill_effect_+%_final": 178
+    },
+    "28": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 181,
+     "active_skill_chill_effect_+%_final": 181
+    },
+    "29": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 184,
+     "active_skill_chill_effect_+%_final": 184
+    },
+    "30": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 187,
+     "active_skill_chill_effect_+%_final": 187
+    },
+    "31": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 188,
+     "active_skill_chill_effect_+%_final": 188
+    },
+    "32": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 190,
+     "active_skill_chill_effect_+%_final": 190
+    },
+    "33": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 191,
+     "active_skill_chill_effect_+%_final": 191
+    },
+    "34": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 193,
+     "active_skill_chill_effect_+%_final": 193
+    },
+    "35": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 194,
+     "active_skill_chill_effect_+%_final": 194
+    },
+    "36": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 196,
+     "active_skill_chill_effect_+%_final": 196
+    },
+    "37": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 197,
+     "active_skill_chill_effect_+%_final": 197
+    },
+    "38": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 199,
+     "active_skill_chill_effect_+%_final": 199
+    },
+    "39": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 200,
+     "active_skill_chill_effect_+%_final": 200
+    },
+    "40": {
+     "active_skill_hit_damage_freeze_multiplier_+%_final": 202,
+     "active_skill_chill_effect_+%_final": 202
+    }
+   },
    "meta_support": null
   },
   "Wind Serpent's Fury": {
@@ -107881,6 +108902,9 @@
    "duration_ms": 8000,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_cause_bleeding"
+   ],
    "meta_support": null
   },
   "Tame Beast": {
@@ -108459,6 +109483,9 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "global_always_hit"
+   ],
    "meta_support": null
   },
   "Storm Lance": {
@@ -108776,6 +109803,12 @@
    "weapons": [
     "Spears"
    ],
+   "flags": [
+    "always_pierce"
+   ],
+   "part": {
+    "overcharged_spear_base_frequency_ms": 200
+   },
    "meta_support": null
   },
   "Elemental Sundering": {
@@ -109084,6 +110117,9 @@
    "projectile_collision": null,
    "weapons": [
     "Spears"
+   ],
+   "flags": [
+    "active_skill_never_freeze_shock_ignite"
    ],
    "meta_support": null
   },
@@ -110006,6 +111042,9 @@
    "weapons": [
     "Talismans"
    ],
+   "part": {
+    "wing_blast_shockwave_damage_+%_final_if_created_from_unique": 50
+   },
    "meta_support": null
   },
   "Oil Barrage": {
@@ -110326,6 +111365,9 @@
    "weapons": [
     "Talismans"
    ],
+   "part": {
+    "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite": 10000
+   },
    "meta_support": null
   },
   "Iron Ward": {
@@ -113820,6 +114862,9 @@
    "weapons": [
     "Talismans"
    ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
+   ],
    "meta_support": null
   },
   "Living Lightning": {
@@ -113865,6 +114910,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_freeze"
+   ],
    "meta_support": null
   },
   "Electromagnetism": {
@@ -113883,6 +114931,18 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_shock"
+   ],
+   "part": {
+    "triggered_by_shocking_rift_support_%": 100,
+    "number_of_shocking_rifts_allowed": 3,
+    "shocking_rift_number_of_pulses": 5,
+    "shocking_rift_pulse_interval_ms": 850,
+    "shocking_rift_damage_+%_final_per_pulse_performed": 20,
+    "shocking_rift_speed_+%_per_shock_consumed": 25,
+    "shocking_rift_hinder_ms": 900
+   },
    "meta_support": null
   },
   "Streamlined Rounds": {
@@ -114029,6 +115089,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_consume_impale"
+   ],
    "meta_support": null
   },
   "Skittering Stone I": {
@@ -115054,6 +116117,9 @@
     "Spears",
     "Flails",
     "Talismans"
+   ],
+   "flags": [
+    "cannot_cancel_skill_before_contact_point"
    ],
    "meta_support": null
   },
@@ -116261,6 +117327,9 @@
    "duration_ms": null,
    "projectile_collision": 2,
    "weapons": null,
+   "flags": [
+    "never_freeze_or_chill"
+   ],
    "meta_support": null
   },
   "Creeping Chill": {
@@ -116278,6 +117347,10 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "triggered_by_support_creeping_chill_%": 100,
+    "support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life": 100
+   },
    "meta_support": null
   },
   "Briarpatch": {
@@ -117102,6 +118175,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_ignite"
+   ],
    "meta_support": null
   },
   "Fan The Flames II": {
@@ -117117,6 +118193,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "never_ignite"
+   ],
    "meta_support": null
   },
   "Coursing Current": {
@@ -117134,6 +118213,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "cannot_chain_to_previous_targets"
+   ],
    "meta_support": null
   },
   "Barkskin": {
@@ -117445,6 +118527,253 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "triggered_pustule_from_poison_spores_on_hit_chance_%": 100,
+    "base_chance_to_poison_on_hit_%": 100,
+    "toxic_pustule_max_burst_damage_+%_final_from_stored_poison": 300
+   },
+   "part_levels": {
+    "1": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 17
+    },
+    "2": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 31
+    },
+    "3": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 50,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 5,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 53
+    },
+    "4": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 100,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 9,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 4,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 85
+    },
+    "5": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 150,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 12,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 6,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 127
+    },
+    "6": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 200,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 19,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 8,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 182
+    },
+    "7": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 300,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 26,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 12,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 258
+    },
+    "8": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 425,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 36,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 17,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 359
+    },
+    "9": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 600,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 49,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 24,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 491
+    },
+    "10": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 825,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 66,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 33,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 667
+    },
+    "11": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1075,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 89,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 43,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 895
+    },
+    "12": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1425,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 119,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 57,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1190
+    },
+    "13": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1900,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 157,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 76,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1574
+    },
+    "14": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 2475,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 206,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 99,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2064
+    },
+    "15": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 3225,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 270,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 129,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2697
+    },
+    "16": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 4200,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 351,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 168,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 3512
+    },
+    "17": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 5450,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 455,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 218,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 4552
+    },
+    "18": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 7050,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 588,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 282,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 5872
+    },
+    "19": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 9075,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 755,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 363,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 7555
+    },
+    "20": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 11650,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 969,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 466,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 9691
+    },
+    "21": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 12375,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1032,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 495,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 10308
+    },
+    "22": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 13675,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1141,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 547,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 11402
+    },
+    "23": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 15900,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1324,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 636,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 13248
+    },
+    "24": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 18650,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1555,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 746,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 15550
+    },
+    "25": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 22100,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1843,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 884,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 18423
+    },
+    "26": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 23650,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1971,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 946,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 19703
+    },
+    "27": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25300,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2107,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1012,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 21065
+    },
+    "28": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 27025,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2252,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1081,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 22513
+    },
+    "29": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 28850,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2405,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1154,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 24053
+    },
+    "30": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 30825,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2568,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1233,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 25691
+    },
+    "31": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 32625,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2721,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1305,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 27203
+    },
+    "32": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 34550,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2880,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1382,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 28804
+    },
+    "33": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 36600,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3049,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1464,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 30496
+    },
+    "34": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 38725,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3229,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1549,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 32285
+    },
+    "35": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 41000,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3417,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1640,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 34180
+    },
+    "36": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 43400,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3619,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1736,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 36179
+    },
+    "37": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 45950,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3829,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1838,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 38296
+    },
+    "38": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 48625,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4053,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1945,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 40530
+    },
+    "39": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 51500,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4290,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2060,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 42896
+    },
+    "40": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 54450,
+     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4540,
+     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2178,
+     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 45395
+    }
+   },
    "meta_support": null
   },
   "Deadly Resolve": {
@@ -117538,6 +118867,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+   },
    "meta_support": null
   },
   "Empowered Sparks II": {
@@ -117553,6 +118885,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+   },
    "meta_support": null
   },
   "Controlled Hazard": {
@@ -117738,6 +119073,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "part": {
+    "chance_to_trigger_shocked_ground_on_mark_activated_%": 100
+   },
    "meta_support": null
   },
   "Minion Splash I": {

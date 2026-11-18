@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0} ใช้ศพของศัตรูและของ {1} ได้",
  "{0} casts {1} by itself when it fills its energy": "{0} ร่าย {1} เองเมื่อพลังงานเต็ม",
  "{0} consumes {1}": "{0} กลืนกิน {1}",
- "{0} consumes {1}: a much bigger hit": "{0} กลืนกิน {1}: ปะทะแรงขึ้นมาก",
  "{0} detonates {1}": "{0} จุดระเบิด {1}",
  "{0} empowers {1}: it repeats as an aftershock": "{0} เสริมฤทธิ์ {1}: ทำซ้ำเป็นคลื่นสะท้อน",
  "{0} erupts from {1}": "{0} ปะทุจาก {1}",
@@ -831,5 +830,8 @@
  "Check for updates": "ตรวจหาอัปเดต",
  "Checking…": "กำลังตรวจสอบ…",
  "Exilewright {0} is the latest version.": "Exilewright {0} เป็นเวอร์ชันล่าสุด",
- "The updates could not be checked ({0}).": "ตรวจหาอัปเดตไม่ได้ ({0})"
+ "The updates could not be checked ({0}).": "ตรวจหาอัปเดตไม่ได้ ({0})",
+ "Electrocution": "ช็อตประสาท",
+ "Pinned": "ตรึง",
+ "{0} cannot curse enemies above level {1}": "{0} สาปศัตรูที่เลเวลสูงกว่า {1} ไม่ได้"
 }

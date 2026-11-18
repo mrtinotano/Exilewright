@@ -213,6 +213,7 @@ export function character(b, sum) {
     es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     block: v(sum, 'additional_block_%', 'block_%'),
+    charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
     res, penalty,
     // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
     move: (1 + (v(sum, 'base_movement_velocity_+%') - armourItems(b.items).movement) / 100) * (1 + armourItems(b.items).movement / 100) * 100 - 100,
@@ -437,8 +438,10 @@ export function withSupports(g, sum) {
     for (const [k, val] of Object.entries(p ? p.stats || {} : { ...(d.constant || {}), ...lv })) {
       if (k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
-      else { finals[k] = (finals[k] || 0) + val; if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val; }
+      else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;
     }
+    // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments())
+    for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (k.includes('_final') && typeof val === 'number') finals[k] = (finals[k] || 0) + val;
   }
   return { sum: all, fin, mods, finals };
 }
@@ -585,13 +588,20 @@ export function skill(g, b, treeGear) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
   }
-  out.ail = ailments(st, sum, finals, own);
+  // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
+  // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
+  const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
+  const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
+  // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
+  out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
+  out.curse = (G.types || []).includes('AppliesCurse') ? curseOf(st, sum) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. note: no duration modifiers yet
   const sec = k => st[k] ? st[k] / 1000 : null;
   out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
     detonate: sec('base_skill_detonation_time'), curseDelay: sec('curse_delay_duration_ms'), duration: sec('base_skill_effect_duration'), totem: sec('base_totem_duration') };
+  if (flags.has('global_cannot_crit')) out.crit = 0;
   if (out.avg != null && out.speed) {
     const c = (out.crit || 0) / 100;
     out.dps = out.avg * (1 + c * (out.critBonus || 0) / 100) * out.speed;
@@ -603,10 +613,25 @@ export function skill(g, b, treeGear) {
 // chances (bleeding and poison need one: the game's glossary), "increased" (inc) and "more" (more) chance, buildup, effect
 // and duration. The 3D scene rolls them against each enemy's thresholds (scene.js). Conditional ones (vs marked, wet,
 // electrocuted enemies...) are left out.
-function ailments(st, sum, finals, tags) {
-  const all = k => (st[k] || 0) + (sum[k] || 0) + (finals[k] || 0);
-  const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|_per_|_when_|_while_|_if_/;
-  const more = end => [...new Set([...Object.keys(st), ...Object.keys(finals)])].filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
+function ailments(st, sum, finals, tags, flags = new Set()) {
+  const all = k => (st[k] || 0) + (sum[k] || 0) + (finals[k] || 0), F = k => flags.has(k);
+  const keys = [...new Set([...Object.keys(st), ...Object.keys(sum), ...Object.keys(finals)])];
+  // more damage when consuming a state (Glacial Cascade, Biting Frost), against one (Siege Cascade vs immobilised), per
+  // charge spent (Spiral Volley): [state, %, unique-only / non-unique-only / any]
+  const consume = {}, vs = [], STATE_OF = { fully_broken_armour: 'armour', heavy_stunned: 'stun', frozen: 'freeze', bleeding: 'bleed', poisoned: 'poison',
+    ignited: 'ignite', shocked: 'shock', chilled: 'chill', electrocuted: 'electrocute', pinned: 'pin', immobilised: 'immobilised', cursed: 'curse', marked: 'mark' };
+  for (const k of keys) {
+    let m = k.match(/consume_enemy_(freeze|shock|ignite|fully_broken_armour)_to_gain_(damage|hit_damage_stun_multiplier)(?:_against_(unique|non_unique))?_\+%(?:_final)?$/);
+    if (m) { const c = consume[STATE_OF[m[1]] || m[1]] ||= {}, key = m[2] === 'damage' ? m[3] || 'any' : 'stun'; c[key] = (c[key] || 0) + all(k); continue; }
+    m = k.match(/damage_\+%_final_(?:vs|against)_(\w+?)(_unique|_non_unique)?_enemies$/);
+    if (m && STATE_OF[m[1]]) vs.push([STATE_OF[m[1]], all(k), m[2] ? m[2] === '_unique' : null, /physical/.test(k)]);
+  }
+  for (const s of ['freeze', 'shock']) if (F(`base_consume_enemy_${s}_on_hit`)) consume[s] ||= {};
+  const perCharge = c => keys.filter(k => new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`).test(k)).reduce((t, k) => t + all(k), 0);
+  const whenCharge = c => keys.filter(k => new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`).test(k)).reduce((t, k) => t + all(k), 0);
+  const never = a => F('never_' + a) || F('active_skill_never_freeze_shock_ignite') && ['freeze', 'shock', 'ignite'].includes(a);
+  const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
+  const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
@@ -632,11 +657,40 @@ function ailments(st, sum, finals, tags) {
     stunMelee: melee ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
     breakNormal: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_normal_monsters'] || 0) / 100,
     breakMagic: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_magic_monsters'] || 0) / 100,
+    never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun'), armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
+    always: { freeze: F('always_freeze'), shock: F('always_shock'), ignite: F('always_ignite'), stun: F('always_stun') },
+    alwaysHit: F('global_always_hit'),
+    // Electrocute and Pin build up only from skills that say so
+    electrocute: F('base_lightning_damage_can_electrocute') || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
+    pin: F('base_all_damage_can_pin') || keys.some(k => /pins_as_though_dealt_damage/.test(k)) ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0,
+    chillDamage: more(/chill_as_though_damage_\+%_final$/),
+    consume, vs,
+    charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: perCharge(c), when: whenCharge(c) }])),
+    // Exposure the hits inflict (Primal Strikes, Exposing Cry, Frost Bomb, Oil Grenade) and the supports' on ignite / shock /
+    // cold critical hit; its magnitude: the skill's, else the game's default (scene.js), times "increased Exposure effect"
+    expo: { hit: all('all_exposure_on_hit_magnitude') || null, hitMs: all('all_exposure_on_hit_for_duration_ms') || null,
+      skill: all('active_skill_all_elemental_exposure_magnitude') || all('skill_base_oil_exposure_-_to_total_elemental_resistance') || null,
+      onIgnite: all('inflict_exposure_for_x_ms_on_ignite') || null, onShock: all('inflict_exposure_for_x_ms_on_shock') || null,
+      onColdCrit: all('inflict_exposure_for_x_ms_on_cold_crit') || null, effect: 1 + all('exposure_effect_+%') / 100 },
   };
+}
+// A curse on an enemy: what its gem's level gives (lower resistances and armour, less damage dealt, slower actions), times
+// "increased Curse effect" of the tree, gear and supports; the scene lowers it on rarer monsters (enemies.js curseEffect)
+function curseOf(st, sum) {
+  const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, (st[`base_skill_buff_${e}_damage_resistance_%_to_apply`] || 0) + (e !== 'chaos' ? st['base_skill_buff_all_elements_resistance_%_to_apply'] || 0 : 0)]));
+  return { res, armour: st['base_skill_buff_total_armour_-_to_grant'] || 0, damage: st['base_skill_buff_damage_+%_final_to_apply'] || 0,
+    speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
+    effect: 1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100 };
 }
 // self-check: a support's "more" chance multiplies the gem's own, "increased" ones add up
 { const a = ailments({ 'active_skill_ignite_chance_+%_final': 50 }, { 'ignite_chance_+%': 20 }, { 'support_ignition_chance_to_ignite_+%_final': 100 }, []);
   console.assert(Math.abs(a.igniteChance - 1.2 * 1.5 * 2) < 1e-9 && a.bleed === 0 && a.stun === 1, 'ailment modifiers', a); }
+// ...Glacial Cascade's second part: much more damage when it consumes a freeze, more on unique enemies; it never freezes
+{ const a = skill({ name: 'Glacial Cascade', level: 10, supports: [] }, { gems: [], items: {} }, {}).ail;
+  console.assert(a.consume.freeze.unique > a.consume.freeze.non_unique && a.never.freeze && !a.never.shock, 'consume bonus and never_freeze', a); }
+// ...and Elemental Weakness lowers every elemental resistance, not chaos
+{ const c = skill({ name: 'Elemental Weakness', level: 10, supports: [] }, { gems: [], items: {} }, {}).curse;
+  console.assert(c.res.fire < 0 && c.res.fire === c.res.cold && c.res.chaos === 0 && c.effect === 1, 'curse', c); }
 
 // The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
 // self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)

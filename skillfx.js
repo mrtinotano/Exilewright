@@ -26,14 +26,11 @@ export const SIM = {
   ignite: 4, poison: 3, bleed: 5,
   freezeHits: 3, breakHits: 3,
   dot: 0.35,           // hits per second of each damage over time effect
-  consume: 2,          // extra hits when a payoff consumes its state
-  maxCharges: 3,
+  consume: 2,          // extra hits when a skill consumes a state and its data gives no number for it
   energy: 4,           // ailments a meta gem needs to trigger
   corpseTime: 14, respawn: 2.5,
   heraldR: 2.4,
   body: 0.35,          // m radius of a dummy
-  shockTaken: 0.2, curseTaken: 0.3, brokenTaken: 0.2,   // extra damage taken (as a fraction of the hit)
-  chargeMult: 0.5,     // extra damage per charge spent
   channelTick: 0.16, channelHit: 0.4,   // s between the hits of a channelled skill and how hard each one is
   stormArea: 3,        // m over which a storm / rain with a small impact radius scatters its impacts
   meteor: 1.0,         // s a delayed impact takes to land when the data gives no time
@@ -46,7 +43,7 @@ export const ELEMENTS = ['fire', 'cold', 'lightning', 'chaos', 'physical'];
 export const AILMENT = { fire: 'ignite', cold: 'freeze', lightning: 'shock', chaos: 'poison', physical: 'bleed' };
 export const STATE = {
   ignite: 'Ignite', chill: 'Chill', freeze: 'Freeze', shock: 'Shock', poison: 'Poison', bleed: 'Bleeding',
-  armour: 'Broken Armour', stun: 'Heavy Stun', curse: 'Curse', mark: 'Mark', expo: 'Exposure',
+  armour: 'Broken Armour', stun: 'Heavy Stun', curse: 'Curse', mark: 'Mark', expo: 'Exposure', electrocute: 'Electrocution', pin: 'Pinned',
 };
 export const GROUND = {
   burning: 'Ignited Ground', chilled: 'Chilled Ground', shocked: 'Shocked Ground', oil: 'Oil', gas: 'Gas cloud',

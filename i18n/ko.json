@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0}은(는) 적과 {1}의 시신을 사용할 수 있음",
  "{0} casts {1} by itself when it fills its energy": "{0}은(는) 에너지가 차면 스스로 {1}을(를) 시전함",
  "{0} consumes {1}": "{0}이(가) {1}을(를) 소모",
- "{0} consumes {1}: a much bigger hit": "{0}이(가) {1}을(를) 소모: 훨씬 큰 타격",
  "{0} detonates {1}": "{0}이(가) {1}을(를) 기폭",
  "{0} empowers {1}: it repeats as an aftershock": "{0}이(가) {1}을(를) 강화: 여진으로 반복",
  "{0} erupts from {1}": "{1}에서 {0} 분출",
@@ -831,5 +830,8 @@
  "Check for updates": "업데이트 확인",
  "Checking…": "확인 중…",
  "Exilewright {0} is the latest version.": "Exilewright {0}이(가) 최신 버전입니다.",
- "The updates could not be checked ({0}).": "업데이트를 확인할 수 없습니다({0})."
+ "The updates could not be checked ({0}).": "업데이트를 확인할 수 없습니다({0}).",
+ "Electrocution": "전기 처형",
+ "Pinned": "고정",
+ "{0} cannot curse enemies above level {1}": "{0}은(는) 레벨 {1}을(를) 넘는 적을 저주할 수 없음"
 }

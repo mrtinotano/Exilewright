@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0} kann die Leichen deiner Gegner und von {1} nutzen",
  "{0} casts {1} by itself when it fills its energy": "{0} wirkt {1} von selbst, wenn seine Energie voll ist",
  "{0} consumes {1}": "{0} verbraucht {1}",
- "{0} consumes {1}: a much bigger hit": "{0} verbraucht {1}: ein viel stärkerer Treffer",
  "{0} detonates {1}": "{0} detoniert {1}",
  "{0} empowers {1}: it repeats as an aftershock": "{0} verstärkt {1}: es wiederholt sich als Nachbeben",
  "{0} erupts from {1}": "{0} bricht aus {1} hervor",
@@ -831,5 +830,8 @@
  "Check for updates": "Nach Updates suchen",
  "Checking…": "Suche…",
  "Exilewright {0} is the latest version.": "Exilewright {0} ist die neueste Version.",
- "The updates could not be checked ({0}).": "Die Suche nach Updates ist fehlgeschlagen ({0})."
+ "The updates could not be checked ({0}).": "Die Suche nach Updates ist fehlgeschlagen ({0}).",
+ "Electrocution": "Elektrisiert",
+ "Pinned": "Festgesetzt",
+ "{0} cannot curse enemies above level {1}": "{0} kann Gegner über Stufe {1} nicht verfluchen"
 }

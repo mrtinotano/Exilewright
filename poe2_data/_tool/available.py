@@ -293,6 +293,8 @@ art_variety = {}
 for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietiesKeys']):
     art_variety.setdefault(r['Id'], varieties[r['MonsterVarietiesKeys'][0]])
 skills, skill_csd = {}, {}
+PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin|cannot_break_armour)')
+PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
         continue
@@ -342,6 +344,26 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                 const[k] = one[k]
                 for lv in levels.values():
                     del lv[k]
+    # what the gem's other parts say (its second hit, the explosion, the empowered use...): only the rules the 3D scene
+    # reads (consuming a state, damage against one, exposure, curses, charges), per level as above; and every on / off
+    # rule of the skill (never_freeze, always_ignite, base_consume_enemy_shock_on_hit...) from all of its parts
+    allfx = effects + [ge_tab[x] for x in fx['AdditionalGrantedEffects'] if ge_tab[x] not in effects and not ge_tab[x]['Id'].startswith('Support')]
+    more_sets = [i for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] if i not in sets]
+    flags = sorted({k for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] for k in map(sid, ss_tab[i]['ImplicitStats']) if PART_FLAG.search(k)})
+    part, part_levels = {}, {}
+    for i in more_sets:
+        part.update({k: v for k, v in zip(map(sid, ss_tab[i]['ConstantStats']), ss_tab[i]['ConstantStatsValues']) if PART_RULE.search(k)})
+        for r in ss_lvl.get(i, []):
+            part_levels.setdefault(r['GemLevel'], {}).update({k: v for k, v in zip(map(sid, r['AdditionalStats']), r['AdditionalStatsValues']) if PART_RULE.search(k)})
+    part_levels = {l: x for l, x in part_levels.items() if x}
+    if part_levels:
+        one = next(iter(part_levels.values()))
+        for k in set.intersection(*map(set, part_levels.values())):
+            if all(lv[k] == one[k] for lv in part_levels.values()):
+                part[k] = one[k]
+                for lv in part_levels.values():
+                    del lv[k]
+        part_levels = {l: x for l, x in part_levels.items() if x}
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
     q = next((quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects'][:1]] if i in quality_tab), {})
     acts = [active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None]
@@ -360,6 +382,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
         # what a meta gem does to the skill it uses: its own support part (GemEffects.AdditionalGrantedEffects named
         # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
+        **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}),
         'meta_support': {sid(a): v for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Support')
                          for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])} or None,
     }
@@ -779,6 +802,7 @@ assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJe
 assert all(k in game for k in ('ShockChanceMultiplier', 'IgniteChanceMultiplier', 'BaseShockMagnitude', 'ChillEffectMultiplier', 'ChillMaxEffect', 'BaseChillDuration',
     'BaseShockDuration', 'FreezeDuration', 'FreezeDamageScale', 'FreezeThresholdModifier', 'FreezeModifierDuration', 'HeavyStunDamageScale',
     'HeavyStunThresholdModifier', 'HeavyStunModifierDuration', 'BaseFlammabilityDuration')) and all(mon_stats.get(k) for k in ('base_heavy_stun_duration_ms', 'poise_decay_delay_ms', 'poise_decay_%_per_second')), 'GameConstants / monster.ot: ailment rules'
+assert skills['Glacial Cascade']['part']['active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final'] > 0 and 'never_freeze' in skills['Glacial Cascade']['flags'], 'other stat sets of a skill'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'

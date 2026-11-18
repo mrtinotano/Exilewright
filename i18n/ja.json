@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0}は敵と{1}の死体を使用できる",
  "{0} casts {1} by itself when it fills its energy": "{0}はエネルギーが満タンになると自動で{1}を発動する",
  "{0} consumes {1}": "{0}が{1}を消費",
- "{0} consumes {1}: a much bigger hit": "{0}が{1}を消費: はるかに強力なヒット",
  "{0} detonates {1}": "{0}が{1}を起爆",
  "{0} empowers {1}: it repeats as an aftershock": "{0}が{1}を強化: 余震として繰り返す",
  "{0} erupts from {1}": "{0}が{1}から噴出する",
@@ -831,5 +830,8 @@
  "Check for updates": "アップデートを確認",
  "Checking…": "確認中…",
  "Exilewright {0} is the latest version.": "Exilewright {0} は最新バージョンです。",
- "The updates could not be checked ({0}).": "アップデートを確認できませんでした（{0}）。"
+ "The updates could not be checked ({0}).": "アップデートを確認できませんでした（{0}）。",
+ "Electrocution": "麻痺",
+ "Pinned": "足止め",
+ "{0} cannot curse enemies above level {1}": "{0}はレベル{1}を超える敵を呪えない"
 }

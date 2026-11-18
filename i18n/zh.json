@@ -398,7 +398,6 @@
  "{0} can use the corpses of your enemies and of {1}": "{0}可使用你的敵人與{1}的屍體",
  "{0} casts {1} by itself when it fills its energy": "{0}能量充滿時會自行施放{1}",
  "{0} consumes {1}": "{0}消耗{1}",
- "{0} consumes {1}: a much bigger hit": "{0}消耗{1}：更強力的一擊",
  "{0} detonates {1}": "{0}引爆{1}",
  "{0} empowers {1}: it repeats as an aftershock": "{0}強化{1}：以餘震重複",
  "{0} erupts from {1}": "{0}從{1}爆發",
@@ -831,5 +830,8 @@
  "Check for updates": "檢查更新",
  "Checking…": "檢查中…",
  "Exilewright {0} is the latest version.": "Exilewright {0} 已是最新版本。",
- "The updates could not be checked ({0}).": "無法檢查更新（{0}）。"
+ "The updates could not be checked ({0}).": "無法檢查更新（{0}）。",
+ "Electrocution": "觸電",
+ "Pinned": "被釘身",
+ "{0} cannot curse enemies above level {1}": "{0}無法詛咒等級高於 {1} 的敵人"
 }

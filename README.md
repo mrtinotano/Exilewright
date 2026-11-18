@@ -108,8 +108,12 @@ after the monster's defences, and ailments follow the game's rules (`GameConstan
 and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
 threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a
 while after one), bleeding and poison need a chance from the skill or the build, Armour Break lowers its armour until it
-is Fully Broken. Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a
-value of the scene and not of the game (consumed states, curses, minions) are drawn with "~".
+is Fully Broken, Electrocute and Pin build up from the skills that can inflict them. Each skill keeps its own rules: what it
+never or always inflicts, the more damage it deals when it consumes a state or hits one (frozen, shocked, immobilised...),
+against unique enemies or per charge spent. Curses apply their gem's resistances, armour, damage and speed (less on rarer
+monsters, none above the gem's level limit), and Exposure lowers resistances by its source's magnitude. Chains,
+projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a value of the scene and
+not of the game (a consumed state the skill gives no number for, minions, totems) are drawn with "~".
 
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the
