@@ -456,7 +456,6 @@
  "Demon": "Demonio",
  "Dodged": "Esquivado",
  "Enemies": "Enemigos",
- "Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.": "Los enemigos se quedan quietos, como muñecos: entra en su alcance y te atacan. Un número con ~ incluye un valor que los datos del juego no dan.",
  "Evaded": "Evadido",
  "Every": "Cada",
  "Hits to kill": "Golpes para matarlo",
@@ -846,5 +845,7 @@
  "{0} needs {1} charges and has {2}": "{0} necesita {1} cargas y tiene {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: frasco de vida y frasco de maná",
  "{0} applies its effect constantly": "{0} aplica su efecto constantemente",
- "{0} used": "{0}: usado"
+ "{0} used": "{0}: usado",
+ "Enemies stand still": "Los enemigos se quedan quietos",
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Los enemigos van a por ti a su velocidad cuando entras en su radio de aggro o les golpeas, y atacan cuando estás a su alcance. Un número con ~ incluye un valor que los datos del juego no dan."
 }

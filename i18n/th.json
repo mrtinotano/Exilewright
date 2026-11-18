@@ -456,7 +456,6 @@
  "Demon": "ปีศาจ",
  "Dodged": "หลบได้",
  "Enemies": "ศัตรู",
- "Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.": "ศัตรูยืนนิ่งเหมือนหุ่นฝึก: เดินเข้าไปในระยะแล้วมันจะโจมตีคุณ ตัวเลขที่มี ~ มีค่าที่ข้อมูลเกมไม่ได้ระบุรวมอยู่",
  "Evaded": "หลบหลีกได้",
  "Every": "ทุก",
  "Hits to kill": "จำนวนครั้งที่ต้องปะทะเพื่อสังหาร",
@@ -846,5 +845,7 @@
  "{0} needs {1} charges and has {2}": "{0} ต้องใช้ {1} Charge แต่มี {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: ขวดยาพลังชีวิตและขวดยามานา",
  "{0} applies its effect constantly": "{0} ใช้ผลอย่างต่อเนื่อง",
- "{0} used": "ใช้ {0}"
+ "{0} used": "ใช้ {0}",
+ "Enemies stand still": "ศัตรูยืนอยู่กับที่",
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "ศัตรูจะเข้าหาคุณด้วยความเร็วของมันเมื่อคุณเข้าระยะการตรวจจับหรือโจมตีมัน และโจมตีเมื่ออยู่ในระยะ ตัวเลขที่มี ~ รวมค่าที่ข้อมูลเกมไม่ได้ให้ไว้"
 }

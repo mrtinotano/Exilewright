@@ -179,7 +179,7 @@ export function initScene(el, api) {
     if (dummies.length >= MAXE) { toast(t('The scene holds up to {0} enemies', MAXE)); return null; }
     const fig = makeDummy(fx, { kind: m.category, scale: m.boss ? 1.45 : 1 });
     fig.group.position.set(x, 0, z); fig.group.rotation.y = Math.atan2(pp.x - x, pp.z - z); scene.add(fig.group);
-    const d = { fig, pos: fig.group.position, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], dead: false, corpse: 0, back: 0, fall: 0,
+    const d = { fig, pos: fig.group.position, home: { x, z }, aggro: false, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], dead: false, corpse: 0, back: 0, fall: 0,
       flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expo: null, wind: null, wait: rnd(.6, 1.2) };
     arm(d, tpl.level, tpl.attack); dummies.push(d);
     fx.ring(d.pos, 1.3 * d.sc, .3, 'gold', .4, { a: .6 });
@@ -189,7 +189,7 @@ export function initScene(el, api) {
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
   const clean = d => { d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
-    const f = d.fig; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
+    const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
@@ -256,6 +256,7 @@ export function initScene(el, api) {
   // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
   function hit(d, S, o = {}) {
     if (d.dead) return false;
+    d.aggro = true;   // hit, it comes at you
     const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
@@ -1393,7 +1394,9 @@ export function initScene(el, api) {
   // From the game: the damage per type, the crit chance and the seconds between uses of the attack, and your evasion, block, armour,
   // resistances, life regeneration and energy shield recharge; the projectile's speed and the area's radius where the tables have them.
   // Fixed by the scene: the wind-up, the reach, and how each shape
-  // (strike, slam, projectile, area, bolt) is drawn. Enemies stand still, like dummies: step into their reach to be attacked.
+  // (strike, slam, projectile, area, bolt) is drawn. Enemies walk at you at their MovementSpeed (MonsterVarieties, in the
+  // units of your own speed) once you come within their aggro range (MaxAgroRange) or hit them, until you are in their reach;
+  // not while pinned or winding up, slowed by chill and curses as everything they do. Reset puts them back where they were placed.
   const REACH = { projectile: 14, area: 11, bolt: 11 };
   const reachOf = d => REACH[d.atk.shape] || Math.max(d.atk.reach + .8, 2.2) * d.sc;
   const above = () => ({ x: pp.x, y: 2.5, z: pp.z });
@@ -1610,7 +1613,18 @@ export function initScene(el, api) {
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     d.wait -= dt;
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
-    if (d.wait > 0 || me.safe > 0 || dist(d.pos, pp) > reachOf(d)) return;
+    if (me.safe > 0) return;
+    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10;
+    if (far <= (d.mon.aggro || 0) / 10) d.aggro = true;
+    if (d.aggro && v > 0 && far > R * .8 && !(d.st.pin > 0) && !api.still?.()) {
+      const k = Math.min(far - R * .7, v * dt) / far; d.pos.x += (pp.x - d.pos.x) * k; d.pos.z += (pp.z - d.pos.z) * k;
+      for (const o of dummies) {   // they do not walk into each other
+        if (o === d || o.dead) continue;
+        const dx = d.pos.x - o.pos.x, dz = d.pos.z - o.pos.z, l = Math.hypot(dx, dz), min = SIM.body * 2 * Math.max(d.sc, o.sc);
+        if (l < min && l > 1e-3) { d.pos.x += dx / l * (min - l); d.pos.z += dz / l * (min - l); }
+      }
+    }
+    if (d.wait > 0 || dist(d.pos, pp) > R) return;
     d.wait = Math.max(.25, d.atk.interval); strike(d);
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage

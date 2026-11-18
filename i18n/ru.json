@@ -456,7 +456,6 @@
  "Demon": "Демон",
  "Dodged": "Увернулись",
  "Enemies": "Враги",
- "Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.": "Враги стоят на месте, как манекены: войдите в зону их досягаемости, и они атакуют вас. Число с ~ включает значение, которого нет в данных игры.",
  "Evaded": "Уклонение",
  "Every": "Каждые",
  "Hits to kill": "Ударов до убийства",
@@ -846,5 +845,7 @@
  "{0} needs {1} charges and has {2}": "{0}: нужно зарядов: {1}, есть: {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: флакон здоровья и флакон маны",
  "{0} applies its effect constantly": "{0}: эффект действует постоянно",
- "{0} used": "{0}: использован"
+ "{0} used": "{0}: использован",
+ "Enemies stand still": "Враги стоят на месте",
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Враги идут к вам со своей скоростью, когда вы входите в их радиус агрессии или бьёте их, и атакуют в пределах досягаемости. Число с ~ включает значение, которого нет в данных игры."
 }

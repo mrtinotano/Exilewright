@@ -456,7 +456,6 @@
  "Demon": "惡魔",
  "Dodged": "已閃躲",
  "Enemies": "敵人",
- "Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.": "敵人會像假人一樣站著不動：走進牠們的攻擊範圍就會攻擊你。帶有 ~ 的數字包含遊戲資料未提供的數值。",
  "Evaded": "已閃避",
  "Every": "每",
  "Hits to kill": "擊殺所需擊中次數",
@@ -846,5 +845,7 @@
  "{0} needs {1} charges and has {2}": "{0}需要{1}次充能，目前有{2}次",
  "{0} / {1}: life and mana flask": "{0} / {1}：生命藥劑與魔力藥劑",
  "{0} applies its effect constantly": "{0}會持續套用效果",
- "{0} used": "已使用{0}"
+ "{0} used": "已使用{0}",
+ "Enemies stand still": "敵人停在原地",
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "進入敵人的仇恨範圍或攻擊它們時，敵人會以自身速度向你移動，並在攻擊距離內攻擊。帶 ~ 的數值包含遊戲資料沒有提供的值。"
 }

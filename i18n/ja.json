@@ -456,7 +456,6 @@
  "Demon": "デーモン",
  "Dodged": "ドッジロール回避",
  "Enemies": "敵",
- "Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.": "敵はダミーのように動きません: 射程に入るとアタックしてきます。~ 付きの数値はゲームデータにない値を含みます。",
  "Evaded": "回避",
  "Every": "毎",
  "Hits to kill": "撃破に必要なヒット数",
@@ -846,5 +845,7 @@
  "{0} needs {1} charges and has {2}": "{0}には{1}チャージが必要です (現在{2})",
  "{0} / {1}: life and mana flask": "{0} / {1}: ライフフラスコとマナフラスコ",
  "{0} applies its effect constantly": "{0}は効果を常に適用する",
- "{0} used": "{0}を使用"
+ "{0} used": "{0}を使用",
+ "Enemies stand still": "敵はその場から動かない",
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "敵は索敵範囲に入るか攻撃されると自分の速度で向かってきて、射程内で攻撃する。~ 付きの数値はゲームデータにない値を含む。"
 }

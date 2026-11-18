@@ -779,11 +779,11 @@ for i, m in enumerate(varieties):
         'attack_speed': {k: v for k, v in mod_stats(m['Mods'] + m['Special_Mods']).items() if k in ('attack_speed_+%', 'active_skill_attack_speed_+%_final')}}),
         'life': m['LifeMultiplier'] / 100, 'damage': m['DamageMultiplier'] / 100, 'spread': t['DamageSpread'] / 100,
         'res': [res[el + '1'][0] if res else 0 for el in ('Fire', 'Cold', 'Lightning', 'Chaos')],
-        'attack_time': m['AttackSpeed'] / 1000, 'range': m['MaximumAttackDistance'], 'speed': m['MovementSpeed'],
+        'attack_time': m['AttackSpeed'] / 1000, 'range': m['MaximumAttackDistance'], 'speed': m['MovementSpeed'], 'aggro': m['MaxAgroRange'],   # game units: 10 = 1 m, like the player's speed
         # note: MonsterTypes has this flag in a column the schema has no name for, so extract.mjs leaves it out; all
         # but 2 of the 598 monsters Path of Building 2 exports have it. Read that column if those two ever matter
         'ignores_attack_speed': True}
-    same = json.dumps({k: v for k, v in mon.items() if k not in ('id', 'areas')}, sort_keys=True)
+    same = json.dumps({k: v for k, v in mon.items() if k not in ('id', 'areas', 'aggro')}, sort_keys=True)
     if same in seen:   # the same monster placed somewhere else: one entry, all its areas
         seen[same]['areas'] = sorted(set(seen[same].get('areas', []) + mon.get('areas', [])))
         continue

@@ -175,7 +175,7 @@ const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.
 const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
-const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null }) => ({ enemy, level, attack, rarity }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
+const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false }) => ({ enemy, level, attack, rarity, still }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
 const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
@@ -310,7 +310,8 @@ $('notes').onchange = edit((e, b) => b.notes = e.target.value);
 $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if (!$('notesBox').hidden) $('notes').focus(); };
 $('sceneSkills').onchange = e => {
   const d = e.target.dataset;
-  if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
+  if (d.en === 'still') { sceneCfg.still = e.target.checked; saveScene(); }
+  else if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
     if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();
   } else if (d.i != null) edit((e, b) => b.gems[d.i][d.k] = d.k === 'shape' ? e.target.value : +e.target.value)(e);
@@ -954,11 +955,12 @@ function renderEnemy() {
     <table class="en-t">${theirs.join('')}</table>
     ${yours}
     <div class="en-btns"><button data-en="place" class="${placing ? 'on' : ''}">${placing ? t('Placing: click in the scene') : t('Place with a click')}</button>
-      <button data-en="clear">${t('Remove enemies')}</button><button data-en="reset" title="R">${t('Reset the simulator')}</button></div>
-    <p class="note">${t('Enemies stand still, like dummies: walk into their reach and they attack you. A number with ~ includes a value the game data does not give.')}</p>`;
+      <button data-en="clear">${t('Remove enemies')}</button><button data-en="reset">${t('Reset the simulator')}</button></div>
+    <label class="en-still"><input type="checkbox" data-en="still"${sceneCfg.still ? ' checked' : ''}> ${t('Enemies stand still')}</label>
+    <p class="note">${t('Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.')}</p>`;
 }
 
-scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), ailments: ailmentDefence(c, sum),
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
