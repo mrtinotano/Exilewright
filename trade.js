@@ -238,9 +238,9 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   if (s.total && !from && !to) from = (await pricesOf(s)).find(x => !x.more) || null;   // nothing to rate it by: the cheapest alike
   // nothing better listed: the next dearer alike
   if (from && !to) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
-  // still one price (a single alike, which can ask anything: 99999999 Mirrors): one line fewer, then the name and base
-  // alone (not a rare's bare base: any junk one of it), the two cheapest different prices there
-  if (s.total) for (const kk of new Set([k - 1, ...item.unique || Object.keys(props).length ? [0] : []])) if (!(from && to) && kk >= 0 && kk < k) {
+  // still one price (a single alike, which can ask anything: 99999999 Mirrors): one line fewer at a time, down to the
+  // name and base alone (not a rare's bare base: any junk one of it), the two cheapest different prices there
+  for (let kk = k - 1, last = item.unique || Object.keys(props).length ? 0 : 1; s.total && !(from && to) && kk >= last; kk--) {
     const w = await search(kk, pct), ps = (await pricesOf(w)).filter(x => !x.more), next = ps.find(x => key(x) !== key(ps[0]));
     if (next) [from, to, s, k] = [ps[0], next, w, kk];
   }
