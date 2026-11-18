@@ -46,7 +46,7 @@ export function watchUpdates(el) {
     const u = await fetch('update').then(r => r.ok ? r.json() : null).catch(() => null);
     if (busy || !u?.newer || !u.app) return;
     el.hidden = false;
-    el.innerHTML = `${esc(t('Exilewright {0} is out', u.latest))} <button>${t(u.install ? 'Update' : 'Open')}</button>`;
+    el.innerHTML = `${esc(t('Update available: Exilewright {0}', u.latest))} <button>${t(u.install ? 'Update' : 'Open')}</button>`;
     el.querySelector('button').onclick = async () => {
       if (!u.install) return open(u.page, '_blank', 'noopener');
       busy = true;

@@ -828,5 +828,5 @@
  "Add": "追加",
  "Area level {0}": "エリアレベル {0}",
  "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "キャラクターがいるエリアのレベルです。耐性ペナルティが決まります。空欄ならキャラクターのレベルのエリアになります。",
- "Exilewright {0} is out": "Exilewright {0} が公開されました"
+ "Update available: Exilewright {0}": "アップデートがあります: Exilewright {0}"
 }

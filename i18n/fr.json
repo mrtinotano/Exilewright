@@ -828,5 +828,5 @@
  "Add": "Ajouter",
  "Area level {0}": "Niveau de la zone {0}",
  "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Le niveau de la zone où se trouve le personnage : il fixe la pénalité de résistances. Laissez vide pour une zone du niveau du personnage.",
- "Exilewright {0} is out": "Exilewright {0} est disponible"
+ "Update available: Exilewright {0}": "Mise à jour disponible : Exilewright {0}"
 }

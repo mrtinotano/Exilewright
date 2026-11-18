@@ -828,5 +828,5 @@
  "Add": "新增",
  "Area level {0}": "區域等級 {0}",
  "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "角色所在區域的等級：決定抗性懲罰。留空則為與角色等級相同的區域。",
- "Exilewright {0} is out": "Exilewright {0} 已推出"
+ "Update available: Exilewright {0}": "有可用更新：Exilewright {0}"
 }
