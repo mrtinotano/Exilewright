@@ -66,7 +66,7 @@ export function watchUpdates(el) {
 
 export function initSettings(el, loot) {
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let msg = '', upd = '', list = null, win = {};   // upd: what the updates button found   // the leagues of the trade site; the app's window (serve.py /settings)
+  let msg = '', upd = '', list = null, win = {};   // upd: what the updates button found; list: the leagues of the trade site; win: the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
