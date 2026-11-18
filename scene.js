@@ -323,7 +323,7 @@ export function initScene(el, api) {
   // freeze and heavy stun bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill again for a while
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0) return;
-    const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', hard = d.lock[a] > 0 ? 1 + (GC[G + 'ThresholdModifier']) / 100 : 1;
+    const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, d.stat.poise) * hard) * 100; d.calm = 0;
     if (d.bar[a] < 100) return;
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];

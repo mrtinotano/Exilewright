@@ -23,7 +23,7 @@ export const SIM = {
   lifetime: 8,         // s of objects without duration in the data
   groundTime: 8,       // s of ground effects without duration in the data
   curseDelay: 0.9, curseTime: 9,
-  ignite: 4, chill: 4, shock: 4, freeze: 3.5, poison: 3, bleed: 5, broken: 8,
+  ignite: 4, poison: 3, bleed: 5,
   freezeHits: 3, breakHits: 3,
   dot: 0.35,           // hits per second of each damage over time effect
   consume: 2,          // extra hits when a payoff consumes its state
