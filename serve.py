@@ -761,15 +761,18 @@ class Handler(SimpleHTTPRequestHandler):
         if post and not self.mine():
             return self.reply(403, 'local only')
         try:
-            r = json.loads(call(f'https://api.github.com/repos/{RELEASES}/releases/latest'))
-            latest = r['tag_name'].lstrip('v')
-            setup = next((a['browser_download_url'] for a in r['assets'] if a['name'] == 'Exilewright-setup.exe'), None)
+            # github.com's own link to the latest release, which goes on to its tag's page: not the API (60 asks an hour),
+            # so it can be asked whenever the window comes to the front
+            with urlopen(Request(f'https://github.com/{RELEASES}/releases/latest', method='HEAD', headers=UA), timeout=20) as r:
+                page = r.geturl()
+            latest = page.rsplit('/tag/v', 1)[1]
+            setup = f'https://github.com/{RELEASES}/releases/download/v{latest}/Exilewright-setup.exe'   # each release has it
         except Exception as e:
             return self.reply_json(502, json.dumps({'error': str(e)}).encode())
         installed = FROZEN and not os.path.exists(os.path.join(os.path.dirname(sys.executable), 'portable'))
         newer = number(latest) > number(VERSION)
         if not post:
-            return self.reply_json(200, json.dumps({'version': VERSION, 'latest': latest, 'newer': newer, 'page': r['html_url'],
+            return self.reply_json(200, json.dumps({'version': VERSION, 'latest': latest, 'newer': newer, 'page': page,
                                                     'install': bool(installed and setup), 'app': 'app' in ARGS}).encode())
         if not (newer and installed and setup and setup.startswith(f'https://github.com/{RELEASES}/releases/download/')):
             return self.reply(409, 'nothing to install')

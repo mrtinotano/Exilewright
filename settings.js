@@ -35,13 +35,13 @@ const comboOf = e => {
   return key && (e.ctrlKey || e.altKey) ? [e.ctrlKey && 'Ctrl', e.shiftKey && 'Shift', e.altKey && 'Alt', key].filter(Boolean).join('+') : null;
 };
 
-// a newer version, looked for when the app opens and whenever its window comes back to the front (at most every 10
-// minutes: GitHub answers 60 asks an hour): a line in the top bar with a button that installs it (the installed app)
+// a newer version, looked for when the app opens and whenever its window comes back to the front (at most every
+// half minute): a line in the top bar with a button that installs it (the installed app)
 // or opens its page (the portable one). Run from the code: nothing
 export function watchUpdates(el) {
   let last = 0, busy = false;
   const look = async () => {
-    if (busy || Date.now() - last < 600e3) return;
+    if (busy || Date.now() - last < 30e3) return;
     last = Date.now();
     const u = await fetch('update').then(r => r.ok ? r.json() : null).catch(() => null);
     if (busy || !u?.newer || !u.app) return;
@@ -57,6 +57,7 @@ export function watchUpdates(el) {
   };
   look();
   addEventListener('focus', look);
+  document.addEventListener('visibilitychange', () => document.hidden || look());
 }
 
 export function initSettings(el, loot) {
