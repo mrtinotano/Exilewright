@@ -237,7 +237,8 @@ def overlay():
     body = tk.Frame(box, bg=back)
     q, timer = queue.Queue(), None
     held = None   # the keys and mouse buttons down at the last look; None: not looked at since the window came up
-    keys = None   # the keys that close it: the game's own (game_keys) and Esc; None: any key but W A S D (see watch)
+    keys = []     # what closes it when pressed: the mouse buttons, the game's own keys (game_keys) and Esc; when the game's
+                  # settings cannot be read, any key but W A S D
     over = gone = None   # the window in front when it came up; the one it was over when another came to the front
     if win:
         # hiding is done by making it clear, never by taking it off the screen: putting a window back on the screen
@@ -311,7 +312,7 @@ def overlay():
             root.attributes('-alpha', .95)
             clicks(True)
             game = game_keys()
-            held, keys = None, game | {0x1B} if game else None
+            held, keys = None, [k for k in watch if k in (*mouse, 5, 6) or (k in game | {0x1B} if game else k not in b'WASD')]
         else:
             root.deiconify()
         root.attributes('-topmost', True)            # every time: macOS forgets it while the window is off the screen
@@ -327,7 +328,7 @@ def overlay():
             # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
             # or another window. note: keys and mouse are looked at 20 times a second, not hooked (a hook written
             # in Python can slow the pointer in the game); a hook if presses ever get missed
-            now = {k: user.GetAsyncKeyState(k) for k in watch if k in mouse or k in (5, 6) or (k in keys if keys else k not in b'WASD')}   # 0x8000: down, 1: pressed since the last look
+            now = {k: user.GetAsyncKeyState(k) for k in keys}   # 0x8000: down, 1: pressed since the last look
             down = {k for k, s in now.items() if s & 0x8000}
             new = set() if held is None else {k for k, s in now.items() if s & 1 or k in down and k not in held}
             held = down
@@ -357,19 +358,19 @@ def game_config():
         return ''
 
 
-def game_setting(key, text=None):
+def game_setting(key):
     """-> the value of a setting in the game's settings file, '' when it is not there"""
-    m = re.search(rf'^{key}=(.*?)\s*$', game_config() if text is None else text, re.M)
+    m = re.search(rf'^{key}=(.*?)\s*$', game_config(), re.M)
     return m.group(1) if m else ''
 
 
 def game_keys():
     """-> the Windows key codes the game is set to use ([ACTION_KEYS], or [WASD_ACTION_KEYS] when it moves the character
-    with W A S D: "action=code [modifier]", 0 unbound), mouse buttons left out; None when the file cannot be read"""
+    with W A S D: "action=code [modifier]", 0 unbound); None when the file cannot be read"""
     text = game_config()
-    part = 'WASD_ACTION_KEYS' if game_setting('use_wasd_to_move', text) == 'true' else 'ACTION_KEYS'
+    part = 'WASD_ACTION_KEYS' if re.search(r'^use_wasd_to_move=true\s*$', text, re.M) else 'ACTION_KEYS'
     m = re.search(rf'^\[{part}\]\s*$(.*?)(?=^\[|\Z)', text, re.M | re.S)
-    return {int(c) for c in re.findall(r'^\w+=(\d+)', m.group(1), re.M)} - {0, 1, 2, 4, 5, 6} if m else None
+    return {int(c) for c in re.findall(r'^\w+=(\d+)', m.group(1), re.M)} if m else None
 
 
 def tongue():
