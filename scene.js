@@ -1219,18 +1219,16 @@ export function initScene(el, api) {
   // what the cursor over a skill of the bar shows: its kind and elements, area, projectiles, duration and what it consumes
   function tipOf(i) {
     const S = mk(i); if (!S) return '';
-    {
-      const G = S.G, P = S.P, rows = [];
-      if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
-      else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
-      if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);
-      if (P.dur) rows.push(`${t('duration')} ${P.dur.toFixed(1)} s`);
-      const notes = [...P.consumes.map(s => t('Consumes {0}', t(STATE[s]))), ...P.bonus.map(s => t('Payoff: {0}', t(STATE[s])))];
-      if (P.corpse) notes.push(t('Needs a corpse'));
-      P.spend.forEach(c => notes.push(t('Spends {0} charges', t(CHARGE[c]))));
-      return `<b style="color:${css(S.el)}">${esc(S.label)}</b><span>${t(KIND[S.kind === 'field' ? 'aura' : S.kind] || S.kind)}${P.els.length ? ' · ' + P.els.map(e => t(cap(e))).join(' / ') : ''}</span>`
-        + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : '');
-    }
+    const G = S.G, P = S.P, rows = [];
+    if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
+    else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
+    if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);
+    if (P.dur) rows.push(`${t('duration')} ${P.dur.toFixed(1)} s`);
+    const notes = [...P.consumes.map(s => t('Consumes {0}', t(STATE[s]))), ...P.bonus.map(s => t('Payoff: {0}', t(STATE[s])))];
+    if (P.corpse) notes.push(t('Needs a corpse'));
+    P.spend.forEach(c => notes.push(t('Spends {0} charges', t(CHARGE[c]))));
+    return `<b style="color:${css(S.el)}">${esc(S.label)}</b><span>${t(KIND[S.kind === 'field' ? 'aura' : S.kind] || S.kind)}${P.els.length ? ' · ' + P.els.map(e => t(cap(e))).join(' / ') : ''}</span>`
+      + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : '');
   }
   function showTip(i) {
     const slot = bar.querySelector(`[data-i="${i}"]`); if (!slot) { tipEl.hidden = true; return; }
