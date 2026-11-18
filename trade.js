@@ -240,9 +240,9 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   if (from && !to) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
   // still one price (a single alike, which can ask anything: 99999999 Mirrors): one line fewer, then the name and base
   // alone (not a rare's bare base: any junk one of it), the two cheapest different prices there
-  for (const kk of [k - 1, ...item.unique || Object.keys(props).length ? [0] : []]) if (s.total && !(from && to) && kk >= 0 && kk < k) {
+  if (s.total) for (const kk of new Set([k - 1, ...item.unique || Object.keys(props).length ? [0] : []])) if (!(from && to) && kk >= 0 && kk < k) {
     const w = await search(kk, pct), ps = (await pricesOf(w)).filter(x => !x.more), next = ps.find(x => key(x) !== key(ps[0]));
-    if (next) { [from, to, s, k] = [ps[0], next, w, kk]; }
+    if (next) [from, to, s, k] = [ps[0], next, w, kk];
   }
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };
