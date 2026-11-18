@@ -448,7 +448,7 @@ const ascStart = a => (ASC[a] || []).find(i => N[i].ascendancy_start);
 const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
 // every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
-const GROUP_ART = Object.entries(tree.group_art || {});   // [group, mastery art id]: what the game draws behind it
+const MASTERY = Object.keys(N).filter(id => N[id].mastery_art);   // the passives with their mastery's art behind them
 const visible = () => [...main, ...(ASC[B().asc] || [])];
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
@@ -718,17 +718,15 @@ function drawTree() {
 
   // world-space layers
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
-  // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
-  // once one of its passives is allocated, faint until then (as the game shows it). Not by an attribute passive: a
-  // group also holds those of the paths by it, and the game leaves its art faint for them
-  // note: the faint 0.3 is by eye from a screenshot of the game; no table says it
-  const taken = new Set([...on].filter(id => N[id] && N[id].type !== 'attribute').map(id => String(N[id].group)));
-  for (const [g, id] of GROUP_ART) {
-    const pic = art('mastery/' + id);
-    if (!pic || !GROUPS[g]) continue;
-    const [x, y] = GROUPS[g];
-    ctx.globalAlpha = taken.has(g) ? 1 : .3;
-    ctx.drawImage(pic, x - pic.width, y - pic.height, pic.width * 2, pic.height * 2);
+  // behind each passive of a mastery, its art (images.py: img/mastery, at half size), bright once it is allocated,
+  // faint until then (as the game shows it)
+  // note: the size (1.5 world units a pixel) and the faint 0.3 are by eye from screenshots of the game; no table says them
+  for (const id of MASTERY) {
+    const pic = art('mastery/' + N[id].mastery_art);
+    if (!pic) continue;
+    const [x, y] = WP[id], w = pic.width * 1.5, h = pic.height * 1.5;
+    ctx.globalAlpha = on.has(id) ? 1 : .3;
+    ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
   }
   ctx.globalAlpha = 1;
   // central ascendancy disc
