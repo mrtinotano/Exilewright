@@ -794,6 +794,7 @@
  "mirror": "カランドラの鏡",
  "hinekoras-lock": "ヒネコラの髪束",
  "Open on the trade site": "トレードサイトで開く",
+ "An estimate from what is listed, not a sure price: check on the trade site to be sure.": "出品中のアイテムからの推定で、確かな価格ではありません。確実に知るにはトレードサイトで確認してください。",
  "Numbers within (±%)": "数値の範囲（±%）",
  "Open with Windows": "Windows の起動時に開く",
  "Only in the notification area (click its icon to open the window)": "通知領域のみに表示（アイコンをクリックするとウィンドウを開きます）",
