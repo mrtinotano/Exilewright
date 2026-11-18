@@ -1318,8 +1318,8 @@ export function initScene(el, api) {
   // and heavy stun bars while they fill
   const ailing = () => Object.keys(me.st).filter(a => me.st[a] > 0)
     .map(a => one(api.ailmentIcon?.(a), css(PIP[a]), t(STATE[a]) + (me.mag[a] ? ` ${Math.round(me.mag[a])}%` : ''), '', me.st[a], true)).join('')
-    + Object.keys(me.bar).filter(a => me.bar[a] >= 1 && !(me.st[a] > 0))
-      .map(a => `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${Math.min(100, me.bar[a]).toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
+    + Object.keys(me.bar).filter(a => me.bar[a] >= 1)
+      .map(a => `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
   function keysText() {
     const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
       t('Middle and right click, Q W E R T: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill'), t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
