@@ -264,7 +264,7 @@ export function ailmentDefence(c, sum) {
   const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield') / 100) * pct('freeze_threshold_+%');
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
   const IMMUNE = { ignite: ['immune_to_ignite', 'base_immune_to_ignite'], chill: ['immune_to_chill', 'base_immune_to_chill'], shock: ['immune_to_shock', 'base_immune_to_shock'],
-    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'] };
+    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'], stun: ['base_cannot_be_stunned'] };
   const avoid = {}, dur = {};
   for (const [a, ids] of Object.entries(IMMUNE)) {
     const el = ELEM_AIL.includes(a);
@@ -272,12 +272,13 @@ export function ailmentDefence(c, sum) {
     dur[a] = el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
       : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
   }
+  dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   const eff = { chill: pct('chilled_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%') };
   return { stun, ail, freeze, avoid, dur, eff };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
 { const a = ailmentDefence({ life: 2000, es: 0, evasion: 0, attrs: {} }, { immune_to_freeze: 1, 'base_avoid_shock_%': 30, 'avoid_all_elemental_status_%': 10, 'self_elemental_status_duration_-%': 50 });
-  console.assert(a.ail === 1000 && a.stun === 2000 && a.freeze === 2000 && a.avoid.freeze === 100 && a.avoid.shock === 40 && a.avoid.poison === 0 && a.dur.chill === .5 && a.dur.bleed === 1, 'ailmentDefence'); }
+  console.assert(a.ail === 1000 && a.stun === 2000 && a.freeze === 2000 && a.avoid.freeze === 100 && a.avoid.shock === 40 && a.avoid.poison === 0 && a.dur.chill === .5 && a.dur.bleed === 1 && a.dur.stun === 1 && a.avoid.stun === 0, 'ailmentDefence'); }
 // Rage of the build: GameConstants' 30 at most plus "maximum Rage" and what Berserk grants (its Gemling quality), lost at
 // 300 a minute once 4 s pass without gaining any. regen: the gem that regenerates it (Eternal Rage, per second, level
 // and quality counted); berserk: its "increased Rage effect" and the life it costs per Rage per second while Rage is not

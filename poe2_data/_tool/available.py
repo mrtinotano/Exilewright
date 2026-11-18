@@ -664,7 +664,8 @@ save('currency.json', {'price': [o['id'] or '' for o in price_opts if not o['id'
 # per-level tables that turn the multipliers into life, armour, evasion, accuracy and damage
 ELEMENTS = ('physical', 'fire', 'cold', 'lightning', 'chaos')
 KEEP = re.compile(r'area_of_effect|radius|number_of_(?:additional_)?projectiles|number_of_chains|base_skill_effect_duration|'
-                  r'chance_to_(?:poison|bleed)|ignite_chance|shock_chance|freeze|maim|knockback|_damage_\+%_final')
+                  r'chance_to_(?:poison|bleed)|ignite_chance|shock_chance|freeze|maim|knockback|_damage_\+%_final|'
+                  r'^(?:active_skill_|melee_)?hit_damage_stun_multiplier_\+%(?:_final)?$|^base_stun_duration_\+%$')
 filled = lambda d: {k: v for k, v in d.items() if v not in (None, {}, [], '', 0, False)}
 
 
@@ -819,6 +820,11 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             # the same rules where the game has its own for a player hit by a monster (FreezeDurationPlayer...), without "Player"
             'player': {k[:-6]: v for k, v in game.items() if k.endswith('Player') and re.match(r'(Freeze|BaseChill|BaseShock|BaseFlammability|HeavyStun|Electrocute|Pin)', k)},
             'heavy_stun_ms': mon_stats.get('base_heavy_stun_duration_ms'), 'poise_decay_delay_ms': mon_stats.get('poise_decay_delay_ms'), 'poise_decay_per_second': mon_stats.get('poise_decay_%_per_second'),
+            # what a monster's hit does to your heavy stun bar: more for physical and melee hits (monster.ot), and your own
+            # heavy stun length and how fast your bars empty (character.ot)
+            'stun_physical': mon_stats.get('physical_hit_damage_stun_multiplier_+%_final_from_ot'), 'stun_melee': mon_stats.get('melee_hit_damage_stun_multiplier_+%_final_from_ot'),
+            'player_heavy_stun_ms': char_stats.get('base_heavy_stun_duration_ms'),
+            'player_poise_decay_delay_ms': char_stats.get('poise_decay_delay_ms'), 'player_poise_decay_per_second': char_stats.get('poise_decay_%_per_second'),
         },
         'monsters': monsters, 'rarity': rarity,
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
@@ -857,3 +863,4 @@ assert skills['Orb of Storms']['levels'][20]['_cost'] == {'Mana': 129} and skill
 assert any(s.get('constant', {}).get('_cost_multiplier') == 120 or any(L.get('_cost_multiplier') == 120 for L in s.get('levels', {}).values()) for s in skills.values()) and '_cost_multiplier' not in str(skills['Mortar Cannon']), 'GrantedEffectsPerLevel.CostMultiplier'
 assert next(g for g in gems if g['name'] == 'Berserk')['buff_icon'] == 'Art/2DArt/BuffIcons/Beserk.dds' and next(g for g in gems if g['name'] == 'Rite of Restoration')['buff_icon'].endswith('HuskOfDreamsBuff.dds'), 'BuffDefinitions / BuffVisuals'
 assert game['FreezeDurationPlayer'] == 2 and game['FreezeDamageScalePlayer'] == 2 and game['BaseChillDurationPlayer'] == 2 and game['BaseShockDurationPlayer'] == 4, 'GameConstants: the player ones'
+assert char_stats.get('base_heavy_stun_duration_ms') and char_stats.get('poise_decay_%_per_second') and mon_stats.get('physical_hit_damage_stun_multiplier_+%_final_from_ot'), 'character.ot / monster.ot: heavy stun on you'
