@@ -52,6 +52,10 @@ export function enemyStats(m, level, rarity) {
     res: Object.fromEntries(TYPES.slice(1).map((el, i) => [el, Math.min(cap, m.res?.[i] || 0)])),
     phys: [Math.floor(dmg * (1 - m.spread)), Math.floor(dmg * (1 + m.spread))],
     attackTime: m.attack_time, crit: m.crit, more: more('damage'),
+    // what its hits have to reach to inflict ailments and to fill its stun and freeze bars (DefaultMonsterStats), and how much
+    // less its rarity lets slows, curses and exposure work on it
+    ail: Math.floor(row('ailment', level)), poise: Math.floor(row('poise', level) * more('poise')),
+    slowEffect: more('slow'), curseEffect: more('curse'), expoEffect: more('exposure'), rarity: rarityOf(m, rarity),
   };
 }
 

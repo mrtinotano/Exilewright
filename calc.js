@@ -429,7 +429,7 @@ const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff
 const PLAIN = new Set(['support', 'damage', 'attack', 'cast', 'speed', 'spell', 'projectile', 'melee', 'area', 'of', 'effect', 'and', 'minion', 'skill', 'hit', 'ailment', 'elemental', '+%', 'final', ...DMG]);
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
-  const all = { ...sum }, fin = {}, mods = [];
+  const all = { ...sum }, fin = {}, mods = [], finals = {};
   for (const n of g.supports || []) {
     const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
     if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
@@ -437,10 +437,10 @@ export function withSupports(g, sum) {
     for (const [k, val] of Object.entries(p ? p.stats || {} : { ...(d.constant || {}), ...lv })) {
       if (k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
-      else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;
+      else { finals[k] = (finals[k] || 0) + val; if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val; }
     }
   }
-  return { sum: all, fin, mods };
+  return { sum: all, fin, mods, finals };
 }
 // true when the data says what this support does to the numbers the app calculates
 export const supportKnown = name => !!SK.supports?.[name] || !!SK.skills[name]?.levels;
@@ -473,7 +473,7 @@ export function skill(g, b, treeGear) {
   const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
-  const { sum, fin, mods } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [] } : withSupports(g, treeGear);
+  const { sum, fin, mods, finals } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
   const st = gemStats(g, sum);
   const attack = (G.types || []).includes('Attack'), spell = (G.types || []).includes('Spell');
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
@@ -585,12 +585,58 @@ export function skill(g, b, treeGear) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
   }
+  out.ail = ailments(st, sum, finals, own);
+  // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
+  // grenade or bomb takes to go off, a curse's delay and length, a totem's life. note: no duration modifiers yet
+  const sec = k => st[k] ? st[k] / 1000 : null;
+  out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
+    projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
+    detonate: sec('base_skill_detonation_time'), curseDelay: sec('curse_delay_duration_ms'), duration: sec('base_skill_effect_duration'), totem: sec('base_totem_duration') };
   if (out.avg != null && out.speed) {
     const c = (out.crit || 0) / 100;
     out.dps = out.avg * (1 + c * (out.critBonus || 0) / 100) * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   return out;
 }
+
+// What the hits of a skill do with ailments, from the gem's own stats, its supports' and the tree's and gear's (sum): base
+// chances (bleeding and poison need one: the game's glossary), "increased" (inc) and "more" (more) chance, buildup, effect
+// and duration. The 3D scene rolls them against each enemy's thresholds (scene.js). Conditional ones (vs marked, wet,
+// electrocuted enemies...) are left out.
+function ailments(st, sum, finals, tags) {
+  const all = k => (st[k] || 0) + (sum[k] || 0) + (finals[k] || 0);
+  const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|_per_|_when_|_while_|_if_/;
+  const more = end => [...new Set([...Object.keys(st), ...Object.keys(finals)])].filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
+  const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
+  const melee = tags.includes('melee'), proj = tags.includes('projectile');
+  return {
+    bleed: all('base_chance_to_inflict_bleeding_%'), poison: all('base_chance_to_poison_on_hit_%'),
+    igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/),
+    freeze: scale(['hit_damage_freeze_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'),
+    // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
+    stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
+    shockEffect: scale(['shock_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%'], 'chill_effect_+%_final'),
+    igniteEffect: scale(['base_ignite_effect_+%'], 'ignite_effect_+%_final'), poisonEffect: scale(['base_poison_effect_+%'], 'poison_effect_+%_final'),
+    bleedEffect: scale(['base_bleeding_effect_+%'], 'bleeding_effect_+%_final'),
+    shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
+    chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
+    freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
+    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final'),
+    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final'), poisonTime: scale(['base_poison_duration_+%'], 'damaging_ailment_duration_+%_final'),
+    // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
+    breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
+    breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),
+    // what every hit of a player has (character.ot): more heavy stun buildup from physical damage and melee hits, and
+    // more Armour Break against normal and magic monsters
+    stunPhys: 1 + (CHAR['physical_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100,
+    stunMelee: melee ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
+    breakNormal: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_normal_monsters'] || 0) / 100,
+    breakMagic: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_magic_monsters'] || 0) / 100,
+  };
+}
+// self-check: a support's "more" chance multiplies the gem's own, "increased" ones add up
+{ const a = ailments({ 'active_skill_ignite_chance_+%_final': 50 }, { 'ignite_chance_+%': 20 }, { 'support_ignition_chance_to_ignite_+%_final': 100 }, []);
+  console.assert(Math.abs(a.igniteChance - 1.2 * 1.5 * 2) < 1e-9 && a.bleed === 0 && a.stun === 1, 'ailment modifiers', a); }
 
 // The numbers impact.js compares before and after a change: the panel's (resistances capped, as shown) and each skill's DPS
 // self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)

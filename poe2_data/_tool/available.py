@@ -723,7 +723,10 @@ monsters.sort(key=lambda m: (m['name'], m['id']))
 mon_stats = ot_stats(text('metadata', 'monsters', 'monster.ot'))
 dms = load('DefaultMonsterStats')
 # what a monster's rarity adds (Mods MonsterMagic<n>, MonsterRare<n>, MonsterUnique<n>): +% final life, energy shield, damage
-RARITY_STATS = {'monster_life_+%_final_from_rarity': 'life', 'monster_energy_shield_+%_final_from_rarity': 'es', 'monster_rarity_damage_+%_final': 'damage'}
+# and how much less it takes from poise (stun / freeze buildup), slows, curses and exposure
+RARITY_STATS = {'monster_life_+%_final_from_rarity': 'life', 'monster_energy_shield_+%_final_from_rarity': 'es', 'monster_rarity_damage_+%_final': 'damage',
+                'poise_threshold_+%_final_from_rarity': 'poise', 'slow_potency_+%_final_from_rarity': 'slow', 'curse_effect_on_self_+%_final_from_rarity': 'curse',
+                'exposure_effect_on_self_+%_final_from_rarity': 'exposure'}
 rarity = {}
 for m in mods:
     r = re.fullmatch(r'Monster(Magic|Rare|Unique)\d+', m['Id'])
@@ -735,7 +738,9 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
         # index = monster level - 1
         'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'),
             # % more elemental / chaos damage of a monster at the level (stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level)
-            ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'))},
+            ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'),
+            # what a hit has to deal to inflict an ailment (Elemental Ailment Threshold) and to fill the stun / freeze bar (poise)
+            ('ailment', 'AilmentThreshold'), ('poise', 'PoiseThreshold'))},
         'constants': {
             'skill_effectiveness': game['SkillDamageBaseEffectiveness'],
             'monster_crit_bonus': mon_stats.get('base_critical_hit_damage_bonus'), 'monster_max_resistance': mon_stats.get('base_maximum_all_resistances_%'),
@@ -748,6 +753,10 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             'ignite_per_minute': game['IgniteHitDamagePercentPerMinute'], 'ignite_duration': game['BaseIgniteDuration'],
             'bleed_per_minute': game['BleedingHitDamagePercentPerMinute'], 'bleed_duration': game['BaseBleedingDuration'],
             'poison_per_minute': game['PoisonHitDamagePercentPerMinute'], 'poison_duration': game['BasePoisonDuration'],
+            # every other ailment rule on a monster, as GameConstants names it (chance multipliers, buildup scales, durations,
+            # the harder-to-freeze / stun window after one), plus the monster's own heavy stun length and poise decay (monster.ot)
+            'game': {k: v for k, v in game.items() if re.match(r'(Shock|Ignite|MiscAilment|AilmentChance|Chill|Freeze|HeavyStun|Electrocute|Pin|BaseShock|BaseChill|BaseFlammability|CullingStrike|JaggedGround)', k) and not k.endswith('Player')},
+            'heavy_stun_ms': mon_stats.get('base_heavy_stun_duration_ms'), 'poise_decay_delay_ms': mon_stats.get('poise_decay_delay_ms'), 'poise_decay_per_second': mon_stats.get('poise_decay_%_per_second'),
         },
         'monsters': monsters, 'rarity': rarity,
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
@@ -767,6 +776,7 @@ assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and re
 assert skills['Berserk']['quality'] and skills['Berserk']['alt_quality'], 'GrantedEffectQualityStats'
 assert any(m['Domain'] == 28 and m['Id'] == 'AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems' for m in mods), 'desecrated modifiers (Mods.Domain 28)'
 assert next(m for m in mods if m['Id'] == 'JewelRadiusPhysicalDamage')['RadiusJewelType'] == 1, 'Mods.RadiusJewelType: 1 = small passives'
+assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'

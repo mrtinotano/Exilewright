@@ -103,6 +103,14 @@ item/area level, quality, stack size, waystone tier; text, border and background
 light beam, minimap icon) and save it straight into `Documents/My Games/Path of Exile 2`, or download it. In the
 game: Options, Game, Item Filter.
 
+**Simulator** (its own tab): the build's skills against the game's monsters in a 3D room. Hits deal the skill's own damage
+after the monster's defences, and ailments follow the game's rules (`GameConstants` and each monster's thresholds per level
+and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
+threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a
+while after one), bleeding and poison need a chance from the skill or the build, Armour Break lowers its armour until it
+is Fully Broken. Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a
+value of the scene and not of the game (consumed states, curses, minions) are drawn with "~".
+
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the
 language).

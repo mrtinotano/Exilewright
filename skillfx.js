@@ -46,7 +46,7 @@ export const ELEMENTS = ['fire', 'cold', 'lightning', 'chaos', 'physical'];
 export const AILMENT = { fire: 'ignite', cold: 'freeze', lightning: 'shock', chaos: 'poison', physical: 'bleed' };
 export const STATE = {
   ignite: 'Ignite', chill: 'Chill', freeze: 'Freeze', shock: 'Shock', poison: 'Poison', bleed: 'Bleeding',
-  armour: 'Broken Armour', curse: 'Curse', mark: 'Mark', expo: 'Exposure',
+  armour: 'Broken Armour', stun: 'Heavy Stun', curse: 'Curse', mark: 'Mark', expo: 'Exposure',
 };
 export const GROUND = {
   burning: 'Ignited Ground', chilled: 'Chilled Ground', shocked: 'Shocked Ground', oil: 'Oil', gas: 'Gas cloud',
@@ -133,15 +133,18 @@ export function profile(gem, d = {}) {
   const a = gem?.attr || {};
   const gain = has('GeneratesCharges') ? ((a.int || 0) >= (a.dex || 0) && (a.int || 0) >= (a.str || 0) ? 'power' : (a.dex || 0) >= (a.str || 0) ? 'frenzy' : 'endurance') : null;
 
-  // Which ailments the hits of this skill inflict.
+  // Which ailments the hits of this skill inflict. Bleeding, poison and Armour Break need a stat of the skill that gives them
+  // (the game's glossary: damage alone never bleeds or poisons); the tree and gear can add them too (calc.js ailments()).
+  const stat = k => Object.values(d.levels || {}).some(l => l[k]) || !!d.constant?.[k];
+  const breaks = stat('apply_X_armour_break_on_hit') || stat('armour_break_physical_damage_%_dealt_as_armour_break');
   const applies = [];
   if (!['curse', 'mark', 'aura', 'herald', 'meta', 'buff'].includes(kind) || N.bomb) {
     G.has('fire') && applies.push('ignite');
     G.has('cold') && applies.push('chill', 'freeze');
     G.has('lightning') && applies.push('shock');
-    G.has('chaos') && attack && applies.push('poison');
-    G.has('physical') && attack && applies.push('bleed', 'armour');
-    !els.length && attack && applies.push('armour');
+    stat('base_chance_to_poison_on_hit_%') && applies.push('poison');
+    stat('base_chance_to_inflict_bleeding_%') && applies.push('bleed');
+    breaks && applies.push('armour');
   }
 
   return {
