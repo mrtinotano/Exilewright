@@ -332,7 +332,7 @@ def overlay():
         root.update_idletasks()
         w, h, (px, py) = root.winfo_reqwidth(), root.winfo_reqheight(), root.winfo_pointerxy()
         sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-        if used[1] > used[0]:   # playing with the controller: the game copied the item it picked, the pointer is not by
+        if pad[0]:   # playing with the controller: the game copied the item it picked, the pointer is not by
             px, py = sw // 2, sh // 4   # it; the window goes to the middle at the top, clear of the game's description
         x, y = spot(w, h, px, py, sw, sh)
         root.geometry(f'+{x}+{y}')
@@ -350,8 +350,8 @@ def overlay():
             root.after_cancel(timer)
         timer = None if v['kind'] in COMPARED else root.after(NOTED * 1000, hide)
 
-    # when the mouse and the controller were last used: the window goes by the pointer only when the mouse was the last
-    used, last = [0.0, 0.0], [None, None]
+    # the controller was used after the mouse: the window does not go by the pointer
+    pad, last = [False], [None, None]
 
     def poll():
         nonlocal held
@@ -376,10 +376,12 @@ def overlay():
                 draw(q.get_nowait())
         except queue.Empty:
             pass
-        now = root.winfo_pointerxy(), pad_state()
-        for i in (0, 1):
-            if now[i] != last[i]:
-                used[i], last[i] = time.monotonic(), now[i]
+        m, p = root.winfo_pointerxy(), pad_state()
+        if m != last[0]:
+            pad[0] = False
+        if p != last[1] and last[1] is not None:
+            pad[0] = True
+        last[:] = m, p
         root.after(50, poll)
     root.after(50, poll)
     return q.put, root.mainloop
