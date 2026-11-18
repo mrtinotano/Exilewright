@@ -831,5 +831,7 @@
  "Press the shortcut again over it to put it in the other slot.": "在它上面再按一次快捷鍵，即可將它放到另一個欄位。",
  "Only {0} listed: the price can be far off.": "只有 {0} 件上架：價格可能相差很大。",
  "Your {0} grants {1}: it is not in the build.": "你的{0}賦予{1}：它不在配置中。",
- "Add": "新增"
+ "Add": "新增",
+ "Area level {0}": "區域等級 {0}",
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "角色所在區域的等級：決定抗性懲罰。留空則為與角色等級相同的區域。"
 }

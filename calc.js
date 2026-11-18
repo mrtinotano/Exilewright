@@ -190,9 +190,8 @@ export function character(b, sum) {
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const res = {};
   // the game lowers elemental resistances by the level of the area (ResistancePenaltyPerAreaLevel: none at first,
-  // -60% from level 65 on). note: the area is taken to be of the character's level, like the monster the panel
-  // rates armour against; an area level of its own if a character must be looked at somewhere else
-  const penalty = SK.resistance_penalty?.[Math.min(lvl, SK.resistance_penalty.length) - 1] || 0;
+  // -60% from level 65 on): the area level the build sets (b.zone), else one of the character's level
+  const penalty = SK.resistance_penalty?.[Math.min(b.zone || lvl, SK.resistance_penalty.length) - 1] || 0;
   for (const [k, others] of Object.entries({ fire: ['cold', 'lightning', 'chaos'], cold: ['fire', 'lightning', 'chaos'], lightning: ['fire', 'cold', 'chaos'], chaos: ['fire', 'cold', 'lightning'] })) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
     const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%']))

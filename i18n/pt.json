@@ -831,5 +831,7 @@
  "Press the shortcut again over it to put it in the other slot.": "Pressione o atalho de novo sobre ele para colocá-lo no outro espaço.",
  "Only {0} listed: the price can be far off.": "Apenas {0} à venda: o preço pode estar bem impreciso.",
  "Your {0} grants {1}: it is not in the build.": "Seu {0} concede {1}: não está na build.",
- "Add": "Adicionar"
+ "Add": "Adicionar",
+ "Area level {0}": "Nível da Área {0}",
+ "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "O nível da área onde o personagem está: define a penalidade de resistências. Deixe vazio para uma área do nível do personagem."
 }

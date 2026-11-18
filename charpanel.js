@@ -41,6 +41,7 @@ export function renderChar(el, b, sum, { asc, cls, points, pending, classes = []
         <button class="cp-pick${picking === 'cls' ? ' open' : ''}" data-pick="cls" title="${t('Base class')}">${esc(cls ? clsLabel(cls) : '—')}</button>
         <button class="cp-pick${picking === 'asc' ? ' open' : ''}" data-pick="asc" title="${t('Ascendancy')}">${esc(asc ? ascLabel(asc) : '—')}</button>
         <div title="${t('Goes up on its own as you allocate tree points: {0} passive points (1 per level)', points)}. ${t('Type your character\'s level to set it yourself; leave it empty to follow the tree again.')}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}</div>
+        <div title="${t('The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character\'s level.')}">${t('Area level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="zone" value="${b.zone || ''}" placeholder="${c.level}">`)}</div>
       </div>
       <div class="cp-portrait" title="${esc(asc ? ascLabel(asc) : '')}"${portrait ? ` style="background-image:url('poe2_data/available/img/${esc(portrait)}')"` : ''}>${portrait ? '' : esc((asc ? ascLabel(asc) : '?')[0])}</div>
       <div class="cp-id cp-attr"><div class="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div></div>
