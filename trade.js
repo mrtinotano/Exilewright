@@ -169,22 +169,17 @@ export function readListing(r) {
 // and with no top (range; Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any
 // %), all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the
-// order is the price's: no exchange rate is needed. In the shop it would sit between the dearest worse one (from:
-// every number at or under its own, no modifier it lacks, not dearer than `to`) and the cheapest better one (to: every number at or over its
-// own, or a modifier it lacks). With neither (alike ones with some numbers a little under, some over): between the cheapest
-// alike and the next dearer one.
+// order is the price's: no exchange rate is needed. It is worth between the cheapest alike one (one as good or better
+// asks that, so no more than it) and the next dearer one.
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
-//      from, to: { amount, currency, more (to: it has modifiers this one lacks) } (null when there is none), id (the search) }
+//      from, to: { amount, currency, more (it has modifiers this one lacks) } (null when there is none), id (the search) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
 // at least the % under it, with no top (more of it is no less like it, and can ask less), as Exiled Exchange 2
-// searches; side -1: from the % under it up to it (worse); 1: it or more (better). A negative number keeps both
-// ends: which way is better there is the line's own
-const range = (v, near, side) => { const r = around(v, near); if (!r) return r;
-  if (side < 0) return { min: r.min, max: v };
-  return v < 0 ? side ? { min: v, max: r.max } : r : { min: side ? v : r.min }; };
-console.assert(JSON.stringify(range(30, 10)) === '{"min":27}' && JSON.stringify(range(30, 10, 1)) === '{"min":30}' && range(30, 10, -1).max === 30 && range(-43, 10).max === -38.7, 'range');
+// searches. A negative number keeps both ends: which way is better there is the line's own
+const range = (v, near) => { const r = around(v, near); return r && v > 0 ? { min: r.min } : r; };
+console.assert(JSON.stringify(range(30, 10)) === '{"min":27}' && range(-43, 10).max === -38.7 && range(0, 10) === null, 'range');
 console.assert(around(1, 50).min === 1 && around(-43, 10).max === -38.7 && around(-1, 90).max === -1 && around(30, 10).min === 27, 'around');
 // the lowest of the steps 5 by 5 over `near` (up to WIDE, which finds something) that finds something: `at` asked
 // about half the steps each time, since a wider % finds all a narrower one does
@@ -216,14 +211,14 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
   const cat = !item.unique && Object.keys(props).length && CATEGORY[classOf(item)];
   const query = { status: { option: state }, ...(!cat && { type: item.base }), ...(item.unique && { name: item.unique }) };
-  const filters = side => ({ ...cat && { type_filters: { filters: { category: { option: cat } } } },
-    ...Object.keys(props).length && { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near, side)])) } } });
+  const filters = { ...cat && { type_filters: { filters: { category: { option: cat } } } },
+    ...Object.keys(props).length && { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) } } };
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
-  // within pct(i) % (on that side of its number); over / upTo: only dearer than / at most that price; desc: dearest first
-  const search = (k, pct, { side = 0, over, upTo, desc } = {}) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
-    filters: { ...filters(side), ...(over || upTo) && { trade_filters: { filters: { price: over ? { min: +over.amount + .01, option: over.currency } : { max: +upTo.amount, option: upTo.currency } } } } },
-    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i), side) && { value: range(l.value, pct(i), side) } }))) }] : [] },
-    sort: { price: desc ? 'desc' : 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
+  // at most pct(i) % under its number; over: only dearer than that price. Cheapest first
+  const search = (k, pct, { over } = {}) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
+    filters: { ...filters, ...over && { trade_filters: { filters: { price: { min: +over.amount + .01, option: over.currency } } } } },
+    stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i)) && { value: range(l.value, pct(i)) } }))) }] : [] },
+    sort: { price: 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
   // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE,
   // then every line at the % it found something with. Still nothing: any one line left out. Then there is none.
   // Fewer searches (the site lets a few through at a time): all of them at WIDE first (nothing even so: no line alone
@@ -248,23 +243,11 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
-  let from = null, to = null;
   const key = x => x.amount + ' ' + x.currency;
-  // the top: the cheapest better one. The bottom: the dearest worse one asking less than it (the site's price filter
-  // converts the currencies, so the bottom is always the cheaper one); none, the dearest alike one under the top (some
-  // numbers a little under, some over: as near as it gets with all its lines), then the worse ones with one of its
-  // lines fewer, then the base alone. Neither with a line this one does not have
-  if (s.total && sided) {
-    to = (await pricesOf(await search(k, pct, { side: 1 }))).find(x => !x.more) || null;
-    const tries = [[k, -1], [k, 0], ...k > 1 ? [[k - 1, -1]] : [], ...k ? [[0, -1]] : []];
-    for (const [kk, side] of tries) {
-      from = (await pricesOf(await search(kk, pct, { side, desc: true, upTo: to }))).find(x => !x.more && (!to || key(x) !== key(to))) || null;
-      if (from) break;
-    }
-  }
-  if (s.total && !from && !to) from = (await pricesOf(s)).find(x => !x.more) || null;   // nothing to rate it by: the cheapest alike
-  // nothing better listed: the next dearer alike
-  if (from && !to) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
+  // the cheapest alike one (one as good or better asks that: this one is worth no more) and the next dearer one,
+  // neither with a line this one does not have
+  let from = s.total ? (await pricesOf(s)).find(x => !x.more) || null : null, to = null;
+  if (from) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
   // still one price (a single alike, which can ask anything: 99999999 Mirrors): one line fewer at a time, down to the
   // name and base alone (not a rare's bare base: any junk one of it), the two cheapest different prices there
   for (let kk = k - 1, last = item.unique || Object.keys(props).length ? 0 : 1; s.total && !(from && to) && kk >= last; kk--) {
