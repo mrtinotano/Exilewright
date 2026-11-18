@@ -824,7 +824,7 @@ class Handler(SimpleHTTPRequestHandler):
             v = json.loads(body) if body and len(body) < 1000 else {}
         except ValueError:
             v = None
-        if not isinstance(v, dict) or any(k + '_key' in v and not combo(v[k + '_key']) for k in KEYS) or                 any(k + '_pad' in v and pad_combo(v[k + '_pad']) is None for k in PADS):
+        if not isinstance(v, dict) or any(k + '_key' in v and not combo(v[k + '_key']) for k in KEYS) or any(k + '_pad' in v and pad_combo(v[k + '_pad']) is None for k in PADS):
             return self.reply(400, 'not a setting')
         KEYS = {k: combo(v[k + '_key']) if k + '_key' in v else c for k, c in KEYS.items()}
         PADS.update({k: pad_combo(v[k + '_pad']) for k in PADS if k + '_pad' in v})

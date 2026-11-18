@@ -11,11 +11,11 @@ const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'Ke
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };
+const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 // the controller's combinations ('LB+RB+Y', '' for none): the buttons by the Gamepad API's standard order, named as
 // serve.py PAD_BUTTON takes them
 const PAD_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Menu', 'LS', 'RS', 'Up', 'Down', 'Left', 'Right'];
-const PAD_LABEL = { price: 'Price check', compare: 'Equipment comparison', worn: 'Equip' };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
+const PAD_LABEL = { price: 'Price check', compare: 'Equipment comparison', worn: 'Equip' };
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
