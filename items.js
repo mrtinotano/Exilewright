@@ -215,12 +215,11 @@ const NAMED = new Map();   // every name the data has for a base (English, then 
 for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
   for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
 // every modifier of one kind of item (base.domain) and every implicit, as matchLines candidates: made once
-const ANY = new Map();
-const anyOf = domain => ANY.get(domain) || ANY.set(domain, D.affixes.filter(a => a.domain === domain && !a.radius).flatMap(a => shapes(a.id, a.stats))).get(domain);
-const anyImplicit = () => ANY.get('implicit') || ANY.set('implicit', Object.entries(D.implicits).flatMap(([id, st]) => shapes('implicit:' + id, st))).get('implicit');
+const ANY = new Map(), once = (k, f) => ANY.get(k) || ANY.set(k, f()).get(k);
+const anyOf = domain => once(domain, () => D.affixes.filter(a => a.domain === domain && !a.radius).flatMap(a => shapes(a.id, a.stats)));
+const anyImplicit = () => once('implicit', () => Object.entries(D.implicits).flatMap(([id, st]) => shapes('implicit:' + id, st)));
 // a belt's own charm slots, which no table gives ("Has 3 Charm Slots"): as a stat, in the words of the game
-const charmSlots = () => ANY.get('slots') || ANY.set('slots', [1, 2, 3].flatMap(v => shapes('local_charm_slots', [['local_charm_slots', v, v]]))).get('slots');
-const statsOf = key => AFFIX[key]?.stats || (key.startsWith('implicit:') ? D.implicits[key.slice(9)] : [[key]]);
+const CHARM_SLOTS = [1, 2, 3].flatMap(v => shapes('local_charm_slots', [['local_charm_slots', v, v]]));
 // text copied from the game (Ctrl+C on an item) or from Path of Building
 // -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
 export function parseItem(text) {
@@ -271,6 +270,7 @@ export function parseItem(text) {
     }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+  const addExtra = (stats, raw) => stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + raw[k]; });
   // the game: "Quality: +20% (augmented)" ("Calidad: +20% (augmented)": the only "+N% (augmented)" property, the tag
   // stays English in every language), Path of Building: "Quality: 20"
   const quality = raw.map(l => l.match(/^Quality: \+?(\d+)|^[^:]+: \+(\d+)% \(augmented\)$/)?.slice(1).find(Boolean)).find(Boolean);
@@ -288,7 +288,7 @@ export function parseItem(text) {
   for (const sets of [pool(a => canRoll(a, base)), pool(a => a.domain === base.domain), D.runes.map((st, i) => [i, st])]) {
     if (!left.length) break;
     const by = new Map(sets), m = matchLines(left, sets.flatMap(([k, st]) => shapes(k, st)));
-    for (const f of m.found) by.get(f.key).forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
+    for (const f of m.found) addExtra(by.get(f.key), f.raw);
     left = m.missed;
   }
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
@@ -315,11 +315,11 @@ export function parseItem(text) {
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
   // data does not give the base, "Has 1 Charm Slot") is read as one of any item of its kind: a modifier, or for an
   // implicit line any base's implicit too, counted as its stats (item.extra, as runes)
-  const toExtra = f => statsOf(f.key).forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + f.raw[k]; });
-  const more = matchLines(ex.missed, [...anyOf(base.domain), ...charmSlots()], id => AFFIX[id]?.family);
+  const toExtra = f => addExtra(AFFIX[f.key]?.stats || (f.key.startsWith('implicit:') ? D.implicits[f.key.slice(9)] : [[f.key]]), f.raw);
+  const more = matchLines(ex.missed, [...anyOf(base.domain), ...CHARM_SLOTS], id => AFFIX[id]?.family);
   for (const f of more.found) if (AFFIX[f.key]) item.mods.push({ id: f.key, values: f.values }); else toExtra(f);
   ex.missed = more.missed;
-  const own1 = matchLines(im.missed, [...anyOf(base.domain), ...anyImplicit(), ...charmSlots()]);
+  const own1 = matchLines(im.missed, [...anyOf(base.domain), ...anyImplicit(), ...CHARM_SLOTS]);
   own1.found.forEach(toExtra);
   im.missed = own1.missed;
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
