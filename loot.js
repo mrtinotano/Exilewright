@@ -133,6 +133,23 @@ export function initLoot(el, ctx) {
     if (free) { e.took = free; put(free, r.item, r.name); }
     say(told(e, verdict(e)[0]));
   }
+  // the "put on" shortcut (Settings): the copied item is now what the character wears, in the slot where it does the
+  // most (of two rings, the one it beats). Pressed again over it: it goes to the next slot it fits, and the one it left
+  // gets back what it had (S.was). It also makes the comparison go by what the character wears
+  function wear(text) {
+    const r = parseItem(text.replace(/\r/g, '').trim());
+    if (!r || r.unidentified) return say({ kind: 'none', title: 'Exilewright', lines: [t(r ? 'That item is not identified yet: identify it and copy it again.' : 'That is not item text, or the planner does not have its base.')] });
+    if (S.vs === 'build') { S.vs = 'worn'; render(); }
+    if (!Object.keys(S.on).length) fromBuild();
+    const e = { r }, all = verdict(e), on = all.find(x => x.kind === 'on'), slots = all.map(x => x.slot).sort();
+    if (!all.length) return say(told(e));
+    const slot = on ? slots[(slots.indexOf(on.slot) + 1) % slots.length] : all[0].slot;
+    if (on && slot !== on.slot) { if (S.was?.[on.slot]) S.on[on.slot] = S.was[on.slot]; else delete S.on[on.slot]; }
+    if (slot !== on?.slot) { S.was = { [slot]: S.on[slot] }; put(slot, r.item, r.name); }
+    say({ kind: 'on', title: `${BADGE.on[0]} ${t('Equipped')} · ${slotName(slot)}`, name: r.name || nameOf(r.item), lines: [
+      t('Taken as what the character wears: what you copy next is compared with it'),
+      ...slots.length > 1 ? [[[t('Press the shortcut again over it to put it in the other slot.'), 'dim']]] : []] });
+  }
   // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
   // judged
   async function priceCheck(text) {
@@ -163,7 +180,7 @@ export function initLoot(el, ctx) {
   function watch() {
     const src = new EventSource('clipboard?lang=' + lang);
     src.onopen = () => { live = 'on'; showLive(); };
-    src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else add(x); };
+    src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else if (x?.worn) wear(x.worn); else add(x); };
     src.onerror = () => { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); };
     // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
     navigator.locks?.request('poe2loot', () => new Promise(() => {}));

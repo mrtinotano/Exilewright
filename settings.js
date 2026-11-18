@@ -11,14 +11,14 @@ const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'Ke
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
+const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
   return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
 })();
 export const settings = () => S;
-const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey }) }).catch(() => {});
+const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey }) }).catch(() => {});
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} tell(); };
 tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
@@ -49,7 +49,7 @@ export async function update(ask, quiet) {
 export function initSettings(el, ask, loot) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let wait = null, msg = '', list = null, upd = '', win = {};   // the shortcut being set ('price' or a scene key); the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
+  let wait = null, msg = '', list = null, upd = '', win = {};   // the shortcut being set ('price', 'worn' or a scene key); the leagues of the trade site; what the update check said; the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
@@ -67,6 +67,9 @@ export function initSettings(el, ask, loot) {
           <label><input type="checkbox" data-s="deep"${S.deep ? ' checked' : ''}> ${t('Thorough search')}</label></div>
         <p class="note">${t('When nothing is within the %: each modifier alone is searched up to 30%, then with one of them left out. It takes more searches (and seconds).')}</p>
         <p class="note">${t(NEEDS)}</p>
+      </section>
+      <section><p class="note">${t('Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.')}</p>
+        <div class="optrow"><label>${t('Shortcut')} ${cap('worn', S.wornKey)}</label></div>
       </section>
       <section><h3>${t('Simulator keys')}</h3>
         <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
@@ -91,7 +94,10 @@ export function initSettings(el, ask, loot) {
     if (/^(Control|Shift|Alt|Meta)/.test(e.code)) return;   // a modifier alone: wait for the key that comes with it
     msg = '';
     if (e.code !== 'Escape') {
-      if (wait === 'price') { const c = comboOf(e); if (c) { S.priceKey = c; save(); } else msg = t(NEEDS); }
+      if (wait === 'price' || wait === 'worn') {
+        const c = comboOf(e), other = wait === 'price' ? 'wornKey' : 'priceKey';
+        if (c) { if (S[other] === c) S[other] = S[wait + 'Key']; S[wait + 'Key'] = c; save(); } else msg = t(NEEDS);
+      }
       else if (FIXED.test(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: W A S D, 1-9 and Esc stay as they are.');
       else { const other = Object.keys(S.keys).find(k => k !== wait && S.keys[k] === e.code); if (other) S.keys[other] = S.keys[wait]; S.keys[wait] = e.code; save(); }
     }

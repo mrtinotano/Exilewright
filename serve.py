@@ -29,10 +29,11 @@ Games/Path of Exile 2): 409 when that file is there and overwrite is not set, el
 /settings (GET) -> {"app": the window can go to the notification area, "tray", "startup": it can open with Windows (the
 installed or portable executable), "on": it does}. POST, local only, any of: {"tray": true} only the icon in the
 notification area (no taskbar button; a click on the icon opens the window, minimizing hides it there), {"on": true}
-opens it with Windows (HKCU Run), {"price_key": "Ctrl+D"} the price check shortcut of the Settings tab (settings.js). On
-Windows, that shortcut pressed while the game is the window in use copies the item under the pointer: one Ctrl+C, as
-if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the pages as
-{"price": text} instead of text, for the Compare tab to look up what it costs on the trade site.
+opens it with Windows (HKCU Run), {"price_key": "Ctrl+D", "worn_key": "Alt+D"} the shortcuts of the Settings tab
+(settings.js). On Windows, a shortcut pressed while the game is the window in use copies the item under the pointer: one
+Ctrl+C, as if pressed (GGG's rule for tools: one action per key press, nothing automatic), and that copy goes to the
+pages as {"price": text} (look up what it costs on the trade site) or {"worn": text} (the character now wears it)
+instead of text.
 
 /update tells the page whether there is a newer version (the latest release on GitHub, RELEASES):
   GET  /update   {"version", "latest", "newer", "page" (the release's page), "install" (this is the installed app and the
@@ -398,7 +399,7 @@ def tell(text):
 def watch_clipboard():
     """the one reader of the clipboard: item text goes to every page listening. With the window over the game, a line
     in it when no page is there to judge the item, or none answers"""
-    global ASKED, PRICE_AT
+    global ASKED, PRESSED
     look, wait = CLIP
     seen, idle = None, True
     while True:
@@ -411,9 +412,9 @@ def watch_clipboard():
             continue
         seen, text = look(seen)
         if text and len(text) < 8000 and re.search(r'\n-{8}\r?\n', text):
-            if PRICE_AT and time.monotonic() - PRICE_AT < 2:   # copied by the price check shortcut
-                text = {'price': text}
-            PRICE_AT = 0
+            if PRESSED[0] and time.monotonic() - PRESSED[1] < 2:   # copied by a shortcut
+                text = {PRESSED[0]: text}
+            PRESSED = ('', 0)
             for q in list(LISTEN):
                 q.put(text)
             if OVER and LISTEN:
@@ -433,7 +434,7 @@ def watch_game():
         k = ctypes.windll.kernel32
         k.CreateMutexW.restype = ctypes.c_void_p
         k.WaitForSingleObject(ctypes.c_void_p(k.CreateMutexW(None, False, r'Local\ExilewrightGameWatch')), 0xFFFFFFFF)
-        threading.Thread(target=watch_price_key, daemon=True).start()
+        threading.Thread(target=watch_keys, daemon=True).start()
     watch_clipboard()
 
 
@@ -457,31 +458,33 @@ assert number('0.10') > number('0.9') > number('0.2') and not number('0.2') > nu
 assert combo('Ctrl+D') == ([0x11], 0x44) and combo('Alt+F5') == ([0x12], 0x74) and combo('Shift+D') is None, 'combo'
 
 
-def watch_price_key():
-    """Windows: the price check shortcut pressed while the game is the window in use. The game copies the item under the
+def watch_keys():
+    """Windows: a shortcut of KEYS pressed while the game is the window in use. The game copies the item under the
     pointer with Ctrl+C: that is sent once (the keys of the shortcut that are not Ctrl are let go first, so the game
-    sees Ctrl+C alone), and the copy that follows is marked as a price check (watch_clipboard)"""
-    global PRICE_AT
+    sees Ctrl+C alone), and the copy that follows is marked with the shortcut's name (watch_clipboard)"""
+    global PRESSED
     user = ctypes.windll.user32
     user.GetForegroundWindow.restype = ctypes.c_void_p
     user.GetWindowTextW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_int]
-    was = False
+    was = set()
     while True:
         time.sleep(.03)
-        mods, key = PRICE_KEY
-        down = all(user.GetAsyncKeyState(k) & 0x8000 for k in (*mods, key))
-        if down and not was:
+        down = {name for name, (mods, key) in KEYS.items() if all(user.GetAsyncKeyState(k) & 0x8000 for k in (*mods, key))}
+        # Ctrl+Shift+D held also holds Ctrl+D: the shortcut with the most keys is the one pressed
+        name = max(down - was, key=lambda n: len(KEYS[n][0]), default=None)
+        was = down
+        if name:
+            mods, key = KEYS[name]
             title = ctypes.create_unicode_buffer(64)
             user.GetWindowTextW(user.GetForegroundWindow(), title, 64)
             if title.value.startswith('Path of Exile 2'):
-                PRICE_AT = time.monotonic()
+                PRESSED = (name, time.monotonic())
                 up, ctrl = 2, 0x11 in mods   # KEYEVENTF_KEYUP
                 for k in (0x10, 0x12):
                     if k in mods:
                         user.keybd_event(k, 0, up, 0)
                 for k, how in ((0x11, 0), (0x43, 0), (0x43, up)) + (() if ctrl else ((0x11, up),)):
                     user.keybd_event(k, 0, how, 0)
-        was = down
 
 
 VERSION = '0.25'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
@@ -498,8 +501,8 @@ TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
 TONE = {'up': '#8fe89a', 'down': '#ee8888', 'dim': '#9a8f78'}   # pieces of a line: better, worse, said in passing
 LISTEN = []    # a queue for every page listening to /clipboard
 ASKED = 0      # when item text went to the pages, while no verdict for the window has come back
-PRICE_KEY = combo('Ctrl+D')   # the price check shortcut (Settings) as ([modifier keys], key), as the page last said
-PRICE_AT = 0   # when the price check shortcut sent Ctrl+C to the game
+KEYS = {'price': combo('Ctrl+D'), 'worn': combo('Alt+D')}   # the shortcuts (Settings) as ([modifier keys], key), as the page last said
+PRESSED = ('', 0)   # which shortcut sent Ctrl+C to the game, and when
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
 OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
@@ -744,17 +747,16 @@ class Handler(SimpleHTTPRequestHandler):
         threading.Timer(.5, os._exit, (0,)).start()   # once the page has its answer: the installer replaces these files
 
     def do_settings(self, body=None):
-        global PRICE_KEY
+        global KEYS
         if not self.mine():
             return self.reply(403, 'local only')
         try:
             v = json.loads(body) if body and len(body) < 1000 else {}
         except ValueError:
             v = None
-        if not isinstance(v, dict) or ('price_key' in v and not combo(v['price_key'])):
+        if not isinstance(v, dict) or any(k + '_key' in v and not combo(v[k + '_key']) for k in KEYS):
             return self.reply(400, 'not a setting')
-        if 'price_key' in v:
-            PRICE_KEY = combo(v['price_key'])
+        KEYS = {k: combo(v[k + '_key']) if k + '_key' in v else c for k, c in KEYS.items()}
         if 'tray' in v and TRAY:
             TRAY[0](bool(v['tray']))
         on = at_startup(bool(v['on']) if 'on' in v else None)

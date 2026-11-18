@@ -826,5 +826,7 @@
  "Point at an enemy to turn it into a corpse": "ชี้ไปที่ศัตรูเพื่อเปลี่ยนเป็นศพ",
  "Your own sound…": "เสียงของคุณ…",
  "The game's sounds are not in the app yet": "เสียงของเกมยังไม่มีในแอป",
- "With the levels your passives and gear add": "รวมเลเวลที่ได้จากพาสซีฟและอุปกรณ์ของคุณ"
+ "With the levels your passives and gear add": "รวมเลเวลที่ได้จากพาสซีฟและอุปกรณ์ของคุณ",
+ "Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.": "สวมไอเทมในเกม วางเคอร์เซอร์บนไอเทมนั้นแล้วกดปุ่มลัด: การเปรียบเทียบจะถือว่าเป็นสิ่งที่ตัวละครสวมใส่",
+ "Press the shortcut again over it to put it in the other slot.": "กดปุ่มลัดบนไอเทมนั้นอีกครั้งเพื่อใส่ในช่องอื่น"
 }
