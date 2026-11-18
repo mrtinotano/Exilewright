@@ -238,11 +238,10 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
   const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
     .some(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || ''));
-  const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
-    return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
   // what the cheapest alike ones ask (as Exiled Exchange 2 lists them): no range worked out of them
-  const prices = s.total ? (await pricesOf(s)).filter(x => !x.more) : [];
+  const ids = (s.result || []).slice(0, MANY);
+  const prices = ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price && !more(r.item)).map(r => r.listing.price) : [];
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), prices, id: s.id };
 }
