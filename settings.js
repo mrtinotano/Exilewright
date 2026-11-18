@@ -37,14 +37,16 @@ const comboOf = e => {
 
 // a newer version, looked for when the app opens and whenever its window comes back to the front (at most every
 // half minute): a line in the top bar with a button that installs it (the installed app)
-// or opens its page (the portable one). Run from the code: nothing
+// or opens its page (the portable one). Run from the code: nothing. Settings' button asks at once (lookNow)
+let lookNow = async () => null;
 export function watchUpdates(el) {
   let last = 0, busy = false;
-  const look = async () => {
-    if (busy || Date.now() - last < 30e3) return;
+  // -> serve.py's answer ({ error } when it could not ask), or null when it was not asked
+  const look = async now => {
+    if (busy || !now && Date.now() - last < 30e3) return null;
     last = Date.now();
-    const u = await fetch('update').then(r => r.ok ? r.json() : null).catch(() => null);
-    if (busy || !u?.newer || !u.app) return;
+    const u = await fetch('update').then(r => r.json()).catch(e => ({ error: e.message }));
+    if (busy || !u?.newer || !u.app) return u;
     el.hidden = false;
     el.innerHTML = `${esc(t('Update available: Exilewright {0}', u.latest))} <button>${t(u.install ? 'Update' : 'Open')}</button>`;
     el.querySelector('button').onclick = async () => {
@@ -54,7 +56,9 @@ export function watchUpdates(el) {
       const r = await fetch('update', { method: 'POST' }).catch(e => ({ ok: false, statusText: e.message }));
       if (!r.ok) { busy = false; el.textContent = t('The update could not be downloaded ({0}).', r.statusText || r.status); }
     };
+    return u;
   };
+  lookNow = () => look(true);
   look();
   addEventListener('focus', look);
   document.addEventListener('visibilitychange', () => document.hidden || look());
@@ -62,7 +66,7 @@ export function watchUpdates(el) {
 
 export function initSettings(el, loot) {
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let msg = '', list = null, win = {};   // the leagues of the trade site; the app's window (serve.py /settings)
+  let msg = '', upd = '', list = null, win = {};   // upd: what the updates button found   // the leagues of the trade site; the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
@@ -90,6 +94,7 @@ export function initSettings(el, loot) {
           ${win.startup ? check('on', 'Open with Windows') : ''}
           ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}
         <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label></div>
+        ${win.app ? `<div class="optrow"><button data-do="update">${t('Check for updates')}</button>${upd ? ` <span class="optmsg">${esc(upd)}</span>` : ''}</div>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
@@ -117,6 +122,10 @@ export function initSettings(el, loot) {
     if (!d) return;
     if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
+    else if (d.dataset.do === 'update') {   // a newer one shows in the top bar, with its button
+      upd = t('Checking…');
+      lookNow().then(u => { upd = !u || u.error ? t('The updates could not be checked ({0}).', u?.error || '?') : u.newer ? t('Update available: Exilewright {0}', u.latest) : t('Exilewright {0} is the latest version.', u.version); render(); });
+    }
     render();
   };
   el.onchange = e => {

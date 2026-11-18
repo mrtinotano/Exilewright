@@ -826,5 +826,9 @@
  "Add": "Добавить",
  "Area level {0}": "Уровень области {0}",
  "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Уровень области, где находится персонаж: от него зависит штраф к сопротивлениям. Оставьте пустым для области уровня персонажа.",
- "Update available: Exilewright {0}": "Доступно обновление: Exilewright {0}"
+ "Update available: Exilewright {0}": "Доступно обновление: Exilewright {0}",
+ "Check for updates": "Проверить обновления",
+ "Checking…": "Проверка…",
+ "Exilewright {0} is the latest version.": "Exilewright {0} — последняя версия.",
+ "The updates could not be checked ({0}).": "Не удалось проверить обновления ({0})."
 }

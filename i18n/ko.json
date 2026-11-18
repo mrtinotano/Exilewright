@@ -826,5 +826,9 @@
  "Add": "추가",
  "Area level {0}": "지역 레벨 {0}",
  "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "캐릭터가 있는 지역의 레벨입니다. 저항 페널티를 정합니다. 비워 두면 캐릭터 레벨의 지역이 됩니다.",
- "Update available: Exilewright {0}": "업데이트 가능: Exilewright {0}"
+ "Update available: Exilewright {0}": "업데이트 가능: Exilewright {0}",
+ "Check for updates": "업데이트 확인",
+ "Checking…": "확인 중…",
+ "Exilewright {0} is the latest version.": "Exilewright {0}이(가) 최신 버전입니다.",
+ "The updates could not be checked ({0}).": "업데이트를 확인할 수 없습니다({0})."
 }
