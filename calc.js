@@ -489,7 +489,8 @@ export function skill(g, b, treeGear) {
   // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
   // Mortar Cannon placed, no Rage (16/11): 2.7% under this. note: Rage is not counted; the gem before it, a link of
   // its own if a build breaks it
-  const meta = usedBy(b, (b.gems || []).indexOf(g)), byTotem = meta && SK.skills[meta.name]?.totem || null;
+  // g may be a copy with other supports (the Optimizer's): the build's gem of that name then
+  const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || null;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
   // "per active Totem" counts each one: all the build may place (the game's windows, 16/11: one Mortar Cannon x1.0183
   // damage, two x1.0366)
