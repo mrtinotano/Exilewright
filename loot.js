@@ -164,15 +164,14 @@ export function initLoot(el, ctx) {
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
         ...s.deep ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const cost = x => `${x.amount} ${t(x.currency)}`;
-      const worth = p.from && p.to ? t('Between {0} and {1}', cost(p.from), cost(p.to)) : (p.from || p.to) && cost(p.from || p.to);
+      // note: the 5 cheapest shown, so the window stays small; the trade site's link lists them all
+      const asked = p.prices.slice(0, 5).map(cost).join(' · ');
       show({ name, link, lines: [
-        ...worth ? [[[t('It may be worth') + ': ', ''], [worth, 'up']]] : [],
+        ...asked ? [[[t('Similar ones for sale') + ': ', ''], [asked, 'up']]] : [],
         [[p.near ? t('{0} like it listed in {1}, its numbers at most {2}% under', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
-        // note: "few" is a fixed 5 listings, not a measure of how spread the prices are
-        ...worth && p.total < 5 ? [[[t('Only {0} listed: the price can be far off.', p.total), 'dim']]] : [],
-        ...worth ? [[[t('An estimate from what is listed, not a sure price: check on the trade site to be sure.'), 'dim']]] : []] });
+        ...asked ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;
       show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });

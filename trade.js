@@ -169,10 +169,9 @@ export function readListing(r) {
 // and with no top (range; Settings; not rounded, and a number never goes past 1 towards 0: "+1 to …" stays 1 at any
 // %), all of them: one it lacks is not alike.
 // Without any, only the name and base. The site sorts the listings by what they are worth whatever the currency, so the
-// order is the price's: no exchange rate is needed. It is worth between the cheapest alike one (one as good or better
-// asks that, so no more than it) and the next dearer one.
+// order is the price's: no exchange rate is needed. What the cheapest alike ones ask is the answer, as listed.
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
-//      from, to: { amount, currency, more (it has modifiers this one lacks) } (null when there is none), id (the search) }
+//      prices: [{ amount, currency }] (the cheapest alike ones, at most MANY), id (the search) }
 const MANY = 10, WIDE = 30;
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
@@ -214,9 +213,8 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   const filters = { ...cat && { type_filters: { filters: { category: { option: cat } } } },
     ...Object.keys(props).length && { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) } } };
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
-  // at most pct(i) % under its number; over: only dearer than that price. Cheapest first
-  const search = (k, pct, { over } = {}) => call('search?league=' + encodeURIComponent(league), { query: { ...query,
-    filters: { ...filters, ...over && { trade_filters: { filters: { price: { min: +over.amount + .01, option: over.currency } } } } },
+  // at most pct(i) % under its number. Cheapest first
+  const search = (k, pct) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters,
     stats: k ? [{ type: 'count', value: { min: k }, filters: lines.flatMap((l, i) => l.ids.map(id => ({ id, ...range(l.value, pct(i)) && { value: range(l.value, pct(i)) } }))) }] : [] },
     sort: { price: 'asc' } }, deep ? 65 : 8);   // a thorough search waits its turn
   // all of them within the %; nothing, and `deep` (Settings): one line at a time, its % alone raised 5 by 5 up to WIDE,
@@ -235,7 +233,7 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     else if (n > 1) s = await search(k = n - 1, pct);
   }
   // a listing with a skill level line this one does not have ("+3 to Level of all Attack Skills", by the site's stat
-  // number and wording) can be many times dearer: never one of the two prices. note: only those, as every rare alike
+  // number and wording) can be many times dearer: never one of the prices shown. note: only those, as every rare alike
   // has some other line, and which other ones raise a price this much is no table's
   const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
   const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
@@ -243,19 +241,10 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   const pricesOf = async s => { const ids = (s.result || []).slice(0, MANY);
     return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => ({ ...r.listing.price, more: more(r.item) })) : []; };
   const sided = n || Object.keys(props).length;
-  const key = x => x.amount + ' ' + x.currency;
-  // the cheapest alike one (one as good or better asks that: this one is worth no more) and the next dearer one,
-  // neither with a line this one does not have
-  let from = s.total ? (await pricesOf(s)).find(x => !x.more) || null : null, to = null;
-  if (from) to = (await pricesOf(await search(k, pct, { over: from }))).find(x => !x.more) || null;
-  // still one price (a single alike, which can ask anything: 99999999 Mirrors): one line fewer at a time, down to the
-  // name and base alone (not a rare's bare base: any junk one of it), the two cheapest different prices there
-  for (let kk = k - 1, last = item.unique || Object.keys(props).length ? 0 : 1; s.total && !(from && to) && kk >= last; kk--) {
-    const w = await search(kk, pct), ps = (await pricesOf(w)).filter(x => !x.more), next = ps.find(x => key(x) !== key(ps[0]));
-    if (next) [from, to, s, k] = [ps[0], next, w, kk];
-  }
+  // what the cheapest alike ones ask (as Exiled Exchange 2 lists them): no range worked out of them
+  const prices = s.total ? (await pricesOf(s)).filter(x => !x.more) : [];
   const raised = Object.values(wide);
-  return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), from, to, id: s.id };
+  return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), prices, id: s.id };
 }
 
 // ---------- the search
