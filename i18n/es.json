@@ -836,5 +836,7 @@
  "{0} cannot curse enemies above level {1}": "{0} no puede maldecir a enemigos de nivel superior a {1}",
  "No skill of the build is used by hand: they are always on.": "Ninguna habilidad de la build se usa a mano: están siempre activas.",
  "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} queda desactivada: reserva {1} de Espíritu y quedan {2}",
- "Keys and statistics of the simulator": "Teclas y estadísticas del simulador"
+ "Keys and statistics of the simulator": "Teclas y estadísticas del simulador",
+ "Rage": "Furia",
+ "Not enough mana for {0}": "No hay maná suficiente para {0}"
 }

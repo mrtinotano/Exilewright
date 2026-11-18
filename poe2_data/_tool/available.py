@@ -335,8 +335,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                              ('AttackSpeedMultiplier', 'active_skill_attack_speed_+%_final')):
                 if r[col]:
                     st[key] = r[col]
-            if any(r['CostAmounts']):   # channelled skills cost per minute: written per second
-                st['_cost'] = {c['Id'].removesuffix('PerMinute'): round(v / c['Divisor'], 1) if c['PerMinute'] else v
+            if x['IsSupport'] and r['CostMultiplier'] not in (0, 100):   # a support's cost multiplier (Path of Building 2: SupportManaMultiplier)
+                st['_cost_multiplier'] = r['CostMultiplier']
+            if any(r['CostAmounts']):   # channelled skills cost per minute: written per second (ManaPerSecond)
+                st['_cost'] = {c['Id'].replace('PerMinute', 'PerSecond'): round(v / c['Divisor'], 1) if c['PerMinute'] else v
                                for c, v in zip((cost_types[t] for t in x['CostTypes']), r['CostAmounts'])}
     rad = lambda area: {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const} or None
     radius = rad('active_skill_base_area_of_effect_radius')
@@ -835,3 +837,5 @@ assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'a
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
+assert skills['Orb of Storms']['levels'][20]['_cost'] == {'Mana': 129} and skills['Runic Tempering']['levels'][20]['_cost'] == {'ManaPerSecond': 19.6}, 'GrantedEffectsPerLevel.CostAmounts'
+assert any(s.get('constant', {}).get('_cost_multiplier') == 120 or any(L.get('_cost_multiplier') == 120 for L in s.get('levels', {}).values()) for s in skills.values()) and '_cost_multiplier' not in str(skills['Mortar Cannon']), 'GrantedEffectsPerLevel.CostMultiplier'

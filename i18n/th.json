@@ -836,5 +836,7 @@
  "{0} cannot curse enemies above level {1}": "{0} สาปศัตรูที่เลเวลสูงกว่า {1} ไม่ได้",
  "No skill of the build is used by hand: they are always on.": "ไม่มีสกิลในบิลด์ที่ต้องกดใช้เอง: ทั้งหมดทำงานอยู่ตลอด",
  "{0} stays off: it reserves {1} Spirit and {2} is left": "{0} ยังปิดอยู่: ต้องสำรองพลังวิญญาณ {1} แต่เหลือ {2}",
- "Keys and statistics of the simulator": "ปุ่มและสถิติของเครื่องจำลอง"
+ "Keys and statistics of the simulator": "ปุ่มและสถิติของเครื่องจำลอง",
+ "Rage": "คลั่ง",
+ "Not enough mana for {0}": "มานาไม่พอสำหรับ {0}"
 }

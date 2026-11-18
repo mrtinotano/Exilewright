@@ -76,7 +76,7 @@ export function initScene(el, api) {
 
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
-  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false };   // your life and energy shield against their attacks
+  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -175,7 +175,12 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.life = me.maxL; me.es = me.maxE; me.hurt = -9; }
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; }
+  // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
+  const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
+  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
+  // your death, by an enemy or by your own life loss: everything restored
+  function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
@@ -239,6 +244,10 @@ export function initScene(el, api) {
     }
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
+    if (real && D.attack && S.src !== 'minionHit') {
+      const R = sheet().rage, eff = R?.berserk && tog[R.berserk.name] ? R.berserk.effect : 0;
+      g *= (1 + me.rage * (100 + eff) / 1e4) / (1 + (D.rage || 0) * (100 + (D.rageEffect || 0)) / 1e4);
+    }
     if (!o.noPay) {
       const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
@@ -267,6 +276,7 @@ export function initScene(el, api) {
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
+    if (!S.src) { const G = sheet().rage?.gain; gainRage((G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? G?.melee || 0 : 0)); }
     d.by = S; damage(d, total, S);
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
@@ -421,7 +431,7 @@ export function initScene(el, api) {
     }
   }
   function kill(d, S) {
-    d.dead = true; stats.kills++;
+    d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
@@ -1043,6 +1053,11 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
       }
     }
+    if (!auto && me.maxM && !tog[S.name]) {
+      const cost = (S.dmg?.cost || 0) * (S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1);
+      if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
+      me.mana -= cost; gainRage(sheet().rage?.gain.use);
+    }
     const run = K[S.kind] || K.area;
     run(S);
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
@@ -1069,7 +1084,7 @@ export function initScene(el, api) {
   function release() {
     const c = charge; charge = null; held = null;
     const P = c && base(c.i)?.P; if (!P) return;
-    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2 })) cd = useTime(base(c.i));
+    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2, held: c.s })) cd = useTime(base(c.i));
   }
   // keep: selecting with the number keys does not stop placing enemies
   function select(i, tell = true, keep = false) { if (!api.build().gems[i]) return; sel = i; hudT = 0; if (placing && !keep) setPlacing(false); if (tell) api.onSelect?.(i); }
@@ -1209,17 +1224,19 @@ export function initScene(el, api) {
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
     keysText();
     // your life and energy shield (the left orb, energy shield as its ring), mana and the Spirit left unreserved (the right
-    // one), as the game shows them. note: the scene spends no mana, its orb stays full
-    const c = sheet(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
+    // one, with Rage), as the game shows them
+    const c = sheet(), rm = rageMax(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
     put(lifeEl, `<div class="s-vtxt">${me.known ? row(t('Life'), short(Math.max(0, Math.ceil(me.life))), short(me.maxL)) : `<div><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`}`
       + `${me.maxE > 0 ? row(t('Energy Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}</div><div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}</div>`);
-    put(manaEl, `<div class="s-vtxt">${c.mana ? row(t('Mana'), short(c.mana), short(c.mana)) : ''}${c.spirit ? row(t('Spirit'), short(Math.max(0, free)), short(c.spirit)) : ''}</div><div class="s-orb"><i style="height:${c.mana ? 100 : 0}%"></i></div>`);
+    put(manaEl, `<div class="s-vtxt">${me.maxM ? row(t('Mana'), short(Math.max(0, Math.floor(me.mana))), short(me.maxM)) : ''}${c.spirit ? row(t('Spirit'), short(Math.max(0, free)), short(c.spirit)) : ''}`
+      + `${rm ? row(t('Rage'), short(Math.floor(me.rage)), short(rm)) : ''}</div><div class="s-orb"><i style="height:${pct(me.mana, me.maxM)}%"></i></div>`);
     if (!tipEl.hidden && tipEl.dataset.i != null) showTip(+tipEl.dataset.i);
   }
   // what the cursor over a skill of the bar shows: its kind and elements, area, projectiles, duration and what it consumes
   function tipOf(i) {
     const S = mk(i); if (!S) return '';
     const G = S.G, P = S.P, rows = [];
+    if (S.dmg?.cost) rows.push(`${t('Cost')} ${S.dmg.costPerSecond ? fmt(S.dmg.cost, 1) + '/s' : short(S.dmg.cost)} ${t('Mana')}`);
     if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
     else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
     if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);
@@ -1319,7 +1336,7 @@ export function initScene(el, api) {
   const GREY = '#c8c0b0';
   function hurt(n, chaos, el, crit, d) {
     if (!(n > 0)) return;
-    stats.taken += n; me.hurt = time; shake = Math.min(.45, shake + .1);
+    stats.taken += n; me.hurt = time; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
     const c = el === 'physical' ? 'blood' : el;
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
@@ -1328,10 +1345,7 @@ export function initScene(el, api) {
     const other = n - chaos; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     me.life -= left;
-    if (me.life <= 0) {
-      stats.deaths++; say(t('{0} killed you', d?.mon.name || '?'), 'blood'); toast(t('You died: life and energy shield restored'));
-      fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2;
-    }
+    if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
   function struck(d) {
@@ -1417,6 +1431,20 @@ export function initScene(el, api) {
     me.safe = Math.max(0, me.safe - dt);
     if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * dt);
     if (me.es < E && time - me.hurt >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * dt);
+    // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
+    // any, and Berserk costs life per Rage while Rage is not being lost
+    const M = c.mana || 0;
+    if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
+    if (c.manaRegen > 0 && me.mana < M) me.mana = Math.min(M, me.mana + c.manaRegen * dt);
+    const R = c.rage, top = rageMax();
+    if (!top) { me.rage = 0; return; }
+    if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);
+    if (time - me.raged > R.delay) me.rage = Math.max(0, me.rage - R.loss * dt);
+    me.rage = Math.min(me.rage, top);
+    if (R.berserk && tog[R.berserk.name] && me.known && me.rage > 0 && time - me.raged <= R.delay) {
+      me.life -= me.maxL * R.berserk.lifePerRage / 100 * me.rage * dt;
+      if (me.life <= 0) died(api.info(api.build().gems.find(g => g.name === R.berserk.name)).label);
+    }
   }
   function tickHazards(dt) {
     for (let i = hazards.length - 1; i >= 0; i--) {

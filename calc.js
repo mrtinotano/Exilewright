@@ -235,6 +235,9 @@ export function character(b, sum) {
 // the 3D scene, where the enemies hit the character.
 export function recovery(c, sum) {
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
+  // mana: inherent 4%/s unless a keystone removes it, plus "mana equal to X% of life"
+  const manaBase = sum.no_inherent_mana_regeneration ? 0 : CHAR['character_inherent_mana_regeneration_rate_per_minute_%'] / 100 / 60;   // 240/min = 4%/s
+  const manaLife = v(sum, 'regenerate_mana_equal_to_x%_of_life_per_minute');
   // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
@@ -243,8 +246,30 @@ export function recovery(c, sum) {
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'),
     esRate, esDelay: CHAR.energy_shield_delay_ms / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
     esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
+    manaRegen: c.mana == null || manaLife && c.life == null ? null
+      : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
   };
 }
+// Rage of the build: GameConstants' 30 at most plus "maximum Rage" and what Berserk grants (its Gemling quality), lost at
+// 300 a minute once 4 s pass without gaining any. regen: the gem that regenerates it (Eternal Rage, per second, level
+// and quality counted); berserk: its "increased Rage effect" and the life it costs per Rage per second while Rage is not
+// being lost; gain: Rage the build gains on hit / on attack or melee hit / on kill / when hit / on skill use
+const RAGE_GAIN = { hit: ['gain_x_rage_on_hit', 'base_gain_x_rage_on_hit'], attack: ['gain_x_rage_on_attack_hit'], melee: ['gain_x_rage_on_melee_hit'], kill: ['gain_rage_on_kill'], hurt: ['gain_x_rage_when_hit'], use: ['gain_x_rage_on_skill_use'] };
+export function rageOf(b, sum) {
+  const find = k => (b.gems || []).find(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.[k] != null || SK.skills[x.name]?.constant?.[k] != null);
+  const rg = find('ceaseless_rage_base_rage_regeneration_per_minute'), bz = find('skill_base_rage_effect_+%_to_apply');
+  const bs = bz ? gemStats(bz, sum) : {};
+  const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
+  const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage'), any = !!rg || !!sum.maximum_rage || Object.values(gain).some(x => x > 0);
+  return {
+    base: any ? base : 0, gain, delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000, loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60,
+    regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
+    berserk: bz && { name: bz.name, effect: bs['skill_base_rage_effect_+%_to_apply'] || 0, max: bs['berserk_maximum_rage_granted_+'] || 0, lifePerRage: (bs['skill_base_life_loss_%_per_minute_per_rage_while_not_losing_rage_to_apply'] || 0) / 60 },
+  };
+}
+// self-check: Eternal Rage 15 regenerates 225 a minute (3.75/s), Berserk 17 with 6% quality grants +2 and 59% effect
+{ const r = rageOf({ gems: [{ name: 'Eternal Rage', level: 15 }, { name: 'Berserk', level: 17, quality: 6 }] }, { ascendancy_gemling_enable_thaumaturgy_quality_stats: 1 });
+  console.assert(r.base === 30 && r.regen.perSec === 3.75 && r.berserk.max === 2 && r.berserk.effect === 59 && r.delay === 4 && r.loss === 5 && r.berserk.lifePerRage === .1, 'rageOf'); }
 
 // Detailed list under the resistances, by section like the in-game character panel.
 // Each row: [label, value text, tooltip?]. Base rates come from character.ot and GameConstants (skills.json character_stats):
@@ -254,13 +279,8 @@ export function sheet(b, sum) {
   const c = character(b, sum), at = c.attrs, pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const num = fmt;
   const NO_LIFE = t('Needs the class base life (regenerate the data on Windows)'), NO_MANA = t('Needs the class base mana (regenerate the data on Windows)');
-  const { lifeRegen, esRate, esDelay, esRecharge } = recovery(c, sum);
+  const { lifeRegen, esRate, esDelay, esRecharge, manaRegen } = recovery(c, sum);
   const esRegen = v(sum, 'base_energy_shield_regeneration_rate_per_minute') / 60 * pct('energy_shield_regeneration_rate_+%', 'energy_shield_recovery_rate_+%');
-  // mana: inherent 4%/s unless a keystone removes it, plus "mana equal to X% of life"
-  const manaBase = sum.no_inherent_mana_regeneration ? 0 : CHAR['character_inherent_mana_regeneration_rate_per_minute_%'] / 100 / 60;   // 240/min = 4%/s
-  const manaLife = v(sum, 'regenerate_mana_equal_to_x%_of_life_per_minute');
-  const manaRegen = c.mana == null || manaLife && c.life == null ? null
-    : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%');
   // deflection (part of armour / evasion as deflection rating)
   const deflect = (c.armour * v(sum, 'base_deflection_rating_%_of_armour') + c.evasion * v(sum, 'base_deflection_rating_%_of_evasion_rating')) / 100 * pct('deflection_rating_+%');
   // thorns
@@ -319,9 +339,7 @@ export function sheet(b, sum) {
   const worn = armourItems(b.items);
   // Rage: once the build has some (a gem that regenerates it, or more maximum Rage): GameConstants' 30, loss delay and
   // loss per minute, plus maximum Rage and Berserk's Gemling quality (the game's panel, 17/11: 30 + 14 + 2 = 46)
-  const berserk = (b.gems || []).find(x => SK.skills[x.name]?.quality?.['skill_base_rage_effect_+%_to_apply']);
-  const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
-  const rage = rageGen || sum.maximum_rage ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (berserk ? gemStats(berserk, sum)['berserk_maximum_rage_granted_+'] || 0 : 0) : 0;
+  const R = rageOf(b, sum), rage = R.base && R.base + (R.berserk?.max || 0);
   const most = (base, ...ids) => (CHAR[base] || 0) + v(sum, ...ids);
   // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
   const applies = { fire: v(sum, 'base_armour_%_applies_to_fire_damage'), cold: v(sum, 'base_armour_%_applies_to_cold_damage'), lightning: v(sum, 'base_armour_%_applies_to_lightning_damage', 'base_armour_applies_to_lightning_damage') };
@@ -348,7 +366,7 @@ export function sheet(b, sum) {
     'total_life_recovery_per_minute_from_flasks': flask.life * 60, 'total_mana_recovery_per_minute_from_flasks': flask.mana * 60,
     'base_armour_on_equipped_armour_items': worn.armour, 'base_evasion_rating_on_equipped_armour_items': worn.evasion,
     'base_maximum_energy_shield_on_equipped_armour_items': worn.energy_shield,
-    'virtual_maximum_rage': rage, 'virtual_rage_loss_delay_ms': rage && CHAR.rage_loss_delay_ms, 'virtual_inherent_rage_loss_per_minute': rage && CHAR.rage_loss_per_minute,
+    'virtual_maximum_rage': rage, 'virtual_rage_loss_delay_ms': rage && R.delay * 1000, 'virtual_inherent_rage_loss_per_minute': rage && R.loss * 60,
     'virtual_maximum_power_charges': most('max_power_charges', 'max_power_charges'), 'virtual_maximum_frenzy_charges': most('max_frenzy_charges', 'max_frenzy_charges'),
     'virtual_maximum_endurance_charges': most('max_endurance_charges', 'max_endurance_charges'),
     ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [`virtual_maximum_${e}_infusion_stacks`, most('base_maximum_infusions', `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
@@ -515,11 +533,21 @@ export function skill(g, b, treeGear) {
   // GameConstants + "maximum Rage") when a gem of the build regenerates it (Eternal Rage), else none. Berserk's "increased
   // Rage effect" (gem level and quality) scales that bonus, and its Gemling alt quality grants maximum Rage: the game's
   // window with Berserk 17, 6% quality (59%, +2 Rage: 46), 16/11, gives x1.730 (46 x 1.59% = x1.731)
-  const rageGen = (b.gems || []).some(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.ceaseless_rage_base_rage_regeneration_per_minute);
-  const berserk = (b.gems || []).find(x => SK.skills[x.name]?.quality?.['skill_base_rage_effect_+%_to_apply']);
-  const bst = berserk ? gemStats(berserk, treeGear) : {};
-  const rage = out.rage = attack && rageGen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (bst['berserk_maximum_rage_granted_+'] || 0) : 0;
-  const rageEffect = out.rageEffect = bst['skill_base_rage_effect_+%_to_apply'] || 0;
+  const R = rageOf(b, treeGear);
+  const rage = out.rage = attack && R.regen ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (R.berserk?.max || 0) : 0;
+  const rageEffect = out.rageEffect = R.berserk?.effect || 0;
+  // mana per use (per second for a channelled skill), as Path of Building 2 works it out (CalcOffence): the gem's cost at
+  // its level times its supports' cost multipliers (floored to 4 digits), plus flat cost, then increased / reduced (up
+  // when reduced, down when increased), more / less the same way, over cost efficiency; an upfront cost is whole
+  const supMult = own.includes('meta') ? 1 : Math.floor((g.supports || []).reduce((x, n) => x * ({ ...SK.skills[n]?.constant, ...Object.values(SK.skills[n]?.levels || {})[0] }._cost_multiplier ?? 100) / 100, 1) * 1e4) / 1e4;
+  const perSec = st._cost?.ManaPerSecond != null, baseCost = (perSec ? st._cost.ManaPerSecond : st._cost?.Mana) || 0;
+  if (baseCost && !sum.no_mana_cost) {
+    const step = (x, f) => f < 1 ? Math.ceil(x * f) : Math.floor(x * f), raw = baseCost * supMult + v(sum, 'base_mana_cost_+');
+    const inc1 = 1 + (inc(sum, 'mana_cost_+%', tags) - v(sum, 'base_mana_cost_-%') + v(sum, 'base_cost_+%')) / 100;
+    const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100), eff = 1 + v(sum, 'base_mana_cost_efficiency_+%') / 100;
+    out.cost = perSec ? Math.max(0, raw * inc1 * more1 / eff) : Math.max(0, Math.round(step(step(Math.floor(raw), inc1), more1) / eff));
+    out.costPerSecond = perSec;
+  } else out.cost = 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -761,6 +789,11 @@ function curseOf(st, sum) {
 { const c = skill({ name: 'Cluster Grenade', level: 17, quality: 16, supports: ['Payload'] }, { gems: [], items: {} }, { 'grenade_skill_cooldown_speed_+%': 45, 'grenade_skill_cooldown_count_+': 1 });
   console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2, 'cooldown and uses', c); }
 console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
+// self-check: mana cost. Orb of Storms 20 costs 129; Shock Conduction II's x1.2 makes it 154 (154.8 down), 10% reduced
+// 139 (138.6 up), 25% cost efficiency 111; Runic Tempering costs per second, not rounded
+{ const b = { gems: [], items: {} }, orb = sum => skill({ name: 'Orb of Storms', level: 20, supports: ['Shock Conduction II'] }, b, sum).cost;
+  console.assert(skill({ name: 'Orb of Storms', level: 20 }, b, {}).cost === 129 && orb({}) === 154 && orb({ 'base_mana_cost_-%': 10 }) === 139 && orb({ 'base_mana_cost_-%': 10, 'base_mana_cost_efficiency_+%': 25 }) === 111
+    && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true, 'mana cost'); }
 
 export function snapshot(b, sum) {
   const c = character(b, sum), r = recovery(c, sum), R = c.res;

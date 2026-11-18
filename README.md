@@ -105,7 +105,7 @@ game: Options, Game, Item Filter.
 
 **Simulator** (its own tab): the build's skills against the game's monsters in a 3D room, on a screen laid out like the game's (life and energy shield orb, mana and Spirit orb, the skill bar by it; a skill's info shows with the cursor over it, the keys behind the ? button). The keys 1-9 are the skills used by
 hand; persistent ones (auras, heralds, buffs like Berserk, reserved minions, Cast on X) are on, in the build's order, while
-the build's Spirit covers them, and the skill placed in a meta gem is used by it. Hits deal the skill's own damage
+the build's Spirit covers them, and the skill placed in a meta gem is used by it. Each use costs its mana as Path of Building 2 works it out (the gem's cost, its supports' multipliers, reduced cost and cost efficiency; per second while channelled) and mana regenerates at the build's rate; Rage is gained from its gem (Eternal Rage) or the build's "gain Rage on hit / kill / when hit", lost after 4 s without gaining any, raises attack damage by the Rage you have, and Berserk costs its life per Rage while on. Hits deal the skill's own damage
 after the monster's defences, and ailments follow the game's rules (`GameConstants` and each monster's thresholds per level
 and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
 threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a

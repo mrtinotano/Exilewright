@@ -6413,7 +6413,8 @@
   "Bhatair's Vengeance": {
    "cast_time_ms": 0,
    "constant": {
-    "supported_skill_grants_shatter_fang_to_you_and_allies_in_presence_for_base_X_ms_on_freeze": 15000
+    "supported_skill_grants_shatter_fang_to_you_and_allies_in_presence_for_base_X_ms_on_freeze": 15000,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -8082,6 +8083,7 @@
     "base_maximum_seals_for_skill": 5,
     "skill_rapid_fire_repeats_per_broken_seal": 1,
     "_cooldown_ms": 10000,
+    "_cost_multiplier": 200,
     "_stored_uses": 1
    },
    "levels": {
@@ -9369,7 +9371,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_unbreakable_light_stun_threshold_+%_final_while_performing_action": 200,
-    "support_stability_heavy_stun_threshold_+%_final_while_performing_action": 30
+    "support_stability_heavy_stun_threshold_+%_final_while_performing_action": 30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -9581,7 +9584,7 @@
     "active_skill_ground_effect_area_of_effect_+%_final_per_second_max": 200,
     "_cooldown_ms": 3000,
     "_cost": {
-     "ManaPercent": 1.0
+     "ManaPercentPerSecond": 1.0
     },
     "_stored_uses": 1
    },
@@ -10596,7 +10599,8 @@
   "Shock Siphon": {
    "cast_time_ms": 0,
    "constant": {
-    "support_recover_%_maximum_energy_shield_killing_shocked_enemies": 4
+    "support_recover_%_maximum_energy_shield_killing_shocked_enemies": 4,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -10616,7 +10620,8 @@
     "support_spell_rapid_fire_repeat_use_damage_+%_final": -50,
     "support_%_of_total_cast_time_as_base_skill_seal_gain_interval": 200,
     "base_maximum_seals_for_skill": 2,
-    "skill_rapid_fire_repeats_per_broken_seal": 1
+    "skill_rapid_fire_repeats_per_broken_seal": 1,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -10634,7 +10639,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_%_chance_to_shock_nearby_enemy_on_shock": 50,
-    "shock_nearby_enemy_base_area_of_effect_radius": 25
+    "shock_nearby_enemy_base_area_of_effect_radius": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -11082,7 +11088,9 @@
   },
   "Devastate": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -13006,7 +13014,8 @@
   "Premeditation": {
    "cast_time_ms": 0,
    "constant": {
-    "support_empowered_damage_+%_final": 15
+    "support_empowered_damage_+%_final": 15,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -13022,7 +13031,9 @@
   },
   "Murderous Intent": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -19725,202 +19736,202 @@
    "levels": {
     "1": {
      "_cost": {
-      "Mana": 3.9
+      "ManaPerSecond": 3.9
      }
     },
     "2": {
      "_cost": {
-      "Mana": 4.6
+      "ManaPerSecond": 4.6
      }
     },
     "3": {
      "_cost": {
-      "Mana": 5.3
+      "ManaPerSecond": 5.3
      }
     },
     "4": {
      "_cost": {
-      "Mana": 6.2
+      "ManaPerSecond": 6.2
      }
     },
     "5": {
      "_cost": {
-      "Mana": 7.2
+      "ManaPerSecond": 7.2
      }
     },
     "6": {
      "_cost": {
-      "Mana": 8.2
+      "ManaPerSecond": 8.2
      }
     },
     "7": {
      "_cost": {
-      "Mana": 9.3
+      "ManaPerSecond": 9.3
      }
     },
     "8": {
      "_cost": {
-      "Mana": 10.6
+      "ManaPerSecond": 10.6
      }
     },
     "9": {
      "_cost": {
-      "Mana": 12.0
+      "ManaPerSecond": 12.0
      }
     },
     "10": {
      "_cost": {
-      "Mana": 13.6
+      "ManaPerSecond": 13.6
      }
     },
     "11": {
      "_cost": {
-      "Mana": 15.2
+      "ManaPerSecond": 15.2
      }
     },
     "12": {
      "_cost": {
-      "Mana": 17.1
+      "ManaPerSecond": 17.1
      }
     },
     "13": {
      "_cost": {
-      "Mana": 19.1
+      "ManaPerSecond": 19.1
      }
     },
     "14": {
      "_cost": {
-      "Mana": 21.3
+      "ManaPerSecond": 21.3
      }
     },
     "15": {
      "_cost": {
-      "Mana": 23.7
+      "ManaPerSecond": 23.7
      }
     },
     "16": {
      "_cost": {
-      "Mana": 26.4
+      "ManaPerSecond": 26.4
      }
     },
     "17": {
      "_cost": {
-      "Mana": 29.2
+      "ManaPerSecond": 29.2
      }
     },
     "18": {
      "_cost": {
-      "Mana": 32.4
+      "ManaPerSecond": 32.4
      }
     },
     "19": {
      "_cost": {
-      "Mana": 35.8
+      "ManaPerSecond": 35.8
      }
     },
     "20": {
      "_cost": {
-      "Mana": 39.5
+      "ManaPerSecond": 39.5
      }
     },
     "21": {
      "_cost": {
-      "Mana": 43.6
+      "ManaPerSecond": 43.6
      }
     },
     "22": {
      "_cost": {
-      "Mana": 48.0
+      "ManaPerSecond": 48.0
      }
     },
     "23": {
      "_cost": {
-      "Mana": 52.9
+      "ManaPerSecond": 52.9
      }
     },
     "24": {
      "_cost": {
-      "Mana": 58.1
+      "ManaPerSecond": 58.1
      }
     },
     "25": {
      "_cost": {
-      "Mana": 63.8
+      "ManaPerSecond": 63.8
      }
     },
     "26": {
      "_cost": {
-      "Mana": 70.0
+      "ManaPerSecond": 70.0
      }
     },
     "27": {
      "_cost": {
-      "Mana": 76.7
+      "ManaPerSecond": 76.7
      }
     },
     "28": {
      "_cost": {
-      "Mana": 84.0
+      "ManaPerSecond": 84.0
      }
     },
     "29": {
      "_cost": {
-      "Mana": 92.0
+      "ManaPerSecond": 92.0
      }
     },
     "30": {
      "_cost": {
-      "Mana": 100.6
+      "ManaPerSecond": 100.6
      }
     },
     "31": {
      "_cost": {
-      "Mana": 110.0
+      "ManaPerSecond": 110.0
      }
     },
     "32": {
      "_cost": {
-      "Mana": 120.1
+      "ManaPerSecond": 120.1
      }
     },
     "33": {
      "_cost": {
-      "Mana": 131.1
+      "ManaPerSecond": 131.1
      }
     },
     "34": {
      "_cost": {
-      "Mana": 143.0
+      "ManaPerSecond": 143.0
      }
     },
     "35": {
      "_cost": {
-      "Mana": 155.9
+      "ManaPerSecond": 155.9
      }
     },
     "36": {
      "_cost": {
-      "Mana": 169.9
+      "ManaPerSecond": 169.9
      }
     },
     "37": {
      "_cost": {
-      "Mana": 185.1
+      "ManaPerSecond": 185.1
      }
     },
     "38": {
      "_cost": {
-      "Mana": 201.5
+      "ManaPerSecond": 201.5
      }
     },
     "39": {
      "_cost": {
-      "Mana": 219.2
+      "ManaPerSecond": 219.2
      }
     },
     "40": {
      "_cost": {
-      "Mana": 238.4
+      "ManaPerSecond": 238.4
      }
     }
    },
@@ -23975,241 +23986,241 @@
    "levels": {
     "1": {
      "_cost": {
-      "Mana": 2.9
+      "ManaPerSecond": 2.9
      }
     },
     "2": {
      "_base_multiplier": 11000,
      "_cost": {
-      "Mana": 3.4
+      "ManaPerSecond": 3.4
      }
     },
     "3": {
      "_base_multiplier": 12100,
      "_cost": {
-      "Mana": 3.9
+      "ManaPerSecond": 3.9
      }
     },
     "4": {
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 4.4
+      "ManaPerSecond": 4.4
      }
     },
     "5": {
      "_base_multiplier": 14300,
      "_cost": {
-      "Mana": 4.9
+      "ManaPerSecond": 4.9
      }
     },
     "6": {
      "_base_multiplier": 15400,
      "_cost": {
-      "Mana": 5.5
+      "ManaPerSecond": 5.5
      }
     },
     "7": {
      "_base_multiplier": 16600,
      "_cost": {
-      "Mana": 6.2
+      "ManaPerSecond": 6.2
      }
     },
     "8": {
      "_base_multiplier": 17700,
      "_cost": {
-      "Mana": 6.9
+      "ManaPerSecond": 6.9
      }
     },
     "9": {
      "_base_multiplier": 18700,
      "_cost": {
-      "Mana": 7.6
+      "ManaPerSecond": 7.6
      }
     },
     "10": {
      "_base_multiplier": 19800,
      "_cost": {
-      "Mana": 8.4
+      "ManaPerSecond": 8.4
      }
     },
     "11": {
      "_base_multiplier": 20900,
      "_cost": {
-      "Mana": 9.2
+      "ManaPerSecond": 9.2
      }
     },
     "12": {
      "_base_multiplier": 22200,
      "_cost": {
-      "Mana": 10.1
+      "ManaPerSecond": 10.1
      }
     },
     "13": {
      "_base_multiplier": 23500,
      "_cost": {
-      "Mana": 11.1
+      "ManaPerSecond": 11.1
      }
     },
     "14": {
      "_base_multiplier": 24900,
      "_cost": {
-      "Mana": 12.1
+      "ManaPerSecond": 12.1
      }
     },
     "15": {
      "_base_multiplier": 26500,
      "_cost": {
-      "Mana": 13.2
+      "ManaPerSecond": 13.2
      }
     },
     "16": {
      "_base_multiplier": 28100,
      "_cost": {
-      "Mana": 14.3
+      "ManaPerSecond": 14.3
      }
     },
     "17": {
      "_base_multiplier": 29900,
      "_cost": {
-      "Mana": 15.5
+      "ManaPerSecond": 15.5
      }
     },
     "18": {
      "_base_multiplier": 31900,
      "_cost": {
-      "Mana": 16.8
+      "ManaPerSecond": 16.8
      }
     },
     "19": {
      "_base_multiplier": 34000,
      "_cost": {
-      "Mana": 18.2
+      "ManaPerSecond": 18.2
      }
     },
     "20": {
      "_base_multiplier": 36200,
      "_cost": {
-      "Mana": 19.6
+      "ManaPerSecond": 19.6
      }
     },
     "21": {
      "_base_multiplier": 38600,
      "_cost": {
-      "Mana": 21.2
+      "ManaPerSecond": 21.2
      }
     },
     "22": {
      "_base_multiplier": 41200,
      "_cost": {
-      "Mana": 22.9
+      "ManaPerSecond": 22.9
      }
     },
     "23": {
      "_base_multiplier": 44000,
      "_cost": {
-      "Mana": 24.6
+      "ManaPerSecond": 24.6
      }
     },
     "24": {
      "_base_multiplier": 46900,
      "_cost": {
-      "Mana": 26.5
+      "ManaPerSecond": 26.5
      }
     },
     "25": {
      "_base_multiplier": 50000,
      "_cost": {
-      "Mana": 28.4
+      "ManaPerSecond": 28.4
      }
     },
     "26": {
      "_base_multiplier": 53300,
      "_cost": {
-      "Mana": 30.5
+      "ManaPerSecond": 30.5
      }
     },
     "27": {
      "_base_multiplier": 56900,
      "_cost": {
-      "Mana": 32.7
+      "ManaPerSecond": 32.7
      }
     },
     "28": {
      "_base_multiplier": 60700,
      "_cost": {
-      "Mana": 35.1
+      "ManaPerSecond": 35.1
      }
     },
     "29": {
      "_base_multiplier": 64700,
      "_cost": {
-      "Mana": 37.6
+      "ManaPerSecond": 37.6
      }
     },
     "30": {
      "_base_multiplier": 69000,
      "_cost": {
-      "Mana": 40.2
+      "ManaPerSecond": 40.2
      }
     },
     "31": {
      "_base_multiplier": 73600,
      "_cost": {
-      "Mana": 43.0
+      "ManaPerSecond": 43.0
      }
     },
     "32": {
      "_base_multiplier": 78500,
      "_cost": {
-      "Mana": 46.0
+      "ManaPerSecond": 46.0
      }
     },
     "33": {
      "_base_multiplier": 83800,
      "_cost": {
-      "Mana": 49.1
+      "ManaPerSecond": 49.1
      }
     },
     "34": {
      "_base_multiplier": 89300,
      "_cost": {
-      "Mana": 52.4
+      "ManaPerSecond": 52.4
      }
     },
     "35": {
      "_base_multiplier": 95300,
      "_cost": {
-      "Mana": 55.9
+      "ManaPerSecond": 55.9
      }
     },
     "36": {
      "_base_multiplier": 101600,
      "_cost": {
-      "Mana": 59.6
+      "ManaPerSecond": 59.6
      }
     },
     "37": {
      "_base_multiplier": 108400,
      "_cost": {
-      "Mana": 63.5
+      "ManaPerSecond": 63.5
      }
     },
     "38": {
      "_base_multiplier": 115600,
      "_cost": {
-      "Mana": 67.6
+      "ManaPerSecond": 67.6
      }
     },
     "39": {
      "_base_multiplier": 123300,
      "_cost": {
-      "Mana": 72.0
+      "ManaPerSecond": 72.0
      }
     },
     "40": {
      "_base_multiplier": 131600,
      "_cost": {
-      "Mana": 76.6
+      "ManaPerSecond": 76.6
      }
     }
    },
@@ -24623,7 +24634,8 @@
   "Dazing Cry": {
    "cast_time_ms": 0,
    "constant": {
-    "support_dazed_cry_duration_ms": 4000
+    "support_dazed_cry_duration_ms": 4000,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -24707,7 +24719,8 @@
     "support_hide_of_helbrym_soak_duration_ms": 2000,
     "support_hide_of_helbrym_guard_duration_ms": 4000,
     "support_hide_of_helbrym_gain_guard_from_%_of_damage_taken": 50,
-    "support_hide_of_helbrym_gain_rage_from_%_of_damage_taken": 3
+    "support_hide_of_helbrym_gain_rage_from_%_of_damage_taken": 3,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -25152,7 +25165,8 @@
    "constant": {
     "crossbow_load_x_bolts_on_dodge": 4,
     "support_double_barrel_number_of_crossbow_bolts_+": 3,
-    "attack_speed_+%": 10
+    "attack_speed_+%": 10,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -25634,7 +25648,8 @@
     "support_randomise_higher_aoe_+%_final": 50,
     "support_randomise_lower_aoe_+%_final": -40,
     "support_randomise_higher_projectile_speed_+%_final": 50,
-    "support_randomise_lower_projectile_speed_+%_final": -40
+    "support_randomise_lower_projectile_speed_+%_final": -40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -25765,7 +25780,8 @@
   "Rusted Spikes": {
    "cast_time_ms": 0,
    "constant": {
-    "aggravate_bleeding_on_pin_chance_%": 100
+    "aggravate_bleeding_on_pin_chance_%": 100,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -25799,7 +25815,8 @@
   "Reverberate": {
    "cast_time_ms": 0,
    "constant": {
-    "chance_to_aftershock_+%_per_250_ms_attack_time": 15
+    "chance_to_aftershock_+%_per_250_ms_attack_time": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -25849,7 +25866,8 @@
   "Unyielding": {
    "cast_time_ms": 0,
    "constant": {
-    "damage_taken_%_recouped_as_life_while_performing_attack_per_250_ms_attack_time": 8
+    "damage_taken_%_recouped_as_life_while_performing_attack_per_250_ms_attack_time": 8,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -25882,7 +25900,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_overextend_critical_strike_multiplier_+%_final": 30,
-    "daze_self_on_critical_hit_for_X_ms": 5000
+    "daze_self_on_critical_hit_for_X_ms": 5000,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -25899,7 +25918,8 @@
   "Excoriate": {
    "cast_time_ms": 0,
    "constant": {
-    "support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target": 10
+    "support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target": 10,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -25919,7 +25939,8 @@
   "Unbending": {
    "cast_time_ms": 0,
    "constant": {
-    "damage_taken_%_recouped_as_mana_while_performing_spell_per_250_ms_cast_time": 8
+    "damage_taken_%_recouped_as_mana_while_performing_spell_per_250_ms_cast_time": 8,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -25955,7 +25976,8 @@
    "constant": {
     "skill_cannot_be_used_unless_stationary_for_X_ms": 1500,
     "support_unmoving_damage_+%_final_per_250_ms_stationary": 3,
-    "support_unmoving_damage_multiplier_cap": 45
+    "support_unmoving_damage_multiplier_cap": 45,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -25972,7 +25994,8 @@
   "Magnetic Remnants": {
    "cast_time_ms": 0,
    "constant": {
-    "remnant_pickup_range_+%": 35
+    "remnant_pickup_range_+%": 35,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -25988,7 +26011,9 @@
   },
   "Unsteady Tempo": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 110
+   },
    "levels": {
     "1": {}
    },
@@ -26039,7 +26064,8 @@
   "Arms Length": {
    "cast_time_ms": 0,
    "constant": {
-    "support_arms_length_knockback_distance_+%_final": 40
+    "support_arms_length_knockback_distance_+%_final": 40,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -26073,7 +26099,8 @@
   "Untouchable": {
    "cast_time_ms": 0,
    "constant": {
-    "evasion_+%_while_performing_action_per_250_ms_attack_time": 25
+    "evasion_+%_while_performing_action_per_250_ms_attack_time": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -26094,7 +26121,8 @@
     "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects": 5,
     "support_greatwood_life_regeneration_rate_per_minute_%_per_totem_in_radius": 60,
     "damage_+%_final_per_totem_in_radius_from_support_greatwood": 10,
-    "area_of_effect_+%_per_totem_in_radius_from_support_greatwood": 5
+    "area_of_effect_+%_per_totem_in_radius_from_support_greatwood": 5,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -26116,7 +26144,8 @@
     "support_greatwood_maximum_life_+%_final": 30,
     "support_greatwood_life_regeneration_rate_per_minute_%_per_totem_in_radius": 50,
     "damage_+%_final_per_totem_in_radius_from_support_greatwood": 6,
-    "area_of_effect_+%_per_totem_in_radius_from_support_greatwood": 6
+    "area_of_effect_+%_per_totem_in_radius_from_support_greatwood": 6,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -26133,7 +26162,8 @@
   "Unabating": {
    "cast_time_ms": 0,
    "constant": {
-    "armour_+%_while_performing_action_per_250_ms_attack_time": 25
+    "armour_+%_while_performing_action_per_250_ms_attack_time": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -26150,7 +26180,8 @@
   "First Blood": {
    "cast_time_ms": 0,
    "constant": {
-    "bleed_chance_+%_vs_full_life_enemy": 100
+    "bleed_chance_+%_vs_full_life_enemy": 100,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -26255,7 +26286,8 @@
   "Outmaneuver": {
    "cast_time_ms": 0,
    "constant": {
-    "armour_break_physical_damage_%_dealt_as_armour_break_vs_parried_enemies": 25
+    "armour_break_physical_damage_%_dealt_as_armour_break_vs_parried_enemies": 25,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -26989,7 +27021,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_totem_life_+%_final": 25,
-    "support_hardy_totems_trigger_splinter_explosion_on_death_chance_%": 100
+    "support_hardy_totems_trigger_splinter_explosion_on_death_chance_%": 100,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -30017,7 +30050,8 @@
    "cast_time_ms": 0,
    "constant": {
     "supported_active_skill_gem_level_+": 1,
-    "supported_active_skill_gem_quality_%": 5
+    "supported_active_skill_gem_quality_%": 5,
+    "_cost_multiplier": 90
    },
    "levels": {
     "1": {}
@@ -30052,7 +30086,8 @@
   "Xoph's Pyre": {
    "cast_time_ms": 0,
    "constant": {
-    "non_skill_base_fire_damage_%_to_gain_as_chaos": 40
+    "non_skill_base_fire_damage_%_to_gain_as_chaos": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30069,7 +30104,8 @@
   "Esh's Radiance": {
    "cast_time_ms": 0,
    "constant": {
-    "non_skill_base_lightning_damage_%_to_gain_as_chaos": 40
+    "non_skill_base_lightning_damage_%_to_gain_as_chaos": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30086,7 +30122,8 @@
   "Tul's Stillness": {
    "cast_time_ms": 0,
    "constant": {
-    "non_skill_base_cold_damage_%_to_gain_as_chaos": 40
+    "non_skill_base_cold_damage_%_to_gain_as_chaos": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30104,7 +30141,8 @@
    "cast_time_ms": 0,
    "constant": {
     "non_skill_base_physical_damage_%_to_gain_as_chaos": 40,
-    "chaos_damage_%_dealt_as_armour_break": 20
+    "chaos_damage_%_dealt_as_armour_break": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30121,7 +30159,8 @@
   "Rakiata's Flow": {
    "cast_time_ms": 0,
    "constant": {
-    "treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance": 100
+    "treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30298,6 +30337,7 @@
     "support_spell_echo_number_of_echo_cascades": 3,
     "echoed_spell_area_of_effect_+%": 40,
     "_cooldown_ms": 5000,
+    "_cost_multiplier": 130,
     "_stored_uses": 1
    },
    "levels": {
@@ -30333,7 +30373,8 @@
    "cast_time_ms": 0,
    "constant": {
     "gain_unholy_might_for_X_ms_on_command": 15000,
-    "minion_gain_unholy_might_for_X_ms_on_command": 15000
+    "minion_gain_unholy_might_for_X_ms_on_command": 15000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30350,7 +30391,8 @@
   "Kulemak's Dominion": {
    "cast_time_ms": 0,
    "constant": {
-    "cascadeable_offering_support_offering_casted_spell_damage_+%_final": -50
+    "cascadeable_offering_support_offering_casted_spell_damage_+%_final": -50,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -30384,7 +30426,8 @@
   "Varashta's Blessing": {
    "cast_time_ms": 0,
    "constant": {
-    "support_djinn_lineage_damage_+%_final_per_different_command_in_last_8_seconds": 10
+    "support_djinn_lineage_damage_+%_final_per_different_command_in_last_8_seconds": 10,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -30453,7 +30496,9 @@
   },
   "Xibaqua's Rending": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 115
+   },
    "levels": {
     "1": {}
    },
@@ -30468,7 +30513,9 @@
   },
   "Khatal's Rejuvenation": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -31799,202 +31846,202 @@
    "levels": {
     "1": {
      "_cost": {
-      "Mana": 2.9
+      "ManaPerSecond": 2.9
      }
     },
     "2": {
      "_cost": {
-      "Mana": 3.4
+      "ManaPerSecond": 3.4
      }
     },
     "3": {
      "_cost": {
-      "Mana": 3.9
+      "ManaPerSecond": 3.9
      }
     },
     "4": {
      "_cost": {
-      "Mana": 4.4
+      "ManaPerSecond": 4.4
      }
     },
     "5": {
      "_cost": {
-      "Mana": 4.9
+      "ManaPerSecond": 4.9
      }
     },
     "6": {
      "_cost": {
-      "Mana": 5.5
+      "ManaPerSecond": 5.5
      }
     },
     "7": {
      "_cost": {
-      "Mana": 6.2
+      "ManaPerSecond": 6.2
      }
     },
     "8": {
      "_cost": {
-      "Mana": 6.9
+      "ManaPerSecond": 6.9
      }
     },
     "9": {
      "_cost": {
-      "Mana": 7.6
+      "ManaPerSecond": 7.6
      }
     },
     "10": {
      "_cost": {
-      "Mana": 8.4
+      "ManaPerSecond": 8.4
      }
     },
     "11": {
      "_cost": {
-      "Mana": 9.2
+      "ManaPerSecond": 9.2
      }
     },
     "12": {
      "_cost": {
-      "Mana": 10.1
+      "ManaPerSecond": 10.1
      }
     },
     "13": {
      "_cost": {
-      "Mana": 11.1
+      "ManaPerSecond": 11.1
      }
     },
     "14": {
      "_cost": {
-      "Mana": 12.1
+      "ManaPerSecond": 12.1
      }
     },
     "15": {
      "_cost": {
-      "Mana": 13.2
+      "ManaPerSecond": 13.2
      }
     },
     "16": {
      "_cost": {
-      "Mana": 14.3
+      "ManaPerSecond": 14.3
      }
     },
     "17": {
      "_cost": {
-      "Mana": 15.5
+      "ManaPerSecond": 15.5
      }
     },
     "18": {
      "_cost": {
-      "Mana": 16.8
+      "ManaPerSecond": 16.8
      }
     },
     "19": {
      "_cost": {
-      "Mana": 18.2
+      "ManaPerSecond": 18.2
      }
     },
     "20": {
      "_cost": {
-      "Mana": 19.6
+      "ManaPerSecond": 19.6
      }
     },
     "21": {
      "_cost": {
-      "Mana": 21.2
+      "ManaPerSecond": 21.2
      }
     },
     "22": {
      "_cost": {
-      "Mana": 22.9
+      "ManaPerSecond": 22.9
      }
     },
     "23": {
      "_cost": {
-      "Mana": 24.6
+      "ManaPerSecond": 24.6
      }
     },
     "24": {
      "_cost": {
-      "Mana": 26.5
+      "ManaPerSecond": 26.5
      }
     },
     "25": {
      "_cost": {
-      "Mana": 28.4
+      "ManaPerSecond": 28.4
      }
     },
     "26": {
      "_cost": {
-      "Mana": 30.5
+      "ManaPerSecond": 30.5
      }
     },
     "27": {
      "_cost": {
-      "Mana": 32.7
+      "ManaPerSecond": 32.7
      }
     },
     "28": {
      "_cost": {
-      "Mana": 35.1
+      "ManaPerSecond": 35.1
      }
     },
     "29": {
      "_cost": {
-      "Mana": 37.6
+      "ManaPerSecond": 37.6
      }
     },
     "30": {
      "_cost": {
-      "Mana": 40.2
+      "ManaPerSecond": 40.2
      }
     },
     "31": {
      "_cost": {
-      "Mana": 43.0
+      "ManaPerSecond": 43.0
      }
     },
     "32": {
      "_cost": {
-      "Mana": 46.0
+      "ManaPerSecond": 46.0
      }
     },
     "33": {
      "_cost": {
-      "Mana": 49.1
+      "ManaPerSecond": 49.1
      }
     },
     "34": {
      "_cost": {
-      "Mana": 52.4
+      "ManaPerSecond": 52.4
      }
     },
     "35": {
      "_cost": {
-      "Mana": 55.9
+      "ManaPerSecond": 55.9
      }
     },
     "36": {
      "_cost": {
-      "Mana": 59.6
+      "ManaPerSecond": 59.6
      }
     },
     "37": {
      "_cost": {
-      "Mana": 63.5
+      "ManaPerSecond": 63.5
      }
     },
     "38": {
      "_cost": {
-      "Mana": 67.6
+      "ManaPerSecond": 67.6
      }
     },
     "39": {
      "_cost": {
-      "Mana": 72.0
+      "ManaPerSecond": 72.0
      }
     },
     "40": {
      "_cost": {
-      "Mana": 76.6
+      "ManaPerSecond": 76.6
      }
     }
    },
@@ -42487,280 +42534,280 @@
      "active_skill_stun_threshold_+%_while_performing_action": 5,
      "rune_ward_block_%_damage_taken": 25,
      "_cost": {
-      "Ward": 3.0
+      "WardPerSecond": 3.0
      }
     },
     "2": {
      "active_skill_stun_threshold_+%_while_performing_action": 10,
      "rune_ward_block_%_damage_taken": 25,
      "_cost": {
-      "Ward": 3.4
+      "WardPerSecond": 3.4
      }
     },
     "3": {
      "active_skill_stun_threshold_+%_while_performing_action": 15,
      "rune_ward_block_%_damage_taken": 25,
      "_cost": {
-      "Ward": 3.8
+      "WardPerSecond": 3.8
      }
     },
     "4": {
      "active_skill_stun_threshold_+%_while_performing_action": 20,
      "rune_ward_block_%_damage_taken": 25,
      "_cost": {
-      "Ward": 4.2
+      "WardPerSecond": 4.2
      }
     },
     "5": {
      "active_skill_stun_threshold_+%_while_performing_action": 25,
      "rune_ward_block_%_damage_taken": 24,
      "_cost": {
-      "Ward": 4.6
+      "WardPerSecond": 4.6
      }
     },
     "6": {
      "active_skill_stun_threshold_+%_while_performing_action": 30,
      "rune_ward_block_%_damage_taken": 24,
      "_cost": {
-      "Ward": 5.1
+      "WardPerSecond": 5.1
      }
     },
     "7": {
      "active_skill_stun_threshold_+%_while_performing_action": 35,
      "rune_ward_block_%_damage_taken": 24,
      "_cost": {
-      "Ward": 5.5
+      "WardPerSecond": 5.5
      }
     },
     "8": {
      "active_skill_stun_threshold_+%_while_performing_action": 40,
      "rune_ward_block_%_damage_taken": 24,
      "_cost": {
-      "Ward": 6.0
+      "WardPerSecond": 6.0
      }
     },
     "9": {
      "active_skill_stun_threshold_+%_while_performing_action": 45,
      "rune_ward_block_%_damage_taken": 23,
      "_cost": {
-      "Ward": 6.5
+      "WardPerSecond": 6.5
      }
     },
     "10": {
      "active_skill_stun_threshold_+%_while_performing_action": 50,
      "rune_ward_block_%_damage_taken": 23,
      "_cost": {
-      "Ward": 7.0
+      "WardPerSecond": 7.0
      }
     },
     "11": {
      "active_skill_stun_threshold_+%_while_performing_action": 55,
      "rune_ward_block_%_damage_taken": 23,
      "_cost": {
-      "Ward": 7.5
+      "WardPerSecond": 7.5
      }
     },
     "12": {
      "active_skill_stun_threshold_+%_while_performing_action": 60,
      "rune_ward_block_%_damage_taken": 23,
      "_cost": {
-      "Ward": 8.1
+      "WardPerSecond": 8.1
      }
     },
     "13": {
      "active_skill_stun_threshold_+%_while_performing_action": 65,
      "rune_ward_block_%_damage_taken": 22,
      "_cost": {
-      "Ward": 8.6
+      "WardPerSecond": 8.6
      }
     },
     "14": {
      "active_skill_stun_threshold_+%_while_performing_action": 70,
      "rune_ward_block_%_damage_taken": 22,
      "_cost": {
-      "Ward": 9.2
+      "WardPerSecond": 9.2
      }
     },
     "15": {
      "active_skill_stun_threshold_+%_while_performing_action": 75,
      "rune_ward_block_%_damage_taken": 22,
      "_cost": {
-      "Ward": 9.8
+      "WardPerSecond": 9.8
      }
     },
     "16": {
      "active_skill_stun_threshold_+%_while_performing_action": 80,
      "rune_ward_block_%_damage_taken": 22,
      "_cost": {
-      "Ward": 10.4
+      "WardPerSecond": 10.4
      }
     },
     "17": {
      "active_skill_stun_threshold_+%_while_performing_action": 85,
      "rune_ward_block_%_damage_taken": 21,
      "_cost": {
-      "Ward": 11.0
+      "WardPerSecond": 11.0
      }
     },
     "18": {
      "active_skill_stun_threshold_+%_while_performing_action": 90,
      "rune_ward_block_%_damage_taken": 21,
      "_cost": {
-      "Ward": 11.7
+      "WardPerSecond": 11.7
      }
     },
     "19": {
      "active_skill_stun_threshold_+%_while_performing_action": 95,
      "rune_ward_block_%_damage_taken": 21,
      "_cost": {
-      "Ward": 12.3
+      "WardPerSecond": 12.3
      }
     },
     "20": {
      "active_skill_stun_threshold_+%_while_performing_action": 100,
      "rune_ward_block_%_damage_taken": 21,
      "_cost": {
-      "Ward": 13.0
+      "WardPerSecond": 13.0
      }
     },
     "21": {
      "active_skill_stun_threshold_+%_while_performing_action": 105,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 13.7
+      "WardPerSecond": 13.7
      }
     },
     "22": {
      "active_skill_stun_threshold_+%_while_performing_action": 110,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 14.4
+      "WardPerSecond": 14.4
      }
     },
     "23": {
      "active_skill_stun_threshold_+%_while_performing_action": 115,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 15.2
+      "WardPerSecond": 15.2
      }
     },
     "24": {
      "active_skill_stun_threshold_+%_while_performing_action": 120,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 15.9
+      "WardPerSecond": 15.9
      }
     },
     "25": {
      "active_skill_stun_threshold_+%_while_performing_action": 125,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 16.8
+      "WardPerSecond": 16.8
      }
     },
     "26": {
      "active_skill_stun_threshold_+%_while_performing_action": 130,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 17.6
+      "WardPerSecond": 17.6
      }
     },
     "27": {
      "active_skill_stun_threshold_+%_while_performing_action": 135,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 18.4
+      "WardPerSecond": 18.4
      }
     },
     "28": {
      "active_skill_stun_threshold_+%_while_performing_action": 140,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 19.3
+      "WardPerSecond": 19.3
      }
     },
     "29": {
      "active_skill_stun_threshold_+%_while_performing_action": 145,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 20.2
+      "WardPerSecond": 20.2
      }
     },
     "30": {
      "active_skill_stun_threshold_+%_while_performing_action": 150,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 21.1
+      "WardPerSecond": 21.1
      }
     },
     "31": {
      "active_skill_stun_threshold_+%_while_performing_action": 155,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 22.0
+      "WardPerSecond": 22.0
      }
     },
     "32": {
      "active_skill_stun_threshold_+%_while_performing_action": 160,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 23.0
+      "WardPerSecond": 23.0
      }
     },
     "33": {
      "active_skill_stun_threshold_+%_while_performing_action": 165,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 24.0
+      "WardPerSecond": 24.0
      }
     },
     "34": {
      "active_skill_stun_threshold_+%_while_performing_action": 170,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 25.0
+      "WardPerSecond": 25.0
      }
     },
     "35": {
      "active_skill_stun_threshold_+%_while_performing_action": 175,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 26.1
+      "WardPerSecond": 26.1
      }
     },
     "36": {
      "active_skill_stun_threshold_+%_while_performing_action": 180,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 27.1
+      "WardPerSecond": 27.1
      }
     },
     "37": {
      "active_skill_stun_threshold_+%_while_performing_action": 185,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 28.3
+      "WardPerSecond": 28.3
      }
     },
     "38": {
      "active_skill_stun_threshold_+%_while_performing_action": 190,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 29.4
+      "WardPerSecond": 29.4
      }
     },
     "39": {
      "active_skill_stun_threshold_+%_while_performing_action": 195,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 30.6
+      "WardPerSecond": 30.6
      }
     },
     "40": {
      "active_skill_stun_threshold_+%_while_performing_action": 200,
      "rune_ward_block_%_damage_taken": 20,
      "_cost": {
-      "Ward": 31.8
+      "WardPerSecond": 31.8
      }
     }
    },
@@ -45214,7 +45261,7 @@
      "off_hand_weapon_maximum_physical_damage": 5,
      "_base_multiplier": 3000,
      "_cost": {
-      "Mana": 7.2
+      "ManaPerSecond": 7.2
      }
     },
     "2": {
@@ -45222,7 +45269,7 @@
      "off_hand_weapon_maximum_physical_damage": 8,
      "_base_multiplier": 3300,
      "_cost": {
-      "Mana": 8.3
+      "ManaPerSecond": 8.3
      }
     },
     "3": {
@@ -45230,7 +45277,7 @@
      "off_hand_weapon_maximum_physical_damage": 12,
      "_base_multiplier": 3600,
      "_cost": {
-      "Mana": 9.6
+      "ManaPerSecond": 9.6
      }
     },
     "4": {
@@ -45238,7 +45285,7 @@
      "off_hand_weapon_maximum_physical_damage": 17,
      "_base_multiplier": 4000,
      "_cost": {
-      "Mana": 10.8
+      "ManaPerSecond": 10.8
      }
     },
     "5": {
@@ -45246,7 +45293,7 @@
      "off_hand_weapon_maximum_physical_damage": 21,
      "_base_multiplier": 4300,
      "_cost": {
-      "Mana": 12.2
+      "ManaPerSecond": 12.2
      }
     },
     "6": {
@@ -45254,7 +45301,7 @@
      "off_hand_weapon_maximum_physical_damage": 26,
      "_base_multiplier": 4600,
      "_cost": {
-      "Mana": 13.7
+      "ManaPerSecond": 13.7
      }
     },
     "7": {
@@ -45262,7 +45309,7 @@
      "off_hand_weapon_maximum_physical_damage": 32,
      "_base_multiplier": 4900,
      "_cost": {
-      "Mana": 15.3
+      "ManaPerSecond": 15.3
      }
     },
     "8": {
@@ -45270,7 +45317,7 @@
      "off_hand_weapon_maximum_physical_damage": 37,
      "_base_multiplier": 5200,
      "_cost": {
-      "Mana": 17.0
+      "ManaPerSecond": 17.0
      }
     },
     "9": {
@@ -45278,7 +45325,7 @@
      "off_hand_weapon_maximum_physical_damage": 43,
      "_base_multiplier": 5500,
      "_cost": {
-      "Mana": 18.8
+      "ManaPerSecond": 18.8
      }
     },
     "10": {
@@ -45286,7 +45333,7 @@
      "off_hand_weapon_maximum_physical_damage": 50,
      "_base_multiplier": 5700,
      "_cost": {
-      "Mana": 20.8
+      "ManaPerSecond": 20.8
      }
     },
     "11": {
@@ -45294,7 +45341,7 @@
      "off_hand_weapon_maximum_physical_damage": 56,
      "_base_multiplier": 6000,
      "_cost": {
-      "Mana": 22.9
+      "ManaPerSecond": 22.9
      }
     },
     "12": {
@@ -45302,7 +45349,7 @@
      "off_hand_weapon_maximum_physical_damage": 63,
      "_base_multiplier": 6300,
      "_cost": {
-      "Mana": 25.1
+      "ManaPerSecond": 25.1
      }
     },
     "13": {
@@ -45310,7 +45357,7 @@
      "off_hand_weapon_maximum_physical_damage": 70,
      "_base_multiplier": 6600,
      "_cost": {
-      "Mana": 27.4
+      "ManaPerSecond": 27.4
      }
     },
     "14": {
@@ -45318,7 +45365,7 @@
      "off_hand_weapon_maximum_physical_damage": 78,
      "_base_multiplier": 7000,
      "_cost": {
-      "Mana": 29.9
+      "ManaPerSecond": 29.9
      }
     },
     "15": {
@@ -45326,7 +45373,7 @@
      "off_hand_weapon_maximum_physical_damage": 85,
      "_base_multiplier": 7300,
      "_cost": {
-      "Mana": 32.6
+      "ManaPerSecond": 32.6
      }
     },
     "16": {
@@ -45334,7 +45381,7 @@
      "off_hand_weapon_maximum_physical_damage": 93,
      "_base_multiplier": 7700,
      "_cost": {
-      "Mana": 35.4
+      "ManaPerSecond": 35.4
      }
     },
     "17": {
@@ -45342,7 +45389,7 @@
      "off_hand_weapon_maximum_physical_damage": 101,
      "_base_multiplier": 8100,
      "_cost": {
-      "Mana": 38.4
+      "ManaPerSecond": 38.4
      }
     },
     "18": {
@@ -45350,7 +45397,7 @@
      "off_hand_weapon_maximum_physical_damage": 110,
      "_base_multiplier": 8500,
      "_cost": {
-      "Mana": 41.6
+      "ManaPerSecond": 41.6
      }
     },
     "19": {
@@ -45358,7 +45405,7 @@
      "off_hand_weapon_maximum_physical_damage": 119,
      "_base_multiplier": 8900,
      "_cost": {
-      "Mana": 45.1
+      "ManaPerSecond": 45.1
      }
     },
     "20": {
@@ -45366,7 +45413,7 @@
      "off_hand_weapon_maximum_physical_damage": 128,
      "_base_multiplier": 9400,
      "_cost": {
-      "Mana": 48.7
+      "ManaPerSecond": 48.7
      }
     },
     "21": {
@@ -45374,7 +45421,7 @@
      "off_hand_weapon_maximum_physical_damage": 137,
      "_base_multiplier": 9800,
      "_cost": {
-      "Mana": 52.5
+      "ManaPerSecond": 52.5
      }
     },
     "22": {
@@ -45382,7 +45429,7 @@
      "off_hand_weapon_maximum_physical_damage": 147,
      "_base_multiplier": 10300,
      "_cost": {
-      "Mana": 56.6
+      "ManaPerSecond": 56.6
      }
     },
     "23": {
@@ -45390,7 +45437,7 @@
      "off_hand_weapon_maximum_physical_damage": 157,
      "_base_multiplier": 10800,
      "_cost": {
-      "Mana": 61.0
+      "ManaPerSecond": 61.0
      }
     },
     "24": {
@@ -45398,7 +45445,7 @@
      "off_hand_weapon_maximum_physical_damage": 167,
      "_base_multiplier": 11400,
      "_cost": {
-      "Mana": 65.6
+      "ManaPerSecond": 65.6
      }
     },
     "25": {
@@ -45406,7 +45453,7 @@
      "off_hand_weapon_maximum_physical_damage": 178,
      "_base_multiplier": 11900,
      "_cost": {
-      "Mana": 70.5
+      "ManaPerSecond": 70.5
      }
     },
     "26": {
@@ -45414,7 +45461,7 @@
      "off_hand_weapon_maximum_physical_damage": 189,
      "_base_multiplier": 12500,
      "_cost": {
-      "Mana": 75.6
+      "ManaPerSecond": 75.6
      }
     },
     "27": {
@@ -45422,7 +45469,7 @@
      "off_hand_weapon_maximum_physical_damage": 200,
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 81.1
+      "ManaPerSecond": 81.1
      }
     },
     "28": {
@@ -45430,7 +45477,7 @@
      "off_hand_weapon_maximum_physical_damage": 211,
      "_base_multiplier": 13800,
      "_cost": {
-      "Mana": 86.9
+      "ManaPerSecond": 86.9
      }
     },
     "29": {
@@ -45438,7 +45485,7 @@
      "off_hand_weapon_maximum_physical_damage": 223,
      "_base_multiplier": 14500,
      "_cost": {
-      "Mana": 93.1
+      "ManaPerSecond": 93.1
      }
     },
     "30": {
@@ -45446,7 +45493,7 @@
      "off_hand_weapon_maximum_physical_damage": 235,
      "_base_multiplier": 15200,
      "_cost": {
-      "Mana": 99.6
+      "ManaPerSecond": 99.6
      }
     },
     "31": {
@@ -45454,7 +45501,7 @@
      "off_hand_weapon_maximum_physical_damage": 247,
      "_base_multiplier": 16000,
      "_cost": {
-      "Mana": 106.5
+      "ManaPerSecond": 106.5
      }
     },
     "32": {
@@ -45462,7 +45509,7 @@
      "off_hand_weapon_maximum_physical_damage": 260,
      "_base_multiplier": 16800,
      "_cost": {
-      "Mana": 113.8
+      "ManaPerSecond": 113.8
      }
     },
     "33": {
@@ -45470,7 +45517,7 @@
      "off_hand_weapon_maximum_physical_damage": 273,
      "_base_multiplier": 17600,
      "_cost": {
-      "Mana": 121.6
+      "ManaPerSecond": 121.6
      }
     },
     "34": {
@@ -45478,7 +45525,7 @@
      "off_hand_weapon_maximum_physical_damage": 286,
      "_base_multiplier": 18500,
      "_cost": {
-      "Mana": 129.8
+      "ManaPerSecond": 129.8
      }
     },
     "35": {
@@ -45486,7 +45533,7 @@
      "off_hand_weapon_maximum_physical_damage": 299,
      "_base_multiplier": 19500,
      "_cost": {
-      "Mana": 138.4
+      "ManaPerSecond": 138.4
      }
     },
     "36": {
@@ -45494,7 +45541,7 @@
      "off_hand_weapon_maximum_physical_damage": 313,
      "_base_multiplier": 20400,
      "_cost": {
-      "Mana": 147.6
+      "ManaPerSecond": 147.6
      }
     },
     "37": {
@@ -45502,7 +45549,7 @@
      "off_hand_weapon_maximum_physical_damage": 327,
      "_base_multiplier": 21400,
      "_cost": {
-      "Mana": 157.3
+      "ManaPerSecond": 157.3
      }
     },
     "38": {
@@ -45510,7 +45557,7 @@
      "off_hand_weapon_maximum_physical_damage": 342,
      "_base_multiplier": 22500,
      "_cost": {
-      "Mana": 167.6
+      "ManaPerSecond": 167.6
      }
     },
     "39": {
@@ -45518,7 +45565,7 @@
      "off_hand_weapon_maximum_physical_damage": 356,
      "_base_multiplier": 23600,
      "_cost": {
-      "Mana": 178.4
+      "ManaPerSecond": 178.4
      }
     },
     "40": {
@@ -45526,7 +45573,7 @@
      "off_hand_weapon_maximum_physical_damage": 371,
      "_base_multiplier": 24800,
      "_cost": {
-      "Mana": 189.8
+      "ManaPerSecond": 189.8
      }
     }
    },
@@ -46102,7 +46149,8 @@
   "Projectile Acceleration I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_faster_projectiles_projectile_speed_+%_final": 40
+    "support_faster_projectiles_projectile_speed_+%_final": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -46120,7 +46168,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_faster_projectiles_projectile_speed_+%_final": 40,
-    "base_chance_to_pierce_%": 40
+    "base_chance_to_pierce_%": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -46137,7 +46186,8 @@
   "Projectile Acceleration III": {
    "cast_time_ms": 0,
    "constant": {
-    "support_faster_projectiles_projectile_speed_+%_final": 40
+    "support_faster_projectiles_projectile_speed_+%_final": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -46172,7 +46222,8 @@
   "Heightened Accuracy I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_additional_accurary_rating_+%_final": 50
+    "support_additional_accurary_rating_+%_final": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -46189,7 +46240,8 @@
   "Heightened Accuracy II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_additional_accurary_rating_+%_final": 50
+    "support_additional_accurary_rating_+%_final": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -46210,7 +46262,8 @@
    "cast_time_ms": 0,
    "constant": {
     "base_skill_area_of_effect_+%": 35,
-    "support_increased_area_damage_+%_final": 0
+    "support_increased_area_damage_+%_final": 0,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -46228,7 +46281,8 @@
    "cast_time_ms": 0,
    "constant": {
     "base_skill_area_of_effect_+%": 45,
-    "support_increased_area_damage_+%_final": 0
+    "support_increased_area_damage_+%_final": 0,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -46673,7 +46727,8 @@
    "cast_time_ms": 0,
    "constant": {
     "non_skill_base_all_damage_%_to_gain_as_chaos": 25,
-    "support_chaos_support_non_chaos_damage_+%_final": -50
+    "support_chaos_support_non_chaos_damage_+%_final": -50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {},
@@ -51574,7 +51629,8 @@
   "Blind I": {
    "cast_time_ms": 0,
    "constant": {
-    "global_chance_to_blind_on_hit_%": 100
+    "global_chance_to_blind_on_hit_%": 100,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -51592,7 +51648,8 @@
    "cast_time_ms": 0,
    "constant": {
     "global_chance_to_blind_on_hit_%": 100,
-    "blind_effect_+%": 20
+    "blind_effect_+%": 20,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -52224,7 +52281,8 @@
   "Fire Penetration I": {
    "cast_time_ms": 0,
    "constant": {
-    "base_reduce_enemy_fire_resistance_%": 30
+    "base_reduce_enemy_fire_resistance_%": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -52240,7 +52298,9 @@
   },
   "Fire Penetration II": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -52256,7 +52316,8 @@
   "Cold Penetration": {
    "cast_time_ms": 0,
    "constant": {
-    "base_reduce_enemy_cold_resistance_%": 30
+    "base_reduce_enemy_cold_resistance_%": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -52273,7 +52334,8 @@
   "Lightning Penetration": {
    "cast_time_ms": 0,
    "constant": {
-    "base_reduce_enemy_lightning_resistance_%": 30
+    "base_reduce_enemy_lightning_resistance_%": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -52345,7 +52407,8 @@
    "cast_time_ms": 0,
    "constant": {
     "terrain_arrow_attachment_chance_reduction_+%": 100,
-    "support_fork_forked_projectile_damage_+%_final": -30
+    "support_fork_forked_projectile_damage_+%_final": -30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -53107,7 +53170,8 @@
    "constant": {
     "support_multicast_cast_speed_+%_final": -30,
     "support_spell_echo_number_of_echo_cascades": 1,
-    "echoed_spell_area_of_effect_+%": 40
+    "echoed_spell_area_of_effect_+%": 40,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -53197,280 +53261,280 @@
      "spell_minimum_base_fire_damage": 7,
      "spell_maximum_base_fire_damage": 11,
      "_cost": {
-      "Mana": 5.6
+      "ManaPerSecond": 5.6
      }
     },
     "2": {
      "spell_minimum_base_fire_damage": 10,
      "spell_maximum_base_fire_damage": 14,
      "_cost": {
-      "Mana": 6.6
+      "ManaPerSecond": 6.6
      }
     },
     "3": {
      "spell_minimum_base_fire_damage": 13,
      "spell_maximum_base_fire_damage": 20,
      "_cost": {
-      "Mana": 7.8
+      "ManaPerSecond": 7.8
      }
     },
     "4": {
      "spell_minimum_base_fire_damage": 17,
      "spell_maximum_base_fire_damage": 26,
      "_cost": {
-      "Mana": 9.0
+      "ManaPerSecond": 9.0
      }
     },
     "5": {
      "spell_minimum_base_fire_damage": 22,
      "spell_maximum_base_fire_damage": 33,
      "_cost": {
-      "Mana": 10.4
+      "ManaPerSecond": 10.4
      }
     },
     "6": {
      "spell_minimum_base_fire_damage": 27,
      "spell_maximum_base_fire_damage": 41,
      "_cost": {
-      "Mana": 11.9
+      "ManaPerSecond": 11.9
      }
     },
     "7": {
      "spell_minimum_base_fire_damage": 33,
      "spell_maximum_base_fire_damage": 50,
      "_cost": {
-      "Mana": 13.6
+      "ManaPerSecond": 13.6
      }
     },
     "8": {
      "spell_minimum_base_fire_damage": 40,
      "spell_maximum_base_fire_damage": 60,
      "_cost": {
-      "Mana": 15.5
+      "ManaPerSecond": 15.5
      }
     },
     "9": {
      "spell_minimum_base_fire_damage": 47,
      "spell_maximum_base_fire_damage": 71,
      "_cost": {
-      "Mana": 17.5
+      "ManaPerSecond": 17.5
      }
     },
     "10": {
      "spell_minimum_base_fire_damage": 56,
      "spell_maximum_base_fire_damage": 84,
      "_cost": {
-      "Mana": 19.7
+      "ManaPerSecond": 19.7
      }
     },
     "11": {
      "spell_minimum_base_fire_damage": 66,
      "spell_maximum_base_fire_damage": 99,
      "_cost": {
-      "Mana": 22.2
+      "ManaPerSecond": 22.2
      }
     },
     "12": {
      "spell_minimum_base_fire_damage": 77,
      "spell_maximum_base_fire_damage": 115,
      "_cost": {
-      "Mana": 24.9
+      "ManaPerSecond": 24.9
      }
     },
     "13": {
      "spell_minimum_base_fire_damage": 90,
      "spell_maximum_base_fire_damage": 134,
      "_cost": {
-      "Mana": 27.8
+      "ManaPerSecond": 27.8
      }
     },
     "14": {
      "spell_minimum_base_fire_damage": 104,
      "spell_maximum_base_fire_damage": 156,
      "_cost": {
-      "Mana": 31.0
+      "ManaPerSecond": 31.0
      }
     },
     "15": {
      "spell_minimum_base_fire_damage": 120,
      "spell_maximum_base_fire_damage": 181,
      "_cost": {
-      "Mana": 34.5
+      "ManaPerSecond": 34.5
      }
     },
     "16": {
      "spell_minimum_base_fire_damage": 139,
      "spell_maximum_base_fire_damage": 209,
      "_cost": {
-      "Mana": 38.3
+      "ManaPerSecond": 38.3
      }
     },
     "17": {
      "spell_minimum_base_fire_damage": 160,
      "spell_maximum_base_fire_damage": 241,
      "_cost": {
-      "Mana": 42.5
+      "ManaPerSecond": 42.5
      }
     },
     "18": {
      "spell_minimum_base_fire_damage": 185,
      "spell_maximum_base_fire_damage": 277,
      "_cost": {
-      "Mana": 47.1
+      "ManaPerSecond": 47.1
      }
     },
     "19": {
      "spell_minimum_base_fire_damage": 213,
      "spell_maximum_base_fire_damage": 319,
      "_cost": {
-      "Mana": 52.1
+      "ManaPerSecond": 52.1
      }
     },
     "20": {
      "spell_minimum_base_fire_damage": 244,
      "spell_maximum_base_fire_damage": 367,
      "_cost": {
-      "Mana": 57.5
+      "ManaPerSecond": 57.5
      }
     },
     "21": {
      "spell_minimum_base_fire_damage": 281,
      "spell_maximum_base_fire_damage": 421,
      "_cost": {
-      "Mana": 63.4
+      "ManaPerSecond": 63.4
      }
     },
     "22": {
      "spell_minimum_base_fire_damage": 323,
      "spell_maximum_base_fire_damage": 484,
      "_cost": {
-      "Mana": 69.9
+      "ManaPerSecond": 69.9
      }
     },
     "23": {
      "spell_minimum_base_fire_damage": 370,
      "spell_maximum_base_fire_damage": 556,
      "_cost": {
-      "Mana": 76.9
+      "ManaPerSecond": 76.9
      }
     },
     "24": {
      "spell_minimum_base_fire_damage": 425,
      "spell_maximum_base_fire_damage": 638,
      "_cost": {
-      "Mana": 84.5
+      "ManaPerSecond": 84.5
      }
     },
     "25": {
      "spell_minimum_base_fire_damage": 489,
      "spell_maximum_base_fire_damage": 733,
      "_cost": {
-      "Mana": 92.8
+      "ManaPerSecond": 92.8
      }
     },
     "26": {
      "spell_minimum_base_fire_damage": 562,
      "spell_maximum_base_fire_damage": 842,
      "_cost": {
-      "Mana": 101.8
+      "ManaPerSecond": 101.8
      }
     },
     "27": {
      "spell_minimum_base_fire_damage": 645,
      "spell_maximum_base_fire_damage": 968,
      "_cost": {
-      "Mana": 111.6
+      "ManaPerSecond": 111.6
      }
     },
     "28": {
      "spell_minimum_base_fire_damage": 742,
      "spell_maximum_base_fire_damage": 1114,
      "_cost": {
-      "Mana": 122.3
+      "ManaPerSecond": 122.3
      }
     },
     "29": {
      "spell_minimum_base_fire_damage": 854,
      "spell_maximum_base_fire_damage": 1282,
      "_cost": {
-      "Mana": 133.8
+      "ManaPerSecond": 133.8
      }
     },
     "30": {
      "spell_minimum_base_fire_damage": 984,
      "spell_maximum_base_fire_damage": 1476,
      "_cost": {
-      "Mana": 146.4
+      "ManaPerSecond": 146.4
      }
     },
     "31": {
      "spell_minimum_base_fire_damage": 1134,
      "spell_maximum_base_fire_damage": 1701,
      "_cost": {
-      "Mana": 160.0
+      "ManaPerSecond": 160.0
      }
     },
     "32": {
      "spell_minimum_base_fire_damage": 1309,
      "spell_maximum_base_fire_damage": 1963,
      "_cost": {
-      "Mana": 174.7
+      "ManaPerSecond": 174.7
      }
     },
     "33": {
      "spell_minimum_base_fire_damage": 1511,
      "spell_maximum_base_fire_damage": 2267,
      "_cost": {
-      "Mana": 190.7
+      "ManaPerSecond": 190.7
      }
     },
     "34": {
      "spell_minimum_base_fire_damage": 1747,
      "spell_maximum_base_fire_damage": 2620,
      "_cost": {
-      "Mana": 208.1
+      "ManaPerSecond": 208.1
      }
     },
     "35": {
      "spell_minimum_base_fire_damage": 2021,
      "spell_maximum_base_fire_damage": 3031,
      "_cost": {
-      "Mana": 226.9
+      "ManaPerSecond": 226.9
      }
     },
     "36": {
      "spell_minimum_base_fire_damage": 2341,
      "spell_maximum_base_fire_damage": 3512,
      "_cost": {
-      "Mana": 247.2
+      "ManaPerSecond": 247.2
      }
     },
     "37": {
      "spell_minimum_base_fire_damage": 2715,
      "spell_maximum_base_fire_damage": 4073,
      "_cost": {
-      "Mana": 269.3
+      "ManaPerSecond": 269.3
      }
     },
     "38": {
      "spell_minimum_base_fire_damage": 3153,
      "spell_maximum_base_fire_damage": 4729,
      "_cost": {
-      "Mana": 293.1
+      "ManaPerSecond": 293.1
      }
     },
     "39": {
      "spell_minimum_base_fire_damage": 3665,
      "spell_maximum_base_fire_damage": 5498,
      "_cost": {
-      "Mana": 318.9
+      "ManaPerSecond": 318.9
      }
     },
     "40": {
      "spell_minimum_base_fire_damage": 4267,
      "spell_maximum_base_fire_damage": 6400,
      "_cost": {
-      "Mana": 346.9
+      "ManaPerSecond": 346.9
      }
     }
    },
@@ -54911,7 +54975,8 @@
   "Freeze": {
    "cast_time_ms": 0,
    "constant": {
-    "support_hypothermia_hit_damage_freeze_multiplier_+%_final": 50
+    "support_hypothermia_hit_damage_freeze_multiplier_+%_final": 50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -54928,7 +54993,8 @@
   "Shock": {
    "cast_time_ms": 0,
    "constant": {
-    "support_conduction_chance_to_shock_+%_final": 100
+    "support_conduction_chance_to_shock_+%_final": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58720,7 +58786,8 @@
   "Wildfire": {
    "cast_time_ms": 0,
    "constant": {
-    "support_ignite_proliferation_radius": 15
+    "support_ignite_proliferation_radius": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {},
@@ -58776,7 +58843,8 @@
   "Bleed I": {
    "cast_time_ms": 0,
    "constant": {
-    "base_chance_to_inflict_bleeding_%": 50
+    "base_chance_to_inflict_bleeding_%": 50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58848,7 +58916,8 @@
   "Poison I": {
    "cast_time_ms": 0,
    "constant": {
-    "base_chance_to_poison_on_hit_%": 40
+    "base_chance_to_poison_on_hit_%": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58865,7 +58934,8 @@
   "Poison II": {
    "cast_time_ms": 0,
    "constant": {
-    "base_chance_to_poison_on_hit_%": 60
+    "base_chance_to_poison_on_hit_%": 60,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58883,7 +58953,8 @@
    "cast_time_ms": 0,
    "constant": {
     "base_chance_to_poison_on_hit_%": 60,
-    "mixed_maladies_poison_effect_+%_final_vs_bleeding": 20
+    "mixed_maladies_poison_effect_+%_final_vs_bleeding": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58957,7 +59028,8 @@
   "Brutality I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_brutality_physical_damage_+%_final": 25
+    "support_brutality_physical_damage_+%_final": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58974,7 +59046,8 @@
   "Brutality II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_brutality_physical_damage_+%_final": 30
+    "support_brutality_physical_damage_+%_final": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -58992,7 +59065,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_brutality_physical_damage_+%_final": 30,
-    "hits_ignore_enemy_monster_physical_damage_reduction_%_chance": 20
+    "hits_ignore_enemy_monster_physical_damage_reduction_%_chance": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -59010,7 +59084,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_momentum_distance_travelled_to_gain_momentum": 20,
-    "support_momnetum_damage_+%_final_with_momentum": 40
+    "support_momnetum_damage_+%_final_with_momentum": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -59492,7 +59567,8 @@
    "constant": {
     "base_maximum_seals_for_skill": 3,
     "support_%_of_total_cast_time_as_base_skill_seal_gain_interval": 200,
-    "skill_area_of_effect_+%_per_broken_seal": 30
+    "skill_area_of_effect_+%_per_broken_seal": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -59509,7 +59585,8 @@
   "Close Combat I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_close_combat_attack_damage_+%_final_from_distance": 20
+    "support_close_combat_attack_damage_+%_final_from_distance": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -59526,7 +59603,8 @@
   "Close Combat II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_close_combat_attack_damage_+%_final_from_distance": 30
+    "support_close_combat_attack_damage_+%_final_from_distance": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -60267,7 +60345,8 @@
   "Second Wind I": {
    "cast_time_ms": 0,
    "constant": {
-    "base_cooldown_speed_+%_final": -50
+    "base_cooldown_speed_+%_final": -50,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -60284,7 +60363,8 @@
   "Second Wind II": {
    "cast_time_ms": 0,
    "constant": {
-    "base_cooldown_speed_+%_final": -40
+    "base_cooldown_speed_+%_final": -40,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -60302,7 +60382,8 @@
    "cast_time_ms": 0,
    "constant": {
     "base_cooldown_speed_+%_final": -40,
-    "restore_%_life_on_skill_use_per_1000_ms_cooldown": 1
+    "restore_%_life_on_skill_use_per_1000_ms_cooldown": 1,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -61410,7 +61491,9 @@
   },
   "Impending Doom": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 130
+   },
    "levels": {
     "1": {}
    },
@@ -61827,7 +61910,8 @@
   "Execute I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_executioner_damage_vs_enemies_on_low_life_+%_final": 40
+    "support_executioner_damage_vs_enemies_on_low_life_+%_final": 40,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -61844,7 +61928,8 @@
   "Execute II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_executioner_damage_vs_enemies_on_low_life_+%_final": 50
+    "support_executioner_damage_vs_enemies_on_low_life_+%_final": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -61862,7 +61947,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_executioner_damage_vs_enemies_on_low_life_+%_final": 30,
-    "support_executioner_damage_+%_final_while_on_low_life": 30
+    "support_executioner_damage_+%_final_while_on_low_life": 30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -66840,240 +66926,240 @@
     "1": {
      "_base_multiplier": 7000,
      "_cost": {
-      "Mana": 7.9
+      "ManaPerSecond": 7.9
      }
     },
     "2": {
      "_base_multiplier": 7700,
      "_cost": {
-      "Mana": 9.1
+      "ManaPerSecond": 9.1
      }
     },
     "3": {
      "_base_multiplier": 8500,
      "_cost": {
-      "Mana": 10.5
+      "ManaPerSecond": 10.5
      }
     },
     "4": {
      "_base_multiplier": 9300,
      "_cost": {
-      "Mana": 11.9
+      "ManaPerSecond": 11.9
      }
     },
     "5": {
      "_cost": {
-      "Mana": 13.4
+      "ManaPerSecond": 13.4
      }
     },
     "6": {
      "_base_multiplier": 10800,
      "_cost": {
-      "Mana": 15.1
+      "ManaPerSecond": 15.1
      }
     },
     "7": {
      "_base_multiplier": 11600,
      "_cost": {
-      "Mana": 16.8
+      "ManaPerSecond": 16.8
      }
     },
     "8": {
      "_base_multiplier": 12400,
      "_cost": {
-      "Mana": 18.7
+      "ManaPerSecond": 18.7
      }
     },
     "9": {
      "_base_multiplier": 13100,
      "_cost": {
-      "Mana": 20.6
+      "ManaPerSecond": 20.6
      }
     },
     "10": {
      "_base_multiplier": 13800,
      "_cost": {
-      "Mana": 22.8
+      "ManaPerSecond": 22.8
      }
     },
     "11": {
      "_base_multiplier": 14600,
      "_cost": {
-      "Mana": 25.1
+      "ManaPerSecond": 25.1
      }
     },
     "12": {
      "_base_multiplier": 15500,
      "_cost": {
-      "Mana": 27.5
+      "ManaPerSecond": 27.5
      }
     },
     "13": {
      "_base_multiplier": 16400,
      "_cost": {
-      "Mana": 30.1
+      "ManaPerSecond": 30.1
      }
     },
     "14": {
      "_base_multiplier": 17400,
      "_cost": {
-      "Mana": 32.8
+      "ManaPerSecond": 32.8
      }
     },
     "15": {
      "_base_multiplier": 18500,
      "_cost": {
-      "Mana": 35.7
+      "ManaPerSecond": 35.7
      }
     },
     "16": {
      "_base_multiplier": 19700,
      "_cost": {
-      "Mana": 38.8
+      "ManaPerSecond": 38.8
      }
     },
     "17": {
      "_base_multiplier": 20900,
      "_cost": {
-      "Mana": 42.1
+      "ManaPerSecond": 42.1
      }
     },
     "18": {
      "_base_multiplier": 22300,
      "_cost": {
-      "Mana": 45.7
+      "ManaPerSecond": 45.7
      }
     },
     "19": {
      "_base_multiplier": 23800,
      "_cost": {
-      "Mana": 49.4
+      "ManaPerSecond": 49.4
      }
     },
     "20": {
      "_base_multiplier": 25400,
      "_cost": {
-      "Mana": 53.4
+      "ManaPerSecond": 53.4
      }
     },
     "21": {
      "_base_multiplier": 27000,
      "_cost": {
-      "Mana": 57.6
+      "ManaPerSecond": 57.6
      }
     },
     "22": {
      "_base_multiplier": 28800,
      "_cost": {
-      "Mana": 62.1
+      "ManaPerSecond": 62.1
      }
     },
     "23": {
      "_base_multiplier": 30800,
      "_cost": {
-      "Mana": 66.8
+      "ManaPerSecond": 66.8
      }
     },
     "24": {
      "_base_multiplier": 32800,
      "_cost": {
-      "Mana": 71.9
+      "ManaPerSecond": 71.9
      }
     },
     "25": {
      "_base_multiplier": 35000,
      "_cost": {
-      "Mana": 77.2
+      "ManaPerSecond": 77.2
      }
     },
     "26": {
      "_base_multiplier": 37300,
      "_cost": {
-      "Mana": 82.9
+      "ManaPerSecond": 82.9
      }
     },
     "27": {
      "_base_multiplier": 39800,
      "_cost": {
-      "Mana": 89.0
+      "ManaPerSecond": 89.0
      }
     },
     "28": {
      "_base_multiplier": 42500,
      "_cost": {
-      "Mana": 95.3
+      "ManaPerSecond": 95.3
      }
     },
     "29": {
      "_base_multiplier": 45300,
      "_cost": {
-      "Mana": 102.1
+      "ManaPerSecond": 102.1
      }
     },
     "30": {
      "_base_multiplier": 48300,
      "_cost": {
-      "Mana": 109.2
+      "ManaPerSecond": 109.2
      }
     },
     "31": {
      "_base_multiplier": 51500,
      "_cost": {
-      "Mana": 116.8
+      "ManaPerSecond": 116.8
      }
     },
     "32": {
      "_base_multiplier": 55000,
      "_cost": {
-      "Mana": 124.8
+      "ManaPerSecond": 124.8
      }
     },
     "33": {
      "_base_multiplier": 58600,
      "_cost": {
-      "Mana": 133.3
+      "ManaPerSecond": 133.3
      }
     },
     "34": {
      "_base_multiplier": 62500,
      "_cost": {
-      "Mana": 142.3
+      "ManaPerSecond": 142.3
      }
     },
     "35": {
      "_base_multiplier": 66700,
      "_cost": {
-      "Mana": 151.8
+      "ManaPerSecond": 151.8
      }
     },
     "36": {
      "_base_multiplier": 71200,
      "_cost": {
-      "Mana": 161.8
+      "ManaPerSecond": 161.8
      }
     },
     "37": {
      "_base_multiplier": 75900,
      "_cost": {
-      "Mana": 172.5
+      "ManaPerSecond": 172.5
      }
     },
     "38": {
      "_base_multiplier": 80900,
      "_cost": {
-      "Mana": 183.7
+      "ManaPerSecond": 183.7
      }
     },
     "39": {
      "_base_multiplier": 86300,
      "_cost": {
-      "Mana": 195.6
+      "ManaPerSecond": 195.6
      }
     },
     "40": {
      "_base_multiplier": 92100,
      "_cost": {
-      "Mana": 208.1
+      "ManaPerSecond": 208.1
      }
     }
    },
@@ -68108,7 +68194,8 @@
    "constant": {
     "support_consume_X_endurance_charges_on_use": 1,
     "support_jagged_ground_base_duration_ms": 4000,
-    "support_create_jagged_ground_if_consumed_endurance_charge": 1
+    "support_create_jagged_ground_if_consumed_endurance_charge": 1,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -68125,7 +68212,8 @@
   "Jagged Ground II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_jagged_ground_base_duration_ms": 4000
+    "support_jagged_ground_base_duration_ms": 4000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -68143,7 +68231,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_inevitable_criticals_critical_strike_chance_+%_per_second": 10,
-    "support_inevitable_criticals_critical_strike_chance_+%_cap": 100
+    "support_inevitable_criticals_critical_strike_chance_+%_cap": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -68163,7 +68252,8 @@
     "support_inevitable_criticals_critical_strike_chance_+%_per_second": 40,
     "support_inevitable_criticals_critical_strike_chance_+%_cap": 200,
     "support_inevitable_criticals_critical_strike_multiplier_+%_final_per_second": -10,
-    "support_inevitable_criticals_critical_strike_multiplier_+%_final_cap": -50
+    "support_inevitable_criticals_critical_strike_multiplier_+%_final_cap": -50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -68217,7 +68307,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_ancestral_slam_big_hit_max_count": 1,
-    "ancestral_slam_interval_duration": 6000
+    "ancestral_slam_interval_duration": 6000,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -68235,7 +68326,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_ancestral_slam_big_hit_max_count": 1,
-    "ancestral_slam_interval_duration": 4000
+    "ancestral_slam_interval_duration": 4000,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -68253,7 +68345,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_ancestral_slam_big_hit_max_count": 1,
-    "ancestral_slam_interval_duration": 14000
+    "ancestral_slam_interval_duration": 14000,
+    "_cost_multiplier": 200
    },
    "levels": {
     "1": {}
@@ -68270,7 +68363,8 @@
   "Prolonged Duration I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_more_duration_skill_effect_duration_+%_final": 30
+    "support_more_duration_skill_effect_duration_+%_final": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {},
@@ -68289,7 +68383,8 @@
   "Prolonged Duration II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_more_duration_skill_effect_duration_+%_final": 35
+    "support_more_duration_skill_effect_duration_+%_final": 35,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -68326,7 +68421,8 @@
   "Hex Bloom": {
    "cast_time_ms": 0,
    "constant": {
-    "transfer_hexes_to_X_nearby_enemies_on_kill": 1
+    "transfer_hexes_to_X_nearby_enemies_on_kill": 1,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -69434,7 +69530,7 @@
     "mana_tempest_effects_linger_X_ms": 2000,
     "_cooldown_ms": 1000,
     "_cost": {
-     "ManaPercent": 1.0
+     "ManaPercentPerSecond": 1.0
     },
     "_stored_uses": 1
    },
@@ -70310,280 +70406,320 @@
      "spell_minimum_base_fire_damage": 4,
      "spell_maximum_base_fire_damage": 6,
      "_cost": {
-      "Mana": 6.0
+      "Mana": 7,
+      "ManaPerSecond": 6.0
      }
     },
     "2": {
      "spell_minimum_base_fire_damage": 5,
      "spell_maximum_base_fire_damage": 8,
      "_cost": {
-      "Mana": 7.1
+      "Mana": 8,
+      "ManaPerSecond": 7.1
      }
     },
     "3": {
      "spell_minimum_base_fire_damage": 7,
      "spell_maximum_base_fire_damage": 11,
      "_cost": {
-      "Mana": 8.3
+      "Mana": 9,
+      "ManaPerSecond": 8.3
      }
     },
     "4": {
      "spell_minimum_base_fire_damage": 10,
      "spell_maximum_base_fire_damage": 14,
      "_cost": {
-      "Mana": 9.6
+      "Mana": 11,
+      "ManaPerSecond": 9.6
      }
     },
     "5": {
      "spell_minimum_base_fire_damage": 12,
      "spell_maximum_base_fire_damage": 18,
      "_cost": {
-      "Mana": 11.1
+      "Mana": 13,
+      "ManaPerSecond": 11.1
      }
     },
     "6": {
      "spell_minimum_base_fire_damage": 15,
      "spell_maximum_base_fire_damage": 22,
      "_cost": {
-      "Mana": 12.7
+      "Mana": 15,
+      "ManaPerSecond": 12.7
      }
     },
     "7": {
      "spell_minimum_base_fire_damage": 18,
      "spell_maximum_base_fire_damage": 27,
      "_cost": {
-      "Mana": 14.5
+      "Mana": 17,
+      "ManaPerSecond": 14.5
      }
     },
     "8": {
      "spell_minimum_base_fire_damage": 22,
      "spell_maximum_base_fire_damage": 32,
      "_cost": {
-      "Mana": 16.5
+      "Mana": 19,
+      "ManaPerSecond": 16.5
      }
     },
     "9": {
      "spell_minimum_base_fire_damage": 26,
      "spell_maximum_base_fire_damage": 38,
      "_cost": {
-      "Mana": 18.7
+      "Mana": 22,
+      "ManaPerSecond": 18.7
      }
     },
     "10": {
      "spell_minimum_base_fire_damage": 30,
      "spell_maximum_base_fire_damage": 45,
      "_cost": {
-      "Mana": 21.0
+      "Mana": 25,
+      "ManaPerSecond": 21.0
      }
     },
     "11": {
      "spell_minimum_base_fire_damage": 35,
      "spell_maximum_base_fire_damage": 53,
      "_cost": {
-      "Mana": 23.6
+      "Mana": 28,
+      "ManaPerSecond": 23.6
      }
     },
     "12": {
      "spell_minimum_base_fire_damage": 41,
      "spell_maximum_base_fire_damage": 61,
      "_cost": {
-      "Mana": 26.5
+      "Mana": 31,
+      "ManaPerSecond": 26.5
      }
     },
     "13": {
      "spell_minimum_base_fire_damage": 47,
      "spell_maximum_base_fire_damage": 71,
      "_cost": {
-      "Mana": 29.6
+      "Mana": 35,
+      "ManaPerSecond": 29.6
      }
     },
     "14": {
      "spell_minimum_base_fire_damage": 54,
      "spell_maximum_base_fire_damage": 81,
      "_cost": {
-      "Mana": 33.0
+      "Mana": 39,
+      "ManaPerSecond": 33.0
      }
     },
     "15": {
      "spell_minimum_base_fire_damage": 62,
      "spell_maximum_base_fire_damage": 94,
      "_cost": {
-      "Mana": 36.8
+      "Mana": 44,
+      "ManaPerSecond": 36.8
      }
     },
     "16": {
      "spell_minimum_base_fire_damage": 71,
      "spell_maximum_base_fire_damage": 107,
      "_cost": {
-      "Mana": 40.9
+      "Mana": 49,
+      "ManaPerSecond": 40.9
      }
     },
     "17": {
      "spell_minimum_base_fire_damage": 82,
      "spell_maximum_base_fire_damage": 122,
      "_cost": {
-      "Mana": 45.4
+      "Mana": 54,
+      "ManaPerSecond": 45.4
      }
     },
     "18": {
      "spell_minimum_base_fire_damage": 93,
      "spell_maximum_base_fire_damage": 140,
      "_cost": {
-      "Mana": 50.2
+      "Mana": 60,
+      "ManaPerSecond": 50.2
      }
     },
     "19": {
      "spell_minimum_base_fire_damage": 106,
      "spell_maximum_base_fire_damage": 159,
      "_cost": {
-      "Mana": 55.5
+      "Mana": 66,
+      "ManaPerSecond": 55.5
      }
     },
     "20": {
      "spell_minimum_base_fire_damage": 121,
      "spell_maximum_base_fire_damage": 181,
      "_cost": {
-      "Mana": 61.3
+      "Mana": 73,
+      "ManaPerSecond": 61.3
      }
     },
     "21": {
      "spell_minimum_base_fire_damage": 137,
      "spell_maximum_base_fire_damage": 206,
      "_cost": {
-      "Mana": 67.7
+      "Mana": 81,
+      "ManaPerSecond": 67.7
      }
     },
     "22": {
      "spell_minimum_base_fire_damage": 156,
      "spell_maximum_base_fire_damage": 234,
      "_cost": {
-      "Mana": 74.5
+      "Mana": 89,
+      "ManaPerSecond": 74.5
      }
     },
     "23": {
      "spell_minimum_base_fire_damage": 177,
      "spell_maximum_base_fire_damage": 266,
      "_cost": {
-      "Mana": 82.0
+      "Mana": 98,
+      "ManaPerSecond": 82.0
      }
     },
     "24": {
      "spell_minimum_base_fire_damage": 201,
      "spell_maximum_base_fire_damage": 302,
      "_cost": {
-      "Mana": 90.2
+      "Mana": 108,
+      "ManaPerSecond": 90.2
      }
     },
     "25": {
      "spell_minimum_base_fire_damage": 229,
      "spell_maximum_base_fire_damage": 343,
      "_cost": {
-      "Mana": 99.0
+      "Mana": 118,
+      "ManaPerSecond": 99.0
      }
     },
     "26": {
      "spell_minimum_base_fire_damage": 260,
      "spell_maximum_base_fire_damage": 390,
      "_cost": {
-      "Mana": 108.6
+      "Mana": 130,
+      "ManaPerSecond": 108.6
      }
     },
     "27": {
      "spell_minimum_base_fire_damage": 295,
      "spell_maximum_base_fire_damage": 443,
      "_cost": {
-      "Mana": 119.1
+      "Mana": 142,
+      "ManaPerSecond": 119.1
      }
     },
     "28": {
      "spell_minimum_base_fire_damage": 335,
      "spell_maximum_base_fire_damage": 503,
      "_cost": {
-      "Mana": 130.4
+      "Mana": 156,
+      "ManaPerSecond": 130.4
      }
     },
     "29": {
      "spell_minimum_base_fire_damage": 381,
      "spell_maximum_base_fire_damage": 571,
      "_cost": {
-      "Mana": 142.8
+      "Mana": 171,
+      "ManaPerSecond": 142.8
      }
     },
     "30": {
      "spell_minimum_base_fire_damage": 433,
      "spell_maximum_base_fire_damage": 649,
      "_cost": {
-      "Mana": 156.1
+      "Mana": 187,
+      "ManaPerSecond": 156.1
      }
     },
     "31": {
      "spell_minimum_base_fire_damage": 492,
      "spell_maximum_base_fire_damage": 738,
      "_cost": {
-      "Mana": 170.7
+      "Mana": 204,
+      "ManaPerSecond": 170.7
      }
     },
     "32": {
      "spell_minimum_base_fire_damage": 560,
      "spell_maximum_base_fire_damage": 840,
      "_cost": {
-      "Mana": 186.4
+      "Mana": 223,
+      "ManaPerSecond": 186.4
      }
     },
     "33": {
      "spell_minimum_base_fire_damage": 638,
      "spell_maximum_base_fire_damage": 957,
      "_cost": {
-      "Mana": 203.4
+      "Mana": 244,
+      "ManaPerSecond": 203.4
      }
     },
     "34": {
      "spell_minimum_base_fire_damage": 727,
      "spell_maximum_base_fire_damage": 1090,
      "_cost": {
-      "Mana": 221.9
+      "Mana": 266,
+      "ManaPerSecond": 221.9
      }
     },
     "35": {
      "spell_minimum_base_fire_damage": 829,
      "spell_maximum_base_fire_damage": 1243,
      "_cost": {
-      "Mana": 242.0
+      "Mana": 290,
+      "ManaPerSecond": 242.0
      }
     },
     "36": {
      "spell_minimum_base_fire_damage": 946,
      "spell_maximum_base_fire_damage": 1419,
      "_cost": {
-      "Mana": 263.7
+      "Mana": 316,
+      "ManaPerSecond": 263.7
      }
     },
     "37": {
      "spell_minimum_base_fire_damage": 1080,
      "spell_maximum_base_fire_damage": 1620,
      "_cost": {
-      "Mana": 287.2
+      "Mana": 344,
+      "ManaPerSecond": 287.2
      }
     },
     "38": {
      "spell_minimum_base_fire_damage": 1235,
      "spell_maximum_base_fire_damage": 1853,
      "_cost": {
-      "Mana": 312.7
+      "Mana": 375,
+      "ManaPerSecond": 312.7
      }
     },
     "39": {
      "spell_minimum_base_fire_damage": 1413,
      "spell_maximum_base_fire_damage": 2120,
      "_cost": {
-      "Mana": 340.2
+      "Mana": 408,
+      "ManaPerSecond": 340.2
      }
     },
     "40": {
      "spell_minimum_base_fire_damage": 1619,
      "spell_maximum_base_fire_damage": 2428,
      "_cost": {
-      "Mana": 370.0
+      "Mana": 444,
+      "ManaPerSecond": 370.0
      }
     }
    },
@@ -70784,7 +70920,8 @@
    "cast_time_ms": 0,
    "constant": {
     "chilling_ice_freezing_area_base_radius": 30,
-    "chilling_ice_create_chilled_ground_on_freeze_base_duration_ms": 8000
+    "chilling_ice_create_chilled_ground_on_freeze_base_duration_ms": 8000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -71473,279 +71610,279 @@
      "_base_multiplier": 7500,
      "_cost": {
       "Mana": 14,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "2": {
      "_base_multiplier": 8300,
      "_cost": {
       "Mana": 16,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "3": {
      "_base_multiplier": 9100,
      "_cost": {
       "Mana": 19,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "4": {
      "_cost": {
       "Mana": 21,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "5": {
      "_base_multiplier": 10900,
      "_cost": {
       "Mana": 24,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "6": {
      "_base_multiplier": 11800,
      "_cost": {
       "Mana": 27,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "7": {
      "_base_multiplier": 12700,
      "_cost": {
       "Mana": 30,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "8": {
      "_base_multiplier": 13600,
      "_cost": {
       "Mana": 34,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "9": {
      "_base_multiplier": 14500,
      "_cost": {
       "Mana": 37,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "10": {
      "_base_multiplier": 15400,
      "_cost": {
       "Mana": 41,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "11": {
      "_base_multiplier": 16400,
      "_cost": {
       "Mana": 45,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "12": {
      "_base_multiplier": 17500,
      "_cost": {
       "Mana": 50,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "13": {
      "_base_multiplier": 18700,
      "_cost": {
       "Mana": 54,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "14": {
      "_base_multiplier": 20000,
      "_cost": {
       "Mana": 59,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "15": {
      "_base_multiplier": 21400,
      "_cost": {
       "Mana": 65,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "16": {
      "_base_multiplier": 22900,
      "_cost": {
       "Mana": 70,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "17": {
      "_base_multiplier": 24600,
      "_cost": {
       "Mana": 76,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "18": {
      "_base_multiplier": 26400,
      "_cost": {
       "Mana": 83,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "19": {
      "_base_multiplier": 28400,
      "_cost": {
       "Mana": 90,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "20": {
      "_base_multiplier": 30600,
      "_cost": {
       "Mana": 97,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "21": {
      "_base_multiplier": 33000,
      "_cost": {
       "Mana": 104,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "22": {
      "_base_multiplier": 35500,
      "_cost": {
       "Mana": 113,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "23": {
      "_base_multiplier": 38300,
      "_cost": {
       "Mana": 121,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "24": {
      "_base_multiplier": 41200,
      "_cost": {
       "Mana": 131,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "25": {
      "_base_multiplier": 44400,
      "_cost": {
       "Mana": 140,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "26": {
      "_base_multiplier": 47900,
      "_cost": {
       "Mana": 151,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "27": {
      "_base_multiplier": 51600,
      "_cost": {
       "Mana": 162,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "28": {
      "_base_multiplier": 55600,
      "_cost": {
       "Mana": 173,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "29": {
      "_base_multiplier": 59800,
      "_cost": {
       "Mana": 186,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "30": {
      "_base_multiplier": 64500,
      "_cost": {
       "Mana": 199,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "31": {
      "_base_multiplier": 69500,
      "_cost": {
       "Mana": 212,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "32": {
      "_base_multiplier": 74800,
      "_cost": {
       "Mana": 227,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "33": {
      "_base_multiplier": 80600,
      "_cost": {
       "Mana": 242,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "34": {
      "_base_multiplier": 86800,
      "_cost": {
       "Mana": 259,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "35": {
      "_base_multiplier": 93500,
      "_cost": {
       "Mana": 276,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "36": {
      "_base_multiplier": 100800,
      "_cost": {
       "Mana": 294,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "37": {
      "_base_multiplier": 108600,
      "_cost": {
       "Mana": 314,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "38": {
      "_base_multiplier": 117000,
      "_cost": {
       "Mana": 334,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "39": {
      "_base_multiplier": 126000,
      "_cost": {
       "Mana": 356,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     },
     "40": {
      "_base_multiplier": 135700,
      "_cost": {
       "Mana": 379,
-      "Rage": 5.0
+      "RagePerSecond": 5.0
      }
     }
    },
@@ -71805,7 +71942,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_%_chance_to_shock_nearby_enemy_on_shock": 50,
-    "shock_nearby_enemy_base_area_of_effect_radius": 25
+    "shock_nearby_enemy_base_area_of_effect_radius": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -71822,7 +71960,8 @@
   "Deep Freeze": {
    "cast_time_ms": 0,
    "constant": {
-    "freeze_duration_+%": 50
+    "freeze_duration_+%": 50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72236,7 +72375,8 @@
   "Ignite I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_ignition_chance_to_ignite_+%_final": 100
+    "support_ignition_chance_to_ignite_+%_final": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72253,7 +72393,8 @@
   "Ignite II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_ignition_chance_to_ignite_+%_final": 150
+    "support_ignition_chance_to_ignite_+%_final": 150,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72271,7 +72412,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_ignition_chance_to_ignite_+%_final": 200,
-    "faster_burn_%": 15
+    "faster_burn_%": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72325,7 +72467,8 @@
    "cast_time_ms": 0,
    "constant": {
     "ignite_duration_+%": 100,
-    "support_eternal_flame_chance_to_ignite_+%_final": -25
+    "support_eternal_flame_chance_to_ignite_+%_final": -25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72342,7 +72485,8 @@
   "Eternal Flame II": {
    "cast_time_ms": 0,
    "constant": {
-    "ignite_duration_+%": 100
+    "ignite_duration_+%": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -72359,7 +72503,8 @@
   "Eternal Flame III": {
    "cast_time_ms": 0,
    "constant": {
-    "refresh_ignite_duration_on_critical_strike_chance_%": 20
+    "refresh_ignite_duration_on_critical_strike_chance_%": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -73311,7 +73456,8 @@
   "Exploit Weakness": {
    "cast_time_ms": 0,
    "constant": {
-    "support_gem_consume_enemy_fully_broken_armour_to_gain_damage_+%_final": 40
+    "support_gem_consume_enemy_fully_broken_armour_to_gain_damage_+%_final": 40,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -78928,280 +79074,280 @@
      "spell_minimum_base_physical_damage": 4,
      "spell_maximum_base_physical_damage": 7,
      "_cost": {
-      "Mana": 5.9
+      "ManaPerSecond": 5.9
      }
     },
     "2": {
      "spell_minimum_base_physical_damage": 6,
      "spell_maximum_base_physical_damage": 9,
      "_cost": {
-      "Mana": 7.0
+      "ManaPerSecond": 7.0
      }
     },
     "3": {
      "spell_minimum_base_physical_damage": 8,
      "spell_maximum_base_physical_damage": 12,
      "_cost": {
-      "Mana": 8.2
+      "ManaPerSecond": 8.2
      }
     },
     "4": {
      "spell_minimum_base_physical_damage": 10,
      "spell_maximum_base_physical_damage": 16,
      "_cost": {
-      "Mana": 9.5
+      "ManaPerSecond": 9.5
      }
     },
     "5": {
      "spell_minimum_base_physical_damage": 13,
      "spell_maximum_base_physical_damage": 20,
      "_cost": {
-      "Mana": 11.0
+      "ManaPerSecond": 11.0
      }
     },
     "6": {
      "spell_minimum_base_physical_damage": 16,
      "spell_maximum_base_physical_damage": 24,
      "_cost": {
-      "Mana": 12.6
+      "ManaPerSecond": 12.6
      }
     },
     "7": {
      "spell_minimum_base_physical_damage": 19,
      "spell_maximum_base_physical_damage": 29,
      "_cost": {
-      "Mana": 14.3
+      "ManaPerSecond": 14.3
      }
     },
     "8": {
      "spell_minimum_base_physical_damage": 23,
      "spell_maximum_base_physical_damage": 34,
      "_cost": {
-      "Mana": 16.3
+      "ManaPerSecond": 16.3
      }
     },
     "9": {
      "spell_minimum_base_physical_damage": 27,
      "spell_maximum_base_physical_damage": 40,
      "_cost": {
-      "Mana": 18.4
+      "ManaPerSecond": 18.4
      }
     },
     "10": {
      "spell_minimum_base_physical_damage": 31,
      "spell_maximum_base_physical_damage": 47,
      "_cost": {
-      "Mana": 20.8
+      "ManaPerSecond": 20.8
      }
     },
     "11": {
      "spell_minimum_base_physical_damage": 36,
      "spell_maximum_base_physical_damage": 55,
      "_cost": {
-      "Mana": 23.4
+      "ManaPerSecond": 23.4
      }
     },
     "12": {
      "spell_minimum_base_physical_damage": 42,
      "spell_maximum_base_physical_damage": 63,
      "_cost": {
-      "Mana": 26.2
+      "ManaPerSecond": 26.2
      }
     },
     "13": {
      "spell_minimum_base_physical_damage": 48,
      "spell_maximum_base_physical_damage": 72,
      "_cost": {
-      "Mana": 29.2
+      "ManaPerSecond": 29.2
      }
     },
     "14": {
      "spell_minimum_base_physical_damage": 55,
      "spell_maximum_base_physical_damage": 83,
      "_cost": {
-      "Mana": 32.6
+      "ManaPerSecond": 32.6
      }
     },
     "15": {
      "spell_minimum_base_physical_damage": 63,
      "spell_maximum_base_physical_damage": 94,
      "_cost": {
-      "Mana": 36.3
+      "ManaPerSecond": 36.3
      }
     },
     "16": {
      "spell_minimum_base_physical_damage": 71,
      "spell_maximum_base_physical_damage": 107,
      "_cost": {
-      "Mana": 40.4
+      "ManaPerSecond": 40.4
      }
     },
     "17": {
      "spell_minimum_base_physical_damage": 81,
      "spell_maximum_base_physical_damage": 121,
      "_cost": {
-      "Mana": 44.8
+      "ManaPerSecond": 44.8
      }
     },
     "18": {
      "spell_minimum_base_physical_damage": 91,
      "spell_maximum_base_physical_damage": 137,
      "_cost": {
-      "Mana": 49.6
+      "ManaPerSecond": 49.6
      }
     },
     "19": {
      "spell_minimum_base_physical_damage": 103,
      "spell_maximum_base_physical_damage": 155,
      "_cost": {
-      "Mana": 54.9
+      "ManaPerSecond": 54.9
      }
     },
     "20": {
      "spell_minimum_base_physical_damage": 116,
      "spell_maximum_base_physical_damage": 175,
      "_cost": {
-      "Mana": 60.6
+      "ManaPerSecond": 60.6
      }
     },
     "21": {
      "spell_minimum_base_physical_damage": 131,
      "spell_maximum_base_physical_damage": 197,
      "_cost": {
-      "Mana": 66.8
+      "ManaPerSecond": 66.8
      }
     },
     "22": {
      "spell_minimum_base_physical_damage": 148,
      "spell_maximum_base_physical_damage": 221,
      "_cost": {
-      "Mana": 73.6
+      "ManaPerSecond": 73.6
      }
     },
     "23": {
      "spell_minimum_base_physical_damage": 166,
      "spell_maximum_base_physical_damage": 249,
      "_cost": {
-      "Mana": 81.0
+      "ManaPerSecond": 81.0
      }
     },
     "24": {
      "spell_minimum_base_physical_damage": 187,
      "spell_maximum_base_physical_damage": 280,
      "_cost": {
-      "Mana": 89.0
+      "ManaPerSecond": 89.0
      }
     },
     "25": {
      "spell_minimum_base_physical_damage": 210,
      "spell_maximum_base_physical_damage": 315,
      "_cost": {
-      "Mana": 97.8
+      "ManaPerSecond": 97.8
      }
     },
     "26": {
      "spell_minimum_base_physical_damage": 236,
      "spell_maximum_base_physical_damage": 353,
      "_cost": {
-      "Mana": 107.2
+      "ManaPerSecond": 107.2
      }
     },
     "27": {
      "spell_minimum_base_physical_damage": 264,
      "spell_maximum_base_physical_damage": 397,
      "_cost": {
-      "Mana": 117.6
+      "ManaPerSecond": 117.6
      }
     },
     "28": {
      "spell_minimum_base_physical_damage": 297,
      "spell_maximum_base_physical_damage": 445,
      "_cost": {
-      "Mana": 128.8
+      "ManaPerSecond": 128.8
      }
     },
     "29": {
      "spell_minimum_base_physical_damage": 333,
      "spell_maximum_base_physical_damage": 500,
      "_cost": {
-      "Mana": 141.0
+      "ManaPerSecond": 141.0
      }
     },
     "30": {
      "spell_minimum_base_physical_damage": 374,
      "spell_maximum_base_physical_damage": 562,
      "_cost": {
-      "Mana": 154.2
+      "ManaPerSecond": 154.2
      }
     },
     "31": {
      "spell_minimum_base_physical_damage": 421,
      "spell_maximum_base_physical_damage": 631,
      "_cost": {
-      "Mana": 168.5
+      "ManaPerSecond": 168.5
      }
     },
     "32": {
      "spell_minimum_base_physical_damage": 473,
      "spell_maximum_base_physical_damage": 709,
      "_cost": {
-      "Mana": 184.1
+      "ManaPerSecond": 184.1
      }
     },
     "33": {
      "spell_minimum_base_physical_damage": 531,
      "spell_maximum_base_physical_damage": 797,
      "_cost": {
-      "Mana": 200.9
+      "ManaPerSecond": 200.9
      }
     },
     "34": {
      "spell_minimum_base_physical_damage": 597,
      "spell_maximum_base_physical_damage": 896,
      "_cost": {
-      "Mana": 219.2
+      "ManaPerSecond": 219.2
      }
     },
     "35": {
      "spell_minimum_base_physical_damage": 672,
      "spell_maximum_base_physical_damage": 1008,
      "_cost": {
-      "Mana": 239.0
+      "ManaPerSecond": 239.0
      }
     },
     "36": {
      "spell_minimum_base_physical_damage": 756,
      "spell_maximum_base_physical_damage": 1134,
      "_cost": {
-      "Mana": 260.4
+      "ManaPerSecond": 260.4
      }
     },
     "37": {
      "spell_minimum_base_physical_damage": 851,
      "spell_maximum_base_physical_damage": 1277,
      "_cost": {
-      "Mana": 283.6
+      "ManaPerSecond": 283.6
      }
     },
     "38": {
      "spell_minimum_base_physical_damage": 959,
      "spell_maximum_base_physical_damage": 1439,
      "_cost": {
-      "Mana": 308.8
+      "ManaPerSecond": 308.8
      }
     },
     "39": {
      "spell_minimum_base_physical_damage": 1082,
      "spell_maximum_base_physical_damage": 1623,
      "_cost": {
-      "Mana": 336.0
+      "ManaPerSecond": 336.0
      }
     },
     "40": {
      "spell_minimum_base_physical_damage": 1220,
      "spell_maximum_base_physical_damage": 1831,
      "_cost": {
-      "Mana": 365.4
+      "ManaPerSecond": 365.4
      }
     }
    },
@@ -79615,7 +79761,9 @@
     "charge_skip_consume_chance_%": 25
    },
    "levels": {
-    "1": {},
+    "1": {
+     "_cost_multiplier": 130
+    },
     "2": {},
     "3": {}
    },
@@ -79631,7 +79779,8 @@
   "Corrosion": {
    "cast_time_ms": 0,
    "constant": {
-    "armour_break_for_%_of_poison_damage_over_poison_duration": 80
+    "armour_break_for_%_of_poison_damage_over_poison_duration": 80,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -80098,241 +80247,241 @@
     "1": {
      "_base_multiplier": 5300,
      "_cost": {
-      "Mana": 6.8
+      "ManaPerSecond": 6.8
      }
     },
     "2": {
      "_base_multiplier": 5800,
      "_cost": {
-      "Mana": 7.9
+      "ManaPerSecond": 7.9
      }
     },
     "3": {
      "_base_multiplier": 6400,
      "_cost": {
-      "Mana": 9.0
+      "ManaPerSecond": 9.0
      }
     },
     "4": {
      "_base_multiplier": 7000,
      "_cost": {
-      "Mana": 10.3
+      "ManaPerSecond": 10.3
      }
     },
     "5": {
      "_base_multiplier": 7600,
      "_cost": {
-      "Mana": 11.6
+      "ManaPerSecond": 11.6
      }
     },
     "6": {
      "_base_multiplier": 8200,
      "_cost": {
-      "Mana": 13.0
+      "ManaPerSecond": 13.0
      }
     },
     "7": {
      "_base_multiplier": 8800,
      "_cost": {
-      "Mana": 14.5
+      "ManaPerSecond": 14.5
      }
     },
     "8": {
      "_base_multiplier": 9400,
      "_cost": {
-      "Mana": 16.1
+      "ManaPerSecond": 16.1
      }
     },
     "9": {
      "_base_multiplier": 9900,
      "_cost": {
-      "Mana": 17.8
+      "ManaPerSecond": 17.8
      }
     },
     "10": {
      "_base_multiplier": 10500,
      "_cost": {
-      "Mana": 19.6
+      "ManaPerSecond": 19.6
      }
     },
     "11": {
      "_base_multiplier": 11100,
      "_cost": {
-      "Mana": 21.6
+      "ManaPerSecond": 21.6
      }
     },
     "12": {
      "_base_multiplier": 11700,
      "_cost": {
-      "Mana": 23.7
+      "ManaPerSecond": 23.7
      }
     },
     "13": {
      "_base_multiplier": 12400,
      "_cost": {
-      "Mana": 25.9
+      "ManaPerSecond": 25.9
      }
     },
     "14": {
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 28.3
+      "ManaPerSecond": 28.3
      }
     },
     "15": {
      "_base_multiplier": 14000,
      "_cost": {
-      "Mana": 30.8
+      "ManaPerSecond": 30.8
      }
     },
     "16": {
      "_base_multiplier": 14900,
      "_cost": {
-      "Mana": 33.5
+      "ManaPerSecond": 33.5
      }
     },
     "17": {
      "_base_multiplier": 15900,
      "_cost": {
-      "Mana": 36.4
+      "ManaPerSecond": 36.4
      }
     },
     "18": {
      "_base_multiplier": 16900,
      "_cost": {
-      "Mana": 39.4
+      "ManaPerSecond": 39.4
      }
     },
     "19": {
      "_base_multiplier": 18000,
      "_cost": {
-      "Mana": 42.6
+      "ManaPerSecond": 42.6
      }
     },
     "20": {
      "_base_multiplier": 19200,
      "_cost": {
-      "Mana": 46.1
+      "ManaPerSecond": 46.1
      }
     },
     "21": {
      "_base_multiplier": 20500,
      "_cost": {
-      "Mana": 49.7
+      "ManaPerSecond": 49.7
      }
     },
     "22": {
      "_base_multiplier": 21800,
      "_cost": {
-      "Mana": 53.6
+      "ManaPerSecond": 53.6
      }
     },
     "23": {
      "_base_multiplier": 23300,
      "_cost": {
-      "Mana": 57.7
+      "ManaPerSecond": 57.7
      }
     },
     "24": {
      "_base_multiplier": 24800,
      "_cost": {
-      "Mana": 62.0
+      "ManaPerSecond": 62.0
      }
     },
     "25": {
      "_base_multiplier": 26500,
      "_cost": {
-      "Mana": 66.7
+      "ManaPerSecond": 66.7
      }
     },
     "26": {
      "_base_multiplier": 28300,
      "_cost": {
-      "Mana": 71.6
+      "ManaPerSecond": 71.6
      }
     },
     "27": {
      "_base_multiplier": 30200,
      "_cost": {
-      "Mana": 76.8
+      "ManaPerSecond": 76.8
      }
     },
     "28": {
      "_base_multiplier": 32200,
      "_cost": {
-      "Mana": 82.3
+      "ManaPerSecond": 82.3
      }
     },
     "29": {
      "_base_multiplier": 34300,
      "_cost": {
-      "Mana": 88.1
+      "ManaPerSecond": 88.1
      }
     },
     "30": {
      "_base_multiplier": 36600,
      "_cost": {
-      "Mana": 94.3
+      "ManaPerSecond": 94.3
      }
     },
     "31": {
      "_base_multiplier": 39000,
      "_cost": {
-      "Mana": 100.8
+      "ManaPerSecond": 100.8
      }
     },
     "32": {
      "_base_multiplier": 41600,
      "_cost": {
-      "Mana": 107.7
+      "ManaPerSecond": 107.7
      }
     },
     "33": {
      "_base_multiplier": 44400,
      "_cost": {
-      "Mana": 115.0
+      "ManaPerSecond": 115.0
      }
     },
     "34": {
      "_base_multiplier": 47400,
      "_cost": {
-      "Mana": 122.8
+      "ManaPerSecond": 122.8
      }
     },
     "35": {
      "_base_multiplier": 50500,
      "_cost": {
-      "Mana": 131.0
+      "ManaPerSecond": 131.0
      }
     },
     "36": {
      "_base_multiplier": 53900,
      "_cost": {
-      "Mana": 139.7
+      "ManaPerSecond": 139.7
      }
     },
     "37": {
      "_base_multiplier": 57500,
      "_cost": {
-      "Mana": 148.8
+      "ManaPerSecond": 148.8
      }
     },
     "38": {
      "_base_multiplier": 61300,
      "_cost": {
-      "Mana": 158.5
+      "ManaPerSecond": 158.5
      }
     },
     "39": {
      "_base_multiplier": 65400,
      "_cost": {
-      "Mana": 168.8
+      "ManaPerSecond": 168.8
      }
     },
     "40": {
      "_base_multiplier": 69700,
      "_cost": {
-      "Mana": 179.6
+      "ManaPerSecond": 179.6
      }
     }
    },
@@ -81704,241 +81853,241 @@
    "levels": {
     "1": {
      "_cost": {
-      "Mana": 17.6
+      "ManaPerSecond": 17.6
      }
     },
     "2": {
      "_base_multiplier": 11000,
      "_cost": {
-      "Mana": 20.3
+      "ManaPerSecond": 20.3
      }
     },
     "3": {
      "_base_multiplier": 12100,
      "_cost": {
-      "Mana": 23.2
+      "ManaPerSecond": 23.2
      }
     },
     "4": {
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 26.4
+      "ManaPerSecond": 26.4
      }
     },
     "5": {
      "_base_multiplier": 14200,
      "_cost": {
-      "Mana": 29.8
+      "ManaPerSecond": 29.8
      }
     },
     "6": {
      "_base_multiplier": 15300,
      "_cost": {
-      "Mana": 33.4
+      "ManaPerSecond": 33.4
      }
     },
     "7": {
      "_base_multiplier": 16400,
      "_cost": {
-      "Mana": 37.3
+      "ManaPerSecond": 37.3
      }
     },
     "8": {
      "_base_multiplier": 17400,
      "_cost": {
-      "Mana": 41.5
+      "ManaPerSecond": 41.5
      }
     },
     "9": {
      "_base_multiplier": 18200,
      "_cost": {
-      "Mana": 45.9
+      "ManaPerSecond": 45.9
      }
     },
     "10": {
      "_base_multiplier": 19100,
      "_cost": {
-      "Mana": 50.6
+      "ManaPerSecond": 50.6
      }
     },
     "11": {
      "_base_multiplier": 20100,
      "_cost": {
-      "Mana": 55.6
+      "ManaPerSecond": 55.6
      }
     },
     "12": {
      "_base_multiplier": 21100,
      "_cost": {
-      "Mana": 61.0
+      "ManaPerSecond": 61.0
      }
     },
     "13": {
      "_base_multiplier": 22200,
      "_cost": {
-      "Mana": 66.7
+      "ManaPerSecond": 66.7
      }
     },
     "14": {
      "_base_multiplier": 23300,
      "_cost": {
-      "Mana": 72.8
+      "ManaPerSecond": 72.8
      }
     },
     "15": {
      "_base_multiplier": 24400,
      "_cost": {
-      "Mana": 79.3
+      "ManaPerSecond": 79.3
      }
     },
     "16": {
      "_base_multiplier": 25700,
      "_cost": {
-      "Mana": 86.2
+      "ManaPerSecond": 86.2
      }
     },
     "17": {
      "_base_multiplier": 26900,
      "_cost": {
-      "Mana": 93.6
+      "ManaPerSecond": 93.6
      }
     },
     "18": {
      "_base_multiplier": 28300,
      "_cost": {
-      "Mana": 101.4
+      "ManaPerSecond": 101.4
      }
     },
     "19": {
      "_base_multiplier": 29700,
      "_cost": {
-      "Mana": 109.7
+      "ManaPerSecond": 109.7
      }
     },
     "20": {
      "_base_multiplier": 31200,
      "_cost": {
-      "Mana": 118.6
+      "ManaPerSecond": 118.6
      }
     },
     "21": {
      "_base_multiplier": 32700,
      "_cost": {
-      "Mana": 128.0
+      "ManaPerSecond": 128.0
      }
     },
     "22": {
      "_base_multiplier": 34400,
      "_cost": {
-      "Mana": 137.9
+      "ManaPerSecond": 137.9
      }
     },
     "23": {
      "_base_multiplier": 36100,
      "_cost": {
-      "Mana": 148.5
+      "ManaPerSecond": 148.5
      }
     },
     "24": {
      "_base_multiplier": 37900,
      "_cost": {
-      "Mana": 159.7
+      "ManaPerSecond": 159.7
      }
     },
     "25": {
      "_base_multiplier": 39800,
      "_cost": {
-      "Mana": 171.6
+      "ManaPerSecond": 171.6
      }
     },
     "26": {
      "_base_multiplier": 41800,
      "_cost": {
-      "Mana": 184.2
+      "ManaPerSecond": 184.2
      }
     },
     "27": {
      "_base_multiplier": 43900,
      "_cost": {
-      "Mana": 197.6
+      "ManaPerSecond": 197.6
      }
     },
     "28": {
      "_base_multiplier": 46100,
      "_cost": {
-      "Mana": 211.7
+      "ManaPerSecond": 211.7
      }
     },
     "29": {
      "_base_multiplier": 48400,
      "_cost": {
-      "Mana": 226.7
+      "ManaPerSecond": 226.7
      }
     },
     "30": {
      "_base_multiplier": 50800,
      "_cost": {
-      "Mana": 242.6
+      "ManaPerSecond": 242.6
      }
     },
     "31": {
      "_base_multiplier": 53300,
      "_cost": {
-      "Mana": 259.4
+      "ManaPerSecond": 259.4
      }
     },
     "32": {
      "_base_multiplier": 56000,
      "_cost": {
-      "Mana": 277.2
+      "ManaPerSecond": 277.2
      }
     },
     "33": {
      "_base_multiplier": 58800,
      "_cost": {
-      "Mana": 296.1
+      "ManaPerSecond": 296.1
      }
     },
     "34": {
      "_base_multiplier": 61800,
      "_cost": {
-      "Mana": 316.1
+      "ManaPerSecond": 316.1
      }
     },
     "35": {
      "_base_multiplier": 64800,
      "_cost": {
-      "Mana": 337.1
+      "ManaPerSecond": 337.1
      }
     },
     "36": {
      "_base_multiplier": 68100,
      "_cost": {
-      "Mana": 359.4
+      "ManaPerSecond": 359.4
      }
     },
     "37": {
      "_base_multiplier": 71500,
      "_cost": {
-      "Mana": 383.1
+      "ManaPerSecond": 383.1
      }
     },
     "38": {
      "_base_multiplier": 75100,
      "_cost": {
-      "Mana": 408.0
+      "ManaPerSecond": 408.0
      }
     },
     "39": {
      "_base_multiplier": 78800,
      "_cost": {
-      "Mana": 434.4
+      "ManaPerSecond": 434.4
      }
     },
     "40": {
      "_base_multiplier": 82800,
      "_cost": {
-      "Mana": 462.2
+      "ManaPerSecond": 462.2
      }
     }
    },
@@ -83269,241 +83418,241 @@
     "1": {
      "_base_multiplier": 11000,
      "_cost": {
-      "Mana": 6.2
+      "ManaPerSecond": 6.2
      }
     },
     "2": {
      "_base_multiplier": 12100,
      "_cost": {
-      "Mana": 7.2
+      "ManaPerSecond": 7.2
      }
     },
     "3": {
      "_base_multiplier": 13300,
      "_cost": {
-      "Mana": 8.2
+      "ManaPerSecond": 8.2
      }
     },
     "4": {
      "_base_multiplier": 14500,
      "_cost": {
-      "Mana": 9.3
+      "ManaPerSecond": 9.3
      }
     },
     "5": {
      "_base_multiplier": 15700,
      "_cost": {
-      "Mana": 10.5
+      "ManaPerSecond": 10.5
      }
     },
     "6": {
      "_base_multiplier": 16800,
      "_cost": {
-      "Mana": 11.8
+      "ManaPerSecond": 11.8
      }
     },
     "7": {
      "_base_multiplier": 18000,
      "_cost": {
-      "Mana": 13.2
+      "ManaPerSecond": 13.2
      }
     },
     "8": {
      "_base_multiplier": 19100,
      "_cost": {
-      "Mana": 14.7
+      "ManaPerSecond": 14.7
      }
     },
     "9": {
      "_base_multiplier": 20100,
      "_cost": {
-      "Mana": 16.2
+      "ManaPerSecond": 16.2
      }
     },
     "10": {
      "_base_multiplier": 21100,
      "_cost": {
-      "Mana": 17.9
+      "ManaPerSecond": 17.9
      }
     },
     "11": {
      "_base_multiplier": 22100,
      "_cost": {
-      "Mana": 19.7
+      "ManaPerSecond": 19.7
      }
     },
     "12": {
      "_base_multiplier": 23200,
      "_cost": {
-      "Mana": 21.6
+      "ManaPerSecond": 21.6
      }
     },
     "13": {
      "_base_multiplier": 24400,
      "_cost": {
-      "Mana": 23.6
+      "ManaPerSecond": 23.6
      }
     },
     "14": {
      "_base_multiplier": 25600,
      "_cost": {
-      "Mana": 25.8
+      "ManaPerSecond": 25.8
      }
     },
     "15": {
      "_base_multiplier": 26900,
      "_cost": {
-      "Mana": 28.1
+      "ManaPerSecond": 28.1
      }
     },
     "16": {
      "_base_multiplier": 28200,
      "_cost": {
-      "Mana": 30.5
+      "ManaPerSecond": 30.5
      }
     },
     "17": {
      "_base_multiplier": 29600,
      "_cost": {
-      "Mana": 33.1
+      "ManaPerSecond": 33.1
      }
     },
     "18": {
      "_base_multiplier": 31100,
      "_cost": {
-      "Mana": 35.9
+      "ManaPerSecond": 35.9
      }
     },
     "19": {
      "_base_multiplier": 32700,
      "_cost": {
-      "Mana": 38.8
+      "ManaPerSecond": 38.8
      }
     },
     "20": {
      "_base_multiplier": 34300,
      "_cost": {
-      "Mana": 41.9
+      "ManaPerSecond": 41.9
      }
     },
     "21": {
      "_base_multiplier": 36000,
      "_cost": {
-      "Mana": 45.2
+      "ManaPerSecond": 45.2
      }
     },
     "22": {
      "_base_multiplier": 37800,
      "_cost": {
-      "Mana": 48.8
+      "ManaPerSecond": 48.8
      }
     },
     "23": {
      "_base_multiplier": 39700,
      "_cost": {
-      "Mana": 52.5
+      "ManaPerSecond": 52.5
      }
     },
     "24": {
      "_base_multiplier": 41700,
      "_cost": {
-      "Mana": 56.5
+      "ManaPerSecond": 56.5
      }
     },
     "25": {
      "_base_multiplier": 43800,
      "_cost": {
-      "Mana": 60.7
+      "ManaPerSecond": 60.7
      }
     },
     "26": {
      "_base_multiplier": 46000,
      "_cost": {
-      "Mana": 65.1
+      "ManaPerSecond": 65.1
      }
     },
     "27": {
      "_base_multiplier": 48300,
      "_cost": {
-      "Mana": 69.8
+      "ManaPerSecond": 69.8
      }
     },
     "28": {
      "_base_multiplier": 50700,
      "_cost": {
-      "Mana": 74.8
+      "ManaPerSecond": 74.8
      }
     },
     "29": {
      "_base_multiplier": 53200,
      "_cost": {
-      "Mana": 80.2
+      "ManaPerSecond": 80.2
      }
     },
     "30": {
      "_base_multiplier": 55900,
      "_cost": {
-      "Mana": 85.8
+      "ManaPerSecond": 85.8
      }
     },
     "31": {
      "_base_multiplier": 58700,
      "_cost": {
-      "Mana": 91.7
+      "ManaPerSecond": 91.7
      }
     },
     "32": {
      "_base_multiplier": 61600,
      "_cost": {
-      "Mana": 98.0
+      "ManaPerSecond": 98.0
      }
     },
     "33": {
      "_base_multiplier": 64700,
      "_cost": {
-      "Mana": 104.7
+      "ManaPerSecond": 104.7
      }
     },
     "34": {
      "_base_multiplier": 67900,
      "_cost": {
-      "Mana": 111.8
+      "ManaPerSecond": 111.8
      }
     },
     "35": {
      "_base_multiplier": 71300,
      "_cost": {
-      "Mana": 119.2
+      "ManaPerSecond": 119.2
      }
     },
     "36": {
      "_base_multiplier": 74900,
      "_cost": {
-      "Mana": 127.1
+      "ManaPerSecond": 127.1
      }
     },
     "37": {
      "_base_multiplier": 78600,
      "_cost": {
-      "Mana": 135.4
+      "ManaPerSecond": 135.4
      }
     },
     "38": {
      "_base_multiplier": 82600,
      "_cost": {
-      "Mana": 144.2
+      "ManaPerSecond": 144.2
      }
     },
     "39": {
      "_base_multiplier": 86700,
      "_cost": {
-      "Mana": 153.6
+      "ManaPerSecond": 153.6
      }
     },
     "40": {
      "_base_multiplier": 91000,
      "_cost": {
-      "Mana": 163.4
+      "ManaPerSecond": 163.4
      }
     }
    },
@@ -83545,7 +83694,7 @@
      "off_hand_weapon_maximum_physical_damage": 6,
      "_base_multiplier": 3000,
      "_cost": {
-      "Mana": 7.0
+      "ManaPerSecond": 7.0
      }
     },
     "2": {
@@ -83554,7 +83703,7 @@
      "off_hand_weapon_maximum_physical_damage": 9,
      "_base_multiplier": 3300,
      "_cost": {
-      "Mana": 8.0
+      "ManaPerSecond": 8.0
      }
     },
     "3": {
@@ -83563,7 +83712,7 @@
      "off_hand_weapon_maximum_physical_damage": 15,
      "_base_multiplier": 3600,
      "_cost": {
-      "Mana": 9.2
+      "ManaPerSecond": 9.2
      }
     },
     "4": {
@@ -83572,7 +83721,7 @@
      "off_hand_weapon_maximum_physical_damage": 20,
      "_base_multiplier": 4000,
      "_cost": {
-      "Mana": 10.4
+      "ManaPerSecond": 10.4
      }
     },
     "5": {
@@ -83581,7 +83730,7 @@
      "off_hand_weapon_maximum_physical_damage": 26,
      "_base_multiplier": 4300,
      "_cost": {
-      "Mana": 11.8
+      "ManaPerSecond": 11.8
      }
     },
     "6": {
@@ -83590,7 +83739,7 @@
      "off_hand_weapon_maximum_physical_damage": 32,
      "_base_multiplier": 4600,
      "_cost": {
-      "Mana": 13.2
+      "ManaPerSecond": 13.2
      }
     },
     "7": {
@@ -83599,7 +83748,7 @@
      "off_hand_weapon_maximum_physical_damage": 38,
      "_base_multiplier": 4900,
      "_cost": {
-      "Mana": 14.8
+      "ManaPerSecond": 14.8
      }
     },
     "8": {
@@ -83608,7 +83757,7 @@
      "off_hand_weapon_maximum_physical_damage": 45,
      "_base_multiplier": 5200,
      "_cost": {
-      "Mana": 16.4
+      "ManaPerSecond": 16.4
      }
     },
     "9": {
@@ -83617,7 +83766,7 @@
      "off_hand_weapon_maximum_physical_damage": 53,
      "_base_multiplier": 5500,
      "_cost": {
-      "Mana": 18.2
+      "ManaPerSecond": 18.2
      }
     },
     "10": {
@@ -83626,7 +83775,7 @@
      "off_hand_weapon_maximum_physical_damage": 60,
      "_base_multiplier": 5700,
      "_cost": {
-      "Mana": 20.0
+      "ManaPerSecond": 20.0
      }
     },
     "11": {
@@ -83635,7 +83784,7 @@
      "off_hand_weapon_maximum_physical_damage": 68,
      "_base_multiplier": 6000,
      "_cost": {
-      "Mana": 22.0
+      "ManaPerSecond": 22.0
      }
     },
     "12": {
@@ -83644,7 +83793,7 @@
      "off_hand_weapon_maximum_physical_damage": 76,
      "_base_multiplier": 6300,
      "_cost": {
-      "Mana": 24.1
+      "ManaPerSecond": 24.1
      }
     },
     "13": {
@@ -83653,7 +83802,7 @@
      "off_hand_weapon_maximum_physical_damage": 85,
      "_base_multiplier": 6600,
      "_cost": {
-      "Mana": 26.4
+      "ManaPerSecond": 26.4
      }
     },
     "14": {
@@ -83662,7 +83811,7 @@
      "off_hand_weapon_maximum_physical_damage": 94,
      "_base_multiplier": 7000,
      "_cost": {
-      "Mana": 28.8
+      "ManaPerSecond": 28.8
      }
     },
     "15": {
@@ -83671,7 +83820,7 @@
      "off_hand_weapon_maximum_physical_damage": 103,
      "_base_multiplier": 7300,
      "_cost": {
-      "Mana": 31.4
+      "ManaPerSecond": 31.4
      }
     },
     "16": {
@@ -83680,7 +83829,7 @@
      "off_hand_weapon_maximum_physical_damage": 113,
      "_base_multiplier": 7700,
      "_cost": {
-      "Mana": 34.1
+      "ManaPerSecond": 34.1
      }
     },
     "17": {
@@ -83689,7 +83838,7 @@
      "off_hand_weapon_maximum_physical_damage": 123,
      "_base_multiplier": 8100,
      "_cost": {
-      "Mana": 37.0
+      "ManaPerSecond": 37.0
      }
     },
     "18": {
@@ -83698,7 +83847,7 @@
      "off_hand_weapon_maximum_physical_damage": 133,
      "_base_multiplier": 8500,
      "_cost": {
-      "Mana": 40.1
+      "ManaPerSecond": 40.1
      }
     },
     "19": {
@@ -83707,7 +83856,7 @@
      "off_hand_weapon_maximum_physical_damage": 144,
      "_base_multiplier": 8900,
      "_cost": {
-      "Mana": 43.5
+      "ManaPerSecond": 43.5
      }
     },
     "20": {
@@ -83716,7 +83865,7 @@
      "off_hand_weapon_maximum_physical_damage": 155,
      "_base_multiplier": 9400,
      "_cost": {
-      "Mana": 46.9
+      "ManaPerSecond": 46.9
      }
     },
     "21": {
@@ -83725,7 +83874,7 @@
      "off_hand_weapon_maximum_physical_damage": 166,
      "_base_multiplier": 9800,
      "_cost": {
-      "Mana": 50.6
+      "ManaPerSecond": 50.6
      }
     },
     "22": {
@@ -83734,7 +83883,7 @@
      "off_hand_weapon_maximum_physical_damage": 178,
      "_base_multiplier": 10300,
      "_cost": {
-      "Mana": 54.6
+      "ManaPerSecond": 54.6
      }
     },
     "23": {
@@ -83743,7 +83892,7 @@
      "off_hand_weapon_maximum_physical_damage": 190,
      "_base_multiplier": 10800,
      "_cost": {
-      "Mana": 58.8
+      "ManaPerSecond": 58.8
      }
     },
     "24": {
@@ -83752,7 +83901,7 @@
      "off_hand_weapon_maximum_physical_damage": 202,
      "_base_multiplier": 11400,
      "_cost": {
-      "Mana": 63.2
+      "ManaPerSecond": 63.2
      }
     },
     "25": {
@@ -83761,7 +83910,7 @@
      "off_hand_weapon_maximum_physical_damage": 215,
      "_base_multiplier": 11900,
      "_cost": {
-      "Mana": 67.9
+      "ManaPerSecond": 67.9
      }
     },
     "26": {
@@ -83770,7 +83919,7 @@
      "off_hand_weapon_maximum_physical_damage": 228,
      "_base_multiplier": 12500,
      "_cost": {
-      "Mana": 72.9
+      "ManaPerSecond": 72.9
      }
     },
     "27": {
@@ -83779,7 +83928,7 @@
      "off_hand_weapon_maximum_physical_damage": 242,
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 78.2
+      "ManaPerSecond": 78.2
      }
     },
     "28": {
@@ -83788,7 +83937,7 @@
      "off_hand_weapon_maximum_physical_damage": 256,
      "_base_multiplier": 13800,
      "_cost": {
-      "Mana": 83.8
+      "ManaPerSecond": 83.8
      }
     },
     "29": {
@@ -83797,7 +83946,7 @@
      "off_hand_weapon_maximum_physical_damage": 270,
      "_base_multiplier": 14500,
      "_cost": {
-      "Mana": 89.8
+      "ManaPerSecond": 89.8
      }
     },
     "30": {
@@ -83806,7 +83955,7 @@
      "off_hand_weapon_maximum_physical_damage": 284,
      "_base_multiplier": 15200,
      "_cost": {
-      "Mana": 96.0
+      "ManaPerSecond": 96.0
      }
     },
     "31": {
@@ -83815,7 +83964,7 @@
      "off_hand_weapon_maximum_physical_damage": 299,
      "_base_multiplier": 16000,
      "_cost": {
-      "Mana": 102.7
+      "ManaPerSecond": 102.7
      }
     },
     "32": {
@@ -83824,7 +83973,7 @@
      "off_hand_weapon_maximum_physical_damage": 315,
      "_base_multiplier": 16800,
      "_cost": {
-      "Mana": 109.8
+      "ManaPerSecond": 109.8
      }
     },
     "33": {
@@ -83833,7 +83982,7 @@
      "off_hand_weapon_maximum_physical_damage": 330,
      "_base_multiplier": 17600,
      "_cost": {
-      "Mana": 117.2
+      "ManaPerSecond": 117.2
      }
     },
     "34": {
@@ -83842,7 +83991,7 @@
      "off_hand_weapon_maximum_physical_damage": 346,
      "_base_multiplier": 18500,
      "_cost": {
-      "Mana": 125.1
+      "ManaPerSecond": 125.1
      }
     },
     "35": {
@@ -83851,7 +84000,7 @@
      "off_hand_weapon_maximum_physical_damage": 362,
      "_base_multiplier": 19500,
      "_cost": {
-      "Mana": 133.5
+      "ManaPerSecond": 133.5
      }
     },
     "36": {
@@ -83860,7 +84009,7 @@
      "off_hand_weapon_maximum_physical_damage": 379,
      "_base_multiplier": 20400,
      "_cost": {
-      "Mana": 142.3
+      "ManaPerSecond": 142.3
      }
     },
     "37": {
@@ -83869,7 +84018,7 @@
      "off_hand_weapon_maximum_physical_damage": 396,
      "_base_multiplier": 21400,
      "_cost": {
-      "Mana": 151.7
+      "ManaPerSecond": 151.7
      }
     },
     "38": {
@@ -83878,7 +84027,7 @@
      "off_hand_weapon_maximum_physical_damage": 413,
      "_base_multiplier": 22500,
      "_cost": {
-      "Mana": 161.5
+      "ManaPerSecond": 161.5
      }
     },
     "39": {
@@ -83887,7 +84036,7 @@
      "off_hand_weapon_maximum_physical_damage": 431,
      "_base_multiplier": 23600,
      "_cost": {
-      "Mana": 172.0
+      "ManaPerSecond": 172.0
      }
     },
     "40": {
@@ -83896,7 +84045,7 @@
      "off_hand_weapon_maximum_physical_damage": 449,
      "_base_multiplier": 24800,
      "_cost": {
-      "Mana": 183.0
+      "ManaPerSecond": 183.0
      }
     }
    },
@@ -84799,7 +84948,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_bursting_plague_store_%_poison_applied_magnitude_towards_burst": 100,
-    "support_bursting_plague_max_value_%_of_max_life": 20
+    "support_bursting_plague_max_value_%_of_max_life": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -85015,7 +85165,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_active_skill_consume_enemy_freeze_to_gain_damage_+%_final": 40,
-    "support_biting_frost_damage_+%_final_vs_frozen_unique_enemies": 20
+    "support_biting_frost_damage_+%_final_vs_frozen_unique_enemies": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -85036,7 +85187,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_active_skill_consume_enemy_freeze_to_gain_damage_+%_final": 40,
-    "support_biting_frost_damage_+%_final_vs_frozen_unique_enemies": 20
+    "support_biting_frost_damage_+%_final_vs_frozen_unique_enemies": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -85094,7 +85246,8 @@
   "Fiery Death": {
    "cast_time_ms": 0,
    "constant": {
-    "chance_to_trigger_fiery_death_on_ignited_enemy_death_%": 60
+    "chance_to_trigger_fiery_death_on_ignited_enemy_death_%": 60,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -86341,7 +86494,8 @@
   "Stun I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_overpower_hit_damage_stun_multiplier_+%_final": 50
+    "support_overpower_hit_damage_stun_multiplier_+%_final": 50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -86358,7 +86512,8 @@
   "Stun II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_overpower_hit_damage_stun_multiplier_+%_final": 70
+    "support_overpower_hit_damage_stun_multiplier_+%_final": 70,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -86376,7 +86531,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_overpower_hit_damage_stun_multiplier_+%_final": 300,
-    "support_overpower_damage_+%_final": -50
+    "support_overpower_damage_+%_final": -50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -87549,7 +87705,8 @@
   "Heightened Curse": {
    "cast_time_ms": 0,
    "constant": {
-    "curse_effect_+%": 25
+    "curse_effect_+%": 25,
+    "_cost_multiplier": 140
    },
    "levels": {
     "1": {}
@@ -87582,7 +87739,9 @@
   },
   "Decaying Hex": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 130
+   },
    "levels": {
     "1": {}
    },
@@ -87598,7 +87757,8 @@
   "Focused Curse": {
    "cast_time_ms": 0,
    "constant": {
-    "support_focus_curse_curse_delay_+%_final": -50
+    "support_focus_curse_curse_delay_+%_final": -50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -88090,7 +88250,8 @@
   "Charge Profusion I": {
    "cast_time_ms": 0,
    "constant": {
-    "chance_to_gain_1_more_charge_%": 30
+    "chance_to_gain_1_more_charge_%": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -88108,7 +88269,8 @@
    "cast_time_ms": 0,
    "constant": {
     "chance_to_gain_1_more_charge_%": 30,
-    "chance_to_gain_1_more_random_charge_%": 15
+    "chance_to_gain_1_more_random_charge_%": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -95436,7 +95598,9 @@
   },
   "Crescendo I": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -95452,7 +95616,8 @@
   "Crescendo II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_crescendo_non_final_strike_attack_speed_+%_final": 15
+    "support_crescendo_non_final_strike_attack_speed_+%_final": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -95468,7 +95633,9 @@
   },
   "Crescendo III": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -95484,7 +95651,8 @@
   "Fire Exposure": {
    "cast_time_ms": 0,
    "constant": {
-    "inflict_exposure_for_x_ms_on_ignite": 8000
+    "inflict_exposure_for_x_ms_on_ignite": 8000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -95501,7 +95669,8 @@
   "Lightning Exposure": {
    "cast_time_ms": 0,
    "constant": {
-    "inflict_exposure_for_x_ms_on_shock": 8000
+    "inflict_exposure_for_x_ms_on_shock": 8000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -95518,7 +95687,8 @@
   "Cold Exposure": {
    "cast_time_ms": 0,
    "constant": {
-    "inflict_exposure_for_x_ms_on_cold_crit": 8000
+    "inflict_exposure_for_x_ms_on_cold_crit": 8000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97288,7 +97458,8 @@
   "Longshot I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_far_combat_attack_damage_+%_final_from_distance": 25
+    "support_far_combat_attack_damage_+%_final_from_distance": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97305,7 +97476,8 @@
   "Longshot II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_far_combat_attack_damage_+%_final_from_distance": 35
+    "support_far_combat_attack_damage_+%_final_from_distance": 35,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97339,7 +97511,8 @@
   "Elemental Armament I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_attack_skills_elemental_damage_+%_final": 20
+    "support_attack_skills_elemental_damage_+%_final": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97356,7 +97529,8 @@
   "Elemental Armament II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_attack_skills_elemental_damage_+%_final": 25
+    "support_attack_skills_elemental_damage_+%_final": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97373,7 +97547,8 @@
   "Elemental Armament III": {
    "cast_time_ms": 0,
    "constant": {
-    "support_elemental_armament_attack_damage_+%_final_per_elemental_ailment_on_target": 12
+    "support_elemental_armament_attack_damage_+%_final_per_elemental_ailment_on_target": 12,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -97393,7 +97568,8 @@
   "Cooldown Recovery I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_cooldown_reduction_cooldown_recovery_+%": 25
+    "support_cooldown_reduction_cooldown_recovery_+%": 25,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -97410,7 +97586,8 @@
   "Cooldown Recovery II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_cooldown_reduction_cooldown_recovery_+%": 30
+    "support_cooldown_reduction_cooldown_recovery_+%": 30,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -100074,7 +100251,8 @@
     "number_of_dual_cascade_aftershocks": 1,
     "aftershock_damage_+%_final_from_support_dual_cascade_aftershocks": -45,
     "aftershock_area_of_effect_+%_final_from_support_dual_cascade_aftershocks": -30,
-    "support_dual_cascade_aftershocks_attack_speed_+%_final": -15
+    "support_dual_cascade_aftershocks_attack_speed_+%_final": -15,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -101003,7 +101181,9 @@
   },
   "Burning Inscription": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 110
+   },
    "levels": {
     "1": {}
    },
@@ -101165,7 +101345,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_double_barrel_number_of_crossbow_bolts_+": 1,
-    "support_double_barrel_crossbow_reload_speed_-%_final": 30
+    "support_double_barrel_crossbow_reload_speed_-%_final": 30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -101183,7 +101364,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_double_barrel_number_of_crossbow_bolts_+": 1,
-    "support_double_barrel_crossbow_reload_speed_-%_final": 20
+    "support_double_barrel_crossbow_reload_speed_-%_final": 20,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -101201,7 +101383,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_double_barrel_number_of_crossbow_bolts_+": 1,
-    "support_double_barrel_crossbow_reload_speed_-%_final": 20
+    "support_double_barrel_crossbow_reload_speed_-%_final": 20,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -103899,241 +104082,241 @@
     "1": {
      "_base_multiplier": 12000,
      "_cost": {
-      "Mana": 7.9
+      "ManaPerSecond": 7.9
      }
     },
     "2": {
      "_base_multiplier": 13200,
      "_cost": {
-      "Mana": 9.1
+      "ManaPerSecond": 9.1
      }
     },
     "3": {
      "_base_multiplier": 14500,
      "_cost": {
-      "Mana": 10.5
+      "ManaPerSecond": 10.5
      }
     },
     "4": {
      "_base_multiplier": 15900,
      "_cost": {
-      "Mana": 11.9
+      "ManaPerSecond": 11.9
      }
     },
     "5": {
      "_base_multiplier": 17200,
      "_cost": {
-      "Mana": 13.4
+      "ManaPerSecond": 13.4
      }
     },
     "6": {
      "_base_multiplier": 18500,
      "_cost": {
-      "Mana": 15.1
+      "ManaPerSecond": 15.1
      }
     },
     "7": {
      "_base_multiplier": 19900,
      "_cost": {
-      "Mana": 16.8
+      "ManaPerSecond": 16.8
      }
     },
     "8": {
      "_base_multiplier": 21200,
      "_cost": {
-      "Mana": 18.7
+      "ManaPerSecond": 18.7
      }
     },
     "9": {
      "_base_multiplier": 22400,
      "_cost": {
-      "Mana": 20.6
+      "ManaPerSecond": 20.6
      }
     },
     "10": {
      "_base_multiplier": 23700,
      "_cost": {
-      "Mana": 22.8
+      "ManaPerSecond": 22.8
      }
     },
     "11": {
      "_base_multiplier": 25100,
      "_cost": {
-      "Mana": 25.1
+      "ManaPerSecond": 25.1
      }
     },
     "12": {
      "_base_multiplier": 26600,
      "_cost": {
-      "Mana": 27.5
+      "ManaPerSecond": 27.5
      }
     },
     "13": {
      "_base_multiplier": 28200,
      "_cost": {
-      "Mana": 30.1
+      "ManaPerSecond": 30.1
      }
     },
     "14": {
      "_base_multiplier": 29900,
      "_cost": {
-      "Mana": 32.8
+      "ManaPerSecond": 32.8
      }
     },
     "15": {
      "_base_multiplier": 31800,
      "_cost": {
-      "Mana": 35.7
+      "ManaPerSecond": 35.7
      }
     },
     "16": {
      "_base_multiplier": 33800,
      "_cost": {
-      "Mana": 38.8
+      "ManaPerSecond": 38.8
      }
     },
     "17": {
      "_base_multiplier": 35900,
      "_cost": {
-      "Mana": 42.1
+      "ManaPerSecond": 42.1
      }
     },
     "18": {
      "_base_multiplier": 38200,
      "_cost": {
-      "Mana": 45.7
+      "ManaPerSecond": 45.7
      }
     },
     "19": {
      "_base_multiplier": 40700,
      "_cost": {
-      "Mana": 49.4
+      "ManaPerSecond": 49.4
      }
     },
     "20": {
      "_base_multiplier": 43500,
      "_cost": {
-      "Mana": 53.4
+      "ManaPerSecond": 53.4
      }
     },
     "21": {
      "_base_multiplier": 46400,
      "_cost": {
-      "Mana": 57.6
+      "ManaPerSecond": 57.6
      }
     },
     "22": {
      "_base_multiplier": 49400,
      "_cost": {
-      "Mana": 62.1
+      "ManaPerSecond": 62.1
      }
     },
     "23": {
      "_base_multiplier": 52700,
      "_cost": {
-      "Mana": 66.8
+      "ManaPerSecond": 66.8
      }
     },
     "24": {
      "_base_multiplier": 56300,
      "_cost": {
-      "Mana": 71.9
+      "ManaPerSecond": 71.9
      }
     },
     "25": {
      "_base_multiplier": 60000,
      "_cost": {
-      "Mana": 77.2
+      "ManaPerSecond": 77.2
      }
     },
     "26": {
      "_base_multiplier": 64000,
      "_cost": {
-      "Mana": 82.9
+      "ManaPerSecond": 82.9
      }
     },
     "27": {
      "_base_multiplier": 68300,
      "_cost": {
-      "Mana": 89.0
+      "ManaPerSecond": 89.0
      }
     },
     "28": {
      "_base_multiplier": 72800,
      "_cost": {
-      "Mana": 95.3
+      "ManaPerSecond": 95.3
      }
     },
     "29": {
      "_base_multiplier": 77700,
      "_cost": {
-      "Mana": 102.1
+      "ManaPerSecond": 102.1
      }
     },
     "30": {
      "_base_multiplier": 82800,
      "_cost": {
-      "Mana": 109.2
+      "ManaPerSecond": 109.2
      }
     },
     "31": {
      "_base_multiplier": 88400,
      "_cost": {
-      "Mana": 116.8
+      "ManaPerSecond": 116.8
      }
     },
     "32": {
      "_base_multiplier": 94200,
      "_cost": {
-      "Mana": 124.8
+      "ManaPerSecond": 124.8
      }
     },
     "33": {
      "_base_multiplier": 100500,
      "_cost": {
-      "Mana": 133.3
+      "ManaPerSecond": 133.3
      }
     },
     "34": {
      "_base_multiplier": 107200,
      "_cost": {
-      "Mana": 142.3
+      "ManaPerSecond": 142.3
      }
     },
     "35": {
      "_base_multiplier": 114400,
      "_cost": {
-      "Mana": 151.8
+      "ManaPerSecond": 151.8
      }
     },
     "36": {
      "_base_multiplier": 122000,
      "_cost": {
-      "Mana": 161.8
+      "ManaPerSecond": 161.8
      }
     },
     "37": {
      "_base_multiplier": 130100,
      "_cost": {
-      "Mana": 172.5
+      "ManaPerSecond": 172.5
      }
     },
     "38": {
      "_base_multiplier": 138800,
      "_cost": {
-      "Mana": 183.7
+      "ManaPerSecond": 183.7
      }
     },
     "39": {
      "_base_multiplier": 148000,
      "_cost": {
-      "Mana": 195.6
+      "ManaPerSecond": 195.6
      }
     },
     "40": {
      "_base_multiplier": 157900,
      "_cost": {
-      "Mana": 208.1
+      "ManaPerSecond": 208.1
      }
     }
    },
@@ -104194,7 +104377,8 @@
    "constant": {
     "number_of_branching_fissures": 2,
     "branching_fissure_area_of_effect_+%_final": -35,
-    "branching_fissure_damage_+%_final": -40
+    "branching_fissure_damage_+%_final": -40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104213,7 +104397,8 @@
    "constant": {
     "number_of_branching_fissures": 2,
     "branching_fissure_area_of_effect_+%_final": -35,
-    "branching_fissure_damage_+%_final": -30
+    "branching_fissure_damage_+%_final": -30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104463,7 +104648,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_slow_cast_cast_speed_+%_final": -15,
-    "support_slow_cast_spell_damage_+%_final": 35
+    "support_slow_cast_spell_damage_+%_final": 35,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -104480,7 +104666,8 @@
   "Wildshards I": {
    "cast_time_ms": 0,
    "constant": {
-    "spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova": 20
+    "spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104548,7 +104735,8 @@
   "Heft": {
    "cast_time_ms": 0,
    "constant": {
-    "support_heft_maximum_physical_damage_+%_final": 30
+    "support_heft_maximum_physical_damage_+%_final": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104565,7 +104753,8 @@
   "Rising Tempest": {
    "cast_time_ms": 0,
    "constant": {
-    "support_elemental_damage_+%_final_per_different_elemental_skill_used_recently": 12
+    "support_elemental_damage_+%_final_per_different_elemental_skill_used_recently": 12,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104732,7 +104921,8 @@
   "Energy Retention": {
    "cast_time_ms": 0,
    "constant": {
-    "trigger_skills_refund_half_energy_spent_chance_%": 35
+    "trigger_skills_refund_half_energy_spent_chance_%": 35,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -104786,7 +104976,8 @@
   "Energy Capacitor": {
    "cast_time_ms": 0,
    "constant": {
-    "skill_maximum_energy_+%": 80
+    "skill_maximum_energy_+%": 80,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -104803,7 +104994,8 @@
   "Boundless Energy I": {
    "cast_time_ms": 0,
    "constant": {
-    "energy_generated_+%": 35
+    "energy_generated_+%": 35,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -104820,7 +105012,8 @@
   "Boundless Energy II": {
    "cast_time_ms": 0,
    "constant": {
-    "energy_generated_+%": 45
+    "energy_generated_+%": 45,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -104875,7 +105068,8 @@
     "support_randomise_lower_recover_%_cost_on_use": 0,
     "support_randomise_higher_recover_%_cost_on_use": 20,
     "support_randomise_lower_damage_+%_final": -40,
-    "support_randomise_higher_damage_+%_final": 60
+    "support_randomise_higher_damage_+%_final": 60,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104892,7 +105086,8 @@
   "Zenith I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_spell_damage_+%_final_while_above_90%_maximum_mana": 30
+    "support_spell_damage_+%_final_while_above_90%_maximum_mana": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -104928,7 +105123,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_command_skill_damage_+%_final": 20,
-    "minion_command_skill_cooldown_speed_+%": 20
+    "minion_command_skill_cooldown_speed_+%": 20,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -105012,7 +105208,8 @@
   "Retaliate I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_max_attack_damage_+%_final_from_current_poise": 40
+    "support_max_attack_damage_+%_final_from_current_poise": 40,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -105030,7 +105227,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_max_attack_damage_+%_final_from_current_poise": 40,
-    "support_hit_damage_stun_multiplier_+%_final_from_current_poise": 100
+    "support_hit_damage_stun_multiplier_+%_final_from_current_poise": 100,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -105087,7 +105285,8 @@
    "constant": {
     "support_static_charge_charge_gain_per_metre": 2,
     "support_static_charge_%_damage_gained_as_lightning_per_10_charge": 10,
-    "support_static_charge_maximum_charge": 30
+    "support_static_charge_maximum_charge": 30,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105124,7 +105323,8 @@
    "constant": {
     "support_called_shots_projectile_damage_+%_final_when_matching_direction": 30,
     "called_shot_aiming_delay_ms": 1000,
-    "called_shot_angle_allowance_degs": 40
+    "called_shot_angle_allowance_degs": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105143,7 +105343,8 @@
    "constant": {
     "support_called_shots_projectile_damage_+%_final_when_matching_direction": 40,
     "called_shot_aiming_delay_ms": 1000,
-    "called_shot_angle_allowance_degs": 40
+    "called_shot_angle_allowance_degs": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105162,7 +105363,8 @@
    "constant": {
     "called_shot_aiming_delay_ms": 1000,
     "called_shot_angle_allowance_degs": 40,
-    "support_called_shots_additional_projectiles_when_matching_indicated_direction": 4
+    "support_called_shots_additional_projectiles_when_matching_indicated_direction": 4,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105198,7 +105400,8 @@
    "constant": {
     "support_charged_shots_applies_every_X_shots": 3,
     "support_charged_shots_recover_%_mana_cost_on_use": 100,
-    "support_charged_shots_%_damage_to_gain_as_lightning": 30
+    "support_charged_shots_%_damage_to_gain_as_lightning": 30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -105216,7 +105419,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_charged_shots_applies_every_X_shots": 3,
-    "support_charged_shots_%_damage_to_gain_as_lightning": 60
+    "support_charged_shots_%_damage_to_gain_as_lightning": 60,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105272,7 +105476,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_chanelling_damage_+%_final_per_second_channelling": 10,
-    "support_channelling_damage_cap": 40
+    "support_channelling_damage_cap": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105290,7 +105495,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_chanelling_damage_+%_final_per_second_channelling": 20,
-    "support_channelling_damage_cap": 40
+    "support_channelling_damage_cap": 40,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105307,7 +105513,8 @@
   "Steadfast I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_steadfast_stun_threshold_+%_final_while_channelling": 50
+    "support_steadfast_stun_threshold_+%_final_while_channelling": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -105325,7 +105532,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_steadfast_ailment_threshold_+%_final_while_channelling": 100,
-    "support_steadfast_stun_threshold_+%_final_while_channelling": 50
+    "support_steadfast_stun_threshold_+%_final_while_channelling": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -105343,7 +105551,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_crystalshatter_buff_damage_%_gained_as_extra_cold_per_2000_crystal_life": 1,
-    "support_crystalshatter_buff_duration": 6000
+    "support_crystalshatter_buff_duration": 6000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105359,7 +105568,9 @@
   },
   "Embitter": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -105374,7 +105585,9 @@
   },
   "Battershout": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 130
+   },
    "levels": {
     "1": {}
    },
@@ -105413,7 +105626,8 @@
   "Crazed Minions": {
    "cast_time_ms": 0,
    "constant": {
-    "support_crazed_minions_minion_damage_+%_final_if_revived_recently": 30
+    "support_crazed_minions_minion_damage_+%_final_if_revived_recently": 30,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -105434,7 +105648,8 @@
     "support_spectral_arrows_damage_+%_final_with_non_spectral_projectiles": -60,
     "support_spectral_arrows_base_duration_ms": 3000,
     "support_spectral_arrows_delay_between_projectiles_ms": 100,
-    "support_spectral_arrows_maximum_spectral_arrows": 5
+    "support_spectral_arrows_maximum_spectral_arrows": 5,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105469,7 +105684,8 @@
   "Acrimony": {
    "cast_time_ms": 0,
    "constant": {
-    "skill_enemies_affected_by_non_ailment_damage_over_time_life_regeneration_rate_+%": -50
+    "skill_enemies_affected_by_non_ailment_damage_over_time_life_regeneration_rate_+%": -50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -105679,7 +105895,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_melee_damage_+%_final_vs_higher_percent_life_target": 40,
-    "support_melee_damage_+%_final_vs_lower_percent_life_target": -20
+    "support_melee_damage_+%_final_vs_lower_percent_life_target": -20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105712,7 +105929,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_retreating_assault_projectile_damage_+%_final_if_melee_hit_in_past_8_seconds": 20,
-    "support_retreating_assault_melee_damage_+%_final": -100
+    "support_retreating_assault_melee_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105730,7 +105948,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_retreating_assault_projectile_damage_+%_final_if_melee_hit_in_past_8_seconds": 25,
-    "support_retreating_assault_melee_damage_+%_final": -100
+    "support_retreating_assault_melee_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105748,7 +105967,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_retreating_assault_projectile_damage_+%_final_if_melee_hit_in_past_2_seconds": 30,
-    "support_retreating_assault_melee_damage_+%_final": -100
+    "support_retreating_assault_melee_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105766,7 +105986,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_advancing_assault_melee_damage_+%_final_if_projectile_attack_damage_hit_in_past_8_seconds": 20,
-    "support_advancing_assault_projectile_damage_+%_final": -100
+    "support_advancing_assault_projectile_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105784,7 +106005,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_advancing_assault_melee_damage_+%_final_if_projectile_attack_damage_hit_in_past_8_seconds": 25,
-    "support_advancing_assault_projectile_damage_+%_final": -100
+    "support_advancing_assault_projectile_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105802,7 +106024,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_advancing_assault_melee_damage_+%_final_if_projectile_attack_damage_hit_in_past_2_seconds": 30,
-    "support_advancing_assault_projectile_damage_+%_final": -100
+    "support_advancing_assault_projectile_damage_+%_final": -100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105855,7 +106078,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_unseen_critical_damage_multiplier_+%_final_vs_blinded_enemies": 15,
-    "support_unseen_critical_strike_chance_+%_final_vs_blinded_enemies": 15
+    "support_unseen_critical_strike_chance_+%_final_vs_blinded_enemies": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -105988,7 +106212,9 @@
   },
   "Caltrops": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 120
+   },
    "levels": {
     "1": {}
    },
@@ -106029,7 +106255,8 @@
   "Ancestral Call I": {
    "cast_time_ms": 0,
    "constant": {
-    "ancestral_call_spirit_strike_interval_ms": 5000
+    "ancestral_call_spirit_strike_interval_ms": 5000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106046,7 +106273,8 @@
   "Ancestral Call II": {
    "cast_time_ms": 0,
    "constant": {
-    "ancestral_call_spirit_strike_interval_ms": 3000
+    "ancestral_call_spirit_strike_interval_ms": 3000,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106098,7 +106326,8 @@
   "Barbs I": {
    "cast_time_ms": 0,
    "constant": {
-    "deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger": 4
+    "deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger": 4,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106115,7 +106344,8 @@
   "Barbs II": {
    "cast_time_ms": 0,
    "constant": {
-    "deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger": 6
+    "deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger": 6,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106132,7 +106362,8 @@
   "Barbs III": {
    "cast_time_ms": 0,
    "constant": {
-    "deal_thorns_damage_twice_on_hit_for_X_hits_after_thorns_trigger": 1
+    "deal_thorns_damage_twice_on_hit_for_X_hits_after_thorns_trigger": 1,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106408,7 +106639,8 @@
     "support_splinter_totem_skill_speed_+%_final_each_splinter": -10,
     "support_splinter_totem_damage_+%_final_each_splinter": -20,
     "support_splinter_totem_maximum_life_+%_final_each_splinter": -20,
-    "support_splinter_totem_area_of_effect_+%_final_each_splinter": -20
+    "support_splinter_totem_area_of_effect_+%_final_each_splinter": -20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106430,7 +106662,8 @@
     "support_splinter_totem_skill_speed_+%_final_each_splinter": -7,
     "support_splinter_totem_damage_+%_final_each_splinter": -15,
     "support_splinter_totem_maximum_life_+%_final_each_splinter": -15,
-    "support_splinter_totem_area_of_effect_+%_final_each_splinter": -15
+    "support_splinter_totem_area_of_effect_+%_final_each_splinter": -15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106447,7 +106680,8 @@
   "Punch Through": {
    "cast_time_ms": 0,
    "constant": {
-    "apply_attack_projectile_weakness_%_per_1m_knockback": 3
+    "apply_attack_projectile_weakness_%_per_1m_knockback": 3,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -106468,7 +106702,8 @@
     "rip_support_life_remnant_creation_radius": 15,
     "base_remnant_duration_ms": 8000,
     "rip_support_buff_base_duration": 5000,
-    "rip_support_life_regeneration_rate_+%": 10
+    "rip_support_life_regeneration_rate_+%": 10,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -106485,7 +106720,8 @@
   "Tear": {
    "cast_time_ms": 0,
    "constant": {
-    "on_kill_effect_occur_twice_chance_%_vs_bleeding_enemies": 50
+    "on_kill_effect_occur_twice_chance_%_vs_bleeding_enemies": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -106542,7 +106778,8 @@
   "Tireless": {
    "cast_time_ms": 0,
    "constant": {
-    "chance_for_exerted_attacks_to_not_reduce_count_%": 25
+    "chance_for_exerted_attacks_to_not_reduce_count_%": 25,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106559,7 +106796,8 @@
   "Volcanic Eruption": {
    "cast_time_ms": 0,
    "constant": {
-    "support_volcanic_eruption_%_chance_to_trigger_vs_ignited_enemies": 100
+    "support_volcanic_eruption_%_chance_to_trigger_vs_ignited_enemies": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106593,7 +106831,8 @@
   "Heightened Charges": {
    "cast_time_ms": 0,
    "constant": {
-    "chance_%_to_double_effect_of_removing_charges": 20
+    "chance_%_to_double_effect_of_removing_charges": 20,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -106611,7 +106850,8 @@
    "cast_time_ms": 0,
    "constant": {
     "apply_X_incision_on_hit": 1,
-    "support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%": 3
+    "support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%": 3,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -106682,7 +106922,8 @@
   "Rearm I": {
    "cast_time_ms": 0,
    "constant": {
-    "hazard_rearm_%_chance": 20
+    "hazard_rearm_%_chance": 20,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -106699,7 +106940,8 @@
   "Rearm II": {
    "cast_time_ms": 0,
    "constant": {
-    "hazard_rearm_%_chance": 30
+    "hazard_rearm_%_chance": 30,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -106751,7 +106993,8 @@
   "Impale": {
    "cast_time_ms": 0,
    "constant": {
-    "impale_on_hit_%_chance": 100
+    "impale_on_hit_%_chance": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106806,7 +107049,8 @@
   "Short Fuse I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_fast_forward_detonation_time_+%_final": -40
+    "support_fast_forward_detonation_time_+%_final": -40,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -106824,7 +107068,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_fast_forward_detonation_time_+%_final": -80,
-    "support_short_fuse_damage_+%_final": -30
+    "support_short_fuse_damage_+%_final": -30,
+    "_cost_multiplier": 115
    },
    "levels": {
     "1": {}
@@ -106841,7 +107086,8 @@
   "Mark for Death": {
    "cast_time_ms": 0,
    "constant": {
-    "marked_target_%_physical_damage_taken_as_armour_break": 10
+    "marked_target_%_physical_damage_taken_as_armour_break": 10,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106858,7 +107104,8 @@
   "Mark for Death II": {
    "cast_time_ms": 0,
    "constant": {
-    "marked_target_%_physical_damage_taken_as_armour_break": 15
+    "marked_target_%_physical_damage_taken_as_armour_break": 15,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106876,7 +107123,8 @@
    "cast_time_ms": 0,
    "constant": {
     "mixed_maladies_poison_effect_+%_final_vs_bleeding": 20,
-    "mixed_maladies_bleed_effect_+%_final_vs_poisoned": 20
+    "mixed_maladies_bleed_effect_+%_final_vs_poisoned": 20,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -106991,7 +107239,8 @@
   "Hardy Totems I": {
    "cast_time_ms": 0,
    "constant": {
-    "support_totem_life_+%_final": 40
+    "support_totem_life_+%_final": 40,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -107008,7 +107257,8 @@
   "Hardy Totems II": {
    "cast_time_ms": 0,
    "constant": {
-    "support_totem_life_+%_final": 50
+    "support_totem_life_+%_final": 50,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -107026,7 +107276,8 @@
    "cast_time_ms": 0,
    "constant": {
     "support_ground_effect_area_of_effect_+%_final_per_second": 20,
-    "support_ground_effect_area_of_effect_+%_final_per_second_max": 100
+    "support_ground_effect_area_of_effect_+%_final_per_second_max": 100,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -111521,241 +111772,281 @@
     "1": {
      "_base_multiplier": 9000,
      "_cost": {
-      "Mana": 6.0
+      "Mana": 6,
+      "ManaPerSecond": 6.0
      }
     },
     "2": {
      "_base_multiplier": 9900,
      "_cost": {
-      "Mana": 6.9
+      "Mana": 7,
+      "ManaPerSecond": 6.9
      }
     },
     "3": {
      "_base_multiplier": 10900,
      "_cost": {
-      "Mana": 7.9
+      "Mana": 8,
+      "ManaPerSecond": 7.9
      }
     },
     "4": {
      "_base_multiplier": 11900,
      "_cost": {
-      "Mana": 9.0
+      "Mana": 9,
+      "ManaPerSecond": 9.0
      }
     },
     "5": {
      "_base_multiplier": 12800,
      "_cost": {
-      "Mana": 10.2
+      "Mana": 10,
+      "ManaPerSecond": 10.2
      }
     },
     "6": {
      "_base_multiplier": 13800,
      "_cost": {
-      "Mana": 11.4
+      "Mana": 11,
+      "ManaPerSecond": 11.4
      }
     },
     "7": {
      "_base_multiplier": 14700,
      "_cost": {
-      "Mana": 12.7
+      "Mana": 13,
+      "ManaPerSecond": 12.7
      }
     },
     "8": {
      "_base_multiplier": 15600,
      "_cost": {
-      "Mana": 14.2
+      "Mana": 14,
+      "ManaPerSecond": 14.2
      }
     },
     "9": {
      "_base_multiplier": 16400,
      "_cost": {
-      "Mana": 15.7
+      "Mana": 16,
+      "ManaPerSecond": 15.7
      }
     },
     "10": {
      "_base_multiplier": 17200,
      "_cost": {
-      "Mana": 17.3
+      "Mana": 17,
+      "ManaPerSecond": 17.3
      }
     },
     "11": {
      "_base_multiplier": 18100,
      "_cost": {
-      "Mana": 19.0
+      "Mana": 19,
+      "ManaPerSecond": 19.0
      }
     },
     "12": {
      "_base_multiplier": 19000,
      "_cost": {
-      "Mana": 20.8
+      "Mana": 21,
+      "ManaPerSecond": 20.8
      }
     },
     "13": {
      "_base_multiplier": 19900,
      "_cost": {
-      "Mana": 22.8
+      "Mana": 23,
+      "ManaPerSecond": 22.8
      }
     },
     "14": {
      "_base_multiplier": 20900,
      "_cost": {
-      "Mana": 24.9
+      "Mana": 25,
+      "ManaPerSecond": 24.9
      }
     },
     "15": {
      "_base_multiplier": 22000,
      "_cost": {
-      "Mana": 27.1
+      "Mana": 28,
+      "ManaPerSecond": 27.1
      }
     },
     "16": {
      "_base_multiplier": 23100,
      "_cost": {
-      "Mana": 29.5
+      "Mana": 30,
+      "ManaPerSecond": 29.5
      }
     },
     "17": {
      "_base_multiplier": 24200,
      "_cost": {
-      "Mana": 32.0
+      "Mana": 33,
+      "ManaPerSecond": 32.0
      }
     },
     "18": {
      "_base_multiplier": 25500,
      "_cost": {
-      "Mana": 34.6
+      "Mana": 35,
+      "ManaPerSecond": 34.6
      }
     },
     "19": {
      "_base_multiplier": 26700,
      "_cost": {
-      "Mana": 37.5
+      "Mana": 38,
+      "ManaPerSecond": 37.5
      }
     },
     "20": {
      "_base_multiplier": 28100,
      "_cost": {
-      "Mana": 40.5
+      "Mana": 41,
+      "ManaPerSecond": 40.5
      }
     },
     "21": {
      "_base_multiplier": 29500,
      "_cost": {
-      "Mana": 43.7
+      "Mana": 45,
+      "ManaPerSecond": 43.7
      }
     },
     "22": {
      "_base_multiplier": 30900,
      "_cost": {
-      "Mana": 47.1
+      "Mana": 48,
+      "ManaPerSecond": 47.1
      }
     },
     "23": {
      "_base_multiplier": 32500,
      "_cost": {
-      "Mana": 50.7
+      "Mana": 52,
+      "ManaPerSecond": 50.7
      }
     },
     "24": {
      "_base_multiplier": 34100,
      "_cost": {
-      "Mana": 54.5
+      "Mana": 56,
+      "ManaPerSecond": 54.5
      }
     },
     "25": {
      "_base_multiplier": 35800,
      "_cost": {
-      "Mana": 58.6
+      "Mana": 60,
+      "ManaPerSecond": 58.6
      }
     },
     "26": {
      "_base_multiplier": 37600,
      "_cost": {
-      "Mana": 62.9
+      "Mana": 65,
+      "ManaPerSecond": 62.9
      }
     },
     "27": {
      "_base_multiplier": 39500,
      "_cost": {
-      "Mana": 67.5
+      "Mana": 69,
+      "ManaPerSecond": 67.5
      }
     },
     "28": {
      "_base_multiplier": 41500,
      "_cost": {
-      "Mana": 72.3
+      "Mana": 74,
+      "ManaPerSecond": 72.3
      }
     },
     "29": {
      "_base_multiplier": 43500,
      "_cost": {
-      "Mana": 77.5
+      "Mana": 80,
+      "ManaPerSecond": 77.5
      }
     },
     "30": {
      "_base_multiplier": 45700,
      "_cost": {
-      "Mana": 82.9
+      "Mana": 85,
+      "ManaPerSecond": 82.9
      }
     },
     "31": {
      "_base_multiplier": 48000,
      "_cost": {
-      "Mana": 88.6
+      "Mana": 91,
+      "ManaPerSecond": 88.6
      }
     },
     "32": {
      "_base_multiplier": 50400,
      "_cost": {
-      "Mana": 94.7
+      "Mana": 97,
+      "ManaPerSecond": 94.7
      }
     },
     "33": {
      "_base_multiplier": 52900,
      "_cost": {
-      "Mana": 101.2
+      "Mana": 104,
+      "ManaPerSecond": 101.2
      }
     },
     "34": {
      "_base_multiplier": 55600,
      "_cost": {
-      "Mana": 108.0
+      "Mana": 111,
+      "ManaPerSecond": 108.0
      }
     },
     "35": {
      "_base_multiplier": 58400,
      "_cost": {
-      "Mana": 115.2
+      "Mana": 119,
+      "ManaPerSecond": 115.2
      }
     },
     "36": {
      "_base_multiplier": 61300,
      "_cost": {
-      "Mana": 122.8
+      "Mana": 126,
+      "ManaPerSecond": 122.8
      }
     },
     "37": {
      "_base_multiplier": 64300,
      "_cost": {
-      "Mana": 130.9
+      "Mana": 135,
+      "ManaPerSecond": 130.9
      }
     },
     "38": {
      "_base_multiplier": 67600,
      "_cost": {
-      "Mana": 139.4
+      "Mana": 144,
+      "ManaPerSecond": 139.4
      }
     },
     "39": {
      "_base_multiplier": 70900,
      "_cost": {
-      "Mana": 148.4
+      "Mana": 153,
+      "ManaPerSecond": 148.4
      }
     },
     "40": {
      "_base_multiplier": 74500,
      "_cost": {
-      "Mana": 157.9
+      "Mana": 163,
+      "ManaPerSecond": 157.9
      }
     }
    },
@@ -112075,280 +112366,280 @@
      "_base_multiplier": 3000,
      "_cost": {
       "Mana": 23,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "2": {
      "_base_multiplier": 3300,
      "_cost": {
       "Mana": 26,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "3": {
      "_base_multiplier": 3600,
      "_cost": {
       "Mana": 30,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "4": {
      "_base_multiplier": 4000,
      "_cost": {
       "Mana": 35,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "5": {
      "_base_multiplier": 4300,
      "_cost": {
       "Mana": 39,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "6": {
      "_base_multiplier": 4600,
      "_cost": {
       "Mana": 44,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "7": {
      "_base_multiplier": 5000,
      "_cost": {
       "Mana": 49,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "8": {
      "_base_multiplier": 5300,
      "_cost": {
       "Mana": 54,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "9": {
      "_base_multiplier": 5600,
      "_cost": {
       "Mana": 60,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "10": {
      "_base_multiplier": 5900,
      "_cost": {
       "Mana": 67,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "11": {
      "_base_multiplier": 6300,
      "_cost": {
       "Mana": 73,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "12": {
      "_base_multiplier": 6600,
      "_cost": {
       "Mana": 80,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "13": {
      "_base_multiplier": 7000,
      "_cost": {
       "Mana": 88,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "14": {
      "_base_multiplier": 7500,
      "_cost": {
       "Mana": 96,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "15": {
      "_base_multiplier": 7900,
      "_cost": {
       "Mana": 105,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "16": {
      "_base_multiplier": 8400,
      "_cost": {
       "Mana": 114,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "17": {
      "_base_multiplier": 9000,
      "_cost": {
       "Mana": 124,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "18": {
      "_base_multiplier": 9600,
      "_cost": {
       "Mana": 134,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "19": {
      "_base_multiplier": 10200,
      "_cost": {
       "Mana": 145,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "20": {
      "_base_multiplier": 10900,
      "_cost": {
       "Mana": 157,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "21": {
      "_base_multiplier": 11600,
      "_cost": {
       "Mana": 169,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "22": {
      "_base_multiplier": 12400,
      "_cost": {
       "Mana": 182,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "23": {
      "_base_multiplier": 13200,
      "_cost": {
       "Mana": 196,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "24": {
      "_base_multiplier": 14100,
      "_cost": {
       "Mana": 211,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "25": {
      "_base_multiplier": 15000,
      "_cost": {
       "Mana": 227,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "26": {
      "_base_multiplier": 16000,
      "_cost": {
       "Mana": 244,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "27": {
      "_base_multiplier": 17100,
      "_cost": {
       "Mana": 261,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "28": {
      "_base_multiplier": 18200,
      "_cost": {
       "Mana": 280,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "29": {
      "_base_multiplier": 19400,
      "_cost": {
       "Mana": 300,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "30": {
      "_base_multiplier": 20700,
      "_cost": {
       "Mana": 321,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "31": {
      "_base_multiplier": 22100,
      "_cost": {
       "Mana": 343,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "32": {
      "_base_multiplier": 23600,
      "_cost": {
       "Mana": 367,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "33": {
      "_base_multiplier": 25100,
      "_cost": {
       "Mana": 392,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "34": {
      "_base_multiplier": 26800,
      "_cost": {
       "Mana": 418,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "35": {
      "_base_multiplier": 28600,
      "_cost": {
       "Mana": 446,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "36": {
      "_base_multiplier": 30500,
      "_cost": {
       "Mana": 476,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "37": {
      "_base_multiplier": 32500,
      "_cost": {
       "Mana": 507,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "38": {
      "_base_multiplier": 34700,
      "_cost": {
       "Mana": 540,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "39": {
      "_base_multiplier": 37000,
      "_cost": {
       "Mana": 575,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     },
     "40": {
      "_base_multiplier": 39500,
      "_cost": {
       "Mana": 612,
-      "Rage": 6.0
+      "RagePerSecond": 6.0
      }
     }
    },
@@ -112820,241 +113111,241 @@
     "1": {
      "_base_multiplier": 5500,
      "_cost": {
-      "Mana": 10.0
+      "ManaPerSecond": 10.0
      }
     },
     "2": {
      "_base_multiplier": 6000,
      "_cost": {
-      "Mana": 11.6
+      "ManaPerSecond": 11.6
      }
     },
     "3": {
      "_base_multiplier": 6600,
      "_cost": {
-      "Mana": 13.2
+      "ManaPerSecond": 13.2
      }
     },
     "4": {
      "_base_multiplier": 7200,
      "_cost": {
-      "Mana": 15.0
+      "ManaPerSecond": 15.0
      }
     },
     "5": {
      "_base_multiplier": 7700,
      "_cost": {
-      "Mana": 17.0
+      "ManaPerSecond": 17.0
      }
     },
     "6": {
      "_base_multiplier": 8300,
      "_cost": {
-      "Mana": 19.0
+      "ManaPerSecond": 19.0
      }
     },
     "7": {
      "_base_multiplier": 8800,
      "_cost": {
-      "Mana": 21.2
+      "ManaPerSecond": 21.2
      }
     },
     "8": {
      "_base_multiplier": 9300,
      "_cost": {
-      "Mana": 23.6
+      "ManaPerSecond": 23.6
      }
     },
     "9": {
      "_base_multiplier": 9700,
      "_cost": {
-      "Mana": 26.1
+      "ManaPerSecond": 26.1
      }
     },
     "10": {
      "_base_multiplier": 10100,
      "_cost": {
-      "Mana": 28.8
+      "ManaPerSecond": 28.8
      }
     },
     "11": {
      "_base_multiplier": 10500,
      "_cost": {
-      "Mana": 31.7
+      "ManaPerSecond": 31.7
      }
     },
     "12": {
      "_base_multiplier": 10900,
      "_cost": {
-      "Mana": 34.7
+      "ManaPerSecond": 34.7
      }
     },
     "13": {
      "_base_multiplier": 11300,
      "_cost": {
-      "Mana": 38.0
+      "ManaPerSecond": 38.0
      }
     },
     "14": {
      "_base_multiplier": 11800,
      "_cost": {
-      "Mana": 41.5
+      "ManaPerSecond": 41.5
      }
     },
     "15": {
      "_base_multiplier": 12200,
      "_cost": {
-      "Mana": 45.2
+      "ManaPerSecond": 45.2
      }
     },
     "16": {
      "_base_multiplier": 12700,
      "_cost": {
-      "Mana": 49.1
+      "ManaPerSecond": 49.1
      }
     },
     "17": {
      "_base_multiplier": 13100,
      "_cost": {
-      "Mana": 53.3
+      "ManaPerSecond": 53.3
      }
     },
     "18": {
      "_base_multiplier": 13600,
      "_cost": {
-      "Mana": 57.8
+      "ManaPerSecond": 57.8
      }
     },
     "19": {
      "_base_multiplier": 14000,
      "_cost": {
-      "Mana": 62.5
+      "ManaPerSecond": 62.5
      }
     },
     "20": {
      "_base_multiplier": 14500,
      "_cost": {
-      "Mana": 67.5
+      "ManaPerSecond": 67.5
      }
     },
     "21": {
      "_base_multiplier": 15000,
      "_cost": {
-      "Mana": 72.8
+      "ManaPerSecond": 72.8
      }
     },
     "22": {
      "_base_multiplier": 15500,
      "_cost": {
-      "Mana": 78.5
+      "ManaPerSecond": 78.5
      }
     },
     "23": {
      "_base_multiplier": 16000,
      "_cost": {
-      "Mana": 84.5
+      "ManaPerSecond": 84.5
      }
     },
     "24": {
      "_base_multiplier": 16500,
      "_cost": {
-      "Mana": 90.9
+      "ManaPerSecond": 90.9
      }
     },
     "25": {
      "_base_multiplier": 17100,
      "_cost": {
-      "Mana": 97.7
+      "ManaPerSecond": 97.7
      }
     },
     "26": {
      "_base_multiplier": 17600,
      "_cost": {
-      "Mana": 104.9
+      "ManaPerSecond": 104.9
      }
     },
     "27": {
      "_base_multiplier": 18200,
      "_cost": {
-      "Mana": 112.5
+      "ManaPerSecond": 112.5
      }
     },
     "28": {
      "_base_multiplier": 18800,
      "_cost": {
-      "Mana": 120.5
+      "ManaPerSecond": 120.5
      }
     },
     "29": {
      "_base_multiplier": 19500,
      "_cost": {
-      "Mana": 129.1
+      "ManaPerSecond": 129.1
      }
     },
     "30": {
      "_base_multiplier": 20100,
      "_cost": {
-      "Mana": 138.2
+      "ManaPerSecond": 138.2
      }
     },
     "31": {
      "_base_multiplier": 20800,
      "_cost": {
-      "Mana": 147.7
+      "ManaPerSecond": 147.7
      }
     },
     "32": {
      "_base_multiplier": 21500,
      "_cost": {
-      "Mana": 157.9
+      "ManaPerSecond": 157.9
      }
     },
     "33": {
      "_base_multiplier": 22200,
      "_cost": {
-      "Mana": 168.6
+      "ManaPerSecond": 168.6
      }
     },
     "34": {
      "_base_multiplier": 22900,
      "_cost": {
-      "Mana": 180.0
+      "ManaPerSecond": 180.0
      }
     },
     "35": {
      "_base_multiplier": 23700,
      "_cost": {
-      "Mana": 192.0
+      "ManaPerSecond": 192.0
      }
     },
     "36": {
      "_base_multiplier": 24400,
      "_cost": {
-      "Mana": 204.7
+      "ManaPerSecond": 204.7
      }
     },
     "37": {
      "_base_multiplier": 25300,
      "_cost": {
-      "Mana": 218.1
+      "ManaPerSecond": 218.1
      }
     },
     "38": {
      "_base_multiplier": 26100,
      "_cost": {
-      "Mana": 232.3
+      "ManaPerSecond": 232.3
      }
     },
     "39": {
      "_base_multiplier": 27000,
      "_cost": {
-      "Mana": 247.3
+      "ManaPerSecond": 247.3
      }
     },
     "40": {
      "_base_multiplier": 27900,
      "_cost": {
-      "Mana": 263.2
+      "ManaPerSecond": 263.2
      }
     }
    },
@@ -115396,7 +115687,8 @@
     "support_auto_shotgun_attack_speed_+%_final": 50,
     "support_auto_shotgun_damage_+%_final": -60,
     "support_auto_shotgun_projectile_count_+%_final": 0,
-    "support_auto_shotgun_reload_speed_+%_final": -50
+    "support_auto_shotgun_reload_speed_+%_final": -50,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -115485,7 +115777,8 @@
    "constant": {
     "gain_X_guard_on_heavy_stun_per_10_strength": 4,
     "gain_X_guard_on_stun_per_10_strength": 2,
-    "guard_on_stun_guard_duration_ms": 4000
+    "guard_on_stun_guard_duration_ms": 4000,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -115504,7 +115797,8 @@
    "constant": {
     "gain_X_guard_on_heavy_stun_per_10_strength": 6,
     "gain_X_guard_on_stun_per_10_strength": 2,
-    "guard_on_stun_guard_duration_ms": 4000
+    "guard_on_stun_guard_duration_ms": 4000,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
@@ -115521,7 +115815,8 @@
   "Crystalline Shards": {
    "cast_time_ms": 0,
    "constant": {
-    "ice_crystal_explosion_impale_chance_%": 100
+    "ice_crystal_explosion_impale_chance_%": 100,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -118475,7 +118770,8 @@
   "Mark of Siphoning": {
    "cast_time_ms": 0,
    "constant": {
-    "marked_enemies_leech_physical_attack_damage_taken_as_mana_to_you_permyriad": 800
+    "marked_enemies_leech_physical_attack_damage_taken_as_mana_to_you_permyriad": 800,
+    "_cost_multiplier": 120
    },
    "levels": {
     "1": {}
@@ -118493,7 +118789,8 @@
    "cast_time_ms": 0,
    "constant": {
     "marked_enemies_leech_physical_attack_damage_taken_as_mana_to_you_permyriad": 800,
-    "marked_enemies_leech_physical_attack_damage_taken_as_life_to_you_permyriad": 800
+    "marked_enemies_leech_physical_attack_damage_taken_as_life_to_you_permyriad": 800,
+    "_cost_multiplier": 140
    },
    "levels": {
     "1": {}
@@ -118547,7 +118844,8 @@
   "Exposing Cry": {
    "cast_time_ms": 0,
    "constant": {
-    "all_exposure_on_hit_for_duration_ms": 5000
+    "all_exposure_on_hit_for_duration_ms": 5000,
+    "_cost_multiplier": 130
    },
    "levels": {
     "1": {}
@@ -119266,7 +119564,8 @@
     "warcry_echo_area_of_effect_+%_final_per_repeat": 100,
     "skill_unusable_until_moved_X_distance": 100,
     "support_echoing_cry_warcry_monster_power_+%_final": -50,
-    "support_echoing_cry_damage_+%_final": -40
+    "support_echoing_cry_damage_+%_final": -40,
+    "_cost_multiplier": 150
    },
    "levels": {
     "1": {}
@@ -119456,7 +119755,9 @@
   },
   "Eternal Mark": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 110
+   },
    "levels": {
     "1": {}
    },
@@ -119524,7 +119825,9 @@
   },
   "Minion Splash I": {
    "cast_time_ms": 0,
-   "constant": {},
+   "constant": {
+    "_cost_multiplier": 110
+   },
    "levels": {
     "1": {}
    },
@@ -119540,7 +119843,8 @@
   "Minion Splash II": {
    "cast_time_ms": 0,
    "constant": {
-    "minion_skill_area_of_effect_+%": 20
+    "minion_skill_area_of_effect_+%": 20,
+    "_cost_multiplier": 110
    },
    "levels": {
     "1": {}
