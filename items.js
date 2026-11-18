@@ -47,11 +47,11 @@ export function radiusOf(item) {
 // the implicit that is a radius jewel's radius reads as the game shows it: "Radius: Small" (PassiveJewelRadii)
 const radiusOnly = st => st.length === 1 && st[0][0] === 'local_jewel_effect_base_radius';
 const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
-// how the game words a radius modifier in any language (ClientStrings: "Small Passive Skills in Radius also grant {0}",
-// "…は{0}も付与する"): line -> [kind, the modifier's own line]
 // "Grants Skill: Level 11 Purity of Fire" in any language (grant_line) -> its level
 const GRANT = Object.values(D.grant_line || {}).map(tpl => new RegExp('^' + tpl.split(/(\{[01]\})/)
   .map(x => x === '{0}' ? '.+?' : x === '{1}' ? '(\\d+)' : x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('') + '$'));
+// how the game words a radius modifier in any language (ClientStrings: "Small Passive Skills in Radius also grant {0}",
+// "…は{0}も付与する"): line -> [kind, the modifier's own line]
 const RADIUS = Object.values(D.radius_grant).flatMap(o => Object.entries(o).map(([kind, tpl]) =>
   [kind, new RegExp('^' + tpl.split('{0}').map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(':?\\s*(.+?)\\s*') + '$')]));
 const radLine = l => RADIUS.map(([kind, re]) => [kind, l.match(re)?.[1]]).find(x => x[1]);

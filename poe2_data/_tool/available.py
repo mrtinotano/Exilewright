@@ -498,7 +498,7 @@ bases, implicit_ids = [], set()
 base_types = load('BaseItemTypes')
 gem_name = lambda sg: base_types[skill_gems[sg]['BaseItemType']]['Name']
 inherent = {x['BaseItemType']: [gem_name(sg) for sg in x['SkillsGranted']] for x in load('ItemInherentSkills') if x['SkillsGranted']}
-for i, b in enumerate(load('BaseItemTypes')):
+for i, b in enumerate(base_types):
     cls = classes[b['ItemClass']]['Name']
     if cls not in SLOT_CLASSES or not ok(b['Name']) or b['ModDomain'] not in (1, 2, 11) or b['Name'] not in trade_types:  # 1 item, 2 flask/charm, 11 jewel
         continue
@@ -533,14 +533,14 @@ save('items.json', {
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     # the tags of a modifier (Mods.ImplicitTags: elemental, lightning, resistance...), for catalyst quality
     'implicit_tags': {mods[m]['Id']: [tags_tab[t]['Id'] for t in mods[m]['ImplicitTags']] for m in implicit_ids if mods[m]['ImplicitTags']},
-    # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
-    # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
-    # lightning; Defence -> defences, the tag's own name)
     # how an item says the level of the skill it grants, in each language (ClientStrings ItemDisplayGrantedSkill:
     # "Grants Skill: <underline>{{Level {1} {0}}}" shown as "Grants Skill: Level 11 Purity of Fire"): {0} the skill, {1} its level
     'grant_line': {c: re.sub(r'\{(?!\d\})|(?<!\{\d)\}', '', re.sub(r'<\w+>', '', t['ItemDisplayGrantedSkill']))
                    for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
     'mod_grants': {mods[x['Mod']]['Id']: gem_name(x['Skill']) for x in load('ModGrantedSkills')},
+    # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
+    # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
+    # lightning; Defence -> defences, the tag's own name)
     'catalysts': {q['Description']: next(t for t in (w, w + 's') if t in tag_ids)
                   for rows in [load('AlternateQualityTypes'), *load_langs('AlternateQualityTypes').values()] for q in rows
                   for w in [re.sub(r'^(Jewellery|CurrencyJewel)Quality', '', q['Id']).lower()]},
