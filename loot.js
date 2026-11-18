@@ -170,6 +170,8 @@ export function initLoot(el, ctx) {
         [[p.near ? t('{0} like it listed in {1}, its numbers within {2}%', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
+        // ponytail: "few" is a fixed 5 listings, not a measure of how spread the prices are
+        ...worth && p.total < 5 ? [[[t('Only {0} listed: the price can be far off.', p.total), 'dim']]] : [],
         ...worth ? [[[t('An estimate from what is listed, not a sure price: check on the trade site to be sure.'), 'dim']]] : []] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;

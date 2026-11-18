@@ -828,5 +828,6 @@
  "The game's sounds are not in the app yet": "게임 사운드가 아직 앱에 없습니다",
  "With the levels your passives and gear add": "패시브와 장비로 추가되는 레벨 포함",
  "Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.": "게임에서 아이템을 착용하고 그 위에 포인터를 올린 뒤 단축키를 누르세요. 비교에서 캐릭터가 착용 중인 것으로 취급합니다.",
- "Press the shortcut again over it to put it in the other slot.": "그 위에서 단축키를 한 번 더 누르면 다른 슬롯에 착용합니다."
+ "Press the shortcut again over it to put it in the other slot.": "그 위에서 단축키를 한 번 더 누르면 다른 슬롯에 착용합니다.",
+ "Only {0} listed: the price can be far off.": "등록된 것이 {0}개뿐입니다. 가격이 크게 다를 수 있습니다."
 }

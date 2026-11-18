@@ -828,5 +828,6 @@
  "The game's sounds are not in the app yet": "Los sonidos del juego aún no están en la app",
  "With the levels your passives and gear add": "Con los niveles que añaden tus pasivas y tu equipo",
  "Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.": "Ponte un objeto en el juego, pon el puntero sobre él y pulsa el atajo: la comparación lo toma como lo que lleva puesto el personaje.",
- "Press the shortcut again over it to put it in the other slot.": "Pulsa otra vez el atajo sobre él para ponerlo en el otro hueco."
+ "Press the shortcut again over it to put it in the other slot.": "Pulsa otra vez el atajo sobre él para ponerlo en el otro hueco.",
+ "Only {0} listed: the price can be far off.": "Solo hay {0} a la venta: el precio puede estar muy abierto."
 }
