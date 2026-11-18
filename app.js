@@ -449,7 +449,6 @@ const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
 // every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
 const GROUP_ART = Object.entries(tree.group_art || {});   // [group, mastery art id]: what the game draws behind it
-const groupOf = id => String(N[id]?.group);
 const visible = () => [...main, ...(ASC[B().asc] || [])];
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
@@ -722,7 +721,7 @@ function drawTree() {
   // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
   // once one of its passives is allocated, faint until then (as the game shows it)
   // ponytail: the faint 0.3 is by eye from a screenshot of the game; no table says it
-  const taken = new Set([...on].map(groupOf));
+  const taken = new Set([...on].map(id => String(N[id]?.group)));
   for (const [g, id] of GROUP_ART) {
     const pic = art('mastery/' + id);
     if (!pic || !GROUPS[g]) continue;
