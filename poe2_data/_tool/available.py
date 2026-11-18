@@ -437,7 +437,14 @@ except FileNotFoundError:
     monster_stats = []
 # the level of a minion or totem by its gem's level (2 per level)
 minion_level = [r['MinionLevel'] for r in sorted(load('MinionGemLevelScaling'), key=lambda r: r['GemLevel'])]
-save('skills.json', {'monster_stats': monster_stats, 'minion_level': minion_level, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+# what a minion gets of its owner's stats (MinionStats: the owner's stat -> the minion's; note: "virtual_minion_X" read as
+# the "minion_X" the tree and gear give) and what every player minion has (PlayerMinionIntrinsicStats: +70% critical damage
+# bonus, always hits). The rows for one kind of minion (zombies, skeletons...) and for companions are left out: which kind
+# a gem raises is not in the dump (DisplayMinionMonsterType is empty)
+minion_stats = {sid(r['MinionStat']).replace('virtual_minion_', 'minion_', 1): next(sid(x) for x in r['PlayerStat'] if x != r['MinionStat'])
+                for r in load('MinionStats') if not (r['MinionType'] or r['MinionType2'] or r['CompanionStat']) and any(x != r['MinionStat'] for x in r['PlayerStat'])}
+minion_intrinsic = {sid(r['Stat']): r['Value'] for r in load('PlayerMinionIntrinsicStats')}
+save('skills.json', {'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
@@ -720,6 +727,15 @@ for w in world:
     area_bosses.update(w['Bosses_MonsterVarietiesKeys'])
     for k in w['Bosses_MonsterVarietiesKeys'] if named(w) else []:
         areas.setdefault(varieties[k]['Name'], set()).add(place(w))
+def mod_stats(ids):
+    out = {}
+    for i in ids:
+        for j in range(1, 7):
+            if mods[i].get(f'Stat{j}') is not None:
+                out[sid(mods[i][f'Stat{j}'])] = out.get(sid(mods[i][f'Stat{j}']), 0) + mods[i][f'Stat{j}Value'][0]
+    return out
+
+
 monsters, mskills, seen = [], {}, {}
 for i, m in enumerate(varieties):
     if not ok(m['Name']) or not re.search(r'[A-Za-z]{2}', m['Name']):
@@ -731,7 +747,9 @@ for i, m in enumerate(varieties):
         'boss': 'Boss' in m['Id'] or m['BossHealthBar'] or i in area_bosses,
         'es': t['EnergyShieldFromLife'] / 100, 'armour': t['Armour'] / 100, 'evasion': t['Evasion'] / 100,
         'crit': round(m['AttackCrit'] * 100, 2), 'ranged': 'ranged' in [tags_tab[x]['Id'] for x in m['Tags']],
-        'areas': sorted(areas.get(m['Name'], ())), 'skills': [ge_tab[g]['Id'] for g in m['GrantedEffects']]}),
+        'areas': sorted(areas.get(m['Name'], ())), 'skills': [ge_tab[g]['Id'] for g in m['GrantedEffects']],
+        # its own mods' attack speed (Raging Spirit: 40% more)
+        'attack_speed': {k: v for k, v in mod_stats(m['Mods'] + m['Special_Mods']).items() if k in ('attack_speed_+%', 'active_skill_attack_speed_+%_final')}}),
         'life': m['LifeMultiplier'] / 100, 'damage': m['DamageMultiplier'] / 100, 'spread': t['DamageSpread'] / 100,
         'res': [res[el + '1'][0] if res else 0 for el in ('Fire', 'Cold', 'Lightning', 'Chaos')],
         'attack_time': m['AttackSpeed'] / 1000, 'range': m['MaximumAttackDistance'], 'speed': m['MovementSpeed'],
@@ -762,7 +780,7 @@ for m in mods:
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({
         # index = monster level - 1
-        'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'),
+        'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'), ('ally_damage', 'MinionDamage'),
             # % more elemental / chaos damage of a monster at the level (stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level)
             ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'),
             # what a hit has to deal to inflict an ailment (Elemental Ailment Threshold) and to fill the stun / freeze bar (poise)
@@ -796,6 +814,8 @@ assert skills['Fireball']['cast_time_ms'] and skills['Fireball']['levels'][20]['
 assert all(char_stats.get(k) for k in ('life_per_level', 'mana_per_level', 'energy_shield_delay_ms', 'ailment_threshold_life_%')), 'character.ot / GameConstants'
 assert char_stats['ignite_%_per_second'] == 20 and char_stats['ignite_duration_s'] == 4, 'GameConstants: Ignite'
 assert char_stats['base_maximum_rage'] == 30, 'GameConstants: BaseMaximumRage'
+assert minion_stats['minion_damage_+%'] == 'damage_+%' and minion_intrinsic['base_critical_hit_damage_bonus'] == 70, 'MinionStats / PlayerMinionIntrinsicStats'
+assert next(m for m in monsters if m['id'] == 'Metadata/Monsters/RagingSpirit/RagingSpiritPlayerSummoned')['attack_speed'] == {'active_skill_attack_speed_+%_final': 40}, "a monster variety's mods"
 assert all(c.get(k) for c in chars if ok(c['Name']) for k in ('BaseMaxLife', 'BaseMaxMana')), 'Characters base life / mana'
 assert all(b['spirit'] for b in bases if b['class'] == 'Sceptres'), 'ItemSpirit: a sceptre without its Spirit'
 assert [['base_spirit', 30]] in quest_rewards and len(res_penalty) == 100 and res_penalty[0] == 0 > res_penalty[-1], 'QuestStaticRewards / ResistancePenaltyPerAreaLevel'

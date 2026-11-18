@@ -114,9 +114,10 @@ against unique enemies or per charge spent. Curses apply their gem's resistances
 monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, and marks add their
 critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
-speed the planner calculates for a totem, up to the build's totem limit. Chains, projectiles, grenade fuses, curse delays
-and totem durations are each gem's own. Numbers that use a value of the scene and not of the game (a consumed state the
-skill gives no number for, minions) are drawn with "~".
+speed the planner calculates for a totem, up to the build's totem limit. Minions are the game's monster their gem raises,
+at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers.
+Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a value of the
+scene and not of the game (a consumed state the skill gives no number for, a minion with no damaging skill) are drawn with "~".
 
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
 (open with Windows; only an icon in the notification area, no taskbar button: a click on it opens the window; the

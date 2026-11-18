@@ -2,7 +2,7 @@
 "(c) Grinding Gear Games" - plus its own reading of them):
 - ../available/pob2.json: for every support gem, what each of its stats does to the calculation (Damage MORE, Speed
   INC, a NeverCrit flag...), so calc.js need not guess it from the stat id; and which permanent quest rewards the
-  campaign gives, with the choices among them.
+  campaign gives, with the choices among them; and which monster each minion gem raises.
 - ../available/trade_mods.json: for every item modifier of items.json and unique_items.json, its English name and the
   number the official trade site gives each of its lines (the gear search, trade.js).
 Everything else (gems per level, character constants, monsters) comes from the game itself: available.py.
@@ -194,9 +194,25 @@ quests = [{'key': 'quest' + q['Description'] + q['Area'] + q['Info'], 'act': q['
           for q in Lua(src, src.index('{')).value() if q['useConfig']]
 assert any(q['options'] == ['+30 to Spirit'] for q in quests) and any(q.get('pick') for q in quests), 'QuestRewards.lua'
 
-dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua) - game data (c) Grinding Gear Games',
-      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests}, 'pob2.json')
+# ---- minions ----------------------------------------------------------------------------------------------------------
+# Which monster a minion gem raises: the game's link (DisplayMinionMonsterType) is empty in the dump, Path of Building 2
+# writes it by hand (Export/Skills: #minionList, Export/Minions/Minions.txt: #monster <variety> <name>). The monster's own
+# numbers are the game's (monsters.json). A skill named "Skeletal Warrior Minion" there is the gem "Skeletal Warrior"
+variety = dict((n, v) for v, n in re.findall(r'^#monster (\S+) (\w+)', get('../Export/Minions/Minions.txt'), re.M))
+gem_names = {g['name'] for g in json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8'))}
+minions = {}
+for path in ('Skills/act_str.lua', 'Skills/act_dex.lua', 'Skills/act_int.lua', 'Skills/other.lua'):
+    for name, body in re.findall(r'^skills\["\w+"\] = \{\s*name = "([^"]+)",(.*?)^\}', get(path), re.M | re.S):
+        name = name if name in gem_names else name.removesuffix(' Minion')
+        ids = [variety[x] for x in re.findall(r'"(\w+)"', (re.search(r'minionList = \{(.*?)\}', body, re.S) or [''] * 2)[1]) if x in variety]
+        if ids and name in gem_names:
+            minions.setdefault(name, ids)
+assert minions['Raise Zombie'] == ['Metadata/Monsters/Zombies/PlayerSummoned/PlayerSummonedZombie_'] and 'Skeletal Warrior' in minions, 'Minions.txt / minionList'
+
+dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists) - game data (c) Grinding Gear Games',
+      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'minions': minions}, 'pob2.json')
 print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
+print(f'{len(minions)} minion gems with their monster')
 print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')
 
 # The trade site's stat of every modifier line. ModItem.lua / ModItemExclusive.lua, one modifier per row:

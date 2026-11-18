@@ -4,6 +4,7 @@
 import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
 import { SK } from './skilldata.js';
+import { enemy, attackOf, attacksOf } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -605,6 +606,12 @@ export function skill(g, b, treeGear) {
   out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
     detonate: sec('base_skill_detonation_time'), curseDelay: sec('curse_delay_duration_ms'), duration: sec('base_skill_effect_duration'), totem: sec('base_totem_duration') };
+  // a minion gem: the hits are its minion's (the DPS one minion's)
+  const mn = out.minion = SK.minions?.[g.name] ? minionOf(g, st, sum, fin) : null;
+  if (mn) {
+    const ty = Object.values(mn.hits);
+    Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
+  }
   if (flags.has('global_cannot_crit')) out.crit = 0;
   if (out.avg != null && out.speed) {
     const c = (out.crit || 0) / 100;
@@ -680,6 +687,44 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 // A mark on an enemy: more critical damage it takes (Sniper's Mark), more freeze / electrocute buildup against it
 // (Freezing / Voltaic Mark), and the buff you gain when that state fills and consumes it: damage gained as extra
 // cold / lightning for its secondary duration
+// The minion a minion gem raises (pob2.json: which monster) at the level its gem gives (MinionGemLevelScaling), hitting
+// with its first skill that deals damage (enemies.js attackOf, with the allies' damage per level), and what it gets of
+// the build: the game's MinionStats turns the owner's stats (tree, gear, the gem's, its supports') into the minion's
+// ("minion_damage_+%" -> "damage_+%"), and every player minion has PlayerMinionIntrinsicStats (+70% critical damage
+// bonus). note: "Minions have X% increased Attack and Cast Speed" (no MinionStats row) counts for both; the rows for one
+// kind of minion (zombies, skeletons) do not (available.py)
+function minionOf(g, st, sum, fin) {
+  const m = enemy(SK.minions[g.name][0]), level = SK.minion_level?.[st._level - 1];
+  const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
+  if (!level || !key || key === 'basic') return null;
+  const a = attackOf(m, level, key, 'normal', true), ms = { ...SK.minion_intrinsic };
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
+  // added damage, then physical converted and gained as other types, as for the character
+  const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
+  const base = Object.fromEntries(DMG.map(t => [t, [0, 1].map(i => (a.hits[t]?.[i] || 0) + added(t, i))]));
+  const conv = t => v(ms, `non_skill_base_physical_damage_%_to_convert_to_${t}`, `active_skill_base_physical_damage_%_to_convert_to_${t}`);
+  const phys = base.physical, kept = 1 - Math.min(1, DMG.slice(1).reduce((x, t) => x + conv(t), 0) / 100);
+  for (const t of DMG.slice(1)) base[t] = base[t].map((x, i) => x + phys[i] * (conv(t) + v(ms, `non_skill_base_physical_damage_%_to_gain_as_${t}`)) / 100);
+  base.physical = phys.map(x => x * kept);
+  const scale = t => (1 + (inc(ms, 'damage_+%', tags) + v(ms, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(ms, 'elemental_damage_+%') : 0)) / 100)
+    * (1 + v(ms, 'damage_+%_final_for_minion') / 100) * (1 + v(st, 'active_skill_minion_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t);
+  const hits = {};
+  for (const t of DMG) if (base[t][1]) hits[t] = base[t].map(x => Math.round(x * scale(t)));
+  const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
+  const speed = a.attack ? (1 + (inc(ms, 'attack_speed_+%', tags) + both) / 100) * (1 + v(ms, 'attack_speed_+%_final_for_minions') / 100) : 1 + (inc(ms, 'cast_speed_+%', tags) + both) / 100;
+  return { name: m.name, level, hits, speed: Math.min(speed / a.period, a.cooldown ? 1 / a.cooldown : Infinity),
+    crit: Math.min(100, a.crit * (1 + inc(ms, 'critical_strike_chance_+%', tags) / 100)),
+    critBonus: a.critBonus + v(ms, 'base_critical_hit_damage_bonus') + inc(ms, 'critical_strike_multiplier_+', tags) };
+}
+// self-check: a gem level 20 Raise Zombie raises a level 40 zombie: 204 x 0.75 ± 30% = 107-198 physical every 1.25 s, crit
+// bonus 30 + 70; Raging Spirits' 40% more attack speed and 70% of physical as fire (the gem's), and 20% more damage from the tree
+if (SK.minions?.['Raise Zombie']) {
+  const z = skill({ name: 'Raise Zombie', level: 20, supports: [] }, { gems: [], items: {} }, {}), r = skill({ name: 'Raging Spirits', level: 20, supports: [] }, { gems: [], items: {} }, { 'minion_damage_+%': 20 });
+  console.assert(z.minion?.level === 40 && z.hits.physical?.join() === '107,198' && Math.abs(z.speed - .8) < 1e-9 && z.critBonus === 100
+    && r.hits.fire?.join() === '96,144' && r.hits.physical?.join() === '41,62' && Math.abs(r.speed - 1.4) < 1e-9, 'minion damage', z, r);
+}
+
 function markOf(st) {
   const k = re => Object.keys(st).find(x => re.test(x)), as = k(/_mark_damage_buff_damage_%_to_gain_as_\w+$/);
   return { crit: st.enemy_additional_critical_strike_multiplier_against_self || 0,

@@ -5,9 +5,9 @@
 // each mitigated with the game's own formulas.
 // Ailments follow the game's rules (GameConstants, each enemy's ailment threshold and poise, the skill's own modifiers: afflict()),
 // and each gem's own chains, projectiles and times (calc.js shape). Consumed states, more damage against a state, charges spent,
-// curses, marks and exposure use the skill's own stats (calc.js ailments(), curseOf(), markOf()), and totems the damage calc.js
-// gives their attack. Not in the game data: what consuming a state does when the skill gives no number for it, the damage of
-// minions, and how an enemy attack looks and reaches you. Those are the SIM defaults of
+// curses, marks and exposure use the skill's own stats (calc.js ailments(), curseOf(), markOf()), and totems and minions the
+// damage calc.js gives their attack (minionOf()). Not in the game data: what consuming a state does when the skill gives no
+// number for it, a minion whose skills deal no damage of their own, and how an enemy attack looks and reaches you. Those are the SIM defaults of
 // skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
 // WASD move · 1-9 or left click (hold) cast at the cursor · right-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · R reset
 // (those five can be changed in Settings: settings.js).
@@ -135,7 +135,7 @@ export function initScene(el, api) {
   }
 
   // ---------- enemies: monsters of the game placed with a click, with their stats at the chosen level (enemies.js)
-  // sources the damage of the build does not describe (a totem with its own damage hits as 'totemHit')
+  // sources the damage of the build does not describe (a totem or minion with its own damage hits as 'totemHit' / 'minionHit')
   const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);
   const MAXE = 60;
   function arm(d, level, key) {
@@ -247,7 +247,7 @@ export function initScene(el, api) {
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
-      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + ((D.critBonus || 0) + (M?.D?.crit || 0)) / 100 : 1, B = buffs.find(b => b.gain)?.gain;
+      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + ((D.critBonus || 0) + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm; }
       if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
       for (const el in raw) { const got = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
@@ -592,7 +592,8 @@ export function initScene(el, api) {
     objs.push(q); return q;
   }
   function minion(S, p, life) {
-    const f = makeMinion(fx, S.el), MS = { ...S, src: 'minion', mult: .5 }, ranged = S.P.ranged;
+    // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s
+    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
@@ -604,7 +605,7 @@ export function initScene(el, api) {
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         if (k > stop) { const v = Math.min(k - stop, 5.5 * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
-          wait = ranged ? 1.5 : 1.1; sw = 1;
+          wait = real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1; sw = 1;
           if (ranged) shoot(MS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, MS); }
         }

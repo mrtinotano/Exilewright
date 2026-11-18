@@ -39,10 +39,11 @@ export function search(q, limit = 80) {
 // (Mods MonsterMagic<n>, MonsterRare<n>, MonsterUnique<n>).
 export const RARITIES = ['normal', 'magic', 'rare', 'unique'];
 export const rarityOf = (m, r) => RARITIES.includes(r) ? r : m.boss ? 'unique' : 'normal';
-export function enemyStats(m, level, rarity) {
+// A player's minion (ally) is that monster with the allies' damage per level (DefaultMonsterStats MinionDamage)
+export function enemyStats(m, level, rarity, ally = false) {
   const R = MON.rarity?.[rarityOf(m, rarity)] || {}, more = k => 1 + (R[k] || 0) / 100;
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
-  let dmg = Math.floor(row('damage', level)) * m.damage * more('damage');
+  let dmg = Math.floor(row(ally ? 'ally_damage' : 'damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
   const cap = K.monster_max_resistance ?? 75;
   return {
@@ -77,8 +78,8 @@ export function attacksOf(m) {
 
 // Values of one attack of a monster at a level: damage per type before your defences, use interval, crit, and how it
 // reaches you (shape: melee | slam | projectile | area | bolt).
-export function attackOf(m, level, key, rarity) {
-  const st = enemyStats(m, level, rarity), sk = MON.skills[key] && usable(MON.skills[key]) ? MON.skills[key] : null;
+export function attackOf(m, level, key, rarity, ally = false) {
+  const st = enemyStats(m, level, rarity, ally), sk = MON.skills[key] && usable(MON.skills[key]) ? MON.skills[key] : null;
   const set = sk?.sets[0] || { flags: ['attack', 'melee'], eff: [1, 0, 0] }, flags = set.flags, attack = flags.includes('attack');
   const L = clamp(Math.round(level) || 1, 1, 100);
   // "effectiveness" values grow with the monster's level; literal values (interpolation 1) are used as they are
@@ -93,8 +94,8 @@ export function attackOf(m, level, key, rarity) {
     hits.physical = [lo * left, hi * left];
   }
   // monsters deal more elemental and chaos damage with their level (DefaultMonsterStats MoreElementalDamage / MoreChaosDamage;
-  // note: read as the stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level by their names)
-  const lv = el => el === 'physical' ? 1 : 1 + row(el === 'chaos' ? 'more_chaos' : 'more_elemental', L) / 100;
+  // note: read as the stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level by their names: not a player's minion)
+  const lv = el => el === 'physical' || ally ? 1 : 1 + row(el === 'chaos' ? 'more_chaos' : 'more_elemental', L) / 100;
   for (const el of Object.keys(hits)) { hits[el] = hits[el].map(x => Math.round(x * lv(el))); if (!hits[el][1]) delete hits[el]; }
   for (const [el, [x, i]] of Object.entries(set.dot || {})) { const d = val(x, i) / 60 * lv(el); if (d > 0) dot[el] = d; }   // the data is per minute
   const projectile = flags.includes('projectile') || !sk && !!m.ranged || String(key || '').startsWith('MeleeAtAnimationSpeed') && !!m.ranged;
@@ -103,12 +104,13 @@ export function attackOf(m, level, key, rarity) {
   // seconds between uses: the skill's own time when it has one, else the monster's attack time (with the skill's attack
   // speed multiplier) or the cast time; never faster than the cooldown
   const own = sk && sk.cast !== 1 ? sk.cast : null;
-  const period = attack ? own ?? m.attack_time / (1 + (sk?.speed || 0) / 100) : sk?.cast || 1;
+  // (and with the monster's own attack speed mods: Raging Spirit's 40% more)
+  const A = m.attack_speed || {}, period = attack ? own ?? m.attack_time / (1 + (sk?.speed || 0) / 100) / (1 + (A['attack_speed_+%'] || 0) / 100) / (1 + (A['active_skill_attack_speed_+%_final'] || 0) / 100) : sk?.cast || 1;
   return {
     key: sk ? key : 'basic', name: sk ? sk.name || set.label || plain(key) : t('Basic attack'), description: sk?.description || '',
     attack, hits, dot, hasHit,
     dotDur: set.const?.base_skill_effect_duration ? set.const.base_skill_effect_duration / 1000 : null,
-    interval: Math.max(period, sk?.cooldown || 0), cooldown: sk?.cooldown || 0,
+    period, interval: Math.max(period, sk?.cooldown || 0), cooldown: sk?.cooldown || 0,
     crit: sk?.crit ?? m.crit ?? 0, critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     area, unblockable: !!set.unblockable,
