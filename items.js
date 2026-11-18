@@ -21,11 +21,17 @@ const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 // desecrated: also the desecrated modifiers (Abyss) its tags allow (reading an item, the item maker, the gear search)
 const canRoll = (a, base, desecrated) => { if (a.desecrated ? !desecrated : a.domain !== base.domain) return false; const t = a.spawn.find(([tag]) => base.tags.includes(tag)); return !!t && t[1] > 0; };
 
+// catalyst quality ("Quality (Lightning Modifiers): +10%", rings, amulets, jewels): the modifiers with its tag
+// (Mods.ImplicitTags) are that much stronger, rounded down as the game shows them (28 -> 30). The copied text has them
+// without it, and so are they kept
+const boost = (item, tags, vals) => !item.catalyst || !tags?.includes(item.catalyst) || !vals ? vals
+  : vals.map(v => Math.trunc(v * (1 + (item.quality || 0) / 100)));
+const modVals = (item, m, vals = m.values) => boost(item, AFFIX[m.id]?.tags, vals);
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
-  base.implicits.forEach((id, i) => add(D.implicits[id], item.implicits?.[i]));
-  for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, m.values);
+  base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
+  for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return out;
 }
@@ -127,9 +133,9 @@ function itemParts(it, en = true) {
   if (!base) return null;
   const say = en ? statLinesEn : statLines, lines = (stats, vals) => linesIn(say, stats, vals);
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
-  const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => lines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
+  const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => lines(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i]))));
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
-  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, filled(AFFIX[m.id].stats, m.values)), en ? 'en' : lang));
+  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
   const rune = it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
@@ -275,6 +281,8 @@ export function parseItem(text) {
   // stays English in every language), Path of Building: "Quality: 20"
   const quality = raw.map(l => l.match(/^Quality: \+?(\d+)|^[^:]+: \+(\d+)% \(augmented\)$/)?.slice(1).find(Boolean)).find(Boolean);
   if (+quality) item.quality = +quality;
+  const catalyst = raw.map(l => D.catalysts?.[l.match(/^(.+): \+\d+% \(augmented\)$/)?.[1]]).find(Boolean);   // "Quality (Lightning Modifiers)"
+  if (catalyst) item.catalyst = catalyst;
   const own0 = base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])), im = matchLines(impl, own0);
   // the game's detailed text gives implicits no tag: a plain line worded as one of the base's own is it
   const im2 = matchLines(expl, own0.filter(c => !im.found.some(f => f.key === c.key)));
@@ -512,8 +520,8 @@ export function itemView(it) {
     props: [['Physical Damage', l.physical], ['Fire Damage', l.fire], ['Cold Damage', l.cold], ['Lightning Damage', l.lightning],
       ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
       ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
-    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
-      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, filled(AFFIX[m.id].stats, m.values))))] };
+    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i])))),
+      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values)))))] };
 }
 export const propText = ([, v, dec = 0, unit = '']) => Array.isArray(v) ? `${fmt(v[0])}–${fmt(v[1])}` : fmt(v, dec) + unit;
 // what changes hands when `item` takes the place of `old` (null: nothing was there): [lines gained, lines lost] in the
@@ -704,6 +712,9 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and quality, a multiplier of its own on the item's defences
 { const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && BASE[r.item.base].armour.energy_shield;
   console.assert(r?.item.quality === 20 && local(r.item).energy_shield === Math.round(base * 1.2), 'parseItem: quality'); }
+{ // catalyst quality: the game's own ring (checked in game: lightning resistance +50, not the copied 28 + 19)
+  const r = parseItem('Item Class: Rings\nRarity: Rare\nRapture Gyre\nTopaz Ring\n--------\nQuality (Lightning Modifiers): +10% (augmented)\n--------\nItem Level: 49\n--------\n{ Implicit Modifier — Elemental, Lightning, Resistance — 10% Increased }\n+28(20-30)% to Lightning Resistance\n--------\n{ Prefix Modifier "Healthy" (Tier: 7) — Life }\n+21(20-29) to maximum Life\n{ Prefix Modifier "Coursing" (Tier: 3) — Damage, Elemental, Lightning — 10% Increased }\n19(18-22)% increased Lightning Damage\n{ Suffix Modifier "of the Storm" (Tier: 6) — Elemental, Lightning, Resistance — 10% Increased }\n+19(16-20)% to Lightning Resistance'), s = r && rolled(r.item);
+  console.assert(s?.['base_lightning_damage_resistance_%'] === 50 && s['lightning_damage_+%'] === 20 && s.base_maximum_life === 21 && String(r.item.mods[2]?.values) === '19', 'parseItem: catalyst', s); }
 { // ...and the off hand: none next to a crossbow, a quiver next to a bow only
   const of = cls => ({ base: D.bases.find(b => b.class === cls)?.name });
   console.assert(!offhandFits(of('Crossbows'), of('Sceptres')) && !offhandFits(of('Crossbows'), of('Quivers')) && offhandFits(of('Bows'), of('Quivers')) && offhandFits(of('Wands'), of('Sceptres')), 'offhandFits');

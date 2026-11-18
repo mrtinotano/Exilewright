@@ -477,6 +477,7 @@ def read_it(p, cache={}):
     return cache[p]
 
 tags_tab = load('Tags')
+tag_ids = {t['Id'] for t in tags_tab}
 SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
     'Amulets': ['amulet'], 'Rings': ['ring1', 'ring2'], 'Belts': ['belt'], 'Gloves': ['gloves'], 'Boots': ['boots'],
     'Body Armours': ['body'], 'Helmets': ['helmet'], 'Shields': ['offhand'], 'Foci': ['offhand'], 'Bucklers': ['offhand'], 'Quivers': ['offhand'],
@@ -524,10 +525,19 @@ save('items.json', {
                      for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
     'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
+    # the tags of a modifier (Mods.ImplicitTags: elemental, lightning, resistance...), for catalyst quality
+    'implicit_tags': {mods[m]['Id']: [tags_tab[t]['Id'] for t in mods[m]['ImplicitTags']] for m in implicit_ids if mods[m]['ImplicitTags']},
+    # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
+    # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
+    # lightning; Defence -> defences, the tag's own name)
+    'catalysts': {q['Description']: next(t for t in (w, w + 's') if t in tag_ids)
+                  for rows in [load('AlternateQualityTypes'), *load_langs('AlternateQualityTypes').values()] for q in rows
+                  for w in [re.sub(r'^(Jewellery|CurrencyJewel)Quality', '', q['Id']).lower()]},
     'unique_img': {shown(u['WordsKey']): visual[u['ItemVisualIdentityKey']]['DDSFile'] for u in layout if u['ItemVisualIdentityKey'] is not None},
     'affixes': [{'id': m['Id'], 'name': m['Name'], **tr(mods_tr, i), 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
                  'level': m['Level'], 'domain': m['Domain'], 'family': m['Families'][0] if m['Families'] else None, 'stats': mod_stats(m),
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])],
+                 **({'tags': [tags_tab[t]['Id'] for t in m['ImplicitTags']]} if m['ImplicitTags'] else {}),
                  **({'desecrated': True} if m['Domain'] == 28 else {}),
                  # a radius jewel's modifier is given by the passives in its radius (Mods.RadiusJewelType: 1 small ones,
                  # 2 notable ones; "Small Passive Skills in Radius also grant ...")
