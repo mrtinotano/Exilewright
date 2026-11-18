@@ -288,8 +288,9 @@ export function initOpt(el, ctx) {
         to.sockets = Math.max(to.sockets ?? 2, names.length + held); to.supports = [...names]; });
     }
     if (what === 'equip') {
-      const sel = gearSel(b), item = G[gearKey(b, sel)]?.res.found[+btn.dataset.i]?.item; if (!item) return;
-      ctx.change(b => wear(b, sel.slot, structuredClone(item), ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
+      const sel = gearSel(b), l = G[gearKey(b, sel)]?.res.found[+btn.dataset.i], item = l?.item; if (!item) return;
+      // a rare keeps its name, as one read from the game's text does
+      ctx.change(b => wear(b, sel.slot, { ...structuredClone(item), ...l.name && !item.unique && { name: l.name } }, ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
     }
   };
   return render;

@@ -129,7 +129,7 @@ function itemParts(it, en = true) {
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
   const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => lines(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i])));
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
-  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values)), en ? 'en' : lang));
+  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, filled(AFFIX[m.id].stats, m.values)), en ? 'en' : lang));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
   const rune = it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
@@ -311,13 +311,13 @@ export function parseItem(text) {
     ex = own(u);
     ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
-  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.values }));
+  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw }));   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
   // data does not give the base, "Has 1 Charm Slot") is read as one of any item of its kind: a modifier, or for an
   // implicit line any base's implicit too, counted as its stats (item.extra, as runes)
   const toExtra = f => addExtra(AFFIX[f.key]?.stats || (f.key.startsWith('implicit:') ? D.implicits[f.key.slice(9)] : [[f.key]]), f.raw);
   const more = matchLines(ex.missed, [...anyOf(base.domain), ...CHARM_SLOTS], id => AFFIX[id]?.family);
-  for (const f of more.found) if (AFFIX[f.key]) item.mods.push({ id: f.key, values: f.values }); else toExtra(f);
+  for (const f of more.found) if (AFFIX[f.key]) item.mods.push({ id: f.key, values: f.raw }); else toExtra(f);
   ex.missed = more.missed;
   const own1 = matchLines(im.missed, [...anyOf(base.domain), ...anyImplicit(), ...CHARM_SLOTS]);
   own1.found.forEach(toExtra);
@@ -484,7 +484,9 @@ export function tradeItem({ name, base: baseName, lines }) {
       read(f.a.id, f.a.stats, f.values, l.hash, mine);
     });
   }
-  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: fixVals(f.a.stats, f.values) })).concat(dm.found.map(f => ({ id: f.key, values: f.values })));
+  // the numbers as listed, not cut to the tier's range: an item keeps what it rolled before a patch changed the tier
+  // ("Impregnable", level 75, 43% increased Armour; 45-50% since 18/11)
+  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: f.values })).concat(dm.found.map(f => ({ id: f.key, values: f.raw })));
   return { item, slots: base.slots, missed: [...missed] };
 }
 
@@ -492,6 +494,8 @@ export function tradeItem({ name, base: baseName, lines }) {
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => lo === hi ? '' :
   `<input type="number" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" value="${vals?.[k] ?? hi}" data-path="${path}" data-k="${k}" title="${id}: ${lo}–${hi}">`).join('');
+// a modifier's numbers as the item has them: one rolled before a patch can be off its tier's range now
+const filled = (stats, vals) => stats.map(([, , hi], k) => vals?.[k] ?? hi);
 const fixVals = (stats, vals) => stats.map(([, lo, hi], k) => Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi)));
 const text = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
 const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => AFFIX[m.id].affix === a).length;
@@ -509,7 +513,7 @@ export function itemView(it) {
       ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
       ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
     mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))),
-      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, fixVals(AFFIX[m.id].stats, m.values))))] };
+      ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, filled(AFFIX[m.id].stats, m.values))))] };
 }
 export const propText = ([, v, dec = 0, unit = '']) => Array.isArray(v) ? `${fmt(v[0])}–${fmt(v[1])}` : fmt(v, dec) + unit;
 // what changes hands when `item` takes the place of `old` (null: nothing was there): [lines gained, lines lost] in the
