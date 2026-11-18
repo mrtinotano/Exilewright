@@ -88,7 +88,8 @@ export function initSettings(el, ask, loot) {
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
     el.querySelector('section').after(loot);
-    loot.querySelector('.lworn')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: wornRow() }).firstElementChild);
+    const w = loot.querySelector('.lworn');
+    if (w) w.outerHTML = wornRow();
   }
   addEventListener('keydown', e => {
     if (!wait || el.hidden) return;
