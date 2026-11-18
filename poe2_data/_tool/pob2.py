@@ -198,7 +198,7 @@ assert any(q['options'] == ['+30 to Spirit'] for q in quests) and any(q.get('pic
 # Which monster a minion gem raises: the game's link (DisplayMinionMonsterType) is empty in the dump, Path of Building 2
 # writes it by hand (Export/Skills: #minionList, Export/Minions/Minions.txt: #monster <variety> <name>). The monster's own
 # numbers are the game's (monsters.json). A skill named "Skeletal Warrior Minion" there is the gem "Skeletal Warrior"
-variety = dict((n, v) for v, n in re.findall(r'^#monster (\S+) (\w+)', get('../Export/Minions/Minions.txt'), re.M))
+variety = {n: v for v, n in re.findall(r'^#monster (\S+) (\w+)', get('../Export/Minions/Minions.txt'), re.M)}
 gem_names = {g['name'] for g in json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8'))}
 minions = {}
 for path in ('Skills/act_str.lua', 'Skills/act_dex.lua', 'Skills/act_int.lua', 'Skills/other.lua'):

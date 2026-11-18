@@ -607,7 +607,7 @@ export function skill(g, b, treeGear) {
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
     detonate: sec('base_skill_detonation_time'), curseDelay: sec('curse_delay_duration_ms'), duration: sec('base_skill_effect_duration'), totem: sec('base_totem_duration') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
-  const mn = out.minion = SK.minions?.[g.name] ? minionOf(g, st, sum, fin) : null;
+  const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
@@ -698,7 +698,7 @@ function minionOf(g, st, sum, fin) {
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
   const a = attackOf(m, level, key, 'normal', true), ms = { ...SK.minion_intrinsic };
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
   const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
   // added damage, then physical converted and gained as other types, as for the character
   const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
@@ -719,7 +719,7 @@ function minionOf(g, st, sum, fin) {
 }
 // self-check: a gem level 20 Raise Zombie raises a level 40 zombie: 204 x 0.75 ± 30% = 107-198 physical every 1.25 s, crit
 // bonus 30 + 70; Raging Spirits' 40% more attack speed and 70% of physical as fire (the gem's), and 20% more damage from the tree
-if (SK.minions?.['Raise Zombie']) {
+if (SK.minions['Raise Zombie']) {
   const z = skill({ name: 'Raise Zombie', level: 20, supports: [] }, { gems: [], items: {} }, {}), r = skill({ name: 'Raging Spirits', level: 20, supports: [] }, { gems: [], items: {} }, { 'minion_damage_+%': 20 });
   console.assert(z.minion?.level === 40 && z.hits.physical?.join() === '107,198' && Math.abs(z.speed - .8) < 1e-9 && z.critBonus === 100
     && r.hits.fire?.join() === '96,144' && r.hits.physical?.join() === '41,62' && Math.abs(r.speed - 1.4) < 1e-9, 'minion damage', z, r);
