@@ -80,7 +80,7 @@ export function initScene(el, api) {
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
-  let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false;
+  let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
   let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
@@ -94,6 +94,7 @@ export function initScene(el, api) {
   help.onclick = () => { hud.hidden = !hud.hidden; help.classList.toggle('on', !hud.hidden); };
   const logEl = div('s-log'), lifeEl = div('s-life'), manaEl = div('s-mana'), bar = div('s-bar'), tipEl = div('s-tip'), toastEl = div('s-toast');
   tipEl.hidden = true;
+  const pickEl = div('s-pick'); pickEl.hidden = true;
   const shown = new Map(), put = (node, html) => { if (shown.get(node) !== html) { shown.set(node, html); node.innerHTML = html; } };
   const say = (text, c = 'gold') => {
     const l = logs[logs.length - 1];
@@ -131,6 +132,23 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
+  // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T, each with the skill put on it
+  // (click its slot to choose); a skill new to the build takes the first free slot, as in the game. -> gem index or null
+  const SLOT_KEYS = ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'];
+  function barNow() {
+    const gems = api.build().gems, own = slots(), names = own.map(i => gems[i].name), B = api.bar?.() || {};
+    const s = SLOT_KEYS.map((_, k) => B.slots?.[k] ?? null), seen = [...(B.seen || [])];
+    let change = !B.slots;
+    for (const n of names) if (!seen.includes(n)) { seen.push(n); change = true; const k = s.findIndex(x => !x || !names.includes(x)); if (k >= 0) s[k] = n; }
+    if (change) api.setBar?.({ slots: s, seen });
+    return s.map(n => n ? (own.find(i => gems[i].name === n) ?? null) : null);
+  }
+  // a skill already on another slot swaps with the one here, as in the game
+  function setSlot(k, name) { barNow(); const B = api.bar?.(); if (!B) return; const s = [...B.slots], j = name ? s.indexOf(name) : -1; if (j >= 0 && j !== k) s[j] = s[k]; s[k] = name; api.setBar({ ...B, slots: s }); hudT = 0; }
+  // a slot's key: a mouse with its button lit, or the letter
+  const MOUSE = ['M5 1v5H1V5a4 4 0 0 1 4-4z', 'M4.2 2.4h1.6v2.8H4.2z', 'M5 1v5h4V5a4 4 0 0 0-4-4z'];
+  const keyLabel = k => SLOT_KEYS[k][0] === 'm' ? `<svg class="s-mouse" viewBox="0 0 10 14"><rect x="1" y="1" width="8" height="12" rx="4" fill="none" stroke="currentColor"/><path d="${MOUSE[+SLOT_KEYS[k][1]]}" fill="currentColor"/></svg>` : keyName(SLOT_KEYS[k]);
+  const gemBy = n => api.build().gems.find(g => g.name === n);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
@@ -317,7 +335,7 @@ export function initScene(el, api) {
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; buffs = buffs.filter(b => !b.gain);
-      buffs.push({ label: M.label, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
+      buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
@@ -814,7 +832,7 @@ export function initScene(el, api) {
     mark(S) {
       const d = near(S.at, SIM.snap); if (!d) return toast(t('No enemy at the cursor'));
       for (const e of dummies) if (e.mark) e.mark = null;   // one mark at a time
-      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
+      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
       fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
       say(t('{0} marks the target', S.label), 'mark');
     },
@@ -824,7 +842,7 @@ export function initScene(el, api) {
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); }
-      if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
+      if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
       if (S.P.gain && list.length) gainCharge(S.P.gain, S.label);
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
@@ -981,9 +999,9 @@ export function initScene(el, api) {
       const P = S.P;
       if (P.corpse && !useCorpse(S)) return;
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
-      if (P.repeats) { empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n: 2 + S.spent, label: S.label, s: 12 }); say(t('{0}: your next skill repeats {1} times', S.label, 2 + S.spent), 'gold'); }
-      else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
-      else { buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
+      if (P.repeats) { empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n: 2 + S.spent, label: S.label, name: S.name, s: 12 }); say(t('{0}: your next skill repeats {1} times', S.label, 2 + S.spent), 'gold'); }
+      else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
+      else { buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
     },
     area(S) {
       const P = S.P, R = S.A; let c = S.at;
@@ -991,7 +1009,7 @@ export function initScene(el, api) {
       if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
         const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
         thing(holder(pp), P.dur, { off: () => dec.remove() });
-        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, c: css(S.el), s: P.dur }); say(t('{0} active', S.label), S.el);
+        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css(S.el), s: P.dur }); say(t('{0} active', S.label), S.el);
         return;
       }
       if (P.consumes.length && S.R >= 6) {   // strikes only the enemies that carry the state, wherever they stand in range
@@ -1040,7 +1058,7 @@ export function initScene(el, api) {
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       if (S.stage != null) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
-      facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el);
+      facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       const hits = !NOHIT.has(S.kind);
@@ -1097,7 +1115,7 @@ export function initScene(el, api) {
   const bodyA = V(0, 0, 0), bodyB = V(0, 0, 0);
   const pick = (ground = placing) => {
     ray.setFromCamera(mouse, cam); ray.ray.intersectPlane(plane, cursor);
-    if (ground) return;
+    if (ground) return null;
     let best = null, near = Infinity;
     for (const d of dummies) {
       if (d.dead) continue;
@@ -1106,7 +1124,9 @@ export function initScene(el, api) {
       const k = cam.position.distanceToSquared(bodyA); if (k < near) { near = k; best = d; }
     }
     if (best) cursor.set(best.pos.x, 0, best.pos.z);
+    return best;
   };
+  const useSlot = (k, key) => { const i = barNow()[k]; if (i == null) return; select(i, true, true); press(i, key); };
   addEventListener('keydown', e => {
     if (el.hidden || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     const c = e.code;
@@ -1114,9 +1134,9 @@ export function initScene(el, api) {
     if (c === K.roll) e.preventDefault();
     keys[c] = true;
     if (e.repeat) return;
-    if (/^Digit[1-9]$/.test(c)) { const i = slots()[+c[5] - 1]; if (i != null) { select(i, true, true); press(i, c); } }
+    if (SLOT_KEYS.includes(c)) useSlot(SLOT_KEYS.indexOf(c), c);
     else if (c === K.reset) reset();
-    else if (c === 'Escape') setPlacing(false);
+    else if (c === 'Escape') { setPlacing(false); closePick(); }
     else if (c === K.refill) { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
     else if (c === K.corpse) {   // the enemy at the cursor becomes a corpse, for the skills that need one
       const d = near(cursor, 4);
@@ -1125,31 +1145,52 @@ export function initScene(el, api) {
     }
     else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
     else if (c === K.roll && !move && rollCd <= 0) {
-      const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r);
-      const dx = l ? (-sy * f + cy * r) / l : Math.sin(facing), dz = l ? (-cy * f - sy * r) / l : Math.cos(facing);
-      move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = null;
+      // toward the cursor, as the game's roll
+      const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
+      const dx = l > .1 ? fx0 / l : Math.sin(facing), dz = l > .1 ? fz0 / l : Math.cos(facing);
+      move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = goal = null;
       fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
       event('dodge', near(pp, 30)?.pos || pp, NONE);
     }
   });
-  addEventListener('keyup', e => { keys[e.code] = false; if (held?.key === e.code) release(); });
-  addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = false; if (held) release(); });
+  addEventListener('keyup', e => { keys[e.code] = false; if (held?.key === e.code) release(); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = walk = false; if (held) release(); });
   dom.addEventListener('mousemove', e => {
     aimMouse(e);
     if (orbit) { camS.yaw -= e.movementX * .006; camS.pitch = clamp(camS.pitch + e.movementY * .005, .35, 1.45); }
   });
   dom.addEventListener('mousedown', e => {
-    aimMouse(e);
-    if (e.button === 2) orbit = true;
-    else if (e.button === 0) { const put = !!tpl.mon && (placing || e.shiftKey); pick(put); if (put) place(cursor.x, cursor.z); else press(sel, 'mouse'); }
+    aimMouse(e); closePick();
+    if (e.button === 1) e.preventDefault();   // no auto-scroll
+    if (e.altKey) { orbit = true; e.preventDefault(); return; }
+    if (e.button === 0 && tpl.mon && (placing || e.ctrlKey)) { pick(true); place(cursor.x, cursor.z); return; }
+    const foe = pick();
+    // the left button walks, as in the game: its skill is used on an enemy under the cursor, or anywhere with Shift
+    if (e.button === 0) { const i = barNow()[0]; if (i != null && (foe || e.shiftKey)) useSlot(0, 'm0'); else { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
+    else if (e.button <= 2) useSlot(e.button, 'm' + e.button);
   });
-  addEventListener('mouseup', e => { if (e.button === 0 && held?.key === 'mouse') release(); if (e.button === 2) orbit = false; });
+  addEventListener('mouseup', e => { if (held?.key === 'm' + e.button) release(); if (e.button === 0) walk = false; orbit = false; });
   dom.addEventListener('contextmenu', e => e.preventDefault());
   dom.addEventListener('wheel', e => { e.preventDefault(); camS.dist = clamp(camS.dist * (1 + Math.sign(e.deltaY) * .1), 8, 42); }, { passive: false });
+  // clicking a slot opens the list of the skills to put on it, as in the game
   bar.addEventListener('mousedown', e => {
-    const b = e.target.closest('[data-i]'); if (!b) return;
-    e.preventDefault(); const i = +b.dataset.i; select(i);
-    if (base(i)?.P.toggle) use(i);
+    const b = e.target.closest('[data-k]'); if (!b) return;
+    e.preventDefault(); e.stopPropagation(); openPick(+b.dataset.k);
+  });
+  function openPick(k) {
+    if (!pickEl.hidden && +pickEl.dataset.k === k) return closePick();
+    const gems = api.build().gems, cur = barNow()[k], slot = bar.querySelector(`[data-k="${k}"]`); if (!slot) return;
+    put(pickEl, slots().map(i => { const inf = api.info(gems[i]); return `<button data-pick="${i}" title="${esc(inf.label)}"${i === cur ? ' class="on"' : ''}>${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false">` : esc(inf.label.slice(0, 3))}</button>`; }).join('')
+      + `<button data-pick="" title="${esc(t('Empty'))}">✕</button>`);
+    pickEl.dataset.k = k; pickEl.hidden = false; tipEl.hidden = true;
+    const r = slot.getBoundingClientRect(), box = el.getBoundingClientRect(), w = pickEl.offsetWidth;
+    pickEl.style.left = clamp(r.left - box.left + r.width / 2 - w / 2, 6, box.width - w - 6) + 'px';
+    pickEl.style.bottom = (box.bottom - r.top + 8) + 'px';
+  }
+  function closePick() { pickEl.hidden = true; }
+  pickEl.addEventListener('mousedown', e => {
+    e.stopPropagation(); const b = e.target.closest('[data-pick]'); if (!b) return;
+    e.preventDefault(); setSlot(+pickEl.dataset.k, b.dataset.pick === '' ? null : api.build().gems[+b.dataset.pick].name); closePick();
   });
 
   // ---------- target reticle: the real area of the selected skill, where it would land
@@ -1214,12 +1255,13 @@ export function initScene(el, api) {
       if (fits) { free -= r; unpaid.delete(g.name); if (!tog[g.name]) { const S = mk(i); if (S) K.toggle(S); } }
       else if (!unpaid.has(g.name)) { unpaid.add(g.name); untoggle(g.name); say(t('{0} stays off: it reserves {1} Spirit and {2} is left', api.info(g).label, r, free), 'dust'); }
     });
-    const list = slots();
-    if (!list.includes(sel)) sel = list[0] ?? 0;
-    put(bar, list.slice(0, 12).map((i, n) => {
+    const list = slots(), at = barNow();
+    if (!list.includes(sel)) sel = at.find(i => i != null) ?? list[0] ?? 0;
+    put(bar, list.length ? at.map((i, k) => {
+      if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
       const g = gems[i], inf = api.info(g), P = prof(g, inf);
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${n < 9 ? `<b>${n + 1}</b>` : ''}</button>`;
-    }).join('') || `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`);
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span><b>${keyLabel(k)}</b></button>`;
+    }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`);
     put(buffEl, effects());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
     keysText();
@@ -1227,7 +1269,7 @@ export function initScene(el, api) {
     // one, with Rage), as the game shows them
     const c = sheet(), rm = rageMax(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
     put(lifeEl, `<div class="s-vtxt">${me.known ? row(t('Life'), short(Math.max(0, Math.ceil(me.life))), short(me.maxL)) : `<div><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`}`
-      + `${me.maxE > 0 ? row(t('Energy Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}</div><div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}</div>`);
+      + `${me.maxE > 0 ? row(t('Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}</div><div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}</div>`);
     put(manaEl, `<div class="s-vtxt">${me.maxM ? row(t('Mana'), short(Math.max(0, Math.floor(me.mana))), short(me.maxM)) : ''}${c.spirit ? row(t('Spirit'), short(Math.max(0, free)), short(c.spirit)) : ''}`
       + `${rm ? row(t('Rage'), short(Math.floor(me.rage)), short(rm)) : ''}</div><div class="s-orb"><i style="height:${pct(me.mana, me.maxM)}%"></i></div>`);
     if (!tipEl.hidden && tipEl.dataset.i != null) showTip(+tipEl.dataset.i);
@@ -1248,6 +1290,7 @@ export function initScene(el, api) {
       + rows.map(r => `<span>${r}</span>`).join('') + (notes.length ? `<small>${notes.map(esc).join(' · ')}</small>` : '');
   }
   function showTip(i) {
+    if (!pickEl.hidden) return;
     const slot = bar.querySelector(`[data-i="${i}"]`); if (!slot) { tipEl.hidden = true; return; }
     put(tipEl, tipOf(i)); tipEl.dataset.i = i; tipEl.hidden = false;
     const r = slot.getBoundingClientRect(), box = el.getBoundingClientRect(), w = tipEl.offsetWidth;
@@ -1256,19 +1299,23 @@ export function initScene(el, api) {
   }
   bar.addEventListener('mouseover', e => { const b = e.target.closest('[data-i]'); if (b) showTip(+b.dataset.i); });
   bar.addEventListener('mouseleave', () => { tipEl.hidden = true; delete tipEl.dataset.i; });
+  // your buffs as the game shows them, top left: its icon (the game's buff art, else the skill's), the count in its
+  // corner, the seconds left under it, its name over it
   function effects() {
-    const b = [];
-    for (const c in charges) if (charges[c]) b.push(`<span style="--c:${css(CHC[c])}">${'●'.repeat(charges[c])}${'○'.repeat(Math.max(0, maxC(c) - charges[c]))} ${t(CHARGE[c])}</span>`);
-    for (const k in tog) { const T = tog[k]; b.push(`<span style="--c:${css(T.el)}">${esc(T.label)}${T.kind === 'meta' ? ` ${T.energy}/${T.need}` : ''}</span>`); }
-    for (const E of empower) b.push(`<span style="--c:${css(E.el || 'gold')}">▸ ${esc(E.label)}${E.uses > 1 ? ' ×' + E.uses : ''}</span>`);
-    for (const B of buffs) b.push(`<span style="--c:${B.c}">${esc(B.label)} ${Math.ceil(B.s)}s</span>`);
-    if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
+    const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
+    const one = (img, c, title, n, s) => `<span class="s-buff" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
+    for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
+    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : '')); }
+    for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
+    for (const B of buffs) b.push(one(icon(B.name), B.c, B.label, '', B.s));
+    if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span class="s-txt" style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     return b.join('');
   }
   function keysText() {
-    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('WASD move · 1-9 or click: cast at the cursor (hold to repeat)'), t('Right-drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
+    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
+      t('Middle and right click, Q W E R T: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill'), t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
       t('{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset', ...['corpse', 'charges', 'refill', 'reset'].map(k => keyName(settings().keys[k]))),
-      !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Shift+click: place {0}', tpl.mon.name),
+      !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Ctrl+click: place {0}', tpl.mon.name),
       t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
     if (hud.textContent !== text) hud.textContent = text;
   }
@@ -1470,13 +1517,10 @@ export function initScene(el, api) {
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(); }
-    } else {
-      const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
-      if (f || r) {
-        const sy = Math.sin(camS.yaw), cy = Math.cos(camS.yaw), l = Math.hypot(f, r), mx = (-sy * f + cy * r) / l, mz = (-cy * f - sy * r) / l, v = spd() * dt;
-        pp.x += mx * v; pp.z += mz * v; moving = true;
-        if (time - castAt > .45 && !charge) facing = Math.atan2(mx, mz);
-      }
+    } else if (goal && !charge) {   // to the point clicked, following the cursor while the button is held
+      if (walk) goal = { x: cursor.x, z: cursor.z };
+      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * dt);
+      if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
@@ -1540,6 +1584,8 @@ export function initScene(el, api) {
   return {
     select: i => select(i, false),
     selected: () => sel,
+    // the key of the bar a skill of the build is on (html), '' when on none
+    keyOf: i => { const k = barNow().indexOf(i); return k >= 0 ? keyLabel(k) : ''; },
     reset,
     // the enemy the next click places: { id → monster of enemies.js, level, attack, rarity }. The ones of that monster already in the scene follow it.
     enemy(mon, level, attack, rarity) {

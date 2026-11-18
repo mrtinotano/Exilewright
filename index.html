@@ -95,8 +95,14 @@
   /* the simulator's screen, laid out like the game's: effects top left, orbs in the bottom corners, skills by the mana orb */
   .s-top, .s-log, .s-life, .s-mana, .s-bar, .s-tip, .s-toast { position:absolute; pointer-events:none; font-family:Georgia, serif; }
   .s-top { left:10px; right:10px; top:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
-  .s-buffs { display:flex; flex-wrap:wrap; gap:4px; max-width:calc(100% - 40px); }
-  .s-buffs span { padding:3px 8px; font-size:12px; color:var(--c, #e8d8a8); background:#0b0a08d9; border:1px solid var(--c, #5a4a30); white-space:nowrap; }
+  /* buffs as the game's: icons in a row, the count in the corner, the seconds left under it */
+  .s-buffs { display:flex; flex-wrap:wrap; gap:16px 4px; max-width:calc(100% - 40px); pointer-events:auto; }
+  .s-buff { position:relative; width:34px; height:34px; background:#000; border:1px solid #6a5a3a; box-shadow:0 0 0 1px #000, 0 2px 6px #000a; }
+  .s-buff img { width:100%; height:100%; display:block; }
+  .s-buff i { display:flex; width:100%; height:100%; align-items:center; justify-content:center; font:12px Georgia, serif; font-style:normal; color:var(--c, #c8b890); }
+  .s-buff em { position:absolute; right:2px; bottom:0; font:bold 12px system-ui, sans-serif; font-style:normal; color:#fff; text-shadow:0 0 2px #000, 0 0 3px #000, 0 0 3px #000; }
+  .s-buff small { position:absolute; left:-6px; right:-6px; top:100%; margin-top:1px; text-align:center; font:11px system-ui, sans-serif; color:#e8dcc0; text-shadow:0 1px 2px #000, 0 0 2px #000; }
+  .s-buffs .s-txt { align-self:center; padding:3px 8px; font-size:12px; color:var(--c, #e8d8a8); background:#0b0a08d9; border:1px solid var(--c, #5a4a30); white-space:nowrap; }
   .s-help { pointer-events:auto; flex:none; width:28px; height:28px; margin-left:auto; padding:0; font:bold 15px Georgia, serif; color:#c8b890; background:#0b0a08d9; border:1px solid #5a4a30; border-radius:50%; cursor:pointer; }
   .s-help:hover, .s-help.on { color:#ffe9b0; border-color:#c9a85a; }
   #scene #hud { position:absolute; top:44px; right:10px; z-index:2; max-width:calc(100% - 20px); padding:7px 10px; font:11.5px/1.55 system-ui, sans-serif; white-space:pre-wrap; color:#a89878; background:#0b0a08eb; border:1px solid #5a4a30; }
@@ -119,24 +125,33 @@
   .s-orb::after { content:''; position:absolute; inset:8% 22% 52% 18%; border-radius:50%; background:radial-gradient(ellipse at 50% 30%, #ffffff40, #ffffff00 70%); }
   /* energy shield: a ring around the life orb, filled as far as it is */
   .s-orb u { position:absolute; inset:0; border-radius:50%; background:conic-gradient(#7cc0ff var(--p), #7cc0ff26 0); -webkit-mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); }
-  .s-bar { right:152px; bottom:14px; max-width:calc(100% - 304px); box-sizing:border-box; display:flex; justify-content:flex-end; gap:4px; padding:5px; background:linear-gradient(#1a150e, #0b0a08); border:1px solid #5a4a30; box-shadow:0 0 0 1px #000, 0 4px 12px #000a; pointer-events:auto; }
+  /* the skill bar in the middle, between the orbs: mouse buttons, then Q W E R T */
+  .s-bar { left:50%; transform:translateX(-50%); bottom:12px; width:max-content; max-width:calc(100% - 300px); box-sizing:border-box; display:flex; justify-content:center; gap:5px; padding:6px; background:linear-gradient(#1a150e, #0b0a08); border:1px solid #5a4a30; box-shadow:0 0 0 1px #000, 0 4px 12px #000a; pointer-events:auto; }
   .s-bar:empty, .s-buffs:empty { display:none; }
   .s-bar .note { padding:4px 8px; font-size:12px; color:#a89878; }
-  .s-slot { position:relative; flex:0 1 46px; min-width:24px; aspect-ratio:1; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  .s-slot { position:relative; flex:0 1 58px; width:58px; min-width:26px; aspect-ratio:1; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  .s-slot.none { background:radial-gradient(circle, #1a150e, #070605); border-style:dashed; }
+  .s-mouse { width:10px; height:14px; vertical-align:-3px; }
   .s-slot img { width:100%; height:100%; display:block; object-fit:cover; }
   .s-slot span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:12px Georgia, serif; color:var(--c, #c8b890); }
   .s-slot img + span { display:none; }
-  .s-slot b { position:absolute; left:0; right:0; bottom:0; font:bold 10px/13px system-ui, sans-serif; text-align:center; color:#e8dcc0; background:#000a; }
+  .s-slot b { position:absolute; left:0; right:0; bottom:0; font:bold 11px/15px system-ui, sans-serif; text-align:center; color:#e8dcc0; background:#000b; }
   .s-slot:hover { border-color:#8a7a5c; }
   .s-slot.on { border-color:var(--c, #c9a85a); box-shadow:0 0 8px var(--c, #c9a85a); }
   .s-slot.act::after { content:''; position:absolute; inset:0; border:2px solid var(--c, #c9a85a); box-shadow:inset 0 0 12px var(--c, #c9a85a); }
   .s-tip { z-index:3; width:max-content; max-width:260px; padding:7px 10px 8px; color:#a89878; background:#0b0a08f0; border:1px solid #5a4a30; border-top:2px solid var(--c, #c9a85a); }
-  .s-tip[hidden] { display:none; }
+  .s-tip[hidden], .s-pick[hidden] { display:none; }
+  /* the skills to put on a slot, as the game's list over its bar */
+  .s-pick { position:absolute; z-index:4; display:grid; grid-template-columns:repeat(auto-fill, 46px); gap:4px; width:max-content; max-width:min(260px, calc(100% - 12px)); padding:6px; background:#0b0a08f2; border:1px solid #5a4a30; box-shadow:0 4px 14px #000c; }
+  .s-pick button { width:46px; height:46px; padding:0; background:#000; border:1px solid #4a3f2c; color:#c8b890; font:13px Georgia, serif; cursor:pointer; overflow:hidden; }
+  .s-pick button:hover, .s-pick button.on { border-color:#c9a85a; box-shadow:0 0 6px #c9a85a; }
+  .s-pick img { width:100%; height:100%; display:block; }
   .s-tip b { display:block; font-weight:normal; font-size:16px; margin-bottom:2px; }
   .s-tip span { display:block; font-size:12px; line-height:1.45; }
   .s-tip span:first-of-type { color:#c8b890; font-variant:small-caps; font-size:13px; }
   .s-tip small { display:block; margin-top:3px; font-size:11.5px; color:#ffd27a; }
-  @container (max-width:700px) { .s-orb { width:84px; height:84px; } .s-bar { right:108px; max-width:calc(100% - 216px); } .s-vtxt { font-size:13px; } .s-log { bottom:150px; } }
+  /* a scene too narrow for the bar between the orbs: the bar along the bottom, the orbs over it */
+  @container (max-width:860px) { .s-orb { width:84px; height:84px; } .s-bar { bottom:8px; max-width:calc(100% - 16px); } .s-life, .s-mana { bottom:82px; } .s-vtxt { font-size:13px; } .s-log { bottom:226px; } }
   .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; white-space:nowrap; }
   .s-toast.on { opacity:1; }
   /* character panel, like the in-game one */

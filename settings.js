@@ -6,16 +6,16 @@ import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
 
 const KEY = 'exwSettings';
-// the 3D scene's own keys (moving is W A S D and skills 1-9, as in the game)
-const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyR' };
+// the 3D scene's own keys (the skill bar is the mouse buttons and Q W E R T, as in the game)
+const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyX' };
 const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
-const FIXED = /^(Key[WASD]|Digit[1-9]|Escape)$/;
+const FIXED = /^(Key[QWERT]|Escape)$/;
 const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
-  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
+  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...Object.fromEntries(Object.entries(s.keys || {}).filter(([, c]) => !FIXED.test(c))) } };   // a key saved before the bar took it goes back to its default
 })();
 export const settings = () => S;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -112,7 +112,7 @@ export function initSettings(el, loot) {
         const c = comboOf(e), other = wait === 'price' ? 'wornKey' : 'priceKey';
         if (c) { if (S[other] === c) S[other] = S[wait + 'Key']; S[wait + 'Key'] = c; save(); } else msg = t(NEEDS);
       }
-      else if (FIXED.test(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: W A S D, 1-9 and Esc stay as they are.');
+      else if (FIXED.test(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: Q W E R T are the skill bar and Esc stays as it is.');
       else { const other = Object.keys(S.keys).find(k => k !== wait && S.keys[k] === e.code); if (other) S.keys[other] = S.keys[wait]; S.keys[wait] = e.code; save(); }
     }
     wait = null; render();

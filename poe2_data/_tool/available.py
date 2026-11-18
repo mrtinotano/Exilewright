@@ -116,6 +116,18 @@ json.dump(dict(sorted(trade_uniques.items())), open(os.path.join(ROOT, 'poe2db_c
 
 # --- gems
 active_skills, skill_types = load('ActiveSkills'), [t['Id'] for t in load('ActiveSkillType')]
+# the icon the game shows for a buff (BuffDefinitions -> BuffVisuals.BuffDDSFile), found for a skill by its ActiveSkills
+# id (a buff of that id, or a visual of that id or that id + _buff: sigil_of_life_buff) or by its name
+buff_defs, buff_vis = load('BuffDefinitions'), load('BuffVisuals')
+_vis_icon = {v['Id']: v['BuffDDSFile'] for v in buff_vis if v['BuffDDSFile']}
+_buff_icon = {r['Id']: buff_vis[r['BuffVisual']]['BuffDDSFile'] for r in buff_defs if r['BuffVisual'] is not None and not r['Invisible'] and buff_vis[r['BuffVisual']]['BuffDDSFile']}
+_buff_by_name = {}
+for r in buff_defs:
+    if r['Name'] and r['Id'] in _buff_icon:
+        _buff_by_name.setdefault(r['Name'], _buff_icon[r['Id']])
+def buff_icon(a):
+    i = a['Id']
+    return _buff_icon.get(i) or _vis_icon.get(i) or _vis_icon.get(i + '_buff') or _buff_by_name.get(a['DisplayedName'])
 active_skills_tr = load_langs('ActiveSkills')
 gem_effects_tr = load_langs('GemEffects')
 support_row = {s['SkillGem']: s for s in supports}
@@ -172,7 +184,7 @@ for i, g in enumerate(skill_gems):
                         adds=types(ge['AddedActiveSkillTypes']), gems_only=ge['SupportsGemsOnly'])
     elif ge and ge['ActiveSkill'] is not None:
         a = active_skills[ge['ActiveSkill']]
-        gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'],
+        gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'], buff_icon=buff_icon(a),
                         # text for the skill's info window (ActiveSkills.Description, per language), keyword markup kept
                         description=a.get('Description'), **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description', True))
         # a meta gem (Mortar Cannon, Ancestral Warrior Totem...): the skills its sockets take are those its own support
@@ -446,7 +458,7 @@ minion_level = [r['MinionLevel'] for r in sorted(load('MinionGemLevelScaling'), 
 minion_stats = {sid(r['MinionStat']).replace('virtual_minion_', 'minion_', 1): next(sid(x) for x in r['PlayerStat'] if x != r['MinionStat'])
                 for r in load('MinionStats') if not (r['MinionType'] or r['MinionType2'] or r['CompanionStat']) and any(x != r['MinionStat'] for x in r['PlayerStat'])}
 minion_intrinsic = {sid(r['Stat']): r['Value'] for r in load('PlayerMinionIntrinsicStats')}
-save('skills.json', {'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+save('skills.json', {'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
@@ -839,3 +851,4 @@ assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces']
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
 assert skills['Orb of Storms']['levels'][20]['_cost'] == {'Mana': 129} and skills['Runic Tempering']['levels'][20]['_cost'] == {'ManaPerSecond': 19.6}, 'GrantedEffectsPerLevel.CostAmounts'
 assert any(s.get('constant', {}).get('_cost_multiplier') == 120 or any(L.get('_cost_multiplier') == 120 for L in s.get('levels', {}).values()) for s in skills.values()) and '_cost_multiplier' not in str(skills['Mortar Cannon']), 'GrantedEffectsPerLevel.CostMultiplier'
+assert next(g for g in gems if g['name'] == 'Berserk')['buff_icon'] == 'Art/2DArt/BuffIcons/Beserk.dds' and next(g for g in gems if g['name'] == 'Rite of Restoration')['buff_icon'].endswith('HuskOfDreamsBuff.dds'), 'BuffDefinitions / BuffVisuals'

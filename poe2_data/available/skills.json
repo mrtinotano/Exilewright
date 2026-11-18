@@ -1,4 +1,9 @@
 {
+ "charge_icons": {
+  "frenzy": "Art/2DArt/BuffIcons/chargedex.dds",
+  "power": "Art/2DArt/BuffIcons/chargeint.dds",
+  "endurance": "Art/2DArt/BuffIcons/chargestr.dds"
+ },
  "monster_stats": [
   {
    "level": 1,

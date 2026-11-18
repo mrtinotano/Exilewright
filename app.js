@@ -172,7 +172,7 @@ function renderStats() {
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
-const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon) }; };
+const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
 const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null }) => ({ enemy, level, attack, rarity }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
@@ -184,7 +184,7 @@ function renderSceneSkills() {
   const b = B(), sum = treeSum(), on = scene3d?.selected();
   dmgCache.clear();
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
-  let n = 0; const key = b.gems.map((_, i) => byHand(b, i) ? ++n : 0);   // the scene's 1-9: what is used by hand
+  const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
   const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
   const cards = list.map(({ g, inf, P }, i) => {
     const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
@@ -195,7 +195,7 @@ function renderSceneSkills() {
       G.duration ? `<span>${t('duration')} <b>${fmt(G.duration, G.duration % 1 ? 1 : 0)} s</b></span>` : '',
     ].join('');
     return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
-      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key[i] && key[i] < 10 ? `<i>${key[i]}</i>` : ''}</span>
+      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key(i) ? `<i>${key(i)}</i>` : ''}</span>
         <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
         <b class="sdps">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
@@ -207,7 +207,7 @@ function renderSceneSkills() {
   }).join('');
   const syn = synergies(list), name = i => `<b>${esc(list[i].label)}</b>`;
   const line = x => `<li data-card="${x.a}">${t(x.text, name(x.a), x.b == null ? '' : name(x.b), x.args[2] ? `<i>${esc(t(x.args[2]))}</i>` : '')}</li>`;
-  $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('keys 1-9 in the scene')}</small></h3>
+  $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('their keys: click a slot of the simulator bar to change them')}</small></h3>
     ${cards || `<p class="note">${t('Add skills in the Skills tab.')}</p>`}
     ${list.length > 1 ? `<h3>${t('Synergies in this build')} <small class="note">${syn.length}</small></h3>
       ${syn.length ? `<ul class="syn">${syn.slice(0, 14).map(line).join('')}</ul>${syn.length > 14 ? `<details class="syn-more"><summary>${t('{0} more', syn.length - 14)}</summary><ul class="syn">${syn.slice(14).map(line).join('')}</ul></details>` : ''}`
@@ -867,6 +867,8 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
 
 // ---------- enemy of the 3D scene: searchable list of the game's monsters, its level and attack, and what the numbers say (enemies.js)
 const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg));
+// the simulator's skill bar of each build: { slots: [gem name or null x8], seen: [gem names it has placed] }
+const BAR_KEY = SCENE_KEY + ':bar', sceneBars = (() => { try { return JSON.parse(localStorage.getItem(BAR_KEY) || '{}'); } catch { return {}; } })();
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
 const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity);
 const attr = x => esc(x).replace(/"/g, '&quot;');
@@ -957,7 +959,9 @@ function renderEnemy() {
 }
 
 scene3d = initScene($('scene'), { build: B, geo, playerSpeed, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
-  sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum) }; } });
+  sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum) }; },
+  chargeIcon: c => gemImg(SK.charge_icons?.[c]),
+  bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   items => snap({ ...B(), items }), () => treeSum().keystone_giants_blood);
