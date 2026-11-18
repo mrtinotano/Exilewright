@@ -206,12 +206,12 @@ function renderSceneSkills() {
         ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
     </div>`;
   };
-  const cards = list.map((x, i) => live(x.g, i) ? card(x, i) : '').join(''), rest = list.map((x, i) => live(x.g, i) ? '' : card(x, i)).join('');
+  const cards = [], rest = []; list.forEach((x, i) => (live(x.g, i) ? cards : rest).push(card(x, i)));
   const syn = synergies(list), name = i => `<b>${esc(list[i].label)}</b>`;
   const line = x => `<li data-card="${x.a}">${t(x.text, name(x.a), x.b == null ? '' : name(x.b), x.args[2] ? `<i>${esc(t(x.args[2]))}</i>` : '')}</li>`;
   $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('their keys: click a slot of the simulator bar to change them')}</small></h3>
-    ${cards || `<p class="note">${t(list.length ? 'None of your skills used by hand deals damage.' : 'Add skills in the Skills tab.')}</p>`}
-    ${rest ? `<details class="syn-more"><summary>${t('Other skills: their damage does not change while you play')}</summary>${rest}</details>` : ''}
+    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills used by hand deals damage.' : 'Add skills in the Skills tab.')}</p>`}
+    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: their damage does not change while you play')}</summary>${rest.join('')}</details>` : ''}
     ${list.length > 1 ? `<h3>${t('Synergies in this build')} <small class="note">${syn.length}</small></h3>
       ${syn.length ? `<ul class="syn">${syn.slice(0, 14).map(line).join('')}</ul>${syn.length > 14 ? `<details class="syn-more"><summary>${t('{0} more', syn.length - 14)}</summary><ul class="syn">${syn.slice(14).map(line).join('')}</ul></details>` : ''}`
         : `<p class="note">${t('No combos found between these skills yet.')}</p>`}` : ''}

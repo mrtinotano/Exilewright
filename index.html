@@ -43,7 +43,6 @@
   .s-enwrap summary::after { content:' ▾'; } .s-enwrap[open] summary::after { content:' ▴'; }
   .s-enwrap summary:hover, .s-enwrap[open] summary { border-color:#c9a85a; color:#ffe9b0; }
   #sceneEnemy { width:340px; max-width:100%; box-sizing:border-box; max-height:calc(100vh - 330px); overflow:auto; margin-top:4px; padding:8px 10px; background:#0e0c0af2; border:1px solid #5a4a30; }
-  #sceneEnemy p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
   #sceneEnemy p.en-areas { margin:1px 0 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   /* enemy picker of the 3D scene */
   .en-pick input { width:100%; box-sizing:border-box; padding:4px 6px; background:#14110d; border:1px solid #5a4a30; color:#e8d8a8; font:13px Georgia, serif; }
@@ -99,7 +98,7 @@
   .sk-set label { flex-direction:column; align-items:stretch; gap:2px; }
   .sk-set input, .sk-set select { padding:2px 4px; background:#14110d; border-color:#3a3022; }
   .sk-set button { align-self:end; padding:3px 6px; background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; } .sk-set button:hover { background:#3a3225; }
-  #sceneSkills p.note, #simChar p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
+  #sceneSkills p.note, #sceneEnemy p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
   /* 3D scene overlays */
   #scene { overflow:hidden; background:#07080b; user-select:none; container-type:inline-size; }
   #scene canvas { position:absolute; inset:0; cursor:crosshair; }
