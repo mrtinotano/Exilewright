@@ -49,6 +49,9 @@ const radiusOnly = st => st.length === 1 && st[0][0] === 'local_jewel_effect_bas
 const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
 // how the game words a radius modifier in any language (ClientStrings: "Small Passive Skills in Radius also grant {0}",
 // "…は{0}も付与する"): line -> [kind, the modifier's own line]
+// "Grants Skill: Level 11 Purity of Fire" in any language (grant_line) -> its level
+const GRANT = Object.values(D.grant_line || {}).map(tpl => new RegExp('^' + tpl.split(/(\{[01]\})/)
+  .map(x => x === '{0}' ? '.+?' : x === '{1}' ? '(\\d+)' : x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('') + '$'));
 const RADIUS = Object.values(D.radius_grant).flatMap(o => Object.entries(o).map(([kind, tpl]) =>
   [kind, new RegExp('^' + tpl.split('{0}').map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(':?\\s*(.+?)\\s*') + '$')]));
 const radLine = l => RADIUS.map(([kind, re]) => [kind, l.match(re)?.[1]]).find(x => x[1]);
@@ -283,6 +286,9 @@ export function parseItem(text) {
   if (+quality) item.quality = +quality;
   const catalyst = raw.map(l => D.catalysts?.[l.match(/^(.+): \+\d+% \(augmented\)$/)?.[1]]).find(Boolean);   // "Quality (Lightning Modifiers)"
   if (catalyst) item.catalyst = catalyst;
+  // the level of each skill it grants, in the order the game lists them (the base's own first: grantedSkills)
+  const levels = raw.map(l => GRANT.map(re => +l.match(re)?.[1]).find(Boolean)).filter(Boolean);
+  if (levels.length) item.grantLevels = levels;
   const own0 = base.implicits.flatMap((id, i) => shapes(i, D.implicits[id])), im = matchLines(impl, own0);
   // the game's detailed text gives implicits no tag: a plain line worded as one of the base's own is it
   const im2 = matchLines(expl, own0.filter(c => !im.found.some(f => f.key === c.key)));
@@ -343,6 +349,9 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
+// the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
+export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
+  [...BASE[it.base]?.grants || [], ...(it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
 // what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
 // bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand
 export function offhandFits(weapon, off, giant) {
@@ -570,8 +579,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     const count = a => mods.filter(m => AFFIX[m.id].affix === a).length;
     const rarity = rarityOf(it), rest = { ...getBuild().items };
     delete rest[slot];
-    const families = new Set(mods.map(m => AFFIX[m.id].family));
-    const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX)
+    const families = new Set(mods.map(m => AFFIX[m.id].family)), desecrated = mods.some(m => AFFIX[m.id].desecrated);
+    // one desecrated modifier per item (the game: "This item already has a Desecrated Modifier.")
+    const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
     const props = [
       l.physical && prop('Physical Damage', l.physical.join('–')),
@@ -712,6 +722,9 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and quality, a multiplier of its own on the item's defences
 { const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && BASE[r.item.base].armour.energy_shield;
   console.assert(r?.item.quality === 20 && local(r.item).energy_shield === Math.round(base * 1.2), 'parseItem: quality'); }
+{ // a skill the item grants, and its level as the game words it (English and Spanish)
+  const g = l => grantedSkills({ weapon: parseItem(`Item Class: Sceptres\nRarity: Normal\nShrine Sceptre\n--------\n${l}\n--------\nItem Level: 40`)?.item })[0];
+  console.assert(String(g('Grants Skill: Level 11 Impurity')) === 'Impurity,weapon,11' && g('Otorga la habilidad: Impureza nivel 9')?.[2] === 9, 'grantedSkills', g('Grants Skill: Level 11 Impurity')); }
 { // catalyst quality: the game's own ring (checked in game: lightning resistance +50, not the copied 28 + 19)
   const r = parseItem('Item Class: Rings\nRarity: Rare\nRapture Gyre\nTopaz Ring\n--------\nQuality (Lightning Modifiers): +10% (augmented)\n--------\nItem Level: 49\n--------\n{ Implicit Modifier — Elemental, Lightning, Resistance — 10% Increased }\n+28(20-30)% to Lightning Resistance\n--------\n{ Prefix Modifier "Healthy" (Tier: 7) — Life }\n+21(20-29) to maximum Life\n{ Prefix Modifier "Coursing" (Tier: 3) — Damage, Elemental, Lightning — 10% Increased }\n19(18-22)% increased Lightning Damage\n{ Suffix Modifier "of the Storm" (Tier: 6) — Elemental, Lightning, Resistance — 10% Increased }\n+19(16-20)% to Lightning Resistance'), s = r && rolled(r.item);
   console.assert(s?.['base_lightning_damage_resistance_%'] === 50 && s['lightning_damage_+%'] === 20 && s.base_maximum_life === 21 && String(r.item.mods[2]?.values) === '19', 'parseItem: catalyst', s); }

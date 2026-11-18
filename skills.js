@@ -7,6 +7,7 @@ export { canSupport };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
+import { grantedSkills, SLOTS } from './items.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const GEMS = await load('gems.json');
 export const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
@@ -128,10 +129,13 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
         <div class="socks">${sockets}</div>${picker}</div></div>`;
     }).join('');
     const per = SK.support_capacity_per_attribute;
+    // what the gear gives that the build does not have yet (the build's own gems are what is worked out)
+    const give = grantedSkills(b.items).filter(([n]) => GEM[n] && !b.gems.some(g => g.name === n)).map(([n, slot, level]) =>
+      `<p class="note">${t('Your {0} grants {1}: it is not in the build.', t(SLOTS[slot] || 'Jewel'), esc(tn(GEM[n])))} <button data-grant="${esc(n)}" data-level="${level || ''}">${t('Add')}</button></p>`).join('');
     const cur = b.gems[sel] && GEM[b.gems[sel].name]?.kind !== 'support' ? b.gems[sel] : null;
     side.innerHTML = cur ? details(cur, b, sum, geo) : `<p class="note">${t('Select a skill to see all its stats.')}</p>`;
     el.innerHTML = `<div class="skills"><div class="skadd"><input list="gemNames" placeholder="${t('Add skill…')}" id="gemSearch"><datalist id="gemNames">${GEMS.filter(g => g.kind !== 'support')
-      .map(g => `<option value="${esc(tn(g))}">`).join('')}</datalist></div>${rows || `<p class="note">${t('No skills yet: type a gem name above.')}</p>`}
+      .map(g => `<option value="${esc(tn(g))}">`).join('')}</datalist></div>${give}${rows || `<p class="note">${t('No skills yet: type a gem name above.')}</p>`}
       <div class="cap">${t('Support gem capacity')}: ${Object.entries(ATTRS).map(([k, [a, , c]]) =>
         `<span style="color:${used[k] > Math.floor(attrs[k] / per) ? '#f55' : c}">${a} (${used[k]}/${Math.floor(attrs[k] / per)})</span>`).join(', ')}
       <br><small class="note">${t('{0} attribute = 1 capacity. Attributes: Str {1}, Dex {2}, Int {3}. Sockets: whatever your gem has (Jeweller\'s Orbs, max {4}).', per, attrs.str, attrs.dex, attrs.int, SK.max_support_sockets)}</small></div></div>`;
@@ -143,6 +147,8 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
   el.addEventListener('click', e => {
     const x = e.target.closest('[data-unsup]');
     if (x) { unsup(...x.dataset.unsup.split(':').map(Number)); return; }
+    const grant = e.target.closest('[data-grant]');
+    if (grant) { addGem(grant.dataset.grant, +grant.dataset.level || undefined); render(); return; }
     const del = e.target.closest('[data-del]');
     if (del) { getBuild().gems.splice(del.dataset.del, 1); open = null; if (sel >= +del.dataset.del) sel = Math.max(0, sel - 1); changed(); render(); return; }
     const opt = e.target.closest('[data-sup]');

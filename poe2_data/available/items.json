@@ -4826,7 +4826,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Golden Targe",
@@ -4867,7 +4870,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Blacksteel Crest Shield",
@@ -4908,7 +4914,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Desert Buckler",
@@ -4950,7 +4959,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Tasalian Focus",
@@ -6027,7 +6039,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Golden Targe",
@@ -6069,7 +6084,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Blacksteel Crest Shield",
@@ -6111,7 +6129,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Desert Buckler",
@@ -6154,7 +6175,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Tasalian Focus",
@@ -7834,7 +7858,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Heart of Ice"
+   ]
   },
   {
    "name": "Utzaal Cuirass",
@@ -8820,7 +8847,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Soaring Targe",
@@ -8860,7 +8890,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Vaal Crest Shield",
@@ -8900,7 +8933,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Ancient Buckler",
@@ -8941,7 +8977,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Sacred Focus",
@@ -9991,7 +10030,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Soaring Targe",
@@ -10032,7 +10074,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Vaal Crest Shield",
@@ -10073,7 +10118,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Ancient Buckler",
@@ -10115,7 +10163,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Sacred Focus",
@@ -10372,7 +10423,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Plumed Focus",
@@ -10866,7 +10920,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Mirror of Refraction"
+   ]
   },
   {
    "name": "Ancient Mail",
@@ -11930,7 +11987,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Glacial Fortress",
@@ -11970,7 +12030,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Baroque Targe",
@@ -12010,7 +12073,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Sekheman Crest Shield",
@@ -12050,7 +12116,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Gutspike Buckler",
@@ -12091,7 +12160,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Leyline Focus",
@@ -13141,7 +13213,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Baroque Targe",
@@ -13182,7 +13257,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Sekheman Crest Shield",
@@ -13223,7 +13301,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Gutspike Buckler",
@@ -13265,7 +13346,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Leyline Focus",
@@ -13762,7 +13846,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Conqueror Plate",
@@ -14760,7 +14847,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Spellslinger"
+   ]
   },
   {
    "name": "Twisted Wand",
@@ -14794,7 +14884,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Coiling Bolts"
+   ]
   },
   {
    "name": "Runic Fork",
@@ -14898,7 +14991,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Feast of Flesh"
+   ]
   },
   {
    "name": "Perching Staff",
@@ -14931,7 +15027,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Spiraling Conspiracy"
+   ]
   },
   {
    "name": "Heavy Bow",
@@ -15524,7 +15623,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Visceral Quiver",
@@ -17060,7 +17162,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Mammoth Targe",
@@ -17100,7 +17205,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Intricate Crest Shield",
@@ -17140,7 +17248,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Ornate Buckler",
@@ -17181,7 +17292,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Druidic Focus",
@@ -18268,7 +18382,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Mammoth Targe",
@@ -18309,7 +18426,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Intricate Crest Shield",
@@ -18350,7 +18470,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Ornate Buckler",
@@ -18392,7 +18515,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Druidic Focus",
@@ -19883,7 +20009,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Blacksteel Tower Shield",
@@ -19924,7 +20053,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Venerable Defender",
@@ -19966,7 +20098,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Venerable Defender",
@@ -20009,7 +20144,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Intricate Crest Shield",
@@ -20050,7 +20188,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Cruel Talisman",
@@ -20659,7 +20800,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Glowering Crest Shield",
@@ -20699,7 +20843,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Venerable Defender",
@@ -20740,7 +20887,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Stone Cuirass",
@@ -21021,7 +21171,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Glowering Crest Shield",
@@ -21062,7 +21215,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Volant Quiver",
@@ -21136,7 +21292,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Bladeguard Buckler",
@@ -21177,7 +21336,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Hallowed Focus",
@@ -21257,7 +21419,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Bladeguard Buckler",
@@ -21299,7 +21464,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Hallowed Focus",
@@ -21455,7 +21623,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Bandit Mace",
@@ -22732,7 +22903,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Stone Targe",
@@ -22772,7 +22946,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Quartered Crest Shield",
@@ -22812,7 +22989,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Jingling Buckler",
@@ -22853,7 +23033,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Cultist Focus",
@@ -23853,7 +24036,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Stone Targe",
@@ -23894,7 +24080,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Quartered Crest Shield",
@@ -23935,7 +24124,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Jingling Buckler",
@@ -23977,7 +24169,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Cultist Focus",
@@ -24295,7 +24490,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Consecrate"
+   ]
   },
   {
    "name": "Covert Hood",
@@ -24502,7 +24700,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Penetrating Quiver",
@@ -27070,7 +27271,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Voodoo Focus",
@@ -28234,7 +28438,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Polished Targe",
@@ -28274,7 +28481,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Dekharan Crest Shield",
@@ -28314,7 +28524,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Spikeward Buckler",
@@ -28355,7 +28568,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Arrayed Focus",
@@ -29155,7 +29371,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Polished Targe",
@@ -29196,7 +29415,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Dekharan Crest Shield",
@@ -29237,7 +29459,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Spikeward Buckler",
@@ -29279,7 +29504,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Arrayed Focus",
@@ -29653,7 +29881,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Enervating Nova"
+   ]
   },
   {
    "name": "Lumbering Talisman",
@@ -30519,7 +30750,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Whorl Focus",
@@ -31828,7 +32062,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Mercenary Targe",
@@ -31868,7 +32105,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Descry Crest Shield",
@@ -31908,7 +32148,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Coiled Buckler",
@@ -31949,7 +32192,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Jingling Focus",
@@ -32193,7 +32439,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Whorl Focus",
@@ -32652,7 +32901,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Seer Crest Shield",
@@ -32693,7 +32945,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Pearl Buckler",
@@ -32735,7 +32990,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Absent Amulet",
@@ -32769,7 +33027,16 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Cast on Elemental Ailment",
+    "Cast on Critical",
+    "Cast on Dodge",
+    "Rhoa Mount",
+    "Archmage",
+    "Trinity",
+    "Eternal Rage"
+   ]
   },
   {
    "name": "Heavy Belt",
@@ -33159,7 +33426,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Seer Crest Shield",
@@ -33201,7 +33471,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Pearl Buckler",
@@ -33244,7 +33517,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Heraldric Tower Shield",
@@ -33286,7 +33562,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Ancient Greatblade",
@@ -33489,7 +33768,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Unleash"
+   ]
   },
   {
    "name": "Wrath Sceptre",
@@ -33524,7 +33806,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": 100
+   "spirit": 100,
+   "grants": [
+    "Fulmination"
+   ]
   },
   {
    "name": "Mystic Raiment",
@@ -34414,7 +34699,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Fur-lined Targe",
@@ -34454,7 +34742,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Engraved Crest Shield",
@@ -34494,7 +34785,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Painted Buckler",
@@ -34535,7 +34829,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Staghorn Focus",
@@ -34616,7 +34913,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Kalguuran Forgehammer",
@@ -34823,7 +35123,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Stratified Targe",
@@ -34864,7 +35167,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Cutlass",
@@ -36380,7 +36686,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Wayward Crest Shield",
@@ -36421,7 +36730,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Laminate Buckler",
@@ -36463,7 +36775,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runed Focus",
@@ -37700,7 +38015,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Ironwood Targe",
@@ -37740,7 +38058,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Painted Crest Shield",
@@ -37780,7 +38101,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Oak Buckler",
@@ -37821,7 +38145,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Wreath Focus",
@@ -38886,7 +39213,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Wayward Crest Shield",
@@ -38928,7 +39258,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Laminate Buckler",
@@ -38971,7 +39304,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Runed Focus",
@@ -39270,7 +39606,46 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Arctic Armour",
+    "Herald of Ash",
+    "Herald of Ice",
+    "Herald of Thunder",
+    "Plague Bearer",
+    "Barrier Invocation",
+    "Lingering Illusion",
+    "Ghost Dance",
+    "Mana Remnants",
+    "Magma Barrier",
+    "Raging Spirits",
+    "Wind Dancer",
+    "Cast on Minion Death",
+    "Scavenged Plating",
+    "War Banner",
+    "Defiance Banner",
+    "Dread Banner",
+    "Time of Need",
+    "Attrition",
+    "Charge Regulation",
+    "Shard Scavenger",
+    "Overwhelming Presence",
+    "Alchemist's Boon",
+    "Reaper's Invocation",
+    "Berserk",
+    "Herald of Plague",
+    "Herald of Blood",
+    "Withering Presence",
+    "Ravenous Swarm",
+    "Combat Frenzy",
+    "Trail of Caltrops",
+    "Convalescence",
+    "Iron Ward",
+    "Siphon Elements",
+    "Briarpatch",
+    "Savage Fury",
+    "Barkskin"
+   ]
   },
   {
    "name": "Portent Amulet",
@@ -39304,7 +39679,16 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Wolf Pack",
+    "Blink",
+    "Elemental Invocation",
+    "Elemental Conflux",
+    "Sacrifice",
+    "Mirage Archer",
+    "Feral Invocation"
+   ]
   },
   {
    "name": "Treasured Blade",
@@ -41262,7 +41646,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Blazon Crest Shield",
@@ -41304,7 +41691,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Sigil Crest Shield",
@@ -41346,7 +41736,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Ridged Buckler",
@@ -41389,7 +41782,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Spiked Buckler",
@@ -41432,7 +41828,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Crystal Focus",
@@ -41643,7 +42042,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Toxic Quiver",
@@ -41761,7 +42163,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Sombre Gloves",
@@ -41927,7 +42332,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Reap"
+   ]
   },
   {
    "name": "Construct Crossbow",
@@ -45789,7 +46197,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Painted Tower Shield",
@@ -45831,7 +46242,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Braced Tower Shield",
@@ -45873,7 +46287,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Barricade Tower Shield",
@@ -45915,7 +46332,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Hardwood Targe",
@@ -45957,7 +46377,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Crescent Targe",
@@ -45999,7 +46422,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Emblem Crest Shield",
@@ -46041,7 +46467,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Jingling Crest Shield",
@@ -46083,7 +46512,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runemastered Leather Buckler",
@@ -46126,7 +46558,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Wooden Buckler",
@@ -46169,7 +46604,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Plated Buckler",
@@ -46212,7 +46650,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Iron Buckler",
@@ -46255,7 +46696,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runemastered Twig Focus",
@@ -46670,7 +47114,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Vaal Cuirass",
@@ -46794,7 +47241,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Obsidian Greatsword",
@@ -47042,7 +47492,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Omen Crest Shield",
@@ -47083,7 +47536,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Plumed Focus",
@@ -47288,7 +47744,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Omen Crest Shield",
@@ -47330,7 +47789,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Plumed Focus",
@@ -47984,7 +48446,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Decompose"
+   ]
   },
   {
    "name": "Cultist Bow",
@@ -49075,7 +49540,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Chiseled Targe",
@@ -49116,7 +49584,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Sectarian Crest Shield",
@@ -49157,7 +49628,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Ringed Buckler",
@@ -49199,7 +49673,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Voodoo Focus",
@@ -50299,7 +50776,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Chiseled Targe",
@@ -50341,7 +50821,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Sectarian Crest Shield",
@@ -50383,7 +50866,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Ringed Buckler",
@@ -50426,7 +50912,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Voodoo Focus",
@@ -51410,7 +51899,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Jingling Crest Shield",
@@ -51451,7 +51943,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Keth Raiment",
@@ -51780,7 +52275,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Jingling Crest Shield",
@@ -51822,7 +52320,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Savage Greataxe",
@@ -52565,7 +53066,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": 100
+   "spirit": 100,
+   "grants": [
+    "Impurity"
+   ]
   },
   {
    "name": "Studded Vest",
@@ -52846,7 +53350,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Spiked Buckler",
@@ -52888,7 +53395,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Crystal Focus",
@@ -53251,7 +53761,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Spiked Buckler",
@@ -53294,7 +53807,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Crystal Focus",
@@ -53374,7 +53890,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Galvanic Field"
+   ]
   },
   {
    "name": "Chiming Staff",
@@ -53407,7 +53926,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Sigil of Power"
+   ]
   },
   {
    "name": "Stellar Amulet",
@@ -53962,7 +54484,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Tonal Focus",
@@ -54127,7 +54652,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Tonal Focus",
@@ -54298,7 +54826,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Effigial Tower Shield",
@@ -54340,7 +54871,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Timeless Jewel",
@@ -55619,7 +56153,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Volatile Dead"
+   ]
   },
   {
    "name": "Pyrophyte Staff",
@@ -55657,7 +56194,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Solar Orb"
+   ]
   },
   {
    "name": "Recurve Bow",
@@ -55777,7 +56317,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": 100
+   "spirit": 100,
+   "grants": [
+    "Malice"
+   ]
   },
   {
    "name": "Familial Talisman",
@@ -56822,7 +57365,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Studded Targe",
@@ -56863,7 +57409,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Emblem Crest Shield",
@@ -56904,7 +57453,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Iron Buckler",
@@ -56946,7 +57498,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Engraved Focus",
@@ -58114,7 +58669,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Studded Targe",
@@ -58156,7 +58714,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Emblem Crest Shield",
@@ -58198,7 +58759,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Iron Buckler",
@@ -58241,7 +58805,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Engraved Focus",
@@ -58552,7 +59119,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Sapphire Ring",
@@ -58752,7 +59322,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Vampiric Blade",
@@ -59000,7 +59573,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Power Siphon"
+   ]
   },
   {
    "name": "Warden Bow",
@@ -59527,7 +60103,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Iron Cuirass",
@@ -60021,7 +60600,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Bearded Axe",
@@ -60926,7 +61508,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Fire Quiver",
@@ -61214,7 +61799,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Sigil Crest Shield",
@@ -61255,7 +61843,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Sigil Crest Shield",
@@ -61297,7 +61888,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Broadsword",
@@ -61504,7 +62098,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": 100
+   "spirit": 100,
+   "grants": [
+    "Discipline"
+   ]
   },
   {
    "name": "Ringmail Gauntlets",
@@ -61625,7 +62222,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Woven Focus",
@@ -61789,7 +62389,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Woven Focus",
@@ -62282,7 +62885,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Ruby Charm",
@@ -62735,7 +63341,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Hook Axe",
@@ -63315,7 +63924,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Bone Blast"
+   ]
   },
   {
    "name": "Attuned Wand",
@@ -63349,7 +63961,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Mana Drain"
+   ]
   },
   {
    "name": "Gelid Staff",
@@ -63387,7 +64002,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Freezing Shards"
+   ]
   },
   {
    "name": "Voltaic Staff",
@@ -63425,7 +64043,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Lightning Bolt"
+   ]
   },
   {
    "name": "Shortsword",
@@ -63892,7 +64513,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Chaos Bolt"
+   ]
   },
   {
    "name": "Ashen Staff",
@@ -63930,7 +64554,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Firebolt"
+   ]
   },
   {
    "name": "Crude Bow",
@@ -64051,7 +64678,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": 100
+   "spirit": 100,
+   "grants": [
+    "Skeletal Warrior"
+   ]
   },
   {
    "name": "Changeling Talisman",
@@ -64734,7 +65364,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Hardwood Targe",
@@ -64775,7 +65408,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Blazon Crest Shield",
@@ -64816,7 +65452,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Leather Buckler",
@@ -64858,7 +65497,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Twig Focus",
@@ -66325,7 +66967,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Hardwood Targe",
@@ -66367,7 +67012,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Blazon Crest Shield",
@@ -66409,7 +67057,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Raise Shield"
+   ]
   },
   {
    "name": "Runeforged Leather Buckler",
@@ -66452,7 +67103,10 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "grants": [
+    "Parry"
+   ]
   },
   {
    "name": "Runeforged Twig Focus",
@@ -68778,6 +69432,85 @@
    "life",
    "mana"
   ]
+ },
+ "grant_line": {
+  "en": "Grants Skill: Level {1} {0}",
+  "es": "Otorga la habilidad: {0} nivel {1}",
+  "pt": "Concede a Habilidade: Nível {1} {0}",
+  "fr": "Octroie l'Aptitude : Niveau {1} {0}",
+  "de": "Gewährt Fertigkeit: {0}, Stufe {1}",
+  "ru": "Дарует умение: {0} {1} уровня",
+  "ja": "スキルを付与: レベル {1} {0}",
+  "ko": "스킬 부여: {1}레벨 {0}",
+  "th": "ให้สกิล: {0} เลเวล {1}",
+  "zh": "賦予技能: {1} 級 {0}"
+ },
+ "mod_grants": {
+  "UniqueTriggerDecomposeOnStep1": "Decompose",
+  "UniqueGrantsBlinkSand1": "Blink",
+  "UniqueTriggerGasCloudOnMainHandHit1": "[DNT-UNUSED] Gas Cloud",
+  "UniqueTriggerDetonationOnOffHandHit1": "[DNT-UNUSED] Detonation",
+  "UniqueGrantsCastOnBlock1": "Cast on Block",
+  "UniqueGrantsCastCurseOnBlock1": "Curse on Block",
+  "UniqueTriggerEmberFusilladeOnSpellCast1": "Ember Fusillade",
+  "UniqueTriggerSparkOnKillingShockedEnemy1": "Spark",
+  "UniqueTriggerLightningBoltOnCriticalStrike1": "Lightning Bolt",
+  "UniqueGrantsHeraldOfAsh1": "Herald of Ash",
+  "UniqueGrantsHeraldOfIce1": "Herald of Ice",
+  "UniqueGrantsHeraldOfThunder1": "Herald of Thunder",
+  "UniqueGrantsWitheringPresence1": "Withering Presence",
+  "UniqueGrantsCastOnCharmUseSkill1": "Cast on Charm Use",
+  "UniqueGrantsCastLightningSpellOnHit1": "Thundergod's Wrath",
+  "UniqueGrantsChaosInfusion1": "Chaotic Surge",
+  "UniqueTriggerInfusionOnReload": "Gemini Surge",
+  "UniqueTriggerPoisonToadOnKill": "Bursting Fen Toad",
+  "UniqueGrantsElementalPowerSkill": "Pinnacle of Power",
+  "UniqueGrantsRequiemSkill": "Requiem",
+  "UniqueGrantsIcestormSkill": "Icestorm",
+  "UniqueLightlessStalker1": "[DNT] Lightless Stalker",
+  "GhostfuseArrowUnique_1": "Phantasmal Arrow",
+  "HammerOfNgamahuUnique__1": "[DNT] Hammer of Ngamahu",
+  "BlackPowderBlitzUnique__1": "Black Powder Blitz",
+  "ValakosLuckUnique__1": "Valako's Charge",
+  "ThunderfistUnique__1": "Crackling Palm",
+  "ForesightUnique__1": "Future-Past",
+  "RunicTemperingUnique__1": "Runic Tempering",
+  "UniqueKulemakHisWinnowingFlame_1": "His Winnowing Flame",
+  "UniqueKulemakHisFoulEmergence_1": "His Foul Emergence",
+  "UniqueKulemakHisDarkHorizon_1": "His Dark Horizon",
+  "UniqueKulemakHisVileIntrusion_1": "His Vile Intrusion",
+  "UniqueKulemakHisScatteringCalamity_1": "His Scattering Calamity",
+  "UniqueKulemakHisGraveCommand_1": "His Grave Command",
+  "TheFlawedEdictUnique__1": "[DNT-UNUSED] The Flawed Edict",
+  "UniquePackleaderCompanion_1": "Azmerian Wolf",
+  "UniqueCacklingCompanionSkill1": "Cackling Companions",
+  "UniqueFungalTerrainSkill1": "[DNT] Fungal Terrain",
+  "UniqueVesselOfWrathSkill1": "Molten Crash",
+  "UniqueShatteringSpiteSkill1": "Shattering Spite",
+  "UniqueGrantsLifeRemnants1": "Life Remnants",
+  "UniqueCoilingBoltsSkill1": "Coiling Bolts",
+  "UniqueTangmazuConspiracySkill1": "Spiraling Conspiracy",
+  "UniqueSigilOfLifeSkill1": "Rite of Restoration",
+  "UniqueAncientGiftsSkill1": "Wildwood's Gifts",
+  "UniqueRighteousDescentSkill1": "Righteous Descent",
+  "UniqueStarbornOnslaughtSkill1": "Starborn Onslaught",
+  "UniqueAzmerianSwarmSkill1": "Azmerian Swarms",
+  "UniqueHarbingerOfMadnessSkill1": "Harbinger of Madness",
+  "UniqueSanguineRevelrySkill1": "Sanguine Revelry",
+  "UniqueBlasphemySkill1": "Blasphemy",
+  "UniqueMistRavenCompanionSkill1": "Mist Raven",
+  "UniqueSoaringMidnightSkill1": "Soaring Midnight",
+  "UniqueCrushingFearSkill1": "Crushing Fear",
+  "UniqueMidnightStarSkill1": "Midnight Zenith",
+  "UniqueSpiritVesselSkill1": "Spirit Vessel",
+  "UniqueTheStarsAnswerSkill1": "The Stars Answer",
+  "UniqueHazardousHoldoutSkill1": "Kinetic Bash",
+  "UniqueMoltenShowerSkill1": "Molten Shower",
+  "HandWrapsThunderfistUnique__1": "Gelid Palm",
+  "UniqueInternecineDraw1": "[DNT] Internecine Draw",
+  "UniqueAtziriHeraldSkill1": "Herald of the Royal Queen",
+  "HandWrapsUniqueStunDamageIncrease1": "Smash to Smithereens",
+  "UniqueAbyssalLivingBomb1": "Untether"
  },
  "catalysts": {
   "Quality (Life Modifiers)": "life",

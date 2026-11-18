@@ -493,6 +493,11 @@ visual = load('ItemVisualIdentity')
 mods_tr = load_langs('Mods')
 mod_stats = lambda m: [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]
 bases, implicit_ids = [], set()
+# the skill an item gives with no gem ("Grants Skill: Purity of Fire"): a base's own (ItemInherentSkills: sceptres,
+# staves, shields) and a modifier's (ModGrantedSkills), by the gem's name
+base_types = load('BaseItemTypes')
+gem_name = lambda sg: base_types[skill_gems[sg]['BaseItemType']]['Name']
+inherent = {x['BaseItemType']: [gem_name(sg) for sg in x['SkillsGranted']] for x in load('ItemInherentSkills') if x['SkillsGranted']}
 for i, b in enumerate(load('BaseItemTypes')):
     cls = classes[b['ItemClass']]['Name']
     if cls not in SLOT_CLASSES or not ok(b['Name']) or b['ModDomain'] not in (1, 2, 11) or b['Name'] not in trade_types:  # 1 item, 2 flask/charm, 11 jewel
@@ -509,6 +514,7 @@ for i, b in enumerate(load('BaseItemTypes')):
         'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10},
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
         'spirit': spirit.get(i),
+        **({'grants': inherent[i]} if i in inherent else {}),
     })
 # what a rune (soul core, talisman...) gives in a socket, every set of stats once ([[id, value, value], ...]): parseItem
 # reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
@@ -530,6 +536,11 @@ save('items.json', {
     # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
     # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
     # lightning; Defence -> defences, the tag's own name)
+    # how an item says the level of the skill it grants, in each language (ClientStrings ItemDisplayGrantedSkill:
+    # "Grants Skill: <underline>{{Level {1} {0}}}" shown as "Grants Skill: Level 11 Purity of Fire"): {0} the skill, {1} its level
+    'grant_line': {c: re.sub(r'\{(?!\d\})|(?<!\{\d)\}', '', re.sub(r'<\w+>', '', t['ItemDisplayGrantedSkill']))
+                   for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
+    'mod_grants': {mods[x['Mod']]['Id']: gem_name(x['Skill']) for x in load('ModGrantedSkills')},
     'catalysts': {q['Description']: next(t for t in (w, w + 's') if t in tag_ids)
                   for rows in [load('AlternateQualityTypes'), *load_langs('AlternateQualityTypes').values()] for q in rows
                   for w in [re.sub(r'^(Jewellery|CurrencyJewel)Quality', '', q['Id']).lower()]},

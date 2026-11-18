@@ -225,10 +225,10 @@ function gemTip(t) {
   tip.style.top = Math.max(4, Math.min(innerHeight - h - 4, r.top)) + 'px';
 }
 document.addEventListener('mouseover', e => gemTip(e.target.closest?.('[data-tip]')));
-function addGem(name) {
+function addGem(name, level = 20) {   // level: the one an item that grants it says
   const g = gems.find(g => g.name === name || tn(g) === name || g.name_es === name);
   if (!g) return false;
-  B().gems.push({ name: g.name, shape: 'auto', level: 20, radius: 0, width: 0 });
+  B().gems.push({ name: g.name, shape: 'auto', level, radius: 0, width: 0 });
   save(); renderSide(); return true;
 }
 

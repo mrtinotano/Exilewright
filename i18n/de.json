@@ -829,5 +829,7 @@
  "With the levels your passives and gear add": "Mit den Stufen, die deine Passiven und deine Ausrüstung hinzufügen",
  "Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.": "Lege im Spiel einen Gegenstand an, halte den Zeiger darüber und drücke das Tastenkürzel: Der Vergleich nimmt ihn als das, was der Charakter trägt.",
  "Press the shortcut again over it to put it in the other slot.": "Drücke das Tastenkürzel noch einmal darüber, um ihn in den anderen Platz zu legen.",
- "Only {0} listed: the price can be far off.": "Nur {0} angeboten: Der Preis kann weit danebenliegen."
+ "Only {0} listed: the price can be far off.": "Nur {0} angeboten: Der Preis kann weit danebenliegen.",
+ "Your {0} grants {1}: it is not in the build.": "Dein {0} gewährt {1}: Es ist nicht im Build.",
+ "Add": "Hinzufügen"
 }
