@@ -719,9 +719,10 @@ function drawTree() {
   // world-space layers
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
   // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
-  // once one of its passives is allocated, faint until then (as the game shows it)
+  // once one of its passives is allocated, faint until then (as the game shows it). Not by an attribute passive: a
+  // group also holds those of the paths by it, and the game leaves its art faint for them
   // note: the faint 0.3 is by eye from a screenshot of the game; no table says it
-  const taken = new Set([...on].filter(id => N[id]?.mastery).map(id => String(N[id].group)));
+  const taken = new Set([...on].filter(id => N[id] && N[id].type !== 'attribute').map(id => String(N[id].group)));
   for (const [g, id] of GROUP_ART) {
     const pic = art('mastery/' + id);
     if (!pic || !GROUPS[g]) continue;

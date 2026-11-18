@@ -223,14 +223,11 @@ for gid, n in nodes.items():
 attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(p['Stats'])}
              for p in passives for k in ('strength', 'dexterity', 'intelligence') if p['Id'].startswith('generic_attribute_' + k)}
 # the art the game draws behind a group (images.py: img/mastery/<id>): the mastery of its passives (PassiveSkills.MasteryGroup
-# -> PassiveSkillMasteryGroups.Art -> PassiveSkillTreeMasteryArt), the one most of them have. A passive with a mastery
-# says so ("mastery"): only one of those lights its group's art (a group also holds the attribute passives of the paths
-# by it, which have none)
+# -> PassiveSkillMasteryGroups.Art -> PassiveSkillTreeMasteryArt), the one most of them have
 mastery_groups, mastery_art = load('PassiveSkillMasteryGroups'), load('PassiveSkillTreeMasteryArt')
 group_art = {}
 for gid, n in nodes.items():
     if by_gid[gid]['MasteryGroup'] is not None:
-        n['mastery'] = True
         group_art.setdefault(n['group'], []).append(mastery_art[mastery_groups[by_gid[gid]['MasteryGroup']]['Art']]['Id'])
 group_art = {g: max(l, key=l.count) for g, l in group_art.items()}   # a tie: the first one of them, every run
 save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'group_art': group_art, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
