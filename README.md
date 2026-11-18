@@ -7,6 +7,10 @@ Every number comes from the game's own data (see `poe2_data/README.md`).
 Fan-made, not affiliated with or endorsed by Grinding Gear Games. Path of Exile, its data and images are (c)
 Grinding Gear Games; support stat readings come from Path of Building Community (MIT). See `LICENSE`.
 
+> **Early version.** Exilewright is a young tool: many things do not work quite right yet, and some numbers may be
+> off. It is being improved as fast as possible. If something looks wrong, please
+> [open an issue](https://github.com/mrtinotano/Exilewright/issues/new/choose).
+
 ## Install
 Download it from [Releases](https://github.com/mrtinotano/Exilewright/releases/latest):
 - **Exilewright-setup.exe**: installs it (no admin rights needed) and adds it to the Start menu. Your builds are kept
@@ -114,3 +118,10 @@ the passive tree, and the monsters of the Simulator. `available.py` ends with a 
 a column it needs. `pob2.py` needs no install: it reads from Path of Building 2 the two things the tables do not say,
 what each support's stats do to the calculation (`pob2.json`) and the trade-site number of every item modifier
 (`trade_mods.json`, what the gear search matches by).
+
+## Feedback
+Found a bug, a number that does not match the game, or have an idea? [Open an issue](https://github.com/mrtinotano/Exilewright/issues/new/choose)
+(there is a form for each). The project does not take pull requests: they are closed on their own, so please write an
+issue instead.
+
+Working on it with an AI coding assistant? `AGENTS.md` tells it how the project is laid out and its rules.

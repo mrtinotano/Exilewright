@@ -1,0 +1,36 @@
+name: Bug report
+description: Something works wrong, a number does not match the game, or the app fails
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Exilewright version
+      description: In the window's title (for example 0.26)
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options: [Passive tree, Equipment, Skills, Optimizer, Simulator, Character panel, Price check, Equipment comparison, Loot filter, Import / Export, Settings / updates, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+      description: If a number is off, the number the app shows and the one the game shows.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to see it
+      placeholder: "1. Import this build...\n2. Open the Skills tab...\n3. ..."
+  - type: textarea
+    id: build
+    attributes:
+      label: Build or item
+      description: A Path of Building 2 code or link (Export), or the item's text copied in the game with Ctrl+C. Screenshots help too.
+      render: text

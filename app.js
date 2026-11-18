@@ -720,7 +720,7 @@ function drawTree() {
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
   // behind each group, the art of its mastery (images.py: img/mastery, at half size: two world units a pixel), bright
   // once one of its passives is allocated, faint until then (as the game shows it)
-  // ponytail: the faint 0.3 is by eye from a screenshot of the game; no table says it
+  // note: the faint 0.3 is by eye from a screenshot of the game; no table says it
   const taken = new Set([...on].map(id => String(N[id]?.group)));
   for (const [g, id] of GROUP_ART) {
     const pic = art('mastery/' + id);
