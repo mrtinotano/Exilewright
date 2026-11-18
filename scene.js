@@ -827,7 +827,7 @@ export function initScene(el, api) {
     // Cannon's Cluster Grenade), with the damage and speed calc.js gives it as the totem's; up to the build's totem limit.
     // Without that damage it hits for the scene's share, drawn "~".
     totem(S) {
-      const j = api.build().gems.findIndex((_, j) => api.usedBy?.(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
+      const j = api.build().gems.findIndex((_, j) => api.usedBy(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
       const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].dead = true;
       const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem' }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
       const every = real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3;
@@ -839,8 +839,8 @@ export function initScene(el, api) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime)) { e.dead = true; return; }
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
-          wait = every; f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z);
-          const k = dist(d.pos, e.pos) || 1, a0 = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
+          wait = every;
+          const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
           else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, real ? {} : { mult: .6 }); }

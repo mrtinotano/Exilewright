@@ -597,8 +597,8 @@ export function skill(g, b, treeGear) {
   const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
-  out.curse = (G.types || []).includes('AppliesCurse') ? curseOf(st, sum) : null;
-  out.mark = (G.types || []).includes('Mark') ? markOf(st) : null;
+  out.curse = gt.includes('AppliesCurse') ? curseOf(st, sum) : null;
+  out.mark = gt.includes('Mark') ? markOf(st) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. note: no duration modifiers yet
   const sec = k => st[k] ? st[k] / 1000 : null;

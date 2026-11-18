@@ -303,13 +303,13 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     # A skill that deals no damage itself has the one that does laid over it: a gem's own skill that only loads
     # ammunition or reserves spirit (crossbow rounds, Black Powder Blitz) under the skill the gem then uses, and the
     # main stat set of a skill made of several parts (Rolling Slam) under its first part that deals damage
-    idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
     # ...and a totem's own attack over the totem it raises (Shockwave Totem's quake: its damage, speed and area)
     implicit_of = lambda x: {sid(a) for a in ss_tab[x['StatSet']]['ImplicitStats']}
+    idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
     effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])
                      or 'is_totem' in implicit_of(e) and 'base_skill_is_totemified' in implicit_of(ge_tab[x]) and not ge_tab[x]['Id'].startswith('Support')]
     # ...unless the skill sets that part off by itself (Ancestral Cry's shockwave): then the cry's own cast time, cost and area stay on top
-    if 'display_statset_hide_usage_stats' in {sid(a) for a in ss_tab[effects[-1]['StatSet']]['ImplicitStats']}:
+    if 'display_statset_hide_usage_stats' in implicit_of(effects[-1]):
         effects.reverse()
     sets = [i for x in effects for i in [x['StatSet']] + ([j for j in x['AdditionalStatSets'] if not idle(j)][:1] if idle(x['StatSet']) else [])]
     implicit = {sid(a) for i in sets for a in ss_tab[i]['ImplicitStats']}
