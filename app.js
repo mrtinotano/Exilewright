@@ -186,7 +186,8 @@ function renderSceneSkills() {
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
   const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
   const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
-  const cards = list.map(({ g, inf, P }, i) => {
+  const live = (g, i) => byHand(b, i) && !SK.skills[g.name]?.totem && skillDmg(g).dps != null;   // a totem's damage is its own
+  const card = ({ g, inf, P }, i) => {
     const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
     const num = (k, v, tip) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${tip}">`;
     const facts = [
@@ -197,18 +198,20 @@ function renderSceneSkills() {
     return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
       <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key(i) ? `<i>${key(i)}</i>` : ''}</span>
         <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
-        <b class="sdps">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
+        <b class="sdps" data-dps="${i}">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
       ${facts ? `<div class="sk-facts">${facts}</div>` : ''}
       <div class="sk-edit"><select data-i="${i}" data-k="shape" title="${t('How the scene casts it: Auto follows the game data of the gem')}">${opts(SHAPES, shape)}</select>
         ${G.radiusFromData ? '' : `<label title="${t('the game gives no radius for this gem: manual value')}">${t('radius')}${num('radius', g.radius, t('the game gives no radius for this gem: manual value'))}<small>${t('manual')}</small></label>`}
         ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
     </div>`;
-  }).join('');
+  };
+  const cards = list.map((x, i) => live(x.g, i) ? card(x, i) : '').join(''), rest = list.map((x, i) => live(x.g, i) ? '' : card(x, i)).join('');
   const syn = synergies(list), name = i => `<b>${esc(list[i].label)}</b>`;
   const line = x => `<li data-card="${x.a}">${t(x.text, name(x.a), x.b == null ? '' : name(x.b), x.args[2] ? `<i>${esc(t(x.args[2]))}</i>` : '')}</li>`;
   $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('their keys: click a slot of the simulator bar to change them')}</small></h3>
-    ${cards || `<p class="note">${t('Add skills in the Skills tab.')}</p>`}
+    ${cards || `<p class="note">${t(list.length ? 'None of your skills used by hand deals damage.' : 'Add skills in the Skills tab.')}</p>`}
+    ${rest ? `<details class="syn-more"><summary>${t('Other skills: their damage does not change while you play')}</summary>${rest}</details>` : ''}
     ${list.length > 1 ? `<h3>${t('Synergies in this build')} <small class="note">${syn.length}</small></h3>
       ${syn.length ? `<ul class="syn">${syn.slice(0, 14).map(line).join('')}</ul>${syn.length > 14 ? `<details class="syn-more"><summary>${t('{0} more', syn.length - 14)}</summary><ul class="syn">${syn.slice(14).map(line).join('')}</ul></details>` : ''}`
         : `<p class="note">${t('No combos found between these skills yet.')}</p>`}` : ''}
@@ -850,12 +853,14 @@ cv.onwheel = e => {
 addEventListener('resize', redraw);
 
 // ---------- tabs
-// side panel: character sheet in Tree / Equipment, details of the selected skill in Skills, sheet + skills split in the 3D scene
+// side panel: character sheet in Tree / Equipment, details of the selected skill in Skills, in the 3D scene what changes while
+// you play (resistances, speeds, damage taken...) over the skills whose damage changes with it
 document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   const v = btn.dataset.v;
   document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === btn));
   document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== v);
-  $('charPanel').hidden = v === 'skills';
+  $('charPanel').hidden = v === 'skills' || v === 'scene';
+  $('simChar').hidden = v !== 'scene';
   $('skillPanel').hidden = v !== 'skills';
   $('sceneSkills').hidden = v !== 'scene';
   if (v === 'items') renderItems();     // what each item would change depends on the tree and skills as they are now
@@ -873,6 +878,11 @@ const BAR_KEY = SCENE_KEY + ':bar', sceneBars = (() => { try { return JSON.parse
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
 const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity);
 const attr = x => esc(x).replace(/"/g, '&quot;');
+const enWrap = Object.assign(document.createElement('details'), { className: 's-enwrap' });
+enWrap.innerHTML = `<summary>${t('Enemies')}</summary><div id="sceneEnemy"></div>`;
+$('scene').append(enWrap);
+enWrap.onchange = $('sceneSkills').onchange; enWrap.onclick = $('sceneSkills').onclick;
+enWrap.querySelector('summary').onmouseup = e => e.target.blur();   // Space rolls in the scene, it must not fold the panel
 $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(ENEMIES.length))}</small></h3>
   <div class="en-pick"><input id="enFind" type="search" placeholder="${attr(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
   <div id="enDetail"></div>`;
@@ -960,7 +970,27 @@ function renderEnemy() {
     <p class="note">${t('Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.')}</p>`;
 }
 
-scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
+// what buffs and ailments change while you play, against your character without them: up in green, down in red
+// (`good`: whether more is better). Life, mana, Spirit, Rage and charges are already on the scene's screen.
+let liveHtml = '';
+function onLive(L) {
+  if ($('simChar').hidden) return;
+  const row = (k, [now, was], unit, good = true, d = 0) => {
+    const cls = Math.abs(now - was) < .05 ? '' : (now > was) === good ? 'up' : 'down';
+    return `<tr><th>${k}</th><td>${cls ? `<small>${fmt(was, d)}${unit} → </small>` : ''}<b class="${cls}">${fmt(now, d)}${unit}</b></td></tr>`;
+  };
+  const html = `<h3>${t('Character')} <small class="note">${t('what buffs and ailments change while you play')}</small></h3><table class="en-t">
+    ${L.res.map(([e, now, was]) => row(`<span class="dm ${e}">${t(EL_NAME[e])}</span>`, [now, was], '%')).join('')}
+    ${row(t('Movement speed'), L.move, ' m/s', true, 1)}${row(t('Action speed'), L.action, '%')}
+    ${row(t('Damage taken'), L.taken, '%', false)}${row(t('Attack damage from Rage'), L.rage, '%')}${row(t('Guard'), L.guard, '')}</table>`;
+  if (html !== liveHtml) $('simChar').innerHTML = liveHtml = html;
+  B().gems.forEach((g, i) => {   // the cards' damage per second, as it is now
+    const el = document.querySelector(`#sceneList > .sk-card [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;
+    const k = L.dps(i), v = `${fmt(s.dps * k)} <small>DPS</small>`;
+    if (el.dataset.v !== v) { el.dataset.v = v; el.innerHTML = v; el.className = 'sdps' + (k > 1.001 ? ' up' : k < .999 ? ' down' : ''); }
+  });
+}
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, onLive, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum()),
   sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), ailments: ailmentDefence(c, sum),
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },

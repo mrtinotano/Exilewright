@@ -847,5 +847,13 @@
  "{0} applies its effect constantly": "{0}: эффект действует постоянно",
  "{0} used": "{0}: использован",
  "Enemies stand still": "Враги стоят на месте",
- "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Враги идут к вам со своей скоростью, когда вы входите в их радиус агрессии или бьёте их, и атакуют в пределах досягаемости. Число с ~ включает значение, которого нет в данных игры."
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Враги идут к вам со своей скоростью, когда вы входите в их радиус агрессии или бьёте их, и атакуют в пределах досягаемости. Число с ~ включает значение, которого нет в данных игры.",
+ "Character": "Персонаж",
+ "what buffs and ailments change while you play": "что меняют баффы и состояния во время игры",
+ "Action speed": "Скорость действий",
+ "Damage taken": "Получаемый урон",
+ "Attack damage from Rage": "Урон от атак за Свирепость",
+ "Guard": "Оборона",
+ "None of your skills used by hand deals damage.": "Ни одно из ваших умений, используемых вручную, не наносит урон.",
+ "Other skills: their damage does not change while you play": "Другие умения: их урон не меняется во время игры"
 }

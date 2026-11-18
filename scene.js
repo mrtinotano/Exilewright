@@ -265,10 +265,7 @@ export function initScene(el, api) {
     }
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
-    if (real && D.attack && S.src !== 'minionHit') {
-      const R = sheet().rage, eff = R?.berserk && tog[R.berserk.name] ? R.berserk.effect : 0;
-      g *= (1 + me.rage * (100 + eff) / 1e4) / (1 + (D.rage || 0) * (100 + (D.rageEffect || 0)) / 1e4);
-    }
+    if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if (!o.noPay) {
       const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
@@ -1532,6 +1529,19 @@ export function initScene(el, api) {
       say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
     });
   }
+  // the attack damage your Rage adds now (berserk's effect while it is on), and against what the skill's numbers assume
+  const rageNow = () => { const R = sheet().rage; return me.rage * (100 + (R?.berserk && tog[R.berserk.name] ? R.berserk.effect : 0)) / 100; };
+  const rageX = D => (1 + rageNow() / 100) / (1 + (D.rage || 0) * (100 + (D.rageEffect || 0)) / 1e4);
+  // what buffs and ailments change right now, for the side panel (app.js onLive): each as [now, without them]
+  function live() {
+    const c = sheet(), w = withCharms(c), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain;
+    return {
+      res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
+      move: [spd() * act, spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0], rage: [rageNow(), 0], guard: [me.guard, 0],
+      // the share of its damage per second a skill used by hand deals now: action speed, Rage on attacks, a mark's buff
+      dps: i => { const D = base(i)?.dmg; return D ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) : 1; },
+    };
+  }
   // your resistances with those of the charms in use
   function withCharms(c) {
     const add = {};
@@ -1748,7 +1758,7 @@ export function initScene(el, api) {
     player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
-    if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); }
+    if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); }
   }
   const clock = new THREE.Clock(); let lastErr = '';
   renderer.setAnimationLoop(() => {

@@ -30,9 +30,21 @@
   #sceneSkills { flex:1; overflow:auto; min-height:0; padding:8px 10px; border-top:2px solid #4a3f2c; background:#121010; }
   #sceneSkills[hidden] { display:none; }
   #sceneSkills { flex:1.6; }
-  #sceneSkills h3 { margin:14px 0 6px; font:14px Georgia, serif; font-variant:small-caps; color:#e8d8a8; display:flex; align-items:baseline; gap:6px; border-bottom:1px solid #3a3022; padding-bottom:3px; }
-  #sceneSkills h3:first-child { margin-top:0; }
-  #sceneList { margin-top:16px; }
+  #sceneSkills h3, #simChar h3 { margin:14px 0 6px; font:14px Georgia, serif; font-variant:small-caps; color:#e8d8a8; display:flex; align-items:baseline; gap:6px; border-bottom:1px solid #3a3022; padding-bottom:3px; }
+  #sceneSkills h3:first-child, #simChar h3:first-child { margin-top:0; }
+  /* the 3D scene's side panel: only what buffs and ailments change while you play */
+  #simChar { flex:1; overflow:auto; min-height:0; padding:8px 10px; }
+  #simChar[hidden] { display:none; }
+  #simChar .up, .sdps.up { color:#7fd07f; } #simChar .down, .sdps.down { color:#f07060; }
+  /* the enemy panel: a dropdown in the scene, by the help button */
+  .s-enwrap { position:absolute; top:10px; right:46px; z-index:3; max-width:calc(100% - 56px); font-family:Georgia, serif; }
+  .s-enwrap summary { list-style:none; height:28px; padding:0 12px; font:14px/26px Georgia, serif; font-variant:small-caps; color:#e8d8a8; background:#0b0a08d9; border:1px solid #5a4a30; cursor:pointer; text-align:right; }
+  .s-enwrap summary::-webkit-details-marker { display:none; }
+  .s-enwrap summary::after { content:' ▾'; } .s-enwrap[open] summary::after { content:' ▴'; }
+  .s-enwrap summary:hover, .s-enwrap[open] summary { border-color:#c9a85a; color:#ffe9b0; }
+  #sceneEnemy { width:340px; max-width:100%; box-sizing:border-box; max-height:calc(100vh - 330px); overflow:auto; margin-top:4px; padding:8px 10px; background:#0e0c0af2; border:1px solid #5a4a30; }
+  #sceneEnemy p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
+  #sceneEnemy p.en-areas { margin:1px 0 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   /* enemy picker of the 3D scene */
   .en-pick input { width:100%; box-sizing:border-box; padding:4px 6px; background:#14110d; border:1px solid #5a4a30; color:#e8d8a8; font:13px Georgia, serif; }
   .en-pick input:focus { outline:none; border-color:#c9a85a; }
@@ -43,7 +55,6 @@
   #enList p.note { margin:0; padding:5px 7px; }
   .en-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 6px; margin-top:8px; font:14px Georgia, serif; color:#e8d8a8; }
   .en-head small { font-size:11px; color:#a89878; } .en-head span { margin-left:auto; font-size:11.5px; color:#c9a85a; }
-  #sceneSkills p.en-areas { margin:1px 0 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #enDetail .sk-set { margin:6px 0; } #enDetail .sk-set a { color:#c9a85a; cursor:pointer; } #enDetail .sk-set small { color:#6f6450; }
   #enDetail h4 { margin:10px 0 3px; font:12.5px Georgia, serif; color:#c9a85a; display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 6px; }
   #enDetail h4 small { margin-left:auto; font-size:10.5px; color:#6f6450; }
@@ -54,7 +65,7 @@
   .en-btns { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; }
   .en-btns button { flex:1 1 auto; padding:4px 6px; font-size:12px; background:#2c261d; border:1px solid #5a4a30; color:#e0cfa8; cursor:pointer; } .en-btns button:hover { background:#3a3225; }
   .en-btns button.on { flex-basis:100%; background:#4a3a14; border-color:#c9a85a; color:#ffe9a8; }
-  #sceneSkills h3 .note { font-variant:normal; margin-left:auto; }
+  #sceneSkills h3 .note, #simChar h3 .note { font-variant:normal; margin-left:auto; }
   /* 3D scene side panel: one card per skill, the build's combos and the training-ground settings */
   .sk-card { --c:#8a7a5c; margin:0 0 6px; padding:6px 7px 6px 9px; background:linear-gradient(#1c1813, #13100c); border:1px solid #3a3022; border-left:3px solid var(--c); cursor:pointer; }
   .sk-card:hover { border-color:#6a5a3a; border-left-color:var(--c); }
@@ -88,7 +99,7 @@
   .sk-set label { flex-direction:column; align-items:stretch; gap:2px; }
   .sk-set input, .sk-set select { padding:2px 4px; background:#14110d; border-color:#3a3022; }
   .sk-set button { align-self:end; padding:3px 6px; background:#2c261d; border-color:#5a4a30; color:#e0cfa8; cursor:pointer; } .sk-set button:hover { background:#3a3225; }
-  #sceneSkills p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
+  #sceneSkills p.note, #simChar p.note { margin:8px 0 0; font-size:11px; line-height:1.4; }
   /* 3D scene overlays */
   #scene { overflow:hidden; background:#07080b; user-select:none; container-type:inline-size; }
   #scene canvas { position:absolute; inset:0; cursor:crosshair; }
@@ -96,7 +107,7 @@
   .s-top, .s-log, .s-life, .s-mana, .s-bar, .s-tip, .s-toast { position:absolute; pointer-events:none; font-family:Georgia, serif; }
   .s-top { left:10px; right:10px; top:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
   /* buffs as the game's: icons in a row, the count in the corner, the seconds left under it */
-  .s-col { display:flex; flex-direction:column; gap:18px; max-width:calc(100% - 40px); }
+  .s-col { display:flex; flex-direction:column; gap:18px; max-width:calc(100% - 180px); }
   .s-buffs { display:flex; flex-wrap:wrap; gap:16px 4px; pointer-events:auto; }
   .s-buff { position:relative; width:34px; height:34px; background:#000; border:1px solid #6a5a3a; box-shadow:0 0 0 1px #000, 0 2px 6px #000a; }
   .s-buff img { width:100%; height:100%; display:block; }
@@ -433,7 +444,8 @@
 <aside id="side">
   <div id="charPanel"></div>
   <div id="skillPanel" class="skdetail" hidden></div>
-  <div id="sceneSkills" hidden><div id="sceneEnemy"></div><div id="sceneList"></div></div>
+  <div id="simChar" hidden></div>
+  <div id="sceneSkills" hidden><div id="sceneList"></div></div>
 </aside>
 <main>
   <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="filter" data-t>Loot filter</button><button data-v="scene" data-t>Simulator</button><button data-v="settings" data-t>Settings</button></nav>

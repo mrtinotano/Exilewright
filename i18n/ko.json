@@ -847,5 +847,13 @@
  "{0} applies its effect constantly": "{0}의 효과가 상시 적용됩니다",
  "{0} used": "{0} 사용",
  "Enemies stand still": "적이 제자리에 서 있음",
- "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "적은 어그로 범위에 들어가거나 공격받으면 자신의 속도로 다가오고, 사거리 안에서 공격합니다. ~ 표시 수치는 게임 데이터에 없는 값을 포함합니다."
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "적은 어그로 범위에 들어가거나 공격받으면 자신의 속도로 다가오고, 사거리 안에서 공격합니다. ~ 표시 수치는 게임 데이터에 없는 값을 포함합니다.",
+ "Character": "캐릭터",
+ "what buffs and ailments change while you play": "플레이 중 버프와 상태 이상이 바꾸는 것",
+ "Action speed": "동작 속도",
+ "Damage taken": "받는 피해",
+ "Attack damage from Rage": "격노로 인한 공격 피해",
+ "Guard": "가호",
+ "None of your skills used by hand deals damage.": "직접 사용하는 스킬 중 피해를 주는 스킬이 없습니다.",
+ "Other skills: their damage does not change while you play": "기타 스킬: 플레이 중 피해가 바뀌지 않음"
 }

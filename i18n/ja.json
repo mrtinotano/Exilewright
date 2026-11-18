@@ -847,5 +847,13 @@
  "{0} applies its effect constantly": "{0}は効果を常に適用する",
  "{0} used": "{0}を使用",
  "Enemies stand still": "敵はその場から動かない",
- "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "敵は索敵範囲に入るか攻撃されると自分の速度で向かってきて、射程内で攻撃する。~ 付きの数値はゲームデータにない値を含む。"
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "敵は索敵範囲に入るか攻撃されると自分の速度で向かってきて、射程内で攻撃する。~ 付きの数値はゲームデータにない値を含む。",
+ "Character": "キャラクター",
+ "what buffs and ailments change while you play": "プレイ中にバフと状態異常が変えるもの",
+ "Action speed": "アクションスピード",
+ "Damage taken": "受けるダメージ",
+ "Attack damage from Rage": "憤怒によるアタックダメージ",
+ "Guard": "ガード",
+ "None of your skills used by hand deals damage.": "手動で使うスキルにダメージを与えるものがない。",
+ "Other skills: their damage does not change while you play": "その他のスキル：プレイ中にダメージが変わらない"
 }

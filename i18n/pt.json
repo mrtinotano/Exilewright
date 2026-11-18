@@ -847,5 +847,13 @@
  "{0} applies its effect constantly": "{0} aplica seu efeito constantemente",
  "{0} used": "{0}: usado",
  "Enemies stand still": "Os inimigos ficam parados",
- "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Os inimigos vêm até você na velocidade deles quando você entra no raio de aggro ou os acerta, e atacam ao seu alcance. Um número com ~ inclui um valor que os dados do jogo não dão."
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Os inimigos vêm até você na velocidade deles quando você entra no raio de aggro ou os acerta, e atacam ao seu alcance. Um número com ~ inclui um valor que os dados do jogo não dão.",
+ "Character": "Personagem",
+ "what buffs and ailments change while you play": "o que bônus e afecções mudam enquanto você joga",
+ "Action speed": "Velocidade de ação",
+ "Damage taken": "Dano sofrido",
+ "Attack damage from Rage": "Dano de ataque por Fúria",
+ "Guard": "Guarda",
+ "None of your skills used by hand deals damage.": "Nenhuma das suas habilidades usadas manualmente causa dano.",
+ "Other skills: their damage does not change while you play": "Outras habilidades: o dano delas não muda enquanto você joga"
 }

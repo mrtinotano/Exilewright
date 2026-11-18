@@ -847,5 +847,13 @@
  "{0} applies its effect constantly": "{0} wendet seine Wirkung dauerhaft an",
  "{0} used": "{0} benutzt",
  "Enemies stand still": "Gegner bleiben stehen",
- "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Gegner kommen mit ihrer Geschwindigkeit auf dich zu, sobald du in ihrem Aggro-Radius bist oder sie triffst, und greifen in Reichweite an. Eine Zahl mit ~ enthält einen Wert, den die Spieldaten nicht liefern."
+ "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Gegner kommen mit ihrer Geschwindigkeit auf dich zu, sobald du in ihrem Aggro-Radius bist oder sie triffst, und greifen in Reichweite an. Eine Zahl mit ~ enthält einen Wert, den die Spieldaten nicht liefern.",
+ "Character": "Charakter",
+ "what buffs and ailments change while you play": "was Buffs und Beeinträchtigungen beim Spielen ändern",
+ "Action speed": "Aktionsgeschwindigkeit",
+ "Damage taken": "Erlittener Schaden",
+ "Attack damage from Rage": "Angriffsschaden durch Rausch",
+ "Guard": "Wache",
+ "None of your skills used by hand deals damage.": "Keine deiner von Hand eingesetzten Fertigkeiten verursacht Schaden.",
+ "Other skills: their damage does not change while you play": "Andere Fertigkeiten: ihr Schaden ändert sich beim Spielen nicht"
 }
