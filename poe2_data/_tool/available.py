@@ -551,6 +551,7 @@ SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
 armour = {a['BaseItemType']: a for a in load('ArmourTypes')}
 weapon = {w['BaseItemType']: w for w in load('WeaponTypes')}
 flasks = {f['BaseItemType']: f for f in load('Flasks')}
+charges = {c['BaseItemTypesKey']: c for c in load('ComponentCharges')}   # a flask's (and charm's) most charges and charges per use
 spirit = {s['BaseItemType']: s['SpiritGranted'] for s in load('ItemSpirit')}   # sceptres: 100
 visual = load('ItemVisualIdentity')
 mods_tr = load_langs('Mods')
@@ -574,7 +575,7 @@ for i, b in enumerate(base_types):
         'armour': a and {'armour': a['Armour'], 'evasion': a['Evasion'], 'energy_shield': a['EnergyShield'], 'movement_speed_%': a['IncreasedMovementSpeed']},
         'img': visual[b['ItemVisualIdentity']]['DDSFile'] if b['ItemVisualIdentity'] is not None else None,
         'size': [b['Width'], b['Height']],
-        'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10},
+        'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10, 'charges': charges[b['Id']]['MaxCharges'], 'per_use': charges[b['Id']]['PerCharge']},
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
         'spirit': spirit.get(i),
         **({'grants': inherent[i]} if i in inherent else {}),
@@ -583,6 +584,7 @@ for i, b in enumerate(base_types):
 # reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
 rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValues'])): 1 for r in load('SoulCoreStats') if r['Stats']})
 assert any(x[0][0] == 'base_fire_damage_resistance_%' for x in rune_sets), 'SoulCoreStats'
+assert next(b for b in bases if b['name'] == 'Lesser Life Flask')['flask'] == {'life': 50, 'mana': 0, 'recovery_s': 3.0, 'charges': 60, 'per_use': 10}, 'Flasks / ComponentCharges'
 save('items.json', {
     'runes': rune_sets,
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")

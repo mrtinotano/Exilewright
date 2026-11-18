@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt + перетаскивание: вращение · Колесо: масштаб · {0}: кувырок",
  "Ctrl+click: place {0}": "Ctrl+клик: разместить {0}",
  "their keys: click a slot of the simulator bar to change them": "их клавиши: клик по ячейке панели симулятора, чтобы сменить",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "Эта клавиша занята: Q W E R T — панель умений, Esc не меняется."
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "Эта клавиша занята: Q W E R T — панель умений, Esc не меняется.",
+ "{0}: nothing equipped": "{0}: ничего не надето",
+ "{0} needs {1} charges and has {2}": "{0}: нужно зарядов: {1}, есть: {2}",
+ "{0} / {1}: life and mana flask": "{0} / {1}: флакон здоровья и флакон маны",
+ "{0} applies its effect constantly": "{0}: эффект действует постоянно"
 }

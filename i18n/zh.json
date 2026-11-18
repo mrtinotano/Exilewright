@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+拖曳：環繞 · 滾輪：縮放 · {0}：翻滾",
  "Ctrl+click: place {0}": "Ctrl+點擊：放置{0}",
  "their keys: click a slot of the simulator bar to change them": "按鍵：點擊模擬器技能列的欄位以更換",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "該按鍵已被使用：Q W E R T 是技能列，Esc 維持不變。"
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "該按鍵已被使用：Q W E R T 是技能列，Esc 維持不變。",
+ "{0}: nothing equipped": "{0}：未裝備",
+ "{0} needs {1} charges and has {2}": "{0}需要{1}次充能，目前有{2}次",
+ "{0} / {1}: life and mana flask": "{0} / {1}：生命藥劑與魔力藥劑",
+ "{0} applies its effect constantly": "{0}會持續套用效果"
 }

@@ -7,8 +7,8 @@ import { STATUS, leagues } from './trade.js';
 
 const KEY = 'exwSettings';
 // the 3D scene's own keys (the skill bar is the mouse buttons and Q W E R T, as in the game)
-const SCENE_KEYS = { roll: 'Space', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyX' };
-const SCENE_LABEL = { roll: 'Roll', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
+const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyX' };
+const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const FIXED = /^(Key[QWERT]|Escape)$/;
 const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)

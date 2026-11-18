@@ -136,6 +136,14 @@
   .s-bar:empty, .s-buffs:empty { display:none; }
   .s-bar .note { padding:4px 8px; font-size:12px; color:#a89878; }
   .s-slot { position:relative; flex:0 1 58px; width:58px; min-width:26px; aspect-ratio:1; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  /* the flasks at the ends of the bar, as the game's: the item's art, darkened above the charges it has */
+  .s-flask { position:relative; flex:0 0 32px; width:32px; height:58px; align-self:center; padding:0; background:#000; border:1px solid #4a3f2c; cursor:pointer; overflow:hidden; }
+  .s-flask img { width:100%; height:100%; object-fit:contain; display:block; }
+  .s-flask i { position:absolute; left:0; right:0; top:0; background:#000b; }
+  .s-flask b { position:absolute; left:0; right:0; bottom:0; font:bold 11px/15px system-ui, sans-serif; text-align:center; color:#e8dcc0; background:#000b; }
+  .s-flask.act { border-color:#c9a85a; box-shadow:0 0 6px #c9a85a; }
+  .s-flask.low img { filter:grayscale(.8) brightness(.6); }
+  .s-flask.none { border-style:dashed; background:radial-gradient(circle, #1a150e, #070605); }
   .s-slot.none { background:radial-gradient(circle, #1a150e, #070605); border-style:dashed; }
   .s-mouse { width:10px; height:14px; vertical-align:-3px; }
   .s-slot img { width:100%; height:100%; display:block; object-fit:cover; }

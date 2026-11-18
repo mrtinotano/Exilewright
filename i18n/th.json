@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ลาก: หมุนกล้อง · ล้อเมาส์: ซูม · {0}: กลิ้งหลบ",
  "Ctrl+click: place {0}": "Ctrl+คลิก: วาง {0}",
  "their keys: click a slot of the simulator bar to change them": "ปุ่มของมัน: คลิกช่องบนแถบของเครื่องจำลองเพื่อเปลี่ยน",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "ปุ่มนี้ถูกใช้แล้ว: Q W E R T เป็นแถบสกิล และ Esc เปลี่ยนไม่ได้"
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "ปุ่มนี้ถูกใช้แล้ว: Q W E R T เป็นแถบสกิล และ Esc เปลี่ยนไม่ได้",
+ "{0}: nothing equipped": "{0}: ไม่ได้สวมใส่",
+ "{0} needs {1} charges and has {2}": "{0} ต้องใช้ {1} Charge แต่มี {2}",
+ "{0} / {1}: life and mana flask": "{0} / {1}: ขวดยาพลังชีวิตและขวดยามานา",
+ "{0} applies its effect constantly": "{0} ใช้ผลอย่างต่อเนื่อง"
 }

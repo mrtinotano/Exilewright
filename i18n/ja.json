@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ドラッグ: 回転 · ホイール: ズーム · {0}: ロール",
  "Ctrl+click: place {0}": "Ctrl+クリック: {0}を配置",
  "their keys: click a slot of the simulator bar to change them": "キー: シミュレーターのバーの枠をクリックで変更",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "そのキーは使用中です。Q W E R Tはスキルバー、Escは変更できません。"
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "そのキーは使用中です。Q W E R Tはスキルバー、Escは変更できません。",
+ "{0}: nothing equipped": "{0}: 未装備",
+ "{0} needs {1} charges and has {2}": "{0}には{1}チャージが必要です (現在{2})",
+ "{0} / {1}: life and mana flask": "{0} / {1}: ライフフラスコとマナフラスコ",
+ "{0} applies its effect constantly": "{0}は効果を常に適用する"
 }

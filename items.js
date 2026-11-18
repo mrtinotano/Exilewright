@@ -115,17 +115,30 @@ export function armourItems(items = {}) {
 // character panel, 17/11: Ultimate Life Flask with 92% increased, 25% + 32% from tree and rune, 43% less, 20% slower
 // 421.3 per second there (421.6 here: note: the game's rounding of each step isn't in the data); Lavianga's Spirits 37.5
 export function flaskRecovery(items = {}, sum = {}) {
-  const out = { life: 0, mana: 0 }, g = id => sum[id] || 0;
+  const out = { life: 0, mana: 0 };
   for (const it of Object.values(items)) {
-    const base = BASE[it?.base]; if (!base?.flask) continue;
-    const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana';
-    if (!s.local_flask_always_drinking && !(k === 'life' && !it.unique && g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you'))) continue;
-    const amount = base.flask[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
-      * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1);
-    out[k] += amount / base.flask.recovery_s * (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
+    const f = flaskOf(it, sum);
+    if (f?.always) out[f.k] += f.amount / f.time;
   }
   return out;
 }
+// One drink of a flask: what it recovers (life or mana) over how many seconds, as above, and its charges: the most it
+// holds and what a use spends (ComponentCharges, with its own and the character's modifiers) and how much more it gains
+// on kill; always: it applies its effect constantly; es: its life recovery also recovers energy shield. null for an item that is not a flask.
+export function flaskOf(it, sum = {}) {
+  const base = BASE[it?.base]; if (!base?.flask) return null;
+  const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
+  const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
+    * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1);
+  const time = F.recovery_s / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
+  const max = Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
+  const per = Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('flask_charges_used_+%') + (k === 'mana' ? g('flask_mana_charges_used_+%') : 0)) / 100));
+  const gain = 1 + (g('flask_charges_gained_+%') + g(`${k}_flask_charges_gained_+%`)) / 100;
+  const always = !!s.local_flask_always_drinking || k === 'life' && !it.unique && !!g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you');
+  return { k, amount, time, max, per, gain, always, es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
+}
+// self-check: a Lesser Life Flask recovers 50 life over 3 s with 60 charges, 10 a use
+{ const f = flaskOf({ base: 'Lesser Life Flask' }); console.assert(f.amount === 50 && f.time === 3 && f.max === 60 && f.per === 10 && f.k === 'life', 'flaskOf'); }
 
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };

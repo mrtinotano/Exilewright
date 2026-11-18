@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+arrastar: orbitar · Roda: zoom · {0}: girar",
  "Ctrl+click: place {0}": "Ctrl+clique: posicionar {0}",
  "their keys: click a slot of the simulator bar to change them": "as teclas: clique num espaço da barra do simulador para trocá-las",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "Essa tecla está ocupada: Q W E R T são a barra de habilidades e Esc fica como está."
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "Essa tecla está ocupada: Q W E R T são a barra de habilidades e Esc fica como está.",
+ "{0}: nothing equipped": "{0}: nada equipado",
+ "{0} needs {1} charges and has {2}": "{0} precisa de {1} cargas e tem {2}",
+ "{0} / {1}: life and mana flask": "{0} / {1}: frasco de vida e frasco de mana",
+ "{0} applies its effect constantly": "{0} aplica seu efeito constantemente"
 }

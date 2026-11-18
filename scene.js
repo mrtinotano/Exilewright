@@ -77,7 +77,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, calm: 0, tick: .5, by: null };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, calm: 0, tick: .5, by: null, fl: [null, null], drink: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -195,7 +195,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {} }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, fl: [null, null], drink: [] }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -452,6 +452,8 @@ export function initScene(el, api) {
   }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    const r = d.stat.rarity || 'normal';   // the kill refills your flasks
+    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain); });
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
@@ -1139,6 +1141,7 @@ export function initScene(el, api) {
     if (e.repeat) return;
     if (SLOT_KEYS.includes(c)) useSlot(SLOT_KEYS.indexOf(c), c);
     else if (c === K.reset) reset();
+    else if (c === K.lifeFlask || c === K.manaFlask) drink(c === K.lifeFlask ? 0 : 1);
     else if (c === 'Escape') { setPlacing(false); closePick(); }
     else if (c === K.refill) { heal(); fx.ring(pp, 1.6, .3, 'holy', .4); say(t('Life and energy shield refilled'), 'holy'); }
     else if (c === K.corpse) {   // the enemy at the cursor becomes a corpse, for the skills that need one
@@ -1177,6 +1180,7 @@ export function initScene(el, api) {
   dom.addEventListener('wheel', e => { e.preventDefault(); camS.dist = clamp(camS.dist * (1 + Math.sign(e.deltaY) * .1), 8, 42); }, { passive: false });
   // clicking a slot opens the list of the skills to put on it, as in the game
   bar.addEventListener('mousedown', e => {
+    const f = e.target.closest('[data-f]'); if (f) { e.preventDefault(); e.stopPropagation(); return drink(+f.dataset.f); }
     const b = e.target.closest('[data-k]'); if (!b) return;
     e.preventDefault(); e.stopPropagation(); openPick(+b.dataset.k);
   });
@@ -1260,11 +1264,11 @@ export function initScene(el, api) {
     });
     const list = slots(), at = barNow();
     if (!list.includes(sel)) sel = at.find(i => i != null) ?? list[0] ?? 0;
-    put(bar, list.length ? at.map((i, k) => {
+    put(bar, flaskHtml(0) + (list.length ? at.map((i, k) => {
       if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
       const g = gems[i], inf = api.info(g), P = prof(g, inf);
       return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span><b>${keyLabel(k)}</b></button>`;
-    }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`);
+    }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`) + flaskHtml(1));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
     keysText();
@@ -1323,6 +1327,7 @@ export function initScene(el, api) {
   function keysText() {
     const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
       t('Middle and right click, Q W E R T: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill'), t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
+      t('{0} / {1}: life and mana flask', keyName(settings().keys.lifeFlask), keyName(settings().keys.manaFlask)),
       t('{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset', ...['corpse', 'charges', 'refill', 'reset'].map(k => keyName(settings().keys[k]))),
       !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Ctrl+click: place {0}', tpl.mon.name),
       t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
@@ -1473,6 +1478,37 @@ export function initScene(el, api) {
     const pois = (A['base_chance_to_poison_on_hit_%'] || 0) + (A[d.atk.attack ? 'chance_to_poison_on_hit_with_attacks_%' : 'spells_chance_to_poison_on_hit_%'] || 0);
     if ((x('physical') || x('chaos')) && roll(pois) && can('poison')) suffer('poison', DUR.poison * D.dur.poison, { dot: dot('poison', 'chaos', x('physical') + x('chaos')) });
   }
+  // Flasks, as the game's: the build's life flask and mana flask (items.js flaskOf()), on 1 and 2 and at the ends of the bar.
+  // One that applies its effect constantly recovers all the time and is not drunk.
+  // A drink spends its charges and recovers its amount over its time; drinking again replaces the one in progress (note:
+  // the tables do not say what a second drink does). Kills refill them, as the glossary (KeywordPopups Flask, Power) says:
+  // half the monster's power for a normal one, all of it for a magic one, twice it for rare and unique ones, the power being
+  // the rarity's 1 / 2 / 5 times the monster's own, and 20 for a unique (note: a monster's own power is not in the tables:
+  // the glossary's average, 1, is used). Dying and refilling fill them, as a checkpoint or a well does.
+  const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
+  const flasks = () => sheet().flasks || [];
+  const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
+  const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
+  const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana
+    if (f.k === 'mana') return void (me.mana = Math.min(me.maxM, me.mana + n));
+    me.life = Math.min(me.maxL, me.life + n); if (f.es) me.es = Math.min(me.maxE, me.es + n);
+  };
+  function drink(n) {
+    const f = flasks()[n];
+    if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
+    if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
+    if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
+    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time };
+    fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
+  }
+  // a flask on the bar: its art darkened above the charges it has, its key under it
+  function flaskHtml(n) {
+    const f = flasks()[n], key = `<b>${esc(keyName(settings().keys[n ? 'manaFlask' : 'lifeFlask']))}</b>`;
+    if (!f) return `<button class="s-flask none" data-f="${n}" title="${esc(t('{0}: nothing equipped', flaskName(n)))}">${key}</button>`;
+    const left = flaskLeft(n);
+    return `<button class="s-flask${me.drink[n] || f.always ? ' act' : ''}${left < f.per ? ' low' : ''}" data-f="${n}" title="${esc(flaskName(n))} ${Math.floor(left)}/${f.max}">`
+      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" onerror="this.remove()">` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i>${key}</button>`;
+  }
   // ground left by a skill that deals damage over time: it hurts while you stand in it
   function hazard(d, p) {
     const list = Object.entries(d.atk.dot).sort((x, y) => y[1] - x[1]); if (!list.length) return;
@@ -1566,6 +1602,11 @@ export function initScene(el, api) {
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     if (c.manaRegen > 0 && me.mana < M) me.mana = Math.min(M, me.mana + c.manaRegen * dt);
+    me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
+      if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
+      flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
+    });
+    for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }
     if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);

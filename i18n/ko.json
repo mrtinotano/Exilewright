@@ -841,5 +841,9 @@
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+드래그: 회전 · 휠: 확대/축소 · {0}: 구르기",
  "Ctrl+click: place {0}": "Ctrl+클릭: {0} 배치",
  "their keys: click a slot of the simulator bar to change them": "키: 시뮬레이터 바의 칸을 클릭해 변경",
- "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "사용 중인 키입니다. Q W E R T는 스킬 바이고 Esc는 바꿀 수 없습니다."
+ "That key is taken: Q W E R T are the skill bar and Esc stays as it is.": "사용 중인 키입니다. Q W E R T는 스킬 바이고 Esc는 바꿀 수 없습니다.",
+ "{0}: nothing equipped": "{0}: 장착 안 됨",
+ "{0} needs {1} charges and has {2}": "{0}에 충전 {1}회가 필요합니다 (현재 {2})",
+ "{0} / {1}: life and mana flask": "{0} / {1}: 생명력 플라스크와 마나 플라스크",
+ "{0} applies its effect constantly": "{0}의 효과가 상시 적용됩니다"
 }

@@ -21541,7 +21541,9 @@
    "flask": {
     "life": 920,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -21578,7 +21580,9 @@
    "flask": {
     "life": 0,
     "mana": 310,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -33139,7 +33143,9 @@
    "flask": {
     "life": 840,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -33176,7 +33182,9 @@
    "flask": {
     "life": 0,
     "mana": 285,
-    "recovery_s": 3.5
+    "recovery_s": 3.5,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -33217,7 +33225,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 1.0
+    "recovery_s": 1.0,
+    "charges": 80,
+    "per_use": 80
    },
    "weapon": null,
    "spirit": null
@@ -40255,7 +40265,9 @@
    "flask": {
     "life": 710,
     "mana": 0,
-    "recovery_s": 5.0
+    "recovery_s": 5.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -40292,7 +40304,9 @@
    "flask": {
     "life": 0,
     "mana": 185,
-    "recovery_s": 2.0
+    "recovery_s": 2.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -40333,7 +40347,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 40,
+    "per_use": 30
    },
    "weapon": null,
    "spirit": null
@@ -51134,7 +51150,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 30
    },
    "weapon": null,
    "spirit": null
@@ -51175,7 +51193,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 30
    },
    "weapon": null,
    "spirit": null
@@ -51280,7 +51300,9 @@
    "flask": {
     "life": 450,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -51317,7 +51339,9 @@
    "flask": {
     "life": 0,
     "mana": 165,
-    "recovery_s": 2.5
+    "recovery_s": 2.5,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -54069,7 +54093,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -54106,7 +54132,9 @@
    "flask": {
     "life": 340,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -54143,7 +54171,9 @@
    "flask": {
     "life": 0,
     "mana": 165,
-    "recovery_s": 3.5
+    "recovery_s": 3.5,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -55679,7 +55709,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 30
    },
    "weapon": null,
    "spirit": null
@@ -57644,7 +57676,9 @@
    "flask": {
     "life": 260,
     "mana": 0,
-    "recovery_s": 5.0
+    "recovery_s": 5.0,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -57681,7 +57715,9 @@
    "flask": {
     "life": 0,
     "mana": 110,
-    "recovery_s": 2.5
+    "recovery_s": 2.5,
+    "charges": 75,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -59195,7 +59231,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 40
    },
    "weapon": null,
    "spirit": null
@@ -61140,7 +61178,9 @@
    "flask": {
     "life": 150,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 70,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -61177,7 +61217,9 @@
    "flask": {
     "life": 0,
     "mana": 90,
-    "recovery_s": 2.5
+    "recovery_s": 2.5,
+    "charges": 70,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -61218,7 +61260,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -61754,7 +61798,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -62926,7 +62972,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -62967,7 +63015,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -63008,7 +63058,9 @@
    "flask": {
     "life": 0,
     "mana": 0,
-    "recovery_s": 4.0
+    "recovery_s": 4.0,
+    "charges": 40,
+    "per_use": 20
    },
    "weapon": null,
    "spirit": null
@@ -63763,7 +63815,9 @@
    "flask": {
     "life": 90,
     "mana": 0,
-    "recovery_s": 5.0
+    "recovery_s": 5.0,
+    "charges": 65,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -63800,7 +63854,9 @@
    "flask": {
     "life": 0,
     "mana": 70,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 65,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -65814,7 +65870,9 @@
    "flask": {
     "life": 50,
     "mana": 0,
-    "recovery_s": 3.0
+    "recovery_s": 3.0,
+    "charges": 60,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
@@ -65851,7 +65909,9 @@
    "flask": {
     "life": 0,
     "mana": 50,
-    "recovery_s": 2.0
+    "recovery_s": 2.0,
+    "charges": 60,
+    "per_use": 10
    },
    "weapon": null,
    "spirit": null
