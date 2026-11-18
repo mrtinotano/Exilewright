@@ -1,4 +1,4 @@
-import { t, tn, fmt } from './i18n.js';
+import { t, tn, fmt, lang } from './i18n.js';
 import { initScene } from './scene.js';
 import { profile, chips, synergies } from './skillfx.js';
 import { statLines } from './stats.js';
@@ -384,7 +384,9 @@ const openShare = async exporting => {
       l.download = name; l.click();
     };
     if (a === 'json') await save(JSON.stringify(B(), null, 1), B().name.replace(/[^\w-]+/g, '_') + '.json', 'json');
-    if (a === 'game') await save(toBuildFile(B(), shareCtx()), buildFileName(B()), 'game');
+    // in the game's language: the page's when they are the same, else English (the only other one the planner has)
+    if (a === 'game') { const g = (await fetch('game').then(r => r.json()).catch(() => null))?.language;
+      await save(toBuildFile(B(), shareCtx(), !!g && g !== lang), buildFileName(B()), 'game'); }
     if (a === 'file') $('importFile').click();
     if (el.dataset.up) {
       const s = SITES.find(s => s.id === el.dataset.up);

@@ -157,7 +157,7 @@ const INVENTORY = {   // game InventoryId + position, from PoB's generated src/D
   boots: ['Boots1', 0], amulet: ['Amulet1', 0], ring1: ['Ring1', 0], ring2: ['Ring2', 0], belt: ['Belt1', 0],
   flask1: ['Flask1', 0], flask2: ['Flask1', 1], charm1: ['Flask1', 2], charm2: ['Flask1', 3], charm3: ['Flask1', 4] };
 export const TREE_VERSION = '0.5';
-export function toBuildFile(b, ctx) {
+export function toBuildFile(b, ctx, en = false) {   // en: in English, not the page's language
   const st = ctx.ascStart(b.asc), byName = Object.fromEntries(ctx.gems.map(g => [g.name, g]));
   // the game's ascendancy id is the one in its start node's id (AscendancyWitch1Start__ -> Witch1)
   const ascendancy = ctx.N[st]?.id.match(/^Ascendancy(.+?)Start/)?.[1] || POB_ASC[b.asc];
@@ -167,12 +167,12 @@ export function toBuildFile(b, ctx) {
     .filter(id => ctx.N[id]?.id).map(id => ({ id: ctx.N[id].id, weapon_set: set[id] || 0 }));
   const skills = b.gems.filter(g => byName[g.name]).map(g => {
     const sup = (g.supports || []).filter(n => byName[n]).map(n => byName[n].id);
-    return { id: byName[g.name].id, additional_text: t('Level') + ' ' + (g.level ?? 20), ...sup.length ? { support_skills: sup } : {} };
+    return { id: byName[g.name].id, additional_text: (en ? 'Level' : t('Level')) + ' ' + (g.level ?? 20), ...sup.length ? { support_skills: sup } : {} };
   });
   const inventory_slots = Object.entries(b.items || {}).filter(([slot]) => INVENTORY[slot])
-    .map(([slot, it]) => ({ inventory_id: INVENTORY[slot][0], slot_x: INVENTORY[slot][1], ...it.unique && { unique_name: it.unique }, additional_text: itemNote(it) }))
+    .map(([slot, it]) => ({ inventory_id: INVENTORY[slot][0], slot_x: INVENTORY[slot][1], ...it.unique && { unique_name: it.unique }, additional_text: itemNote(it, en) }))
     .filter(s => s.additional_text || s.unique_name);   // a unique by its name, as the official format has it
-  return JSON.stringify({ name: b.name || t('Unnamed'), ...ascendancy ? { ascendancy } : {}, ...b.notes ? { description: b.notes } : {},
+  return JSON.stringify({ name: b.name || (en ? 'Unnamed' : t('Unnamed')), ...ascendancy ? { ascendancy } : {}, ...b.notes ? { description: b.notes } : {},
     passives, skills, inventory_slots }, null, 2);
 }
 export const buildFileName = b => (b.name || 'Unnamed').replace(/[\\/:*?"<>|\x00-\x1f]/g, '-') + ` [${TREE_VERSION}].build`;

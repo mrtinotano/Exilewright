@@ -144,8 +144,8 @@ export function itemText(it) {
 // the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
 const RGB = { normal: '200, 200, 200', magic: '136, 136, 255', rare: '255, 255, 119', unique: '175, 96, 37' };
-export function itemNote(it) {
-  const p = itemParts(it, false);
+export function itemNote(it, en = false) {
+  const p = itemParts(it, en);
   if (!p) return '';
   const clean = l => l.replace(/[{}]/g, '');   // braces delimit the markup
   return [`<rgb(${RGB[p.r]})>{<b>{${clean([p.name, p.base.name].filter(Boolean).join('\n'))}}}`,

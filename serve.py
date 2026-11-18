@@ -347,13 +347,19 @@ def overlay():
     return q.put, root.mainloop
 
 
-def wasd():
-    """the game is set to move the character with W A S D (its own settings file says; False when that cannot be read)"""
-    try:   # note: the Documents folder where Windows has it by default; one moved elsewhere reads as "with the mouse"
-        with open(os.path.join(os.path.expanduser('~'), 'Documents', 'My Games', 'Path of Exile 2', 'poe2_production_Config.ini'), encoding='utf-8-sig') as f:
-            return bool(re.search(r'^use_wasd_to_move=true\s*$', f.read(), re.M))
+def game_setting(key):
+    """-> the value of a setting in the game's own settings file (poe2_production_Config.ini), '' when it cannot be read"""
+    try:
+        with open(os.path.join(game_folder(), 'poe2_production_Config.ini'), encoding='utf-8-sig') as f:
+            m = re.search(rf'^{key}=(.*?)\s*$', f.read(), re.M)
+            return m.group(1) if m else ''
     except (OSError, ValueError):
-        return False
+        return ''
+
+
+def wasd():
+    """the game is set to move the character with W A S D (False when its settings file cannot be read)"""
+    return game_setting('use_wasd_to_move') == 'true'
 
 
 def tongue():
@@ -753,6 +759,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_update()
         if u.path == '/settings':
             return self.do_settings()
+        if u.path == '/game':   # the language the game is played in ('en'; '' when its settings file cannot be read)
+            return self.reply_json(200, json.dumps({'language': game_setting('language')[:2].lower()}).encode())
         if u.path != '/share/download':
             return super().do_GET()
         link = parse_qs(u.query).get('url', [''])[0]
