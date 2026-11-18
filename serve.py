@@ -766,6 +766,8 @@ class Handler(SimpleHTTPRequestHandler):
             with urlopen(Request(f'https://github.com/{RELEASES}/releases/latest', method='HEAD', headers=UA), timeout=20) as r:
                 page = r.geturl()
             latest = page.rsplit('/tag/v', 1)[1]
+            if not re.fullmatch(r'\d+(\.\d+)*', latest):   # it goes into a link and a file name
+                raise ValueError(f'not a version: {page}')
         except Exception as e:
             return self.reply_json(502, json.dumps({'error': str(e)}).encode())
         installed = FROZEN and not os.path.exists(os.path.join(os.path.dirname(sys.executable), 'portable'))
