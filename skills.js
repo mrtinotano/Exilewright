@@ -1,7 +1,7 @@
 // Skills tab laid out like the in-game skill panel: icon, level, name and support sockets per skill.
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
-import { t, tn, fmt, lang } from './i18n.js';
+import { t, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
 import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport } from './calc.js';
 export { canSupport };
 import { shownLines } from './stats.js';
@@ -26,7 +26,7 @@ function gemLines(name, level) {
 }
 const descOf = G => G['description_' + lang] || G.description || '';
 // what a support does in words: the game's description, else Path of Building's reading of its stats (English)
-export const supportText = S => descOf(S) || SK.supports?.[S.name]?.text || '';
+export const supportText = S => kwPlain(descOf(S)) || SK.supports?.[S.name]?.text || '';
 const DTYPE = { physical: 'Physical Damage', fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage', chaos: 'Chaos Damage' };
 
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill details window
@@ -39,7 +39,7 @@ function details(g, b, sum, geo) {
   const sups = (g.supports || []).filter(n => GEM[n]);
   const lines = shownLines(st, g.name), spirit = reservation(g, sum), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
-    ${descOf(G) ? `<p class="ddesc">${esc(descOf(G))}</p>` : ''}
+    ${descOf(G) ? `<p class="ddesc">${kwHtml(descOf(G))}</p>` : ''}
     ${sec('Damage', [
       ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
       ['Total Combined Damage', hits.length ? `${fmt(lo)} – ${fmt(hi)}` : '—'],
@@ -78,7 +78,7 @@ function details(g, b, sum, geo) {
     <h4>${t('Skill Stats')}</h4>${lines.length ? `<div class="dlines">${lines.map(esc).join('<br>')}</div>` : `<p class="note">—</p>`}
     <h4>${t('Supports')}</h4>${sups.length ? sups.map(n => {
       const S = GEM[n], sl = gemLines(n, 1);
-      return `<div class="dsup"><img src="${img(S.icon)}" alt=""><div><b>${esc(tn(S))} <button class="sockx" data-unsup="${b.gems.indexOf(g)}:${g.supports.indexOf(n)}" title="${t('Remove support')}">✕</button></b>${descOf(S) ? `<small>${esc(descOf(S))}</small>` : ''}${sl.length ? `<div class="dlines">${sl.map(esc).join('<br>')}</div>` : ''}</div></div>`;
+      return `<div class="dsup"><img src="${img(S.icon)}" alt=""><div><b>${esc(tn(S))} <button class="sockx" data-unsup="${b.gems.indexOf(g)}:${g.supports.indexOf(n)}" title="${t('Remove support')}">✕</button></b>${descOf(S) ? `<small>${kwHtml(descOf(S))}</small>` : ''}${sl.length ? `<div class="dlines">${sl.map(esc).join('<br>')}</div>` : ''}</div></div>`;
     }).join('') : `<p class="note">${t('No supports socketed')}</p>`}`;
 }
 

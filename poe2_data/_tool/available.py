@@ -33,13 +33,14 @@ def load_langs(t):
 plain = lambda s: re.sub(r'\[(?:[^\]|]*\|)?([^\]]*)\]', r'\1', s) if s else None
 
 
-def tr(by_lang, i, field='Name', key='name'):
-    """{'name_es': ..., 'name_fr': ...} for row i (or row by key for dict tables); empty texts left out."""
+def tr(by_lang, i, field='Name', key='name', keep=False):
+    """{'name_es': ..., 'name_fr': ...} for row i (or row by key for dict tables); empty texts left out. keep: the
+    game's keyword markup stays ("[Ignite|ignited]", read by i18n.js)"""
     out = {}
     for c, rows in by_lang.items():
         r = rows.get(i) if isinstance(rows, dict) else rows[i] if i is not None and i < len(rows) else None
         if r and r.get(field):
-            out[f'{key}_{c}'] = plain(r[field])
+            out[f'{key}_{c}'] = r[field] if keep else plain(r[field])
     return out
 
 
@@ -165,21 +166,28 @@ for i, g in enumerate(skill_gems):
         # if it comes out empty the picker falls back to the support's stat lines (skills.json)
         ex = gem_effects[g['GemEffects'][0]] if g['GemEffects'] else {}
         desc_col = next((c for c in ('SupportText', 'Description') if ex.get(c)), 'SupportText')
-        gems[-1].update(description=plain(ex.get(desc_col)), **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description') if g['GemEffects'] else {})
+        gems[-1].update(description=ex.get(desc_col), **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description', True) if g['GemEffects'] else {})
         gems[-1].update(icon=sr['Icon'], family=[support_family[f]['Id'] for f in sr['Family']], lineage=sr['IsLineage'],
                         require=types(ge['AllowedActiveSkillTypes']), exclude=types(ge['ExcludedActiveSkillTypes']),
                         adds=types(ge['AddedActiveSkillTypes']), gems_only=ge['SupportsGemsOnly'])
     elif ge and ge['ActiveSkill'] is not None:
         a = active_skills[ge['ActiveSkill']]
         gems[-1].update(icon=a['Icon_DDSFile'], types=types(a['ActiveSkillTypes']), cannot_be_supported=ge['CannotBeSupported'],
-                        # text for the skill's info window (ActiveSkills.Description, per language)
-                        description=plain(a.get('Description')), **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description'))
+                        # text for the skill's info window (ActiveSkills.Description, per language), keyword markup kept
+                        description=a.get('Description'), **tr(active_skills_tr, ge['ActiveSkill'], 'Description', 'description', True))
         # a meta gem (Mortar Cannon, Ancestral Warrior Totem...): the skills its sockets take are those its own support
         # part (GemEffects.AdditionalGrantedEffects named Support...) can support, as a support gem's require / exclude
         part = next((grants[x] for x in gem_effects[g['GemEffects'][0]]['AdditionalGrantedEffects'] if grants[x]['Id'].startswith('Support')), None)
         if 'meta' in tags and part:
             gems[-1]['holds'] = {'require': types(part['AllowedActiveSkillTypes']), 'exclude': types(part['ExcludedActiveSkillTypes'])}
 save('gems.json', gems)
+# what the keywords of those descriptions mean (KeywordPopups: the game's help on hovering "[Ignite|ignited]"), the
+# ones they use: {id: {term, def, term_<code>, def_<code>}}
+KW = re.compile(r'\[([^\]|]+)(?:\|[^\]]*)?\]')
+used = {m for g in gems for k, v in g.items() if k.startswith('description') and v for m in KW.findall(v)}
+kw_langs = load_langs('KeywordPopups')
+save('keywords.json', {k['Id']: {'term': plain(k['Term']), 'def': plain(k['Definition']), **tr(kw_langs, i, 'Term', 'term'), **tr(kw_langs, i, 'Definition', 'def')}
+                       for i, k in enumerate(load('KeywordPopups')) if k['Id'] in used})
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)
 graph, roots, pos, centres, orbit, radii = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))

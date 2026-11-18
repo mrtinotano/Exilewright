@@ -1,5 +1,5 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
-import { t, tn, fmt, lang as LANG } from './i18n.js';
+import { t, tn, fmt, lang as LANG, kwHtml } from './i18n.js';
 import { statLines, shownLines } from './stats.js';
 import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick } from './calc.js';
 
@@ -86,7 +86,7 @@ export function skillTip(G, g, b, sum, geo) {
   const hits = Object.entries(s.hits).map(([k, [lo, hi]]) => t(DMG_NAME[k], `${n(lo)}–${n(hi)}`)).join('<br>');
   return `<div class="th">${esc(tn(G) || G.name)}<small>${esc(tags)}</small></div>
     <div class="gp">${props.map(([k, val]) => `<div>${t(k)}: <span>${val}</span></div>`).join('')}</div>
-    ${G['description_' + LANG] || G.description ? `<div class="gd">${esc(G['description_' + LANG] || G.description)}</div>` : ''}
+    ${G['description_' + LANG] || G.description ? `<div class="gd">${kwHtml(G['description_' + LANG] || G.description)}</div>` : ''}
     ${lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : ''}
     <div class="gc"><div class="gch">${t('With your tree and gear')}</div>
       ${hits ? `<div>${t('Damage per hit')}:<br><span>${hits}</span></div>` : ''}

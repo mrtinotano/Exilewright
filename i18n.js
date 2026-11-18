@@ -24,3 +24,14 @@ for (const el of document.querySelectorAll('[data-t]')) {
   for (const a of ['title', 'placeholder']) if (el.hasAttribute(a)) el.setAttribute(a, t(el.getAttribute(a)));
 }
 export const cap = s => s[0].toUpperCase() + s.slice(1);
+
+// the game's keyword markup in a description: "[Ignite|ignited]" ("[Fire]": the word is its own key)
+const KWRE = /\[([^\]|]+)(?:\|([^\]]*))?\]/g;
+const KW = await fetch('poe2_data/available/keywords.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
+const escKw = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+export const kwPlain = s => (s || '').replace(KWRE, (m, k, x) => x ?? k);
+// as HTML: a keyword the game explains on hover (KeywordPopups) shows that explanation as its tooltip
+export const kwHtml = s => (s || '').split(KWRE).map((x, i, a) => i % 3 === 0 ? escKw(x) : i % 3 === 2 ? '' : (k => {
+  const shown = escKw(a[i + 1] ?? k), w = KW[k];
+  return w ? `<span class="kw" title="${escKw((w['term_' + lang] || w.term) + '\n' + (w['def_' + lang] || w.def))}">${shown}</span>` : shown;
+})(x)).join('');
