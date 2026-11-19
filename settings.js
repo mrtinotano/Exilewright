@@ -38,7 +38,7 @@ tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
 export const keyName = code => code === 'Space' ? t('Space') : code.replace(/^Key|^Digit/, '');
 const CLICK = ['Left click', 'Middle click', 'Right click'];
-const slotName = c => c[0] === 'm' ? t(CLICK[+c[1]]) : keyName(c);
+export const slotName = c => c[0] === 'm' ? t(CLICK[+c[1]]) : keyName(c);
 const pad = () => [...(navigator.getGamepads?.() || [])].find(Boolean);
 // a shortcut for over the game: Ctrl and/or Alt (and Shift) with a letter, a digit or F1-F12
 const comboOf = e => {
