@@ -832,5 +832,6 @@
  "None of your skills deals damage.": "Ни одно из ваших умений не наносит урон.",
  "Mana Recovery per second": "Восстановление маны в секунду",
  "Damage over time taken per second": "Получаемый урон со временем в секунду",
- "{0}: life lost per second": "{0}: потеря здоровья в секунду"
+ "{0}: life lost per second": "{0}: потеря здоровья в секунду",
+ "{0} needs {1} Combo": "{0}: нужно {1} комбо"
 }

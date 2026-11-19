@@ -256,6 +256,14 @@ export function initScene(el, api) {
 
   // ---------- combat rules
   const maxC = c => sheet().charges?.[c] || 0;   // the build's maximum (calc.js character())
+  // a charge a skill grants, with its supports' chance of one more (Charge Profusion: "when you gain a Charge")
+  function chargeBy(type, S) {
+    gainCharge(type, S.label); const M = S.dmg?.more || {};
+    if (Math.random() * 100 < M.one) gainCharge(type, S.label);
+    if (Math.random() * 100 < M.random) gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], S.label);
+  }
+  // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
+  const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
   function gainCharge(type, by) {
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
@@ -328,7 +336,18 @@ export function initScene(el, api) {
     }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
-    if (!S.src) { const G = sheet().rage?.gain; gainRage((G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? G?.melee || 0 : 0)); }
+    // Rage: "Only one Hit every 0.5 seconds can cause you to gain Rage" (keywords.json); the tree's gains and the skill's
+    // supports' (calc.js onHit); a crit can cost it (Prototype Seventeen); Combo from Strikes; a perfectly timed hit's charge
+    const H = real ? D.onHit : null;
+    if (!S.src && time - (me.rageHit ?? -9) >= .5) {
+      const G = sheet().rage?.gain, n = (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
+      if (n > 0) { me.rageHit = time; gainRage(n); }
+    }
+    if (!S.src && H) {
+      if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
+      if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
+      if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
+    }
     d.by = S; damage(d, total, S);
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
@@ -350,11 +369,11 @@ export function initScene(el, api) {
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || 8), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || 8) };
-    const count = { Rage: S.enraged ? Infinity : me.rage, FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
+    const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0 };
     let n;
     if (c.type === 'ActorCondition' || c.type === 'Condition') n = is[v] ? 1 : 0;
-    else if (c.type === 'MultiplierThreshold') n = v in count && (count[v] >= (c.threshold || 0)) ? 1 : 0;
+    else if (c.type === 'MultiplierThreshold') n = v === 'Rage' && S.enraged || v in count && count[v] >= (c.threshold || 0) ? 1 : 0;
     else if (c.type === 'Multiplier') n = v in count ? Math.floor(count[v] / (c.div || 1)) : 0;
     else if (c.type === 'DistanceRamp') {   // [distance in tenths of a metre, share] points, as PoB2 has them (Longshot: "7m+")
       const x = dist(pp, d.pos) * 10, R = c.ramp; n = x <= R[0][0] ? R[0][1] : R[R.length - 1][1];
@@ -363,7 +382,7 @@ export function initScene(el, api) {
     return c.neg ? +!n : n;
   }
   function when(D, d, S) {
-    const W = { dmg: {}, crit: 1, critBonus: 1 };
+    const W = { dmg: {}, crit: S.critX || 1, critBonus: 1 };   // Potential's consumed power charge
     for (const w of D.when || []) {
       let n = w.cond.reduce((t, c) => t * condN(c, d, S), 1);
       if (!n) continue;
@@ -477,8 +496,9 @@ export function initScene(el, api) {
     if (x('physical') && !N.bleed && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * A.breakPct / 100) * A.breakMore;
+    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100) * A.breakMore;   // Tumult's consumed frenzy charge
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
+      if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
       if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); }
     }
@@ -493,6 +513,8 @@ export function initScene(el, api) {
     if (d.bar[a] < 100) return;
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
+    const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
+    if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
@@ -549,7 +571,7 @@ export function initScene(el, api) {
       for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) e.dots.push({ ...o, s: 5, ...dotOf(e, o.S) }); e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
-    if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) gainCharge(S.P.gain, S.label);
+    if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
@@ -578,7 +600,7 @@ export function initScene(el, api) {
   function useCorpse(S) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
-    const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); if (S.P.gain) gainCharge(S.P.gain, S.label);
+    const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); if (S.P.gain) chargeBy(S.P.gain, S);
     return p;
   }
 
@@ -933,7 +955,7 @@ export function initScene(el, api) {
         for (const d of list) {
           if (C?.maxLevel && d.level > C.maxLevel) { say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); continue; }
           n++;
-          d.curse = { s: sh(S).duration || SIM.curseTime, label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
+          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
       });
     },
@@ -951,7 +973,7 @@ export function initScene(el, api) {
       const list = inside(c, R);
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); }
       if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
-      if (S.P.gain && list.length) gainCharge(S.P.gain, S.label);
+      if (S.P.gain && list.length) chargeBy(S.P.gain, S);
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
       const k = S.name;
@@ -1180,6 +1202,8 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
       }
     }
+    const CB = S.dmg?.combo;
+    if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
       const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, life = (S.dmg?.lifeCost || 0) * per;
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
@@ -1189,6 +1213,19 @@ export function initScene(el, api) {
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
     if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { me.rage -= S.dmg.enrage; S.enraged = true; }
+    // charges the supports consume on use (calc.js onUse): one each, all of them for Rally; Perpetual Charge may keep
+    // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
+    const U = !auto && S.dmg?.onUse; nextCdX = 1;
+    if (U) {
+      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; return n * (Math.random() * 100 < U.double ? 2 : 1); };
+      let n;
+      if (U.speed && (n = take('frenzy'))) nextCdX = 1 + U.speed * n / 100;
+      if (U.breakPct && (n = take('frenzy'))) S.breakPct = U.breakPct * n;
+      if (U.crit && (n = take('power'))) S.critX = 1 + U.crit * n / 100;
+      if (U.curse && (n = take('power'))) S.curseX = 1 + U.curse * n / 100;
+      if (U.lifePerEndurance && (n = take('endurance', true))) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerEndurance * n / 100);
+      if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
+    }
     const run = K[S.kind] || K.area;
     run(S);
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
@@ -1202,7 +1239,8 @@ export function initScene(el, api) {
     if (b && use(i)) cd = b.P.channel && !b.P.stages ? SIM.channelTick : useTime(b); else { cd = .3; held = null; }
   }
   // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
-  const useTime = b => b.dmg?.speed > 0 ? clamp(1 / b.dmg.speed, .15, 3) : SIM.castTime;
+  let nextCdX = 1;   // Ferocity: more skill speed for the use that consumed a frenzy charge
+  const useTime = b => (b.dmg?.speed > 0 ? clamp(1 / b.dmg.speed, .15, 3) : SIM.castTime) / nextCdX;
   function press(i, key) {
     const b = api.byHand(i) && base(i); if (!b || move) return;
     held = null;

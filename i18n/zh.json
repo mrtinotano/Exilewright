@@ -832,5 +832,6 @@
  "None of your skills deals damage.": "你的技能都不造成傷害。",
  "Mana Recovery per second": "每秒魔力恢復",
  "Damage over time taken per second": "每秒承受的持續傷害",
- "{0}: life lost per second": "{0}：每秒失去的生命"
+ "{0}: life lost per second": "{0}：每秒失去的生命",
+ "{0} needs {1} Combo": "{0}需要{1}連擊"
 }

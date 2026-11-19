@@ -310,7 +310,8 @@ export function rageOf(b, sum) {
   const rg = find('ceaseless_rage_base_rage_regeneration_per_minute'), bz = find('skill_base_rage_effect_+%_to_apply');
   const bs = bz ? gemStats(bz, sum) : {};
   const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
-  const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage'), any = !!rg || !!sum.maximum_rage || Object.values(gain).some(x => x > 0);
+  const fromSupport = (b.gems || []).some(x => (x.supports || []).some(n => ['gain_x_rage_on_melee_hit', 'gain_x%_of_maximum_rage_on_melee_hit'].some(k => SK.skills[n]?.constant?.[k])));   // Rage I-III, Medved's
+  const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage'), any = !!rg || !!sum.maximum_rage || fromSupport || Object.values(gain).some(x => x > 0);
   return {
     base: any ? base : 0, gain, delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000, loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60,
     regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
@@ -714,6 +715,8 @@ export function skill(g, b, treeGear) {
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
     });
+  const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
+  if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: 1 / (1 + critInc / 100) });
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
@@ -754,6 +757,27 @@ export function skill(g, b, treeGear) {
     return phys || all ? { phys, all, more: 1 + v(sum, `base_${r}_leech_amount_+%`) / 100, rate: 1 + v(sum, `base_${r}_leech_rate_+%`) / 100 } : null;
   };
   out.enrage = v(sum, 'support_rageforged_consumes_X_rage_to_enrage_skill_use');   // Rageforged: Rage spent on a use to enrage it
+  // what the skill's hits and uses do with Rage, charges and Combo (its supports' stats; the tree's Rage gains are
+  // the character's: rageOf). onHit: Rage on melee hit (Rage I-III; Medved's Felling: % of maximum), endurance charges
+  // on breaking armour, on heavy stunning, on a perfectly timed hit; crit per 5 Rage and Rage lost on crit (Prototype
+  // Seventeen). onUse: a charge consumed for more skill speed (Ferocity), crit chance (Potential), armour break (Tumult),
+  // curse duration (Abiding Hex), all endurance charges for life (Rally); the chance to keep them (Perpetual Charge) or
+  // double the benefit (Heightened Charges), life lost per 5 Rage (Medved's). more: an extra charge (Charge Profusion)
+  // (read from the supports' own stats: PoB2 reads some as conditional mods, which leave them out of sum)
+  const sup = k => (g.supports || []).reduce((t, n) => t + (SK.skills[n]?.constant?.[k] || 0), 0), all2 = k => sup(k) + v(treeGear, k);
+  out.onHit = { rage: sup('gain_x_rage_on_melee_hit'), ragePct: all2('gain_x%_of_maximum_rage_on_melee_hit'),
+    breakEndurance: all2('chance_to_gain_endurance_charge_on_armour_break_%'), stunEndurance: all2('chance_to_gain_endurance_charge_on_heavy_stunning_non_unique_enemy_%'),
+    stunEnduranceUnique: all2('gain_x_endurance_charges_on_heavy_stunning_unique_enemy'), perfectEndurance: all2('chance_to_gain_endurance_charge_on_perfect_timing_hit_%'),
+    loseRageOnCrit: all2('lose_%_of_maximum_rage_on_dealing_critical_strike') };
+  out.onUse = { speed: all2('skill_consume_frenzy_charge_to_gain_skill_speed_+%_final'), crit: all2('skill_consume_power_charge_to_gain_critical_strike_chance_+%_final'),
+    breakPct: all2('skill_consume_frenzy_charge_to_armour_break_for_%_of_physical_damage'), curse: all2('support_consume_power_charge_to_gain_curse_duration_+%_final'),
+    lifePerEndurance: all2('consume_endurance_charges_on_use_to_recover_%_maximum_life_per_charge'), keep: all2('charge_skip_consume_chance_%'),
+    double: all2('chance_%_to_double_effect_of_removing_charges'), lifePer5Rage: all2('lose_x%_of_life_per_5_rage_on_supported_skill_use') };
+  out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
+  // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
+  // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
+  out.combo = { strike: own.includes('strike'), decay: (all2('base_combo_stacks_decay_delay_ms') || null) && all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
+    need: all2('support_combo_finisher_required_number_of_combo_stacks'), extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;

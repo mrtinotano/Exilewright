@@ -832,5 +832,6 @@
  "None of your skills deals damage.": "Nenhuma das suas habilidades causa dano.",
  "Mana Recovery per second": "Recuperação de mana por segundo",
  "Damage over time taken per second": "Dano degenerativo sofrido por segundo",
- "{0}: life lost per second": "{0}: vida perdida por segundo"
+ "{0}: life lost per second": "{0}: vida perdida por segundo",
+ "{0} needs {1} Combo": "{0} precisa de {1} de combo"
 }

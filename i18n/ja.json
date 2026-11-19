@@ -832,5 +832,6 @@
  "None of your skills deals damage.": "ダメージを与えるスキルがない。",
  "Mana Recovery per second": "毎秒マナ回復",
  "Damage over time taken per second": "毎秒受ける継続ダメージ",
- "{0}: life lost per second": "{0}：毎秒失うライフ"
+ "{0}: life lost per second": "{0}：毎秒失うライフ",
+ "{0} needs {1} Combo": "{0}には{1}コンボが必要です"
 }

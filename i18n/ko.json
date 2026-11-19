@@ -832,5 +832,6 @@
  "None of your skills deals damage.": "피해를 주는 스킬이 없습니다.",
  "Mana Recovery per second": "초당 마나 회복",
  "Damage over time taken per second": "초당 받는 지속 피해",
- "{0}: life lost per second": "{0}: 초당 잃는 생명력"
+ "{0}: life lost per second": "{0}: 초당 잃는 생명력",
+ "{0} needs {1} Combo": "{0}에 연계 {1} 필요"
 }
