@@ -115,11 +115,18 @@ export function attackOf(m, level, key, rarity, ally = false) {
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     area, unblockable: !!set.unblockable, ail: set.const || {},   // the skill's ailment chances and freeze multipliers
     // metres and metres per second, where the game's tables say them (else the scene uses its own)
-    radius: (set.const?.active_skill_base_area_of_effect_radius || 0) / 10 || null, projSpeed: (sk?.proj_speed || 0) / 10 || null,
+    radius: radiusOf(set.const || {}), count: set.const?.number_of_projectiles_override || 1, projSpeed: (sk?.proj_speed || 0) / 10 || null,
     reach: (m.range || 10) / 10,   // metres, for melee attacks
   };
 }
 
+// the radius of a monster skill's area, in metres: its base radius (and flat radius) in game units, scaled by the square root
+// of its increased and more area, and by its more radius, in whole game units as the player's (geo() in app.js)
+const radiusOf = C => {
+  const base = C.active_skill_base_area_of_effect_radius ? C.active_skill_base_area_of_effect_radius + (C['active_skill_base_radius_+'] || 0) : 0;   // a flat radius alone adds to no radius the tables give
+  const area = (1 + (C['base_skill_area_of_effect_+%'] || 0) / 100) * (1 + (C['active_skill_area_of_effect_+%_final'] || 0) / 100);
+  return Math.floor(base * Math.sqrt(Math.max(0, area)) * (1 + (C['active_skill_area_of_effect_radius_+%_final'] || 0) / 100)) / 10 || null;
+};
 // ---------- the game's defence formulas
 const avg = r => (r[0] + r[1]) / 2;
 // chance (%) that a monster with this accuracy hits a character with this evasion

@@ -1635,8 +1635,13 @@ export function initScene(el, api) {
     const el = list[0][0], r = 2.2;
     hazards.push({ x: p.x, z: p.z, r, s: d.atk.dotDur || 3, tick: .25, d, dot: { ...d.atk.dot }, el, decal: fx.decal(p, r, 'patch', el, { a: .55, k: 1.2, pulse: 5, y: .04 }) });
   }
-  function bullet(d) {
-    const a = d.atk, c = d.col, from = chest(d), ox = pp.x - from.x, oz = pp.z - from.z, l = Math.hypot(ox, oz) || 1, dx = ox / l, dz = oz / l;
+  // its projectiles (number_of_projectiles_override), fanned out as yours; one use hits you once (shot.hit)
+  function volley(d) {
+    const from = chest(d), a0 = Math.atan2(pp.x - from.x, pp.z - from.z), n = d.atk.count, shot = { hit: false };
+    for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .13; bullet(d, Math.sin(a), Math.cos(a), shot); }
+  }
+  function bullet(d, dx, dz, shot) {
+    const a = d.atk, c = d.col, from = chest(d), l = Math.hypot(pp.x - from.x, pp.z - from.z) || 1;
     const m = a.attack ? fx.arrow(c) : fx.orb(c, .2); m.position.set(from.x, Math.min(from.y, 1.3), from.z); m.rotation.y = Math.atan2(dx, dz); scene.add(m);
     let left = a.hasHit ? 18 : l;   // a skill without a hit lands where you stood
     const land = () => { q.dead = true; if (a.area || !a.hasHit) fx.explode(m.position, 1.4, c, { soft: true }); hazard(d, m.position); };
@@ -1645,7 +1650,7 @@ export function initScene(el, api) {
         let s = Math.min(left, (a.projSpeed || 15) * dt); left -= s;
         while (s > 0 && !q.dead) {
           const k = Math.min(.3, s); s -= k; m.position.x += dx * k; m.position.z += dz * k;
-          if (a.hasHit && dist(m.position, pp) <= .55) { struck(d); land(); }
+          if (a.hasHit && !shot.hit && dist(m.position, pp) <= .55) { shot.hit = true; struck(d); land(); }
         }
         if (q.dead) return;
         fx.emit(1, { p: m.position, v: .3, life: .3, size: .15, c, c2: 'white', drag: 1 });
@@ -1671,7 +1676,7 @@ export function initScene(el, api) {
         if (a.hasHit) { fx.explode(p, R, c, { soft: true }); if (slam) shake = Math.min(.45, shake + .1); if (dist(p, pp) <= R) struck(d); }
         hazard(d, p);
       } };
-    } else if (a.shape === 'projectile') d.wind = { s: .2, land() { bullet(d); } };
+    } else if (a.shape === 'projectile') d.wind = { s: .2, land() { volley(d); } };
     else {   // bolt: a spell that strikes you directly
       fx.emit(10, { p: chest(d), r: .3, v: .6, up: 1, life: .5, size: .2, c, c2: 'white' });
       d.wind = { s: .5, land() { const to = V(pp.x, 1.1, pp.z); fx.bolt(chest(d), to, c, .18, .05, .3); fx.glow(to, 1.2, c, .25); struck(d); hazard(d, pp); } };
