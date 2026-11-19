@@ -183,6 +183,7 @@ export function initScene(el, api) {
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
+  const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body;   // to the dummy's edge
   const coneHalf = S => (S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
   function aim(S, p) {
     const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange;
@@ -1088,7 +1089,7 @@ export function initScene(el, api) {
       });
     },
     strike(S) {
-      const P = S.P, reach = (P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body, n = P.dash ? Math.max(1, S.spent) : 1;   // to the dummy's edge
+      const P = S.P, reach = strikeR(S), n = P.dash ? Math.max(1, S.spent) : 1;
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
       const go = (d, k) => {
@@ -1436,7 +1437,7 @@ export function initScene(el, api) {
       case 'aura': case 'herald': if (S.R) circle(pp, S.R); break;
       case 'field': circle(pp, S.A); break;
       case 'meta': case 'minion': case 'buff': break;
-      case 'strike': { const reach = (P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body, d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
+      case 'strike': { const reach = strikeR(S), d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
       case 'sweep': case 'cone': sector(S.R || meleeR(S), coneHalf(S)); break;
       case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
       case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
