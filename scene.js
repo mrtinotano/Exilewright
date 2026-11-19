@@ -893,15 +893,15 @@ export function initScene(el, api) {
     'Life Remnants': { c: 'blood', kill: s => s['life_remnants_chance_to_spawn_orb_on_killing_enemy_%'], every: s => s.life_remnants_spawn_remnant_on_hit_vs_enemy_every_X_ms,
       get: (s, k) => { me.life = overflow(me.life, me.maxL, s.life_remnants_gain_per_globe * k); } },
     'Mana Remnants': { c: 'lightning', ail: true, kill: s => s['mana_remnants_chance_to_spawn_orb_on_killing_enemy_with_elemental_ailment_%'], crit: true,
-      every: s => s.mana_remnants_spawn_remnant_on_crit_vs_elemental_ailment_enemy_every_X_ms, get: (s, k) => { me.mana = Math.max(me.mana, Math.min(me.maxM, me.mana + s.mana_remnants_gain_per_globe * k)); } },
+      every: s => s.mana_remnants_spawn_remnant_on_crit_vs_elemental_ailment_enemy_every_X_ms, get: (s, k) => { me.mana = gain(me.mana, me.maxM, s.mana_remnants_gain_per_globe * k); } },
     'Sanguine Revelry': { c: 'fire', bleed: true, kill: s => s['sanguine_revelry_%_change_to_create_remnant_on_killing_bleeding_enemy'], every: s => s.create_furious_remnant_when_hitting_bleeding_enemies_once_every_x_ms,
       get: (s, k) => { gainRage(s.sanguine_revelry_rage_gain_per_pickup * k);   // the life by the Rage you have once it is granted
-        me.life = Math.max(me.life, Math.min(me.maxL, me.life + me.maxL * (s['sanguine_revelry_remnant_restore_%_permyriad_of_max_life_per_5_current_rage'] || 0) / 1e6 * k * Math.floor(me.rage / 5))); } },
+        me.life = gain(me.life, me.maxL, me.maxL * (s['sanguine_revelry_remnant_restore_%_permyriad_of_max_life_per_5_current_rage'] || 0) / 1e6 * k * Math.floor(me.rage / 5)); } },
     'Remnants of Kalguur': { c: 'gold', kill: s => s['ward_remnants_chance_to_spawn_orb_on_killing_enemy_%'], stun: s => s['ward_remnants_chance_to_spawn_remnant_on_stun_%'],
       stunCd: s => s.ward_remnants_spawn_remnant_on_stun_cooldown_ms, get: (s, k) => { me.ward = overflow(me.ward, me.maxW, s.ward_remnants_gain_per_globe * k); } },
   };
   const OVERFLOW = 1.5;   // keywords.json Overflow: "can be recovered up to 1.5 times that maximum"
-  const overflow = (v, max, n) => Math.max(v, Math.min(max * OVERFLOW, v + n));
+  const gain = (v, max, n) => Math.max(v, Math.min(max, v + n)), overflow = (v, max, n) => gain(v, max * OVERFLOW, n);   // what is already above the top stays
   const EL_AIL = ['ignite', 'chill', 'freeze', 'shock', 'electrocute'];   // keywords.json ElementalAilments
   const ORB = new THREE.SphereGeometry(.22, 10, 8), remnantAt = {};
   const remnantSkills = () => api.build().gems.flatMap((g, i) => REMNANT[g.name] && tog[g.name] ? [base(i)] : []).filter(S => S?.dmg?.stats);
@@ -921,8 +921,7 @@ export function initScene(el, api) {
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
     fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
     if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
-    const delay = (s.remnant_delay_X_ms || 0) / 1000;
-    later(delay, () => { R.get(s, k); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
+    later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
   }
   // a hit of yours (each skill no more than once in its time; Mana Remnants on a critical hit on an enemy with an elemental
   // ailment, Sanguine Revelry on a bleeding one), a kill (its chance, under the same condition), a heavy stun (Kalguur's
@@ -2207,8 +2206,8 @@ export function initScene(el, api) {
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
   const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana
-    if (f.k === 'mana') return void (me.mana = Math.max(me.mana, Math.min(me.maxM, me.mana + n)));
-    me.life = Math.max(me.life, Math.min(me.maxL, me.life + n)); if (f.es) me.es = Math.min(me.maxE, me.es + n);   // overflowed life stays
+    if (f.k === 'mana') return void (me.mana = gain(me.mana, me.maxM, n));
+    me.life = gain(me.life, me.maxL, n); if (f.es) me.es = Math.min(me.maxE, me.es + n);
   };
   function drink(n) {
     const f = flasks()[n];
