@@ -1594,7 +1594,8 @@ export function initScene(el, api) {
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
-      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, life = (S.dmg?.lifeCost || 0) * per;
+      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, LP = S.dmg?.lifePerRecent,
+        life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);

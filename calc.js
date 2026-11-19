@@ -643,6 +643,9 @@ export function skill(g, b, treeGear) {
       out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost) : Math.max(0, step(step(step(life, inc2), more2), moreCost));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
     }
+    // Paquate's Pact: a % of maximum life more for each use or trigger of the skill Recently, up to the stat's own cap
+    const pact = Object.keys(sum).find(k => k.startsWith('support_corrupting_cry_%_life_cost_per_supported_skill'));
+    if (pact) out.lifePerRecent = { pct: sum[pact], max: +pact.match(/up_to_(\d+)%/)[1] };
     out.costPerSecond = perSec;
   } else out.cost = 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
