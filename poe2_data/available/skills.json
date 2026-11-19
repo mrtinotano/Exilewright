@@ -2599,6 +2599,10 @@
   "plant_skill_effect_duration_+%_final_from_archon_of_nature": 200,
   "plant_skill_limit_+": 2
  },
+ "archon_time": [
+  10,
+  20
+ ],
  "archon_nature_icon": "Art/2DArt/BuffIcons/ArchonNature.dds",
  "character_stats": {
   "level": 1,

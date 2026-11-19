@@ -268,8 +268,9 @@ export function character(b, sum) {
     // radius in metres (character.ot, its area scaled like calc's sheet)
     overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
       r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
-      // an Archon lasts 10 s, then 20 s before another (KeywordPopups Archon); its increased duration, its delay's faster expiry
-      archonTime: 10 * pct('archon_duration_+%'), archonDelay: 20 / pct('archon_delay_expires_x%_faster') },
+      // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
+      // duration, its recovery's faster expiry
+      archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster') },
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
