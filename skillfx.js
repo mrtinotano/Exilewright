@@ -35,6 +35,7 @@ export const SIM = {
   stormArea: 3,        // m over which a storm / rain with a small impact radius scatters its impacts
   meteor: 1.0,         // s a delayed impact takes to land when the data gives no time
   snap: 3,             // m around the cursor where a single-target skill looks for its target
+  pickup: 0.6,         // m from a Remnant at which walking over it collects it (the data gives only the +% to it)
   totemArea: 3, totemTime: 12, minionTime: 14,
 };
 

@@ -366,6 +366,7 @@ export function initScene(el, api) {
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
+    if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
     // Rage: "Only one Hit every 0.5 seconds can cause you to gain Rage" (keywords.json); the tree's gains and the skill's
     // supports' (calc.js onHit); a crit can cost it (Prototype Seventeen); Combo from Strikes; a perfectly timed hit's charge
@@ -596,7 +597,7 @@ export function initScene(el, api) {
     if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
-    else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }
+    else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; if (!S.src) remnantOn('stun', d); }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
     else if (a === 'electrocute' || a === 'pin') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
     else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
@@ -734,6 +735,7 @@ export function initScene(el, api) {
     }
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
+    if (!S?.src) remnantOn('kill', d);
     hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
@@ -882,6 +884,55 @@ export function initScene(el, api) {
       const m = new THREE.Mesh(PUSTULE, new THREE.MeshStandardMaterial({ color: 0x5f8a2a, emissive: 0x1d3008, roughness: .6 })); m.position.set(q.x, .25, q.z);
       planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, tick: (dt, e) => presence(e),
         end: () => { if (X) { say(t('{0} detonates', S.label), 'poison'); boom(q, X.A, X); } } }));
+    }
+  }
+  // ---------- Remnants (keywords.json Remnant): your persistent skills drop them where their condition is met, for their
+  // duration; walking over one collects it. Its effect +%, chance for one more, delay and pickup range are the gem's stats
+  // with its supports' (Remnant Potency, Harmonic / Magnetic Remnants); Selfless Remnants gives it to your allies instead
+  const REMNANT = {
+    'Life Remnants': { c: 'blood', kill: s => s['life_remnants_chance_to_spawn_orb_on_killing_enemy_%'], every: s => s.life_remnants_spawn_remnant_on_hit_vs_enemy_every_X_ms,
+      get: (s, k) => { me.life = overflow(me.life, me.maxL, s.life_remnants_gain_per_globe * k); } },
+    'Mana Remnants': { c: 'lightning', ail: true, kill: s => s['mana_remnants_chance_to_spawn_orb_on_killing_enemy_with_elemental_ailment_%'], crit: true,
+      every: s => s.mana_remnants_spawn_remnant_on_crit_vs_elemental_ailment_enemy_every_X_ms, get: (s, k) => { me.mana = Math.max(me.mana, Math.min(me.maxM, me.mana + s.mana_remnants_gain_per_globe * k)); } },
+    'Sanguine Revelry': { c: 'fire', bleed: true, kill: s => s['sanguine_revelry_%_change_to_create_remnant_on_killing_bleeding_enemy'], every: s => s.create_furious_remnant_when_hitting_bleeding_enemies_once_every_x_ms,
+      get: (s, k) => { gainRage(s.sanguine_revelry_rage_gain_per_pickup * k);   // the life by the Rage you have once it is granted
+        me.life = Math.max(me.life, Math.min(me.maxL, me.life + me.maxL * (s['sanguine_revelry_remnant_restore_%_permyriad_of_max_life_per_5_current_rage'] || 0) / 1e6 * k * Math.floor(me.rage / 5))); } },
+    'Remnants of Kalguur': { c: 'gold', kill: s => s['ward_remnants_chance_to_spawn_orb_on_killing_enemy_%'], stun: s => s['ward_remnants_chance_to_spawn_remnant_on_stun_%'],
+      stunCd: s => s.ward_remnants_spawn_remnant_on_stun_cooldown_ms, get: (s, k) => { me.ward = overflow(me.ward, me.maxW, s.ward_remnants_gain_per_globe * k); } },
+  };
+  const OVERFLOW = 1.5;   // keywords.json Overflow: "can be recovered up to 1.5 times that maximum"
+  const overflow = (v, max, n) => Math.max(v, Math.min(max * OVERFLOW, v + n));
+  const EL_AIL = ['ignite', 'chill', 'freeze', 'shock', 'electrocute'];   // keywords.json ElementalAilments
+  const ORB = new THREE.SphereGeometry(.22, 10, 8), remnantAt = {};
+  const remnantSkills = () => api.build().gems.flatMap((g, i) => REMNANT[g.name] && tog[g.name] ? [base(i)] : []).filter(S => S?.dmg?.stats);
+  // the gem's stats and, of the Remnant ones, what its supports, the tree and gear add (calc.js sum)
+  const rstats = S => { const s = { ...S.dmg.stats }; for (const [k, x] of Object.entries(S.dmg.sum || {})) if (/remnant/.test(k) && typeof x === 'number') s[k] = (s[k] || 0) + x; return s; };
+  function remnant(S, p) {
+    const s = rstats(S), R = REMNANT[S.name], n = 1 + (Math.random() * 100 < (s['chance_%_to_create_additional_remnant'] || 0) ? 1 : 0);
+    const reach = SIM.pickup * (1 + (s['remnant_pickup_range_+%'] || 0) / 100);
+    for (let j = 0; j < n; j++) {
+      const c = j ? around(p, SIM.pickup) : { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(R.c, 2.2), fog: false }));
+      m.position.set(c.x, .5, c.z);
+      thing(m, (s.base_remnant_duration_ms || SIM.lifetime * 1000) / 1000, { name: S.name, c,
+        tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, R, c); } } });
+    }
+  }
+  function collect(S, R, c) {
+    const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
+    fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
+    if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
+    const delay = (s.remnant_delay_X_ms || 0) / 1000;
+    later(delay, () => { R.get(s, k); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
+  }
+  // a hit of yours (each skill no more than once in its time; Mana Remnants on a critical hit on an enemy with an elemental
+  // ailment, Sanguine Revelry on a bleeding one), a kill (its chance, under the same condition), a heavy stun (Kalguur's
+  // chance, its cooldown)
+  function remnantOn(type, d, crit) {
+    for (const S of remnantSkills()) {
+      const R = REMNANT[S.name], s = rstats(S), ok = (!R.ail || EL_AIL.some(a => d.st[a] > 0)) && (!R.bleed || d.st.bleed > 0);
+      if (type === 'hit') { const ms = R.every?.(s); if (ok && ms && (!R.crit || crit) && time - (remnantAt[S.name] ?? -99) >= ms / 1000) { remnantAt[S.name] = time; remnant(S, d.pos); } }
+      else if (type === 'kill') { if (ok && Math.random() * 100 < (R.kill(s) || 0)) remnant(S, d.pos); }
+      else if (R.stun && time - (remnantAt[S.name] ?? -99) >= (R.stunCd(s) || 0) / 1000 && Math.random() * 100 < (R.stun(s) || 0)) { remnantAt[S.name] = time; remnant(S, d.pos); }
     }
   }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
@@ -2156,8 +2207,8 @@ export function initScene(el, api) {
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
   const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana
-    if (f.k === 'mana') return void (me.mana = Math.min(me.maxM, me.mana + n));
-    me.life = Math.min(me.maxL, me.life + n); if (f.es) me.es = Math.min(me.maxE, me.es + n);
+    if (f.k === 'mana') return void (me.mana = Math.max(me.mana, Math.min(me.maxM, me.mana + n)));
+    me.life = Math.max(me.life, Math.min(me.maxL, me.life + n)); if (f.es) me.es = Math.min(me.maxE, me.es + n);   // overflowed life stays
   };
   function drink(n) {
     const f = flasks()[n];
@@ -2327,7 +2378,7 @@ export function initScene(el, api) {
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
-    me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);
+    if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     me.safe = Math.max(0, me.safe - dt);
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
     for (const a in me.lock) me.lock[a] -= dt;
