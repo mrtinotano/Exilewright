@@ -948,7 +948,7 @@ export function initScene(el, api) {
   }
   function minion(S, p, life, o = {}) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
-    // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies within o.range
+    // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
@@ -963,11 +963,8 @@ export function initScene(el, api) {
         else if (d && wait <= 0) {
           wait = real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1; sw = 1;
           if (ranged) shoot(MS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
+          else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MS, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, MS); }
-          for (let c = 0, cur = d, seen = new Set([d]); c < (o.chains || 0); c++) {
-            const n = near(cur.pos, o.range, x => !seen.has(x)); if (!n) break;
-            seen.add(n); fx.bolt(V(cur.pos.x, 1.2, cur.pos.z), V(n.pos.x, 1.2, n.pos.z), S.el, .18); hit(n, MS); cur = n;
-          }
           if (o.attacks && --o.attacks <= 0) e.dead = true;
         }
       },
@@ -1868,7 +1865,7 @@ export function initScene(el, api) {
       const LL = T.stats?.['chance_to_trigger_living_lightning_on_lightning_damage_%'];
       if (LL && T.minion && S.els.includes('lightning') && Math.random() * 100 < LL && objs.filter(x => x.kind === T.id && !x.dead).length < T.stats.base_number_of_living_lightning_allowed && spend(T)) {
         const X = asTrig(S, T, T.minion.hits); X.dmg = { ...X.dmg, ...T.minion }; X.P = { ...X.P, ranged: false };
-        minion(X, around(d.pos, 1.5), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id, attacks: T.stats.living_lightning_maximum_number_of_attacks, chains: T.shape?.chains ?? T.stats.number_of_chains, range: T.shape?.chainRange || 4 });
+        minion(X, around(d.pos, 1.5), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id, attacks: T.stats.living_lightning_maximum_number_of_attacks, chains: T.shape?.chains ?? T.stats.number_of_chains });
       }
       // Fist of Kalguur: the boosted slam's first hit on an enemy leaves its rune there (up to its limit, the oldest goes),
       // erupting as an aftershock after its duration; its cooldown
