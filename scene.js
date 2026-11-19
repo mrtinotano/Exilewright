@@ -1515,7 +1515,7 @@ export function initScene(el, api) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * though('chill') / thr * D.eff.chill);
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
-        D.freeze, PL.FreezeDuration * D.dur.freeze);
+        D.freeze, PL.FreezeDuration * D.dur.freeze * (1 + (A['freeze_duration_+%'] || 0) / 100));
     }
     // electrocute, only from the skills that say so (GSPerennialKingGlassSwordFenceZap), against your ailment threshold
     const E = A['active_skill_electrocutes_as_though_dealt_damage_+%_final'];
@@ -1531,7 +1531,7 @@ export function initScene(el, api) {
     if (!frozen() && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
-    if (x('physical') && roll(A['local_chance_to_bleed_on_hit_%'] || 0) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
+    if (x('physical') && roll((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
     const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);
     if (roll(maim) && can('maim')) suffer('maim', MAIM.time);
