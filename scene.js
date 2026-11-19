@@ -89,7 +89,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, runes: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -1827,7 +1827,7 @@ export function initScene(el, api) {
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     me.life -= left;
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
-    if (me.life < 1 && me.ward > 0 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; me.life = 1; }
+    if (me.life < 1 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; me.life = 1; }
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -1852,8 +1852,8 @@ export function initScene(el, api) {
     for (const T of S.dmg?.trig || []) {
       // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
       // enemy, for its Ward cost
-      if (T.stats?.['triggered_by_support_rune_forged_blades_%'] && d.st.armour > 0 && me.ward >= (T.wardCost || 0)) {
-        me.ward -= T.wardCost || 0; clear(d, 'armour');
+      if (T.stats?.['triggered_by_support_rune_forged_blades_%'] && d.st.armour > 0 && me.ward >= T.wardCost) {
+        me.ward -= T.wardCost; clear(d, 'armour');
         const X = asTrig(S, T), n = sh(X).projectiles || T.stats.base_number_of_projectiles; say(X.label, 'physical');
         for (let k = 0; k < n; k++) { const a = k * TAU / n; shoot(X, d.pos, Math.sin(a), Math.cos(a), { seen: [d] }); }
       }
@@ -2156,8 +2156,8 @@ export function initScene(el, api) {
     const c = sheet(), L = c.life || 0, E = c.es || 0; me.known = c.life != null;
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
-    const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? (me.ward || 0) / me.maxW * W : W; me.maxW = W; }
-    me.ward = Math.min(W, (me.ward || 0) + W * WARD_REGEN / 100 * dt);
+    const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
+    me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);
     me.safe = Math.max(0, me.safe - dt);
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
     for (const a in me.lock) me.lock[a] -= dt;
