@@ -399,8 +399,8 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
         **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}),
         # the skill a support sets off (Fiery Death's explosion: TriggeredFieryDeathPlayer), its own constant stats
-        **({'triggers': {ge_tab[x]['Id']: {sid(a): v for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])}
-                         for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}} if g['kind'] == 'support' and any(ge_tab[x]['Id'].startswith('Triggered') for x in fx['AdditionalGrantedEffects']) else {}),
+        **({'triggers': t} if g['kind'] == 'support' and (t := {ge_tab[x]['Id']: {sid(a): v for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])}
+                                                                  for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}) else {}),
         'meta_support': {sid(a): v for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Support')
                          for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])} or None,
     }
