@@ -819,7 +819,7 @@ export function skill(g, b, treeGear) {
   const baseOf = c => ({ ...Object.fromEntries(Object.entries(c).flatMap(([k, x]) => { const m = k.match(/^spell_(minimum|maximum)_base_(\w+)_damage_as_%_of_intelligence$/); return m ? [[`spell_${m[1]}_base_${m[2]}_damage`, x * intel / 100]] : []; })),
     ...(c['support_mana_flare_%_of_current_mana_consumed'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
     ...(c['support_battershout_physical_damage_equal_to_%_of_broken_armour'] || c['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] || c['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] ? unit('physical') : {}),
-    ...(c['corpse_explosion_monster_life_%'] ? unit('fire') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
+    ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
     .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {} })));
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's

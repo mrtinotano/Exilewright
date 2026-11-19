@@ -966,12 +966,29 @@ export function initScene(el, api) {
         if ((tk -= dt) <= 0) { tk = .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: .4 }); }
       } });
   }
-  function fissure(S, from, ang, len) {
-    const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len };
+  // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
+  // for that share of its life as fire in its area; Crater opens its fissures, a hit of its own each (their length and
+  // spread the slam's: the data gives none; ponytail: they do not last its duration nor take aftershocks)
+  function landed(S, c) {
+    for (const T of S.dmg?.trig || []) {
+      const ts = T.stats || {};
+      if (ts.corpse_explosion_monster_life_permillage_fire) {
+        const wait = (ts.explosion_delay_ms || 0) / 1000;
+        for (const d of dummies.filter(d => d.corpse > 0 && dist(d.pos, c) <= ts.active_skill_base_secondary_area_of_effect_radius / 10).slice(0, ts.detonate_on_landing_maximum_number_of_corpses_to_detonate)) {
+          const p = { x: d.pos.x, z: d.pos.z }, X = asTrig(S, T, scale(T.hits, d.max * ts.corpse_explosion_monster_life_permillage_fire / 1e5));
+          eat(d, 'fire'); fx.telegraph(p, X.A, 'fire', wait); later(wait, () => boom(p, X.A, X));
+        }
+      }
+      const n = T.support?.support_fissure_on_landing_create_X_fissures_on_impact;
+      if (n) { const X = asTrig(S, T), a0 = Math.atan2(S.dx, S.dz); say(X.label, X.el); for (let j = 0; j < n; j++) fissure(X, c, a0 + (j - (n - 1) / 2) * .5, 5, X.A, 1); }
+    }
+  }
+  function fissure(S, from, ang, len, r = .8, mult = .5) {
+    const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len }, seen = new Set();   // each enemy once
     fx.strip(from, b, .9, 0x070605, 4, { dark: true, tex: 'beam', a: .9, y: .033 });
     for (let k = 1; k <= len; k++) later(k * .06, () => {
       const p = { x: from.x + dx * k, z: from.z + dz * k };
-      pop(p, .8, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); area(p, .8, S, { mult: .5, noPay: true, noTouch: true });
+      pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
     });
   }
   function slash(S, dx, dz, r = 2, half = .95) {
@@ -1158,6 +1175,7 @@ export function initScene(el, api) {
       const land = () => {
         if (S.R || P.attack) boom(to, S.A, S); else fx.ring(to, .2, 1.6, S.el, .4);
         if (P.ground) ground(P.ground, to, S.A, P.dur, S);
+        if (P.jump) landed(S, to);
       };
       if (P.blink && !P.jump) {
         fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
