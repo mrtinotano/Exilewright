@@ -104,8 +104,7 @@ export function gemStats(g, sum = {}) {
   let level = g.level;
   for (const [k, x] of Object.entries(sum)) if (k.endsWith(end) && k.slice(0, -end.length).split('_').every(fits)) level += x;
   // Uhtred's: only with exactly no / one / two other supports modifying it
-  const others = (g.supports || []).filter(Boolean).length - 1;
-  level += v(sum, `supported_active_skill_gem_level_+_if_${['no', 'one', 'two'][others]}_other_support${others === 1 ? '' : 's'}`);
+  level += v(sum, 'supported_active_skill_gem_level_+_if_' + ['no_other_supports', 'one_other_support', 'two_other_supports'][(g.supports || []).filter(Boolean).length - 1]);
   const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+', 'supported_active_skill_gem_quality_%');
   const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
@@ -498,8 +497,8 @@ export function withSupports(g, sum) {
     // the game's stats, except those PoB2 reads as a mod used here (or only under a condition): Bleed II's bleed chance,
     // Fire Mastery's level, which PoB2 reads as mods the app has no use for or does not have
     const read = new Set((p?.mods || []).filter(m => m[4] || USED.test(m[0])).map(m => m[5]));
-    for (const [k, val] of Object.entries(p ? { ...Object.fromEntries(Object.entries(game).filter(([k]) => !read.has(k))), ...(p.stats || {}) } : game)) {
-      if (k.startsWith('_') || typeof val !== 'number') continue;
+    for (const [k, val] of Object.entries({ ...game, ...(p?.stats || {}) })) {
+      if (read.has(k) || k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
       else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;
     }
