@@ -30,18 +30,16 @@ for prefix, row, kinds in (('', uiart['Character'], ('Passive', 'Notable', 'Keys
             TREE[f'{prefix}{kind.lower()}_{state}'] = frames[row[kind + 'Frame']][col]
 for state, col in (('normal', 'Normal'), ('active', 'Active')):
     TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
-# the character panel's resistance icons (UIImages InGame/CharacterPanel), saved whole as ../available/img/panel/<role>.webp
-PANEL = {k: 'Art/2DArt/UIImages/InGame/' + v for k, v in {
-    'fire': 'CharacterPanel/IconFire', 'cold': 'CharacterPanel/IconCold',
-    'lightning': 'CharacterPanel/IconLightning', 'chaos': 'CharacterPanel/IconChaos'}.items()}
-# ...and the ones painted into the panel's own picture (life, energy shield, mana, spirit, armour, evasion, block): where
-# each sits in CharacterPanelContent (4K), cut off the stone behind it
+# the character panel's icons, painted into the panel's own picture (CharacterPanelContent, 4K), saved as
+# ../available/img/panel/<role>.webp: where each sits in it, cut off the stone behind it; the resistances' are round
+# badges (centre, radius)
 CONTENT = 'art/textures/interface/2d/2dart/uiimages/ingame/characterpanel/4k/characterpanelcontent.dds'
 PAINTED = {'life': (152, 55), 'es': (452, 55), 'mana': (747, 52), 'spirit': (1047, 52), 'armour': (285, 271), 'evasion': (599, 271), 'block': (913, 271)}
+BADGES = {'fire': (102, 539, 45), 'cold': (670, 537, 45), 'lightning': (102, 653, 45), 'chaos': (670, 655, 45)}
 # the art behind a group of the tree, by its mastery (PassiveSkillTreeMasteryArt.ActiveEffectImage), saved whole at
 # half size as ../available/img/mastery/<id>.webp
 MASTERY = {r['Id']: r['ActiveEffectImage'] for r in table('PassiveSkillTreeMasteryArt') if r['ActiveEffectImage']}
-ui = set(TREE.values()) | set(PANEL.values()) | set(MASTERY.values())
+ui = set(TREE.values()) | set(MASTERY.values())
 atlas = {}
 if ui:
     index = os.path.join(ROOT, 'files', 'art', 'uiimages1.txt')
@@ -72,7 +70,7 @@ for p in paths:
         im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((p, str(e)))
-for folder, role, name in [('tree', *x) for x in TREE.items()] + [('panel', *x) for x in PANEL.items()] + [('mastery', *x) for x in MASTERY.items()]:   # each is a picture of its own: whole, full size (the tree's are drawn large when zoomed in; the masteries at half)
+for folder, role, name in [('tree', *x) for x in TREE.items()] + [('mastery', *x) for x in MASTERY.items()]:   # each is a picture of its own: whole, full size (the tree's are drawn large when zoomed in; the masteries at half)
     out = os.path.join(ROOT, 'available', 'img', folder, role + '.webp')
     try:
         os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -91,9 +89,13 @@ try:
     sheet = Image.open(os.path.join(ROOT, 'files', CONTENT)).convert('RGBA')
     for role, (x, y) in PAINTED.items():
         painted(sheet.crop((x - 46, y - 42, x + 46, y + 46))).save(os.path.join(ROOT, 'available', 'img', 'panel', role + '.webp'), 'WEBP', quality=90)
+    for role, (x, y, r) in BADGES.items():
+        c, m = sheet.crop((x - r, y - r, x + r + 1, y + r + 1)), Image.new('L', (8 * (2 * r + 1),) * 2)
+        ImageDraw.Draw(m).ellipse((0, 0, m.width - 1, m.height - 1), fill=255)
+        c.putalpha(m.resize(c.size, Image.LANCZOS)); c.save(os.path.join(ROOT, 'available', 'img', 'panel', role + '.webp'), 'WEBP', quality=90)
 except Exception as e:
     bad.append(('panel', str(e)))
-skip = {v.lower() for v in [*TREE.values(), *PANEL.values(), *MASTERY.values()]}
+skip = {v.lower() for v in [*TREE.values(), *MASTERY.values()]}
 for name, (file, (x1, y1, x2, y2)) in atlas.items():
     if name in skip:
         continue
