@@ -2,7 +2,7 @@
 ../available/img/<path>.webp at half size. A path without .dds is a UIImages name: the piece of its atlas that
 art/uiimages1.txt gives, saved as ../available/img/<name>.webp. Usage: python images.py <gameDir>   (run after available.py and uniques.py)"""
 import json, os, shlex, subprocess, sys
-from PIL import Image
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 items = json.load(open(os.path.join(ROOT, 'available', 'items.json'), encoding='utf8'))
@@ -30,13 +30,14 @@ for prefix, row, kinds in (('', uiart['Character'], ('Passive', 'Notable', 'Keys
             TREE[f'{prefix}{kind.lower()}_{state}'] = frames[row[kind + 'Frame']][col]
 for state, col in (('normal', 'Normal'), ('active', 'Active')):
     TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
-# the character panel's icons (UIImages InGame/CharacterPanel, the spirit one from the HUD), saved whole as
-# ../available/img/panel/<role>.webp. note: life, energy shield and mana have none in the files (MainStat* are the old
-# panel's frames, an orb in them): charpanel.js draws those
+# the character panel's resistance icons (UIImages InGame/CharacterPanel), saved whole as ../available/img/panel/<role>.webp
 PANEL = {k: 'Art/2DArt/UIImages/InGame/' + v for k, v in {
-    'spirit': 'SpiritIcon', 'armour': 'CharacterPanel/IconPhysicalReduction', 'evasion': 'CharacterPanel/IconEvasion',
-    'block': 'CharacterPanel/IconBlock', 'fire': 'CharacterPanel/IconFire', 'cold': 'CharacterPanel/IconCold',
+    'fire': 'CharacterPanel/IconFire', 'cold': 'CharacterPanel/IconCold',
     'lightning': 'CharacterPanel/IconLightning', 'chaos': 'CharacterPanel/IconChaos'}.items()}
+# ...and the ones painted into the panel's own picture (life, energy shield, mana, spirit, armour, evasion, block): where
+# each sits in CharacterPanelContent (4K), cut off the stone behind it
+CONTENT = 'art/textures/interface/2d/2dart/uiimages/ingame/characterpanel/4k/characterpanelcontent.dds'
+PAINTED = {'life': (152, 55), 'es': (452, 55), 'mana': (747, 52), 'spirit': (1047, 52), 'armour': (285, 271), 'evasion': (599, 271), 'block': (913, 271)}
 # the art behind a group of the tree, by its mastery (PassiveSkillTreeMasteryArt.ActiveEffectImage), saved whole at
 # half size as ../available/img/mastery/<id>.webp
 MASTERY = {r['Id']: r['ActiveEffectImage'] for r in table('PassiveSkillTreeMasteryArt') if r['ActiveEffectImage']}
@@ -52,7 +53,7 @@ if ui:
         if name in ui:
             atlas[name.lower()] = (file.lower(), tuple(int(v) for v in box))
 paths = sorted(p.lower() for p in paths)
-todo = [p for p in sorted(set(paths) | {f for f, _ in atlas.values()}) if not os.path.exists(os.path.join(ROOT, 'files', p))]   # atlases: extracted, not converted whole
+todo = [p for p in sorted(set(paths) | {f for f, _ in atlas.values()} | {CONTENT}) if not os.path.exists(os.path.join(ROOT, 'files', p))]   # atlases: extracted, not converted whole
 if todo:
     lst = os.path.join(ROOT, 'files', '_dds_list.txt')
     open(lst, 'w').write('\n'.join(todo))
@@ -79,6 +80,20 @@ for folder, role, name in [('tree', *x) for x in TREE.items()] + [('panel', *x) 
         (im.resize((im.width // 2, im.height // 2), Image.LANCZOS) if folder == 'mastery' else im).save(out, 'WEBP', quality=90)
     except Exception as e:
         bad.append((role, str(e)))
+def painted(c):   # the icon: what is bright or coloured, with the holes inside it filled, small specks dropped
+    hsv = c.convert('RGB').convert('HSV')
+    m = ImageChops.lighter(c.convert('L').point(lambda x: 255 if x > 105 else 0), ImageChops.multiply(hsv.getchannel('S'), hsv.getchannel('V')).point(lambda x: 255 if x > 45 else 0))
+    m = m.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MinFilter(3))
+    ImageDraw.floodfill(m, (0, 0), 128)
+    c.putalpha(m.point(lambda x: 0 if x == 128 else 255).filter(ImageFilter.GaussianBlur(0.8)))
+    c = c.crop(c.getbbox()); side = max(c.size)
+    sq = Image.new('RGBA', (side, side)); sq.alpha_composite(c, ((side - c.width) // 2, (side - c.height) // 2)); return sq
+try:
+    sheet = Image.open(os.path.join(ROOT, 'files', CONTENT)).convert('RGBA')
+    for role, (x, y) in PAINTED.items():
+        painted(sheet.crop((x - 46, y - 42, x + 46, y + 46))).save(os.path.join(ROOT, 'available', 'img', 'panel', role + '.webp'), 'WEBP', quality=90)
+except Exception as e:
+    bad.append(('panel', str(e)))
 skip = {v.lower() for v in [*TREE.values(), *PANEL.values(), *MASTERY.values()]}
 for name, (file, (x1, y1, x2, y2)) in atlas.items():
     if name in skip:
