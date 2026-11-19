@@ -847,6 +847,7 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "게임 창에 표시되는 피해가 능력치와 다른 일부 보조: 파일에서 읽은 것이 아니라 게임에서 측정한 값입니다.",
  "Runic Ward": "룬 수호",
  "{0} shatters": "{0}이(가) 산산조각 납니다",
+ "{0} is Overgrown": "{0} 과성장",
  "{0} returns": "{0}이(가) 돌아옵니다",
  "{0} detonates": "{0}이(가) 기폭됩니다"
 }

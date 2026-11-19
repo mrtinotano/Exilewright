@@ -264,6 +264,10 @@ export function character(b, sum) {
     // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
     // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
     // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
+    // Plants Overgrow: a chance as each is created (passives), a chance as it enters your Presence (items), that Presence's
+    // radius in metres (character.ot, its area scaled like calc's sheet)
+    overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
+      r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10 },
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },

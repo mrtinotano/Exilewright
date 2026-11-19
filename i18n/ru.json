@@ -847,6 +847,7 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Несколько поддержек, урон которых окна игры показывают иначе, чем их характеристики: измерено в игре, а не прочитано из её файлов.",
  "Runic Ward": "Рунический барьер",
  "{0} shatters": "{0} разбивается",
+ "{0} is Overgrown": "{0} разрастается",
  "{0} returns": "{0} возвращается",
  "{0} detonates": "{0} детонирует"
 }

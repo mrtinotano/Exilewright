@@ -847,6 +847,16 @@ export function initScene(el, api) {
     objs.push(e); return e;
   }
   const holder = c => { const g = new THREE.Group(); g.position.set(c.x, 0, c.z); return g; };
+  // Overgrowth (keywords.json): never from the plant's own skill; Thunderstorm's area, a passive's chance as the plant is
+  // created, an item's as it enters your Presence (calc.js character() overgrow). Accelerated Growth then explodes there
+  // after its delay, its own damage and area (calc.js trig)
+  function overgrow(o) {
+    if (o.overgrown || o.dead) return; o.overgrown = true; const S = o.plant;
+    fx.ring(o.c, .2, o.R, 'poison', .5); fx.emit(14, { p: { x: o.c.x, y: .1, z: o.c.z }, r: o.R * .8, v: .4, up: 2, life: .8, size: .25, c: 'poison' });
+    say(t('{0} is Overgrown', S.label), 'poison');
+    const T = S.dmg.trig?.find(T => T.stats?.['triggered_by_support_explosive_growth_%']); if (!T || !spend(T)) return;
+    const X = asTrig(S, T); later(T.stats.support_explosive_growth_explosion_delay_X_ms / 1000, () => boom(o.c, X.A, X));
+  }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
   const limit = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
@@ -1428,7 +1438,8 @@ export function initScene(el, api) {
       const Z = Math.max(R * 2.4, SIM.stormArea), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
-        tick(dt, e) {   // impacts scattered over the area for as long as it lasts
+        tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
+          for (const o of objs) if (o.plant && !o.overgrown && dist(o.c, c) <= Z) overgrow(o);
           if ((tk -= dt) > 0) return; tk = .17;
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
@@ -1442,13 +1453,16 @@ export function initScene(el, api) {
       fx.ring(c, .2, R, S.el, .45);
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
-      thing(holder(c), dur, { name: S.name,
+      const G = sheet().overgrow, inP = () => dist(pp, c) <= G.r;
+      const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R, inP: P.plant && inP(),
         tick(dt, e) {
+          if (e.plant && inP() !== e.inP && (e.inP = !e.inP) && Math.random() * 100 < G.near) overgrow(e);
           if (Math.random() < dt * R * 8) fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R * .9, v: .2, up: 1.4, life: .7, size: .22, c: S.el });
           if ((tk -= dt) > 0) return; tk = .5;
           area(c, R, { ...S, self: e }, { mult: .25, noPay: e.s > .6, noTouch: true });
         },
         off: () => dec.remove() });
+      if (z.plant && (Math.random() * 100 < G.now || z.inP && Math.random() * 100 < G.near)) overgrow(z);
     },
     dot(S) {
       const R = S.A; let c = S.at;

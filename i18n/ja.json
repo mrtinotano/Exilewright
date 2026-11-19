@@ -847,6 +847,7 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "ゲームのウィンドウが能力値と違うダメージを表示する一部のサポート: ファイルから読んだのではなく、ゲーム内で測定した値です。",
  "Runic Ward": "ルーンワード",
  "{0} shatters": "{0}が粉砕される",
+ "{0} is Overgrown": "{0}が生い茂る",
  "{0} returns": "{0}が戻る",
  "{0} detonates": "{0}が起爆する"
 }

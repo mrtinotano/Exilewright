@@ -847,6 +847,7 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "หินเสริมบางตัวที่หน้าต่างของเกมแสดงความเสียหายต่างจากค่าสถานะ: วัดในเกม ไม่ได้อ่านจากไฟล์",
  "Runic Ward": "วอร์ดอักขระ",
  "{0} shatters": "{0} แตกสลาย",
+ "{0} is Overgrown": "{0} งอกเงย",
  "{0} returns": "{0} กลับมา",
  "{0} detonates": "{0} จุดระเบิด"
 }
