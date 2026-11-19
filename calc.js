@@ -721,8 +721,8 @@ export function skill(g, b, treeGear) {
     .map(([[name, kind, val, , cond0, stat], c]) => {
       const secs = +stat.match(/past_(\d+)_seconds/)?.[1] || undefined, cond = cond0.map(x => ({ ...x, secs }));   // Pursuit III: "in the past 2 seconds"
       const types = name === 'PhysicalDamage' ? ['physical'] : name === 'ElementalDamage' ? ['fire', 'cold', 'lightning'] : DMG;
-      // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40) or on the stacks (Culmination's 10)
-      const lim = Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal);
+      // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40; Inexorable Critical II's own per stat) or on the stacks (Culmination's 10)
+      const lim = c[stat.replace(/_per_\w+$/, '_cap')] ?? Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal || x.limitNegTotal);
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
     });
