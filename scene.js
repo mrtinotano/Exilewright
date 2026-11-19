@@ -851,18 +851,36 @@ export function initScene(el, api) {
       remove() { fx.drop(mesh); } };
     objs.push(e); return e;
   }
-  // Caltrops: a projectile of the supported skill that reaches the end of its flight leaves its caltrops, within its
-  // secondary radius, each a Hazard that hits the first enemy to step in its area and is gone, for its duration
+  // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone, for dur s;
+  // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
+  function hazardAt(X, p, dur, o = {}) {
+    const arm = o.arm || 0, c = o.c || 'dust';
+    const decal = fx.decal(p, X.A, 'patch', c, { a: .8, k: 1 });
+    const e = thing(holder(p), dur, { name: X.name,
+      tick() {
+        if (e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= X.A + SIM.body)) return;
+        e.dead = true; area(p, X.A, e.s < .5 && o.early ? { ...X, mult: X.mult * (1 + o.early / 100) } : X);
+        fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' });
+      },
+      off: () => decal.remove() });
+  }
+  const around = (c, r) => { const a = rnd(TAU), k = rnd(r); return { x: c.x + Math.sin(a) * k, z: c.z + Math.cos(a) * k }; };
+  // Caltrops: a projectile of the supported skill that reaches the end of its flight leaves its caltrops within its
+  // secondary radius, for its duration
   function caltrops(S, at) {
     const T = !S.src && S.dmg?.trig?.find(T => T.stats?.['triggered_by_caltrops_support_%']), ts = T?.stats; if (!T) return;
     const X = asTrig(S, T), dur = sh(X).duration || ts.base_skill_effect_duration / 1000;
-    for (let k = 0; k < (sh(X).projectiles || ts.base_number_of_projectiles || 1); k++) {
-      const a = rnd(TAU), r = rnd(ts.active_skill_base_secondary_area_of_effect_radius / 10), p = { x: at.x + Math.sin(a) * r, z: at.z + Math.cos(a) * r };
-      const decal = fx.decal(p, X.A, 'patch', 'dust', { a: .8, k: 1 });
-      const e = thing(holder(p), dur, { name: X.name,
-        tick() { const d = dummies.find(d => !d.dead && dist(d.pos, p) <= X.A + SIM.body); if (d) { e.dead = true; area(p, X.A, X); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c: 'dust', c2: 'white' }); } },
-        off: () => decal.remove() });
-    }
+    for (let k = 0; k < (sh(X).projectiles || ts.base_number_of_projectiles || 1); k++) hazardAt(X, around(at, ts.active_skill_base_secondary_area_of_effect_radius / 10), dur);
+  }
+  // A Slam reaching the ground: it sets off the Crater fissures it reaches; Brambleslam leaves its brambles in the slam's
+  // area (where in it the data does not say), Hazards that arm and deal less if set off early; its cooldown (their maim:
+  // the scene does not slow enemies by it)
+  function slammed(S, c, R) {
+    quake(c, R);
+    const T = !S.src && S.dmg?.trig?.find(T => T.stats?.['triggered_by_briarpatch_support_on_slam_%']), ts = T?.stats; if (!T) return;
+    if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) return; r.push(time + T.cooldown / 1000); }
+    const X = asTrig(S, T), dur = sh(X).duration || ts.base_skill_effect_duration / 1000; say(X.label, X.el);
+    for (let k = 0; k < (T.support.create_X_briar_thorns_on_slam || 1); k++) hazardAt(X, around(c, R), dur, { arm: ts.briarpatches_arming_time_ms / 1000, early: ts['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'], c: 'poison' });
   }
   const tint = (m, c) => m.traverse(x => { if (x.material) x.material.color.copy(fx.color(c, x.isSprite ? 1.5 : 3)); });
   function shoot(S, from, dx, dz, o = {}) {
@@ -1237,7 +1255,7 @@ export function initScene(el, api) {
       const land = () => {
         if (S.R || P.attack) boom(to, S.A, S); else fx.ring(to, .2, 1.6, S.el, .4);
         if (P.ground) ground(P.ground, to, S.A, P.dur, S);
-        if (P.slams) quake(to, S.A);
+        if (P.slams) slammed(S, to, S.A);
         if (P.jump) landed(S, to);
       };
       if (P.blink && !P.jump) {
@@ -1259,7 +1277,7 @@ export function initScene(el, api) {
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
-        quake(c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        slammed(S, c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
         if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
