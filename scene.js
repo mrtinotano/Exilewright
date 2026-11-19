@@ -116,12 +116,12 @@ export function initScene(el, api) {
   function base(i) {
     const g = api.build().gems[i]; if (!g) return null;
     const c = cache.get(i); if (c && c.g === g && time - c.at < .5) return c.S;
-    const inf = api.info(g), G = api.geo(g), P = prof(g, inf);
+    const inf = api.info(g), G = api.geo(g), dmg = api.damage?.(g) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur && dur !== P0.dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg };
     cache.set(i, { g, at: time, S }); return S;
   }
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
