@@ -661,20 +661,20 @@ export function skill(g, b, treeGear) {
   const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
-  out.curse = gt.includes('AppliesCurse') ? curseOf(st, sum) : null;
-  out.mark = gt.includes('Mark') ? markOf(st) : null;
+  const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
+  out.curse = curse ? curseOf(st, sum) : null;
+  out.mark = mark ? markOf(st) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. Skill effect duration: the increased
   // ones added (curses' and marks' own too), times each support's more (Persistence, Swift Affliction, Limit...), as PoB2
   // (SkillStatMap: Duration INC / MORE) and the game texts say; detonation and totem time their own increased
-  const sec = k => st[k] ? st[k] / 1000 : null, curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
+  const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null;
   const durMore = Math.max(0, 1 + (v(sum, 'skill_effect_duration_+%') + v(st, 'skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
-  const times = (s, m) => s == null ? null : s * m;
   out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
-    detonate: times(sec('base_skill_detonation_time'), 1 + v(sum, 'grenade_fuse_duration_+%') / 100), curseDelay: sec('curse_delay_duration_ms'),
-    duration: times(sec('base_skill_effect_duration'), durMore), totem: times(sec('base_totem_duration'), 1 + v(sum, 'totem_duration_+%') / 100) };
+    detonate: sec('base_skill_detonation_time', 1 + v(sum, 'grenade_fuse_duration_+%') / 100), curseDelay: sec('curse_delay_duration_ms'),
+    duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100) };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
   if (mn) {
