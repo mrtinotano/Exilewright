@@ -1550,7 +1550,7 @@ export function initScene(el, api) {
   // implicit says happens (you become ignited, frozen, stunned..., take fire damage, kill a rare or unique enemy) and it has
   // the charges, and grants its buff while it lasts: immunity to that ailment (removing it) or its resistance. Kills refill
   // them with half the monster's power (the glossary's KeywordPopups Charm). note: Silver Charm's slows are not the scene's
-  // chill: nothing slows you here, so it is never used
+  // chill: it is used when you are maimed
   const CHARM_GAIN = .5, IMMUNE_TO = { utility_charm_freeze_immunity: 'freeze', utility_charm_bleeding_immunity: 'bleed', utility_charm_poison_immunity: 'poison',
     utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun', utility_charm_slow_immunity: 'maim' };
   const charms = () => sheet().charms || [];
