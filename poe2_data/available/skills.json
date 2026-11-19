@@ -120226,6 +120226,5931 @@
    "projectile_collision": null,
    "weapons": null,
    "meta_support": null
+  },
+  "TriggeredLightningDetonateDeadPlayer": {
+   "name": "Voltaic Fulmination",
+   "name_es": "Fulminación voltaica",
+   "name_pt": "Fulminação Voltaica",
+   "name_fr": "Fulmination voltaïque",
+   "name_de": "Voltaischer Wutausbruch",
+   "name_ru": "Бушующий гром",
+   "name_ja": "ヴォルカニックフルミネーション",
+   "name_ko": "전도성 뇌전",
+   "name_th": "ฟ้าลั่นประจุ",
+   "name_zh": "伏打轟鳴",
+   "triggered_by": "Eonyr's Thunder",
+   "types": [
+    "SkillGrantedBySupport",
+    "Lightning",
+    "Area",
+    "Triggered",
+    "Triggerable",
+    "InbuiltTrigger",
+    "Spell",
+    "Cooldown"
+   ],
+   "tags": [
+    "area",
+    "lightning",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_support_electrocute_lineage_%": 100,
+    "explosion_delay_ms": 400,
+    "_stored_uses": 5
+   },
+   "levels": {
+    "1": {
+     "active_skill_base_area_of_effect_radius": 15,
+     "skill_specific_stat_description_mode": 5,
+     "_cooldown_ms": 300
+    },
+    "2": {
+     "active_skill_base_area_of_effect_radius": 15,
+     "skill_specific_stat_description_mode": 5,
+     "_cooldown_ms": 295
+    },
+    "3": {
+     "active_skill_base_area_of_effect_radius": 15,
+     "skill_specific_stat_description_mode": 6,
+     "_cooldown_ms": 290
+    },
+    "4": {
+     "active_skill_base_area_of_effect_radius": 16,
+     "skill_specific_stat_description_mode": 6,
+     "_cooldown_ms": 285
+    },
+    "5": {
+     "active_skill_base_area_of_effect_radius": 16,
+     "skill_specific_stat_description_mode": 7,
+     "_cooldown_ms": 280
+    },
+    "6": {
+     "active_skill_base_area_of_effect_radius": 16,
+     "skill_specific_stat_description_mode": 7,
+     "_cooldown_ms": 275
+    },
+    "7": {
+     "active_skill_base_area_of_effect_radius": 17,
+     "skill_specific_stat_description_mode": 8,
+     "_cooldown_ms": 270
+    },
+    "8": {
+     "active_skill_base_area_of_effect_radius": 17,
+     "skill_specific_stat_description_mode": 8,
+     "_cooldown_ms": 265
+    },
+    "9": {
+     "active_skill_base_area_of_effect_radius": 17,
+     "skill_specific_stat_description_mode": 9,
+     "_cooldown_ms": 260
+    },
+    "10": {
+     "active_skill_base_area_of_effect_radius": 18,
+     "skill_specific_stat_description_mode": 9,
+     "_cooldown_ms": 255
+    },
+    "11": {
+     "active_skill_base_area_of_effect_radius": 18,
+     "skill_specific_stat_description_mode": 10,
+     "_cooldown_ms": 250
+    },
+    "12": {
+     "active_skill_base_area_of_effect_radius": 18,
+     "skill_specific_stat_description_mode": 10,
+     "_cooldown_ms": 245
+    },
+    "13": {
+     "active_skill_base_area_of_effect_radius": 19,
+     "skill_specific_stat_description_mode": 11,
+     "_cooldown_ms": 240
+    },
+    "14": {
+     "active_skill_base_area_of_effect_radius": 19,
+     "skill_specific_stat_description_mode": 11,
+     "_cooldown_ms": 235
+    },
+    "15": {
+     "active_skill_base_area_of_effect_radius": 19,
+     "skill_specific_stat_description_mode": 12,
+     "_cooldown_ms": 230
+    },
+    "16": {
+     "active_skill_base_area_of_effect_radius": 20,
+     "skill_specific_stat_description_mode": 12,
+     "_cooldown_ms": 225
+    },
+    "17": {
+     "active_skill_base_area_of_effect_radius": 20,
+     "skill_specific_stat_description_mode": 13,
+     "_cooldown_ms": 220
+    },
+    "18": {
+     "active_skill_base_area_of_effect_radius": 20,
+     "skill_specific_stat_description_mode": 13,
+     "_cooldown_ms": 215
+    },
+    "19": {
+     "active_skill_base_area_of_effect_radius": 21,
+     "skill_specific_stat_description_mode": 14,
+     "_cooldown_ms": 210
+    },
+    "20": {
+     "active_skill_base_area_of_effect_radius": 21,
+     "skill_specific_stat_description_mode": 14,
+     "_cooldown_ms": 205
+    },
+    "21": {
+     "active_skill_base_area_of_effect_radius": 21,
+     "skill_specific_stat_description_mode": 15,
+     "_cooldown_ms": 200
+    },
+    "22": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 15,
+     "_cooldown_ms": 195
+    },
+    "23": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 15,
+     "_cooldown_ms": 190
+    },
+    "24": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 15,
+     "_cooldown_ms": 185
+    },
+    "25": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 16,
+     "_cooldown_ms": 180
+    },
+    "26": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 16,
+     "_cooldown_ms": 175
+    },
+    "27": {
+     "active_skill_base_area_of_effect_radius": 22,
+     "skill_specific_stat_description_mode": 16,
+     "_cooldown_ms": 170
+    },
+    "28": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 16,
+     "_cooldown_ms": 165
+    },
+    "29": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 17,
+     "_cooldown_ms": 160
+    },
+    "30": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 17,
+     "_cooldown_ms": 155
+    },
+    "31": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 17,
+     "_cooldown_ms": 150
+    },
+    "32": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 17,
+     "_cooldown_ms": 145
+    },
+    "33": {
+     "active_skill_base_area_of_effect_radius": 23,
+     "skill_specific_stat_description_mode": 18,
+     "_cooldown_ms": 140
+    },
+    "34": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 18,
+     "_cooldown_ms": 135
+    },
+    "35": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 18,
+     "_cooldown_ms": 130
+    },
+    "36": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 18,
+     "_cooldown_ms": 125
+    },
+    "37": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 19,
+     "_cooldown_ms": 120
+    },
+    "38": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 19,
+     "_cooldown_ms": 115
+    },
+    "39": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "skill_specific_stat_description_mode": 19,
+     "_cooldown_ms": 110
+    },
+    "40": {
+     "active_skill_base_area_of_effect_radius": 25,
+     "skill_specific_stat_description_mode": 19,
+     "_cooldown_ms": 105
+    }
+   },
+   "radius": null,
+   "flags": [
+    "cannot_electrocute"
+   ]
+  },
+  "TriggeredElementalDischargePlayer": {
+   "name": "Elemental Discharge",
+   "name_es": "Descarga elemental",
+   "name_pt": "Descarga Elemental",
+   "name_fr": "Décharge élémentaire",
+   "name_de": "Elementarentladung",
+   "name_ru": "Стихийный разряд",
+   "name_ja": "エレメンタルディスチャージ",
+   "name_ko": "원소 방출",
+   "name_th": "ระเบิดพลังธาตุ",
+   "name_zh": "元素解放",
+   "triggered_by": "Elemental Discharge",
+   "types": [
+    "Spell",
+    "Damage",
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Cooldown",
+    "Triggered",
+    "InbuiltTrigger",
+    "Area",
+    "AttackInPlace",
+    "Cold",
+    "Fire",
+    "Lightning"
+   ],
+   "tags": [
+    "area",
+    "cold",
+    "fire",
+    "lightning",
+    "spell"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 20,
+    "_cooldown_ms": 1000,
+    "_spell_crit": 1000,
+    "_stored_uses": 1,
+    "spell_maximum_base_cold_damage_as_%_of_intelligence": 120,
+    "spell_maximum_base_fire_damage_as_%_of_intelligence": 60,
+    "spell_maximum_base_lightning_damage_as_%_of_intelligence": 120,
+    "spell_minimum_base_cold_damage_as_%_of_intelligence": 80,
+    "spell_minimum_base_fire_damage_as_%_of_intelligence": 40,
+    "spell_minimum_base_lightning_damage_as_%_of_intelligence": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 20
+   },
+   "flags": null
+  },
+  "TriggeredFieryDeathPlayer": {
+   "name": "Fiery Death",
+   "name_es": "Muerte ardiente",
+   "name_pt": "Morte Ardente",
+   "name_fr": "Mort ardente",
+   "name_de": "Feuriger Tod",
+   "name_ru": "Пламенная смерть",
+   "name_ja": "ファイヤリィデス",
+   "name_ko": "불타는 죽음",
+   "name_th": "ตายระอุเพลิง",
+   "name_zh": "火熱死寂",
+   "triggered_by": "Fiery Death",
+   "types": [
+    "Spell",
+    "Damage",
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Fire",
+    "TargetsDestructibleCorpses",
+    "Area",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "fire",
+    "spell"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_fiery_death_support_%": 100,
+    "active_skill_base_area_of_effect_radius": 20,
+    "corpse_explosion_monster_life_%": 10,
+    "_spell_crit": 800
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 20
+   },
+   "flags": null
+  },
+  "TriggeredManaFlarePlayer": {
+   "name": "Mana Flare",
+   "name_es": "Destello de maná",
+   "name_pt": "Sinalizador de Mana",
+   "name_fr": "Flamboiement de Mana",
+   "name_de": "Mana-Fackel",
+   "name_ru": "Вспышка маны",
+   "name_ja": "マナフレア",
+   "name_ko": "마나 섬광",
+   "name_th": "เปลวมานา",
+   "name_zh": "魔力閃焰",
+   "triggered_by": "Mana Flare",
+   "types": [
+    "Spell",
+    "Damage",
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Cooldown",
+    "Triggered",
+    "InbuiltTrigger",
+    "Area",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "spell"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_mana_flare_support_%": 100,
+    "support_mana_flare_%_of_current_mana_consumed": 25,
+    "active_skill_base_area_of_effect_radius": 20,
+    "_cooldown_ms": 1000,
+    "_spell_crit": 700,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 20
+   },
+   "flags": null
+  },
+  "TriggeredDecayingHexPlayer": {
+   "name": "Profane Decay",
+   "name_es": "Decaimiento profano",
+   "name_pt": "Apodrecimento Profano",
+   "name_fr": "Décomposition profane",
+   "name_de": "Profaner Verfall",
+   "name_ru": "Нечестивое разложение",
+   "name_ja": "プロフェンディケイ",
+   "name_ko": "부정한 부패",
+   "name_th": "เสื่อมสลายนอกรีต",
+   "name_zh": "瀆神衰敗",
+   "triggered_by": "Decaying Hex",
+   "types": [
+    "Duration",
+    "Spell",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "AttackInPlace",
+    "SkillGrantedBySupport",
+    "Chaos",
+    "Damage",
+    "DamageOverTime"
+   ],
+   "tags": [
+    "chaos",
+    "duration",
+    "spell"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 8000
+   },
+   "levels": {
+    "1": {
+     "base_chaos_damage_to_deal_per_minute": 356
+    },
+    "2": {
+     "base_chaos_damage_to_deal_per_minute": 518
+    },
+    "3": {
+     "base_chaos_damage_to_deal_per_minute": 750
+    },
+    "4": {
+     "base_chaos_damage_to_deal_per_minute": 1015
+    },
+    "5": {
+     "base_chaos_damage_to_deal_per_minute": 1317
+    },
+    "6": {
+     "base_chaos_damage_to_deal_per_minute": 1664
+    },
+    "7": {
+     "base_chaos_damage_to_deal_per_minute": 2059
+    },
+    "8": {
+     "base_chaos_damage_to_deal_per_minute": 2511
+    },
+    "9": {
+     "base_chaos_damage_to_deal_per_minute": 3027
+    },
+    "10": {
+     "base_chaos_damage_to_deal_per_minute": 3618
+    },
+    "11": {
+     "base_chaos_damage_to_deal_per_minute": 4294
+    },
+    "12": {
+     "base_chaos_damage_to_deal_per_minute": 5067
+    },
+    "13": {
+     "base_chaos_damage_to_deal_per_minute": 5954
+    },
+    "14": {
+     "base_chaos_damage_to_deal_per_minute": 6971
+    },
+    "15": {
+     "base_chaos_damage_to_deal_per_minute": 8139
+    },
+    "16": {
+     "base_chaos_damage_to_deal_per_minute": 9481
+    },
+    "17": {
+     "base_chaos_damage_to_deal_per_minute": 11025
+    },
+    "18": {
+     "base_chaos_damage_to_deal_per_minute": 12803
+    },
+    "19": {
+     "base_chaos_damage_to_deal_per_minute": 14852
+    },
+    "20": {
+     "base_chaos_damage_to_deal_per_minute": 17217
+    },
+    "21": {
+     "base_chaos_damage_to_deal_per_minute": 19951
+    },
+    "22": {
+     "base_chaos_damage_to_deal_per_minute": 23113
+    },
+    "23": {
+     "base_chaos_damage_to_deal_per_minute": 26777
+    },
+    "24": {
+     "base_chaos_damage_to_deal_per_minute": 31026
+    },
+    "25": {
+     "base_chaos_damage_to_deal_per_minute": 35961
+    },
+    "26": {
+     "base_chaos_damage_to_deal_per_minute": 41701
+    },
+    "27": {
+     "base_chaos_damage_to_deal_per_minute": 48385
+    },
+    "28": {
+     "base_chaos_damage_to_deal_per_minute": 56180
+    },
+    "29": {
+     "base_chaos_damage_to_deal_per_minute": 65284
+    },
+    "30": {
+     "base_chaos_damage_to_deal_per_minute": 75932
+    },
+    "31": {
+     "base_chaos_damage_to_deal_per_minute": 88403
+    },
+    "32": {
+     "base_chaos_damage_to_deal_per_minute": 103032
+    },
+    "33": {
+     "base_chaos_damage_to_deal_per_minute": 120217
+    },
+    "34": {
+     "base_chaos_damage_to_deal_per_minute": 140438
+    },
+    "35": {
+     "base_chaos_damage_to_deal_per_minute": 164266
+    },
+    "36": {
+     "base_chaos_damage_to_deal_per_minute": 192389
+    },
+    "37": {
+     "base_chaos_damage_to_deal_per_minute": 225635
+    },
+    "38": {
+     "base_chaos_damage_to_deal_per_minute": 265001
+    },
+    "39": {
+     "base_chaos_damage_to_deal_per_minute": 311688
+    },
+    "40": {
+     "base_chaos_damage_to_deal_per_minute": 367150
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredCorruptingCryPlayer": {
+   "name": "Corrupted Cry",
+   "name_es": "Grito corrupto",
+   "name_pt": "Clamor Corrompido",
+   "name_fr": "Cri corrompu",
+   "name_de": "Verderbter Schrei",
+   "name_ru": "Осквернённый клич",
+   "name_ja": "コラㇷ゚テッドクライ",
+   "name_ko": "타락한 함성",
+   "name_th": "คำรามมลทิน",
+   "name_zh": "汙染戰吼",
+   "triggered_by": "Corrupting Cry I",
+   "types": [
+    "Duration",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "AttackInPlace",
+    "SkillGrantedBySupport",
+    "Physical",
+    "DamageOverTime"
+   ],
+   "tags": [
+    "duration",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 5000,
+    "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 1
+   },
+   "levels": {
+    "1": {
+     "base_physical_damage_to_deal_per_minute": 356
+    },
+    "2": {
+     "base_physical_damage_to_deal_per_minute": 518
+    },
+    "3": {
+     "base_physical_damage_to_deal_per_minute": 750
+    },
+    "4": {
+     "base_physical_damage_to_deal_per_minute": 1015
+    },
+    "5": {
+     "base_physical_damage_to_deal_per_minute": 1317
+    },
+    "6": {
+     "base_physical_damage_to_deal_per_minute": 1664
+    },
+    "7": {
+     "base_physical_damage_to_deal_per_minute": 2059
+    },
+    "8": {
+     "base_physical_damage_to_deal_per_minute": 2511
+    },
+    "9": {
+     "base_physical_damage_to_deal_per_minute": 3027
+    },
+    "10": {
+     "base_physical_damage_to_deal_per_minute": 3618
+    },
+    "11": {
+     "base_physical_damage_to_deal_per_minute": 4294
+    },
+    "12": {
+     "base_physical_damage_to_deal_per_minute": 5067
+    },
+    "13": {
+     "base_physical_damage_to_deal_per_minute": 5954
+    },
+    "14": {
+     "base_physical_damage_to_deal_per_minute": 6971
+    },
+    "15": {
+     "base_physical_damage_to_deal_per_minute": 8139
+    },
+    "16": {
+     "base_physical_damage_to_deal_per_minute": 9481
+    },
+    "17": {
+     "base_physical_damage_to_deal_per_minute": 11025
+    },
+    "18": {
+     "base_physical_damage_to_deal_per_minute": 12803
+    },
+    "19": {
+     "base_physical_damage_to_deal_per_minute": 14852
+    },
+    "20": {
+     "base_physical_damage_to_deal_per_minute": 17217
+    },
+    "21": {
+     "base_physical_damage_to_deal_per_minute": 19951
+    },
+    "22": {
+     "base_physical_damage_to_deal_per_minute": 23113
+    },
+    "23": {
+     "base_physical_damage_to_deal_per_minute": 26777
+    },
+    "24": {
+     "base_physical_damage_to_deal_per_minute": 31026
+    },
+    "25": {
+     "base_physical_damage_to_deal_per_minute": 35961
+    },
+    "26": {
+     "base_physical_damage_to_deal_per_minute": 41701
+    },
+    "27": {
+     "base_physical_damage_to_deal_per_minute": 48385
+    },
+    "28": {
+     "base_physical_damage_to_deal_per_minute": 56180
+    },
+    "29": {
+     "base_physical_damage_to_deal_per_minute": 65284
+    },
+    "30": {
+     "base_physical_damage_to_deal_per_minute": 75932
+    },
+    "31": {
+     "base_physical_damage_to_deal_per_minute": 88403
+    },
+    "32": {
+     "base_physical_damage_to_deal_per_minute": 103032
+    },
+    "33": {
+     "base_physical_damage_to_deal_per_minute": 120217
+    },
+    "34": {
+     "base_physical_damage_to_deal_per_minute": 140438
+    },
+    "35": {
+     "base_physical_damage_to_deal_per_minute": 164266
+    },
+    "36": {
+     "base_physical_damage_to_deal_per_minute": 192389
+    },
+    "37": {
+     "base_physical_damage_to_deal_per_minute": 225635
+    },
+    "38": {
+     "base_physical_damage_to_deal_per_minute": 265001
+    },
+    "39": {
+     "base_physical_damage_to_deal_per_minute": 311688
+    },
+    "40": {
+     "base_physical_damage_to_deal_per_minute": 367150
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredCorruptingCryTwoPlayer": {
+   "name": "Corrupted Cry",
+   "name_es": "Grito corrupto",
+   "name_pt": "Clamor Corrompido",
+   "name_fr": "Cri corrompu",
+   "name_de": "Verderbter Schrei",
+   "name_ru": "Осквернённый клич",
+   "name_ja": "コラㇷ゚テッドクライ",
+   "name_ko": "타락한 함성",
+   "name_th": "คำรามมลทิน",
+   "name_zh": "汙染戰吼",
+   "triggered_by": "Corrupting Cry II",
+   "types": [
+    "Duration",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "AttackInPlace",
+    "SkillGrantedBySupport",
+    "Physical",
+    "DamageOverTime"
+   ],
+   "tags": [
+    "duration",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 5000,
+    "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 1
+   },
+   "levels": {
+    "1": {
+     "base_physical_damage_to_deal_per_minute": 356
+    },
+    "2": {
+     "base_physical_damage_to_deal_per_minute": 518
+    },
+    "3": {
+     "base_physical_damage_to_deal_per_minute": 750
+    },
+    "4": {
+     "base_physical_damage_to_deal_per_minute": 1015
+    },
+    "5": {
+     "base_physical_damage_to_deal_per_minute": 1317
+    },
+    "6": {
+     "base_physical_damage_to_deal_per_minute": 1664
+    },
+    "7": {
+     "base_physical_damage_to_deal_per_minute": 2059
+    },
+    "8": {
+     "base_physical_damage_to_deal_per_minute": 2511
+    },
+    "9": {
+     "base_physical_damage_to_deal_per_minute": 3027
+    },
+    "10": {
+     "base_physical_damage_to_deal_per_minute": 3618
+    },
+    "11": {
+     "base_physical_damage_to_deal_per_minute": 4294
+    },
+    "12": {
+     "base_physical_damage_to_deal_per_minute": 5067
+    },
+    "13": {
+     "base_physical_damage_to_deal_per_minute": 5954
+    },
+    "14": {
+     "base_physical_damage_to_deal_per_minute": 6971
+    },
+    "15": {
+     "base_physical_damage_to_deal_per_minute": 8139
+    },
+    "16": {
+     "base_physical_damage_to_deal_per_minute": 9481
+    },
+    "17": {
+     "base_physical_damage_to_deal_per_minute": 11025
+    },
+    "18": {
+     "base_physical_damage_to_deal_per_minute": 12803
+    },
+    "19": {
+     "base_physical_damage_to_deal_per_minute": 14852
+    },
+    "20": {
+     "base_physical_damage_to_deal_per_minute": 17217
+    },
+    "21": {
+     "base_physical_damage_to_deal_per_minute": 19951
+    },
+    "22": {
+     "base_physical_damage_to_deal_per_minute": 23113
+    },
+    "23": {
+     "base_physical_damage_to_deal_per_minute": 26777
+    },
+    "24": {
+     "base_physical_damage_to_deal_per_minute": 31026
+    },
+    "25": {
+     "base_physical_damage_to_deal_per_minute": 35961
+    },
+    "26": {
+     "base_physical_damage_to_deal_per_minute": 41701
+    },
+    "27": {
+     "base_physical_damage_to_deal_per_minute": 48385
+    },
+    "28": {
+     "base_physical_damage_to_deal_per_minute": 56180
+    },
+    "29": {
+     "base_physical_damage_to_deal_per_minute": 65284
+    },
+    "30": {
+     "base_physical_damage_to_deal_per_minute": 75932
+    },
+    "31": {
+     "base_physical_damage_to_deal_per_minute": 88403
+    },
+    "32": {
+     "base_physical_damage_to_deal_per_minute": 103032
+    },
+    "33": {
+     "base_physical_damage_to_deal_per_minute": 120217
+    },
+    "34": {
+     "base_physical_damage_to_deal_per_minute": 140438
+    },
+    "35": {
+     "base_physical_damage_to_deal_per_minute": 164266
+    },
+    "36": {
+     "base_physical_damage_to_deal_per_minute": 192389
+    },
+    "37": {
+     "base_physical_damage_to_deal_per_minute": 225635
+    },
+    "38": {
+     "base_physical_damage_to_deal_per_minute": 265001
+    },
+    "39": {
+     "base_physical_damage_to_deal_per_minute": 311688
+    },
+    "40": {
+     "base_physical_damage_to_deal_per_minute": 367150
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredCorruptingCryThreePlayer": {
+   "name": "Twisted Pact",
+   "name_es": "Pacto retorcido",
+   "name_pt": "Pacto Desvirtuado",
+   "name_fr": "Pacte malsain",
+   "name_de": "Bizarrer Pakt",
+   "name_ru": "Порочный договор",
+   "name_ja": "ツイステッドパクト",
+   "name_ko": "뒤틀린 맹약",
+   "name_th": "สัญญาวิปลาส",
+   "name_zh": "扭曲契約",
+   "triggered_by": "Paquate's Pact",
+   "types": [
+    "Duration",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "AttackInPlace",
+    "SkillGrantedBySupport",
+    "Physical",
+    "DamageOverTime"
+   ],
+   "tags": [
+    "duration",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 5000,
+    "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 5
+   },
+   "levels": {
+    "1": {
+     "base_physical_damage_to_deal_per_minute": 421
+    },
+    "2": {
+     "base_physical_damage_to_deal_per_minute": 612
+    },
+    "3": {
+     "base_physical_damage_to_deal_per_minute": 886
+    },
+    "4": {
+     "base_physical_damage_to_deal_per_minute": 1199
+    },
+    "5": {
+     "base_physical_damage_to_deal_per_minute": 1557
+    },
+    "6": {
+     "base_physical_damage_to_deal_per_minute": 1966
+    },
+    "7": {
+     "base_physical_damage_to_deal_per_minute": 2433
+    },
+    "8": {
+     "base_physical_damage_to_deal_per_minute": 2967
+    },
+    "9": {
+     "base_physical_damage_to_deal_per_minute": 3578
+    },
+    "10": {
+     "base_physical_damage_to_deal_per_minute": 4275
+    },
+    "11": {
+     "base_physical_damage_to_deal_per_minute": 5074
+    },
+    "12": {
+     "base_physical_damage_to_deal_per_minute": 5989
+    },
+    "13": {
+     "base_physical_damage_to_deal_per_minute": 7037
+    },
+    "14": {
+     "base_physical_damage_to_deal_per_minute": 8239
+    },
+    "15": {
+     "base_physical_damage_to_deal_per_minute": 9619
+    },
+    "16": {
+     "base_physical_damage_to_deal_per_minute": 11205
+    },
+    "17": {
+     "base_physical_damage_to_deal_per_minute": 13029
+    },
+    "18": {
+     "base_physical_damage_to_deal_per_minute": 15130
+    },
+    "19": {
+     "base_physical_damage_to_deal_per_minute": 17552
+    },
+    "20": {
+     "base_physical_damage_to_deal_per_minute": 20348
+    },
+    "21": {
+     "base_physical_damage_to_deal_per_minute": 23578
+    },
+    "22": {
+     "base_physical_damage_to_deal_per_minute": 27315
+    },
+    "23": {
+     "base_physical_damage_to_deal_per_minute": 31645
+    },
+    "24": {
+     "base_physical_damage_to_deal_per_minute": 36667
+    },
+    "25": {
+     "base_physical_damage_to_deal_per_minute": 42499
+    },
+    "26": {
+     "base_physical_damage_to_deal_per_minute": 49283
+    },
+    "27": {
+     "base_physical_damage_to_deal_per_minute": 57182
+    },
+    "28": {
+     "base_physical_damage_to_deal_per_minute": 66395
+    },
+    "29": {
+     "base_physical_damage_to_deal_per_minute": 77154
+    },
+    "30": {
+     "base_physical_damage_to_deal_per_minute": 89738
+    },
+    "31": {
+     "base_physical_damage_to_deal_per_minute": 104476
+    },
+    "32": {
+     "base_physical_damage_to_deal_per_minute": 121765
+    },
+    "33": {
+     "base_physical_damage_to_deal_per_minute": 142075
+    },
+    "34": {
+     "base_physical_damage_to_deal_per_minute": 165972
+    },
+    "35": {
+     "base_physical_damage_to_deal_per_minute": 194132
+    },
+    "36": {
+     "base_physical_damage_to_deal_per_minute": 227369
+    },
+    "37": {
+     "base_physical_damage_to_deal_per_minute": 266660
+    },
+    "38": {
+     "base_physical_damage_to_deal_per_minute": 313183
+    },
+    "39": {
+     "base_physical_damage_to_deal_per_minute": 368359
+    },
+    "40": {
+     "base_physical_damage_to_deal_per_minute": 433905
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredBurningRunesPlayer": {
+   "name": "Burning Inscription",
+   "name_es": "Inscripción ardiente",
+   "name_pt": "Inscrição Ardente",
+   "name_fr": "Inscription brûlante",
+   "name_de": "Brennende Inschrift",
+   "name_ru": "Пылающее начертание",
+   "name_ja": "バーニングインスクリプション",
+   "name_ko": "용암 명문",
+   "name_th": "อักขระลุกโชน",
+   "name_zh": "爆燃銘文",
+   "triggered_by": "Burning Inscription",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Fire",
+    "SkillGrantedBySupport",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "fire"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_burning_runes_support_%": 100,
+    "active_skill_base_area_of_effect_radius": 20,
+    "base_skill_effect_duration": 4000,
+    "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana": 20,
+    "ground_fire_art_variation": 0
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": {
+    "1": 20,
+    "2": 20,
+    "3": 20,
+    "4": 20,
+    "5": 20,
+    "6": 20,
+    "7": 20,
+    "8": 20,
+    "9": 20,
+    "10": 20,
+    "11": 20,
+    "12": 20,
+    "13": 20,
+    "14": 20,
+    "15": 20,
+    "16": 20,
+    "17": 20,
+    "18": 20,
+    "19": 20,
+    "20": 20,
+    "21": 20,
+    "22": 20,
+    "23": 20,
+    "24": 20,
+    "25": 20,
+    "26": 20,
+    "27": 20,
+    "28": 20,
+    "29": 20,
+    "30": 20,
+    "31": 20,
+    "32": 20,
+    "33": 20,
+    "34": 20,
+    "35": 20,
+    "36": 20,
+    "37": 20,
+    "38": 20,
+    "39": 20,
+    "40": 20
+   },
+   "flags": null
+  },
+  "TriggeredBoneShrapnelPlayer": {
+   "name": "Bone Shrapnel Explosion",
+   "name_es": "Explosión de metralla de hueso",
+   "name_pt": "Explosão de Estilhaços Ósseos",
+   "name_fr": "Explosion de Shrapnel d'os",
+   "name_de": "Knochensplitterexplosion",
+   "name_ru": "Взрыв костяной шрапнели",
+   "name_ja": "ボーンシュラプネルエクスプロージョン",
+   "name_ko": "뼈 파편 폭발",
+   "name_th": "ระเบิดสะเก็ดกระดูก",
+   "name_zh": "骨片爆炸",
+   "triggered_by": "Bone Shrapnel",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Physical",
+    "SkillGrantedBySupport",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 20,
+    "support_bone_shrapnel_physical_damage_equal_to_%_monster_life": 25,
+    "triggered_by_bone_shrapnel_support_%": 100,
+    "_spell_crit": 1300
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 20
+   },
+   "flags": [
+    "cannot_pin"
+   ]
+  },
+  "TriggeredBattershoutExplosionPlayer": {
+   "name": "Battershout",
+   "name_es": "Grito vapuleador",
+   "name_pt": "Clamor Explosivo",
+   "name_fr": "Cri percutant",
+   "name_de": "Bombardierruf",
+   "name_ru": "Крушащий крик",
+   "name_ja": "バターシャウト",
+   "name_ko": "구타하는 고함",
+   "name_th": "ตะเบ็งทารุณ",
+   "name_zh": "猛擊吶喊",
+   "triggered_by": "Battershout",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Physical",
+    "SkillGrantedBySupport",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "support_battershout_physical_damage_equal_to_%_of_broken_armour": 40,
+    "active_skill_base_area_of_effect_radius": 20,
+    "triggered_by_battershout_support_%": 100,
+    "additional_base_critical_strike_chance": 500,
+    "active_skill_damage_+%_final_vs_unique_enemies": 50
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 20
+   },
+   "flags": [
+    "cannot_break_armour"
+   ]
+  },
+  "TriggeredCaltropsPlayer": {
+   "name": "Caltrops",
+   "name_es": "Abrojos",
+   "name_pt": "Estrepes",
+   "name_fr": "Chausse-trappes",
+   "name_de": "Wurfeisen",
+   "name_ru": "Кальтропы",
+   "name_ja": "マキビシ",
+   "name_ko": "마름쇠",
+   "name_th": "ขวาก",
+   "name_zh": "蒺藜",
+   "triggered_by": "Caltrops",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Projectile",
+    "ProjectileNoCollision",
+    "SkillGrantedBySupport",
+    "Hazard",
+    "Duration",
+    "CannotChain",
+    "Attack",
+    "GroundTargetedProjectile",
+    "NoAttackOrCastTime",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "duration",
+    "projectile"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_caltrops_support_%": 100,
+    "base_number_of_projectiles": 1,
+    "active_skill_base_area_of_effect_radius": 5,
+    "active_skill_base_secondary_area_of_effect_radius": 30,
+    "base_skill_effect_duration": 8000,
+    "active_skill_has_%_standard_scaling_attack_damage": 75
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 5
+   },
+   "flags": null
+  },
+  "TriggeredHaemocrystalsPlayer": {
+   "name": "Haemocrystals",
+   "name_es": "Hemocristales",
+   "name_pt": "Hemocristais",
+   "name_fr": "Hémocristaux",
+   "name_de": "Blutkristalle",
+   "name_ru": "Гемокристаллы",
+   "name_ja": "血の結晶",
+   "name_ko": "혈액수정",
+   "name_th": "ผลึกโลหิต",
+   "name_zh": "血晶",
+   "triggered_by": "Haemocrystals",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Physical",
+    "SkillGrantedBySupport",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8,
+    "active_skill_base_area_of_effect_radius": 10,
+    "base_skill_effect_duration": 1500,
+    "support_haemocrystals_crystal_creation_radius": 25,
+    "chance_to_trigger_haemocrystals_%": 100
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 10
+   },
+   "flags": [
+    "cannot_cause_bleeding"
+   ]
+  },
+  "TriggeredQuillburstPlayer": {
+   "name": "Quill Burst",
+   "name_es": "Estallido de espinas",
+   "name_pt": "Rajada de Cálamos",
+   "name_fr": "Explosion épineuse",
+   "name_de": "Dornenexplosion",
+   "name_ru": "Взрыв игл",
+   "name_ja": "クイルバースト",
+   "name_ko": "가시 격발",
+   "name_th": "ระเบิดขนหนาม",
+   "name_zh": "驟羽爆發",
+   "triggered_by": "Quill Burst",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Physical",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Cooldown"
+   ],
+   "tags": [
+    "area",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_spiked_gauntlets_support_%": 100,
+    "active_skill_base_area_of_effect_radius": 15,
+    "_cooldown_ms": 150,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 15
+   },
+   "flags": null
+  },
+  "TriggeredVolcanicEruptionPlayer": {
+   "name": "Volcanic Eruption",
+   "name_es": "Erupción volcánica",
+   "name_pt": "Erupção Vulcânica",
+   "name_fr": "Éruption volcanique",
+   "name_de": "Vulkanausbruch",
+   "name_ru": "Извержение вулкана",
+   "name_ja": "ヴォルカニックエラプション",
+   "name_ko": "화산 분출",
+   "name_th": "ภูเขาไฟปะทุ",
+   "name_zh": "火山迸發",
+   "triggered_by": "Volcanic Eruption",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Fire",
+    "SkillGrantedBySupport",
+    "Attack",
+    "Projectile",
+    "ProjectileNoCollision",
+    "NoAttackOrCastTime",
+    "AttackInPlace",
+    "Cooldown"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "fire",
+    "projectile"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 10,
+    "chance_to_trigger_volcanic_eruption": 100,
+    "base_number_of_projectiles": 4,
+    "active_skill_base_physical_damage_%_to_convert_to_fire": 80,
+    "skill_mortar_minimum_projectile_distance": 5,
+    "skill_mortar_maximum_projectile_distance": 15,
+    "active_skill_has_%_standard_scaling_attack_damage": 20,
+    "_cooldown_ms": 400,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 10
+   },
+   "flags": null
+  },
+  "TriggeredBrambleslamPlayer": {
+   "name": "Brambles",
+   "name_es": "Zarzas",
+   "name_pt": "Espinheiros",
+   "name_fr": "Ronces",
+   "name_de": "Dornicht",
+   "name_ru": "Терновник",
+   "name_ja": "荊棘",
+   "name_ko": "가시나무",
+   "name_th": "พุ่มหนาม",
+   "name_zh": "荊棘",
+   "triggered_by": "Brambleslam",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Physical",
+    "Attack",
+    "NoAttackOrCastTime",
+    "SkillGrantedBySupport",
+    "Hazard",
+    "AttackInPlace",
+    "Cooldown",
+    "Plant"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 10,
+    "triggered_by_briarpatch_support_on_slam_%": 100,
+    "base_skill_effect_duration": 8000,
+    "briarpatches_arming_time_ms": 400,
+    "active_skill_has_%_standard_scaling_attack_damage": 35,
+    "hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self": -80,
+    "plant_skill_damage_+%_final_when_wet": 50,
+    "_cooldown_ms": 150,
+    "_stored_uses": 6
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 10
+   },
+   "flags": null
+  },
+  "TriggeredStaticShocksPlayer": {
+   "name": "Static Shocks",
+   "name_es": "Descargas electrostáticas",
+   "name_pt": "Choques Estáticos",
+   "name_fr": "Décharges statiques",
+   "name_de": "Statische Schocks",
+   "name_ru": "Статический шок",
+   "name_ja": "スタティックショック",
+   "name_ko": "정전기 감전",
+   "name_th": "ประจุช็อค",
+   "name_zh": "靜電震盪",
+   "triggered_by": "Static Shocks",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "SkillGrantedBySupport",
+    "Lightning",
+    "AttackInPlace",
+    "Cooldown",
+    "Sustained",
+    "Spell",
+    "Duration"
+   ],
+   "tags": [
+    "area",
+    "duration",
+    "lightning",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_grounding_shocks_support_on_shock_%": 100,
+    "base_skill_effect_duration": 4000,
+    "active_skill_base_area_of_effect_radius": 30,
+    "maximum_grounding_shocks_allowed": 5,
+    "grounding_shocks_pulse_delay_ms": 650,
+    "grounding_shocks_maximum_targets_per_aoe": 6,
+    "_cooldown_ms": 400,
+    "_spell_crit": 900,
+    "_stored_uses": 3
+   },
+   "levels": {
+    "1": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 4
+    },
+    "2": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 6
+    },
+    "3": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 8
+    },
+    "4": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 11
+    },
+    "5": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 13
+    },
+    "6": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 17
+    },
+    "7": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 20
+    },
+    "8": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 24
+    },
+    "9": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 29
+    },
+    "10": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 34
+    },
+    "11": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 40
+    },
+    "12": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 46
+    },
+    "13": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 54
+    },
+    "14": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 62
+    },
+    "15": {
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 71
+    },
+    "16": {
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 82
+    },
+    "17": {
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 94
+    },
+    "18": {
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 108
+    },
+    "19": {
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 124
+    },
+    "20": {
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 142
+    },
+    "21": {
+     "spell_minimum_base_lightning_damage": 9,
+     "spell_maximum_base_lightning_damage": 162
+    },
+    "22": {
+     "spell_minimum_base_lightning_damage": 10,
+     "spell_maximum_base_lightning_damage": 185
+    },
+    "23": {
+     "spell_minimum_base_lightning_damage": 11,
+     "spell_maximum_base_lightning_damage": 211
+    },
+    "24": {
+     "spell_minimum_base_lightning_damage": 13,
+     "spell_maximum_base_lightning_damage": 241
+    },
+    "25": {
+     "spell_minimum_base_lightning_damage": 15,
+     "spell_maximum_base_lightning_damage": 276
+    },
+    "26": {
+     "spell_minimum_base_lightning_damage": 17,
+     "spell_maximum_base_lightning_damage": 315
+    },
+    "27": {
+     "spell_minimum_base_lightning_damage": 19,
+     "spell_maximum_base_lightning_damage": 360
+    },
+    "28": {
+     "spell_minimum_base_lightning_damage": 22,
+     "spell_maximum_base_lightning_damage": 411
+    },
+    "29": {
+     "spell_minimum_base_lightning_damage": 25,
+     "spell_maximum_base_lightning_damage": 470
+    },
+    "30": {
+     "spell_minimum_base_lightning_damage": 28,
+     "spell_maximum_base_lightning_damage": 538
+    },
+    "31": {
+     "spell_minimum_base_lightning_damage": 32,
+     "spell_maximum_base_lightning_damage": 616
+    },
+    "32": {
+     "spell_minimum_base_lightning_damage": 37,
+     "spell_maximum_base_lightning_damage": 706
+    },
+    "33": {
+     "spell_minimum_base_lightning_damage": 43,
+     "spell_maximum_base_lightning_damage": 809
+    },
+    "34": {
+     "spell_minimum_base_lightning_damage": 49,
+     "spell_maximum_base_lightning_damage": 929
+    },
+    "35": {
+     "spell_minimum_base_lightning_damage": 56,
+     "spell_maximum_base_lightning_damage": 1067
+    },
+    "36": {
+     "spell_minimum_base_lightning_damage": 65,
+     "spell_maximum_base_lightning_damage": 1226
+    },
+    "37": {
+     "spell_minimum_base_lightning_damage": 74,
+     "spell_maximum_base_lightning_damage": 1411
+    },
+    "38": {
+     "spell_minimum_base_lightning_damage": 86,
+     "spell_maximum_base_lightning_damage": 1626
+    },
+    "39": {
+     "spell_minimum_base_lightning_damage": 99,
+     "spell_maximum_base_lightning_damage": 1876
+    },
+    "40": {
+     "spell_minimum_base_lightning_damage": 114,
+     "spell_maximum_base_lightning_damage": 2166
+    }
+   },
+   "radius": {
+    "1": 30,
+    "2": 30,
+    "3": 30,
+    "4": 30,
+    "5": 30,
+    "6": 30,
+    "7": 30,
+    "8": 30,
+    "9": 30,
+    "10": 30,
+    "11": 30,
+    "12": 30,
+    "13": 30,
+    "14": 30,
+    "15": 30,
+    "16": 30,
+    "17": 30,
+    "18": 30,
+    "19": 30,
+    "20": 30,
+    "21": 30,
+    "22": 30,
+    "23": 30,
+    "24": 30,
+    "25": 30,
+    "26": 30,
+    "27": 30,
+    "28": 30,
+    "29": 30,
+    "30": 30,
+    "31": 30,
+    "32": 30,
+    "33": 30,
+    "34": 30,
+    "35": 30,
+    "36": 30,
+    "37": 30,
+    "38": 30,
+    "39": 30,
+    "40": 30
+   },
+   "flags": [
+    "never_shock"
+   ]
+  },
+  "TriggeredSplinterExplosionHardyTotems": {
+   "name": "Tawhoa's Vengeance",
+   "name_es": "Venganza de Tawhoa",
+   "name_pt": "Vingança de Tawhoa",
+   "name_fr": "Vengeance de Tawhoa",
+   "name_de": "Tawhoas Rache",
+   "name_ru": "Возмездие Тахоа",
+   "name_ja": "タウホアの復讐",
+   "name_ko": "타호아의 복수",
+   "name_th": "ทาฟัวทวงแค้น",
+   "name_zh": "塔赫亞的復仇",
+   "triggered_by": "Tawhoa's Tending",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "SkillGrantedBySupport",
+    "Physical",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 30,
+    "triggered_on_death_%": 100,
+    "base_physical_damage_equal_to_%_of_totem_life": 20,
+    "skill_disabled_unless_cloned": 1,
+    "_spell_crit": 500
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 30
+   },
+   "flags": null
+  },
+  "TriggeredLivingLightningPlayer": {
+   "name": "Living Lightning",
+   "name_es": "Rayo viviente",
+   "name_pt": "Relâmpago Vivo",
+   "name_fr": "Foudre vivante",
+   "name_de": "Lebendiger Blitz",
+   "name_ru": "Живая молния",
+   "name_ja": "リビングライトニング",
+   "name_ko": "살아 있는 번개",
+   "name_th": "สายฟ้ามีชีวิต",
+   "name_zh": "活躍閃電",
+   "triggered_by": "Living Lightning",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Minion",
+    "Lightning",
+    "SkillGrantedBySupport",
+    "Limit",
+    "Duration",
+    "SingleLevelSkill",
+    "MinionsAreUndamagable",
+    "CreatesMinion",
+    "Cooldown",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "duration",
+    "lightning"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "chance_to_trigger_living_lightning_on_lightning_damage_%": 100,
+    "base_skill_effect_duration": 30000,
+    "base_number_of_living_lightning_allowed": 5,
+    "living_lightning_maximum_number_of_attacks": 3,
+    "minion_base_physical_damage_%_to_convert_to_lightning": 100,
+    "living_lightning_beam_attack_time_ms": 140,
+    "number_of_chains": 3,
+    "_cooldown_ms": 200,
+    "_stored_uses": 5
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredLivingLightningPlayerTwo": {
+   "name": "Living Lightning",
+   "name_es": "Rayo viviente",
+   "name_pt": "Relâmpago Vivo",
+   "name_fr": "Foudre vivante",
+   "name_de": "Lebendiger Blitz",
+   "name_ru": "Живая молния",
+   "name_ja": "リビングライトニング",
+   "name_ko": "살아 있는 번개",
+   "name_th": "สายฟ้ามีชีวิต",
+   "name_zh": "活躍閃電",
+   "triggered_by": "Living Lightning II",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Minion",
+    "Lightning",
+    "SkillGrantedBySupport",
+    "Limit",
+    "Duration",
+    "SingleLevelSkill",
+    "MinionsAreUndamagable",
+    "CreatesMinion",
+    "Cooldown",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "duration",
+    "lightning"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "chance_to_trigger_living_lightning_on_lightning_damage_%": 100,
+    "base_skill_effect_duration": 30000,
+    "base_number_of_living_lightning_allowed": 8,
+    "living_lightning_maximum_number_of_attacks": 3,
+    "minion_base_physical_damage_%_to_convert_to_lightning": 100,
+    "living_lightning_beam_attack_time_ms": 140,
+    "minion_1%_damage_+%_per_X_player_strength": 5,
+    "active_skill_minion_1%_attack_speed_+%_per_X_player_dexterity": 10,
+    "number_of_chains": 3
+   },
+   "levels": {
+    "1": {
+     "_cooldown_ms": 200,
+     "_stored_uses": 8
+    },
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredSupportFrozenSpiteIceFragmentPlayer": {
+   "name": "Ice Fragments",
+   "name_es": "Fragmentos de hielo",
+   "name_pt": "Fragmentos de Gelo",
+   "name_fr": "Fragments de glace",
+   "name_de": "Eisfragmente",
+   "name_ru": "Куски льда",
+   "name_ja": "アイスフラグメント",
+   "name_ko": "얼음 파편",
+   "name_th": "เศษน้ำแข็ง",
+   "name_zh": "寒冰碎片",
+   "triggered_by": "Frozen Spite",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Projectile",
+    "DetonatesAfterTime",
+    "Area",
+    "Cold",
+    "SkillGrantedBySupport",
+    "FrozenSpite",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "cold",
+    "projectile"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_frozen_spite_support_%": 100,
+    "active_skill_base_area_of_effect_radius": 15,
+    "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage": 10,
+    "ballistic_ice_chunk_cone_angle": 360,
+    "base_skill_detonation_time": 1500,
+    "base_number_of_projectiles": 3,
+    "ice_fragment_min_chunk_distance": 1,
+    "ice_fragment_max_chunk_distance": 35,
+    "ice_fragment_auto_aim_roll_fudge": 2,
+    "_base_multiplier": 7500
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 15
+   },
+   "flags": [
+    "never_freeze"
+   ]
+  },
+  "TriggeredShockingRiftPlayer": {
+   "name": "Electromagnetism",
+   "name_es": "Electromagnetismo",
+   "name_pt": "Eletromagnetismo",
+   "name_fr": "Électromagnétisme",
+   "name_de": "Elektromagnetismus",
+   "name_ru": "Электромагнетизм",
+   "name_ja": "エレクトロマグネティズム",
+   "name_ko": "전자기력",
+   "name_th": "ศาตราอสนีดึงดูด",
+   "name_zh": "磁化電極",
+   "triggered_by": "Electromagnetism",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "SkillGrantedBySupport",
+    "Area",
+    "Sustained",
+    "Lightning",
+    "AttackInPlace",
+    "Damage",
+    "Spell"
+   ],
+   "tags": [
+    "area",
+    "lightning",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_shocking_rift_support_%": 100,
+    "active_skill_base_area_of_effect_radius": 20,
+    "active_skill_base_secondary_area_of_effect_radius": 25,
+    "number_of_shocking_rifts_allowed": 3,
+    "shocking_rift_number_of_pulses": 5,
+    "shocking_rift_pulse_interval_ms": 850,
+    "shocking_rift_damage_+%_final_per_pulse_performed": 20,
+    "shocking_rift_speed_+%_per_shock_consumed": 25,
+    "shocking_rift_hinder_ms": 900,
+    "_spell_crit": 900
+   },
+   "levels": {
+    "1": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 6
+    },
+    "2": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 7
+    },
+    "3": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 10
+    },
+    "4": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 13
+    },
+    "5": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 16
+    },
+    "6": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 20
+    },
+    "7": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 24
+    },
+    "8": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 29
+    },
+    "9": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 34
+    },
+    "10": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 40
+    },
+    "11": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 47
+    },
+    "12": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 54
+    },
+    "13": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 62
+    },
+    "14": {
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 71
+    },
+    "15": {
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 81
+    },
+    "16": {
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 93
+    },
+    "17": {
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 105
+    },
+    "18": {
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 120
+    },
+    "19": {
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 135
+    },
+    "20": {
+     "spell_minimum_base_lightning_damage": 8,
+     "spell_maximum_base_lightning_damage": 153
+    },
+    "21": {
+     "spell_minimum_base_lightning_damage": 9,
+     "spell_maximum_base_lightning_damage": 173
+    },
+    "22": {
+     "spell_minimum_base_lightning_damage": 10,
+     "spell_maximum_base_lightning_damage": 196
+    },
+    "23": {
+     "spell_minimum_base_lightning_damage": 12,
+     "spell_maximum_base_lightning_damage": 221
+    },
+    "24": {
+     "spell_minimum_base_lightning_damage": 13,
+     "spell_maximum_base_lightning_damage": 249
+    },
+    "25": {
+     "spell_minimum_base_lightning_damage": 15,
+     "spell_maximum_base_lightning_damage": 281
+    },
+    "26": {
+     "spell_minimum_base_lightning_damage": 17,
+     "spell_maximum_base_lightning_damage": 317
+    },
+    "27": {
+     "spell_minimum_base_lightning_damage": 19,
+     "spell_maximum_base_lightning_damage": 358
+    },
+    "28": {
+     "spell_minimum_base_lightning_damage": 21,
+     "spell_maximum_base_lightning_damage": 404
+    },
+    "29": {
+     "spell_minimum_base_lightning_damage": 24,
+     "spell_maximum_base_lightning_damage": 455
+    },
+    "30": {
+     "spell_minimum_base_lightning_damage": 27,
+     "spell_maximum_base_lightning_damage": 514
+    },
+    "31": {
+     "spell_minimum_base_lightning_damage": 31,
+     "spell_maximum_base_lightning_damage": 580
+    },
+    "32": {
+     "spell_minimum_base_lightning_damage": 34,
+     "spell_maximum_base_lightning_damage": 655
+    },
+    "33": {
+     "spell_minimum_base_lightning_damage": 39,
+     "spell_maximum_base_lightning_damage": 740
+    },
+    "34": {
+     "spell_minimum_base_lightning_damage": 44,
+     "spell_maximum_base_lightning_damage": 836
+    },
+    "35": {
+     "spell_minimum_base_lightning_damage": 50,
+     "spell_maximum_base_lightning_damage": 945
+    },
+    "36": {
+     "spell_minimum_base_lightning_damage": 56,
+     "spell_maximum_base_lightning_damage": 1070
+    },
+    "37": {
+     "spell_minimum_base_lightning_damage": 64,
+     "spell_maximum_base_lightning_damage": 1211
+    },
+    "38": {
+     "spell_minimum_base_lightning_damage": 72,
+     "spell_maximum_base_lightning_damage": 1372
+    },
+    "39": {
+     "spell_minimum_base_lightning_damage": 82,
+     "spell_maximum_base_lightning_damage": 1556
+    },
+    "40": {
+     "spell_minimum_base_lightning_damage": 93,
+     "spell_maximum_base_lightning_damage": 1766
+    }
+   },
+   "radius": {
+    "1": 20,
+    "2": 20,
+    "3": 20,
+    "4": 20,
+    "5": 20,
+    "6": 20,
+    "7": 20,
+    "8": 20,
+    "9": 20,
+    "10": 20,
+    "11": 20,
+    "12": 20,
+    "13": 20,
+    "14": 20,
+    "15": 20,
+    "16": 20,
+    "17": 20,
+    "18": 20,
+    "19": 20,
+    "20": 20,
+    "21": 20,
+    "22": 20,
+    "23": 20,
+    "24": 20,
+    "25": 20,
+    "26": 20,
+    "27": 20,
+    "28": 20,
+    "29": 20,
+    "30": 20,
+    "31": 20,
+    "32": 20,
+    "33": 20,
+    "34": 20,
+    "35": 20,
+    "36": 20,
+    "37": 20,
+    "38": 20,
+    "39": 20,
+    "40": 20
+   },
+   "flags": [
+    "never_shock"
+   ]
+  },
+  "TriggeredCraterPlayer": {
+   "name": "Crater",
+   "name_es": "Cráter",
+   "name_pt": "Cratera",
+   "name_fr": "Cratère",
+   "name_de": "Krater",
+   "name_ru": "Кратер",
+   "name_ja": "クレーター",
+   "name_ko": "분화구",
+   "name_th": "หลุมอุกกาบาต",
+   "name_zh": "隕坑衝擊",
+   "triggered_by": "Crater",
+   "types": [
+    "SkillGrantedBySupport",
+    "Area",
+    "Fire",
+    "CreatesFissure",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Attack",
+    "Duration",
+    "Melee",
+    "Limit",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "duration",
+    "fire",
+    "melee"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_fissure_on_landing_support_%": 100,
+    "support_fissure_on_landing_maximum_fissure_count": 9,
+    "active_skill_has_%_standard_scaling_attack_damage": 35,
+    "active_skill_base_physical_damage_%_to_convert_to_fire": 80,
+    "active_skill_base_area_of_effect_radius": 15,
+    "base_skill_effect_duration": 6000
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 15
+   },
+   "flags": null
+  },
+  "TriggeredSkitteringStonePlayer": {
+   "name": "Skittering Stone",
+   "name_es": "Roca escurridiza",
+   "name_pt": "Pedra Rastejante",
+   "name_fr": "Pierre grouillante",
+   "name_de": "Huschender Stein",
+   "name_ru": "Ходячий камень",
+   "name_ja": "スキッタリングストーン",
+   "name_ko": "달리는 돌",
+   "name_th": "หินกระดอน",
+   "name_zh": "飛掠之石",
+   "triggered_by": "Skittering Stone I",
+   "types": [
+    "SkillGrantedBySupport",
+    "CreatesMinion",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Duration",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "duration"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_support_hatching_elementals_%": 100,
+    "base_skill_effect_duration": 10000,
+    "support_hatching_elementals_number_of_elementals_per_hatch": 1,
+    "maximum_hatching_elementals_allowed": 8,
+    "minion_1%_damage_+%_per_X_player_strength": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredSkitteringStonePlayerTwo": {
+   "name": "Skittering Stone",
+   "name_es": "Roca escurridiza",
+   "name_pt": "Pedra Rastejante",
+   "name_fr": "Pierre grouillante",
+   "name_de": "Huschender Stein",
+   "name_ru": "Ходячий камень",
+   "name_ja": "スキッタリングストーン",
+   "name_ko": "달리는 돌",
+   "name_th": "หินกระดอน",
+   "name_zh": "飛掠之石",
+   "triggered_by": "Skittering Stone II",
+   "types": [
+    "SkillGrantedBySupport",
+    "CreatesMinion",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Duration",
+    "AttackInPlace"
+   ],
+   "tags": [
+    "duration"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_support_hatching_elementals_%": 100,
+    "base_skill_effect_duration": 20000,
+    "support_hatching_elementals_number_of_elementals_per_hatch": 2,
+    "maximum_hatching_elementals_allowed": 12,
+    "minion_1%_damage_+%_per_X_player_strength": 1
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredXibaquasRendingPlayer": {
+   "name": "Fiery Reclamation",
+   "name_es": "Reclamo ardiente",
+   "name_pt": "Recuperação Ardente",
+   "name_fr": "Réclamation ardente",
+   "name_de": "Feurige Eroberung",
+   "name_ru": "Огненное очищение",
+   "name_ja": "ファイアリーリクラメーション",
+   "name_ko": "불타는 교화",
+   "name_th": "เพลิงเรียกคืน",
+   "name_zh": "燃炎回收",
+   "triggered_by": "Xibaqua's Rending",
+   "types": [
+    "SkillGrantedBySupport",
+    "Area",
+    "Fire",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "AttackInPlace",
+    "TargetsDestructibleCorpses"
+   ],
+   "tags": [
+    "area",
+    "fire"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_vaal_lineage_detonate_on_landing_support_%_chance": 100,
+    "detonate_on_landing_maximum_number_of_corpses_to_detonate": 100,
+    "corpse_explosion_monster_life_permillage_fire": 60,
+    "active_skill_base_secondary_area_of_effect_radius": 35,
+    "active_skill_base_area_of_effect_radius": 15,
+    "explosion_delay_ms": 400
+   },
+   "levels": {
+    "1": {}
+   },
+   "radius": {
+    "1": 15
+   },
+   "flags": null
+  },
+  "TriggeredCreepingChillPlayer": {
+   "name": "Creeping Chill",
+   "name_es": "Escalofrío",
+   "name_pt": "Arrefecimento Insidioso",
+   "name_fr": "Frigorification expansive",
+   "name_de": "Schleichende Kühle",
+   "name_ru": "Ползучий хлад",
+   "name_ja": "クリーピングチル",
+   "name_ko": "엄습하는 오한",
+   "name_th": "หนาวเย็นคืบคลาน",
+   "name_zh": "寒冰蔓延",
+   "triggered_by": "Creeping Chill",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Cold",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "CreatesGroundEffect"
+   ],
+   "tags": [
+    "area",
+    "cold"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_support_creeping_chill_%": 100,
+    "active_skill_base_area_of_effect_radius": 12,
+    "active_skill_ground_effect_area_of_effect_+%_final_per_second": 50,
+    "active_skill_ground_effect_area_of_effect_+%_final_per_second_max": 300,
+    "support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life": 100
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": {
+    "1": 12,
+    "2": 12,
+    "3": 12,
+    "4": 12,
+    "5": 12,
+    "6": 12,
+    "7": 12,
+    "8": 12,
+    "9": 12,
+    "10": 12,
+    "11": 12,
+    "12": 12,
+    "13": 12,
+    "14": 12,
+    "15": 12,
+    "16": 12,
+    "17": 12,
+    "18": 12,
+    "19": 12,
+    "20": 12,
+    "21": 12,
+    "22": 12,
+    "23": 12,
+    "24": 12,
+    "25": 12,
+    "26": 12,
+    "27": 12,
+    "28": 12,
+    "29": 12,
+    "30": 12,
+    "31": 12,
+    "32": 12,
+    "33": 12,
+    "34": 12,
+    "35": 12,
+    "36": 12,
+    "37": 12,
+    "38": 12,
+    "39": 12,
+    "40": 12
+   },
+   "flags": null
+  },
+  "TriggeredExplosiveGrowthPlayer": {
+   "name": "Accelerated Growth",
+   "name_es": "Crecimiento acelerado",
+   "name_pt": "Crescimento Acelerado",
+   "name_fr": "Croissance accélérée",
+   "name_de": "Beschleunigtes Wachstum",
+   "name_ru": "Ускоренный рост",
+   "name_ja": "成長の加速",
+   "name_ko": "가속된 성장",
+   "name_th": "เร่งโต",
+   "name_zh": "飛速生長",
+   "triggered_by": "Accelerated Growth",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Spell"
+   ],
+   "tags": [
+    "area",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_support_explosive_growth_%": 100,
+    "active_skill_base_area_of_effect_radius": 18,
+    "support_explosive_growth_explosion_delay_X_ms": 1200,
+    "active_skill_base_secondary_area_of_effect_radius": 10,
+    "_spell_crit": 1000
+   },
+   "levels": {
+    "1": {
+     "spell_minimum_base_physical_damage": 4,
+     "spell_maximum_base_physical_damage": 6
+    },
+    "2": {
+     "spell_minimum_base_physical_damage": 5,
+     "spell_maximum_base_physical_damage": 8
+    },
+    "3": {
+     "spell_minimum_base_physical_damage": 7,
+     "spell_maximum_base_physical_damage": 10
+    },
+    "4": {
+     "spell_minimum_base_physical_damage": 9,
+     "spell_maximum_base_physical_damage": 13
+    },
+    "5": {
+     "spell_minimum_base_physical_damage": 11,
+     "spell_maximum_base_physical_damage": 17
+    },
+    "6": {
+     "spell_minimum_base_physical_damage": 14,
+     "spell_maximum_base_physical_damage": 21
+    },
+    "7": {
+     "spell_minimum_base_physical_damage": 17,
+     "spell_maximum_base_physical_damage": 25
+    },
+    "8": {
+     "spell_minimum_base_physical_damage": 20,
+     "spell_maximum_base_physical_damage": 30
+    },
+    "9": {
+     "spell_minimum_base_physical_damage": 24,
+     "spell_maximum_base_physical_damage": 36
+    },
+    "10": {
+     "spell_minimum_base_physical_damage": 28,
+     "spell_maximum_base_physical_damage": 42
+    },
+    "11": {
+     "spell_minimum_base_physical_damage": 32,
+     "spell_maximum_base_physical_damage": 49
+    },
+    "12": {
+     "spell_minimum_base_physical_damage": 38,
+     "spell_maximum_base_physical_damage": 57
+    },
+    "13": {
+     "spell_minimum_base_physical_damage": 44,
+     "spell_maximum_base_physical_damage": 65
+    },
+    "14": {
+     "spell_minimum_base_physical_damage": 50,
+     "spell_maximum_base_physical_damage": 75
+    },
+    "15": {
+     "spell_minimum_base_physical_damage": 58,
+     "spell_maximum_base_physical_damage": 86
+    },
+    "16": {
+     "spell_minimum_base_physical_damage": 66,
+     "spell_maximum_base_physical_damage": 99
+    },
+    "17": {
+     "spell_minimum_base_physical_damage": 75,
+     "spell_maximum_base_physical_damage": 113
+    },
+    "18": {
+     "spell_minimum_base_physical_damage": 86,
+     "spell_maximum_base_physical_damage": 129
+    },
+    "19": {
+     "spell_minimum_base_physical_damage": 98,
+     "spell_maximum_base_physical_damage": 147
+    },
+    "20": {
+     "spell_minimum_base_physical_damage": 111,
+     "spell_maximum_base_physical_damage": 167
+    },
+    "21": {
+     "spell_minimum_base_physical_damage": 127,
+     "spell_maximum_base_physical_damage": 190
+    },
+    "22": {
+     "spell_minimum_base_physical_damage": 144,
+     "spell_maximum_base_physical_damage": 216
+    },
+    "23": {
+     "spell_minimum_base_physical_damage": 164,
+     "spell_maximum_base_physical_damage": 246
+    },
+    "24": {
+     "spell_minimum_base_physical_damage": 186,
+     "spell_maximum_base_physical_damage": 279
+    },
+    "25": {
+     "spell_minimum_base_physical_damage": 211,
+     "spell_maximum_base_physical_damage": 317
+    },
+    "26": {
+     "spell_minimum_base_physical_damage": 240,
+     "spell_maximum_base_physical_damage": 360
+    },
+    "27": {
+     "spell_minimum_base_physical_damage": 272,
+     "spell_maximum_base_physical_damage": 408
+    },
+    "28": {
+     "spell_minimum_base_physical_damage": 309,
+     "spell_maximum_base_physical_damage": 464
+    },
+    "29": {
+     "spell_minimum_base_physical_damage": 351,
+     "spell_maximum_base_physical_damage": 527
+    },
+    "30": {
+     "spell_minimum_base_physical_damage": 400,
+     "spell_maximum_base_physical_damage": 599
+    },
+    "31": {
+     "spell_minimum_base_physical_damage": 454,
+     "spell_maximum_base_physical_damage": 682
+    },
+    "32": {
+     "spell_minimum_base_physical_damage": 517,
+     "spell_maximum_base_physical_damage": 776
+    },
+    "33": {
+     "spell_minimum_base_physical_damage": 589,
+     "spell_maximum_base_physical_damage": 883
+    },
+    "34": {
+     "spell_minimum_base_physical_damage": 671,
+     "spell_maximum_base_physical_damage": 1006
+    },
+    "35": {
+     "spell_minimum_base_physical_damage": 765,
+     "spell_maximum_base_physical_damage": 1148
+    },
+    "36": {
+     "spell_minimum_base_physical_damage": 873,
+     "spell_maximum_base_physical_damage": 1310
+    },
+    "37": {
+     "spell_minimum_base_physical_damage": 997,
+     "spell_maximum_base_physical_damage": 1496
+    },
+    "38": {
+     "spell_minimum_base_physical_damage": 1140,
+     "spell_maximum_base_physical_damage": 1710
+    },
+    "39": {
+     "spell_minimum_base_physical_damage": 1305,
+     "spell_maximum_base_physical_damage": 1957
+    },
+    "40": {
+     "spell_minimum_base_physical_damage": 1494,
+     "spell_maximum_base_physical_damage": 2241
+    }
+   },
+   "radius": {
+    "1": 18,
+    "2": 18,
+    "3": 18,
+    "4": 18,
+    "5": 18,
+    "6": 18,
+    "7": 18,
+    "8": 18,
+    "9": 18,
+    "10": 18,
+    "11": 18,
+    "12": 18,
+    "13": 18,
+    "14": 18,
+    "15": 18,
+    "16": 18,
+    "17": 18,
+    "18": 18,
+    "19": 18,
+    "20": 18,
+    "21": 18,
+    "22": 18,
+    "23": 18,
+    "24": 18,
+    "25": 18,
+    "26": 18,
+    "27": 18,
+    "28": 18,
+    "29": 18,
+    "30": 18,
+    "31": 18,
+    "32": 18,
+    "33": 18,
+    "34": 18,
+    "35": 18,
+    "36": 18,
+    "37": 18,
+    "38": 18,
+    "39": 18,
+    "40": 18
+   },
+   "flags": null
+  },
+  "TriggeredExplosiveGrowthPlayerTwo": {
+   "name": "Accelerated Growth",
+   "name_es": "Crecimiento acelerado",
+   "name_pt": "Crescimento Acelerado",
+   "name_fr": "Croissance accélérée",
+   "name_de": "Beschleunigtes Wachstum",
+   "name_ru": "Ускоренный рост",
+   "name_ja": "成長の加速",
+   "name_ko": "가속된 성장",
+   "name_th": "เร่งโต",
+   "name_zh": "飛速生長",
+   "triggered_by": "Accelerated Growth II",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Spell"
+   ],
+   "tags": [
+    "area",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "triggered_by_support_explosive_growth_%": 100,
+    "active_skill_base_area_of_effect_radius": 18,
+    "support_explosive_growth_explosion_delay_X_ms": 1200,
+    "active_skill_base_secondary_area_of_effect_radius": 20,
+    "global_chance_to_blind_on_hit_%": 100,
+    "_spell_crit": 1000
+   },
+   "levels": {
+    "1": {
+     "spell_minimum_base_physical_damage": 4,
+     "spell_maximum_base_physical_damage": 6
+    },
+    "2": {
+     "spell_minimum_base_physical_damage": 5,
+     "spell_maximum_base_physical_damage": 8
+    },
+    "3": {
+     "spell_minimum_base_physical_damage": 7,
+     "spell_maximum_base_physical_damage": 10
+    },
+    "4": {
+     "spell_minimum_base_physical_damage": 9,
+     "spell_maximum_base_physical_damage": 13
+    },
+    "5": {
+     "spell_minimum_base_physical_damage": 11,
+     "spell_maximum_base_physical_damage": 17
+    },
+    "6": {
+     "spell_minimum_base_physical_damage": 14,
+     "spell_maximum_base_physical_damage": 21
+    },
+    "7": {
+     "spell_minimum_base_physical_damage": 17,
+     "spell_maximum_base_physical_damage": 25
+    },
+    "8": {
+     "spell_minimum_base_physical_damage": 20,
+     "spell_maximum_base_physical_damage": 30
+    },
+    "9": {
+     "spell_minimum_base_physical_damage": 24,
+     "spell_maximum_base_physical_damage": 36
+    },
+    "10": {
+     "spell_minimum_base_physical_damage": 28,
+     "spell_maximum_base_physical_damage": 42
+    },
+    "11": {
+     "spell_minimum_base_physical_damage": 32,
+     "spell_maximum_base_physical_damage": 49
+    },
+    "12": {
+     "spell_minimum_base_physical_damage": 38,
+     "spell_maximum_base_physical_damage": 57
+    },
+    "13": {
+     "spell_minimum_base_physical_damage": 44,
+     "spell_maximum_base_physical_damage": 65
+    },
+    "14": {
+     "spell_minimum_base_physical_damage": 50,
+     "spell_maximum_base_physical_damage": 75
+    },
+    "15": {
+     "spell_minimum_base_physical_damage": 58,
+     "spell_maximum_base_physical_damage": 86
+    },
+    "16": {
+     "spell_minimum_base_physical_damage": 66,
+     "spell_maximum_base_physical_damage": 99
+    },
+    "17": {
+     "spell_minimum_base_physical_damage": 75,
+     "spell_maximum_base_physical_damage": 113
+    },
+    "18": {
+     "spell_minimum_base_physical_damage": 86,
+     "spell_maximum_base_physical_damage": 129
+    },
+    "19": {
+     "spell_minimum_base_physical_damage": 98,
+     "spell_maximum_base_physical_damage": 147
+    },
+    "20": {
+     "spell_minimum_base_physical_damage": 111,
+     "spell_maximum_base_physical_damage": 167
+    },
+    "21": {
+     "spell_minimum_base_physical_damage": 127,
+     "spell_maximum_base_physical_damage": 190
+    },
+    "22": {
+     "spell_minimum_base_physical_damage": 144,
+     "spell_maximum_base_physical_damage": 216
+    },
+    "23": {
+     "spell_minimum_base_physical_damage": 164,
+     "spell_maximum_base_physical_damage": 246
+    },
+    "24": {
+     "spell_minimum_base_physical_damage": 186,
+     "spell_maximum_base_physical_damage": 279
+    },
+    "25": {
+     "spell_minimum_base_physical_damage": 211,
+     "spell_maximum_base_physical_damage": 317
+    },
+    "26": {
+     "spell_minimum_base_physical_damage": 240,
+     "spell_maximum_base_physical_damage": 360
+    },
+    "27": {
+     "spell_minimum_base_physical_damage": 272,
+     "spell_maximum_base_physical_damage": 408
+    },
+    "28": {
+     "spell_minimum_base_physical_damage": 309,
+     "spell_maximum_base_physical_damage": 464
+    },
+    "29": {
+     "spell_minimum_base_physical_damage": 351,
+     "spell_maximum_base_physical_damage": 527
+    },
+    "30": {
+     "spell_minimum_base_physical_damage": 400,
+     "spell_maximum_base_physical_damage": 599
+    },
+    "31": {
+     "spell_minimum_base_physical_damage": 454,
+     "spell_maximum_base_physical_damage": 682
+    },
+    "32": {
+     "spell_minimum_base_physical_damage": 517,
+     "spell_maximum_base_physical_damage": 776
+    },
+    "33": {
+     "spell_minimum_base_physical_damage": 589,
+     "spell_maximum_base_physical_damage": 883
+    },
+    "34": {
+     "spell_minimum_base_physical_damage": 671,
+     "spell_maximum_base_physical_damage": 1006
+    },
+    "35": {
+     "spell_minimum_base_physical_damage": 765,
+     "spell_maximum_base_physical_damage": 1148
+    },
+    "36": {
+     "spell_minimum_base_physical_damage": 873,
+     "spell_maximum_base_physical_damage": 1310
+    },
+    "37": {
+     "spell_minimum_base_physical_damage": 997,
+     "spell_maximum_base_physical_damage": 1496
+    },
+    "38": {
+     "spell_minimum_base_physical_damage": 1140,
+     "spell_maximum_base_physical_damage": 1710
+    },
+    "39": {
+     "spell_minimum_base_physical_damage": 1305,
+     "spell_maximum_base_physical_damage": 1957
+    },
+    "40": {
+     "spell_minimum_base_physical_damage": 1494,
+     "spell_maximum_base_physical_damage": 2241
+    }
+   },
+   "radius": {
+    "1": 18,
+    "2": 18,
+    "3": 18,
+    "4": 18,
+    "5": 18,
+    "6": 18,
+    "7": 18,
+    "8": 18,
+    "9": 18,
+    "10": 18,
+    "11": 18,
+    "12": 18,
+    "13": 18,
+    "14": 18,
+    "15": 18,
+    "16": 18,
+    "17": 18,
+    "18": 18,
+    "19": 18,
+    "20": 18,
+    "21": 18,
+    "22": 18,
+    "23": 18,
+    "24": 18,
+    "25": 18,
+    "26": 18,
+    "27": 18,
+    "28": 18,
+    "29": 18,
+    "30": 18,
+    "31": 18,
+    "32": 18,
+    "33": 18,
+    "34": 18,
+    "35": 18,
+    "36": 18,
+    "37": 18,
+    "38": 18,
+    "39": 18,
+    "40": 18
+   },
+   "flags": null
+  },
+  "TriggeredFanTheFlamesPlayer": {
+   "name": "Fan the Flames",
+   "name_es": "Avivar las llamas",
+   "name_pt": "Lenha na Fogueira",
+   "name_fr": "Attisement des flammes",
+   "name_de": "Funkenflug",
+   "name_ru": "Раздувшееся пламя",
+   "name_ja": "ファンザフレイム",
+   "name_ko": "불난 집 부채질",
+   "name_th": "โหมไฟ",
+   "name_zh": "灼炎扇舞",
+   "triggered_by": "Fan The Flames",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Fire",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Attack",
+    "UseGlobalStats",
+    "Cooldown",
+    "NonWeaponAttack"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "fire"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_support_fan_the_flames_%": 100,
+    "active_skill_base_area_of_effect_radius": 35,
+    "_attack_crit": 700,
+    "_cooldown_ms": 500,
+    "_stored_uses": 5
+   },
+   "levels": {
+    "1": {
+     "main_hand_weapon_minimum_fire_damage": 7,
+     "main_hand_weapon_maximum_fire_damage": 11,
+     "_base_multiplier": 4500
+    },
+    "2": {
+     "main_hand_weapon_minimum_fire_damage": 12,
+     "main_hand_weapon_maximum_fire_damage": 18,
+     "_base_multiplier": 4900
+    },
+    "3": {
+     "main_hand_weapon_minimum_fire_damage": 18,
+     "main_hand_weapon_maximum_fire_damage": 28,
+     "_base_multiplier": 5400
+    },
+    "4": {
+     "main_hand_weapon_minimum_fire_damage": 25,
+     "main_hand_weapon_maximum_fire_damage": 38,
+     "_base_multiplier": 6000
+    },
+    "5": {
+     "main_hand_weapon_minimum_fire_damage": 33,
+     "main_hand_weapon_maximum_fire_damage": 49,
+     "_base_multiplier": 6400
+    },
+    "6": {
+     "main_hand_weapon_minimum_fire_damage": 41,
+     "main_hand_weapon_maximum_fire_damage": 61,
+     "_base_multiplier": 7000
+    },
+    "7": {
+     "main_hand_weapon_minimum_fire_damage": 49,
+     "main_hand_weapon_maximum_fire_damage": 73,
+     "_base_multiplier": 7500
+    },
+    "8": {
+     "main_hand_weapon_minimum_fire_damage": 57,
+     "main_hand_weapon_maximum_fire_damage": 86,
+     "_base_multiplier": 8000
+    },
+    "9": {
+     "main_hand_weapon_minimum_fire_damage": 67,
+     "main_hand_weapon_maximum_fire_damage": 100,
+     "_base_multiplier": 8400
+    },
+    "10": {
+     "main_hand_weapon_minimum_fire_damage": 76,
+     "main_hand_weapon_maximum_fire_damage": 114,
+     "_base_multiplier": 8900
+    },
+    "11": {
+     "main_hand_weapon_minimum_fire_damage": 86,
+     "main_hand_weapon_maximum_fire_damage": 129,
+     "_base_multiplier": 9400
+    },
+    "12": {
+     "main_hand_weapon_minimum_fire_damage": 97,
+     "main_hand_weapon_maximum_fire_damage": 145
+    },
+    "13": {
+     "main_hand_weapon_minimum_fire_damage": 108,
+     "main_hand_weapon_maximum_fire_damage": 161,
+     "_base_multiplier": 10600
+    },
+    "14": {
+     "main_hand_weapon_minimum_fire_damage": 119,
+     "main_hand_weapon_maximum_fire_damage": 178,
+     "_base_multiplier": 11200
+    },
+    "15": {
+     "main_hand_weapon_minimum_fire_damage": 131,
+     "main_hand_weapon_maximum_fire_damage": 196,
+     "_base_multiplier": 11900
+    },
+    "16": {
+     "main_hand_weapon_minimum_fire_damage": 143,
+     "main_hand_weapon_maximum_fire_damage": 214,
+     "_base_multiplier": 12700
+    },
+    "17": {
+     "main_hand_weapon_minimum_fire_damage": 156,
+     "main_hand_weapon_maximum_fire_damage": 233,
+     "_base_multiplier": 13500
+    },
+    "18": {
+     "main_hand_weapon_minimum_fire_damage": 169,
+     "main_hand_weapon_maximum_fire_damage": 253,
+     "_base_multiplier": 14300
+    },
+    "19": {
+     "main_hand_weapon_minimum_fire_damage": 182,
+     "main_hand_weapon_maximum_fire_damage": 273,
+     "_base_multiplier": 15300
+    },
+    "20": {
+     "main_hand_weapon_minimum_fire_damage": 196,
+     "main_hand_weapon_maximum_fire_damage": 294,
+     "_base_multiplier": 16300
+    },
+    "21": {
+     "main_hand_weapon_minimum_fire_damage": 211,
+     "main_hand_weapon_maximum_fire_damage": 316,
+     "_base_multiplier": 17400
+    },
+    "22": {
+     "main_hand_weapon_minimum_fire_damage": 226,
+     "main_hand_weapon_maximum_fire_damage": 338,
+     "_base_multiplier": 18500
+    },
+    "23": {
+     "main_hand_weapon_minimum_fire_damage": 241,
+     "main_hand_weapon_maximum_fire_damage": 361,
+     "_base_multiplier": 19800
+    },
+    "24": {
+     "main_hand_weapon_minimum_fire_damage": 257,
+     "main_hand_weapon_maximum_fire_damage": 385,
+     "_base_multiplier": 21100
+    },
+    "25": {
+     "main_hand_weapon_minimum_fire_damage": 273,
+     "main_hand_weapon_maximum_fire_damage": 409,
+     "_base_multiplier": 22500
+    },
+    "26": {
+     "main_hand_weapon_minimum_fire_damage": 289,
+     "main_hand_weapon_maximum_fire_damage": 434,
+     "_base_multiplier": 24000
+    },
+    "27": {
+     "main_hand_weapon_minimum_fire_damage": 307,
+     "main_hand_weapon_maximum_fire_damage": 460,
+     "_base_multiplier": 25600
+    },
+    "28": {
+     "main_hand_weapon_minimum_fire_damage": 324,
+     "main_hand_weapon_maximum_fire_damage": 486,
+     "_base_multiplier": 27300
+    },
+    "29": {
+     "main_hand_weapon_minimum_fire_damage": 342,
+     "main_hand_weapon_maximum_fire_damage": 513,
+     "_base_multiplier": 29100
+    },
+    "30": {
+     "main_hand_weapon_minimum_fire_damage": 360,
+     "main_hand_weapon_maximum_fire_damage": 541,
+     "_base_multiplier": 31100
+    },
+    "31": {
+     "main_hand_weapon_minimum_fire_damage": 379,
+     "main_hand_weapon_maximum_fire_damage": 569,
+     "_base_multiplier": 33100
+    },
+    "32": {
+     "main_hand_weapon_minimum_fire_damage": 399,
+     "main_hand_weapon_maximum_fire_damage": 598,
+     "_base_multiplier": 35300
+    },
+    "33": {
+     "main_hand_weapon_minimum_fire_damage": 418,
+     "main_hand_weapon_maximum_fire_damage": 628,
+     "_base_multiplier": 37700
+    },
+    "34": {
+     "main_hand_weapon_minimum_fire_damage": 439,
+     "main_hand_weapon_maximum_fire_damage": 658,
+     "_base_multiplier": 40200
+    },
+    "35": {
+     "main_hand_weapon_minimum_fire_damage": 459,
+     "main_hand_weapon_maximum_fire_damage": 689,
+     "_base_multiplier": 42900
+    },
+    "36": {
+     "main_hand_weapon_minimum_fire_damage": 480,
+     "main_hand_weapon_maximum_fire_damage": 720,
+     "_base_multiplier": 45700
+    },
+    "37": {
+     "main_hand_weapon_minimum_fire_damage": 502,
+     "main_hand_weapon_maximum_fire_damage": 753,
+     "_base_multiplier": 48800
+    },
+    "38": {
+     "main_hand_weapon_minimum_fire_damage": 524,
+     "main_hand_weapon_maximum_fire_damage": 785,
+     "_base_multiplier": 52000
+    },
+    "39": {
+     "main_hand_weapon_minimum_fire_damage": 546,
+     "main_hand_weapon_maximum_fire_damage": 819,
+     "_base_multiplier": 55500
+    },
+    "40": {
+     "main_hand_weapon_minimum_fire_damage": 569,
+     "main_hand_weapon_maximum_fire_damage": 853,
+     "_base_multiplier": 59200
+    }
+   },
+   "radius": {
+    "1": 35,
+    "2": 35,
+    "3": 35,
+    "4": 35,
+    "5": 35,
+    "6": 35,
+    "7": 35,
+    "8": 35,
+    "9": 35,
+    "10": 35,
+    "11": 35,
+    "12": 35,
+    "13": 35,
+    "14": 35,
+    "15": 35,
+    "16": 35,
+    "17": 35,
+    "18": 35,
+    "19": 35,
+    "20": 35,
+    "21": 35,
+    "22": 35,
+    "23": 35,
+    "24": 35,
+    "25": 35,
+    "26": 35,
+    "27": 35,
+    "28": 35,
+    "29": 35,
+    "30": 35,
+    "31": 35,
+    "32": 35,
+    "33": 35,
+    "34": 35,
+    "35": 35,
+    "36": 35,
+    "37": 35,
+    "38": 35,
+    "39": 35,
+    "40": 35
+   },
+   "flags": [
+    "never_ignite"
+   ]
+  },
+  "TriggeredFanTheFlamesPlayerTwo": {
+   "name": "Fan the Flames",
+   "name_es": "Avivar las llamas",
+   "name_pt": "Lenha na Fogueira",
+   "name_fr": "Attisement des flammes",
+   "name_de": "Funkenflug",
+   "name_ru": "Раздувшееся пламя",
+   "name_ja": "ファンザフレイム",
+   "name_ko": "불난 집 부채질",
+   "name_th": "โหมไฟ",
+   "name_zh": "灼炎扇舞",
+   "triggered_by": "Fan The Flames II",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Area",
+    "Fire",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Attack",
+    "UseGlobalStats",
+    "Cooldown",
+    "NonWeaponAttack"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "fire"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_by_support_fan_the_flames_%": 100,
+    "active_skill_base_area_of_effect_radius": 35,
+    "_attack_crit": 700,
+    "_cooldown_ms": 500,
+    "_stored_uses": 5
+   },
+   "levels": {
+    "1": {
+     "main_hand_weapon_minimum_fire_damage": 7,
+     "main_hand_weapon_maximum_fire_damage": 11,
+     "_base_multiplier": 4500
+    },
+    "2": {
+     "main_hand_weapon_minimum_fire_damage": 12,
+     "main_hand_weapon_maximum_fire_damage": 18,
+     "_base_multiplier": 4900
+    },
+    "3": {
+     "main_hand_weapon_minimum_fire_damage": 18,
+     "main_hand_weapon_maximum_fire_damage": 28,
+     "_base_multiplier": 5400
+    },
+    "4": {
+     "main_hand_weapon_minimum_fire_damage": 25,
+     "main_hand_weapon_maximum_fire_damage": 38,
+     "_base_multiplier": 6000
+    },
+    "5": {
+     "main_hand_weapon_minimum_fire_damage": 33,
+     "main_hand_weapon_maximum_fire_damage": 49,
+     "_base_multiplier": 6400
+    },
+    "6": {
+     "main_hand_weapon_minimum_fire_damage": 41,
+     "main_hand_weapon_maximum_fire_damage": 61,
+     "_base_multiplier": 7000
+    },
+    "7": {
+     "main_hand_weapon_minimum_fire_damage": 49,
+     "main_hand_weapon_maximum_fire_damage": 73,
+     "_base_multiplier": 7500
+    },
+    "8": {
+     "main_hand_weapon_minimum_fire_damage": 57,
+     "main_hand_weapon_maximum_fire_damage": 86,
+     "_base_multiplier": 8000
+    },
+    "9": {
+     "main_hand_weapon_minimum_fire_damage": 67,
+     "main_hand_weapon_maximum_fire_damage": 100,
+     "_base_multiplier": 8400
+    },
+    "10": {
+     "main_hand_weapon_minimum_fire_damage": 76,
+     "main_hand_weapon_maximum_fire_damage": 114,
+     "_base_multiplier": 8900
+    },
+    "11": {
+     "main_hand_weapon_minimum_fire_damage": 86,
+     "main_hand_weapon_maximum_fire_damage": 129,
+     "_base_multiplier": 9400
+    },
+    "12": {
+     "main_hand_weapon_minimum_fire_damage": 97,
+     "main_hand_weapon_maximum_fire_damage": 145
+    },
+    "13": {
+     "main_hand_weapon_minimum_fire_damage": 108,
+     "main_hand_weapon_maximum_fire_damage": 161,
+     "_base_multiplier": 10600
+    },
+    "14": {
+     "main_hand_weapon_minimum_fire_damage": 119,
+     "main_hand_weapon_maximum_fire_damage": 178,
+     "_base_multiplier": 11200
+    },
+    "15": {
+     "main_hand_weapon_minimum_fire_damage": 131,
+     "main_hand_weapon_maximum_fire_damage": 196,
+     "_base_multiplier": 11900
+    },
+    "16": {
+     "main_hand_weapon_minimum_fire_damage": 143,
+     "main_hand_weapon_maximum_fire_damage": 214,
+     "_base_multiplier": 12700
+    },
+    "17": {
+     "main_hand_weapon_minimum_fire_damage": 156,
+     "main_hand_weapon_maximum_fire_damage": 233,
+     "_base_multiplier": 13500
+    },
+    "18": {
+     "main_hand_weapon_minimum_fire_damage": 169,
+     "main_hand_weapon_maximum_fire_damage": 253,
+     "_base_multiplier": 14300
+    },
+    "19": {
+     "main_hand_weapon_minimum_fire_damage": 182,
+     "main_hand_weapon_maximum_fire_damage": 273,
+     "_base_multiplier": 15300
+    },
+    "20": {
+     "main_hand_weapon_minimum_fire_damage": 196,
+     "main_hand_weapon_maximum_fire_damage": 294,
+     "_base_multiplier": 16300
+    },
+    "21": {
+     "main_hand_weapon_minimum_fire_damage": 211,
+     "main_hand_weapon_maximum_fire_damage": 316,
+     "_base_multiplier": 17400
+    },
+    "22": {
+     "main_hand_weapon_minimum_fire_damage": 226,
+     "main_hand_weapon_maximum_fire_damage": 338,
+     "_base_multiplier": 18500
+    },
+    "23": {
+     "main_hand_weapon_minimum_fire_damage": 241,
+     "main_hand_weapon_maximum_fire_damage": 361,
+     "_base_multiplier": 19800
+    },
+    "24": {
+     "main_hand_weapon_minimum_fire_damage": 257,
+     "main_hand_weapon_maximum_fire_damage": 385,
+     "_base_multiplier": 21100
+    },
+    "25": {
+     "main_hand_weapon_minimum_fire_damage": 273,
+     "main_hand_weapon_maximum_fire_damage": 409,
+     "_base_multiplier": 22500
+    },
+    "26": {
+     "main_hand_weapon_minimum_fire_damage": 289,
+     "main_hand_weapon_maximum_fire_damage": 434,
+     "_base_multiplier": 24000
+    },
+    "27": {
+     "main_hand_weapon_minimum_fire_damage": 307,
+     "main_hand_weapon_maximum_fire_damage": 460,
+     "_base_multiplier": 25600
+    },
+    "28": {
+     "main_hand_weapon_minimum_fire_damage": 324,
+     "main_hand_weapon_maximum_fire_damage": 486,
+     "_base_multiplier": 27300
+    },
+    "29": {
+     "main_hand_weapon_minimum_fire_damage": 342,
+     "main_hand_weapon_maximum_fire_damage": 513,
+     "_base_multiplier": 29100
+    },
+    "30": {
+     "main_hand_weapon_minimum_fire_damage": 360,
+     "main_hand_weapon_maximum_fire_damage": 541,
+     "_base_multiplier": 31100
+    },
+    "31": {
+     "main_hand_weapon_minimum_fire_damage": 379,
+     "main_hand_weapon_maximum_fire_damage": 569,
+     "_base_multiplier": 33100
+    },
+    "32": {
+     "main_hand_weapon_minimum_fire_damage": 399,
+     "main_hand_weapon_maximum_fire_damage": 598,
+     "_base_multiplier": 35300
+    },
+    "33": {
+     "main_hand_weapon_minimum_fire_damage": 418,
+     "main_hand_weapon_maximum_fire_damage": 628,
+     "_base_multiplier": 37700
+    },
+    "34": {
+     "main_hand_weapon_minimum_fire_damage": 439,
+     "main_hand_weapon_maximum_fire_damage": 658,
+     "_base_multiplier": 40200
+    },
+    "35": {
+     "main_hand_weapon_minimum_fire_damage": 459,
+     "main_hand_weapon_maximum_fire_damage": 689,
+     "_base_multiplier": 42900
+    },
+    "36": {
+     "main_hand_weapon_minimum_fire_damage": 480,
+     "main_hand_weapon_maximum_fire_damage": 720,
+     "_base_multiplier": 45700
+    },
+    "37": {
+     "main_hand_weapon_minimum_fire_damage": 502,
+     "main_hand_weapon_maximum_fire_damage": 753,
+     "_base_multiplier": 48800
+    },
+    "38": {
+     "main_hand_weapon_minimum_fire_damage": 524,
+     "main_hand_weapon_maximum_fire_damage": 785,
+     "_base_multiplier": 52000
+    },
+    "39": {
+     "main_hand_weapon_minimum_fire_damage": 546,
+     "main_hand_weapon_maximum_fire_damage": 819,
+     "_base_multiplier": 55500
+    },
+    "40": {
+     "main_hand_weapon_minimum_fire_damage": 569,
+     "main_hand_weapon_maximum_fire_damage": 853,
+     "_base_multiplier": 59200
+    }
+   },
+   "radius": {
+    "1": 35,
+    "2": 35,
+    "3": 35,
+    "4": 35,
+    "5": 35,
+    "6": 35,
+    "7": 35,
+    "8": 35,
+    "9": 35,
+    "10": 35,
+    "11": 35,
+    "12": 35,
+    "13": 35,
+    "14": 35,
+    "15": 35,
+    "16": 35,
+    "17": 35,
+    "18": 35,
+    "19": 35,
+    "20": 35,
+    "21": 35,
+    "22": 35,
+    "23": 35,
+    "24": 35,
+    "25": 35,
+    "26": 35,
+    "27": 35,
+    "28": 35,
+    "29": 35,
+    "30": 35,
+    "31": 35,
+    "32": 35,
+    "33": 35,
+    "34": 35,
+    "35": 35,
+    "36": 35,
+    "37": 35,
+    "38": 35,
+    "39": 35,
+    "40": 35
+   },
+   "flags": [
+    "never_ignite"
+   ]
+  },
+  "TriggeredDeadlyCurrentPlayer": {
+   "name": "Coursing Current",
+   "name_es": "Flujo de corriente",
+   "name_pt": "Corrente Viva",
+   "name_fr": "Courant conducteur",
+   "name_de": "Jagender Strom",
+   "name_ru": "Скачущее напряжение",
+   "name_ja": "雷の奔流",
+   "name_ko": "세차게 흐르는 전류",
+   "name_th": "กระแสไล่ล่า",
+   "name_zh": "雷鳴湍流",
+   "triggered_by": "Coursing Current",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Damage",
+    "Lightning",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Projectile",
+    "ProjectilesNotFromUser",
+    "Chains",
+    "Spell",
+    "Cooldown"
+   ],
+   "tags": [
+    "lightning",
+    "projectile",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "number_of_chains": 6,
+    "_cooldown_ms": 200,
+    "_spell_crit": 1000,
+    "_stored_uses": 6
+   },
+   "levels": {
+    "1": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 11
+    },
+    "2": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 14
+    },
+    "3": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 19
+    },
+    "4": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 25
+    },
+    "5": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 32
+    },
+    "6": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 39
+    },
+    "7": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 47
+    },
+    "8": {
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 56
+    },
+    "9": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 66
+    },
+    "10": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 77
+    },
+    "11": {
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 89
+    },
+    "12": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 103
+    },
+    "13": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 119
+    },
+    "14": {
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 136
+    },
+    "15": {
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 156
+    },
+    "16": {
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 177
+    },
+    "17": {
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 202
+    },
+    "18": {
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 229
+    },
+    "19": {
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 259
+    },
+    "20": {
+     "spell_minimum_base_lightning_damage": 8,
+     "spell_maximum_base_lightning_damage": 294
+    },
+    "21": {
+     "spell_minimum_base_lightning_damage": 9,
+     "spell_maximum_base_lightning_damage": 332
+    },
+    "22": {
+     "spell_minimum_base_lightning_damage": 10,
+     "spell_maximum_base_lightning_damage": 375
+    },
+    "23": {
+     "spell_minimum_base_lightning_damage": 11,
+     "spell_maximum_base_lightning_damage": 423
+    },
+    "24": {
+     "spell_minimum_base_lightning_damage": 12,
+     "spell_maximum_base_lightning_damage": 478
+    },
+    "25": {
+     "spell_minimum_base_lightning_damage": 14,
+     "spell_maximum_base_lightning_damage": 539
+    },
+    "26": {
+     "spell_minimum_base_lightning_damage": 16,
+     "spell_maximum_base_lightning_damage": 608
+    },
+    "27": {
+     "spell_minimum_base_lightning_damage": 18,
+     "spell_maximum_base_lightning_damage": 686
+    },
+    "28": {
+     "spell_minimum_base_lightning_damage": 20,
+     "spell_maximum_base_lightning_damage": 773
+    },
+    "29": {
+     "spell_minimum_base_lightning_damage": 22,
+     "spell_maximum_base_lightning_damage": 872
+    },
+    "30": {
+     "spell_minimum_base_lightning_damage": 25,
+     "spell_maximum_base_lightning_damage": 984
+    },
+    "31": {
+     "spell_minimum_base_lightning_damage": 28,
+     "spell_maximum_base_lightning_damage": 1111
+    },
+    "32": {
+     "spell_minimum_base_lightning_damage": 32,
+     "spell_maximum_base_lightning_damage": 1254
+    },
+    "33": {
+     "spell_minimum_base_lightning_damage": 36,
+     "spell_maximum_base_lightning_damage": 1417
+    },
+    "34": {
+     "spell_minimum_base_lightning_damage": 41,
+     "spell_maximum_base_lightning_damage": 1601
+    },
+    "35": {
+     "spell_minimum_base_lightning_damage": 46,
+     "spell_maximum_base_lightning_damage": 1811
+    },
+    "36": {
+     "spell_minimum_base_lightning_damage": 53,
+     "spell_maximum_base_lightning_damage": 2049
+    },
+    "37": {
+     "spell_minimum_base_lightning_damage": 59,
+     "spell_maximum_base_lightning_damage": 2320
+    },
+    "38": {
+     "spell_minimum_base_lightning_damage": 67,
+     "spell_maximum_base_lightning_damage": 2629
+    },
+    "39": {
+     "spell_minimum_base_lightning_damage": 76,
+     "spell_maximum_base_lightning_damage": 2981
+    },
+    "40": {
+     "spell_minimum_base_lightning_damage": 87,
+     "spell_maximum_base_lightning_damage": 3383
+    }
+   },
+   "radius": null,
+   "flags": [
+    "cannot_chain_to_previous_targets"
+   ]
+  },
+  "TriggeredPoisonSporesPustule": {
+   "name": "Poison Spores",
+   "name_es": "Esporas venenosas",
+   "name_pt": "Esporos Venenosos",
+   "name_fr": "Spores empoisonnées",
+   "name_de": "Giftsporen",
+   "name_ru": "Ядовитые споры",
+   "name_ja": "毒胞子",
+   "name_ko": "독 포자",
+   "name_th": "สปอร์พิษ",
+   "name_zh": "劇毒孢子",
+   "triggered_by": "Poison Spores",
+   "types": [
+    "Area",
+    "Duration",
+    "Chaos",
+    "DetonatesAfterTime",
+    "Buff",
+    "Cooldown",
+    "Attack",
+    "NoAttackOrCastTime",
+    "Physical",
+    "Plant",
+    "SkillGrantedBySupport"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "chaos",
+    "duration",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "triggered_pustule_from_poison_spores_on_hit_chance_%": 100,
+    "skill_specific_stat_description_mode": 1,
+    "_cooldown_ms": 100,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25
+    },
+    "2": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25
+    },
+    "3": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 50
+    },
+    "4": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 100
+    },
+    "5": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 150
+    },
+    "6": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 200
+    },
+    "7": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 300
+    },
+    "8": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 425
+    },
+    "9": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 600
+    },
+    "10": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 825
+    },
+    "11": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1075
+    },
+    "12": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1425
+    },
+    "13": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1900
+    },
+    "14": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 2475
+    },
+    "15": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 3225
+    },
+    "16": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 4200
+    },
+    "17": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 5450
+    },
+    "18": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 7050
+    },
+    "19": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 9075
+    },
+    "20": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 11650
+    },
+    "21": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 12375
+    },
+    "22": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 13675
+    },
+    "23": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 15900
+    },
+    "24": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 18650
+    },
+    "25": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 22100
+    },
+    "26": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 23650
+    },
+    "27": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25300
+    },
+    "28": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 27025
+    },
+    "29": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 28850
+    },
+    "30": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 30825
+    },
+    "31": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 32625
+    },
+    "32": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 34550
+    },
+    "33": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 36600
+    },
+    "34": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 38725
+    },
+    "35": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 41000
+    },
+    "36": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 43400
+    },
+    "37": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 45950
+    },
+    "38": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 48625
+    },
+    "39": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 51500
+    },
+    "40": {
+     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 54450
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredDeadlyResolvePlayer": {
+   "name": "Deadly Resolve",
+   "name_es": "Resolución letal",
+   "name_pt": "Determinação Mortal",
+   "name_fr": "Résolution mortelle",
+   "name_de": "Tödliche Entschlossenheit",
+   "name_ru": "Смертоносная решимость",
+   "name_ja": "デッドリーリソルブ",
+   "name_ko": "치명적인 투지",
+   "name_th": "หมายชีวิต",
+   "name_zh": "致死決意",
+   "triggered_by": "Deadly Resolve",
+   "types": [
+    "Triggered",
+    "Area",
+    "SkillGrantedBySupport",
+    "InbuiltTrigger",
+    "Triggerable",
+    "Damage",
+    "Physical",
+    "Attack",
+    "AttackInPlace",
+    "UseGlobalStats",
+    "NonWeaponAttack"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "physical"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "dangerous_resolve_explosion_on_receive_hit_chance_%": 100,
+    "active_skill_base_area_of_effect_radius": 30,
+    "dangerous_resolve_cone_angle": 120,
+    "active_skill_base_secondary_area_of_effect_radius": 0,
+    "_attack_crit": 500
+   },
+   "levels": {
+    "1": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 5,
+     "main_hand_weapon_minimum_physical_damage": 7,
+     "main_hand_weapon_maximum_physical_damage": 11,
+     "_base_multiplier": 9000
+    },
+    "2": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 5,
+     "main_hand_weapon_minimum_physical_damage": 12,
+     "main_hand_weapon_maximum_physical_damage": 18,
+     "_base_multiplier": 9900
+    },
+    "3": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 6,
+     "main_hand_weapon_minimum_physical_damage": 18,
+     "main_hand_weapon_maximum_physical_damage": 28,
+     "_base_multiplier": 11000
+    },
+    "4": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 6,
+     "main_hand_weapon_minimum_physical_damage": 25,
+     "main_hand_weapon_maximum_physical_damage": 38,
+     "_base_multiplier": 12000
+    },
+    "5": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 7,
+     "main_hand_weapon_minimum_physical_damage": 33,
+     "main_hand_weapon_maximum_physical_damage": 49,
+     "_base_multiplier": 13100
+    },
+    "6": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 7,
+     "main_hand_weapon_minimum_physical_damage": 41,
+     "main_hand_weapon_maximum_physical_damage": 61,
+     "_base_multiplier": 14100
+    },
+    "7": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 8,
+     "main_hand_weapon_minimum_physical_damage": 49,
+     "main_hand_weapon_maximum_physical_damage": 73,
+     "_base_multiplier": 15300
+    },
+    "8": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 8,
+     "main_hand_weapon_minimum_physical_damage": 57,
+     "main_hand_weapon_maximum_physical_damage": 86,
+     "_base_multiplier": 16400
+    },
+    "9": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 9,
+     "main_hand_weapon_minimum_physical_damage": 67,
+     "main_hand_weapon_maximum_physical_damage": 100,
+     "_base_multiplier": 17400
+    },
+    "10": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 11,
+     "main_hand_weapon_minimum_physical_damage": 76,
+     "main_hand_weapon_maximum_physical_damage": 114,
+     "_base_multiplier": 18500
+    },
+    "11": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 12,
+     "main_hand_weapon_minimum_physical_damage": 86,
+     "main_hand_weapon_maximum_physical_damage": 129,
+     "_base_multiplier": 19700
+    },
+    "12": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 15,
+     "main_hand_weapon_minimum_physical_damage": 97,
+     "main_hand_weapon_maximum_physical_damage": 145,
+     "_base_multiplier": 21000
+    },
+    "13": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 19,
+     "main_hand_weapon_minimum_physical_damage": 108,
+     "main_hand_weapon_maximum_physical_damage": 161,
+     "_base_multiplier": 22400
+    },
+    "14": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 24,
+     "main_hand_weapon_minimum_physical_damage": 119,
+     "main_hand_weapon_maximum_physical_damage": 178,
+     "_base_multiplier": 24000
+    },
+    "15": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 30,
+     "main_hand_weapon_minimum_physical_damage": 131,
+     "main_hand_weapon_maximum_physical_damage": 196,
+     "_base_multiplier": 25600
+    },
+    "16": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 46,
+     "main_hand_weapon_minimum_physical_damage": 143,
+     "main_hand_weapon_maximum_physical_damage": 214,
+     "_base_multiplier": 27500
+    },
+    "17": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 62,
+     "main_hand_weapon_minimum_physical_damage": 156,
+     "main_hand_weapon_maximum_physical_damage": 233,
+     "_base_multiplier": 29500
+    },
+    "18": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 76,
+     "main_hand_weapon_minimum_physical_damage": 169,
+     "main_hand_weapon_maximum_physical_damage": 253,
+     "_base_multiplier": 31700
+    },
+    "19": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 90,
+     "main_hand_weapon_minimum_physical_damage": 182,
+     "main_hand_weapon_maximum_physical_damage": 273,
+     "_base_multiplier": 34100
+    },
+    "20": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 196,
+     "main_hand_weapon_maximum_physical_damage": 294,
+     "_base_multiplier": 36700
+    },
+    "21": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 211,
+     "main_hand_weapon_maximum_physical_damage": 316,
+     "_base_multiplier": 39600
+    },
+    "22": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 226,
+     "main_hand_weapon_maximum_physical_damage": 338,
+     "_base_multiplier": 42600
+    },
+    "23": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 241,
+     "main_hand_weapon_maximum_physical_damage": 361,
+     "_base_multiplier": 45900
+    },
+    "24": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 257,
+     "main_hand_weapon_maximum_physical_damage": 385,
+     "_base_multiplier": 49500
+    },
+    "25": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 273,
+     "main_hand_weapon_maximum_physical_damage": 409,
+     "_base_multiplier": 53300
+    },
+    "26": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 289,
+     "main_hand_weapon_maximum_physical_damage": 434,
+     "_base_multiplier": 57400
+    },
+    "27": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 307,
+     "main_hand_weapon_maximum_physical_damage": 460,
+     "_base_multiplier": 61900
+    },
+    "28": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 324,
+     "main_hand_weapon_maximum_physical_damage": 486,
+     "_base_multiplier": 66700
+    },
+    "29": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 342,
+     "main_hand_weapon_maximum_physical_damage": 513,
+     "_base_multiplier": 71800
+    },
+    "30": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 360,
+     "main_hand_weapon_maximum_physical_damage": 541,
+     "_base_multiplier": 77400
+    },
+    "31": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 379,
+     "main_hand_weapon_maximum_physical_damage": 569,
+     "_base_multiplier": 83300
+    },
+    "32": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 399,
+     "main_hand_weapon_maximum_physical_damage": 598,
+     "_base_multiplier": 89800
+    },
+    "33": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 418,
+     "main_hand_weapon_maximum_physical_damage": 628,
+     "_base_multiplier": 96700
+    },
+    "34": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 439,
+     "main_hand_weapon_maximum_physical_damage": 658,
+     "_base_multiplier": 104200
+    },
+    "35": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 459,
+     "main_hand_weapon_maximum_physical_damage": 689,
+     "_base_multiplier": 112300
+    },
+    "36": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 480,
+     "main_hand_weapon_maximum_physical_damage": 720,
+     "_base_multiplier": 120900
+    },
+    "37": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 502,
+     "main_hand_weapon_maximum_physical_damage": 753,
+     "_base_multiplier": 130300
+    },
+    "38": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 524,
+     "main_hand_weapon_maximum_physical_damage": 785,
+     "_base_multiplier": 140300
+    },
+    "39": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 546,
+     "main_hand_weapon_maximum_physical_damage": 819,
+     "_base_multiplier": 151200
+    },
+    "40": {
+     "dangerous_resolve_attack_damage_+1%_final_per_X_armour": 108,
+     "main_hand_weapon_minimum_physical_damage": 569,
+     "main_hand_weapon_maximum_physical_damage": 853,
+     "_base_multiplier": 162900
+    }
+   },
+   "radius": {
+    "1": 30,
+    "2": 30,
+    "3": 30,
+    "4": 30,
+    "5": 30,
+    "6": 30,
+    "7": 30,
+    "8": 30,
+    "9": 30,
+    "10": 30,
+    "11": 30,
+    "12": 30,
+    "13": 30,
+    "14": 30,
+    "15": 30,
+    "16": 30,
+    "17": 30,
+    "18": 30,
+    "19": 30,
+    "20": 30,
+    "21": 30,
+    "22": 30,
+    "23": 30,
+    "24": 30,
+    "25": 30,
+    "26": 30,
+    "27": 30,
+    "28": 30,
+    "29": 30,
+    "30": 30,
+    "31": 30,
+    "32": 30,
+    "33": 30,
+    "34": 30,
+    "35": 30,
+    "36": 30,
+    "37": 30,
+    "38": 30,
+    "39": 30,
+    "40": 30
+   },
+   "flags": null
+  },
+  "TriggeredSparkEmpowerPlayer": {
+   "name": "Empowered Sparks",
+   "name_es": "Chispas potenciadas",
+   "name_pt": "Centelhas Fortalecidas",
+   "name_fr": "Étincelles améliorées",
+   "name_de": "Ermächtigte Funken",
+   "name_ru": "Заряженные искры",
+   "name_ja": "強化のスパーク",
+   "name_ko": "강화된 전기불꽃",
+   "name_th": "ประกายสายฟ้าเสริมฤทธิ์",
+   "name_zh": "強化電球",
+   "triggered_by": "Empowered Sparks II",
+   "types": [
+    "SkillGrantedBySupport"
+   ],
+   "tags": [],
+   "cast_time_ms": 1000,
+   "constant": {
+    "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredEmpoweredSparkPlayer": {
+   "name": "Empowered Sparks",
+   "name_es": "Chispas potenciadas",
+   "name_pt": "Centelhas Fortalecidas",
+   "name_fr": "Étincelles améliorées",
+   "name_de": "Ermächtigte Funken",
+   "name_ru": "Заряженные искры",
+   "name_ja": "強化のスパーク",
+   "name_ko": "강화된 전기불꽃",
+   "name_th": "ประกายสายฟ้าเสริมฤทธิ์",
+   "name_zh": "強化電球",
+   "triggered_by": "Empowered Sparks I",
+   "types": [
+    "SkillGrantedBySupport",
+    "Lightning",
+    "Projectile",
+    "Triggered",
+    "Triggerable",
+    "Duration",
+    "InbuiltTrigger"
+   ],
+   "tags": [
+    "duration",
+    "lightning",
+    "projectile"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 2000,
+    "spark_pathing_width_bounds": 20,
+    "damage_hit_effect_index": 1009,
+    "spark_min_time_between_target_clearing_ms": 660,
+    "_spell_crit": 900
+   },
+   "levels": {
+    "1": {
+     "base_number_of_projectiles": 4,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 7
+    },
+    "2": {
+     "base_number_of_projectiles": 5,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 9
+    },
+    "3": {
+     "base_number_of_projectiles": 5,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 11
+    },
+    "4": {
+     "base_number_of_projectiles": 5,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 14
+    },
+    "5": {
+     "base_number_of_projectiles": 5,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 17
+    },
+    "6": {
+     "base_number_of_projectiles": 5,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 21
+    },
+    "7": {
+     "base_number_of_projectiles": 6,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 25
+    },
+    "8": {
+     "base_number_of_projectiles": 6,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 30
+    },
+    "9": {
+     "base_number_of_projectiles": 6,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 35
+    },
+    "10": {
+     "base_number_of_projectiles": 6,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 41
+    },
+    "11": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 47
+    },
+    "12": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 54
+    },
+    "13": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 62
+    },
+    "14": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 70
+    },
+    "15": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 80
+    },
+    "16": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 90
+    },
+    "17": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 102
+    },
+    "18": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 115
+    },
+    "19": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 129
+    },
+    "20": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 8,
+     "spell_maximum_base_lightning_damage": 144
+    },
+    "21": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 9,
+     "spell_maximum_base_lightning_damage": 162
+    },
+    "22": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 10,
+     "spell_maximum_base_lightning_damage": 181
+    },
+    "23": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 11,
+     "spell_maximum_base_lightning_damage": 202
+    },
+    "24": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 12,
+     "spell_maximum_base_lightning_damage": 226
+    },
+    "25": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 13,
+     "spell_maximum_base_lightning_damage": 252
+    },
+    "26": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 15,
+     "spell_maximum_base_lightning_damage": 281
+    },
+    "27": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 16,
+     "spell_maximum_base_lightning_damage": 313
+    },
+    "28": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 18,
+     "spell_maximum_base_lightning_damage": 349
+    },
+    "29": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 20,
+     "spell_maximum_base_lightning_damage": 389
+    },
+    "30": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 23,
+     "spell_maximum_base_lightning_damage": 434
+    },
+    "31": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 25,
+     "spell_maximum_base_lightning_damage": 484
+    },
+    "32": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 28,
+     "spell_maximum_base_lightning_damage": 539
+    },
+    "33": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 32,
+     "spell_maximum_base_lightning_damage": 601
+    },
+    "34": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 35,
+     "spell_maximum_base_lightning_damage": 671
+    },
+    "35": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 39,
+     "spell_maximum_base_lightning_damage": 748
+    },
+    "36": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 44,
+     "spell_maximum_base_lightning_damage": 835
+    },
+    "37": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 49,
+     "spell_maximum_base_lightning_damage": 932
+    },
+    "38": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 55,
+     "spell_maximum_base_lightning_damage": 1041
+    },
+    "39": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 61,
+     "spell_maximum_base_lightning_damage": 1163
+    },
+    "40": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 68,
+     "spell_maximum_base_lightning_damage": 1300
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredEmpoweredSparkPlayerTwo": {
+   "name": "Empowered Sparks",
+   "name_es": "Chispas potenciadas",
+   "name_pt": "Centelhas Fortalecidas",
+   "name_fr": "Étincelles améliorées",
+   "name_de": "Ermächtigte Funken",
+   "name_ru": "Заряженные искры",
+   "name_ja": "強化のスパーク",
+   "name_ko": "강화된 전기불꽃",
+   "name_th": "ประกายสายฟ้าเสริมฤทธิ์",
+   "name_zh": "強化電球",
+   "triggered_by": "Empowered Sparks II",
+   "types": [
+    "SkillGrantedBySupport",
+    "Lightning",
+    "Projectile",
+    "Triggered",
+    "Triggerable",
+    "Duration",
+    "InbuiltTrigger"
+   ],
+   "tags": [
+    "duration",
+    "lightning",
+    "projectile"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 2000,
+    "spark_pathing_width_bounds": 20,
+    "damage_hit_effect_index": 1009,
+    "spark_min_time_between_target_clearing_ms": 660,
+    "_spell_crit": 900
+   },
+   "levels": {
+    "1": {
+     "base_number_of_projectiles": 6,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 7
+    },
+    "2": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 9
+    },
+    "3": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 11
+    },
+    "4": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 14
+    },
+    "5": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 17
+    },
+    "6": {
+     "base_number_of_projectiles": 7,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 21
+    },
+    "7": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 1,
+     "spell_maximum_base_lightning_damage": 25
+    },
+    "8": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 30
+    },
+    "9": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 35
+    },
+    "10": {
+     "base_number_of_projectiles": 8,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 41
+    },
+    "11": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 2,
+     "spell_maximum_base_lightning_damage": 47
+    },
+    "12": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 54
+    },
+    "13": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 3,
+     "spell_maximum_base_lightning_damage": 62
+    },
+    "14": {
+     "base_number_of_projectiles": 9,
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 70
+    },
+    "15": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 4,
+     "spell_maximum_base_lightning_damage": 80
+    },
+    "16": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 90
+    },
+    "17": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 5,
+     "spell_maximum_base_lightning_damage": 102
+    },
+    "18": {
+     "base_number_of_projectiles": 10,
+     "spell_minimum_base_lightning_damage": 6,
+     "spell_maximum_base_lightning_damage": 115
+    },
+    "19": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 7,
+     "spell_maximum_base_lightning_damage": 129
+    },
+    "20": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 8,
+     "spell_maximum_base_lightning_damage": 144
+    },
+    "21": {
+     "base_number_of_projectiles": 11,
+     "spell_minimum_base_lightning_damage": 9,
+     "spell_maximum_base_lightning_damage": 162
+    },
+    "22": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 10,
+     "spell_maximum_base_lightning_damage": 181
+    },
+    "23": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 11,
+     "spell_maximum_base_lightning_damage": 202
+    },
+    "24": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 12,
+     "spell_maximum_base_lightning_damage": 226
+    },
+    "25": {
+     "base_number_of_projectiles": 12,
+     "spell_minimum_base_lightning_damage": 13,
+     "spell_maximum_base_lightning_damage": 252
+    },
+    "26": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 15,
+     "spell_maximum_base_lightning_damage": 281
+    },
+    "27": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 16,
+     "spell_maximum_base_lightning_damage": 313
+    },
+    "28": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 18,
+     "spell_maximum_base_lightning_damage": 349
+    },
+    "29": {
+     "base_number_of_projectiles": 13,
+     "spell_minimum_base_lightning_damage": 20,
+     "spell_maximum_base_lightning_damage": 389
+    },
+    "30": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 23,
+     "spell_maximum_base_lightning_damage": 434
+    },
+    "31": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 25,
+     "spell_maximum_base_lightning_damage": 484
+    },
+    "32": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 28,
+     "spell_maximum_base_lightning_damage": 539
+    },
+    "33": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 32,
+     "spell_maximum_base_lightning_damage": 601
+    },
+    "34": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 35,
+     "spell_maximum_base_lightning_damage": 671
+    },
+    "35": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 39,
+     "spell_maximum_base_lightning_damage": 748
+    },
+    "36": {
+     "base_number_of_projectiles": 14,
+     "spell_minimum_base_lightning_damage": 44,
+     "spell_maximum_base_lightning_damage": 835
+    },
+    "37": {
+     "base_number_of_projectiles": 15,
+     "spell_minimum_base_lightning_damage": 49,
+     "spell_maximum_base_lightning_damage": 932
+    },
+    "38": {
+     "base_number_of_projectiles": 15,
+     "spell_minimum_base_lightning_damage": 55,
+     "spell_maximum_base_lightning_damage": 1041
+    },
+    "39": {
+     "base_number_of_projectiles": 15,
+     "spell_minimum_base_lightning_damage": 61,
+     "spell_maximum_base_lightning_damage": 1163
+    },
+    "40": {
+     "base_number_of_projectiles": 15,
+     "spell_minimum_base_lightning_damage": 68,
+     "spell_maximum_base_lightning_damage": 1300
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredCatalysingDischargePlayer": {
+   "name": "Catalysing Discharge",
+   "name_es": "Descarga catalizadora",
+   "name_pt": "Descarga Catalisadora",
+   "name_fr": "Décharge catalysante",
+   "name_de": "Katalysierende Entladung",
+   "name_ru": "Катализирующий разряд",
+   "name_ja": "カタライジングディスチャージ",
+   "name_ko": "촉진시키는 방출",
+   "name_th": "ระเบิดเร่งปฏิกิริยา",
+   "name_zh": "催化解放",
+   "triggered_by": "Catalysing Elements",
+   "types": [
+    "Spell",
+    "Damage",
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Cooldown",
+    "Triggered",
+    "InbuiltTrigger",
+    "Area",
+    "AttackInPlace",
+    "Cold",
+    "Fire",
+    "Lightning"
+   ],
+   "tags": [
+    "area",
+    "cold",
+    "fire",
+    "lightning",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 20,
+    "_cooldown_ms": 1000,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": {
+    "1": 20,
+    "2": 20,
+    "3": 20,
+    "4": 20,
+    "5": 20,
+    "6": 20,
+    "7": 20,
+    "8": 20,
+    "9": 20,
+    "10": 20,
+    "11": 20,
+    "12": 20,
+    "13": 20,
+    "14": 20,
+    "15": 20,
+    "16": 20,
+    "17": 20,
+    "18": 20,
+    "19": 20,
+    "20": 20,
+    "21": 20,
+    "22": 20,
+    "23": 20,
+    "24": 20,
+    "25": 20,
+    "26": 20,
+    "27": 20,
+    "28": 20,
+    "29": 20,
+    "30": 20,
+    "31": 20,
+    "32": 20,
+    "33": 20,
+    "34": 20,
+    "35": 20,
+    "36": 20,
+    "37": 20,
+    "38": 20,
+    "39": 20,
+    "40": 20
+   },
+   "flags": null
+  },
+  "TriggeredChargedMarkPlayer": {
+   "name": "",
+   "triggered_by": "Charged Mark",
+   "types": [
+    "Spell",
+    "Area",
+    "Damage",
+    "Triggered",
+    "Triggerable",
+    "InbuiltTrigger",
+    "Duration",
+    "AreaSpell",
+    "AttackInPlace",
+    "SkillGrantedBySupport"
+   ],
+   "tags": [
+    "area",
+    "duration",
+    "spell"
+   ],
+   "cast_time_ms": 0,
+   "constant": {
+    "chance_to_trigger_shocked_ground_on_mark_activated_%": 100,
+    "base_skill_effect_duration": 6000
+   },
+   "levels": {
+    "1": {
+     "active_skill_base_area_of_effect_radius": 14
+    },
+    "2": {
+     "active_skill_base_area_of_effect_radius": 14
+    },
+    "3": {
+     "active_skill_base_area_of_effect_radius": 15
+    },
+    "4": {
+     "active_skill_base_area_of_effect_radius": 15
+    },
+    "5": {
+     "active_skill_base_area_of_effect_radius": 16
+    },
+    "6": {
+     "active_skill_base_area_of_effect_radius": 16
+    },
+    "7": {
+     "active_skill_base_area_of_effect_radius": 17
+    },
+    "8": {
+     "active_skill_base_area_of_effect_radius": 17
+    },
+    "9": {
+     "active_skill_base_area_of_effect_radius": 18
+    },
+    "10": {
+     "active_skill_base_area_of_effect_radius": 18
+    },
+    "11": {
+     "active_skill_base_area_of_effect_radius": 19
+    },
+    "12": {
+     "active_skill_base_area_of_effect_radius": 19
+    },
+    "13": {
+     "active_skill_base_area_of_effect_radius": 20
+    },
+    "14": {
+     "active_skill_base_area_of_effect_radius": 20
+    },
+    "15": {
+     "active_skill_base_area_of_effect_radius": 21
+    },
+    "16": {
+     "active_skill_base_area_of_effect_radius": 21
+    },
+    "17": {
+     "active_skill_base_area_of_effect_radius": 22
+    },
+    "18": {
+     "active_skill_base_area_of_effect_radius": 22
+    },
+    "19": {
+     "active_skill_base_area_of_effect_radius": 23
+    },
+    "20": {
+     "active_skill_base_area_of_effect_radius": 23
+    },
+    "21": {
+     "active_skill_base_area_of_effect_radius": 24
+    },
+    "22": {
+     "active_skill_base_area_of_effect_radius": 24
+    },
+    "23": {
+     "active_skill_base_area_of_effect_radius": 24
+    },
+    "24": {
+     "active_skill_base_area_of_effect_radius": 25
+    },
+    "25": {
+     "active_skill_base_area_of_effect_radius": 25
+    },
+    "26": {
+     "active_skill_base_area_of_effect_radius": 25
+    },
+    "27": {
+     "active_skill_base_area_of_effect_radius": 26
+    },
+    "28": {
+     "active_skill_base_area_of_effect_radius": 26
+    },
+    "29": {
+     "active_skill_base_area_of_effect_radius": 26
+    },
+    "30": {
+     "active_skill_base_area_of_effect_radius": 27
+    },
+    "31": {
+     "active_skill_base_area_of_effect_radius": 27
+    },
+    "32": {
+     "active_skill_base_area_of_effect_radius": 27
+    },
+    "33": {
+     "active_skill_base_area_of_effect_radius": 28
+    },
+    "34": {
+     "active_skill_base_area_of_effect_radius": 28
+    },
+    "35": {
+     "active_skill_base_area_of_effect_radius": 28
+    },
+    "36": {
+     "active_skill_base_area_of_effect_radius": 29
+    },
+    "37": {
+     "active_skill_base_area_of_effect_radius": 29
+    },
+    "38": {
+     "active_skill_base_area_of_effect_radius": 29
+    },
+    "39": {
+     "active_skill_base_area_of_effect_radius": 30
+    },
+    "40": {
+     "active_skill_base_area_of_effect_radius": 30
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredFracturedSelfPlayer": {
+   "name": "Fragment Self",
+   "name_es": "Fragmento de ti",
+   "name_pt": "Fragmentar-se",
+   "name_fr": "Auto-fragmentation",
+   "name_de": "Selbstfragmentierung",
+   "name_ru": "Расколотое я",
+   "name_ja": "フラクチャーセルフ",
+   "name_ko": "자기 파편화",
+   "name_th": "ตัวตนแตกร้าว",
+   "name_zh": "破碎仿身",
+   "triggered_by": "Trickster's Shard",
+   "types": [
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Instant",
+    "Duration",
+    "Limit",
+    "Area"
+   ],
+   "tags": [
+    "area",
+    "duration"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 5000,
+    "active_skill_base_area_of_effect_radius": 15,
+    "support_tricksters_shard_maximum_active_mimics": 4
+   },
+   "levels": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {},
+    "6": {},
+    "7": {},
+    "8": {},
+    "9": {},
+    "10": {},
+    "11": {},
+    "12": {},
+    "13": {},
+    "14": {},
+    "15": {},
+    "16": {},
+    "17": {},
+    "18": {},
+    "19": {},
+    "20": {},
+    "21": {},
+    "22": {},
+    "23": {},
+    "24": {},
+    "25": {},
+    "26": {},
+    "27": {},
+    "28": {},
+    "29": {},
+    "30": {},
+    "31": {},
+    "32": {},
+    "33": {},
+    "34": {},
+    "35": {},
+    "36": {},
+    "37": {},
+    "38": {},
+    "39": {},
+    "40": {}
+   },
+   "radius": {
+    "1": 15,
+    "2": 15,
+    "3": 15,
+    "4": 15,
+    "5": 15,
+    "6": 15,
+    "7": 15,
+    "8": 15,
+    "9": 15,
+    "10": 15,
+    "11": 15,
+    "12": 15,
+    "13": 15,
+    "14": 15,
+    "15": 15,
+    "16": 15,
+    "17": 15,
+    "18": 15,
+    "19": 15,
+    "20": 15,
+    "21": 15,
+    "22": 15,
+    "23": 15,
+    "24": 15,
+    "25": 15,
+    "26": 15,
+    "27": 15,
+    "28": 15,
+    "29": 15,
+    "30": 15,
+    "31": 15,
+    "32": 15,
+    "33": 15,
+    "34": 15,
+    "35": 15,
+    "36": 15,
+    "37": 15,
+    "38": 15,
+    "39": 15,
+    "40": 15
+   },
+   "flags": null
+  },
+  "TriggeredMorrigansInsightPlayer": {
+   "name": "Nature's Exchange",
+   "name_es": "Intercambio de la naturaleza",
+   "name_pt": "Troca da Natureza",
+   "name_fr": "Échange de la Nature",
+   "name_de": "Austausch der Natur",
+   "name_ru": "Природный обмен",
+   "name_ja": "ネイチャーエクスチェンジ",
+   "name_ko": "자연의 교환",
+   "name_th": "พันธะพฤกษา",
+   "name_zh": "自然交換",
+   "triggered_by": "Mórrigan's Insight",
+   "types": [
+    "SkillGrantedBySupport",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Cold",
+    "Guard",
+    "Duration",
+    "Cooldown"
+   ],
+   "tags": [
+    "cold",
+    "duration"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_skill_effect_duration": 8000,
+    "_cooldown_ms": 8000,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 3,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 5,
+     "morrigan_ward_gain_X_guard": 16
+    },
+    "2": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 4,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 6,
+     "morrigan_ward_gain_X_guard": 21
+    },
+    "3": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 6,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 9,
+     "morrigan_ward_gain_X_guard": 29
+    },
+    "4": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 8,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 11,
+     "morrigan_ward_gain_X_guard": 38
+    },
+    "5": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 10,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 14,
+     "morrigan_ward_gain_X_guard": 48
+    },
+    "6": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 12,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 18,
+     "morrigan_ward_gain_X_guard": 59
+    },
+    "7": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 14,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 22,
+     "morrigan_ward_gain_X_guard": 72
+    },
+    "8": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 17,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 26,
+     "morrigan_ward_gain_X_guard": 86
+    },
+    "9": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 21,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 31,
+     "morrigan_ward_gain_X_guard": 103
+    },
+    "10": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 24,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 37,
+     "morrigan_ward_gain_X_guard": 122
+    },
+    "11": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 29,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 43,
+     "morrigan_ward_gain_X_guard": 143
+    },
+    "12": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 33,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 50,
+     "morrigan_ward_gain_X_guard": 167
+    },
+    "13": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 39,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 58,
+     "morrigan_ward_gain_X_guard": 195
+    },
+    "14": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 45,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 68,
+     "morrigan_ward_gain_X_guard": 226
+    },
+    "15": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 52,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 79,
+     "morrigan_ward_gain_X_guard": 262
+    },
+    "16": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 60,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 91,
+     "morrigan_ward_gain_X_guard": 302
+    },
+    "17": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 70,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 105,
+     "morrigan_ward_gain_X_guard": 349
+    },
+    "18": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 80,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 121,
+     "morrigan_ward_gain_X_guard": 402
+    },
+    "19": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 92,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 139,
+     "morrigan_ward_gain_X_guard": 462
+    },
+    "20": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 106,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 159,
+     "morrigan_ward_gain_X_guard": 531
+    },
+    "21": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 122,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 183,
+     "morrigan_ward_gain_X_guard": 610
+    },
+    "22": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 140,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 210,
+     "morrigan_ward_gain_X_guard": 701
+    },
+    "23": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 161,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 242,
+     "morrigan_ward_gain_X_guard": 805
+    },
+    "24": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 185,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 277,
+     "morrigan_ward_gain_X_guard": 925
+    },
+    "25": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 212,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 319,
+     "morrigan_ward_gain_X_guard": 1062
+    },
+    "26": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 244,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 366,
+     "morrigan_ward_gain_X_guard": 1221
+    },
+    "27": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 281,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 421,
+     "morrigan_ward_gain_X_guard": 1403
+    },
+    "28": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 323,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 484,
+     "morrigan_ward_gain_X_guard": 1614
+    },
+    "29": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 371,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 557,
+     "morrigan_ward_gain_X_guard": 1857
+    },
+    "30": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 428,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 642,
+     "morrigan_ward_gain_X_guard": 2139
+    },
+    "31": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 493,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 740,
+     "morrigan_ward_gain_X_guard": 2466
+    },
+    "32": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 569,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 853,
+     "morrigan_ward_gain_X_guard": 2845
+    },
+    "33": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 657,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 985,
+     "morrigan_ward_gain_X_guard": 3285
+    },
+    "34": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 759,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 1139,
+     "morrigan_ward_gain_X_guard": 3797
+    },
+    "35": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 879,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 1318,
+     "morrigan_ward_gain_X_guard": 4393
+    },
+    "36": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 1018,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 1527,
+     "morrigan_ward_gain_X_guard": 5089
+    },
+    "37": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 1180,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 1771,
+     "morrigan_ward_gain_X_guard": 5902
+    },
+    "38": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 1371,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 2056,
+     "morrigan_ward_gain_X_guard": 6853
+    },
+    "39": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 1594,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 2390,
+     "morrigan_ward_gain_X_guard": 7968
+    },
+    "40": {
+     "morrigan_ward_thorns_minimum_base_cold_damage": 1855,
+     "morrigan_ward_thorns_maximum_base_cold_damage": 2783,
+     "morrigan_ward_gain_X_guard": 9275
+    }
+   },
+   "radius": null,
+   "flags": null
+  },
+  "TriggeredRuneforgedBladesPlayer": {
+   "name": "Runeforged Blades",
+   "name_es": "Cuchillas runaforjadas",
+   "name_pt": "Lâminas Runiforjadas",
+   "name_fr": "Lames runeforgées",
+   "name_de": "Runengeschmiedete Klingen",
+   "name_ru": "Руннокованые клинки",
+   "name_ja": "ルーンフォージブレード",
+   "name_ko": "룬벼림 칼날",
+   "name_th": "มีดหลอมอักขระ",
+   "name_zh": "符鍛刀刃",
+   "triggered_by": "Runeforged Blades",
+   "types": [
+    "Attack",
+    "Projectile",
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "SkillGrantedBySupport"
+   ],
+   "tags": [
+    "attack",
+    "projectile"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "base_number_of_projectiles": 7,
+    "triggered_by_support_rune_forged_blades_%": 100
+   },
+   "levels": {
+    "1": {
+     "_base_multiplier": 15000,
+     "_cost": {
+      "Ward": 7
+     }
+    },
+    "2": {
+     "_base_multiplier": 16500,
+     "_cost": {
+      "Ward": 8
+     }
+    },
+    "3": {
+     "_base_multiplier": 18200,
+     "_cost": {
+      "Ward": 9
+     }
+    },
+    "4": {
+     "_base_multiplier": 19800,
+     "_cost": {
+      "Ward": 10
+     }
+    },
+    "5": {
+     "_base_multiplier": 21400,
+     "_cost": {
+      "Ward": 11
+     }
+    },
+    "6": {
+     "_base_multiplier": 23000,
+     "_cost": {
+      "Ward": 12
+     }
+    },
+    "7": {
+     "_base_multiplier": 24600,
+     "_cost": {
+      "Ward": 13
+     }
+    },
+    "8": {
+     "_base_multiplier": 26100,
+     "_cost": {
+      "Ward": 15
+     }
+    },
+    "9": {
+     "_base_multiplier": 27400,
+     "_cost": {
+      "Ward": 16
+     }
+    },
+    "10": {
+     "_base_multiplier": 28700,
+     "_cost": {
+      "Ward": 18
+     }
+    },
+    "11": {
+     "_base_multiplier": 30200,
+     "_cost": {
+      "Ward": 19
+     }
+    },
+    "12": {
+     "_base_multiplier": 31700,
+     "_cost": {
+      "Ward": 21
+     }
+    },
+    "13": {
+     "_base_multiplier": 33200,
+     "_cost": {
+      "Ward": 23
+     }
+    },
+    "14": {
+     "_base_multiplier": 34900,
+     "_cost": {
+      "Ward": 24
+     }
+    },
+    "15": {
+     "_base_multiplier": 36700,
+     "_cost": {
+      "Ward": 26
+     }
+    },
+    "16": {
+     "_base_multiplier": 38500,
+     "_cost": {
+      "Ward": 28
+     }
+    },
+    "17": {
+     "_base_multiplier": 40400,
+     "_cost": {
+      "Ward": 31
+     }
+    },
+    "18": {
+     "_base_multiplier": 42400,
+     "_cost": {
+      "Ward": 33
+     }
+    },
+    "19": {
+     "_base_multiplier": 44600,
+     "_cost": {
+      "Ward": 35
+     }
+    },
+    "20": {
+     "_base_multiplier": 46800,
+     "_cost": {
+      "Ward": 37
+     }
+    },
+    "21": {
+     "_base_multiplier": 49100,
+     "_cost": {
+      "Ward": 40
+     }
+    },
+    "22": {
+     "_base_multiplier": 51600,
+     "_cost": {
+      "Ward": 43
+     }
+    },
+    "23": {
+     "_base_multiplier": 54200,
+     "_cost": {
+      "Ward": 45
+     }
+    },
+    "24": {
+     "_base_multiplier": 56900,
+     "_cost": {
+      "Ward": 48
+     }
+    },
+    "25": {
+     "_base_multiplier": 59700,
+     "_cost": {
+      "Ward": 51
+     }
+    },
+    "26": {
+     "_base_multiplier": 62700,
+     "_cost": {
+      "Ward": 54
+     }
+    },
+    "27": {
+     "_base_multiplier": 65800,
+     "_cost": {
+      "Ward": 58
+     }
+    },
+    "28": {
+     "_base_multiplier": 69100,
+     "_cost": {
+      "Ward": 61
+     }
+    },
+    "29": {
+     "_base_multiplier": 72600,
+     "_cost": {
+      "Ward": 65
+     }
+    },
+    "30": {
+     "_base_multiplier": 76200,
+     "_cost": {
+      "Ward": 69
+     }
+    },
+    "31": {
+     "_base_multiplier": 80000,
+     "_cost": {
+      "Ward": 73
+     }
+    },
+    "32": {
+     "_base_multiplier": 84000,
+     "_cost": {
+      "Ward": 77
+     }
+    },
+    "33": {
+     "_base_multiplier": 88200,
+     "_cost": {
+      "Ward": 81
+     }
+    },
+    "34": {
+     "_base_multiplier": 92600,
+     "_cost": {
+      "Ward": 85
+     }
+    },
+    "35": {
+     "_base_multiplier": 97300,
+     "_cost": {
+      "Ward": 90
+     }
+    },
+    "36": {
+     "_base_multiplier": 102100,
+     "_cost": {
+      "Ward": 95
+     }
+    },
+    "37": {
+     "_base_multiplier": 107200,
+     "_cost": {
+      "Ward": 100
+     }
+    },
+    "38": {
+     "_base_multiplier": 112600,
+     "_cost": {
+      "Ward": 105
+     }
+    },
+    "39": {
+     "_base_multiplier": 118200,
+     "_cost": {
+      "Ward": 111
+     }
+    },
+    "40": {
+     "_base_multiplier": 124100,
+     "_cost": {
+      "Ward": 117
+     }
+    }
+   },
+   "radius": null,
+   "flags": [
+    "cannot_break_armour"
+   ]
+  },
+  "TriggeredFistOfKalguurPlayer": {
+   "name": "Fist of Kalguur",
+   "name_es": "Puño de Kalguur",
+   "name_pt": "Punho de Kalguur",
+   "name_fr": "Poing de Kalguur",
+   "name_de": "Faust von Kalguur",
+   "name_ru": "Кулак Калгуура",
+   "name_ja": "フィストオブカルグール",
+   "name_ko": "칼구르의 주먹",
+   "name_th": "หมัดแห่งคาลเกอร์",
+   "name_zh": "卡爾葛之拳",
+   "triggered_by": "Fist Of Kalguur",
+   "types": [
+    "Triggerable",
+    "Triggered",
+    "InbuiltTrigger",
+    "Area",
+    "Attack",
+    "NoAttackOrCastTime",
+    "SkillGrantedBySupport",
+    "AttackInPlace",
+    "Cooldown",
+    "Melee",
+    "Slam",
+    "Duration",
+    "Limit"
+   ],
+   "tags": [
+    "area",
+    "attack",
+    "duration",
+    "melee"
+   ],
+   "cast_time_ms": 1000,
+   "constant": {
+    "active_skill_base_area_of_effect_radius": 24,
+    "triggered_by_fist_of_kalguur_support_%": 100,
+    "base_skill_effect_duration": 4000,
+    "_cooldown_ms": 500,
+    "_stored_uses": 1
+   },
+   "levels": {
+    "1": {
+     "_base_multiplier": 12000
+    },
+    "2": {
+     "_base_multiplier": 13200
+    },
+    "3": {
+     "_base_multiplier": 14600
+    },
+    "4": {
+     "_base_multiplier": 16000
+    },
+    "5": {
+     "_base_multiplier": 17400
+    },
+    "6": {
+     "_base_multiplier": 18900
+    },
+    "7": {
+     "_base_multiplier": 20400
+    },
+    "8": {
+     "_base_multiplier": 21800
+    },
+    "9": {
+     "_base_multiplier": 23200
+    },
+    "10": {
+     "_base_multiplier": 24600
+    },
+    "11": {
+     "_base_multiplier": 26200
+    },
+    "12": {
+     "_base_multiplier": 28000
+    },
+    "13": {
+     "_base_multiplier": 29900
+    },
+    "14": {
+     "_base_multiplier": 31900
+    },
+    "15": {
+     "_base_multiplier": 34200
+    },
+    "16": {
+     "_base_multiplier": 36700
+    },
+    "17": {
+     "_base_multiplier": 39300
+    },
+    "18": {
+     "_base_multiplier": 42300
+    },
+    "19": {
+     "_base_multiplier": 45500
+    },
+    "20": {
+     "_base_multiplier": 49000
+    },
+    "21": {
+     "_base_multiplier": 52800
+    },
+    "22": {
+     "_base_multiplier": 56900
+    },
+    "23": {
+     "_base_multiplier": 61300
+    },
+    "24": {
+     "_base_multiplier": 66000
+    },
+    "25": {
+     "_base_multiplier": 71100
+    },
+    "26": {
+     "_base_multiplier": 76600
+    },
+    "27": {
+     "_base_multiplier": 82500
+    },
+    "28": {
+     "_base_multiplier": 88900
+    },
+    "29": {
+     "_base_multiplier": 95800
+    },
+    "30": {
+     "_base_multiplier": 103200
+    },
+    "31": {
+     "_base_multiplier": 111100
+    },
+    "32": {
+     "_base_multiplier": 119700
+    },
+    "33": {
+     "_base_multiplier": 129000
+    },
+    "34": {
+     "_base_multiplier": 138900
+    },
+    "35": {
+     "_base_multiplier": 149700
+    },
+    "36": {
+     "_base_multiplier": 161200
+    },
+    "37": {
+     "_base_multiplier": 173700
+    },
+    "38": {
+     "_base_multiplier": 187100
+    },
+    "39": {
+     "_base_multiplier": 201600
+    },
+    "40": {
+     "_base_multiplier": 217200
+    }
+   },
+   "radius": {
+    "1": 24,
+    "2": 24,
+    "3": 24,
+    "4": 24,
+    "5": 24,
+    "6": 24,
+    "7": 24,
+    "8": 24,
+    "9": 24,
+    "10": 24,
+    "11": 24,
+    "12": 24,
+    "13": 24,
+    "14": 24,
+    "15": 24,
+    "16": 24,
+    "17": 24,
+    "18": 24,
+    "19": 24,
+    "20": 24,
+    "21": 24,
+    "22": 24,
+    "23": 24,
+    "24": 24,
+    "25": 24,
+    "26": 24,
+    "27": 24,
+    "28": 24,
+    "29": 24,
+    "30": 24,
+    "31": 24,
+    "32": 24,
+    "33": 24,
+    "34": 24,
+    "35": 24,
+    "36": 24,
+    "37": 24,
+    "38": 24,
+    "39": 24,
+    "40": 24
+   },
+   "flags": null
   }
  }
 }

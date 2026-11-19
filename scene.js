@@ -330,6 +330,7 @@ export function initScene(el, api) {
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
+      if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
       if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
@@ -446,6 +447,49 @@ export function initScene(el, api) {
       }
     }
   }
+  // A support's triggered skill (calc.js trig: its damage at the supported gem's level) set off by the supported skill,
+  // with its own cooldown and stored uses, as its game texts say: Coursing Current chains from the enemy a hit shocks;
+  // Static Shocks pulses where it shocked (its pulse delay, duration, area, most targets per pulse and active ones);
+  // Electromagnetism consumes the shock of every enemy within its radius when at least that many are shocked there
+  // (not already in a rift) for a Shocking Rift: its pulses, interval (faster per shock consumed) and more damage per
+  // pulse performed; Volcanic Eruption, on a strike hitting an ignited enemy: its projectiles land around it
+  // (min / max distance) and burst (note: their flight time is not in the data, the scene's delayed-impact time)
+  const trigReady = {}, fields = { static: [], rift: [] };
+  function trigger(S, on, d) {
+    for (const T of S?.dmg?.trig || []) {
+      const ts = T.stats || {}, U = T.support, kind = ts.shocking_rift_number_of_pulses ? 'rift' : ts.grounding_shocks_pulse_delay_ms ? 'static'
+        : ts.chance_to_trigger_volcanic_eruption ? 'erupt' : ts.number_of_chains ? 'current' : null;
+      if (!kind || T.reason || (kind === 'erupt') !== (on === 'ignitedHit')) continue;
+      const near4 = kind === 'rift' && dummies.filter(e => !e.dead && !e.inRift && has(e, 'shock') && dist(e.pos, d.pos) <= U.try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy / 10);
+      if (near4 && near4.length < U.consume_shock_of_X_enemies_to_trigger_shocking_rift) continue;
+      if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) continue; r.push(time + T.cooldown / 1000); }
+      const inf = api.info({ name: T.id }), els = Object.keys(T.hits);
+      const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
+      const c = { x: d.pos.x, z: d.pos.z }, R = (ts.active_skill_base_area_of_effect_radius || 0) / 10;
+      say(X.label, X.el);
+      if (kind === 'current') { const e = near(d.pos, sh(X).chainRange || SIM.chainRange, e => e !== d); if (e) chain(chest(d), e, X, (sh(X).chains || 1) - 1, new Set([d])); }
+      else if (kind === 'erupt') for (let k = 0; k < (ts.base_number_of_projectiles || 1); k++) {
+        const a = Math.random() * Math.PI * 2, r = rnd(ts.skill_mortar_minimum_projectile_distance, ts.skill_mortar_maximum_projectile_distance) / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
+        later(SIM.meteor, () => boom(q, R, X));
+      } else {   // a field that pulses: Static Shocks, Shocking Rift
+        const F = fields[kind], max = ts.maximum_grounding_shocks_allowed || ts.number_of_shocking_rifts_allowed, me2 = { dead: false, in: near4 || [] };
+        if (F.length >= max) { const old = F.shift(); old.dead = true; old.in.forEach(e => e.inRift = false); }
+        F.push(me2);
+        const gap = kind === 'rift' ? ts.shocking_rift_pulse_interval_ms / 1000 / (1 + (ts['shocking_rift_speed_+%_per_shock_consumed'] || 0) * near4.length / 100) : ts.grounding_shocks_pulse_delay_ms / 1000;
+        const pulses = kind === 'rift' ? ts.shocking_rift_number_of_pulses : Math.floor((sh(X).duration || ts.base_skill_effect_duration / 1000) / gap);
+        if (near4) for (const e of near4) { e.st.shock = 0; e.inRift = true; }
+        const pulse = k => {
+          if (me2.dead) return;
+          if (k >= pulses) { me2.dead = true; me2.in.forEach(e => e.inRift = false); F.splice(F.indexOf(me2), 1); return; }
+          let n = 0; fx.ring(c, .2, R, 'lightning', .3);
+          const more = 1 + (ts['shocking_rift_damage_+%_final_per_pulse_performed'] || 0) * k / 100;
+          for (const e of dummies) if (!e.dead && dist(e.pos, c) <= R + SIM.body && n < (ts.grounding_shocks_maximum_targets_per_aoe || Infinity) && hit(e, X, { mult: more })) n++;
+          later(gap, () => pulse(k + 1));
+        };
+        pulse(0);
+      }
+    }
+  }
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -473,7 +517,8 @@ export function initScene(el, api) {
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     if (a === 'freeze') gainBuff(S, 'freeze');
-    if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
+    if (a === 'ignite') d.ignBy = S;
+    if (a === 'shock') trigger(S, 'shock', d);   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }

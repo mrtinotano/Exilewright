@@ -5255,6 +5255,20 @@
  },
  {
   "stats": [
+   "dangerous_resolve_attack_damage_+1%_final_per_X_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เพิ่มความเสียหาย อีก 1% ต่อ[Armour|ค่าเกราะ]ของคุณ {0} สูงสุด 200%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dangerous_resolve_explosion_cooldown_ms"
   ],
   "rows": [
@@ -9528,6 +9542,20 @@
  },
  {
   "stats": [
+   "support_bone_shrapnel_physical_damage_equal_to_%_monster_life"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สร้างความเสียหาย [Physical|กายภาพ] เท่ากับ {0}% ของ พลังชีวิตของเป้าหมายที่ติดสถานะ [Pinned|ตรึง]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_break_%_armour_on_freeze_or_electrocute"
   ],
   "rows": [
@@ -9561,6 +9589,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สร้าง [IgnitedGround|พื้นลุกไหม้] ซึ่งจะสร้างสถานะ ลุกไหม้ ต่อศัตรูราวกับสร้างความเสียหาย [Fire|ไฟ] เท่ากับ {0}% ของ มานาสูงสุดของคุณ",
+    "h": []
    }
   ]
  },
@@ -10887,6 +10929,20 @@
  },
  {
   "stats": [
+   "support_empower_X_attacks_with_spark_on_power_charge_gain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การสร้าง [Charges|Power Charge] ด้วยสกิลที่เสริม [Empowered|เสริมฤทธิ์]ให้กับการ[Attack|โจมตี] {0} ครั้ง",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_empowered_damage_+%_final"
   ],
   "rows": [
@@ -11180,6 +11236,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "สร้างความเสียหาย [Cold|น้ำแข็ง] เท่ากับ {0}% ของ พลังชีวิตสูงสุดของเป้าหมายที่ติดสถานะ [Frozen|แช่แข็ง]",
+    "h": []
    }
   ]
  },
@@ -15356,6 +15426,37 @@
  },
  {
   "stats": [
+   "corpse_explosion_monster_life_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ระเบิด สร้างความเสียหาย [Fire|ไฟ] พื้นฐานเท่ากับ {0}% ของ พลังชีวิตสูงสุดของ[Corpse|ศพ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "corpse_explosion_monster_life_permillage_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ระเบิด สร้างความเสียหาย [Fire|ไฟ] พื้นฐานเท่ากับ {0}% ของ พลังชีวิตสูงสุดของ[Corpse|ศพ]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_permillage_physical"
   ],
   "rows": [
@@ -16339,6 +16440,38 @@
  },
  {
   "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ความเสียหาย ที่เพิ่มขึ้น อีก ต่อศัตรู[Rarity|ยูนิค]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเสียหาย อีก {0}% ต่อศัตรู[Rarity|ยูนิค]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเสียหาย อีก {0}% ต่อศัตรู[Rarity|ยูนิค]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16419,6 +16552,20 @@
      "1|#"
     ],
     "t": "สั่งสม[Glory|บารมี]ให้กับสกิลนี้ เท่ากับ {0}% ของ[Power|พลังมอนสเตอร์] เมื่อสร้างความเสียหาย [Hit|ปะทะ] [Chaos|เคออส] ต่อศัตรูหรือสร้าง[Debuff|ดีบัฟ]ความเสียหาย [Chaos|เคออส] ต่อศัตรู",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_has_%_standard_scaling_attack_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ความเสียหาย โจมตี ของสกิลนี้ เท่ากับ {0}% ของ [DefaultAttackDamage|ความเสียหายโจมตีธรรมดา]",
     "h": []
    }
   ]
@@ -19917,6 +20064,54 @@
      "1|#"
     ],
     "t": "สถานะ [Maim|ขาหัก] จากสกิลนี้ ทำให้เกิดความ[Slow|เชื่องช้า] เพิ่มเติม {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage_as_%_of_intelligence",
+   "spell_maximum_base_fire_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ความเสียหาย [Fire|ไฟ] เท่ากับ {0}% ถึง {1}% ของ [Intelligence] ของคุณ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage_as_%_of_intelligence",
+   "spell_maximum_base_cold_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ความเสียหาย [Cold|น้ำแข็ง] เท่ากับ {0}% ถึง {1}% ของ [Intelligence] ของคุณ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_lightning_damage_as_%_of_intelligence",
+   "spell_maximum_base_lightning_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ความเสียหาย [Lightning|สายฟ้า] เท่ากับ {0}% ถึง {1}% ของ [Intelligence] ของคุณ",
     "h": []
    }
   ]
@@ -36559,6 +36754,20 @@
      "#"
     ],
     "t": "สกิล[Bear|หมี] [Conversion|แปลง]ความเสียหาย [Physical|กายภาพ] {0}% เป็น [Fire|ไฟ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "มิเนียน แปลงความเสียหาย กายภาพ {0}% เป็น สายฟ้า",
     "h": []
    }
   ]

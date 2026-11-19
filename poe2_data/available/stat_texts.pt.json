@@ -5259,6 +5259,20 @@
  },
  {
   "stats": [
+   "dangerous_resolve_attack_damage_+1%_final_per_X_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ㅤ+1% de dano por {0} de sua [Armour|armadura], até 200%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dangerous_resolve_explosion_cooldown_ms"
   ],
   "rows": [
@@ -9532,6 +9546,20 @@
  },
  {
   "stats": [
+   "support_bone_shrapnel_physical_damage_equal_to_%_monster_life"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Causa {0}% da vida máxima do alvo [Pinned|aprisionado] como dano [Physical|físico]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_break_%_armour_on_freeze_or_electrocute"
   ],
   "rows": [
@@ -9565,6 +9593,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Cria [IgnitedGround|chão incendiado], incendiando inimigos como se causasse [Fire|dano de fogo] equivalente a {0}% do seu mana máximo",
+    "h": []
    }
   ]
  },
@@ -10891,6 +10933,20 @@
  },
  {
   "stats": [
+   "support_empower_X_attacks_with_spark_on_power_charge_gain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gerar 1 [Charges|carga de poder] com habilidades reforçadas [Empowered|fortalece] {0} [Attack|ataques]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_empowered_damage_+%_final"
   ],
   "rows": [
@@ -11184,6 +11240,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Causa {0}% da vida máxima do alvo [Frozen|congelado] como dano de [Cold|frio]",
+    "h": []
    }
   ]
  },
@@ -15360,6 +15430,37 @@
  },
  {
   "stats": [
+   "corpse_explosion_monster_life_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Explosão causa dano de [Fire|fogo] base equivalente a {0}% da vida máxima do [Corpse|cadáver]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "corpse_explosion_monster_life_permillage_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Explosão causa dano de [Fire|fogo] base equivalente a {0}% da vida máxima do [Corpse|cadáver]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_permillage_physical"
   ],
   "rows": [
@@ -16343,6 +16444,38 @@
  },
  {
   "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ㅤ+{0}% de dano contra inimigos [Rarity|únicos]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ㅤ+{0}% de dano contra inimigos [Rarity|únicos]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ㅤ-{0}% de dano contra inimigos [Rarity|únicos]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16423,6 +16556,20 @@
      "1|#"
     ],
     "t": "Gera {0}% de [Power|poder de monstro] como [Glory|glória] para esta habilidade ao causar dano de [Hit|ataque] de [Chaos|caos] a um inimigo ou infligir uma [Debuff|penalidade] de dano de [Chaos|caos] degenerativo a um inimigo",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_has_%_standard_scaling_attack_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Dano de ataque desta habilidade é {0}% do [DefaultAttackDamage|dano de ataque padrão]",
     "h": []
    }
   ]
@@ -19920,6 +20067,54 @@
      "1|#"
     ],
     "t": "[Maim|Mutilamentos] desta habilidade [Slow|desaceleram] em +{0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage_as_%_of_intelligence",
+   "spell_maximum_base_fire_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% a {1}% da sua [Intelligence|Inteligência] como dano de [Fire|fogo]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage_as_%_of_intelligence",
+   "spell_maximum_base_cold_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% a {1}% da sua [Intelligence|Inteligência] como dano de [Cold|frio]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_lightning_damage_as_%_of_intelligence",
+   "spell_maximum_base_lightning_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% a {1}% da sua [Intelligence|Inteligência] como dano [Lightning|elétrico]",
     "h": []
    }
   ]
@@ -36562,6 +36757,20 @@
      "#"
     ],
     "t": "Habilidades de [Bear|urso] [Conversion|convertem] {0}% do dano [Physical|físico] em dano de [Fire|fogo]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Lacaios convertem {0}% do dano físico em dano elétrico",
     "h": []
    }
   ]

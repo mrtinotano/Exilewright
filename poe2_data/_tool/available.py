@@ -305,24 +305,8 @@ for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietie
 skills, skill_csd = {}, {}
 PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|support_double_number_of_cooldown_uses|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin)')
 PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
-for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
-    if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
-        continue
-    fx = gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]
-    e = ge_tab[fx['GrantedEffect']]
-    # A skill that deals no damage itself has the one that does laid over it: a gem's own skill that only loads
-    # ammunition or reserves spirit (crossbow rounds, Black Powder Blitz) under the skill the gem then uses, and the
-    # main stat set of a skill made of several parts (Rolling Slam) under its first part that deals damage
-    # ...and a totem's own attack over the totem it raises (Shockwave Totem's quake: its damage, speed and area)
-    implicit_of = lambda x: {sid(a) for a in ss_tab[x['StatSet']]['ImplicitStats']}
-    idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
-    effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])
-                     or 'is_totem' in implicit_of(e) and 'base_skill_is_totemified' in implicit_of(ge_tab[x]) and not ge_tab[x]['Id'].startswith('Support')]
-    # ...unless the skill sets that part off by itself (Ancestral Cry's shockwave): then the cry's own cast time, cost and area stay on top
-    if 'display_statset_hide_usage_stats' in implicit_of(effects[-1]):
-        effects.reverse()
-    sets = [i for x in effects for i in [x['StatSet']] + ([j for j in x['AdditionalStatSets'] if not idle(j)][:1] if idle(x['StatSet']) else [])]
-    implicit = {sid(a) for i in sets for a in ss_tab[i]['ImplicitStats']}
+def stat_levels(effects, sets):
+    """the constant stats of these stat sets and every other one per gem level (the effects' cooldown, uses, cost...)"""
     const = {sid(a): v for i in sets for a, v in zip(ss_tab[i]['ConstantStats'], ss_tab[i]['ConstantStatsValues'])}
     # every stat per gem level and the row's own numbers under "_" keys, for the DPS and the skill info window.
     # FloatStats: BaseResolvedValues is the number the game shows (FloatStatsValues is its share of the level's
@@ -350,8 +334,6 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
             if any(r['CostAmounts']):   # channelled skills cost per minute: written per second (ManaPerSecond)
                 st['_cost'] = {c['Id'].replace('PerMinute', 'PerSecond'): round(v / c['Divisor'], 1) if c['PerMinute'] else v
                                for c, v in zip((cost_types[t] for t in x['CostTypes']), r['CostAmounts'])}
-    rad = lambda area: {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const} or None
-    radius = rad('active_skill_base_area_of_effect_radius')
     if levels:   # what never changes with the level goes to "constant": keeps the file small
         one = next(iter(levels.values()))
         for k in sorted(set.intersection(*map(set, levels.values()))):   # sorted: the same file on every run
@@ -359,6 +341,30 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                 const[k] = one[k]
                 for lv in levels.values():
                     del lv[k]
+    return const, levels
+
+
+for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
+    if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
+        continue
+    fx = gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]
+    e = ge_tab[fx['GrantedEffect']]
+    # A skill that deals no damage itself has the one that does laid over it: a gem's own skill that only loads
+    # ammunition or reserves spirit (crossbow rounds, Black Powder Blitz) under the skill the gem then uses, and the
+    # main stat set of a skill made of several parts (Rolling Slam) under its first part that deals damage
+    # ...and a totem's own attack over the totem it raises (Shockwave Totem's quake: its damage, speed and area)
+    implicit_of = lambda x: {sid(a) for a in ss_tab[x['StatSet']]['ImplicitStats']}
+    idle = lambda i: 'base_deal_no_damage' in {sid(a) for a in ss_tab[i]['ImplicitStats']}
+    effects = [e] + [ge_tab[x] for x in fx['AdditionalGrantedEffects'][:1] if idle(e['StatSet'])
+                     or 'is_totem' in implicit_of(e) and 'base_skill_is_totemified' in implicit_of(ge_tab[x]) and not ge_tab[x]['Id'].startswith('Support')]
+    # ...unless the skill sets that part off by itself (Ancestral Cry's shockwave): then the cry's own cast time, cost and area stay on top
+    if 'display_statset_hide_usage_stats' in implicit_of(effects[-1]):
+        effects.reverse()
+    sets = [i for x in effects for i in [x['StatSet']] + ([j for j in x['AdditionalStatSets'] if not idle(j)][:1] if idle(x['StatSet']) else [])]
+    implicit = {sid(a) for i in sets for a in ss_tab[i]['ImplicitStats']}
+    const, levels = stat_levels(effects, sets)
+    rad = lambda area: {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const} or None
+    radius = rad('active_skill_base_area_of_effect_radius')
     # what the gem's other parts say (its second hit, the explosion, the empowered use...): only the rules the 3D scene
     # reads (consuming a state, damage against one, exposure, curses, charges), per level as above; and every on / off
     # rule of the skill (never_freeze, always_ignite, base_consume_enemy_shock_on_hit...) from all of its parts
@@ -419,6 +425,23 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
             rows = {b.split()[1] for b in text(csd.lower()).split('description')[1:] if 'table_only' in b and b.split()[0] == '1'}
             if 'active_skill_secondary_area_of_effect_radius' in rows and 'active_skill_area_of_effect_radius' not in rows:
                 skills[g['name']]['radius'] = rad('active_skill_base_secondary_area_of_effect_radius')
+# the skills supports set off (Shocking Rift, Volcanic Eruption, Fiery Death...) as skills of their own, under their
+# GrantedEffects id: per level, as they take the level of the skill the support is on (Path of Building 2,
+# CalcActiveSkill: "Active skills granted by support gems inherit the level of the skill that support applied to")
+TAG_OF = {'Attack', 'Spell', 'Area', 'Projectile', 'Melee', 'Duration', 'Fire', 'Cold', 'Lightning', 'Physical', 'Chaos'}
+for g in gems:
+    if g['kind'] != 'support' or not skills.get(g['name'], {}).get('triggers'):
+        continue
+    fx = gfx[skill_gems[g['skill_gems_index']]['GemEffects'][0]]
+    for x in (ge_tab[i] for i in fx['AdditionalGrantedEffects'] if ge_tab[i]['Id'].startswith('Triggered')):
+        const, levels = stat_levels([x], [x['StatSet']])
+        a = active_skills[x['ActiveSkill']] if x['ActiveSkill'] is not None else {}
+        kinds = types(a.get('ActiveSkillTypes') or [])
+        skills[x['Id']] = {'name': a.get('DisplayedName'), **(tr(active_skills_tr, x['ActiveSkill'], 'DisplayedName', 'name') if a else {}),
+                           'triggered_by': g['name'], 'types': kinds, 'tags': sorted(t.lower() for t in kinds if t in TAG_OF),
+                           'cast_time_ms': x['CastTime'], 'constant': const, 'levels': levels or None,
+                           'radius': {l: st.get('active_skill_base_area_of_effect_radius', const.get('active_skill_base_area_of_effect_radius')) for l, st in levels.items()} if 'active_skill_base_area_of_effect_radius' in const else None,
+                           'flags': sorted(k for k in map(sid, ss_tab[x['StatSet']]['ImplicitStats']) if PART_FLAG.search(k)) or None}
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}

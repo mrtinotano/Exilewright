@@ -5255,6 +5255,20 @@
  },
  {
   "stats": [
+   "dangerous_resolve_attack_damage_+1%_final_per_X_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが持つ[Armour|アーマー]{0}ごとにダメージが1%上昇する、最大200%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dangerous_resolve_explosion_cooldown_ms"
   ],
   "rows": [
@@ -9528,6 +9542,20 @@
  },
  {
   "stats": [
+   "support_bone_shrapnel_physical_damage_equal_to_%_monster_life"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Pinned|足止め]状態になった対象のライフの{0}%を[Physical|物理]ダメージとして与える",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_break_%_armour_on_freeze_or_electrocute"
   ],
   "rows": [
@@ -9561,6 +9589,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]を生成し、プレイヤーの最大マナの{0}%と同量の[Fire|火]ダメージを与えたと仮定して敵を発火させる",
+    "h": []
    }
   ]
  },
@@ -10887,6 +10929,20 @@
  },
  {
   "stats": [
+   "support_empower_X_attacks_with_spark_on_power_charge_gain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "サポートされたスキルで[Charges|パワーチャージ]を生成すると[Attack|アタック]を{0}回[Empowered|強化]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_empowered_damage_+%_final"
   ],
   "rows": [
@@ -11180,6 +11236,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Frozen|凍結状態]の対象の最大ライフの{0}%を[Cold|冷気]ダメージとして与える",
+    "h": []
    }
   ]
  },
@@ -15356,6 +15426,37 @@
  },
  {
   "stats": [
+   "corpse_explosion_monster_life_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "爆発により[Corpse|死体]の最大ライフの{0}%と同量の基礎[Fire|火]ダメージを与える",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "corpse_explosion_monster_life_permillage_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "爆発により[Corpse|死体]の最大ライフの{0}%と同量の基礎[Fire|火]ダメージを与える",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_permillage_physical"
   ],
   "rows": [
@@ -16342,6 +16443,38 @@
  },
  {
   "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対するダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対するダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対するダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16422,6 +16555,20 @@
      "1|#"
     ],
     "t": "敵に[Chaos|混沌][Hit|ヒット]を与えるか[Chaos|混沌]継続ダメージの[Debuff|デバフ]を付与した時に[Power|モンスターパワー]の{0}%をこのスキルの[Glory|グローリー]として生成する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_has_%_standard_scaling_attack_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "このスキルのアタックダメージは[DefaultAttackDamage|デフォルトアタックダメージ]の{0}%",
     "h": []
    }
   ]
@@ -19919,6 +20066,54 @@
      "1|#"
     ],
     "t": "このスキルによる[Maim|重傷]は敵を追加で{0}%[Slow|減速]状態にする",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage_as_%_of_intelligence",
+   "spell_maximum_base_fire_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Intelligence|知性]の{0}%から{1}%を[Fire|火]ダメージとして与える",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage_as_%_of_intelligence",
+   "spell_maximum_base_cold_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Intelligence|知性]の{0}%から{1}%を[Cold|冷気]ダメージとして与える",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_lightning_damage_as_%_of_intelligence",
+   "spell_maximum_base_lightning_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Intelligence|知性]の{0}%から{1}%を[Lightning|雷]ダメージとして与える",
     "h": []
    }
   ]
@@ -36561,6 +36756,20 @@
      "#"
     ],
     "t": "[Bear|クマ]スキルは[Physical|物理]ダメージの{0}%を[Fire|火]ダメージに[Conversion|変換]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ミニオンは物理ダメージの{0}%を雷ダメージに変換する",
     "h": []
    }
   ]

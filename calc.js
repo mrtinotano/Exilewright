@@ -110,7 +110,7 @@ const first = (...xs) => xs.find(x => x != null) ?? null;
 // additional effect": per 1000 quality, whole numbers only). _level and _quality are the ones used.
 // note: the levels corrupted gems get are not counted
 export function gemStats(g, sum = {}) {
-  const d = SK.skills[g.name] || {}, tags = GEM[g.name]?.tags || [], end = '_skill_gem_level_+';
+  const d = SK.skills[g.name] || {}, tags = GEM[g.name]?.tags || d.tags || [], end = '_skill_gem_level_+';
   // (a support's "+1 to Level of Supported Fire Skills": supported_fire_skill_gem_level_+; supported_active_: any)
   const fits = w => w === 'all' || w === 'supported' || w === 'active' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
   let level = g.level;
@@ -555,7 +555,7 @@ function more(fin, suffix, tags, type) {
 // 3186-6932 with it, x0.740 for every damage type. Multishot I (35% less) the same way: 2756-5995, x0.640
 const MEASURED_MORE = { 'Multishot I': 0.64 / 0.65, 'Multishot II': 0.74 / 0.75 };
 export function skill(g, b, treeGear) {
-  const G = GEM[g.name] || {}, d = SK.skills[g.name] || {}, own = G.tags || [];
+  const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
   const { sum, fin, mods, finals } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
@@ -620,7 +620,8 @@ export function skill(g, b, treeGear) {
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
-  const mult = attack ? (st._base_multiplier ?? 10000) / 10000 : 1;
+  // "Attack damage of this skill is 20% of Default Attack Damage" (Volcanic Eruption): PoB2's baseMultiplier too
+  const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
   const base = {};
   for (const t of DMG) {
     let lo = 0, hi = 0;
@@ -798,6 +799,10 @@ export function skill(g, b, treeGear) {
     buffOf('Blazing Critical', 'support_blazing_crits_gain_%_fire_damage_with_attacks_on_critical_hit', 'fire', 'support_blazing_crits_base_duration_ms', 'crit', true)].filter(Boolean);
   out.lifeOnKill = sup('support_cannibalism_recover_%_maximum_life_on_kill');
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
+  // the skills its supports set off (Coursing Current, Static Shocks, Electromagnetism, Volcanic Eruption...), at this
+  // gem's level (PoB2: granted skills inherit the level of the skill the support is on), with the tree's and gear's
+  out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
+    .map(id => ({ ...skill({ name: id, level: g.level, supports: [] }, b, treeGear), id, support: SK.skills[n].constant || {} })));
   out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it

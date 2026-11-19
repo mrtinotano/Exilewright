@@ -5256,6 +5256,20 @@
  },
  {
   "stats": [
+   "dangerous_resolve_attack_damage_+1%_final_per_X_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "1% mehr Schaden pro {0} Eurer [Armour|Rüstung], bis zu 200%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dangerous_resolve_explosion_cooldown_ms"
   ],
   "rows": [
@@ -9529,6 +9543,20 @@
  },
  {
   "stats": [
+   "support_bone_shrapnel_physical_damage_equal_to_%_monster_life"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verursacht {0}% des maximalen Lebens des [Pinned|festgesetzten] Ziels als [Physical|physischen] Schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_break_%_armour_on_freeze_or_electrocute"
   ],
   "rows": [
@@ -9562,6 +9590,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erzeugt [IgnitedGround|entzündeten Boden], der Gegner entzündet, was verursachtem [Fire|Feuer]schaden in Höhe von {0}% Eures maximalen Manas entspricht",
+    "h": []
    }
   ]
  },
@@ -10888,6 +10930,20 @@
  },
  {
   "stats": [
+   "support_empower_X_attacks_with_spark_on_power_charge_gain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Das Erzeugen einer [Charges|Energie-Ladung] mit unterstützten Fertigkeiten [Empowered|ermächtigt] {0} [Attack|Angriffe]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_empowered_damage_+%_final"
   ],
   "rows": [
@@ -11181,6 +11237,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Verursacht {0}% des maximalen Lebens des [Frozen|eingefrorenen] Ziels als [Cold|Kälte]schaden",
+    "h": []
    }
   ]
  },
@@ -15357,6 +15427,37 @@
  },
  {
   "stats": [
+   "corpse_explosion_monster_life_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Explosion verursacht Basis-[Fire|Feuer]schaden in Höhe von {0}% des maximalen Lebens der [Corpse|Leiche]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "corpse_explosion_monster_life_permillage_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Explosion verursacht Basis-[Fire|Feuer]schaden in Höhe von {0}% des maximalen Lebens der [Corpse|Leiche]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_permillage_physical"
   ],
   "rows": [
@@ -16340,6 +16441,38 @@
  },
  {
   "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden gegen [Rarity|einzigartige] Gegner@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden gegen [Rarity|einzigartige] Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden gegen [Rarity|einzigartige] Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16420,6 +16553,20 @@
      "1|#"
     ],
     "t": "Generiert {0}% des [Power|Stärkegrads] als [Glory|Ruhm] für diese Fertigkeit, wenn bei einem Gegner [Chaos|Chaos]-[Hit|Treffer]schaden verursacht oder eine [Debuff|Schwächung] mit [Chaos|Chaos]schaden über Zeit angewendet wird",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_has_%_standard_scaling_attack_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Angriffsschaden dieser Fertigkeit beträgt {0}% des [DefaultAttackDamage|Standard-Angriffsschadens]",
     "h": []
    }
   ]
@@ -19918,6 +20065,54 @@
      "1|#"
     ],
     "t": "[Maim|Verstümmelungen] von dieser Fertigkeit [Slow|verlangsamen] um zusätzlich {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage_as_%_of_intelligence",
+   "spell_maximum_base_fire_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% bis {1}% Eurer [Intelligence|Intelligenz] als [Fire|Feuer]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage_as_%_of_intelligence",
+   "spell_maximum_base_cold_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% bis {1}% Eurer [Intelligence|Intelligenz] als [Cold|Kälte]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_lightning_damage_as_%_of_intelligence",
+   "spell_maximum_base_lightning_damage_as_%_of_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% bis {1}% Eurer [Intelligence|Intelligenz] als [Lightning|Blitz]schaden",
     "h": []
    }
   ]
@@ -36560,6 +36755,20 @@
      "#"
     ],
     "t": "[Bear|Bären]-Fertigkeiten [Conversion|wandeln] {0}% des [Physical|physischen] Schadens in [Fire|Feuer]schaden um",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Kreaturen wandeln {0}% des physischen Schadens in Blitzschaden um",
     "h": []
    }
   ]

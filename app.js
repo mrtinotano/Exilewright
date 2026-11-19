@@ -169,7 +169,8 @@ function renderStats() {
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
-const gemInfo = g => { const gem = gems.find(x => x.name === g.name); return { gem, data: SK.skills[g.name] || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
+// a support's triggered skill (SK.skills[id].triggered_by) has no gem: its own name and types, the support's icon
+const gemInfo = g => { const d = SK.skills[g.name], gem = gems.find(x => x.name === g.name) || d?.triggered_by && { ...d, icon: gems.find(x => x.name === d.triggered_by)?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
 const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false, fight = false }) => ({ enemy, level, attack, rarity, still, fight }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
