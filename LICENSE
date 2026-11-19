@@ -28,6 +28,10 @@ This license covers the code of Exilewright only. Not covered:
   Exilewright is a fan-made tool, not affiliated with or endorsed by
   Grinding Gear Games.
 
+- The class and ascendancy portraits in poe2_data/available/img/portraits/ are
+  the "<Name> portrait.png" files of the Path of Exile 2 Wiki
+  (https://www.poe2wiki.net), CC BY-NC-SA 3.0; the art is (c) Grinding Gear Games.
+
 - poe2_data/available/pob2.json is derived from Path of Building Community
   (PathOfBuilding-PoE2), under this license:
 

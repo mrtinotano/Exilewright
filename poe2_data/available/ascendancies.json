@@ -25,7 +25,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/TitanAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WarriorBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Warrior",
   "class_base": {
    "_index": 6,
    "BaseMaxLife": 16,
@@ -87,7 +86,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/WarbringerAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WarriorBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Warrior",
   "class_base": {
    "_index": 6,
    "BaseMaxLife": 16,
@@ -149,7 +147,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/SmithOfKitavaAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WarriorBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Warrior",
   "class_base": {
    "_index": 6,
    "BaseMaxLife": 16,
@@ -211,7 +208,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/DeadeyeAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/RangerBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Ranger",
   "class_base": {
    "_index": 2,
    "BaseMaxLife": 16,
@@ -273,7 +269,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/PathfinderAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/RangerBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Ranger",
   "class_base": {
    "_index": 2,
    "BaseMaxLife": 16,
@@ -335,7 +330,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/AmazonAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/HuntressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Huntress",
   "class_base": {
    "_index": 8,
    "BaseMaxLife": 16,
@@ -397,7 +391,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/WildspeakerAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/HuntressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Huntress",
   "class_base": {
    "_index": 8,
    "BaseMaxLife": 16,
@@ -459,7 +452,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/PrimalistAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/HuntressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Huntress",
   "class_base": {
    "_index": 8,
    "BaseMaxLife": 16,
@@ -521,7 +513,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/InfernalistAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WitchBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Witch",
   "class_base": {
    "_index": 1,
    "BaseMaxLife": 16,
@@ -583,7 +574,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/BloodMageAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WitchBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Witch",
   "class_base": {
    "_index": 1,
    "BaseMaxLife": 16,
@@ -645,7 +635,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/LichAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WitchBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Witch",
   "class_base": {
    "_index": 1,
    "BaseMaxLife": 16,
@@ -707,7 +696,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/LichAbyssalAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/WitchBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Witch",
   "class_base": {
    "_index": 1,
    "BaseMaxLife": 16,
@@ -769,7 +757,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/StormcallerAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/SorceressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Sorceress",
   "class_base": {
    "_index": 7,
    "BaseMaxLife": 16,
@@ -830,7 +817,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/ChronomancerAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/SorceressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Sorceress",
   "class_base": {
    "_index": 7,
    "BaseMaxLife": 16,
@@ -891,7 +877,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/DiscipleoftheDjinnAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/SorceressBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Sorceress",
   "class_base": {
    "_index": 7,
    "BaseMaxLife": 16,
@@ -952,7 +937,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/TacticianAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MercenaryBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Mercenary",
   "class_base": {
    "_index": 9,
    "BaseMaxLife": 16,
@@ -1013,7 +997,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/WitchhunterAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MercenaryBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Mercenary",
   "class_base": {
    "_index": 9,
    "BaseMaxLife": 16,
@@ -1074,7 +1057,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/GemlingAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MercenaryBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Mercenary",
   "class_base": {
    "_index": 9,
    "BaseMaxLife": 16,
@@ -1135,7 +1117,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/OracleAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/DruidBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Druid",
   "class_base": {
    "_index": 11,
    "BaseMaxLife": 16,
@@ -1197,7 +1178,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/ShamanAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/DruidBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Druid",
   "class_base": {
    "_index": 11,
    "BaseMaxLife": 16,
@@ -1259,7 +1239,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/MartialArtistIllustration.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MonkBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Monk",
   "class_base": {
    "_index": 10,
    "BaseMaxLife": 16,
@@ -1320,7 +1299,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/InvokerAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MonkBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Monk",
   "class_base": {
    "_index": 10,
    "BaseMaxLife": 16,
@@ -1381,7 +1359,6 @@
   },
   "tree_image": "Art/2DArt/BaseClassIllustrations/AcolyteofChayulaAscendancy.dds",
   "class_tree_image": "Art/2DArt/BaseClassIllustrations/MonkBaseIllustration.dds",
-  "portrait": "Art/2DArt/UIImages/InGame/NPCWindow/Portraits/PoE2/Character/Monk",
   "class_base": {
    "_index": 10,
    "BaseMaxLife": 16,

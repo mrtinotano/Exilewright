@@ -18,7 +18,7 @@ tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), enco
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
 paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
-ui = {a.get('portrait') for a in ascs if a.get('portrait')}   # character panel faces: UIImages names
+ui = set()   # UIImages names (the character panel's portraits come from portraits.py)
 # the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
 # frames), saved whole as ../available/img/tree/<role>.webp: the node frames per state and the group backgrounds
 def table(t):
@@ -98,29 +98,4 @@ for name, (file, (x1, y1, x2, y2)) in atlas.items():
         im.crop((left, top, left + side, top + side)).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((name, str(e)))
-# the face of each ascendancy's illustration (Ascendancy.PassiveTreeImage), for the character panel: the game draws its
-# own portrait from the character's 3D model, the files only have one per base class. note: centre x, y and side of
-# the square, as fractions of the picture, measured by eye on each illustration (17/11/2026); redo when one changes.
-FACES = {
-    'AcolyteofChayula': (.444, .425), 'Amazon': (.485, .372), 'BloodMage': (.526, .327), 'Chronomancer': (.469, .275),
-    'Deadeye': (.52, .275), 'DiscipleoftheDjinn': (.494, .5), 'Gemling': (.497, .262), 'Infernalist': (.475, .312),
-    'Invoker': (.512, .275), 'LichAbyssal': (.497, .325), 'Lich': (.497, .325), 'MartialArtist': (.505, .325),
-    'Oracle': (.497, .395), 'Pathfinder': (.447, .377), 'Primalist': (.487, .3), 'Shaman': (.477, .285),
-    'SmithOfKitava': (.49, .287), 'Stormcaller': (.494, .33), 'Tactician': (.486, .295), 'Titan': (.487, .317),
-    'Warbringer': (.537, .287), 'Wildspeaker': (.49, .445), 'Witchhunter': (.465, .295)}
-SIDE = .16
-for a in ascs:
-    p = (a.get('tree_image') or '').lower()
-    key = next((k for k in FACES if os.path.basename(p) in (k.lower() + 'ascendancy.dds', k.lower() + 'illustration.dds')), None)
-    if not key:
-        continue
-    out = os.path.join(ROOT, 'available', 'img', 'faces', os.path.basename(p)[:-4] + '.webp')
-    try:
-        im = Image.open(os.path.join(ROOT, 'files', p)).convert('RGB')
-        (x, y), w = FACES[key], im.width
-        os.makedirs(os.path.dirname(out), exist_ok=True)
-        im.crop((round((x - SIDE / 2) * w), round((y - SIDE / 2) * w), round((x + SIDE / 2) * w), round((y + SIDE / 2) * w))).resize((160, 160), Image.LANCZOS).save(out, 'WEBP', quality=85)
-    except Exception as e:
-        bad.append((a['name'], str(e)))
-missing = [a['name'] for a in ascs if a.get('tree_image') and not os.path.exists(os.path.join(ROOT, 'available', 'img', 'faces', os.path.basename(a['tree_image'].lower())[:-4] + '.webp'))]
-print(f'{len(paths) + len(atlas)} images, {len(bad)} failed', bad[:5], 'ascendancies without a face:', missing)
+print(f'{len(paths) + len(atlas)} images, {len(bad)} failed', bad[:5])

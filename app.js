@@ -72,8 +72,8 @@ const CLASSES = [...new Set(ascs.map(a => a.class))];
 let picking = null;  // 'cls' | 'asc': which list is open in the character panel
 // the character panel's face: an ascendancy's, cut from its illustration (images.py FACES; the game draws its own from
 // the 3D model); the base class's from the UI atlas
-const faceOf = a => a?.tree_image && 'faces/' + a.tree_image.toLowerCase().split('/').pop().replace(/\.dds$/, '.webp');
-const portraitOf = asc => faceOf(ascs.find(a => a.name === asc)) || ascs.find(a => a.class === clsOf(asc))?.portrait?.toLowerCase().concat('.webp') || '';
+const portraitOf = asc => asc ? 'portraits/' + asc.toLowerCase().replaceAll(' ', '_') + '.webp' : '';   // poe2_data/_tool/portraits.py
+const clsLabel = x => tn(ascs.find(a => a.class === x)?.class_names) || x;   // a base class as the game names it
 const clsOf = asc => ascs.find(a => a.name === asc)?.class || (CLASSES.includes(asc) ? asc : undefined);
 
 function renderSide() {
@@ -162,7 +162,7 @@ function renderStats() {
   renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
   renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, pending, picking,
     classes: CLASSES, ascOptions: [clsOf(b.asc), ...ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name)], portrait: portraitOf(b.asc),
-    ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel: x => tn(ascs.find(a => a.class === x)?.class_names) || x });
+    ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel });
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
@@ -267,7 +267,7 @@ $('charPanel').onclick = async e => {
   let nodes = [];
   if (b.nodes.length > 1 && root === b.nodes[0]) nodes = b.nodes;   // same start node: the tree stays valid
   else if (b.nodes.length > 1) {
-    const name = tn(ascs.find(a => a.class === cls)?.class_names) || cls;   // as the class list shows it
+    const name = clsLabel(cls);
     nodes = await moveTree(b.nodes, root, name, t('{0} starts somewhere else on the tree.', name));
     if (!nodes) return;
   }
