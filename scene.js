@@ -1495,7 +1495,7 @@ export function initScene(el, api) {
     // (GameConstants <name>ThresholdModifier / <name>ModifierDuration, the player's where the game has its own)
     const build = (a, n, cap, dur) => {
       if (!(n > 0) || !cap || me.st[a] > 0) return;
-      const G = { freeze: 'Freeze', electrocute: 'Electrocute' }[a], rule = k => PL[G + k] ?? GC[G + k];
+      const G = cap(a), rule = k => PL[G + k] ?? GC[G + k];
       me.bar[a] = (me.bar[a] || 0) + n / (cap * (me.lock[a] > 0 ? 1 + rule('ThresholdModifier') / 100 : 1)) * 100; me.calm = 0;
       if (me.bar[a] < 100) return;
       me.bar[a] = 0; me.lock[a] = rule('ModifierDuration');
