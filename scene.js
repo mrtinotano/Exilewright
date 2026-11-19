@@ -76,7 +76,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: { life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } }, bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -222,7 +222,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: { life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } }, bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -315,7 +315,9 @@ export function initScene(el, api) {
       crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + ((D.critBonus || 0) + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm; }
       if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
-      for (const el in raw) { const got = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
+      const dealt = {};
+      for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
+      if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
     if (M?.gain && d.mark === M && crit && own) {
@@ -330,6 +332,17 @@ export function initScene(el, api) {
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S);
     return true;
+  }
+  // Leech (keywords.json): a share of the damage the hit dealt (calc.js leech), as if it dealt at most 40,000 with the
+  // same ratios, less the monster's leech resistance, recovered over one second (faster with leech rate). Only one
+  // instance recovers at a time: a new one is added to what is left (note: how the game joins them is not in the data)
+  function leech(D, dealt, total, d) {
+    const k = Math.min(1, (GAME.leech_max_damage || Infinity) / (total || 1)) * (1 - (d.stat.leechRes || 0));
+    for (const r of ['life', 'mana']) {
+      const x = D.leech?.[r], n = x && ((dealt.physical || 0) * x.phys + total * x.all) / 100 * x.more * k;
+      if (!(n > 0)) continue;
+      const q = me.leech[r]; q.left += n; q.rate = q.left * x.rate; q.keep = r === 'life' && D.leech.keep;
+    }
   }
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
   // after the enemy's resistances. Without that hit (grounds, minions, missing damage) they use the scene value, drawn with "~".
@@ -1759,6 +1772,12 @@ export function initScene(el, api) {
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * dt);
+    // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
+    for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
+      const q = me.leech[r]; if (!(q.left > 0)) continue;
+      if (me[r] >= top && !q.keep) { q.left = 0; continue; }
+      const n = Math.min(q.left, q.rate * dt); q.left -= n; me[r] = Math.min(top, me[r] + n);
+    }
     if (me.es < E && time - me.hurt >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost

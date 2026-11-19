@@ -56,6 +56,8 @@ export function enemyStats(m, level, rarity, ally = false) {
     // what its hits have to reach to inflict ailments and to fill its stun and freeze bars (DefaultMonsterStats), and how much
     // less its rarity lets slows, curses and exposure work on it
     ail: Math.floor(row('ailment', level)), poise: Math.floor(row('poise', level) * more('poise')),
+    // how much less you leech from hitting it (DefaultMonsterStats LeechResistance, permyriad; its own column for rares and uniques)
+    leechRes: row(['rare', 'unique'].includes(rarityOf(m, rarity)) ? 'leech_rare' : 'leech', level) / 1e4,
     slowEffect: more('slow'), curseEffect: more('curse'), expoEffect: more('exposure'), rarity: rarityOf(m, rarity),
   };
 }

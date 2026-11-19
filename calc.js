@@ -728,6 +728,15 @@ export function skill(g, b, treeGear) {
     pierceMore: finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0, perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
     forkMore: finals['support_fork_forked_projectile_damage_+%_final'] || 0, bolts: sec('orb_of_storms_base_bolt_frequency_ms'), maxBolts: st.orb_of_storms_maximum_number_of_hits || null,
     extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0 };
+  // Leech (keywords.json Life / Mana Leech): a share of the hit's damage, in % (the stats are permyriad), recovered over one
+  // second: of an attack's physical damage (supports, gear, the weapon's own), of a spell's whole damage; increased leech
+  // amount and leech rate; Life Leech III's leech is not removed at full life
+  const leechOf = r => {
+    const phys = attack ? (both(`base_${r}_leech_from_physical_attack_damage_permyriad`) + (w?.leech?.[r] || 0)) / 100 : 0;
+    const all = spell ? both(`base_${r}_leech_from_all_spell_damage_permyriad`) / 100 : 0;
+    return phys || all ? { phys, all, more: 1 + v(sum, `base_${r}_leech_amount_+%`) / 100, rate: 1 + v(sum, `base_${r}_leech_rate_+%`) / 100 } : null;
+  };
+  out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
   if (mn) {

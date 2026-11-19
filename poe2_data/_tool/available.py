@@ -810,7 +810,7 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
         # index = monster level - 1
         'tables': {k: [round(r[c], 2) for r in dms] for k, c in (('life', 'MonsterLife'), ('damage', 'Damage'), ('armour', 'Armour'), ('evasion', 'Evasion'), ('accuracy', 'Accuracy'), ('ally_damage', 'MinionDamage'),
             # % more elemental / chaos damage of a monster at the level (stats non_player_minion_{elemental,chaos}_damage_+%_final_from_monster_level)
-            ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'),
+            ('more_elemental', 'MoreElementalDamage'), ('more_chaos', 'MoreChaosDamage'), ('leech', 'LeechResistance'), ('leech_rare', 'RareUniqueLeechResistance'),
             # what a hit has to deal to inflict an ailment (Elemental Ailment Threshold) and to fill the stun / freeze bar (poise)
             ('ailment', 'AilmentThreshold'), ('poise', 'PoiseThreshold'))},
         'constants': {
@@ -821,6 +821,7 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             'player_max_evade': game['DefaultMaxEvadeChancePercent'], 'player_crit_bonus': char_stats.get('base_critical_hit_damage_bonus'),
             'es_recharge_delay_ms': game['BaseShieldRegenCooldownTimeMs'], 'es_recharge_per_minute': char_stats.get('energy_shield_recharge_rate_per_minute_%'),
             'player_max_block': char_stats.get('object_inherent_base_maximum_block_%_from_ot'),
+            'leech_max_damage': game['EffectiveMaxDamageForLeech'],   # a hit leeches as if it dealt at most this much
             # ailments: % of the hit dealt per minute, and how long they last
             'ignite_per_minute': game['IgniteHitDamagePercentPerMinute'], 'ignite_duration': game['BaseIgniteDuration'],
             'bleed_per_minute': game['BleedingHitDamagePercentPerMinute'], 'bleed_duration': game['BaseBleedingDuration'],
