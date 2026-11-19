@@ -186,8 +186,8 @@ function renderSceneSkills() {
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
   const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
   const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
-  // on top: the skills with damage per second and those that raise or lower stats (buffs, auras, heralds, curses, marks, warcries)
-  const STATS = new Set(['buff', 'aura', 'herald', 'curse', 'mark', 'warcry']), live = (g, P) => skillDmg(g).dps != null || STATS.has(P.kind);
+  // on top: the skills with damage per second, and the meta gems that use one; the rest folded under them
+  const dps = g => skillDmg(g).dps != null, live = g => dps(g) || b.gems.some((h, j) => usedBy(b, j) === g && dps(h));
   const card = ({ g, inf, P }, i) => {
     const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
     const num = (k, v, tip) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${tip}">`;
@@ -207,10 +207,10 @@ function renderSceneSkills() {
         ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
     </div>`;
   };
-  const cards = [], rest = []; list.forEach((x, i) => (live(x.g, x.P) ? cards : rest).push(card(x, i)));
-  $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('their keys: click a slot of the simulator bar to change them')}</small></h3>
-    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills deals damage or changes stats.' : 'Add skills in the Skills tab.')}</p>`}
-    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: no damage and no stats of their own')}</summary>${rest.join('')}</details>` : ''}`;
+  const cards = [], rest = []; list.forEach((x, i) => (live(x.g) ? cards : rest).push(card(x, i)));
+  $('sceneList').innerHTML = `<h3>${t('Skills')}</h3><div class="sk-scroll">
+    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills deals damage.' : 'Add skills in the Skills tab.')}</p>`}
+    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: they deal no damage')}</summary>${rest.join('')}</details>` : ''}</div>`;
   syncEnemy(); renderEnemy();
 }
 // skill info window: anything with data-tip="<gem index>"
@@ -974,13 +974,15 @@ function onLive(L) {
     const cls = Math.abs(now - was) < .05 ? '' : (now > was) === good ? 'up' : 'down';
     return `<tr><th>${k}</th><td>${cls ? `<small>${fmt(was, d)}${unit} → </small>` : ''}<b class="${cls}">${fmt(now, d)}${unit}</b></td></tr>`;
   };
-  const html = `<h3>${t('Character')} <small class="note">${t('what buffs and ailments change while you play')}</small></h3><table class="en-t">
+  const html = `<h3>${t('Character')}</h3><table class="en-t">
     ${L.res.map(([e, now, was]) => row(`<span class="dm ${e}">${t(EL_NAME[e])}</span>`, [now, was], '%')).join('')}
-    ${row(t('Movement speed'), L.move, ' m/s', true, 1)}${row(t('Action speed'), L.action, '%')}
-    ${row(t('Damage taken'), L.taken, '%', false)}${row(t('Attack damage from Rage'), L.rage, '%')}${row(t('Guard'), L.guard, '')}</table>`;
+    ${row(t('Movement speed'), L.move, ' m/s', true, 1)}${row(t('Action speed'), L.action, '%')}${row(t('Damage taken'), L.taken, '%', false)}
+    ${row(t('Total Life Recovery per second'), L.life, '', true, 1)}${row(t('Mana Recovery per second'), L.mana, '', true, 1)}${row(t('Damage over time taken per second'), L.dot, '', false, 1)}
+    ${L.berserk ? row(t('{0}: life lost per second', esc(L.berserk.name)), L.berserk.v, '', false, 1) : ''}
+    ${L.rage ? row(t('Attack damage from Rage'), L.rage, '%') : ''}${L.guard ? row(t('Guard'), L.guard, '') : ''}</table>`;
   if (html !== liveHtml) $('simChar').innerHTML = liveHtml = html;
   B().gems.forEach((g, i) => {   // the cards' damage per second, as it is now
-    const el = document.querySelector(`#sceneList > .sk-card [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;
+    const el = document.querySelector(`#sceneList .sk-scroll > .sk-card [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;
     const k = L.dps(i), v = `${fmt(s.dps * k)} <small>DPS</small>`;
     if (el.dataset.v !== v) { el.dataset.v = v; el.innerHTML = v; el.className = 'sdps' + (k > 1.001 ? ' up' : k < .999 ? ' down' : ''); }
   });

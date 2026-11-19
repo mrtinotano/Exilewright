@@ -29,7 +29,10 @@
   #charPanel { flex:1; overflow:auto; min-height:0; }
   #sceneSkills { flex:1; overflow:auto; min-height:0; padding:8px 10px; border-top:2px solid #4a3f2c; background:#121010; }
   #sceneSkills[hidden] { display:none; }
-  #sceneSkills { flex:1.6; }
+  #sceneSkills { flex:1.6; display:flex; flex-direction:column; overflow:hidden; }
+  /* the skills' title stays, the cards scroll under it */
+  #sceneList { flex:1; min-height:0; display:flex; flex-direction:column; }
+  #sceneList .sk-scroll { flex:1; min-height:0; overflow:auto; }
   #sceneSkills h3, #simChar h3 { margin:14px 0 6px; font:14px Georgia, serif; font-variant:small-caps; color:#e8d8a8; display:flex; align-items:baseline; gap:6px; border-bottom:1px solid #3a3022; padding-bottom:3px; }
   #sceneSkills h3:first-child, #simChar h3:first-child { margin-top:0; }
   /* the 3D scene's side panel: only what buffs and ailments change while you play */

@@ -807,7 +807,6 @@
  "Empty": "空き",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ドラッグ: 回転 · ホイール: ズーム · {0}: ロール",
  "Ctrl+click: place {0}": "Ctrl+クリック: {0}を配置",
- "their keys: click a slot of the simulator bar to change them": "キー: シミュレーターのバーの枠をクリックで変更",
  "{0}: nothing equipped": "{0}: 未装備",
  "{0} needs {1} charges and has {2}": "{0}には{1}チャージが必要です (現在{2})",
  "{0} / {1}: life and mana flask": "{0} / {1}: ライフフラスコとマナフラスコ",
@@ -816,7 +815,6 @@
  "Enemies stand still": "敵はその場から動かない",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "敵は索敵範囲に入るか攻撃されると自分の速度で向かってきて、射程内で攻撃する。~ 付きの数値はゲームデータにない値を含む。",
  "Character": "キャラクター",
- "what buffs and ailments change while you play": "プレイ中にバフと状態異常が変えるもの",
  "Action speed": "アクションスピード",
  "Damage taken": "受けるダメージ",
  "Attack damage from Rage": "憤怒によるアタックダメージ",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D：移動",
  "{0}: move to the cursor while held": "{0}：押している間カーソルへ移動",
  "Move is not on the bar: click a slot to put it there": "移動するがバーにない：枠をクリックして配置する",
- "None of your skills deals damage or changes stats.": "ダメージを与えるスキルもステータスを変えるスキルもない。",
- "Other skills: no damage and no stats of their own": "その他のスキル：自身のダメージもステータスもない"
+ "None of your skills deals damage.": "ダメージを与えるスキルがない。",
+ "Other skills: they deal no damage": "その他のスキル：ダメージを与えない",
+ "Mana Recovery per second": "毎秒マナ回復",
+ "Damage over time taken per second": "毎秒受ける継続ダメージ",
+ "{0}: life lost per second": "{0}：毎秒失うライフ"
 }

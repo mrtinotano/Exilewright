@@ -807,7 +807,6 @@
  "Empty": "Leer",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ziehen: kreisen · Mausrad: Zoom · {0}: rollen",
  "Ctrl+click: place {0}": "Strg+Klick: {0} platzieren",
- "their keys: click a slot of the simulator bar to change them": "ihre Tasten: Klick auf ein Feld der Simulator-Leiste, um sie zu ändern",
  "{0}: nothing equipped": "{0}: nichts ausgerüstet",
  "{0} needs {1} charges and has {2}": "{0} benötigt {1} Ladungen und hat {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: Lebensfläschchen und Manafläschchen",
@@ -816,7 +815,6 @@
  "Enemies stand still": "Gegner bleiben stehen",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Gegner kommen mit ihrer Geschwindigkeit auf dich zu, sobald du in ihrem Aggro-Radius bist oder sie triffst, und greifen in Reichweite an. Eine Zahl mit ~ enthält einen Wert, den die Spieldaten nicht liefern.",
  "Character": "Charakter",
- "what buffs and ailments change while you play": "was Buffs und Beeinträchtigungen beim Spielen ändern",
  "Action speed": "Aktionsgeschwindigkeit",
  "Damage taken": "Erlittener Schaden",
  "Attack damage from Rage": "Angriffsschaden durch Rausch",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D: bewegen",
  "{0}: move to the cursor while held": "{0}: zum Cursor bewegen, solange gehalten",
  "Move is not on the bar: click a slot to put it there": "Bewegen ist nicht auf der Leiste: Klicke auf einen Platz, um es dort abzulegen",
- "None of your skills deals damage or changes stats.": "Keine deiner Fertigkeiten verursacht Schaden oder ändert Werte.",
- "Other skills: no damage and no stats of their own": "Andere Fertigkeiten: kein eigener Schaden und keine eigenen Werte"
+ "None of your skills deals damage.": "Keine deiner Fertigkeiten verursacht Schaden.",
+ "Other skills: they deal no damage": "Andere Fertigkeiten: Sie verursachen keinen Schaden",
+ "Mana Recovery per second": "Manawiederherstellung pro Sekunde",
+ "Damage over time taken per second": "Erlittener Schaden über Zeit pro Sekunde",
+ "{0}: life lost per second": "{0}: verlorenes Leben pro Sekunde"
 }

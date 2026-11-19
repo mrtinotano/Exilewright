@@ -807,7 +807,6 @@
  "Empty": "Vide",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+glisser : orbiter · Molette : zoom · {0} : rouler",
  "Ctrl+click: place {0}": "Ctrl+clic : placer {0}",
- "their keys: click a slot of the simulator bar to change them": "leurs touches : clic sur un emplacement de la barre du simulateur pour les changer",
  "{0}: nothing equipped": "{0} : rien d'équipé",
  "{0} needs {1} charges and has {2}": "{0} nécessite {1} charges et en a {2}",
  "{0} / {1}: life and mana flask": "{0} / {1} : flacon de vie et flacon de mana",
@@ -816,7 +815,6 @@
  "Enemies stand still": "Les ennemis restent immobiles",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Les ennemis viennent à vous à leur vitesse dès que vous entrez dans leur rayon d'aggro ou que vous les frappez, et attaquent à portée. Un nombre avec ~ inclut une valeur que les données du jeu ne donnent pas.",
  "Character": "Personnage",
- "what buffs and ailments change while you play": "ce que les bonus et les altérations changent pendant que vous jouez",
  "Action speed": "Vitesse d'action",
  "Damage taken": "Dégâts subis",
  "Attack damage from Rage": "Dégâts d'Attaque de la Rage",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D : se déplacer",
  "{0}: move to the cursor while held": "{0} : se déplacer vers le curseur tant que maintenu",
  "Move is not on the bar: click a slot to put it there": "Déplacer n'est pas sur la barre : cliquez sur un emplacement pour l'y mettre",
- "None of your skills deals damage or changes stats.": "Aucune de vos aptitudes n'inflige de dégâts ni ne change de statistiques.",
- "Other skills: no damage and no stats of their own": "Autres aptitudes : ni dégâts ni statistiques propres"
+ "None of your skills deals damage.": "Aucune de vos aptitudes n'inflige de dégâts.",
+ "Other skills: they deal no damage": "Autres aptitudes : elles n'infligent pas de dégâts",
+ "Mana Recovery per second": "Récupération de mana par seconde",
+ "Damage over time taken per second": "Dégâts sur la durée subis par seconde",
+ "{0}: life lost per second": "{0} : vie perdue par seconde"
 }

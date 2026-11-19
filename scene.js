@@ -1568,13 +1568,25 @@ export function initScene(el, api) {
   const rageNow = () => { const R = sheet().rage; return me.rage * (100 + (R?.berserk && tog[R.berserk.name] ? R.berserk.effect : 0)) / 100; };
   const rageX = D => (1 + rageNow() / 100) / (1 + (D.rage || 0) * (100 + (D.rageEffect || 0)) / 1e4);
   // what buffs and ailments change right now, for the side panel (app.js onLive): each as [now, without them]
+  // (null: the build cannot change it). Recovery: regeneration and the constant flasks, with the flasks being drunk;
+  // damage over time: your ignite, bleeding and poison and the ground you stand in, after resistances and shock, as vitals() and tickHazards() deal it
   function live() {
-    const c = sheet(), w = withCharms(c), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain;
+    const c = sheet(), w = withCharms(c), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain, R = c.rage;
+    const rate = (k, on) => (on ? me.drink : flasks().filter(f => f?.always).map(f => ({ k: f.k, rate: f.amount / f.time }))).reduce((t, D) => t + (D?.k === k ? D.rate : 0), 0);
+    const rec = k => { const r = (k === 'life' ? c.lifeRegen : c.manaRegen) || 0, own = r + rate(k); return [own + rate(k, true), own]; };
+    let dot = 0;
+    for (const a in me.burn) if (me.st[a] > 0) dot += playerTakes(w, me.burn[a].el, me.burn[a].dps, false);
+    if (!(me.safe > 0)) for (const h of hazards) if (dist(h, pp) <= h.r) for (const el in h.dot) dot += playerTakes(w, el, h.dot[el], false);
+    const bz = R?.berserk, raging = bz && tog[bz.name] && me.rage > 0 && time - me.raged <= R.delay;
     return {
       res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
-      move: [spd() * act, spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0], rage: [rageNow(), 0], guard: [me.guard, 0],
-      // the share of its damage per second a skill used by hand deals now: action speed, Rage on attacks, a mark's buff
-      dps: i => { const D = base(i)?.dmg; return D ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) : 1; },
+      move: [spd() * act, spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
+      life: rec('life'), mana: rec('mana'), dot: [dot * (me.st.shock > 0 ? 1 + me.mag.shock / 100 : 1), 0],
+      rage: rageMax() ? [rageNow(), 0] : null, guard: charms().some(f => f?.guard) ? [me.guard, 0] : null,
+      berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
+      // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff (not a
+      // totem's or a minion's, nor one a meta gem uses: those act by themselves)
+      dps: i => { const S = base(i), D = S?.dmg; return D && api.byHand(i) && !['totem', 'minion', 'raise'].includes(S.kind) ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) : 1; },
     };
   }
   // your resistances with those of the charms in use

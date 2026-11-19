@@ -807,7 +807,6 @@
  "Empty": "空",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+拖曳：環繞 · 滾輪：縮放 · {0}：翻滾",
  "Ctrl+click: place {0}": "Ctrl+點擊：放置{0}",
- "their keys: click a slot of the simulator bar to change them": "按鍵：點擊模擬器技能列的欄位以更換",
  "{0}: nothing equipped": "{0}：未裝備",
  "{0} needs {1} charges and has {2}": "{0}需要{1}次充能，目前有{2}次",
  "{0} / {1}: life and mana flask": "{0} / {1}：生命藥劑與魔力藥劑",
@@ -816,7 +815,6 @@
  "Enemies stand still": "敵人停在原地",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "進入敵人的仇恨範圍或攻擊它們時，敵人會以自身速度向你移動，並在攻擊距離內攻擊。帶 ~ 的數值包含遊戲資料沒有提供的值。",
  "Character": "角色",
- "what buffs and ailments change while you play": "遊玩時增益與異常狀態改變的數值",
  "Action speed": "行動速度",
  "Damage taken": "承受傷害",
  "Attack damage from Rage": "盛怒提供的攻擊傷害",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D：移動",
  "{0}: move to the cursor while held": "{0}：按住時朝游標移動",
  "Move is not on the bar: click a slot to put it there": "移動不在技能列上：點擊格子放置",
- "None of your skills deals damage or changes stats.": "你的技能都不造成傷害也不改變數值。",
- "Other skills: no damage and no stats of their own": "其他技能：沒有自身的傷害或數值"
+ "None of your skills deals damage.": "你的技能都不造成傷害。",
+ "Other skills: they deal no damage": "其他技能：不造成傷害",
+ "Mana Recovery per second": "每秒魔力恢復",
+ "Damage over time taken per second": "每秒承受的持續傷害",
+ "{0}: life lost per second": "{0}：每秒失去的生命"
 }

@@ -807,7 +807,6 @@
  "Empty": "ว่าง",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ลาก: หมุนกล้อง · ล้อเมาส์: ซูม · {0}: กลิ้งหลบ",
  "Ctrl+click: place {0}": "Ctrl+คลิก: วาง {0}",
- "their keys: click a slot of the simulator bar to change them": "ปุ่มของมัน: คลิกช่องบนแถบของเครื่องจำลองเพื่อเปลี่ยน",
  "{0}: nothing equipped": "{0}: ไม่ได้สวมใส่",
  "{0} needs {1} charges and has {2}": "{0} ต้องใช้ {1} Charge แต่มี {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: ขวดยาพลังชีวิตและขวดยามานา",
@@ -816,7 +815,6 @@
  "Enemies stand still": "ศัตรูยืนอยู่กับที่",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "ศัตรูจะเข้าหาคุณด้วยความเร็วของมันเมื่อคุณเข้าระยะการตรวจจับหรือโจมตีมัน และโจมตีเมื่ออยู่ในระยะ ตัวเลขที่มี ~ รวมค่าที่ข้อมูลเกมไม่ได้ให้ไว้",
  "Character": "ตัวละคร",
- "what buffs and ailments change while you play": "สิ่งที่บัฟและสถานะผิดปกติเปลี่ยนขณะเล่น",
  "Action speed": "ความเร็วในการกระทำ",
  "Damage taken": "ความเสียหายที่ได้รับ",
  "Attack damage from Rage": "ความเสียหายโจมตีจากคลั่ง",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D: เคลื่อนที่",
  "{0}: move to the cursor while held": "{0}: เคลื่อนที่ไปยังเคอร์เซอร์ขณะกดค้าง",
  "Move is not on the bar: click a slot to put it there": "เคลื่อนที่ไม่อยู่ในแถบ: คลิกช่องเพื่อวาง",
- "None of your skills deals damage or changes stats.": "ไม่มีสกิลใดสร้างความเสียหายหรือเปลี่ยนค่าสถานะ",
- "Other skills: no damage and no stats of their own": "สกิลอื่น: ไม่มีความเสียหายและค่าสถานะของตัวเอง"
+ "None of your skills deals damage.": "ไม่มีสกิลใดสร้างความเสียหาย",
+ "Other skills: they deal no damage": "สกิลอื่น: ไม่สร้างความเสียหาย",
+ "Mana Recovery per second": "การฟื้นฟูมานาต่อวินาที",
+ "Damage over time taken per second": "ความเสียหายต่อเนื่องที่ได้รับต่อวินาที",
+ "{0}: life lost per second": "{0}: พลังชีวิตที่เสียต่อวินาที"
 }

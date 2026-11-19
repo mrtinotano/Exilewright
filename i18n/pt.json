@@ -807,7 +807,6 @@
  "Empty": "Vazio",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+arrastar: orbitar · Roda: zoom · {0}: girar",
  "Ctrl+click: place {0}": "Ctrl+clique: posicionar {0}",
- "their keys: click a slot of the simulator bar to change them": "as teclas: clique num espaço da barra do simulador para trocá-las",
  "{0}: nothing equipped": "{0}: nada equipado",
  "{0} needs {1} charges and has {2}": "{0} precisa de {1} cargas e tem {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: frasco de vida e frasco de mana",
@@ -816,7 +815,6 @@
  "Enemies stand still": "Os inimigos ficam parados",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Os inimigos vêm até você na velocidade deles quando você entra no raio de aggro ou os acerta, e atacam ao seu alcance. Um número com ~ inclui um valor que os dados do jogo não dão.",
  "Character": "Personagem",
- "what buffs and ailments change while you play": "o que bônus e afecções mudam enquanto você joga",
  "Action speed": "Velocidade de ação",
  "Damage taken": "Dano sofrido",
  "Attack damage from Rage": "Dano de ataque por Fúria",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D: mover",
  "{0}: move to the cursor while held": "{0}: mover até o cursor enquanto segura",
  "Move is not on the bar: click a slot to put it there": "Mover não está na barra: clique num espaço para colocá-lo",
- "None of your skills deals damage or changes stats.": "Nenhuma das suas habilidades causa dano nem muda atributos.",
- "Other skills: no damage and no stats of their own": "Outras habilidades: sem dano nem atributos próprios"
+ "None of your skills deals damage.": "Nenhuma das suas habilidades causa dano.",
+ "Other skills: they deal no damage": "Outras habilidades: não causam dano",
+ "Mana Recovery per second": "Recuperação de mana por segundo",
+ "Damage over time taken per second": "Dano degenerativo sofrido por segundo",
+ "{0}: life lost per second": "{0}: vida perdida por segundo"
 }

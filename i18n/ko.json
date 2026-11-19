@@ -807,7 +807,6 @@
  "Empty": "비어 있음",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+드래그: 회전 · 휠: 확대/축소 · {0}: 구르기",
  "Ctrl+click: place {0}": "Ctrl+클릭: {0} 배치",
- "their keys: click a slot of the simulator bar to change them": "키: 시뮬레이터 바의 칸을 클릭해 변경",
  "{0}: nothing equipped": "{0}: 장착 안 됨",
  "{0} needs {1} charges and has {2}": "{0}에 충전 {1}회가 필요합니다 (현재 {2})",
  "{0} / {1}: life and mana flask": "{0} / {1}: 생명력 플라스크와 마나 플라스크",
@@ -816,7 +815,6 @@
  "Enemies stand still": "적이 제자리에 서 있음",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "적은 어그로 범위에 들어가거나 공격받으면 자신의 속도로 다가오고, 사거리 안에서 공격합니다. ~ 표시 수치는 게임 데이터에 없는 값을 포함합니다.",
  "Character": "캐릭터",
- "what buffs and ailments change while you play": "플레이 중 버프와 상태 이상이 바꾸는 것",
  "Action speed": "동작 속도",
  "Damage taken": "받는 피해",
  "Attack damage from Rage": "격노로 인한 공격 피해",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D: 이동",
  "{0}: move to the cursor while held": "{0}: 누르고 있는 동안 커서로 이동",
  "Move is not on the bar: click a slot to put it there": "이동이 바에 없습니다: 칸을 클릭해 배치하세요",
- "None of your skills deals damage or changes stats.": "피해를 주거나 능력치를 바꾸는 스킬이 없습니다.",
- "Other skills: no damage and no stats of their own": "기타 스킬: 자체 피해도 능력치도 없음"
+ "None of your skills deals damage.": "피해를 주는 스킬이 없습니다.",
+ "Other skills: they deal no damage": "기타 스킬: 피해를 주지 않음",
+ "Mana Recovery per second": "초당 마나 회복",
+ "Damage over time taken per second": "초당 받는 지속 피해",
+ "{0}: life lost per second": "{0}: 초당 잃는 생명력"
 }

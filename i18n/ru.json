@@ -807,7 +807,6 @@
  "Empty": "Пусто",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt + перетаскивание: вращение · Колесо: масштаб · {0}: кувырок",
  "Ctrl+click: place {0}": "Ctrl+клик: разместить {0}",
- "their keys: click a slot of the simulator bar to change them": "их клавиши: клик по ячейке панели симулятора, чтобы сменить",
  "{0}: nothing equipped": "{0}: ничего не надето",
  "{0} needs {1} charges and has {2}": "{0}: нужно зарядов: {1}, есть: {2}",
  "{0} / {1}: life and mana flask": "{0} / {1}: флакон здоровья и флакон маны",
@@ -816,7 +815,6 @@
  "Enemies stand still": "Враги стоят на месте",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Враги идут к вам со своей скоростью, когда вы входите в их радиус агрессии или бьёте их, и атакуют в пределах досягаемости. Число с ~ включает значение, которого нет в данных игры.",
  "Character": "Персонаж",
- "what buffs and ailments change while you play": "что меняют баффы и состояния во время игры",
  "Action speed": "Скорость действий",
  "Damage taken": "Получаемый урон",
  "Attack damage from Rage": "Урон от атак за Свирепость",
@@ -837,6 +835,9 @@
  "W A S D: move": "W A S D: движение",
  "{0}: move to the cursor while held": "{0}: движение к курсору, пока удерживаете",
  "Move is not on the bar: click a slot to put it there": "Навигации нет на панели: щёлкните ячейку, чтобы поставить её",
- "None of your skills deals damage or changes stats.": "Ни одно из ваших умений не наносит урон и не меняет характеристики.",
- "Other skills: no damage and no stats of their own": "Другие умения: без собственного урона и характеристик"
+ "None of your skills deals damage.": "Ни одно из ваших умений не наносит урон.",
+ "Other skills: they deal no damage": "Другие умения: не наносят урон",
+ "Mana Recovery per second": "Восстановление маны в секунду",
+ "Damage over time taken per second": "Получаемый урон со временем в секунду",
+ "{0}: life lost per second": "{0}: потеря здоровья в секунду"
 }
