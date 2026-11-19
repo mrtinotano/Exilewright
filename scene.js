@@ -264,6 +264,9 @@ export function initScene(el, api) {
     gainCharge(type, S.label); const M = S.dmg?.more || {};
     if (Math.random() * 100 < M.one) gainCharge(type, S.label);
     if (Math.random() * 100 < M.random) gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], S.label);
+    // Empowered Sparks: a power charge generated empowers your next attacks to trigger its Sparks (no expiry in the data)
+    const E = type === 'power' && S.dmg?.trig?.find(T => T.stats?.support_empower_X_attacks_with_spark_on_power_charge_gain), X = E && S.dmg.trig.find(T => T.support === E.support && T.hits?.lightning);
+    if (X) { empower = empower.filter(e => e.type !== 'spark'); empower.push({ type: 'spark', uses: E.stats.support_empower_X_attacks_with_spark_on_power_charge_gain, X: asTrig(S, X), label: api.info({ name: X.id }).label, name: S.name, el: 'lightning' }); }
   }
   // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
   const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
@@ -431,15 +434,20 @@ export function initScene(el, api) {
       buffs = buffs.filter(b => b.label !== label); buffs.push({ label, name: G.name, c: css(G.el), s: G.time, gain: G, sup: true });
     }
   }
+  // a support's triggered skill (calc.js trig) as a skill of the scene, its hits scaled where the scene knows its base
+  const scale = (hits, f) => Object.fromEntries(Object.entries(hits).map(([e, [lo, hi]]) => [e, [lo * f, hi * f]]));
+  function asTrig(S, T, hits = T.hits) {
+    const inf = api.info({ name: T.id }), els = Object.keys(Object.keys(hits).length ? hits : T.dot || {}), G = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] });   // with the build's area
+    return { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), G, A: G.radius || SIM.area, dmg: { ...T, hits, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
+  }
   // the explosions supports set off when an enemy dies (calc.js onKill: the triggered skill's own stats), their damage a
   // share of that monster's maximum life, through its resistances: Fiery Death (ignited by the skill, its chance), Bone
   // Shrapnel (killed while pinned), Frozen Spite (killed while frozen: ice fragments that land and burst)
   function deathBlast(d, frozen, S) {
     // the triggered skill as calc has it (a base of 100, through the build's modifiers), scaled to that share of life
     const p = { x: d.pos.x, z: d.pos.z }, blast = (q, key, from) => {
-      const T = from.dmg.trig.find(t => t.stats?.[key]), el = Object.keys(T.hits)[0], x = d.max * T.stats[key] / 100;
-      const hits = Object.fromEntries(Object.entries(T.hits).map(([e, [lo, hi]]) => [e, [lo * x / 100, hi * x / 100]])), inf = api.info({ name: T.id });
-      boom(q, api.geo({ name: T.id, level: from.g?.level || 1, supports: [] }).radius, { ...from, name: T.id, label: inf.label, src: 'trigger', el, els: [el], ail: ailOf([el]), mult: 1, gm: 1, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] } });   // with the build's area
+      const T = from.dmg.trig.find(t => t.stats?.[key]), x = d.max * T.stats[key] / 1e4, X = asTrig(from, T, scale(T.hits, x));
+      boom(q, X.A, X);
     };
     for (const T of d.ignBy?.dmg?.onKill || []) if (T['corpse_explosion_monster_life_%'] && d.st.ignite > 0 && Math.random() * 100 < (T['chance_to_trigger_fiery_death_on_ignited_enemy_death_%'] ?? 100))
       later(.05, () => blast(p, 'corpse_explosion_monster_life_%', d.ignBy));
@@ -495,10 +503,8 @@ export function initScene(el, api) {
       if (kind === 'batter') { clear(d, 'armour'); f = d.stat.armour * ts['support_battershout_physical_damage_equal_to_%_of_broken_armour'] / 1e4; }
       if (kind === 'crystal') { f = (d.burn.bleed?.dps || 0) * d.st.bleed * ts['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] / 1e4; clear(d, 'bleed'); }
       if (gone) { for (const a of gone) clear(d, a); hits = Object.fromEntries(gone.map(a => DISCHARGE[a]).filter(e => T.hits[e]).map(e => [e, T.hits[e]])); }
-      hits = Object.fromEntries(Object.entries(hits).map(([e, [lo, hi]]) => [e, [lo * f, hi * f]]));
-      const inf = api.info({ name: T.id }), els = Object.keys(Object.keys(hits).length ? hits : T.dot || {});
-      const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
-      const c = { x: d.pos.x, z: d.pos.z }, R = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] }).radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10, dur = sh(X).duration || ts.base_skill_effect_duration / 1000;   // with the build's area
+      const X = asTrig(S, T, scale(hits, f));
+      const c = { x: d.pos.x, z: d.pos.z }, R = X.G.radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10, dur = sh(X).duration || ts.base_skill_effect_duration / 1000;   // with the build's area
       say(X.label, X.el);
       if (kind === 'fulminate') later((ts.explosion_delay_ms || 0) / 1000, () => boom(c, R, X));
       else if (kind === 'flare' || kind === 'discharge' || kind === 'batter') boom(c, R, X);
@@ -1334,6 +1340,7 @@ export function initScene(el, api) {
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
+        else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
     }
     const CB = S.dmg?.combo;
@@ -2103,7 +2110,7 @@ export function initScene(el, api) {
       if (T.kind === 'herald' && Math.random() < dt * 14) { const a = time * 3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .8, y: rnd(.2, 1.8), z: pp.z + Math.sin(a) * .8 }, v: .1, up: .8, life: .6, size: .16, c: T.el }); }
       if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
     }
-    for (let i = empower.length - 1; i >= 0; i--) if ((empower[i].s -= dt) <= 0) empower.splice(i, 1);
+    for (let i = empower.length - 1; i >= 0; i--) if (empower[i].s != null && (empower[i].s -= dt) <= 0) empower.splice(i, 1);
     for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt) <= 0) buffs.splice(i, 1);
 
     player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
