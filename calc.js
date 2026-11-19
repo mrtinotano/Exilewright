@@ -776,7 +776,7 @@ export function skill(g, b, treeGear) {
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
-  out.combo = { strike: own.includes('strike'), decay: (all2('base_combo_stacks_decay_delay_ms') || null) && all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
+  out.combo = { strike: own.includes('strike'), decay: all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
     need: all2('support_combo_finisher_required_number_of_combo_stacks'), extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
