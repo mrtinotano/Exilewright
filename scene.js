@@ -854,7 +854,7 @@ export function initScene(el, api) {
     if (o.overgrown || o.dead) return; o.overgrown = true; const S = o.plant;
     fx.ring(o.c, .2, o.R, 'poison', .5); fx.emit(14, { p: { x: o.c.x, y: .1, z: o.c.z }, r: o.R * .8, v: .4, up: 2, life: .8, size: .25, c: 'poison' });
     say(t('{0} is Overgrown', S.label), 'poison');
-    const T = S.dmg.trig?.find(T => T.stats?.['triggered_by_support_explosive_growth_%']); if (!T || !spend(T)) return;
+    const T = S.dmg.trig?.find(x => x.stats?.['triggered_by_support_explosive_growth_%']); if (!T || !spend(T)) return;
     const X = asTrig(S, T); later(T.stats.support_explosive_growth_explosion_delay_X_ms / 1000, () => boom(o.c, X.A, X));
   }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
@@ -1439,7 +1439,7 @@ export function initScene(el, api) {
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
-          for (const o of objs) if (o.plant && !o.overgrown && dist(o.c, c) <= Z) overgrow(o);
+          for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
           if ((tk -= dt) > 0) return; tk = .17;
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
