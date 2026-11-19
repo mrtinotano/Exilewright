@@ -763,7 +763,8 @@ export function skill(g, b, treeGear) {
     // reach, in the game's tenths of a metre: a melee attack's is its weapon's range plus "+0.2 metres to Melee Strike
     // Range" (melee_range_+); a dashing strike's its own (base_melee_dash_range), a blink's its distance
     reach: tags.includes('melee') && w ? (w.range + both('melee_range_+')) / 10 : null, dash: st.base_melee_dash_range ? st.base_melee_dash_range / 10 : null,
-    travel: (st.blink_travel_distance || st.black_powder_blitz_travel_distance || 0) / 10 || null };
+    travel: (st.blink_travel_distance || st.black_powder_blitz_travel_distance || 0) / 10 || null,
+    wall: st.wall_maximum_length ? st.wall_maximum_length / 10 * (1 + both('wall_maximum_length_+%') / 100) : null };   // "Wall length is {0} metres"; Ahn's Citadel's increased
   // Leech (keywords.json Life / Mana Leech): a share of the hit's damage, in % (the stats are permyriad), recovered over one
   // second: of an attack's physical damage (supports, gear, the weapon's own), of a spell's whole damage; increased leech
   // amount and leech rate; Life Leech III's leech is not removed at full life

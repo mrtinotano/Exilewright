@@ -968,7 +968,7 @@ export function initScene(el, api) {
       };
     },
     wall(S) {
-      const P = S.P, c = S.at, L = SIM.wall / 2, px = -S.dz, pz = S.dx, dur = P.dur || SIM.lifetime;   // across the aim
+      const P = S.P, c = S.at, L = (sh(S).wall || SIM.wall) / 2, px = -S.dz, pz = S.dx, dur = P.dur || SIM.lifetime;   // across the aim
       const a = { x: c.x - px * L, z: c.z - pz * L }, b = { x: c.x + px * L, z: c.z + pz * L };
       if (P.crystal) {
         for (let i = 0; i < 6; i++) { const k = i / 5, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k }; later(i * .04, () => crystal(S, p, dur)); }
@@ -1441,7 +1441,7 @@ export function initScene(el, api) {
       case 'sweep': case 'cone': sector(S.R || meleeR(S), coneHalf(S)); break;
       case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
       case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
-      case 'wall': strip({ x: c.x + S.dz * SIM.wall / 2, z: c.z - S.dx * SIM.wall / 2 }, -S.dz, S.dx, SIM.wall, .6); break;
+      case 'wall': { const L = sh(S).wall || SIM.wall; strip({ x: c.x + S.dz * L / 2, z: c.z - S.dx * L / 2 }, -S.dz, S.dx, L, .6); break; }
       case 'storm': circle(c, P.wind ? S.A : Math.max(S.A * 2.4, SIM.stormArea)); break;
       case 'slam': circle(c, stageR(S)); break;
       case 'totem': circle(c, P.ballista || P.ranged ? .6 : S.R || SIM.totemArea); break;
