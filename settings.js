@@ -11,8 +11,8 @@ const KEY = 'exwSettings';
 const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyV', reset: 'KeyX' };
 // the skill bar's keys, as the game's two layouts (its config's [ACTION_KEYS] and [WASD_ACTION_KEYS], use_bound_skill1-8):
 // left, middle and right click, then Q W E R T to click to move, Q E R T F with W A S D moving
-export const SLOTS = { click: ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'], wasd: ['m0', 'm1', 'm2', 'KeyQ', 'KeyE', 'KeyR', 'KeyT', 'KeyF'] };
-export const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];   // up, left, down, right (move_up, move_left, move_down, move_right)
+const SLOTS = { click: ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'], wasd: ['m0', 'm1', 'm2', 'KeyQ', 'KeyE', 'KeyR', 'KeyT', 'KeyF'] };
+const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];   // up, left, down, right (move_up, move_left, move_down, move_right)
 const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const DEFAULTS = { input: 'click', priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)

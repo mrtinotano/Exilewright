@@ -16,7 +16,7 @@ import { t, fmt, cap } from './i18n.js';
 import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
-import { settings, keyName, slotKeys, MOVE_KEYS } from './settings.js';
+import { settings, keyName, slotKeys } from './settings.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -1196,7 +1196,7 @@ export function initScene(el, api) {
     const foe = pick();
     // the left button walks, as in the game: its skill is used on an enemy under the cursor, or anywhere with Shift;
     // moving with W A S D it only uses its skill
-    if (e.button === 0) { const i = barNow()[0]; if (i != null && (foe || e.shiftKey || settings().input === 'wasd')) useSlot(0, 'm0'); else if (settings().input !== 'wasd') { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
+    if (e.button === 0) { const i = barNow()[0], W = settings().input === 'wasd'; if (i != null && (foe || e.shiftKey || W)) useSlot(0, 'm0'); else if (!W) { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
     else if (e.button <= 2) useSlot(e.button, 'm' + e.button);
   });
   addEventListener('mouseup', e => { if (held?.key === 'm' + e.button) release(); if (e.button === 0) walk = false; orbit = false; });
