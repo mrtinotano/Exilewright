@@ -319,7 +319,7 @@ export function initScene(el, api) {
       else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
     const M = d.mark;
-    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; later(.05, () => boom(d.pos, M.R, M.S)); }
+    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => boom(d.pos, M.R, M.S)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
@@ -338,7 +338,7 @@ export function initScene(el, api) {
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
     if (M?.gain && d.mark === M && crit && own) {
-      d.mark = null; fx.ring(d.pos, .3, 1.5, 'mark', .35);
+      d.mark = null; trigger(M.S, 'mark', d); fx.ring(d.pos, .3, 1.5, 'mark', .35);
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
@@ -458,32 +458,55 @@ export function initScene(el, api) {
   // Voltaic Fulmination (Eonyr's Thunder): an enemy killed while electrocuted explodes after its delay, a share of its
   // maximum life (PoB2: corpseExplosionLifeMultiplier) as lightning; Mana Flare: a crit consumes that share of your
   // current mana as fire damage around the enemy; Elemental Discharge: a hit consumes the enemy's ignite, freeze and
-  // shock for damage of those elements only. Their base damage scaled from calc.js's (100 for a share, Int for Discharge)
-  const trigReady = {}, fields = { static: [], rift: [] };
-  const ON = { rift: 'shock', static: 'shock', current: 'shock', erupt: 'ignitedHit', fulminate: 'electrocuteKill', flare: 'crit', discharge: 'hit' };
+  // shock for damage of those elements only. Their base damage scaled from calc.js's (100 for a share, Int for Discharge).
+  // Decaying Hex: each enemy a curse curses gets Profane Decay (chaos over time); Corrupting Cry: each enemy a warcry
+  // reaches gets that many Corrupted Blood debuffs (up to 10, keywords.json); Battershout: a warcry consumes the Fully
+  // Broken Armour of each enemy it reaches for a burst of that share of the broken armour; Haemocrystals: a hit
+  // consumes bleeding for crystals around the enemy (up to the most allowed) that burst after their duration, each that
+  // share of the bleeding's remaining damage; Charged Mark: a mark that activates leaves Shocked Ground where it was.
+  // note: Corrupted Blood's debuffs share one duration, refreshed (the game times each one)
+  const trigReady = {}, fields = { static: [], rift: [] }, crystals = [];
+  const KINDS = [['base_number_of_living_lightning_allowed', null], ['shocking_rift_number_of_pulses', 'rift'], ['grounding_shocks_pulse_delay_ms', 'static'],
+    ['chance_to_trigger_volcanic_eruption', 'erupt'], ['number_of_chains', 'current'], ['triggered_by_support_electrocute_lineage_%', 'fulminate'],
+    ['support_mana_flare_%_of_current_mana_consumed', 'flare'], ['spell_minimum_base_cold_damage_as_%_of_intelligence', 'discharge'],
+    ['base_chaos_damage_to_deal_per_minute', 'decay'], ['add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict', 'cry'],
+    ['support_battershout_physical_damage_equal_to_%_of_broken_armour', 'batter'], ['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage', 'crystal'],
+    ['chance_to_trigger_shocked_ground_on_mark_activated_%', 'charged']];
+  const ON = { rift: 'shock', static: 'shock', current: 'shock', erupt: 'ignitedHit', fulminate: 'electrocuteKill', flare: 'crit', discharge: 'hit',
+    decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
     for (const T of S?.dmg?.trig || []) {
-      const ts = T.stats || {}, U = T.support, kind = ts.shocking_rift_number_of_pulses ? 'rift' : ts.grounding_shocks_pulse_delay_ms ? 'static'
-        : ts.chance_to_trigger_volcanic_eruption ? 'erupt' : ts.number_of_chains ? 'current' : ts['triggered_by_support_electrocute_lineage_%'] ? 'fulminate'
-        : ts['support_mana_flare_%_of_current_mana_consumed'] ? 'flare' : ts['spell_minimum_base_cold_damage_as_%_of_intelligence'] ? 'discharge' : null;
-      if (!kind || T.reason || ON[kind] !== on) continue;
+      const ts = T.stats || {}, U = T.support, kind = KINDS.find(([k]) => ts[k])?.[1];
+      if (!kind || T.reason && kind !== 'charged' || ON[kind] !== on) continue;   // Charged Mark only leaves ground
       const gone = kind === 'discharge' && Object.keys(DISCHARGE).filter(a => has(d, a));
-      if (gone && !gone.length) continue;
+      if (gone && !gone.length || kind === 'batter' && !has(d, 'armour') || kind === 'crystal' && !has(d, 'bleed')) continue;
       const near4 = kind === 'rift' && dummies.filter(e => !e.dead && !e.inRift && has(e, 'shock') && dist(e.pos, d.pos) <= U.try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy / 10);
       if (near4 && near4.length < U.consume_shock_of_X_enemies_to_trigger_shocking_rift) continue;
       if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) continue; r.push(time + T.cooldown / 1000); }
       let f = 1, hits = T.hits;
       if (kind === 'fulminate') f = d.max * (ts.skill_specific_stat_description_mode || 0) / 1e4;
       if (kind === 'flare') { const used = me.mana * ts['support_mana_flare_%_of_current_mana_consumed'] / 100; me.mana -= used; f = used / 100; }
+      if (kind === 'batter') { clear(d, 'armour'); f = d.stat.armour * ts['support_battershout_physical_damage_equal_to_%_of_broken_armour'] / 1e4; }
+      if (kind === 'crystal') { f = (d.burn.bleed?.dps || 0) * d.st.bleed * ts['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] / 1e4; clear(d, 'bleed'); }
       if (gone) { for (const a of gone) clear(d, a); hits = Object.fromEntries(gone.map(a => DISCHARGE[a]).filter(e => T.hits[e]).map(e => [e, T.hits[e]])); }
       hits = Object.fromEntries(Object.entries(hits).map(([e, [lo, hi]]) => [e, [lo * f, hi * f]]));
-      const inf = api.info({ name: T.id }), els = Object.keys(hits);
+      const inf = api.info({ name: T.id }), els = Object.keys(Object.keys(hits).length ? hits : T.dot || {});
       const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
       const c = { x: d.pos.x, z: d.pos.z }, R = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] }).radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10;   // with the build's area
       say(X.label, X.el);
       if (kind === 'fulminate') later((ts.explosion_delay_ms || 0) / 1000, () => boom(c, R, X));
-      else if (kind === 'flare' || kind === 'discharge') boom(c, R, X);
+      else if (kind === 'flare' || kind === 'discharge' || kind === 'batter') boom(c, R, X);
+      else if (kind === 'decay' || kind === 'cry') {
+        const o = d.dots.find(o => o.name === T.id), n = kind === 'cry' ? Math.min(10, (o?.stacks || 0) + ts.add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict) : 1;
+        dot(d, { ...X, mult: n, P: { ...X.P, dur: sh(X).duration || ts.base_skill_effect_duration / 1000 } }); d.dots.find(o => o.name === T.id).stacks = n;
+      } else if (kind === 'charged') ground('shocked', c, R, sh(X).duration || ts.base_skill_effect_duration / 1000, X);
+      else if (kind === 'crystal') for (let k = 0; k < (U.consume_bleed_to_create_X_haemocrystals || 1); k++) {
+        if (crystals.length >= (U.support_haemocrystals_maximum_allowed_crystals || Infinity)) break;
+        const a = Math.random() * Math.PI * 2, r = Math.random() * ts.support_haemocrystals_crystal_creation_radius / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
+        crystals.push(q); fx.ring(q, .1, .35, 'blood', .3);
+        later(sh(X).duration || ts.base_skill_effect_duration / 1000, () => { crystals.splice(crystals.indexOf(q), 1); boom(q, R, X); });
+      }
       else if (kind === 'current') { const e = near(d.pos, sh(X).chainRange || SIM.chainRange, e => e !== d); if (e) chain(chest(d), e, X, (sh(X).chains || 1) - 1, new Set([d])); }
       else if (kind === 'erupt') for (let k = 0; k < (ts.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(ts.skill_mortar_minimum_projectile_distance, ts.skill_mortar_maximum_projectile_distance) / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
@@ -531,7 +554,7 @@ export function initScene(el, api) {
     if (!fresh) return;
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
-      const M = d.mark; d.mark = null; buffs = buffs.filter(b => !b.gain || b.sup);
+      const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     if (a === 'freeze') gainBuff(S, 'freeze');
@@ -667,7 +690,7 @@ export function initScene(el, api) {
       const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];
       if (a && st[a] > 0) later(.1, () => herald(T, p));
     }
-    if (M?.bomb) later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.R, M.S); });
+    if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.R, M.S); }); }
     const sp = d.dots.find(o => o.spread);
     if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it
       const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
@@ -1058,7 +1081,7 @@ export function initScene(el, api) {
         for (const d of list) {
           if (C?.maxLevel && d.level > C.maxLevel) { say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); continue; }
           n++;
-          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
+          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
       });
     },
@@ -1074,7 +1097,7 @@ export function initScene(el, api) {
       fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
-      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); }
+      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
       if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
     },
@@ -1622,7 +1645,7 @@ export function initScene(el, api) {
     // the bars empty after a while without buildup (monster.ot poise decay)
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
-    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) boom(d.pos, M.R, M.S); }
+    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); boom(d.pos, M.R, M.S); } }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
