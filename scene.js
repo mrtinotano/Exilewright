@@ -376,6 +376,7 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     d.by = S; damage(d, total, S);
+    if (!S.src) thornHit(S, d);
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
@@ -1820,6 +1821,37 @@ export function initScene(el, api) {
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
+  // Thorns (keywords.json): a melee attack that hits you is dealt your thorns back, a Hit of yours (calc.js character
+  // thorns: its damage, crit, the build's ailments), with the cold thorns Nature's Exchange adds (by your thorns increases).
+  // Quill Burst: after you retaliate, the supported skill's next hits (its count) burst for your thorns around the target.
+  // Morrigan's Insight: the supported skill's hit on a frozen enemy consumes the freeze for Nature's Exchange (its cooldown):
+  // its Guard and cold thorns for its duration
+  const THORN_P = profile({ name: 'Thorns', tags: ['physical'] }, {});
+  function thornsOf() {
+    const T = sheet().thorns || { hits: {} }, N = buffs.find(b => b.thorns), hits = { ...T.hits };
+    if (N) hits.cold = N.thorns.map(x => x * (T.thornsX || 1));
+    return Object.values(hits).some(([, hi]) => hi > 0) ? { ...T, hits } : null;
+  }
+  const thornX = (D, label) => { const els = Object.keys(D.hits).filter(e => D.hits[e][1] > 0); return { name: 'Thorns', label, P: THORN_P, G: {}, A: SIM.area, dmg: { attack: false, dot: {}, trig: [], ...D }, src: 'thorns', el: els.find(e => e !== 'physical') || els[0], els, ail: [], mult: 1, gm: 1, spent: 0 }; };
+  function retaliate(d) {
+    const D = thornsOf(); if (!D || d.dead) return;
+    fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
+    hit(d, thornX(D, t('Thorns')), { noPay: true }); me.quill = { n: 0 };
+  }
+  function thornHit(S, d) {
+    for (const T of S.dmg?.trig || []) {
+      const n = T.support?.trigger_spiked_gauntlets_for_X_hits_after_thorns_trigger, D = n && me.quill && me.quill.n < n && thornsOf() || null;
+      if (D && !spend(T)) continue;
+      if (D) { me.quill.n++; const Q = asTrig(S, T), X = { ...thornX(D, Q.label), name: T.id, A: Q.A }; say(X.label, 'dust'); later(.05, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
+      const g = T.stats?.morrigan_ward_gain_X_guard;
+      if (g && d.st.freeze > 0 && spend(T)) {
+        d.st.freeze = 0; const label = api.info({ name: T.id }).label, dur = T.shape?.duration || T.stats.base_skill_effect_duration / 1000;
+        me.guard = Math.max(me.guard, Math.min(g, 2 * (me.maxL || 0)));   // keywords.json Guard: the higher one stays, up to 200% of your life
+        buffs = buffs.filter(b => !b.thorns); buffs.push({ label, name: S.name, c: css('cold'), s: dur, thorns: [T.stats.morrigan_ward_thorns_minimum_base_cold_damage, T.stats.morrigan_ward_thorns_maximum_base_cold_damage] });
+        say(t('{0} consumes {1}', label, t(STATE.freeze)), 'cold');
+      }
+    }
+  }
   // Deadly Resolve: a stage per its time channelling the supported skill (up to its most, for its duration: one timer for all,
   // ponytail: each stage's own timer if it matters); an enemy's hit expends one for a slash at it, its cone and cooldown, 1%
   // more damage per its armour
@@ -1852,7 +1884,7 @@ export function initScene(el, api) {
     }
     hurt(total, chaos, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
-    resolve(d); ailed(d, raw, dealt);
+    resolve(d); if (a.melee) retaliate(d); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -1986,7 +2018,7 @@ export function initScene(el, api) {
       res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
       move: [spd() * act * maimed(), spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
       life: rec('life'), mana: rec('mana'), dot: [dot * (me.st.shock > 0 ? 1 + me.mag.shock / 100 : 1), 0],
-      rage: rageMax() ? [rageNow(), 0] : null, guard: charms().some(f => f?.guard) ? [me.guard, 0] : null,
+      rage: rageMax() ? [rageNow(), 0] : null, guard: me.guard > 0 || charms().some(f => f?.guard) ? [me.guard, 0] : null,
       berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
       // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff (not a
       // totem's or a minion's, nor one a meta gem uses: those act by themselves)

@@ -258,6 +258,10 @@ export function character(b, sum) {
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%'),
     missingBase: lifeBase == null,
+    // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
+    // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
+    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * pct('thorns_damage_+%'))) },
+      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX: pct('thorns_damage_+%') },
   };
 }
 
