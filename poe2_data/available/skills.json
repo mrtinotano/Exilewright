@@ -12758,12 +12758,8 @@
    "weapons": null,
    "flags": [
     "base_lightning_damage_can_electrocute",
-    "cannot_electrocute",
     "never_shock"
    ],
-   "part": {
-    "triggered_by_support_electrocute_lineage_%": 100
-   },
    "triggers": {
     "TriggeredLightningDetonateDeadPlayer": {
      "triggered_by_support_electrocute_lineage_%": 100,
@@ -86581,9 +86577,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "support_mana_flare_%_of_current_mana_consumed": 25
-   },
    "triggers": {
     "TriggeredManaFlarePlayer": {
      "triggered_by_mana_flare_support_%": 100,
@@ -105736,9 +105729,6 @@
    "flags": [
     "cannot_break_armour"
    ],
-   "part": {
-    "active_skill_damage_+%_final_vs_unique_enemies": 50
-   },
    "triggers": {
     "TriggeredBattershoutExplosionPlayer": {
      "support_battershout_physical_damage_equal_to_%_of_broken_armour": 40,
@@ -106401,9 +106391,6 @@
    "flags": [
     "cannot_cause_bleeding"
    ],
-   "part": {
-    "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8
-   },
    "triggers": {
     "TriggeredHaemocrystalsPlayer": {
      "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8,
@@ -107416,15 +107403,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "never_shock"
-   ],
-   "part": {
-    "triggered_by_grounding_shocks_support_on_shock_%": 100,
-    "maximum_grounding_shocks_allowed": 5,
-    "grounding_shocks_pulse_delay_ms": 650,
-    "grounding_shocks_maximum_targets_per_aoe": 6
-   },
    "triggers": {
     "TriggeredStaticShocksPlayer": {
      "triggered_by_grounding_shocks_support_on_shock_%": 100,
@@ -115870,9 +115848,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "never_freeze"
-   ],
    "triggers": {
     "TriggeredSupportFrozenSpiteIceFragmentPlayer": {
      "triggered_by_frozen_spite_support_%": 100,
@@ -115904,18 +115879,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "never_shock"
-   ],
-   "part": {
-    "triggered_by_shocking_rift_support_%": 100,
-    "number_of_shocking_rifts_allowed": 3,
-    "shocking_rift_number_of_pulses": 5,
-    "shocking_rift_pulse_interval_ms": 850,
-    "shocking_rift_damage_+%_final_per_pulse_performed": 20,
-    "shocking_rift_speed_+%_per_shock_consumed": 25,
-    "shocking_rift_hinder_ms": 900
-   },
    "triggers": {
     "TriggeredShockingRiftPlayer": {
      "triggered_by_shocking_rift_support_%": 100,
@@ -118365,10 +118328,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "triggered_by_support_creeping_chill_%": 100,
-    "support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life": 100
-   },
    "triggers": {
     "TriggeredCreepingChillPlayer": {
      "triggered_by_support_creeping_chill_%": 100,
@@ -119222,9 +119181,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "never_ignite"
-   ],
    "triggers": {
     "TriggeredFanTheFlamesPlayer": {
      "triggered_by_support_fan_the_flames_%": 100,
@@ -119246,9 +119202,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "never_ignite"
-   ],
    "triggers": {
     "TriggeredFanTheFlamesPlayerTwo": {
      "triggered_by_support_fan_the_flames_%": 100,
@@ -119272,9 +119225,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "flags": [
-    "cannot_chain_to_previous_targets"
-   ],
    "triggers": {
     "TriggeredDeadlyCurrentPlayer": {
      "number_of_chains": 6
@@ -119591,253 +119541,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "triggered_pustule_from_poison_spores_on_hit_chance_%": 100,
-    "base_chance_to_poison_on_hit_%": 100,
-    "toxic_pustule_max_burst_damage_+%_final_from_stored_poison": 300
-   },
-   "part_levels": {
-    "1": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 17
-    },
-    "2": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 31
-    },
-    "3": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 50,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 5,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 53
-    },
-    "4": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 100,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 9,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 4,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 85
-    },
-    "5": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 150,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 12,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 6,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 127
-    },
-    "6": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 200,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 19,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 8,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 182
-    },
-    "7": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 300,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 26,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 12,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 258
-    },
-    "8": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 425,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 36,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 17,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 359
-    },
-    "9": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 600,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 49,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 24,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 491
-    },
-    "10": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 825,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 66,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 33,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 667
-    },
-    "11": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1075,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 89,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 43,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 895
-    },
-    "12": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1425,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 119,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 57,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1190
-    },
-    "13": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 1900,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 157,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 76,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1574
-    },
-    "14": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 2475,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 206,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 99,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2064
-    },
-    "15": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 3225,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 270,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 129,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2697
-    },
-    "16": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 4200,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 351,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 168,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 3512
-    },
-    "17": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 5450,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 455,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 218,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 4552
-    },
-    "18": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 7050,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 588,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 282,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 5872
-    },
-    "19": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 9075,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 755,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 363,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 7555
-    },
-    "20": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 11650,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 969,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 466,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 9691
-    },
-    "21": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 12375,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1032,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 495,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 10308
-    },
-    "22": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 13675,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1141,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 547,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 11402
-    },
-    "23": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 15900,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1324,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 636,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 13248
-    },
-    "24": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 18650,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1555,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 746,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 15550
-    },
-    "25": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 22100,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1843,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 884,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 18423
-    },
-    "26": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 23650,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1971,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 946,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 19703
-    },
-    "27": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 25300,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2107,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1012,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 21065
-    },
-    "28": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 27025,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2252,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1081,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 22513
-    },
-    "29": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 28850,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2405,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1154,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 24053
-    },
-    "30": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 30825,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2568,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1233,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 25691
-    },
-    "31": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 32625,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2721,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1305,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 27203
-    },
-    "32": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 34550,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2880,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1382,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 28804
-    },
-    "33": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 36600,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3049,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1464,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 30496
-    },
-    "34": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 38725,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3229,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1549,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 32285
-    },
-    "35": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 41000,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3417,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1640,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 34180
-    },
-    "36": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 43400,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3619,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1736,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 36179
-    },
-    "37": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 45950,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3829,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1838,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 38296
-    },
-    "38": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 48625,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4053,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1945,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 40530
-    },
-    "39": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 51500,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4290,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2060,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 42896
-    },
-    "40": {
-     "pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet": 54450,
-     "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4540,
-     "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2178,
-     "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 45395
-    }
-   },
    "triggers": {
     "TriggeredPoisonSporesPustule": {
      "triggered_pustule_from_poison_spores_on_hit_chance_%": 100,
@@ -119946,9 +119649,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
-   },
    "triggers": {
     "TriggeredSparkEmpowerPlayer": {
      "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
@@ -119975,9 +119675,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
-   },
    "triggers": {
     "TriggeredSparkEmpowerPlayer": {
      "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
@@ -120181,9 +119878,6 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
-   "part": {
-    "chance_to_trigger_shocked_ground_on_mark_activated_%": 100
-   },
    "triggers": {
     "TriggeredChargedMarkPlayer": {
      "chance_to_trigger_shocked_ground_on_mark_activated_%": 100,

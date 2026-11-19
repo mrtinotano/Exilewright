@@ -798,11 +798,11 @@ export function skill(g, b, treeGear) {
     buffOf('Innervate', 'support_innervate_buff_grant_%_added_lightning_attack_damage', 'lightning', 'support_innervate_buff_base_duration_ms', 'shockKill'),
     buffOf('Blazing Critical', 'support_blazing_crits_gain_%_fire_damage_with_attacks_on_critical_hit', 'fire', 'support_blazing_crits_base_duration_ms', 'crit', true)].filter(Boolean);
   out.lifeOnKill = sup('support_cannibalism_recover_%_maximum_life_on_kill');
-  // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
   // the skills its supports set off (Coursing Current, Static Shocks, Electromagnetism, Volcanic Eruption...), at this
-  // gem's level (PoB2: granted skills inherit the level of the skill the support is on), with the tree's and gear's
+  // gem's level (PoB2: granted skills inherit the level of the skill the support is on), with the tree's and gear's modifiers
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
     .map(id => ({ ...skill({ name: id, level: g.level, supports: [] }, b, treeGear), id, support: SK.skills[n].constant || {} })));
+  // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
   out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it

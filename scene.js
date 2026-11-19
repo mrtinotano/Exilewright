@@ -510,6 +510,7 @@ export function initScene(el, api) {
     const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S;
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
+    if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
@@ -517,8 +518,7 @@ export function initScene(el, api) {
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     if (a === 'freeze') gainBuff(S, 'freeze');
-    if (a === 'ignite') d.ignBy = S;
-    if (a === 'shock') trigger(S, 'shock', d);   // Fiery Death: the enemies the supported skill ignites
+    if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }

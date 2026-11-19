@@ -368,7 +368,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     # what the gem's other parts say (its second hit, the explosion, the empowered use...): only the rules the 3D scene
     # reads (consuming a state, damage against one, exposure, curses, charges), per level as above; and every on / off
     # rule of the skill (never_freeze, always_ignite, base_consume_enemy_shock_on_hit...) from all of its parts
-    allfx = effects + [ge_tab[x] for x in fx['AdditionalGrantedEffects'] if ge_tab[x] not in effects and not ge_tab[x]['Id'].startswith('Support')]
+    allfx = effects + [ge_tab[x] for x in fx['AdditionalGrantedEffects'] if ge_tab[x] not in effects and not ge_tab[x]['Id'].startswith(('Support', 'Triggered') if g['kind'] == 'support' else 'Support')]   # a support's triggered skills are skills of their own (below)
     more_sets = [i for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] if i not in sets]
     flags = sorted({k for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] for k in map(sid, ss_tab[i]['ImplicitStats']) if PART_FLAG.search(k)})
     part, part_levels = {}, {}
