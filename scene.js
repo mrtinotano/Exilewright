@@ -9,14 +9,14 @@
 // damage calc.js gives their attack (minionOf()). Not in the game data: what consuming a state does when the skill gives no
 // number for it, a minion whose skills deal no damage of their own, and how an enemy attack looks and reaches you. Those are the SIM defaults of
 // skillfx.js and the shapes of enemies.js; a number that includes one of them is drawn with "~".
-// Left click move (or use its skill on an enemy) · middle / right click and Q W E R T use their skill · Alt-drag orbit · wheel zoom · Space roll · C corpse · G charges · F refill · X reset
-// (those five can be changed in Settings: settings.js).
+// Click to move (or W A S D, chosen in Settings: settings.js), the skill bar on the game's keys for each, Space roll, 1 / 2 flasks,
+// Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, fmt, cap } from './i18n.js';
 import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
-import { settings, keyName } from './settings.js';
+import { settings, keyName, slotKeys, MOVE_KEYS } from './settings.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -133,12 +133,11 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
-  // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T, each with the skill put on it
-  // (click its slot to choose); a skill new to the build takes the first free slot, as in the game. -> gem index or null
-  const SLOT_KEYS = ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'];
+  // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
+  // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game. -> gem index or null
   function barNow() {
     const gems = api.build().gems, own = slots(), names = own.map(i => gems[i].name), B = api.bar?.() || {};
-    const s = SLOT_KEYS.map((_, k) => B.slots?.[k] ?? null), seen = [...(B.seen || [])];
+    const s = slotKeys().map((_, k) => B.slots?.[k] ?? null), seen = [...(B.seen || [])];
     let change = !B.slots;
     for (const n of names) if (!seen.includes(n)) { seen.push(n); change = true; const k = s.findIndex(x => !x || !names.includes(x)); if (k >= 0) s[k] = n; }
     if (change) api.setBar?.({ slots: s, seen });
@@ -148,7 +147,29 @@ export function initScene(el, api) {
   function setSlot(k, name) { barNow(); const B = api.bar?.(); if (!B) return; const s = [...B.slots], j = name ? s.indexOf(name) : -1; if (j >= 0 && j !== k) s[j] = s[k]; s[k] = name; api.setBar({ ...B, slots: s }); hudT = 0; }
   // a slot's key: a mouse with its button lit, or the letter
   const MOUSE = ['M5 1v5H1V5a4 4 0 0 1 4-4z', 'M4.2 2.4h1.6v2.8H4.2z', 'M5 1v5h4V5a4 4 0 0 0-4-4z'];
-  const keyLabel = k => SLOT_KEYS[k][0] === 'm' ? `<svg class="s-mouse" viewBox="0 0 10 14"><rect x="1" y="1" width="8" height="12" rx="4" fill="none" stroke="currentColor"/><path d="${MOUSE[+SLOT_KEYS[k][1]]}" fill="currentColor"/></svg>` : keyName(SLOT_KEYS[k]);
+  const keyLabel = k => { const c = slotKeys()[k]; return padOn ? PAD_NAME[k] : c[0] === 'm' ? `<svg class="s-mouse" viewBox="0 0 10 14"><rect x="1" y="1" width="8" height="12" rx="4" fill="none" stroke="currentColor"/><path d="${MOUSE[+c[1]]}" fill="currentColor"/></svg>` : keyName(c); };
+  // A controller, when the browser sees one (Gamepad API, standard layout): the left stick moves, the right stick aims, else
+  // the nearest enemy is the target, as the game's controller does; its buttons use the bar's slots, roll and drink.
+  // note: the game's default controller binds are in its executable, not in its files: this layout is the simulator's.
+  const PAD = { 0: 0, 2: 1, 3: 2, 5: 3, 7: 4, 4: 5, 6: 6, 11: 7 }, PAD_NAME = ['A', 'X', 'Y', 'RB', 'RT', 'LB', 'LT', 'RS'];
+  let padOn = false, padWas = [], steer = null;   // steer: where W A S D or the stick move you this frame
+  const tilt = (x, y) => Math.hypot(x, y) > .25;
+  const inputOf = on => { if (padOn !== on) { padOn = on; hudT = 0; } };
+  // a direction on the screen (x right, y up) on the ground, as the camera sees it
+  const onGround = (x, y) => { const s = Math.sin(camS.yaw), c = Math.cos(camS.yaw), wx = c * x - s * y, wz = -s * x - c * y, l = Math.hypot(wx, wz); return l ? { x: wx / l, z: wz / l } : null; };
+  function pad() {
+    const g = [...(navigator.getGamepads?.() || [])].find(Boolean); if (!g || el.hidden) return null;
+    const b = g.buttons.map(x => x.pressed), [lx = 0, ly = 0, rx = 0, ry = 0] = g.axes;
+    if (b.some(Boolean) || tilt(lx, ly) || tilt(rx, ry)) inputOf(true);
+    b.forEach((on, n) => {
+      if (on === !!padWas[n]) return;
+      const k = PAD[n], key = 'pad' + n;
+      if (!on) { if (held?.key === key) release(); }
+      else if (k != null) useSlot(k, key); else if (n === 1) roll(); else if (n === 14 || n === 15) drink(n - 14);
+    });
+    padWas = b;
+    return { move: tilt(lx, ly) ? onGround(lx, -ly) : null, aim: tilt(rx, ry) ? onGround(rx, -ry) : null };
+  }
   const gemBy = n => api.build().gems.find(g => g.name === n);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
@@ -1134,12 +1155,12 @@ export function initScene(el, api) {
   const useSlot = (k, key) => { const i = barNow()[k]; if (i == null) return; select(i, true, true); press(i, key); };
   addEventListener('keydown', e => {
     if (el.hidden || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
-    const c = e.code;
+    const c = e.code; inputOf(false);
     const K = settings().keys;
     if (c === K.roll) e.preventDefault();
     keys[c] = true;
     if (e.repeat) return;
-    if (SLOT_KEYS.includes(c)) useSlot(SLOT_KEYS.indexOf(c), c);
+    if (slotKeys().includes(c)) useSlot(slotKeys().indexOf(c), c);
     else if (c === K.reset) reset();
     else if (c === K.lifeFlask || c === K.manaFlask) drink(c === K.lifeFlask ? 0 : 1);
     else if (c === 'Escape') { setPlacing(false); closePick(); }
@@ -1150,19 +1171,21 @@ export function initScene(el, api) {
       else toast(t('Point at an enemy to turn it into a corpse'));
     }
     else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
-    else if (c === K.roll && !move && rollCd <= 0 && !stuck()) {
-      // toward the cursor, as the game's roll
-      const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
-      const dx = l > .1 ? fx0 / l : Math.sin(facing), dz = l > .1 ? fz0 / l : Math.cos(facing);
-      move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = goal = null;
-      fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
-      event('dodge', near(pp, 30)?.pos || pp, NONE);
-    }
+    else if (c === K.roll) roll();
   });
+  // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
+  function roll() {
+    if (move || rollCd > 0 || stuck()) return;
+    const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
+    const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
+    event('dodge', near(pp, 30)?.pos || pp, NONE);
+  }
   addEventListener('keyup', e => { keys[e.code] = false; if (held?.key === e.code) release(); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = walk = false; if (held) release(); });
   dom.addEventListener('mousemove', e => {
-    aimMouse(e);
+    aimMouse(e); inputOf(false);
     if (orbit) { camS.yaw -= e.movementX * .006; camS.pitch = clamp(camS.pitch + e.movementY * .005, .35, 1.45); }
   });
   dom.addEventListener('mousedown', e => {
@@ -1171,8 +1194,9 @@ export function initScene(el, api) {
     if (e.altKey) { orbit = true; e.preventDefault(); return; }
     if (e.button === 0 && tpl.mon && (placing || e.ctrlKey)) { pick(true); place(cursor.x, cursor.z); return; }
     const foe = pick();
-    // the left button walks, as in the game: its skill is used on an enemy under the cursor, or anywhere with Shift
-    if (e.button === 0) { const i = barNow()[0]; if (i != null && (foe || e.shiftKey)) useSlot(0, 'm0'); else { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
+    // the left button walks, as in the game: its skill is used on an enemy under the cursor, or anywhere with Shift;
+    // moving with W A S D it only uses its skill
+    if (e.button === 0) { const i = barNow()[0]; if (i != null && (foe || e.shiftKey || settings().input === 'wasd')) useSlot(0, 'm0'); else if (settings().input !== 'wasd') { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
     else if (e.button <= 2) useSlot(e.button, 'm' + e.button);
   });
   addEventListener('mouseup', e => { if (held?.key === 'm' + e.button) release(); if (e.button === 0) walk = false; orbit = false; });
@@ -1326,11 +1350,13 @@ export function initScene(el, api) {
     + Object.keys(me.bar).filter(a => me.bar[a] >= 1)
       .map(a => `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
   function keysText() {
-    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
-      t('Middle and right click, Q W E R T: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill'), t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
+    const W = settings().input === 'wasd';
+    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), W ? t('W A S D: move · Left click: use its skill') : t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
+      t('Mouse buttons and {0}: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill', slotKeys().slice(3).map(keyName).join(' ')),
+      t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
       t('{0} / {1}: life and mana flask', keyName(settings().keys.lifeFlask), keyName(settings().keys.manaFlask)),
       t('{0}: corpse at the cursor · {1}: fill charges · {2}: refill life · {3}: reset', ...['corpse', 'charges', 'refill', 'reset'].map(k => keyName(settings().keys[k]))),
-      !tpl.mon ? t('Pick an enemy in the left panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Ctrl+click: place {0}', tpl.mon.name),
+      !tpl.mon ? t('Pick an enemy in the Enemies panel to place it') : placing ? t('Click: place {0} · Esc: stop placing', tpl.mon.name) : t('Ctrl+click: place {0}', tpl.mon.name),
       t('Damage dealt: {0} · Kills: {1}', short(stats.dealt), stats.kills), t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)].join('\n');
     if (hud.textContent !== text) hud.textContent = text;
   }
@@ -1560,7 +1586,7 @@ export function initScene(el, api) {
   }
   // a flask on the bar: its art darkened above the charges it has, its key under it
   function flaskHtml(n) {
-    const f = flasks()[n], key = `<b>${esc(keyName(settings().keys[n ? 'manaFlask' : 'lifeFlask']))}</b>`;
+    const f = flasks()[n], key = `<b>${padOn ? (n ? '▶' : '◀') : esc(keyName(settings().keys[n ? 'manaFlask' : 'lifeFlask']))}</b>`;
     if (!f) return `<button class="s-flask none" data-f="${n}" title="${esc(t('{0}: nothing equipped', flaskName(n)))}">${key}</button>`;
     const left = flaskLeft(n);
     return `<button class="s-flask${me.drink[n] || f.always ? ' act' : ''}${left < f.per ? ' low' : ''}" data-f="${n}" title="${esc(flaskName(n))} ${Math.floor(left)}/${f.max}">`
@@ -1700,8 +1726,11 @@ export function initScene(el, api) {
     }
   }
   function step(dt) {
-    // movement
+    // movement: a roll or a dash, else W A S D or the stick (not while a skill is being used: note: the game's own lock is
+    // the skill's animation, the scene's the .3 s its cast pose lasts), else to the point clicked
     let moving = false;
+    const P = pad(), wasd = settings().input === 'wasd' && !held && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD);
+    steer = P?.move || (wasd ? onGround((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0)) : null);
     if (move) {
       const m = move; m.k = Math.min(1, m.k + dt / m.dur); moving = true;
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
@@ -1710,6 +1739,9 @@ export function initScene(el, api) {
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(); }
+    } else if (steer && !charge && !stuck()) {
+      goal = null;
+      if (time - castAt > .3) { const v = spd() * slowed() * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
     } else if (goal && !charge && !stuck()) {   // to the point clicked, following the cursor while the button is held
       if (walk) goal = { x: cursor.x, z: cursor.z };
       const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * dt);
@@ -1724,6 +1756,10 @@ export function initScene(el, api) {
     cam.position.set(camT.x + Math.sin(camS.yaw) * cp * camS.dist + rnd(-shake, shake) * .4, Math.sin(camS.pitch) * camS.dist + rnd(-shake, shake) * .4, camT.z + Math.cos(camS.yaw) * cp * camS.dist);
     cam.lookAt(camT.x, 1, camT.z); cam.updateMatrixWorld();
     pick();
+    if (padOn) {   // with the controller, the cursor is where the right stick points, else on the nearest enemy, else ahead
+      const d = !P?.aim && near(pp, 20), a = P?.aim || { x: Math.sin(facing), z: Math.cos(facing) };
+      if (d) cursor.set(d.pos.x, 0, d.pos.z); else cursor.set(pp.x + a.x * 8, 0, pp.z + a.z * 8);
+    }
 
     // casting
     cd -= dt * slowed(); rollCd -= dt;

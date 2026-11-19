@@ -6,17 +6,25 @@ import { t, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
 
 const KEY = 'exwSettings';
-// the 3D scene's own keys (the skill bar is the mouse buttons and Q W E R T, as in the game)
-const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyF', reset: 'KeyX' };
+// the 3D scene's own keys; the roll and the flasks are the game's (Space, 1, 2), the rest the simulator's, on keys
+// neither of the game's layouts uses for the skill bar or movement
+const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyV', reset: 'KeyX' };
+// the skill bar's keys, as the game's two layouts (its config's [ACTION_KEYS] and [WASD_ACTION_KEYS], use_bound_skill1-8):
+// left, middle and right click, then Q W E R T to click to move, Q E R T F with W A S D moving
+export const SLOTS = { click: ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'], wasd: ['m0', 'm1', 'm2', 'KeyQ', 'KeyE', 'KeyR', 'KeyT', 'KeyF'] };
+export const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];   // up, left, down, right (move_up, move_left, move_down, move_right)
 const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
-const FIXED = /^(Key[QWERT]|Escape)$/;
-const DEFAULTS = { priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
+const DEFAULTS = { input: 'click', priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
-  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...Object.fromEntries(Object.entries(s.keys || {}).filter(([, c]) => !FIXED.test(c))) } };   // a key saved before the bar took it goes back to its default
+  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
 })();
+export const slotKeys = () => SLOTS[S.input] || SLOTS.click;
+const taken = c => c === 'Escape' || slotKeys().includes(c) || S.input === 'wasd' && MOVE_KEYS.includes(c);
+const fix = () => { for (const k in S.keys) if (taken(S.keys[k])) S.keys[k] = SCENE_KEYS[k]; };   // a key the bar or movement takes goes back to its default
+fix();
 export const settings = () => S;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 let wait = null;   // the shortcut being set ('price', 'worn' or a scene key)
@@ -29,6 +37,9 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
 export const keyName = code => code === 'Space' ? t('Space') : code.replace(/^Key|^Digit/, '');
+const CLICK = ['Left click', 'Middle click', 'Right click'];
+const slotName = c => c[0] === 'm' ? t(CLICK[+c[1]]) : keyName(c);
+const pad = () => [...(navigator.getGamepads?.() || [])].find(Boolean);
 // a shortcut for over the game: Ctrl and/or Alt (and Shift) with a letter, a digit or F1-F12
 const comboOf = e => {
   const key = /^Key[A-Z]$|^Digit\d$/.test(e.code) ? e.code.slice(-1) : /^F([1-9]|1[0-2])$/.test(e.code) ? e.code : null;
@@ -85,9 +96,12 @@ export function initSettings(el, loot) {
         <p class="note">${t(NEEDS)}</p>
       </section>
       <section><h3>${t('Simulator keys')}</h3>
-        <p class="note">${t('W A S D move and 1-9 use the skills, as in the game.')}</p>
+        <div class="optrow"><label>${t('Movement')} <select data-s="input">${opt('click', t('Click to move'), S.input !== 'wasd')}${opt('wasd', t('WASD'), S.input === 'wasd')}</select></label></div>
+        <p class="note">${t('Skill bar, as in the game: {0}', slotKeys().map(slotName).join(' · '))}</p>
         <div class="keys">${Object.keys(SCENE_KEYS).map(k => `<label>${t(SCENE_LABEL[k])} ${cap(k, keyName(S.keys[k]))}</label>`).join('')}</div>
         <div class="optrow"><button data-do="defaults">${t('Default keys')}</button></div>
+        <p class="note">${pad() ? t('Controller: {0}', esc(pad().id)) : t('No controller detected: connect one and press any of its buttons.')}</p>
+        <p class="note">${t('With a controller: left stick moves, right stick aims (else the nearest enemy is the target), A X Y RB RT LB LT and the right stick click use the bar\'s skills, B rolls, D-pad left and right drink the life and mana flask.')}</p>
       </section>
       <section><h3>${t('General')}</h3>
         ${win.app || win.startup ? `<div class="optrow">
@@ -112,7 +126,7 @@ export function initSettings(el, loot) {
         const c = comboOf(e), other = wait === 'price' ? 'wornKey' : 'priceKey';
         if (c) { if (S[other] === c) S[other] = S[wait + 'Key']; S[wait + 'Key'] = c; save(); } else msg = t(NEEDS);
       }
-      else if (FIXED.test(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: Q W E R T are the skill bar and Esc stays as it is.');
+      else if (taken(e.code) || e.ctrlKey || e.altKey || e.metaKey) msg = t('That key is taken: it is on the skill bar or moves you, and Esc stays as it is.');
       else { const other = Object.keys(S.keys).find(k => k !== wait && S.keys[k] === e.code); if (other) S.keys[other] = S.keys[wait]; S.keys[wait] = e.code; save(); }
     }
     wait = null; render();
@@ -132,7 +146,8 @@ export function initSettings(el, loot) {
     if ('lang' in e.target.dataset) return setLang(e.target.value);
     if (e.target.dataset.w) return winSet({ [e.target.dataset.w]: e.target.checked });
     const k = e.target.dataset.s;
-    if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.type === 'checkbox' ? e.target.checked : e.target.value; save(); render(); }
+    if (k) { S[k] = e.target.type === 'number' ? Math.min(100, Math.max(0, +e.target.value || 0)) : e.target.type === 'checkbox' ? e.target.checked : e.target.value; fix(); save(); render(); }
   };
+  addEventListener('gamepadconnected', () => el.hidden || render()); addEventListener('gamepaddisconnected', () => el.hidden || render());
   return render;
 }
