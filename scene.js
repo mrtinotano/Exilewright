@@ -1185,7 +1185,7 @@ export function initScene(el, api) {
     // Without that damage it hits for the scene's share, drawn "~".
     totem(S) {
       const j = api.build().gems.findIndex((_, j) => api.usedBy(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
-      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].dead = true;
+      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
       const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem' }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
       const every = real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
@@ -1193,7 +1193,7 @@ export function initScene(el, api) {
       let wait = .5;
       const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
         update(dt) {
-          e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime)) { e.dead = true; return; }
+          e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime)) { e.die(); return; }
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
           wait = every;
@@ -1201,6 +1201,11 @@ export function initScene(el, api) {
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
           else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, real ? {} : { mult: .6 }); }
+        },
+        // Tawhoa's Tending: on death it explodes for that share of the totem's life (calc.js totemLife) in its area
+        die() {
+          e.dead = true; const T = S.dmg?.trig?.find(T => T.stats?.['base_physical_damage_equal_to_%_of_totem_life']);
+          if (T && S.dmg.totemLife) { const X = asTrig(S, T, scale(T.hits, S.dmg.totemLife * T.stats['base_physical_damage_equal_to_%_of_totem_life'] / 1e4)), p = { x: e.pos.x, z: e.pos.z }; say(X.label, X.el); boom(p, X.A, X); }
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       objs.push(e);
