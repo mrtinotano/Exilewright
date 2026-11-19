@@ -804,11 +804,11 @@ export function initScene(el, api) {
       if (e) chain(to, e, S, n - 1, seen, mult);
     });
   }
-  function ground(type, c, r, dur, S) {
+  function ground(type, c, r, dur, S, grow) {   // grow: its area +per% a second, up to +max% (Creeping Chill)
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
-    grounds.push({ type, x: c.x, z: c.z, r, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false });
+    grounds.push({ type, x: c.x, z: c.z, r, r0: r, age: 0, grow, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false });
   }
   function groundFx(g) {
     const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;
@@ -1120,7 +1120,12 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, L = (sh(S).wall || SIM.wall) / 2, px = -S.dz, pz = S.dx, dur = P.dur || SIM.lifetime;   // across the aim
       const a = { x: c.x - px * L, z: c.z - pz * L }, b = { x: c.x + px * L, z: c.z + pz * L };
       if (P.crystal) {
-        for (let i = 0; i < 6; i++) { const k = i / 5, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k }; later(i * .04, () => crystal(S, p, dur)); }
+        // Creeping Chill: the cast consumes its power charges if it can for Chilled Ground around each crystal, its area
+        // growing by its share a second up to its most (area: the radius by its square root); its chill the scene's ground's
+        const T = S.dmg?.trig?.find(T => T.stats?.['support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life']), need = T?.support.support_creeping_chill_consume_X_power_charges_to_trigger_on_ice_crystals || 1;
+        const X = T && charges.power >= need && (charges.power -= need, asTrig(S, T));
+        if (X) say(X.label, X.el);
+        for (let i = 0; i < 6; i++) { const k = i / 5, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k }; later(i * .04, () => { crystal(S, p, dur); if (X) ground('chilled', p, X.A, 0, X, { per: X.dmg.stats['active_skill_ground_effect_area_of_effect_+%_final_per_second'], max: X.dmg.stats['active_skill_ground_effect_area_of_effect_+%_final_per_second_max'] }); }); }
         for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) hit(d, S);
         return;
       }
@@ -2176,6 +2181,7 @@ export function initScene(el, api) {
     for (let i = objs.length - 1; i >= 0; i--) { const o = objs[i]; if (!o.dead) o.update(dt); if (o.dead) { o.remove(); objs.splice(objs.indexOf(o), 1); } }
     for (let i = grounds.length - 1; i >= 0; i--) {
       const g = grounds[i]; g.s -= dt; g.tick -= dt;
+      if (g.grow) { g.age += dt; g.r = g.r0 * Math.sqrt(1 + Math.min(g.grow.max, g.grow.per * g.age) / 100); g.decal.set(g.r); }
       if (g.dead || g.s <= 0) { g.decal.remove(); grounds.splice(i, 1); continue; }
       if (Math.random() < dt * (3 + g.r * g.r * 3)) groundFx(g);
       if (g.tick > 0) continue;
