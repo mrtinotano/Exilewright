@@ -1703,7 +1703,7 @@ export function initScene(el, api) {
         if (l < min && l > 1e-3) { d.pos.x += dx / l * (min - l); d.pos.z += dz / l * (min - l); }
       }
     }
-    if (d.wait > 0 || dist(d.pos, pp) > R) return;
+    if (d.wait > 0 || dist(d.pos, pp) > R || !api.fight?.()) return;   // they attack only when asked (Enemies attack)
     // with stored uses it strikes at its own speed while one is left; each used one recharges over the cooldown
     const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; d.ready.push(time + A.cooldown);
     d.wait = Math.max(.25, A.period, used + 1 < A.uses ? 0 : Math.min(...d.ready) - time); strike(d);

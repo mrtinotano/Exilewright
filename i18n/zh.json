@@ -805,6 +805,7 @@
  "{0} applies its effect constantly": "{0}會持續套用效果",
  "{0} used": "已使用{0}",
  "Enemies stand still": "敵人停在原地",
+ "Enemies attack": "敵人會攻擊",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "進入敵人的仇恨範圍或攻擊它們時，敵人會以自身速度向你移動，並在攻擊距離內攻擊。帶 ~ 的數值包含遊戲資料沒有提供的值。",
  "Character": "角色",
  "Action speed": "行動速度",

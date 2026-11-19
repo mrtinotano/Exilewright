@@ -805,6 +805,7 @@
  "{0} applies its effect constantly": "{0} applique son effet en permanence",
  "{0} used": "{0} : utilisé",
  "Enemies stand still": "Les ennemis restent immobiles",
+ "Enemies attack": "Les ennemis attaquent",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Les ennemis viennent à vous à leur vitesse dès que vous entrez dans leur rayon d'aggro ou que vous les frappez, et attaquent à portée. Un nombre avec ~ inclut une valeur que les données du jeu ne donnent pas.",
  "Character": "Personnage",
  "Action speed": "Vitesse d'action",

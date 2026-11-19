@@ -805,6 +805,7 @@
  "{0} applies its effect constantly": "{0}: эффект действует постоянно",
  "{0} used": "{0}: использован",
  "Enemies stand still": "Враги стоят на месте",
+ "Enemies attack": "Враги атакуют",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "Враги идут к вам со своей скоростью, когда вы входите в их радиус агрессии или бьёте их, и атакуют в пределах досягаемости. Число с ~ включает значение, которого нет в данных игры.",
  "Character": "Персонаж",
  "Action speed": "Скорость действий",

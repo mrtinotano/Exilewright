@@ -805,6 +805,7 @@
  "{0} applies its effect constantly": "{0} ใช้ผลอย่างต่อเนื่อง",
  "{0} used": "ใช้ {0}",
  "Enemies stand still": "ศัตรูยืนอยู่กับที่",
+ "Enemies attack": "ศัตรูโจมตี",
  "Enemies come at you at their speed once you are within their aggro range or hit them, and attack within their reach. A number with ~ includes a value the game data does not give.": "ศัตรูจะเข้าหาคุณด้วยความเร็วของมันเมื่อคุณเข้าระยะการตรวจจับหรือโจมตีมัน และโจมตีเมื่ออยู่ในระยะ ตัวเลขที่มี ~ รวมค่าที่ข้อมูลเกมไม่ได้ให้ไว้",
  "Character": "ตัวละคร",
  "Action speed": "ความเร็วในการกระทำ",
