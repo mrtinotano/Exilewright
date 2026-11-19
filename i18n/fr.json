@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0} : se déplacer vers le curseur tant que maintenu",
  "Move is not on the bar: click a slot to put it there": "Déplacer n'est pas sur la barre : cliquez sur un emplacement pour l'y mettre",
  "None of your skills deals damage.": "Aucune de vos aptitudes n'inflige de dégâts.",
- "Other skills: they deal no damage": "Autres aptitudes : elles n'infligent pas de dégâts",
  "Mana Recovery per second": "Récupération de mana par seconde",
  "Damage over time taken per second": "Dégâts sur la durée subis par seconde",
  "{0}: life lost per second": "{0} : vie perdue par seconde"

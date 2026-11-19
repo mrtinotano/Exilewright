@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0}: движение к курсору, пока удерживаете",
  "Move is not on the bar: click a slot to put it there": "Навигации нет на панели: щёлкните ячейку, чтобы поставить её",
  "None of your skills deals damage.": "Ни одно из ваших умений не наносит урон.",
- "Other skills: they deal no damage": "Другие умения: не наносят урон",
  "Mana Recovery per second": "Восстановление маны в секунду",
  "Damage over time taken per second": "Получаемый урон со временем в секунду",
  "{0}: life lost per second": "{0}: потеря здоровья в секунду"

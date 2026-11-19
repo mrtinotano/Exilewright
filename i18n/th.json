@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0}: เคลื่อนที่ไปยังเคอร์เซอร์ขณะกดค้าง",
  "Move is not on the bar: click a slot to put it there": "เคลื่อนที่ไม่อยู่ในแถบ: คลิกช่องเพื่อวาง",
  "None of your skills deals damage.": "ไม่มีสกิลใดสร้างความเสียหาย",
- "Other skills: they deal no damage": "สกิลอื่น: ไม่สร้างความเสียหาย",
  "Mana Recovery per second": "การฟื้นฟูมานาต่อวินาที",
  "Damage over time taken per second": "ความเสียหายต่อเนื่องที่ได้รับต่อวินาที",
  "{0}: life lost per second": "{0}: พลังชีวิตที่เสียต่อวินาที"

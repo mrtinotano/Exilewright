@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0}：押している間カーソルへ移動",
  "Move is not on the bar: click a slot to put it there": "移動するがバーにない：枠をクリックして配置する",
  "None of your skills deals damage.": "ダメージを与えるスキルがない。",
- "Other skills: they deal no damage": "その他のスキル：ダメージを与えない",
  "Mana Recovery per second": "毎秒マナ回復",
  "Damage over time taken per second": "毎秒受ける継続ダメージ",
  "{0}: life lost per second": "{0}：毎秒失うライフ"

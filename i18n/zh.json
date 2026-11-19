@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0}：按住時朝游標移動",
  "Move is not on the bar: click a slot to put it there": "移動不在技能列上：點擊格子放置",
  "None of your skills deals damage.": "你的技能都不造成傷害。",
- "Other skills: they deal no damage": "其他技能：不造成傷害",
  "Mana Recovery per second": "每秒魔力恢復",
  "Damage over time taken per second": "每秒承受的持續傷害",
  "{0}: life lost per second": "{0}：每秒失去的生命"

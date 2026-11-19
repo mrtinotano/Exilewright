@@ -826,7 +826,6 @@
  "{0}: move to the cursor while held": "{0}: 누르고 있는 동안 커서로 이동",
  "Move is not on the bar: click a slot to put it there": "이동이 바에 없습니다: 칸을 클릭해 배치하세요",
  "None of your skills deals damage.": "피해를 주는 스킬이 없습니다.",
- "Other skills: they deal no damage": "기타 스킬: 피해를 주지 않음",
  "Mana Recovery per second": "초당 마나 회복",
  "Damage over time taken per second": "초당 받는 지속 피해",
  "{0}: life lost per second": "{0}: 초당 잃는 생명력"

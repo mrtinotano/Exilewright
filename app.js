@@ -179,10 +179,10 @@ function renderSceneSkills() {
   dmgCache.clear();
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
   const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
-  // on top: the skills with damage per second, and the meta gems that use one; the rest folded under them
-  const dps = g => skillDmg(g).dps != null, live = g => dps(g) || b.gems.some((h, j) => usedBy(b, j) === g && dps(h));
+  // only the skills with damage per second; one a meta gem uses goes inside that meta gem's card
+  const dps = g => skillDmg(g).dps != null, inside = g => list.map((x, j) => usedBy(b, j) === g && dps(x.g) ? card(x, j) : '').join('');
   const card = ({ g, inf, P }, i) => {
-    const G = geo(g), s = skillDmg(g);
+    const G = geo(g), s = skillDmg(g), sub = inside(g);
     const facts = [
       G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × ${t('tree area')}">${t('radius')} <b>${G.radius.toFixed(2)} m</b></span>` : '',
       G.speed ? `<span>${t('speed')} <b>${G.speed.toFixed(1)} m/s</b></span><span>${t('range')} <b>${G.range.toFixed(1)} m</b></span>` : '',
@@ -194,12 +194,12 @@ function renderSceneSkills() {
         ${s.dps != null ? `<b class="sdps" data-dps="${i}">${fmt(s.dps)} <small>DPS</small></b>` : ''}</div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
       ${facts ? `<div class="sk-facts">${facts}</div>` : ''}
+      ${sub ? `<div class="sk-sub">${sub}</div>` : ''}
     </div>`;
   };
-  const cards = [], rest = []; list.forEach((x, i) => (live(x.g) ? cards : rest).push(card(x, i)));
+  const cards = list.map((x, i) => usedBy(b, i) ? '' : (dps(x.g) || inside(x.g)) && card(x, i) || '').join('');
   $('sceneList').innerHTML = `<h3>${t('Skills')}</h3><div class="sk-scroll">
-    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills deals damage.' : 'Add skills in the Skills tab.')}</p>`}
-    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: they deal no damage')}</summary>${rest.join('')}</details>` : ''}</div>`;
+    ${cards || `<p class="note">${t(list.length ? 'None of your skills deals damage.' : 'Add skills in the Skills tab.')}</p>`}</div>`;
   syncEnemy(); renderEnemy();
 }
 // skill info window: anything with data-tip="<gem index>"
@@ -970,7 +970,7 @@ function onLive(L) {
     ${L.rage ? row(t('Attack damage from Rage'), L.rage, '%') : ''}${L.guard ? row(t('Guard'), L.guard, '') : ''}</table>`;
   if (html !== liveHtml) $('simChar').innerHTML = liveHtml = html;
   B().gems.forEach((g, i) => {   // the cards' damage per second, as it is now
-    const el = document.querySelector(`#sceneList .sk-scroll > .sk-card [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;
+    const el = document.querySelector(`#sceneList [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;
     const k = L.dps(i), v = `${fmt(s.dps * k)} <small>DPS</small>`;
     if (el.dataset.v !== v) { el.dataset.v = v; el.innerHTML = v; el.className = 'sdps' + (k > 1.001 ? ' up' : k < .999 ? ' down' : ''); }
   });
