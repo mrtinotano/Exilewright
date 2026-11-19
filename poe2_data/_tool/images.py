@@ -35,7 +35,7 @@ for state, col in (('normal', 'Normal'), ('active', 'Active')):
 # badges (centre, radius)
 CONTENT = 'art/textures/interface/2d/2dart/uiimages/ingame/characterpanel/4k/characterpanelcontent.dds'
 PAINTED = {'life': (152, 55), 'es': (452, 55), 'mana': (747, 52), 'spirit': (1047, 52), 'armour': (285, 271), 'evasion': (599, 271), 'block': (913, 271)}
-BADGES = {'fire': (102, 539, 45), 'cold': (670, 537, 45), 'lightning': (102, 653, 45), 'chaos': (670, 655, 45)}
+BADGES, BADGE_R = {'fire': (102, 539), 'cold': (670, 537), 'lightning': (102, 653), 'chaos': (670, 655)}, 45
 # the art behind a group of the tree, by its mastery (PassiveSkillTreeMasteryArt.ActiveEffectImage), saved whole at
 # half size as ../available/img/mastery/<id>.webp
 MASTERY = {r['Id']: r['ActiveEffectImage'] for r in table('PassiveSkillTreeMasteryArt') if r['ActiveEffectImage']}
@@ -89,7 +89,8 @@ try:
     sheet = Image.open(os.path.join(ROOT, 'files', CONTENT)).convert('RGBA')
     for role, (x, y) in PAINTED.items():
         painted(sheet.crop((x - 46, y - 42, x + 46, y + 46))).save(os.path.join(ROOT, 'available', 'img', 'panel', role + '.webp'), 'WEBP', quality=90)
-    for role, (x, y, r) in BADGES.items():
+    r = BADGE_R
+    for role, (x, y) in BADGES.items():
         c, m = sheet.crop((x - r, y - r, x + r + 1, y + r + 1)), Image.new('L', (8 * (2 * r + 1),) * 2)
         ImageDraw.Draw(m).ellipse((0, 0, m.width - 1, m.height - 1), fill=255)
         c.putalpha(m.resize(c.size, Image.LANCZOS)); c.save(os.path.join(ROOT, 'available', 'img', 'panel', role + '.webp'), 'WEBP', quality=90)
