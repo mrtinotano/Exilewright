@@ -525,7 +525,7 @@ const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) &
   PLAIN_TEXT.test(statLinesEn({ [k]: 10 })[0] || '');
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
-  const all = { ...sum }, fin = {}, mods = [], finals = {};
+  const all = { ...sum }, fin = {}, mods = [], finals = {}, twice = new Set();
   for (const n of g.supports || []) {
     const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
     if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
@@ -536,13 +536,13 @@ export function withSupports(g, sum) {
     const read = new Set((p?.mods || []).filter(m => m[4] ? !plainText(m[5]) : USED.test(m[0])).map(m => m[5]));
     for (const [k, val] of Object.entries({ ...game, ...(p?.stats || {}) })) {
       if (read.has(k) || k.startsWith('_') || typeof val !== 'number') continue;
-      if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
+      if (!k.endsWith('_final')) { all[k] = (all[k] || 0) + val; if (k.includes('_final')) twice.add(k); }
       else if (plainMore(k, n) || plainText(k)) fin[k] = (fin[k] || 0) + val;
     }
     // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments())
     for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (k.includes('_final') && typeof val === 'number') finals[k] = (finals[k] || 0) + val;
   }
-  return { sum: all, fin, mods, finals };
+  return { sum: all, fin, mods, finals, twice };
 }
 // true when the data says what this support does to the numbers the app calculates
 export const supportKnown = name => !!SK.supports?.[name] || !!SK.skills[name]?.levels;
@@ -575,7 +575,7 @@ export function skill(g, b, treeGear) {
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
-  const { sum, fin, mods, finals } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
+  const { sum, fin, mods, finals, twice = new Set() } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
@@ -752,7 +752,7 @@ export function skill(g, b, treeGear) {
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
   const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
-  out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
+  out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), own, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
   const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
   out.curse = curse ? curseOf(st, sum, finals) : null;
   out.mark = mark ? markOf(st) : null;
