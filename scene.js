@@ -28,7 +28,6 @@ function segDist(p, a, b) {
 }
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 // shape picked by hand in the panel → behaviour (anything else follows the game data)
-const FORCE = { circle: 'area', nova: 'nova', cone: 'cone', line: 'beam', projectile: 'projectile', aura: 'field' };
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
 const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
@@ -116,15 +115,15 @@ export function initScene(el, api) {
   const prof = (g, inf) => { let P = profs.get(g.name); if (!P) profs.set(g.name, P = profile(inf.gem || { name: g.name }, inf.data || {})); return P; };
   function base(i) {
     const g = api.build().gems[i]; if (!g) return null;
-    const c = cache.get(i); if (c && c.g === g && c.shape === g.shape && time - c.at < .5) return c.S;
+    const c = cache.get(i); if (c && c.g === g && time - c.at < .5) return c.S;
     const inf = api.info(g), G = api.geo(g), P = prof(g, inf);
-    const kind = g.shape && g.shape !== 'auto' && FORCE[g.shape] || P.kind;
+    const kind = P.kind;
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const S = { i, g, P, G, kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
-    cache.set(i, { g, shape: g.shape, at: time, S }); return S;
+    cache.set(i, { g, at: time, S }); return S;
   }
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
@@ -182,7 +181,7 @@ export function initScene(el, api) {
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
-  const coneHalf = S => (S.g.shape === 'cone' && S.g.width > 0 ? S.g.width / 2 : S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
+  const coneHalf = S => (S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
   function aim(S, p) {
     const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? SIM.travelRange : S.kind === 'slam' ? SIM.meleeRange : SIM.castRange;
     let dx = p.x - pp.x, dz = p.z - pp.z, l = Math.hypot(dx, dz);
@@ -1068,7 +1067,7 @@ export function initScene(el, api) {
       later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));
     },
     beam(S) {
-      const L = S.R || 10, w = S.g.width || 1, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };
+      const L = S.R || 10, w = 1, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };
       fx.strip(c, b, w, S.el, .35); fx.bolt(V(c.x, 1.1, c.z), V(b.x, 1.1, b.z), S.el, .2, .05, 0);
       for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w / 2 + SIM.body) hit(d, S);
       touch({ x: (c.x + b.x) / 2, z: (c.z + b.z) / 2 }, L / 2, S);
@@ -1269,7 +1268,7 @@ export function initScene(el, api) {
       case 'meta': case 'minion': case 'buff': break;
       case 'strike': { const reach = (P.dash ? SIM.dashRange : SIM.meleeRange) + .6, d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
       case 'sweep': case 'cone': sector(S.R || SIM.meleeRange, coneHalf(S)); break;
-      case 'beam': strip(pp, S.dx, S.dz, S.R || 10, S.g.width || 1); break;
+      case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
       case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
       case 'wall': strip({ x: c.x + S.dz * SIM.wall / 2, z: c.z - S.dx * SIM.wall / 2 }, -S.dz, S.dx, SIM.wall, .6); break;
       case 'storm': circle(c, P.wind ? S.A : Math.max(S.A * 2.4, SIM.stormArea)); break;
@@ -1319,7 +1318,7 @@ export function initScene(el, api) {
     const S = mk(i); if (!S) return '';
     const G = S.G, P = S.P, rows = [];
     if (S.dmg?.cost) rows.push(`${t('Cost')} ${S.dmg.costPerSecond ? fmt(S.dmg.cost, 1) + '/s' : short(S.dmg.cost)} ${t('Mana')}`);
-    if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m${G.radiusFromData ? '' : ` (${t('manual')})`}`);
+    if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m`);
     else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
     if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);
     if (P.dur) rows.push(`${t('duration')} ${P.dur.toFixed(1)} s`);

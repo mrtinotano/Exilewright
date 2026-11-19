@@ -88,10 +88,7 @@
   .chip.w { color:#f09a8a; border-color:#6f3329; } .chip.c { color:#a8b8f0; border-color:#3a4478; }
   .sk-facts { display:flex; flex-wrap:wrap; gap:2px 12px; margin-top:5px; font-size:11.5px; color:#8a7a5c; }
   .sk-facts b { font-weight:normal; color:#e8e0cc; }
-  .sk-edit { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin-top:5px; font-size:11px; color:#8a7a5c; }
-  .sk-edit select { width:auto; max-width:150px; padding:1px 2px; font-size:11px; background:#14110d; border-color:#3a3022; color:#b8a888; }
-  .sk-edit label, .sk-set label { display:flex; align-items:center; gap:4px; margin:0; color:#8a7a5c; }
-  .sk-edit input { width:54px; padding:1px 3px; font-size:11px; background:#14110d; border-color:#3a3022; }
+  .sk-set label { display:flex; align-items:center; gap:4px; margin:0; color:#8a7a5c; }
   .syn-more summary { cursor:pointer; padding:3px 0; font-size:12px; color:#c9a85a; }
   .sk-set { display:grid; grid-template-columns:1fr 1fr; gap:6px 8px; font-size:12px; }
   .sk-set label { flex-direction:column; align-items:stretch; gap:2px; }
@@ -178,7 +175,7 @@
   /* a scene too narrow for the bar between the orbs: the bar along the bottom, the orbs over it */
   @container (max-width:860px) { .s-orb { width:84px; height:84px; } .s-bar { bottom:8px; max-width:calc(100% - 16px); }
     .s-belt { margin-right:6px; padding-right:6px; } .s-flask { flex-basis:24px; width:24px; height:46px; } .s-charm { flex-basis:22px; width:22px; height:22px; } .s-life, .s-mana { bottom:82px; } .s-vtxt { font-size:13px; } .s-log { bottom:226px; } }
-  .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; white-space:nowrap; }
+  .s-toast { left:50%; top:16%; transform:translateX(-50%); padding:5px 14px; font-size:15px; color:#ffe9b0; background:#0b0a08e6; border:1px solid #7a6440; opacity:0; transition:opacity .25s; width:max-content; max-width:calc(100% - 40px); text-align:center; }
   .s-toast.on { opacity:1; }
   /* character panel, like the in-game one */
   .cp { font-family:Georgia, serif; padding:8px 14px 14px 8px; color:#c8b890; font-variant:small-caps; }

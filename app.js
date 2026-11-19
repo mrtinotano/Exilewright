@@ -26,9 +26,6 @@ const label = tn;
 const KEY = 'poe2builds';
 let builds = JSON.parse(localStorage.getItem(KEY) || '{}');
 let cur;
-const SHAPES = { auto: 'Auto (game data)', circle: 'Circle (cursor)', nova: 'Nova (on you)', cone: 'Cone', line: 'Line', projectile: 'Projectile', aura: 'Aura (follows you)' };
-const guessShape = t => t.includes('nova') || t.includes('warcry') ? 'nova' : t.includes('projectile') ? 'projectile' : t.includes('aura') || t.includes('persistent') ? 'aura'
-  : t.includes('slam') || t.includes('strike') ? 'cone' : 'circle';
 // asc: the ascendancy, or the base class's name while none is chosen
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].class, gems: [], nodes: [], ascNodes: [], notes: '' });
 let rev = 0;   // goes up with every change to the builds: what is worked out from the build is kept until then
@@ -81,9 +78,7 @@ const clsOf = asc => ascs.find(a => a.name === asc)?.class || (CLASSES.includes(
 
 function renderSide() {
   const b = B();
-  b.gems.forEach(g => { g.level ??= 20; g.width ??= 0; });  // builds saved before gem levels existed
-  // builds saved before the scene read each skill's behaviour from the game data: a guessed shape becomes Auto, a hand-picked one stays
-  if (!b.fx) { b.fx = 1; b.gems.forEach(g => { if (!g.shape || g.shape === guessShape(gems.find(x => x.name === g.name)?.tags || [])) g.shape = 'auto'; }); }
+  b.gems.forEach(g => { g.level ??= 20; });  // builds saved before gem levels existed
   $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
   $('notes').value = b.notes;
   $('notesBtn').textContent = t('Notes') + (b.notes ? ' •' : '');
@@ -147,8 +142,7 @@ function geo(g) {
     radiusFromData: base != null,
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
     // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
-    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, 1 + inc(sum, 'area_of_effect_+%', tags) / 100))) / 10 : g.radius || 0,
-    width: g.width || 0,
+    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, 1 + inc(sum, 'area_of_effect_+%', tags) / 100))) / 10 : 0,
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,
@@ -185,12 +179,10 @@ function renderSceneSkills() {
   dmgCache.clear();
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
   const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
-  const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
   // on top: the skills with damage per second, and the meta gems that use one; the rest folded under them
   const dps = g => skillDmg(g).dps != null, live = g => dps(g) || b.gems.some((h, j) => usedBy(b, j) === g && dps(h));
   const card = ({ g, inf, P }, i) => {
-    const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
-    const num = (k, v, tip) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${tip}">`;
+    const G = geo(g), s = skillDmg(g);
     const facts = [
       G.radiusFromData ? `<span title="active_skill_base_area_of_effect_radius × ${t('tree area')}">${t('radius')} <b>${G.radius.toFixed(2)} m</b></span>` : '',
       G.speed ? `<span>${t('speed')} <b>${G.speed.toFixed(1)} m/s</b></span><span>${t('range')} <b>${G.range.toFixed(1)} m</b></span>` : '',
@@ -202,9 +194,6 @@ function renderSceneSkills() {
         ${s.dps != null ? `<b class="sdps" data-dps="${i}">${fmt(s.dps)} <small>DPS</small></b>` : ''}</div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
       ${facts ? `<div class="sk-facts">${facts}</div>` : ''}
-      <div class="sk-edit"><select data-i="${i}" data-k="shape" title="${t('How the scene casts it: Auto follows the game data of the gem')}">${opts(SHAPES, shape)}</select>
-        ${G.radiusFromData ? '' : `<label title="${t('the game gives no radius for this gem: manual value')}">${t('radius')}${num('radius', g.radius, t('the game gives no radius for this gem: manual value'))}<small>${t('manual')}</small></label>`}
-        ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
     </div>`;
   };
   const cards = [], rest = []; list.forEach((x, i) => (live(x.g) ? cards : rest).push(card(x, i)));
@@ -227,7 +216,7 @@ document.addEventListener('mouseover', e => gemTip(e.target.closest?.('[data-tip
 function addGem(name, level = 20) {   // level: the one an item that grants it says
   const g = gems.find(g => g.name === name || tn(g) === name || g.name_es === name);
   if (!g) return false;
-  B().gems.push({ name: g.name, shape: 'auto', level, radius: 0, width: 0 });
+  B().gems.push({ name: g.name, level });
   save(); renderSide(); return true;
 }
 
@@ -312,7 +301,7 @@ $('sceneSkills').onchange = e => {
   else if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
     if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();
-  } else if (d.i != null) edit((e, b) => b.gems[d.i][d.k] = d.k === 'shape' ? e.target.value : +e.target.value)(e);
+  }
 };
 $('sceneSkills').onclick = e => {
   const en = e.target.dataset.en;
@@ -358,7 +347,6 @@ const openShare = async exporting => {
   // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
   const importXML = (xml, name) => {
     const { build, warn } = fromXML(xml, shareCtx(), blank);
-    build.gems.forEach(g => Object.assign(g, { shape: 'auto', radius: 0, width: 0 }));
     if (name) build.name = name;
     addBuild(build);
     inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
