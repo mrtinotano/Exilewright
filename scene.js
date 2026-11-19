@@ -324,9 +324,10 @@ export function initScene(el, api) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
       crit = Math.random() * 100 < (D.crit || 0) * W.crit; if (crit) (me.critAt ||= {})[S.name] = time;
-      const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;   // a crit starts Inexorable Critical again
+      const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
-      if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
+      const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
+      if (crit) gainBuff(S, 'crit');
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
       if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
@@ -418,6 +419,14 @@ export function initScene(el, api) {
   }
   // o (from afflict): the game's duration, magnitude (shock, chill) and effect (damaging ailments) of this one;
   // without it (minions, grounds, skills without damage data) freeze and armour break take the scene's hit counts
+  // the supports' buffs of damage gained as extra of an element, on freezing (Ice Bite), killing a shocked enemy
+  // (Innervate) or a crit (Blazing Critical, attacks only): calc.js gains
+  function gainBuff(S, on) {
+    for (const G of S?.dmg?.gains || []) if (G.on === on) {
+      const label = api.info({ name: G.name })?.label || G.name;
+      buffs = buffs.filter(b => b.label !== label); buffs.push({ label, name: G.name, c: css(G.el), s: G.time, gain: G, sup: true });
+    }
+  }
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -441,9 +450,10 @@ export function initScene(el, api) {
     if (!fresh) return;
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
-      const M = d.mark; d.mark = null; buffs = buffs.filter(b => !b.gain);
+      const M = d.mark; d.mark = null; buffs = buffs.filter(b => !b.gain || b.sup);
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
+    if (a === 'freeze') gainBuff(S, 'freeze');
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }
@@ -565,6 +575,9 @@ export function initScene(el, api) {
     charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
+    if (st.shock > 0) gainBuff(S, 'shockKill');
+    // Cannibalism, on a persistent buff that is up: life recovered on kill
+    for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];

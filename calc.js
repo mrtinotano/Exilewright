@@ -784,6 +784,12 @@ export function skill(g, b, treeGear) {
     breakPct: all2('skill_consume_frenzy_charge_to_armour_break_for_%_of_physical_damage'), curse: all2('support_consume_power_charge_to_gain_curse_duration_+%_final'),
     lifePerEndurance: all2('consume_endurance_charges_on_use_to_recover_%_maximum_life_per_charge'), keep: all2('charge_skip_consume_chance_%'),
     double: all2('chance_%_to_double_effect_of_removing_charges'), lifePer5Rage: all2('lose_x%_of_life_per_5_rage_on_supported_skill_use') };
+  // buffs of damage gained as extra of an element for a while, and life on kill (Cannibalism)
+  const buffOf = (name, pct, el, ms, on, attack) => (g.supports || []).includes(name) && { name, pct: sup(pct), el, time: sup(ms) / 1000, on, attack };
+  out.gains = [...['Ice Bite I', 'Ice Bite II'].map(n => buffOf(n, 'support_ice_bite_buff_grant_%_added_cold_attack_damage', 'cold', 'support_ice_bite_base_buff_duration', 'freeze')),
+    buffOf('Innervate', 'support_innervate_buff_grant_%_added_lightning_attack_damage', 'lightning', 'support_innervate_buff_base_duration_ms', 'shockKill'),
+    buffOf('Blazing Critical', 'support_blazing_crits_gain_%_fire_damage_with_attacks_on_critical_hit', 'fire', 'support_blazing_crits_base_duration_ms', 'crit', true)].filter(Boolean);
+  out.lifeOnKill = sup('support_cannibalism_recover_%_maximum_life_on_kill');
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
