@@ -1515,7 +1515,7 @@ export function initScene(el, api) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * though('chill') / thr * D.eff.chill);
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
-        D.freeze, PL.FreezeDuration * D.dur.freeze * (1 + (A['freeze_duration_+%'] || 0) / 100));
+        D.freeze, PL.FreezeDuration * D.dur.freeze * more('freeze_duration_+%'));
     }
     // electrocute, only from the skills that say so (GSPerennialKingGlassSwordFenceZap), against your ailment threshold
     const E = A['active_skill_electrocutes_as_though_dealt_damage_+%_final'];
