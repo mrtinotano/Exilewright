@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, attackOf, attacksOf } from './enemies.js';
+import { enemy, attackOf, attacksOf, ENEMIES } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -837,7 +837,9 @@ export function skill(g, b, treeGear) {
     need: all2('support_combo_finisher_required_number_of_combo_stacks'), extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
-  const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
+  // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
+  const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
+  const mn = out.minion = mid ? minionOf(st, sum, fin, mid) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
@@ -923,8 +925,8 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 // ("minion_damage_+%" -> "damage_+%"), and every player minion has PlayerMinionIntrinsicStats (+70% critical damage
 // bonus). note: "Minions have X% increased Attack and Cast Speed" (no MinionStats row) counts for both; the rows for one
 // kind of minion (zombies, skeletons) do not (available.py)
-function minionOf(g, st, sum, fin) {
-  const m = enemy(SK.minions[g.name][0]), level = SK.minion_level?.[st._level - 1];
+function minionOf(st, sum, fin, id) {
+  const m = enemy(id), level = SK.minion_level?.[st._level - 1];
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
   const a = attackOf(m, level, key, 'normal', true), ms = { ...SK.minion_intrinsic };
@@ -943,7 +945,8 @@ function minionOf(g, st, sum, fin) {
   for (const t of DMG) if (base[t][1]) hits[t] = base[t].map(x => Math.round(x * scale(t)));
   const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
   const speed = a.attack ? (1 + (inc(ms, 'attack_speed_+%', tags) + both) / 100) * (1 + v(ms, 'attack_speed_+%_final_for_minions') / 100) : 1 + (inc(ms, 'cast_speed_+%', tags) + both) / 100;
-  return { name: m.name, level, hits, speed: Math.min(speed / a.period, a.cooldown ? 1 / a.cooldown : Infinity),
+  const period = st.living_lightning_beam_attack_time_ms ? st.living_lightning_beam_attack_time_ms / 1000 : a.period;   // Living Lightning: its beam's attack time
+  return { name: m.name, level, hits, speed: Math.min(speed / period, a.cooldown ? 1 / a.cooldown : Infinity),
     crit: Math.min(100, a.crit * (1 + inc(ms, 'critical_strike_chance_+%', tags) / 100)),
     critBonus: a.critBonus + v(ms, 'base_critical_hit_damage_bonus') + inc(ms, 'critical_strike_multiplier_+', tags) };
 }
