@@ -583,7 +583,7 @@ for i, b in enumerate(base_types):
         'size': [b['Width'], b['Height']],
         'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10, 'charges': charges[b['Id']]['MaxCharges'], 'per_use': charges[b['Id']]['PerCharge']},
         **({'charm': charm_of(fl)} if cls == 'Charms' else {}),
-        'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax']},
+        'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax'], **({'reload_ms': w['ReloadTime']} if w.get('ReloadTime') else {})},
         'spirit': spirit.get(i),
         **({'grants': inherent[i]} if i in inherent else {}),
     })

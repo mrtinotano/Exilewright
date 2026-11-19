@@ -684,6 +684,17 @@ export function skill(g, b, treeGear) {
   const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
   if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
+  // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
+  // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
+  const bolts = attack && w?.reload && v(st, 'base_number_of_crossbow_bolts') + v(sum, 'support_double_barrel_number_of_crossbow_bolts_+');
+  if (bolts && out.speed) {
+    const reloadMore = Object.entries({ ...finals, 'active_skill_reload_speed_+%_final': v(st, 'active_skill_reload_speed_+%_final') })
+      .reduce((m, [k, x]) => { const sign = k.match(/reload_speed_([+-])%_final$/)?.[1]; return sign ? m * (1 + (sign === '-' ? -x : x) / 100) : m; }, 1);
+    const reload = w.reload / ((1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%', 'reload_speed_+%') + speedInc) / 100) * speedMods * reloadMore);
+    const keep = Math.min(v(sum, 'crossbow_attack_%_chance_to_not_consume_ammo') / 100, 1), shots = bolts / (1 - keep);
+    out.clip = { bolts, reload, keep, fire: out.speed };   // fire: shots per second between reloads
+    out.speed = keep >= 1 ? out.speed : shots / (shots / out.speed + reload);
+  }
   // cooldown: the gem's own (quality), the tree's and gear's for its tags (grenade_skill_cooldown_speed_+%) and the
   // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses

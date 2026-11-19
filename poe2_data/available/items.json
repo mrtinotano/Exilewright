@@ -6517,7 +6517,8 @@
     "attack_time_ms": 606,
     "min": 29,
     "max": 115,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -7000,7 +7001,8 @@
     "attack_time_ms": 625,
     "min": 28,
     "max": 112,
-    "range": 120
+    "range": 120,
+    "reload_ms": 1100
    },
    "spirit": null
   },
@@ -7045,7 +7047,8 @@
     "attack_time_ms": 606,
     "min": 31,
     "max": 123,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -7603,7 +7606,8 @@
     "attack_time_ms": 625,
     "min": 32,
     "max": 127,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -7645,7 +7649,8 @@
     "attack_time_ms": 625,
     "min": 33,
     "max": 132,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -10797,7 +10802,8 @@
     "attack_time_ms": 625,
     "min": 31,
     "max": 124,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -14264,7 +14270,8 @@
     "attack_time_ms": 645,
     "min": 30,
     "max": 119,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -18736,7 +18743,8 @@
     "attack_time_ms": 625,
     "min": 43,
     "max": 171,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -20479,7 +20487,8 @@
     "attack_time_ms": 625,
     "min": 27,
     "max": 109,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -21840,7 +21849,8 @@
     "attack_time_ms": 606,
     "min": 23,
     "max": 90,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -25629,7 +25639,8 @@
     "attack_time_ms": 625,
     "min": 62,
     "max": 115,
-    "range": 120
+    "range": 120,
+    "reload_ms": 600
    },
    "spirit": null
   },
@@ -27654,7 +27665,8 @@
     "attack_time_ms": 625,
     "min": 20,
     "max": 82,
-    "range": 120
+    "range": 120,
+    "reload_ms": 1100
    },
    "spirit": null
   },
@@ -31043,7 +31055,8 @@
     "attack_time_ms": 625,
     "min": 23,
     "max": 92,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -32702,7 +32715,8 @@
     "attack_time_ms": 606,
     "min": 21,
     "max": 84,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -34161,7 +34175,8 @@
     "attack_time_ms": 645,
     "min": 22,
     "max": 89,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -35700,7 +35715,8 @@
     "attack_time_ms": 625,
     "min": 20,
     "max": 80,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -37049,7 +37065,8 @@
     "attack_time_ms": 625,
     "min": 20,
     "max": 79,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -41013,7 +41030,8 @@
     "attack_time_ms": 625,
     "min": 32,
     "max": 127,
-    "range": 120
+    "range": 120,
+    "reload_ms": 1100
    },
    "spirit": null
   },
@@ -42406,7 +42424,8 @@
     "attack_time_ms": 625,
     "min": 18,
     "max": 72,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -43114,7 +43133,8 @@
     "attack_time_ms": 625,
     "min": 75,
     "max": 140,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -43158,7 +43178,8 @@
     "attack_time_ms": 625,
     "min": 44,
     "max": 83,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -48567,7 +48588,8 @@
     "attack_time_ms": 606,
     "min": 14,
     "max": 56,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -53078,7 +53100,8 @@
     "attack_time_ms": 588,
     "min": 12,
     "max": 50,
-    "range": 120
+    "range": 120,
+    "reload_ms": 700
    },
    "spirit": null
   },
@@ -55514,7 +55537,8 @@
     "attack_time_ms": 625,
     "min": 9,
     "max": 37,
-    "range": 120
+    "range": 120,
+    "reload_ms": 1100
    },
    "spirit": null
   },
@@ -56347,7 +56371,8 @@
     "attack_time_ms": 625,
     "min": 12,
     "max": 36,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },
@@ -60897,7 +60922,8 @@
     "attack_time_ms": 645,
     "min": 11,
     "max": 26,
-    "range": 120
+    "range": 120,
+    "reload_ms": 750
    },
    "spirit": null
   },
@@ -63729,7 +63755,8 @@
     "attack_time_ms": 625,
     "min": 8,
     "max": 15,
-    "range": 120
+    "range": 120,
+    "reload_ms": 850
    },
    "spirit": null
   },
@@ -64767,7 +64794,8 @@
     "attack_time_ms": 625,
     "min": 7,
     "max": 12,
-    "range": 120
+    "range": 120,
+    "reload_ms": 800
    },
    "spirit": null
   },

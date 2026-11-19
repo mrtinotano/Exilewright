@@ -1240,7 +1240,14 @@ export function initScene(el, api) {
   }
   // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
   let nextCdX = 1;   // Ferocity: more skill speed for the use that consumed a frenzy charge
-  const useTime = b => (b.dmg?.speed > 0 ? clamp(1 / b.dmg.speed, .15, 3) : SIM.castTime) / nextCdX;
+  // a crossbow fires its clip at its firing rate and reloads when the last bolt is gone (Ammo Conservation may keep one)
+  const clips = {};
+  const useTime = b => {
+    const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.speed;
+    let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX;
+    if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; }
+    return t;
+  };
   function press(i, key) {
     const b = api.byHand(i) && base(i); if (!b || move) return;
     held = null;
