@@ -833,7 +833,7 @@ export function initScene(el, api) {
     fx.ring(at, g.r, .3, e, .45); fx.emit(30, { p: { x: g.x, y: .2, z: g.z }, r: g.r, v: .5, up: 3, life: .7, size: .25, c: e, c2: 'white' });
     // Catalysing Elements: boosted by the ground, the skill sets off Catalysing Discharge of its element where you are,
     // that part's own damage (calc.js trig parts), its cooldown
-    const T = !S.src && S.dmg?.trig?.find(T => T.parts?.[`TriggeredCatalysingDischarge${cap(e)}Player`]), D = T?.parts[`TriggeredCatalysingDischarge${cap(e)}Player`];
+    const k = `TriggeredCatalysingDischarge${cap(e)}Player`, T = !S.src && S.dmg?.trig?.find(T => T.parts?.[k]), D = T?.parts[k];
     if (D && spend(T)) { const X = asTrig(S, { ...T, ...D, id: T.id }, D.hits); say(X.label, e); boom(at, X.A, X); }
     return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])] };
   }
@@ -1975,7 +1975,7 @@ export function initScene(el, api) {
       // (calc.js trig parts: the explosion); the poison on that enemy is stored in it (dot ticks in update)
       const PS = T.stats?.['triggered_pustule_from_poison_spores_on_hit_chance_%'], PX = PS && T.parts?.TriggeredPoisonSporesExplosion;
       if (PX && !d.pustule && Math.random() * 100 < PS && spend(T)) {
-        const st = PX.stats; d.pustule = { X: asTrig(S, { ...T, ...PX, id: T.id }, PX.hits), st, left: (PX.shape?.detonate ?? st.base_skill_detonation_time / 1000), stored: 0 };
+        const st = PX.stats; d.pustule = { X: asTrig(S, { ...T, ...PX, id: T.id }, PX.hits), st, left: PX.shape?.detonate ?? st.base_skill_detonation_time / 1000, stored: 0 };
         say(d.pustule.X.label, 'poison');
       }
       // Fist of Kalguur: the boosted slam's first hit on an enemy leaves its rune there (up to its limit, the oldest goes),
