@@ -76,7 +76,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -222,7 +222,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -1351,14 +1351,12 @@ export function initScene(el, api) {
     return b.join('');
   }
   // the ailments on you, under them with a red frame: the game's icon, its magnitude and the seconds left. A buildup (freeze,
-  // electrocute) is that icon in grey filling up in colour from the bottom, its % under it; heavy stun, which has no icon, a bar
+  // electrocute) is that icon in grey filling up in colour from the bottom, its % under it
   const filling = (a, img, p) => `<span class="s-buff bad fill" title="${esc(t(STATE[a]))} ${Math.floor(p)}%"><img src="${esc(img)}" alt="" draggable="false">`
     + `<img src="${esc(img)}" alt="" draggable="false" style="clip-path:inset(${(100 - p).toFixed(1)}% 0 0 0)"><small>${Math.floor(p)}%</small></span>`;
-  const ailing = () => Object.keys(me.st).filter(a => me.st[a] > 0)
+  const ailing = () => Object.keys(me.st).filter(a => me.st[a] > 0 && a !== 'stun')
     .map(a => one(api.ailmentIcon?.(a), css(PIP[a]), t(STATE[a]) + (me.mag[a] ? ` ${Math.round(me.mag[a])}%` : ''), '', me.st[a], true)).join('')
-    + Object.keys(me.bar).filter(a => me.bar[a] >= 1).map(a => api.ailmentIcon?.(a)
-      ? filling(a, api.ailmentIcon(a), me.bar[a])
-      : `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
+    + Object.keys(me.bar).filter(a => me.bar[a] >= 1).map(a => filling(a, api.ailmentIcon?.(a), me.bar[a])).join('');
   function keysText() {
     const W = settings().input === 'wasd', mv = barNow().indexOf(MOVED);
     const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), W ? t('W A S D: move') : mv < 0 ? t('Move is not on the bar: click a slot to put it there') : t('{0}: move to the cursor while held', slotName(slotKeys()[mv])),
@@ -1458,14 +1456,14 @@ export function initScene(el, api) {
     if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
     // a curse that lowers their damage (Enfeeble)
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
-    let total = 0, chaos = 0, top = d.col, best = 0; const raw = {};
+    let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {};
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el], got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
-      total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
+      dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     hurt(total, chaos, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
-    ailed(d, raw);
+    ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -1484,20 +1482,20 @@ export function initScene(el, api) {
     if (!fresh) return;
     if (a === 'freeze' || a === 'stun' || a === 'electrocute') { held = charge = goal = null; walk = false; }   // they stop what you are doing
     if (a === 'freeze') { me.st.chill = 0; fx.emit(22, { p: { x: pp.x, y: 1, z: pp.z }, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); }
-    fx.text(above(), t(STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
+    fx.text(above(), t(a === 'stun' ? 'Light Stun' : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
-  function ailed(d, raw) {
+  function ailed(d, raw, dealt) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
     const thr = Math.max(1, D.ail), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
-    // freeze and heavy stun build up against their thresholds; once one fills, it is harder to fill again for a while
+    // freeze and electrocute build up against their thresholds; once one fills, it is harder to fill again for a while
     // (GameConstants <name>ThresholdModifier / <name>ModifierDuration, the player's where the game has its own)
     const build = (a, n, cap, dur) => {
       if (!(n > 0) || !cap || me.st[a] > 0) return;
-      const G = { freeze: 'Freeze', stun: 'HeavyStun', electrocute: 'Electrocute' }[a], rule = k => PL[G + k] ?? GC[G + k];
+      const G = { freeze: 'Freeze', electrocute: 'Electrocute' }[a], rule = k => PL[G + k] ?? GC[G + k];
       me.bar[a] = (me.bar[a] || 0) + n / (cap * (me.lock[a] > 0 ? 1 + rule('ThresholdModifier') / 100 : 1)) * 100; me.calm = 0;
       if (me.bar[a] < 100) return;
       me.bar[a] = 0; me.lock[a] = rule('ModifierDuration');
@@ -1517,13 +1515,20 @@ export function initScene(el, api) {
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
         D.freeze, PL.FreezeDuration * D.dur.freeze);
     }
-    const melee = d.atk.melee, stun = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
-      * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
-      * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * PL.HeavyStunDamageScale;
     // electrocute, only from the skills that say so (GSPerennialKingGlassSwordFenceZap), against your ailment threshold
     const E = A['active_skill_electrocutes_as_though_dealt_damage_+%_final'];
     if (E != null) build('electrocute', x('lightning') * GC.ElectrocuteDamageScale * (1 + E / 100) * D.eff.electrocute, D.electrocute, PL.ElectrocuteDuration / 1000 * D.dur.electrocute);
-    if (!frozen()) build('stun', stun, D.stun, GAME.player_heavy_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
+    // Plain hits cannot heavily stun a player (KeywordPopups HeavyStunPlayer), they can light stun you (LightStun): the
+    // damage dealt (more from physical and melee hits, monster.ot) against your stun threshold, 100% at all of it, none
+    // under the least chance; each stun of the last few seconds raises your threshold (character.ot)
+    const melee = d.atk.melee, hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
+      * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
+      * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
+    me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
+    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;
+    if (!frozen() && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
+      me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
+    }
     if (x('physical') && roll(A['local_chance_to_bleed_on_hit_%'] || 0) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
     const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);

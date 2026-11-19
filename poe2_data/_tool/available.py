@@ -831,10 +831,14 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             # the same rules where the game has its own for a player hit by a monster (FreezeDurationPlayer...), without "Player"
             'player': {k[:-6]: v for k, v in game.items() if k.endswith('Player') and re.match(r'(Freeze|BaseChill|BaseShock|BaseFlammability|HeavyStun|Electrocute|Pin)', k)},
             'heavy_stun_ms': mon_stats.get('base_heavy_stun_duration_ms'), 'poise_decay_delay_ms': mon_stats.get('poise_decay_delay_ms'), 'poise_decay_per_second': mon_stats.get('poise_decay_%_per_second'),
-            # what a monster's hit does to your heavy stun bar: more for physical and melee hits (monster.ot), and your own
-            # heavy stun length and how fast your bars empty (character.ot)
+            # what a monster's hit does to your stun: more for physical and melee hits (monster.ot), and how fast your bars
+            # empty (character.ot)
             'stun_physical': mon_stats.get('physical_hit_damage_stun_multiplier_+%_final_from_ot'), 'stun_melee': mon_stats.get('melee_hit_damage_stun_multiplier_+%_final_from_ot'),
-            'player_heavy_stun_ms': char_stats.get('base_heavy_stun_duration_ms'),
+            # light stun on you (players cannot be heavily stunned by plain hits: KeywordPopups HeavyStunPlayer): its length,
+            # the least chance that counts, and the higher threshold for each stun in the last few seconds (character.ot)
+            'player_light_stun_ms': char_stats.get('stun_base_duration_override_ms'), 'player_light_stun_min': game['LightStunMinimumChancePlayer'],
+            'player_light_stun_repeat_pct': char_stats.get('light_stun_threshold_+%_final_per_number_of_times_stunned_in_past_duration_from_ot'),
+            'player_light_stun_repeat_ms': char_stats.get('x_ms_for_number_of_times_stunned_in_past_duration_from_ot'),
             'player_poise_decay_delay_ms': char_stats.get('poise_decay_delay_ms'), 'player_poise_decay_per_second': char_stats.get('poise_decay_%_per_second'),
         },
         'monsters': monsters, 'rarity': rarity,
