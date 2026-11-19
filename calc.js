@@ -712,7 +712,7 @@ export function skill(g, b, treeGear) {
       // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40) or on the stacks (Culmination's 10)
       const lim = Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal);
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
-        w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 0, inc: kind === 'INC' };
+        w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
     });
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)

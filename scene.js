@@ -357,22 +357,19 @@ export function initScene(el, api) {
     else if (c.type === 'MultiplierThreshold') n = v in count && (count[v] >= (c.threshold || 0)) ? 1 : 0;
     else if (c.type === 'Multiplier') n = v in count ? Math.floor(count[v] / (c.div || 1)) : 0;
     else if (c.type === 'DistanceRamp') {   // [distance in tenths of a metre, share] points, as PoB2 has them (Longshot: "7m+")
-      const x = dist(pp, d.pos) * 10, R = c.ramp; let k = x <= R[0][0] ? R[0][1] : R[R.length - 1][1];
-      for (let i = 1; i < R.length; i++) if (x > R[i - 1][0] && x <= R[i][0]) k = R[i - 1][1] + (R[i][1] - R[i - 1][1]) * (x - R[i - 1][0]) / (R[i][0] - R[i - 1][0]);
-      n = k;
+      const x = dist(pp, d.pos) * 10, R = c.ramp; n = x <= R[0][0] ? R[0][1] : R[R.length - 1][1];
+      for (let i = 1; i < R.length; i++) if (x > R[i - 1][0] && x <= R[i][0]) n = R[i - 1][1] + (R[i][1] - R[i - 1][1]) * (x - R[i - 1][0]) / (R[i][0] - R[i - 1][0]);
     } else return 0;
-    return c.neg ? (n ? 0 : 1) : n;
+    return c.neg ? +!n : n;
   }
   function when(D, d, S) {
     const W = { dmg: {}, crit: 1, critBonus: 1 };
     for (const w of D.when || []) {
       let n = w.cond.reduce((t, c) => t * condN(c, d, S), 1);
       if (!n) continue;
-      if (w.stacks) n = Math.min(n, w.stacks);
-      const pct = w.cap != null ? Math.min(w.cap, w.val * n) : w.val * n;
+      const pct = Math.min(w.cap ?? Infinity, w.val * Math.min(n, w.stacks || Infinity));
       if (w.what === 'damage') for (const el in w.w) W.dmg[el] = (W.dmg[el] ?? 1) * (1 + pct / 100 * w.w[el]);
-      else if (w.what === 'crit') W.crit *= 1 + pct / 100 * w.w;
-      else W.critBonus *= w.inc ? 1 + pct / Math.max(1, D.critBonus || 100) : 1 + pct / 100;
+      else W[w.what] *= 1 + pct / 100 * w.w;
     }
     return W;
   }
