@@ -460,8 +460,9 @@ minion_stats = {sid(r['MinionStat']).replace('virtual_minion_', 'minion_', 1): n
 minion_intrinsic = {sid(r['Stat']): r['Value'] for r in load('PlayerMinionIntrinsicStats')}
 save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
                      'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
-                     # the icons of the ailments on you; frozen has no icon of its own (the "frozen" buff shows none): its art bufffrozen
-                     'ailment_icons': {a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('freeze', 'frozen_damage_increase'), ('maim', 'maim'))}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+                     # the icons of the ailments on you; the "frozen" buff has none in BuffVisuals: the game's StatusFrozen art (no table names it)
+                     'ailment_icons': {**{a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('maim', 'maim'))},
+                                       'freeze': 'Art/2DArt/BuffIcons/StatusFrozen.dds'}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
