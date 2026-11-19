@@ -435,16 +435,21 @@ export function initScene(el, api) {
   // share of that monster's maximum life, through its resistances: Fiery Death (ignited by the skill, its chance), Bone
   // Shrapnel (killed while pinned), Frozen Spite (killed while frozen: ice fragments that land and burst)
   function deathBlast(d, frozen, S) {
-    const p = { x: d.pos.x, z: d.pos.z }, blast = (q, R, el, x, from) => boom(q, R, { ...from, src: 'trigger', el, els: [el], ail: [], mult: 1, gm: 1, P: { ...from.P, attack: false }, dmg: { hits: { [el]: [x, x] }, crit: 0, critBonus: 0 } });
+    // the triggered skill as calc has it (a base of 100, through the build's modifiers), scaled to that share of life
+    const p = { x: d.pos.x, z: d.pos.z }, blast = (q, el, x, from) => {
+      const T = from.dmg.trig.find(t => t.hits?.[el] && t.stats?.[{ fire: 'corpse_explosion_monster_life_%', physical: 'support_bone_shrapnel_physical_damage_equal_to_%_monster_life', cold: 'support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage' }[el]]);
+      const hits = Object.fromEntries(Object.entries(T.hits).map(([e, [lo, hi]]) => [e, [lo * x / 100, hi * x / 100]])), inf = api.info({ name: T.id });
+      boom(q, api.geo({ name: T.id, level: from.g?.level || 1, supports: [] }).radius, { ...from, name: T.id, label: inf.label, src: 'trigger', el, els: [el], ail: ailOf([el]), mult: 1, gm: 1, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] } });   // with the build's area
+    };
     for (const T of d.ignBy?.dmg?.onKill || []) if (T['corpse_explosion_monster_life_%'] && d.st.ignite > 0 && Math.random() * 100 < (T['chance_to_trigger_fiery_death_on_ignited_enemy_death_%'] ?? 100))
-      later(.05, () => blast(p, T.active_skill_base_area_of_effect_radius / 10, 'fire', d.max * T['corpse_explosion_monster_life_%'] / 100, d.ignBy));
+      later(.05, () => blast(p, 'fire', d.max * T['corpse_explosion_monster_life_%'] / 100, d.ignBy));
     for (const T of S?.dmg?.onKill || []) {
       if (T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] && d.st.pin > 0)
-        later(.05, () => blast(p, T.active_skill_base_area_of_effect_radius / 10, 'physical', d.max * T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] / 100, S));
+        later(.05, () => blast(p, 'physical', d.max * T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] / 100, S));
       const cold = T['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'];
       if (cold && frozen) for (let k = 0; k < (T.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(T.ice_fragment_min_chunk_distance || 0, T.ice_fragment_max_chunk_distance || 0) / 10, q = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
-        fx.ring(q, .1, .4, 'ice', .3); later((T.base_skill_detonation_time || 0) / 1000, () => blast(q, T.active_skill_base_area_of_effect_radius / 10, 'cold', d.max * cold / 100, S));
+        fx.ring(q, .1, .4, 'ice', .3); later((T.base_skill_detonation_time || 0) / 1000, () => blast(q, 'cold', d.max * cold / 100, S));
       }
     }
   }
