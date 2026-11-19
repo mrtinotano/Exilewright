@@ -266,7 +266,7 @@ export function initScene(el, api) {
     if (Math.random() * 100 < M.random) gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], S.label);
     // Empowered Sparks: a power charge generated empowers your next attacks to trigger its Sparks (no expiry in the data)
     const E = type === 'power' && S.dmg?.trig?.find(T => T.stats?.support_empower_X_attacks_with_spark_on_power_charge_gain), X = E && S.dmg.trig.find(T => T.support === E.support && T.hits?.lightning);
-    if (X) { empower = empower.filter(e => e.type !== 'spark'); empower.push({ type: 'spark', uses: E.stats.support_empower_X_attacks_with_spark_on_power_charge_gain, X: asTrig(S, X), label: api.info({ name: X.id }).label, name: S.name, el: 'lightning' }); }
+    if (X) { const A = asTrig(S, X); empower = empower.filter(e => e.type !== 'spark'); empower.push({ type: 'spark', uses: E.stats.support_empower_X_attacks_with_spark_on_power_charge_gain, X: A, label: A.label, name: S.name, el: 'lightning' }); }
   }
   // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
   const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
