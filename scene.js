@@ -1471,7 +1471,7 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1,
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1,
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move / 100 : 1;   // maim slows only your movement
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
@@ -1479,7 +1479,7 @@ export function initScene(el, api) {
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
     if (o.dot && (fresh || o.dot.dps > (me.burn[a]?.dps || 0))) me.burn[a] = o.dot;
     if (!fresh) return;
-    if (a === 'freeze' || a === 'stun') { held = charge = goal = null; walk = false; }
+    if (a === 'freeze' || a === 'stun' || a === 'electrocute') { held = charge = goal = null; walk = false; }   // they stop what you are doing
     if (a === 'freeze') { me.st.chill = 0; fx.emit(22, { p: { x: pp.x, y: 1, z: pp.z }, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); }
     fx.text(above(), t(STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
@@ -1494,7 +1494,7 @@ export function initScene(el, api) {
     // (GameConstants <name>ThresholdModifier / <name>ModifierDuration, the player's where the game has its own)
     const build = (a, n, cap, dur) => {
       if (!(n > 0) || !cap || me.st[a] > 0) return;
-      const G = a === 'freeze' ? 'Freeze' : 'HeavyStun', rule = k => PL[G + k] ?? GC[G + k];
+      const G = { freeze: 'Freeze', stun: 'HeavyStun', electrocute: 'Electrocute' }[a], rule = k => PL[G + k] ?? GC[G + k];
       me.bar[a] = (me.bar[a] || 0) + n / (cap * (me.lock[a] > 0 ? 1 + rule('ThresholdModifier') / 100 : 1)) * 100; me.calm = 0;
       if (me.bar[a] < 100) return;
       me.bar[a] = 0; me.lock[a] = rule('ModifierDuration');
@@ -1517,6 +1517,9 @@ export function initScene(el, api) {
     const melee = d.atk.melee, stun = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
       * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * PL.HeavyStunDamageScale;
+    // electrocute, only from the skills that say so (GSPerennialKingGlassSwordFenceZap), against your ailment threshold
+    const E = A['active_skill_electrocutes_as_though_dealt_damage_+%_final'];
+    if (E != null) build('electrocute', x('lightning') * GC.ElectrocuteDamageScale * (1 + E / 100) * D.eff.electrocute, D.electrocute, PL.ElectrocuteDuration / 1000 * D.dur.electrocute);
     if (!frozen()) build('stun', stun, D.stun, GAME.player_heavy_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     if (x('physical') && roll(A['local_chance_to_bleed_on_hit_%'] || 0) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)

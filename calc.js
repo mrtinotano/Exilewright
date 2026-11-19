@@ -262,9 +262,11 @@ export function ailmentDefence(c, sum) {
   const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
   const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield') / 100) * pct('freeze_threshold_+%');
+  // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
+  const electrocute = ail == null ? null : (ail + v(sum, 'electrocute_threshold_+')) * pct('electrocute_threshold_+%') * pct('electrocute_threshold_+%_final');
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
   const IMMUNE = { ignite: ['immune_to_ignite', 'base_immune_to_ignite'], chill: ['immune_to_chill', 'base_immune_to_chill'], shock: ['immune_to_shock', 'base_immune_to_shock'],
-    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'], stun: ['base_cannot_be_stunned'] };
+    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'], stun: ['base_cannot_be_stunned'], electrocute: ['base_cannot_be_electrocuted', 'cannot_be_electrocuted'] };
   const avoid = {}, dur = {};
   for (const [a, ids] of Object.entries(IMMUNE)) {
     const el = ELEM_AIL.includes(a);
@@ -272,9 +274,10 @@ export function ailmentDefence(c, sum) {
     dur[a] = el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
       : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
   }
-  dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
-  const eff = { chill: pct('chilled_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%') };
-  return { stun, ail, freeze, avoid, dur, eff };
+  dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');
+  dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');   // as Path of Building 2: longer stuns, divided by stun recovery
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self') };
+  return { stun, ail, freeze, electrocute, avoid, dur, eff };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
 { const a = ailmentDefence({ life: 2000, es: 0, evasion: 0, attrs: {} }, { immune_to_freeze: 1, 'base_avoid_shock_%': 30, 'avoid_all_elemental_status_%': 10, 'self_elemental_status_duration_-%': 50 });
