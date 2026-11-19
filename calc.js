@@ -634,11 +634,11 @@ export function skill(g, b, treeGear) {
   // base damage per type
   // "Attack damage of this skill is 20% of Default Attack Damage" (Volcanic Eruption): PoB2's baseMultiplier too
   const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
-  const base = {};
+  const base = {}, nonWeapon = attack && d.types?.includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   for (const t of DMG) {
     let lo = 0, hi = 0;
     if (attack && w) {
-      const r = t === 'physical' ? w.physical : w[t];
+      const r = nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
       if (r) { lo += r[0]; hi += r[1]; }
       lo += v(sum, `attack_minimum_added_${t}_damage`); hi += v(sum, `attack_maximum_added_${t}_damage`);
     }

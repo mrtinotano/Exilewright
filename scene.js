@@ -184,7 +184,7 @@ export function initScene(el, api) {
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
   const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body;   // to the dummy's edge
-  const coneHalf = S => (S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
+  const coneHalf = S => (S.cone / 2 || (S.kind === 'cone' ? SIM.cone / 2 : 65)) * Math.PI / 180;   // S.cone: the data's angle (Deadly Resolve)
   function aim(S, p) {
     const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange;
     let dx = p.x - pp.x, dz = p.z - pp.z, l = Math.hypot(dx, dz);
@@ -1719,6 +1719,23 @@ export function initScene(el, api) {
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
+  // Deadly Resolve: a stage per its time channelling the supported skill (up to its most, for its duration: one timer for all,
+  // ponytail: each stage's own timer if it matters); an enemy's hit expends one for a slash at it, its cone and cooldown, 1%
+  // more damage per its armour
+  function resolveGain(dt) {
+    const B = held && base(held.i), T = B?.P.channel && B.dmg?.trig?.find(T => T.support?.gain_dangerous_resolve_stack_per_X_ms_channeling), U = T?.support;
+    if (!T) { me.resolve = 0; return; }
+    if ((me.resolve = (me.resolve || 0) + dt) < U.gain_dangerous_resolve_stack_per_X_ms_channeling / 1000) return;
+    me.resolve = 0; let E = empower.find(e => e.type === 'resolve');
+    if (!E) { const X = asTrig(B, T); empower.push(E = { type: 'resolve', uses: 0, X, label: X.label, name: B.name, next: 0 }); }
+    E.uses = Math.min(U.maximum_dangerous_resolve_stacks, E.uses + 1); E.s = U.dangerous_resolve_stack_duration_ms / 1000; E.cd = U.dangerous_resolve_explosion_cooldown_ms / 1000;
+  }
+  function resolve(d) {
+    const E = !d.dead && empower.find(e => e.type === 'resolve' && time >= e.next); if (!E) return;
+    E.next = time + E.cd; if (--E.uses <= 0) empower.splice(empower.indexOf(E), 1);
+    const X = E.X, l = dist(d.pos, pp) || 1, k = 1 + Math.floor((sheet().armour || 0) / X.dmg.stats['dangerous_resolve_attack_damage_+1%_final_per_X_armour']) / 100;
+    say(X.label, X.el); K.sweep({ ...X, mult: k, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l, R: X.A, cone: X.dmg.stats.dangerous_resolve_cone_angle });
+  }
   function struck(d) {
     const a = d.atk, c = withCharms(sheet());
     if (d.dead || me.safe > 0 || !a.hasHit) return;
@@ -1734,7 +1751,7 @@ export function initScene(el, api) {
     }
     hurt(total, chaos, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
-    ailed(d, raw, dealt);
+    resolve(d); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -2111,6 +2128,7 @@ export function initScene(el, api) {
       if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
     }
     for (let i = empower.length - 1; i >= 0; i--) if (empower[i].s != null && (empower[i].s -= dt) <= 0) empower.splice(i, 1);
+    resolveGain(dt);
     for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt) <= 0) buffs.splice(i, 1);
 
     player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
