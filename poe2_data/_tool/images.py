@@ -86,8 +86,7 @@ def painted(c):   # the icon: what is bright or coloured, with the holes inside 
     m = m.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MinFilter(3))
     ImageDraw.floodfill(m, (0, 0), 128)
     c.putalpha(m.point(lambda x: 0 if x == 128 else 255).filter(ImageFilter.GaussianBlur(0.8)))
-    c = c.crop(c.getbbox()); side = max(c.size)
-    sq = Image.new('RGBA', (side, side)); sq.alpha_composite(c, ((side - c.width) // 2, (side - c.height) // 2)); return sq
+    return c.crop(c.getbbox())
 try:
     sheet = Image.open(os.path.join(ROOT, 'files', CONTENT)).convert('RGBA')
     for role, (x, y) in PAINTED.items():
