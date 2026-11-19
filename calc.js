@@ -699,8 +699,9 @@ export function skill(g, b, treeGear) {
   // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
   if (st._cooldown_ms) {
-    out.cooldown = st._cooldown_ms / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100);
-    out.uses = (st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags);
+    out.cooldown = st._cooldown_ms / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
+    // Second Wind: less recovery rate, twice the uses (support_double_number_of_cooldown_uses)
+    out.uses = ((st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags)) * ((g.supports || []).some(n => SK.skills[n]?.flags?.includes('support_double_number_of_cooldown_uses')) ? 2 : 1);
     out.useTime = out.speed && 1 / out.speed;   // the game's "Attack time", apart from the cooldown
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
@@ -783,13 +784,16 @@ export function skill(g, b, treeGear) {
   out.onUse = { speed: all2('skill_consume_frenzy_charge_to_gain_skill_speed_+%_final'), crit: all2('skill_consume_power_charge_to_gain_critical_strike_chance_+%_final'),
     breakPct: all2('skill_consume_frenzy_charge_to_armour_break_for_%_of_physical_damage'), curse: all2('support_consume_power_charge_to_gain_curse_duration_+%_final'),
     lifePerEndurance: all2('consume_endurance_charges_on_use_to_recover_%_maximum_life_per_charge'), keep: all2('charge_skip_consume_chance_%'),
-    double: all2('chance_%_to_double_effect_of_removing_charges'), lifePer5Rage: all2('lose_x%_of_life_per_5_rage_on_supported_skill_use') };
+    double: all2('chance_%_to_double_effect_of_removing_charges'), lifePer5Rage: all2('lose_x%_of_life_per_5_rage_on_supported_skill_use'),
+    lifePerCooldown: all2('restore_%_life_on_skill_use_per_1000_ms_cooldown') };
   // buffs of damage gained as extra of an element for a while, and life on kill (Cannibalism)
   const buffOf = (name, pct, el, ms, on, attack) => (g.supports || []).includes(name) && { name, pct: sup(pct), el, time: sup(ms) / 1000, on, attack };
   out.gains = [...['Ice Bite I', 'Ice Bite II'].map(n => buffOf(n, 'support_ice_bite_buff_grant_%_added_cold_attack_damage', 'cold', 'support_ice_bite_base_buff_duration', 'freeze')),
     buffOf('Innervate', 'support_innervate_buff_grant_%_added_lightning_attack_damage', 'lightning', 'support_innervate_buff_base_duration_ms', 'shockKill'),
     buffOf('Blazing Critical', 'support_blazing_crits_gain_%_fire_damage_with_attacks_on_critical_hit', 'fire', 'support_blazing_crits_base_duration_ms', 'crit', true)].filter(Boolean);
   out.lifeOnKill = sup('support_cannibalism_recover_%_maximum_life_on_kill');
+  // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
+  out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)

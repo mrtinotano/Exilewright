@@ -427,6 +427,23 @@ export function initScene(el, api) {
       buffs = buffs.filter(b => b.label !== label); buffs.push({ label, name: G.name, c: css(G.el), s: G.time, gain: G, sup: true });
     }
   }
+  // the explosions supports set off when an enemy dies (calc.js onKill: the triggered skill's own stats), their damage a
+  // share of that monster's maximum life, through its resistances: Fiery Death (ignited by the skill, its chance), Bone
+  // Shrapnel (killed while pinned), Frozen Spite (killed while frozen: ice fragments that land and burst)
+  function deathBlast(d, frozen, S) {
+    const p = { x: d.pos.x, z: d.pos.z }, blast = (q, R, el, x, from) => boom(q, R, { ...from, src: 'trigger', el, els: [el], ail: [], mult: 1, gm: 1, P: { ...from.P, attack: false }, dmg: { hits: { [el]: [x, x] }, crit: 0, critBonus: 0 } });
+    for (const T of d.ignBy?.dmg?.onKill || []) if (T['corpse_explosion_monster_life_%'] && d.st.ignite > 0 && Math.random() * 100 < (T['chance_to_trigger_fiery_death_on_ignited_enemy_death_%'] ?? 100))
+      later(.05, () => blast(p, T.active_skill_base_area_of_effect_radius / 10, 'fire', d.max * T['corpse_explosion_monster_life_%'] / 100, d.ignBy));
+    for (const T of S?.dmg?.onKill || []) {
+      if (T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] && d.st.pin > 0)
+        later(.05, () => blast(p, T.active_skill_base_area_of_effect_radius / 10, 'physical', d.max * T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] / 100, S));
+      const cold = T['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'];
+      if (cold && frozen) for (let k = 0; k < (T.base_number_of_projectiles || 1); k++) {
+        const a = Math.random() * Math.PI * 2, r = rnd(T.ice_fragment_min_chunk_distance || 0, T.ice_fragment_max_chunk_distance || 0) / 10, q = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
+        fx.ring(q, .1, .4, 'ice', .3); later((T.base_skill_detonation_time || 0) / 1000, () => blast(q, T.active_skill_base_area_of_effect_radius / 10, 'cold', d.max * cold / 100, S));
+      }
+    }
+  }
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -454,6 +471,7 @@ export function initScene(el, api) {
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     if (a === 'freeze') gainBuff(S, 'freeze');
+    if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; }
@@ -576,6 +594,7 @@ export function initScene(el, api) {
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     if (st.shock > 0) gainBuff(S, 'shockKill');
+    deathBlast(d, frozen, S);
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // heralds: an enemy that dies with the ailment of their element explodes
@@ -1199,6 +1218,9 @@ export function initScene(el, api) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
+    // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
+    const C = !auto && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
+    if (C && ready.length >= (S.dmg.uses || 1)) return false;
     Object.assign(S, o);
     aim(S, o.at || cursor);
     if (!auto) {
@@ -1243,8 +1265,10 @@ export function initScene(el, api) {
       if (U.crit && (n = take('power'))) S.critX = 1 + U.crit * n / 100;
       if (U.curse && (n = take('power'))) S.curseX = 1 + U.curse * n / 100;
       if (U.lifePerEndurance && (n = take('endurance', true))) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerEndurance * n / 100);
+      if (U.lifePerCooldown && C) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerCooldown * C / 1000 / 100);   // Second Wind III
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
+    if (C) ready.push(time + C / 1000);
     const run = K[S.kind] || K.area;
     run(S);
     used.push({ name: S.name, elemental: S.elemental, t: time }); while (used[0]?.t < time - RECENT) used.shift();
@@ -1261,9 +1285,9 @@ export function initScene(el, api) {
   // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
   let nextCdX = 1;   // Ferocity: more skill speed for the use that consumed a frenzy charge
   // a crossbow fires its clip at its firing rate and reloads when the last bolt is gone (Ammo Conservation may keep one)
-  const clips = {};
+  const clips = {}, cdReady = {};
   const useTime = b => {
-    const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.speed;
+    const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX;
     if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); while (reloads[0]?.t < time - 8) reloads.shift(); }
     return t;

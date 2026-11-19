@@ -12764,6 +12764,12 @@
    "part": {
     "triggered_by_support_electrocute_lineage_%": 100
    },
+   "triggers": {
+    "TriggeredLightningDetonateDeadPlayer": {
+     "triggered_by_support_electrocute_lineage_%": 100,
+     "explosion_delay_ms": 400
+    }
+   },
    "meta_support": null
   },
   "Energy Barrier": {
@@ -24581,6 +24587,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCorruptingCryThreePlayer": {
+     "base_skill_effect_duration": 5000,
+     "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 5
+    }
+   },
    "meta_support": null
   },
   "Hinder": {
@@ -27050,6 +27062,14 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredSplinterExplosionHardyTotems": {
+     "active_skill_base_area_of_effect_radius": 30,
+     "triggered_on_death_%": 100,
+     "base_physical_damage_equal_to_%_of_totem_life": 20,
+     "skill_disabled_unless_cloned": 1
+    }
+   },
    "meta_support": null
   },
   "Herald of Ash": {
@@ -30525,6 +30545,16 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredXibaquasRendingPlayer": {
+     "triggered_by_vaal_lineage_detonate_on_landing_support_%_chance": 100,
+     "detonate_on_landing_maximum_number_of_corpses_to_detonate": 100,
+     "corpse_explosion_monster_life_permillage_fire": 60,
+     "active_skill_base_secondary_area_of_effect_radius": 35,
+     "active_skill_base_area_of_effect_radius": 15,
+     "explosion_delay_ms": 400
+    }
+   },
    "meta_support": null
   },
   "Khatal's Rejuvenation": {
@@ -35154,6 +35184,13 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredFracturedSelfPlayer": {
+     "base_skill_effect_duration": 5000,
+     "active_skill_base_area_of_effect_radius": 15,
+     "support_tricksters_shard_maximum_active_mimics": 4
+    }
+   },
    "meta_support": null
   },
   "Arbiter's Reach": {
@@ -35631,6 +35668,11 @@
    "flags": [
     "never_freeze"
    ],
+   "triggers": {
+    "TriggeredMorrigansInsightPlayer": {
+     "base_skill_effect_duration": 8000
+    }
+   },
    "meta_support": null
   },
   "Tul's Avalanche": {
@@ -37000,6 +37042,12 @@
    "flags": [
     "cannot_break_armour"
    ],
+   "triggers": {
+    "TriggeredRuneforgedBladesPlayer": {
+     "base_number_of_projectiles": 7,
+     "triggered_by_support_rune_forged_blades_%": 100
+    }
+   },
    "meta_support": null
   },
   "Powered by Verisium": {
@@ -42853,6 +42901,13 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredFistOfKalguurPlayer": {
+     "active_skill_base_area_of_effect_radius": 24,
+     "triggered_by_fist_of_kalguur_support_%": 100,
+     "base_skill_effect_duration": 4000
+    }
+   },
    "meta_support": null
   },
   "Voltaic Barrier": {
@@ -60377,6 +60432,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "support_double_number_of_cooldown_uses"
+   ],
    "meta_support": null
   },
   "Second Wind II": {
@@ -60395,6 +60453,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "support_double_number_of_cooldown_uses"
+   ],
    "meta_support": null
   },
   "Second Wind III": {
@@ -60414,6 +60475,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "support_double_number_of_cooldown_uses"
+   ],
    "meta_support": null
   },
   "Seismic Cry": {
@@ -85240,6 +85304,11 @@
    "flags": [
     "active_skill_never_freeze_shock_ignite"
    ],
+   "triggers": {
+    "TriggeredElementalDischargePlayer": {
+     "active_skill_base_area_of_effect_radius": 20
+    }
+   },
    "meta_support": null
   },
   "Hourglass": {
@@ -85278,6 +85347,13 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredFieryDeathPlayer": {
+     "triggered_by_fiery_death_support_%": 100,
+     "active_skill_base_area_of_effect_radius": 20,
+     "corpse_explosion_monster_life_%": 10
+    }
+   },
    "meta_support": null
   },
   "Twister": {
@@ -86507,6 +86583,13 @@
    "weapons": null,
    "part": {
     "support_mana_flare_%_of_current_mana_consumed": 25
+   },
+   "triggers": {
+    "TriggeredManaFlarePlayer": {
+     "triggered_by_mana_flare_support_%": 100,
+     "support_mana_flare_%_of_current_mana_consumed": 25,
+     "active_skill_base_area_of_effect_radius": 20
+    }
    },
    "meta_support": null
   },
@@ -87771,6 +87854,11 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredDecayingHexPlayer": {
+     "base_skill_effect_duration": 8000
+    }
+   },
    "meta_support": null
   },
   "Focused Curse": {
@@ -95808,6 +95896,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCorruptingCryPlayer": {
+     "base_skill_effect_duration": 5000,
+     "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 1
+    }
+   },
    "meta_support": null
   },
   "Corrupting Cry II": {
@@ -95823,6 +95917,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCorruptingCryTwoPlayer": {
+     "base_skill_effect_duration": 5000,
+     "add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict": 1
+    }
+   },
    "meta_support": null
   },
   "Window of Opportunity I": {
@@ -101213,6 +101313,15 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredBurningRunesPlayer": {
+     "triggered_by_burning_runes_support_%": 100,
+     "active_skill_base_area_of_effect_radius": 20,
+     "base_skill_effect_duration": 4000,
+     "support_burning_runes_base_fire_damage_equal_to_%_maximum_mana": 20,
+     "ground_fire_art_variation": 0
+    }
+   },
    "meta_support": null
   },
   "Shard Scavenger": {
@@ -105335,6 +105444,13 @@
    "flags": [
     "cannot_pin"
    ],
+   "triggers": {
+    "TriggeredBoneShrapnelPlayer": {
+     "active_skill_base_area_of_effect_radius": 20,
+     "support_bone_shrapnel_physical_damage_equal_to_%_monster_life": 25,
+     "triggered_by_bone_shrapnel_support_%": 100
+    }
+   },
    "meta_support": null
   },
   "Alignment I": {
@@ -105622,6 +105738,15 @@
    ],
    "part": {
     "active_skill_damage_+%_final_vs_unique_enemies": 50
+   },
+   "triggers": {
+    "TriggeredBattershoutExplosionPlayer": {
+     "support_battershout_physical_damage_equal_to_%_of_broken_armour": 40,
+     "active_skill_base_area_of_effect_radius": 20,
+     "triggered_by_battershout_support_%": 100,
+     "additional_base_critical_strike_chance": 500,
+     "active_skill_damage_+%_final_vs_unique_enemies": 50
+    }
    },
    "meta_support": null
   },
@@ -106244,6 +106369,16 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCaltropsPlayer": {
+     "triggered_by_caltrops_support_%": 100,
+     "base_number_of_projectiles": 1,
+     "active_skill_base_area_of_effect_radius": 5,
+     "active_skill_base_secondary_area_of_effect_radius": 30,
+     "base_skill_effect_duration": 8000,
+     "active_skill_has_%_standard_scaling_attack_damage": 75
+    }
+   },
    "meta_support": null
   },
   "Haemocrystals": {
@@ -106268,6 +106403,15 @@
    ],
    "part": {
     "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8
+   },
+   "triggers": {
+    "TriggeredHaemocrystalsPlayer": {
+     "support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage": 8,
+     "active_skill_base_area_of_effect_radius": 10,
+     "base_skill_effect_duration": 1500,
+     "support_haemocrystals_crystal_creation_radius": 25,
+     "chance_to_trigger_haemocrystals_%": 100
+    }
    },
    "meta_support": null
   },
@@ -106322,6 +106466,12 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredQuillburstPlayer": {
+     "triggered_by_spiked_gauntlets_support_%": 100,
+     "active_skill_base_area_of_effect_radius": 15
+    }
+   },
    "meta_support": null
   },
   "Shocking Leap": {
@@ -106828,6 +106978,17 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredVolcanicEruptionPlayer": {
+     "active_skill_base_area_of_effect_radius": 10,
+     "chance_to_trigger_volcanic_eruption": 100,
+     "base_number_of_projectiles": 4,
+     "active_skill_base_physical_damage_%_to_convert_to_fire": 80,
+     "skill_mortar_minimum_projectile_distance": 5,
+     "skill_mortar_maximum_projectile_distance": 15,
+     "active_skill_has_%_standard_scaling_attack_damage": 20
+    }
+   },
    "meta_support": null
   },
   "Frenzied Riposte": {
@@ -107206,6 +107367,17 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredBrambleslamPlayer": {
+     "active_skill_base_area_of_effect_radius": 10,
+     "triggered_by_briarpatch_support_on_slam_%": 100,
+     "base_skill_effect_duration": 8000,
+     "briarpatches_arming_time_ms": 400,
+     "active_skill_has_%_standard_scaling_attack_damage": 35,
+     "hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self": -80,
+     "plant_skill_damage_+%_final_when_wet": 50
+    }
+   },
    "meta_support": null
   },
   "Inhibitor": {
@@ -107252,6 +107424,16 @@
     "maximum_grounding_shocks_allowed": 5,
     "grounding_shocks_pulse_delay_ms": 650,
     "grounding_shocks_maximum_targets_per_aoe": 6
+   },
+   "triggers": {
+    "TriggeredStaticShocksPlayer": {
+     "triggered_by_grounding_shocks_support_on_shock_%": 100,
+     "base_skill_effect_duration": 4000,
+     "active_skill_base_area_of_effect_radius": 30,
+     "maximum_grounding_shocks_allowed": 5,
+     "grounding_shocks_pulse_delay_ms": 650,
+     "grounding_shocks_maximum_targets_per_aoe": 6
+    }
    },
    "meta_support": null
   },
@@ -115634,6 +115816,17 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredLivingLightningPlayer": {
+     "chance_to_trigger_living_lightning_on_lightning_damage_%": 100,
+     "base_skill_effect_duration": 30000,
+     "base_number_of_living_lightning_allowed": 5,
+     "living_lightning_maximum_number_of_attacks": 3,
+     "minion_base_physical_damage_%_to_convert_to_lightning": 100,
+     "living_lightning_beam_attack_time_ms": 140,
+     "number_of_chains": 3
+    }
+   },
    "meta_support": null
   },
   "Living Lightning II": {
@@ -115649,6 +115842,19 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredLivingLightningPlayerTwo": {
+     "chance_to_trigger_living_lightning_on_lightning_damage_%": 100,
+     "base_skill_effect_duration": 30000,
+     "base_number_of_living_lightning_allowed": 8,
+     "living_lightning_maximum_number_of_attacks": 3,
+     "minion_base_physical_damage_%_to_convert_to_lightning": 100,
+     "living_lightning_beam_attack_time_ms": 140,
+     "minion_1%_damage_+%_per_X_player_strength": 5,
+     "active_skill_minion_1%_attack_speed_+%_per_X_player_dexterity": 10,
+     "number_of_chains": 3
+    }
+   },
    "meta_support": null
   },
   "Frozen Spite": {
@@ -115667,6 +115873,19 @@
    "flags": [
     "never_freeze"
    ],
+   "triggers": {
+    "TriggeredSupportFrozenSpiteIceFragmentPlayer": {
+     "triggered_by_frozen_spite_support_%": 100,
+     "active_skill_base_area_of_effect_radius": 15,
+     "support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage": 10,
+     "ballistic_ice_chunk_cone_angle": 360,
+     "base_skill_detonation_time": 1500,
+     "base_number_of_projectiles": 3,
+     "ice_fragment_min_chunk_distance": 1,
+     "ice_fragment_max_chunk_distance": 35,
+     "ice_fragment_auto_aim_roll_fudge": 2
+    }
+   },
    "meta_support": null
   },
   "Electromagnetism": {
@@ -115696,6 +115915,19 @@
     "shocking_rift_damage_+%_final_per_pulse_performed": 20,
     "shocking_rift_speed_+%_per_shock_consumed": 25,
     "shocking_rift_hinder_ms": 900
+   },
+   "triggers": {
+    "TriggeredShockingRiftPlayer": {
+     "triggered_by_shocking_rift_support_%": 100,
+     "active_skill_base_area_of_effect_radius": 20,
+     "active_skill_base_secondary_area_of_effect_radius": 25,
+     "number_of_shocking_rifts_allowed": 3,
+     "shocking_rift_number_of_pulses": 5,
+     "shocking_rift_pulse_interval_ms": 850,
+     "shocking_rift_damage_+%_final_per_pulse_performed": 20,
+     "shocking_rift_speed_+%_per_shock_consumed": 25,
+     "shocking_rift_hinder_ms": 900
+    }
    },
    "meta_support": null
   },
@@ -115789,6 +116021,16 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCraterPlayer": {
+     "triggered_by_fissure_on_landing_support_%": 100,
+     "support_fissure_on_landing_maximum_fissure_count": 9,
+     "active_skill_has_%_standard_scaling_attack_damage": 35,
+     "active_skill_base_physical_damage_%_to_convert_to_fire": 80,
+     "active_skill_base_area_of_effect_radius": 15,
+     "base_skill_effect_duration": 6000
+    }
+   },
    "meta_support": null
   },
   "Vanguard I": {
@@ -115869,6 +116111,15 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredSkitteringStonePlayer": {
+     "triggered_by_support_hatching_elementals_%": 100,
+     "base_skill_effect_duration": 10000,
+     "support_hatching_elementals_number_of_elementals_per_hatch": 1,
+     "maximum_hatching_elementals_allowed": 8,
+     "minion_1%_damage_+%_per_X_player_strength": 1
+    }
+   },
    "meta_support": null
   },
   "Skittering Stone II": {
@@ -115888,6 +116139,15 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredSkitteringStonePlayerTwo": {
+     "triggered_by_support_hatching_elementals_%": 100,
+     "base_skill_effect_duration": 20000,
+     "support_hatching_elementals_number_of_elementals_per_hatch": 2,
+     "maximum_hatching_elementals_allowed": 12,
+     "minion_1%_damage_+%_per_X_player_strength": 1
+    }
+   },
    "meta_support": null
   },
   "Durability": {
@@ -118109,6 +118369,15 @@
     "triggered_by_support_creeping_chill_%": 100,
     "support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life": 100
    },
+   "triggers": {
+    "TriggeredCreepingChillPlayer": {
+     "triggered_by_support_creeping_chill_%": 100,
+     "active_skill_base_area_of_effect_radius": 12,
+     "active_skill_ground_effect_area_of_effect_+%_final_per_second": 50,
+     "active_skill_ground_effect_area_of_effect_+%_final_per_second_max": 300,
+     "support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life": 100
+    }
+   },
    "meta_support": null
   },
   "Briarpatch": {
@@ -118906,6 +119175,14 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredExplosiveGrowthPlayer": {
+     "triggered_by_support_explosive_growth_%": 100,
+     "active_skill_base_area_of_effect_radius": 18,
+     "support_explosive_growth_explosion_delay_X_ms": 1200,
+     "active_skill_base_secondary_area_of_effect_radius": 10
+    }
+   },
    "meta_support": null
   },
   "Accelerated Growth II": {
@@ -118921,6 +119198,15 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredExplosiveGrowthPlayerTwo": {
+     "triggered_by_support_explosive_growth_%": 100,
+     "active_skill_base_area_of_effect_radius": 18,
+     "support_explosive_growth_explosion_delay_X_ms": 1200,
+     "active_skill_base_secondary_area_of_effect_radius": 20,
+     "global_chance_to_blind_on_hit_%": 100
+    }
+   },
    "meta_support": null
   },
   "Fan The Flames": {
@@ -118939,6 +119225,12 @@
    "flags": [
     "never_ignite"
    ],
+   "triggers": {
+    "TriggeredFanTheFlamesPlayer": {
+     "triggered_by_support_fan_the_flames_%": 100,
+     "active_skill_base_area_of_effect_radius": 35
+    }
+   },
    "meta_support": null
   },
   "Fan The Flames II": {
@@ -118957,6 +119249,12 @@
    "flags": [
     "never_ignite"
    ],
+   "triggers": {
+    "TriggeredFanTheFlamesPlayerTwo": {
+     "triggered_by_support_fan_the_flames_%": 100,
+     "active_skill_base_area_of_effect_radius": 35
+    }
+   },
    "meta_support": null
   },
   "Coursing Current": {
@@ -118977,6 +119275,11 @@
    "flags": [
     "cannot_chain_to_previous_targets"
    ],
+   "triggers": {
+    "TriggeredDeadlyCurrentPlayer": {
+     "number_of_chains": 6
+    }
+   },
    "meta_support": null
   },
   "Barkskin": {
@@ -119535,6 +119838,12 @@
      "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 45395
     }
    },
+   "triggers": {
+    "TriggeredPoisonSporesPustule": {
+     "triggered_pustule_from_poison_spores_on_hit_chance_%": 100,
+     "skill_specific_stat_description_mode": 1
+    }
+   },
    "meta_support": null
   },
   "Deadly Resolve": {
@@ -119555,6 +119864,14 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredDeadlyResolvePlayer": {
+     "dangerous_resolve_explosion_on_receive_hit_chance_%": 100,
+     "active_skill_base_area_of_effect_radius": 30,
+     "dangerous_resolve_cone_angle": 120,
+     "active_skill_base_secondary_area_of_effect_radius": 0
+    }
+   },
    "meta_support": null
   },
   "Advancing Storm": {
@@ -119632,6 +119949,17 @@
    "part": {
     "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
    },
+   "triggers": {
+    "TriggeredSparkEmpowerPlayer": {
+     "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+    },
+    "TriggeredEmpoweredSparkPlayer": {
+     "base_skill_effect_duration": 2000,
+     "spark_pathing_width_bounds": 20,
+     "damage_hit_effect_index": 1009,
+     "spark_min_time_between_target_clearing_ms": 660
+    }
+   },
    "meta_support": null
   },
   "Empowered Sparks II": {
@@ -119649,6 +119977,17 @@
    "weapons": null,
    "part": {
     "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+   },
+   "triggers": {
+    "TriggeredSparkEmpowerPlayer": {
+     "support_empower_X_attacks_with_spark_on_power_charge_gain": 3
+    },
+    "TriggeredEmpoweredSparkPlayerTwo": {
+     "base_skill_effect_duration": 2000,
+     "spark_pathing_width_bounds": 20,
+     "damage_hit_effect_index": 1009,
+     "spark_min_time_between_target_clearing_ms": 660
+    }
    },
    "meta_support": null
   },
@@ -119802,6 +120141,11 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "triggers": {
+    "TriggeredCatalysingDischargePlayer": {
+     "active_skill_base_area_of_effect_radius": 20
+    }
+   },
    "meta_support": null
   },
   "Nova Projectiles II": {
@@ -119839,6 +120183,12 @@
    "weapons": null,
    "part": {
     "chance_to_trigger_shocked_ground_on_mark_activated_%": 100
+   },
+   "triggers": {
+    "TriggeredChargedMarkPlayer": {
+     "chance_to_trigger_shocked_ground_on_mark_activated_%": 100,
+     "base_skill_effect_duration": 6000
+    }
    },
    "meta_support": null
   },

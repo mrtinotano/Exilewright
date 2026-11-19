@@ -303,7 +303,7 @@ art_variety = {}
 for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietiesKeys']):
     art_variety.setdefault(r['Id'], varieties[r['MonsterVarietiesKeys'][0]])
 skills, skill_csd = {}, {}
-PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin)')
+PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|support_double_number_of_cooldown_uses|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin)')
 PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
 for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go by name: of two gems with one name (Herald of Ash and a unique's own) the one you can cut stays
     if g['kind'] not in ('active', 'support', 'spirit'):   # supports too: their stat lines describe them in the picker; spirit: meta gems (Mortar Cannon)
@@ -398,6 +398,9 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         # what a meta gem does to the skill it uses: its own support part (GemEffects.AdditionalGrantedEffects named
         # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
         **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}),
+        # the skill a support sets off (Fiery Death's explosion: TriggeredFieryDeathPlayer), its own constant stats
+        **({'triggers': {ge_tab[x]['Id']: {sid(a): v for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])}
+                         for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}} if g['kind'] == 'support' and any(ge_tab[x]['Id'].startswith('Triggered') for x in fx['AdditionalGrantedEffects']) else {}),
         'meta_support': {sid(a): v for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Support')
                          for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])} or None,
     }
