@@ -833,5 +833,16 @@
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動：{0} 天賦點所需的等級，計入各章任務給予的天賦點（如 Path of Building 2 的估算）。手動：你輸入的等級。",
  "The allocated points need level {0}.": "已配置的點數需要等級 {0}。",
  "Auto": "自動",
- "Manual": "手動"
+ "Manual": "手動",
+ "About the simulator": "關於模擬器",
+ "The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.": "模擬器使用遊戲本身的資料（技能、輔助、怪物、遊戲常數）與 Path of Building 2 的公式，但無法得知遊戲所有的內部運作：可能並非 100% 準確。請用來比較，並在遊戲中確認重要的部分。",
+ "What cannot be checked:": "無法確認的部分：",
+ "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.": "資料沒有提供的飛行與移動時間（迫擊、投擲與落下的技能）：模擬器使用自己的時間。",
+ "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.": "資料沒有提供的距離與形狀（施放、投擲與跳躍距離、錐形角度、沒有半徑的範圍）：使用預設值，並標示為模擬。",
+ "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.": "怪物如何移動、瞄準以及何時攻擊：牠們的 AI 不在遊戲檔案中。預設情況下敵人不會攻擊。",
+ "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.": "碰撞與命中判定：敵人是平地上的圓形，沒有牆壁或視線。",
+ "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "遊戲沒有精確說明的互動，例如對已感電的敵人再次感電是否會觸發，或場地的第一次脈衝何時發生。",
+ "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "動畫、伺服器時間與延遲：每次使用都花費技能的攻擊或施放時間，中間沒有其他動作。",
+ "The order in which effects that happen at once are applied, and the game's rounding.": "同時發生的效果套用的順序，以及遊戲的四捨五入。",
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "少數輔助的傷害在遊戲視窗中顯示與其數值不同：是在遊戲中測得，而非從檔案讀取。"
 }

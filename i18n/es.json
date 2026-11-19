@@ -833,5 +833,16 @@
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Auto: el nivel que piden tus {0} puntos de pasiva, contando los puntos de pasiva que dan las misiones de cada acto (como lo estima Path of Building 2). Manual: el nivel que escribas.",
  "The allocated points need level {0}.": "Los puntos asignados piden nivel {0}.",
  "Auto": "Auto",
- "Manual": "Manual"
+ "Manual": "Manual",
+ "About the simulator": "Sobre el simulador",
+ "The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.": "El simulador usa los datos del propio juego (habilidades, soportes, monstruos, constantes del juego) y las fórmulas de Path of Building 2, pero no se puede conocer todo el funcionamiento interno del juego: puede que no sea 100 % exacto. Úsalo para comparar y comprueba en el juego lo que importe.",
+ "What cannot be checked:": "Lo que no se puede comprobar:",
+ "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.": "Tiempos de vuelo y de recorrido que los datos no dan (morteros, habilidades que se lanzan o que caen): el simulador usa los suyos.",
+ "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.": "Alcances y formas que los datos no dan (alcance de lanzamiento, de arrojar y de salto, ángulo de un cono, un área sin radio): valores por defecto, marcados como simulados.",
+ "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.": "Cómo se mueven, apuntan y deciden atacar los monstruos: su IA no está en los archivos del juego. Por defecto los enemigos no atacan.",
+ "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.": "Colisiones y detección de impactos: los enemigos son círculos sobre suelo plano, sin paredes ni línea de visión.",
+ "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "Interacciones que el juego no describe con exactitud, como si una Electrocución sobre otra activa los disparadores, o cuándo llega el primer pulso de un campo.",
+ "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "Animaciones, tiempos del servidor y latencia: cada uso dura el tiempo de ataque o de lanzamiento de la habilidad, sin nada más entre medias.",
+ "The order in which effects that happen at once are applied, and the game's rounding.": "El orden en que se aplican los efectos que ocurren a la vez, y los redondeos del juego.",
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Algunos soportes cuyo daño las ventanas del juego muestran distinto de lo que dicen sus estadísticas: medido en el juego, no leído de sus archivos."
 }

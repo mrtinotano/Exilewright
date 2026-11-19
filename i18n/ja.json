@@ -833,5 +833,16 @@
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動: パッシブポイント{0}に必要なレベル。各章のクエストで得られるパッシブポイントを含みます（Path of Building 2 の推定と同じ）。手動: 入力したレベル。",
  "The allocated points need level {0}.": "割り振ったポイントにはレベル{0}が必要です。",
  "Auto": "自動",
- "Manual": "手動"
+ "Manual": "手動",
+ "About the simulator": "シミュレーターについて",
+ "The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.": "シミュレーターはゲーム自体のデータ（スキル、サポート、モンスター、ゲーム定数）と Path of Building 2 の計算式を使いますが、ゲーム内部の仕組みをすべて知ることはできません。100%正確ではない可能性があります。比較に使い、重要な点はゲーム内で確認してください。",
+ "What cannot be checked:": "確認できないこと:",
+ "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.": "データにない飛行・移動時間（迫撃、投げるスキルや落下するスキル）: シミュレーター独自の値を使います。",
+ "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.": "データにない範囲や形状（詠唱・投擲・跳躍の距離、円錐の角度、半径のない範囲）: 既定値を使い、シミュレートと表示します。",
+ "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.": "モンスターの移動、狙い、攻撃のタイミング: そのAIはゲームのファイルにありません。既定では敵は攻撃しません。",
+ "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.": "衝突と命中判定: 敵は平らな地面の上の円で、壁や視線はありません。",
+ "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "ゲームが正確に説明していない相互作用（感電中の敵への感電がトリガーを発動するか、フィールドの最初のパルスがいつ起こるかなど）。",
+ "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "アニメーション、サーバーのタイミング、遅延: 各使用はスキルの攻撃時間または詠唱時間だけかかり、その間には何もありません。",
+ "The order in which effects that happen at once are applied, and the game's rounding.": "同時に起こる効果が適用される順序と、ゲームの端数処理。",
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "ゲームのウィンドウが能力値と違うダメージを表示する一部のサポート: ファイルから読んだのではなく、ゲーム内で測定した値です。"
 }

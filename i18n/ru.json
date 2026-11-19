@@ -833,5 +833,16 @@
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Авто: уровень, который нужен для {0} пассивных очков, с учётом пассивных очков за задания каждого акта (как оценивает Path of Building 2). Вручную: уровень, который вы введёте.",
  "The allocated points need level {0}.": "Распределённым очкам нужен уровень {0}.",
  "Auto": "Авто",
- "Manual": "Вручную"
+ "Manual": "Вручную",
+ "About the simulator": "О симуляторе",
+ "The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.": "Симулятор использует данные самой игры (умения, поддержки, монстры, игровые константы) и формулы Path of Building 2, но знать всё внутреннее устройство игры невозможно: он может быть точен не на 100%. Используйте его для сравнения и проверяйте в игре то, что важно.",
+ "What cannot be checked:": "Что нельзя проверить:",
+ "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.": "Время полёта и перемещения, которого нет в данных (мортиры, бросаемые и падающие умения): симулятор использует своё.",
+ "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.": "Дальность и формы, которых нет в данных (дальность применения, броска и прыжка, угол конуса, область без радиуса): значения по умолчанию, помеченные как симуляция.",
+ "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.": "Как монстры двигаются, целятся и решают, когда атаковать: их ИИ нет в файлах игры. По умолчанию враги не атакуют.",
+ "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.": "Столкновения и определение попаданий: враги — круги на ровной земле, без стен и линии видимости.",
+ "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "Взаимодействия, которые игра не описывает точно, например, срабатывают ли триггеры от Шока поверх Шока или когда происходит первый импульс поля.",
+ "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "Анимации, тайминги сервера и задержка: каждое применение длится время атаки или сотворения умения, без ничего между ними.",
+ "The order in which effects that happen at once are applied, and the game's rounding.": "Порядок применения одновременных эффектов и округления игры.",
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Несколько поддержек, урон которых окна игры показывают иначе, чем их характеристики: измерено в игре, а не прочитано из её файлов."
 }

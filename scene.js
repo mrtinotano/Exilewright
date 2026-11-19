@@ -53,6 +53,17 @@ const CHC = { frenzy: 'poison', power: 'arcane', endurance: 'fire' };
 
 // api: { build(), geo(g), playerSpeed(), info(g) → { gem, data, label, icon }, onSelect(i), sheet() → calc.js character() + recovery(),
 //        damage(g) → calc.js skill(), usedBy(i) → the meta gem that uses gem i, byHand(i) → gem i is used by hand, reserve(g) → the spirit gem g reserves (calc.js), onPlacing(on) }
+// what the simulator cannot know, shown behind its "!" button
+const NOT_KNOWN = [
+  "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.",
+  "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.",
+  "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.",
+  "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.",
+  "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.",
+  "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.",
+  "The order in which effects that happen at once are applied, and the game's rounding.",
+  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.",
+];
 export function initScene(el, api) {
   // ---------- renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -93,6 +104,12 @@ export function initScene(el, api) {
   const top = div('s-top'), col = div('s-col', top), buffEl = div('s-buffs', col), badEl = div('s-buffs', col), help = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help', textContent: '?' }));
   help.title = t('Keys and statistics of the simulator'); hud.hidden = true; el.appendChild(hud);
   help.onclick = () => { hud.hidden = !hud.hidden; help.classList.toggle('on', !hud.hidden); };
+  // how far to trust it: what the game's files and Path of Building 2 give, and what nothing can tell (NOT_KNOWN)
+  const warn = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help', textContent: '!', title: t('About the simulator') }));
+  const note = el.appendChild(Object.assign(document.createElement('div'), { className: 's-note', hidden: true }));
+  note.innerHTML = `<b>${t('About the simulator')}</b><p>${t("The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.")}</p>`
+    + `<p>${t('What cannot be checked:')}</p><ul>${NOT_KNOWN.map(x => `<li>${t(x)}</li>`).join('')}</ul>`;
+  warn.onclick = () => { note.hidden = !note.hidden; warn.classList.toggle('on', !note.hidden); };
   const logEl = div('s-log'), lifeEl = div('s-life'), manaEl = div('s-mana'), bar = div('s-bar'), tipEl = div('s-tip'), toastEl = div('s-toast');
   tipEl.hidden = true;
   const pickEl = div('s-pick'); pickEl.hidden = true;

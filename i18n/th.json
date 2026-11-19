@@ -833,5 +833,16 @@
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "อัตโนมัติ: เลเวลที่แต้มพาสซีฟ {0} แต้มต้องการ โดยนับแต้มพาสซีฟที่ได้จากเควสต์ของแต่ละองก์ (ตามที่ Path of Building 2 ประเมิน) กำหนดเอง: เลเวลที่คุณพิมพ์",
  "The allocated points need level {0}.": "แต้มที่จัดสรรต้องการเลเวล {0}",
  "Auto": "อัตโนมัติ",
- "Manual": "กำหนดเอง"
+ "Manual": "กำหนดเอง",
+ "About the simulator": "เกี่ยวกับเครื่องจำลอง",
+ "The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.": "เครื่องจำลองใช้ข้อมูลของเกมเอง (สกิล หินเสริม มอนสเตอร์ ค่าคงที่ของเกม) และสูตรของ Path of Building 2 แต่ไม่สามารถรู้การทำงานภายในของเกมได้ทั้งหมด จึงอาจไม่แม่นยำ 100% ใช้เพื่อเปรียบเทียบ และตรวจสอบสิ่งที่สำคัญในเกม",
+ "What cannot be checked:": "สิ่งที่ตรวจสอบไม่ได้:",
+ "Flight and travel times the data does not give (mortars, thrown and falling skills): the simulator uses its own.": "เวลาบินและเวลาเดินทางที่ข้อมูลไม่ได้ให้ไว้ (ปืนครก สกิลที่ขว้างและที่ตกลงมา): เครื่องจำลองใช้ค่าของตัวเอง",
+ "Ranges and shapes the data does not give (cast, throw and leap range, cone angle, an area without a radius): default values, marked as simulated.": "ระยะและรูปร่างที่ข้อมูลไม่ได้ให้ไว้ (ระยะร่าย ระยะขว้างและระยะกระโดด มุมกรวย พื้นที่ที่ไม่มีรัศมี): ใช้ค่าเริ่มต้นและระบุว่าจำลอง",
+ "How monsters move, aim and choose when to attack: their AI is not in the game's files. By default the enemies do not attack.": "วิธีที่มอนสเตอร์เคลื่อนที่ เล็ง และเลือกจังหวะโจมตี: AI ของพวกมันไม่อยู่ในไฟล์ของเกม ค่าเริ่มต้นคือศัตรูไม่โจมตี",
+ "Collision and hit detection: enemies are circles on flat ground, with no walls or line of sight.": "การชนและการตรวจจับการโจมตีโดน: ศัตรูเป็นวงกลมบนพื้นเรียบ ไม่มีกำแพงหรือแนวสายตา",
+ "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "ปฏิสัมพันธ์ที่เกมไม่ได้อธิบายไว้อย่างชัดเจน เช่น การช็อคซ้ำบนศัตรูที่ช็อคอยู่แล้วจะกระตุ้นทริกเกอร์หรือไม่ หรือพัลส์แรกของสนามเกิดขึ้นเมื่อใด",
+ "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "แอนิเมชัน จังหวะของเซิร์ฟเวอร์ และความหน่วง: การใช้แต่ละครั้งใช้เวลาโจมตีหรือเวลาร่ายของสกิล โดยไม่มีสิ่งอื่นคั่น",
+ "The order in which effects that happen at once are applied, and the game's rounding.": "ลำดับการใช้ผลที่เกิดขึ้นพร้อมกัน และการปัดเศษของเกม",
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "หินเสริมบางตัวที่หน้าต่างของเกมแสดงความเสียหายต่างจากค่าสถานะ: วัดในเกม ไม่ได้อ่านจากไฟล์"
 }
