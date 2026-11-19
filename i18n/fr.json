@@ -845,5 +845,6 @@
  "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "Animations, timing du serveur et latence : chaque utilisation prend le temps d'attaque ou d'incantation de la compétence, sans rien entre les deux.",
  "The order in which effects that happen at once are applied, and the game's rounding.": "L'ordre dans lequel s'appliquent les effets simultanés, et les arrondis du jeu.",
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Quelques soutiens dont les fenêtres du jeu affichent les dégâts autrement que leurs statistiques : mesurés en jeu, pas lus dans ses fichiers.",
- "Runic Ward": "Sauvegarde runique"
+ "Runic Ward": "Sauvegarde runique",
+ "{0} shatters": "{0} se fracasse"
 }

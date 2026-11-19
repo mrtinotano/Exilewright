@@ -731,6 +731,7 @@ export function initScene(el, api) {
     }
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
+    hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
     if (frozen) {   // frozen enemies shatter: no corpse
@@ -842,6 +843,29 @@ export function initScene(el, api) {
     objs.push(e); return e;
   }
   const holder = c => { const g = new THREE.Group(); g.position.set(c.x, 0, c.z); return g; };
+  // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
+  // goes; for its duration
+  const cap = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
+  const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
+  function earth(S, c, max, spike) {
+    cap(S, max);
+    const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
+    m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
+    pop(c, .6, 'dust'); thing(m, S.P.dur || SIM.lifetime, { r: .4, name: S.name, earth: S, near: p => dist(p, c) });
+  }
+  // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
+  // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
+  function hatch(p) {
+    for (const o of objs) {
+      const T = !o.dead && o.earth && o.earth.dmg?.trig?.find(T => T.stats?.['triggered_by_support_hatching_elementals_%']), U = T?.support;
+      if (!T?.minion || o.near(p) > U.support_hatching_elementals_base_radius / 10 || (o.kills = (o.kills || 0) + 1) < U.support_hatching_elementals_hatch_after_X_deaths_in_radius) continue;
+      o.kills = 0; if (!(Math.random() * 100 < (U['support_chance_to_trigger_hatching_elementals_%'] ?? 100))) continue;
+      o.dead = true; const at = o.a ? { x: (o.a.x + o.b.x) / 2, z: (o.a.z + o.b.z) / 2 } : { x: o.pos.x, z: o.pos.z }, X = asTrig(o.earth, T, T.minion.hits);
+      X.dmg = { ...X.dmg, ...T.minion }; X.P = { ...X.P, ranged: false }; pop(at, 1, 'dust'); say(t('{0} shatters', o.earth.label), 'dust');
+      for (let k = 0; k < T.stats.support_hatching_elementals_number_of_elementals_per_hatch; k++)
+        if (objs.filter(x => x.kind === T.id && !x.dead).length < T.stats.maximum_hatching_elementals_allowed) minion(X, around(at, 1), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id });
+    }
+  }
   function lob(mesh, from, to, dur, h, land, o = {}) {
     mesh.position.copy(from); scene.add(mesh); let k = 0;
     const e = { pos: mesh.position, dead: false,
@@ -1169,7 +1193,8 @@ export function initScene(el, api) {
       }
       const fire = S.els.includes('fire'); let tk = 0;
       fx.strip(a, b, 1.2, S.el, dur, { a: .6 });
-      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label,
+      if (P.earthen) cap(S, S.dmg?.stats?.base_number_of_shield_walls_allowed);
+      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label, earth: P.earthen && S, near: p => segDist(p, a, b),
         tick(dt, e) {
           for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
           if ((tk -= dt) > 0) return; tk = .5;
@@ -1286,6 +1311,8 @@ export function initScene(el, api) {
       later(.12, () => {
         slammed(S, c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
+        // the earthen object it leaves: Earthshatter's spike where its fissure ends, Forge Hammer's hammer where it lands
+        if (P.earthen) { const st = S.dmg?.stats || {}, spike = !!st.spike_slam_max_spikes; earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike); }
         if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
         if (P.fan && S.spent) { const a0 = Math.atan2(S.dx, S.dz), n = 1 + S.spent * 2; for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .22; shoot({ ...S, aoe: false, P: { ...P, explodes: false } }, c, Math.sin(a), Math.cos(a), { speed: 20, range: 11 }); } }

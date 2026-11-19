@@ -158,7 +158,7 @@ export function profile(gem, d = {}) {
     fissure: has('CreatesFissure'),
     absorbs: has('InteractsWithElementalGround'),
     crystal: has('IceCrystal'),
-    object: has('ObjectDurability'),
+    object: has('ObjectDurability'), earthen: has('CanCreateStoneElementals'),
     rainy: has('Rain'),
     spiral: has('ProjectileSpiral'),
     dotHit: has('DamageOverTime') && !has('CreatesGroundEffect'),
