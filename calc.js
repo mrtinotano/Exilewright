@@ -711,13 +711,24 @@ export function skill(g, b, treeGear) {
   // ones added (curses' and marks' own too), times each support's more (Persistence, Swift Affliction, Limit...), as PoB2
   // (SkillStatMap: Duration INC / MORE) and the game texts say; detonation and totem time their own increased
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null;
+  const both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (v(sum, 'skill_effect_duration_+%') + v(st, 'skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: (v(st, 'number_of_chains') + v(sum, 'number_of_chains')) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms'),
-    duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100) };
+    duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
+    // Pierce, Fork and Chain as PoB2 counts them (CalcOffence, SkillStatMap) and the glossary orders them: a projectile
+    // pierces, else forks (the first time it hits), else chains; chaining reaches 6 m from a projectile, 4 m otherwise
+    // (Orb of Storms' own distance), more with increased chaining range. The less damage after piercing or forking
+    pierce: flags.has('cannot_pierce') ? 0 : flags.has('always_pierce') ? Infinity : both('projectile_base_number_of_targets_to_pierce')
+      + (gt.includes('Bow') ? both('arrow_base_number_of_targets_to_pierce') : 0) + both('base_chance_to_pierce_%', 'pierce_%') / 100,
+    forks: flags.has('projectiles_cannot_fork') || !(flags.has('projectiles_fork') || both('projectiles_fork')) ? 0 : Math.min(2, 1 + both('number_of_additional_forks_base')),
+    chainRange: (st.arc_chain_distance ? st.arc_chain_distance / 10 : gt.includes('Projectile') ? 6 : 4) * (1 + both('chaining_range_+%') / 100),
+    pierceMore: finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0, perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
+    forkMore: finals['support_fork_forked_projectile_damage_+%_final'] || 0, bolts: sec('orb_of_storms_base_bolt_frequency_ms'), maxBolts: st.orb_of_storms_maximum_number_of_hits || null,
+    extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0 };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
   if (mn) {

@@ -561,16 +561,18 @@ export function initScene(el, api) {
     fx.disc(p, r, c, .28, { a: .6 }); fx.ring(p, r * .3, r, c, .3); fx.flash(p, c, 12, .2, 5);
     fx.emit(Math.min(24, 6 + r * 8), { p: { x: p.x, y: .2, z: p.z }, r: r * .5, v: r * 2.2, up: 2, life: .4, size: .16, c, c2: 'white', drag: 1.5, g: 4 });
   }
-  function chain(from, d, S, n, seen = new Set()) {
-    const to = chest(d);
+  // a chain hits each enemy once, each with the damage of the first (a support's less damage is in calc.js), and
+  // reaches as far as calc.js shape says
+  function chain(from, d, S, n, seen = new Set(), mult = 1) {
+    const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
-    seen.add(d); hit(d, S, { mult: seen.size > 1 ? .8 : 1 });
+    seen.add(d); hit(d, S, { mult });
     if (n <= 0) return;
     later(.07, () => {
       // a lightning rod within reach takes the bolt and pulses over its whole area
-      if (S.els.includes('lightning')) for (const o of objs) if (o.rod && !o.dead && !seen.has(o) && o !== S.self && dist(o.pos, d.pos) <= SIM.chainRange) { seen.add(o); fx.bolt(to, V(o.pos.x, 1.7, o.pos.z), S.el, .18); o.pulse(S); break; }
-      const e = near(d.pos, SIM.chainRange, e => !seen.has(e));
-      if (e) chain(to, e, S, n - 1, seen);
+      if (S.els.includes('lightning')) for (const o of objs) if (o.rod && !o.dead && !seen.has(o) && o !== S.self && dist(o.pos, d.pos) <= R) { seen.add(o); fx.bolt(to, V(o.pos.x, 1.7, o.pos.z), S.el, .18); o.pulse(S); break; }
+      const e = near(d.pos, R, e => !seen.has(e));
+      if (e) chain(to, e, S, n - 1, seen, mult);
     });
   }
   function ground(type, c, r, dur, S) {
@@ -626,12 +628,24 @@ export function initScene(el, api) {
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
     let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0;
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
-    const seen = new Set();
+    // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
+    // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
+    const D = sh(S), seen = new Set(o.seen), forked = o.forked || 0;
+    const pierceN = Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
+    let pierced = o.pierced || 0;
+    const mult = () => (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z };
-      if (P.chains && hitD) chain(m.position.clone(), hitD, cur, sh(cur).chains || SIM.chains);
+      if (P.chains && hitD) {
+        chain(m.position.clone(), hitD, cur, D.chains || 0, seen, mult());
+        // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
+        const by = chest(hitD);
+        for (const e of dummies.filter(e => !e.dead && !seen.has(e) && dist(e.pos, hitD.pos) <= S.A).sort((a, b) => dist(a.pos, hitD.pos) - dist(b.pos, hitD.pos)).slice(0, D.extraTargets || 0)) {
+          seen.add(e); fx.bolt(by, chest(e), cur.el, .18); hit(e, cur, { mult: mult() });
+        }
+      }
       else if (P.explodes || S.aoe) boom(p, S.A, cur);
-      else if (hitD) { hit(hitD, cur); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); }
+      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
@@ -646,7 +660,14 @@ export function initScene(el, api) {
           }
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
-            if (slow) hit(d, cur); else { end(d); break; }
+            if (slow) hit(d, cur);
+            else if (pierced < pierceN) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }
+            else if (forked < (D.forks || 0)) {
+              hit(d, cur, { mult: mult() }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
+              for (const s of [-1, 1]) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1 }); }
+              break;
+            }
+            else { end(d); break; }
           }
         }
         if (q.dead) return;
@@ -755,7 +776,7 @@ export function initScene(el, api) {
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand();
-      if (d) chain(h, d, S, sh(S).chains || SIM.chains);
+      if (d) chain(h, d, S, sh(S).chains || 0);
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
     rain(S) {
@@ -814,12 +835,12 @@ export function initScene(el, api) {
       const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
       fx.ring(c, .2, 1.4, S.el, .4);
       let tk = .4;
-      const e = thing(m, dur, { r: R, orbOf: S.name, name: S.name,
+      const e = thing(m, dur, { r: R, orbOf: S.name, name: S.name, bolts: 0,
         tick(dt, e) {
           m.position.y = 1.3 + Math.sin(e.s * 3) * .08; if (P.detonates) m.userData.core.scale.setScalar(.3 * (1 + e.s / dur * .7));
           if ((tk -= dt) > 0) return;
           if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
-          else if (P.chains) { tk = .9; e.zap(); }
+          else if (P.chains) { tk = sh(S).bolts || .9; e.zap(); }
           else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
         },
         end: e => { if (P.detonates) boom(c, R, { ...S, self: e }); },
@@ -827,7 +848,8 @@ export function initScene(el, api) {
       if (P.chains) e.zap = extra => {
         const d = near(c, R); if (!d) return;
         if (extra) say(t('{0} fires an extra bolt', S.label), S.el);
-        chain(V(c.x, m.position.y, c.z), d, { ...S, self: e, src: 'orb' }, 2);
+        chain(V(c.x, m.position.y, c.z), d, { ...S, self: e, src: 'orb' }, sh(S).chains ?? 2);
+        if (++e.bolts >= (sh(S).maxBolts || Infinity)) e.dead = true;   // "Orb expires after firing 6 bolts"
       };
     },
     wall(S) {
@@ -1115,8 +1137,8 @@ export function initScene(el, api) {
     run(S);
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, from: { x: pp.x, z: pp.z } }); }); }
-    // an Orb of Storms nearby answers your lightning skills with a bolt of its own
-    if (!auto && S.els.includes('lightning')) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
+    // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
+    if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
   }
   function fire(i) {

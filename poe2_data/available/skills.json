@@ -11,8 +11,8 @@
   "shock": "Art/2DArt/BuffIcons/buffshocked.dds",
   "poison": "Art/2DArt/SkillIcons/iconpoisoned.dds",
   "bleed": "Art/2DArt/BuffIcons/buffbleed.dds",
-  "freeze": "Art/2DArt/BuffIcons/StatusFrozen.dds",
   "maim": "Art/2DArt/BuffIcons/MaimBuff.dds",
+  "freeze": "Art/2DArt/BuffIcons/StatusFrozen.dds",
   "electrocute": "Art/2DArt/BuffIcons/StatusElectrocuted.dds"
  },
  "monster_stats": [
@@ -52436,6 +52436,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "projectiles_fork"
+   ],
    "meta_support": null
   },
   "Elemental Weakness": {

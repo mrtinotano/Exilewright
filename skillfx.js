@@ -16,7 +16,7 @@ export const SIM = {
   area: 1.6,           // m radius when the data has none
   cone: 55,            // degrees of a cone when not set by hand
   wall: 7,             // m length of a wall
-  chains: 4, chainRange: 4.5,
+  chainRange: 4,        // m of a chain (keywords.json Chain: 4 m, a projectile's 6 m: calc.js shape)
   fuse: 1.4,           // s grenade fuse
   orbFuse: 2.6,        // s of an orb that detonates after a time
   orbBlast: 2.4,       // m base blast when the data only gives the per-level bonus radius
