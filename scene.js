@@ -27,7 +27,6 @@ function segDist(p, a, b) {
   return Math.hypot(p.x - a.x - vx * k, p.z - a.z - vz * k);
 }
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-// shape picked by hand in the panel → behaviour (anything else follows the game data)
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
 const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
@@ -117,12 +116,11 @@ export function initScene(el, api) {
     const g = api.build().gems[i]; if (!g) return null;
     const c = cache.get(i); if (c && c.g === g && time - c.at < .5) return c.S;
     const inf = api.info(g), G = api.geo(g), P = prof(g, inf);
-    const kind = P.kind;
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
-    const S = { i, g, P, G, kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg: api.damage?.(g) || null };
     cache.set(i, { g, at: time, S }); return S;
   }
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
@@ -1067,9 +1065,9 @@ export function initScene(el, api) {
       later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));
     },
     beam(S) {
-      const L = S.R || 10, w = 1, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };
-      fx.strip(c, b, w, S.el, .35); fx.bolt(V(c.x, 1.1, c.z), V(b.x, 1.1, b.z), S.el, .2, .05, 0);
-      for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w / 2 + SIM.body) hit(d, S);
+      const L = S.R || 10, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };   // note: 1 m wide, the scene's: the data gives no width
+      fx.strip(c, b, 1, S.el, .35); fx.bolt(V(c.x, 1.1, c.z), V(b.x, 1.1, b.z), S.el, .2, .05, 0);
+      for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= .5 + SIM.body) hit(d, S);
       touch({ x: (c.x + b.x) / 2, z: (c.z + b.z) / 2 }, L / 2, S);
     },
   };
