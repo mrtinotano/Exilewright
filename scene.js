@@ -851,8 +851,40 @@ export function initScene(el, api) {
     cap(S, max);
     const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
     m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
-    pop(c, .6, 'dust'); thing(m, S.P.dur || SIM.lifetime, { r: .4, name: S.name, earth: S, near: p => dist(p, c) });
+    pop(c, .6, 'dust');
+    const e = thing(m, S.P.dur || SIM.lifetime, { r: .4, name: S.name, earth: S, near: p => dist(p, c),
+      // a warcry near it shatters it: the spike's explosion, or the hammer's Molten Fissures in a spiral (calc.js parts)
+      shatter() {
+        e.dead = true; pop(c, 1, 'dust'); const X = partOf(S, spike ? 'EarthshatterSpikePlayer' : 'ForgeHammerFissurePlayer'); if (!X) return;
+        say(t('{0} shatters', S.label), X.el);
+        if (spike) return boom(c, X.A, X);
+        const n = S.dmg.stats.base_number_of_fissures || 1, a0 = rnd(TAU);
+        for (let k = 0; k < n; k++) later(k * .08, () => fissure(X, c, a0 + k * TAU / n, 5, X.A, 1, { dur: X.dmg.stats.base_skill_effect_duration / 1000, max: S.dmg.stats.forge_hammer_base_maximum_number_of_fissures }));
+      } });
   }
+  // a part of the skill with its own damage (calc.js parts), as a skill of the scene
+  const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}); return D && { ...S, dmg: { ...D, trig: [] }, A: (D.stats.active_skill_base_area_of_effect_radius || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
+  // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
+  // you attack the one in front of them. Your Slams and warcries shatter them all; each explodes around itself, more
+  // when slammed, less within its first 0.5 s when enemies break it
+  function shieldWall(S, a, b, c, dur) {
+    const st = S.dmg.stats, r = (st.active_skill_base_secondary_area_of_effect_radius || 10) / 10, len = dist(a, b), n = Math.max(1, Math.round(len / (2 * r))), g = holder(c), born = time;
+    cap(S, st.base_number_of_shield_walls_allowed);
+    const segs = Array.from({ length: n }, (_, i) => {
+      const k = (i + .5) / n, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k };
+      const m = new THREE.Mesh(new THREE.BoxGeometry(len / n * .95, 1.3, .45), new THREE.MeshStandardMaterial({ color: 0x6b5a48, roughness: .95, flatShading: true }));
+      m.position.set(p.x - c.x, .65, p.z - c.z); m.rotation.y = Math.atan2(-(b.z - a.z), b.x - a.x); m.castShadow = true; g.add(m);
+      return { p, r, m, life: st.shield_wall_maximum_life || 1, hurt(n) { if ((this.life -= n) <= 0) blow(this, time - born < .5 ? 1 + (st['shield_wall_damage_+%_final_for_first_500_ms_when_not_killed_by_self'] || 0) / 100 : 1); } };
+    });
+    const blow = (q, mult) => { if (q.life === -1) return; q.life = -1; q.m.visible = false; pop(q.p, r, 'dust'); boom(q.p, r, { ...S, mult: S.mult * mult }); if (segs.every(x => x.life === -1)) e.dead = true; };
+    for (const q of segs) pop(q.p, .5, 'dust');
+    const e = thing(g, dur, { name: S.name, earth: S, segs, a, b, near: p => segDist(p, a, b),
+      shatter(how) { say(t('{0} shatters', S.label), 'dust'); for (const q of segs) blow(q, how === 'slam' ? 1 + (st['shield_wall_damage_+%_final_when_slammed'] || 0) / 100 : 1); } });
+  }
+  // the Shield Wall segment between enemy d and you, the nearest
+  const wallIn = d => { let best = null, k = dist(d.pos, pp);
+    for (const o of objs) if (o.segs && !o.dead) for (const q of o.segs) if (q.life > 0 && dist(d.pos, q.p) < k && segDist(q.p, d.pos, pp) < q.r + SIM.body) { best = q; k = dist(d.pos, q.p); }
+    return best; };
   // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
   // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
   function hatch(p) {
@@ -1193,8 +1225,8 @@ export function initScene(el, api) {
       }
       const fire = S.els.includes('fire'); let tk = 0;
       fx.strip(a, b, 1.2, S.el, dur, { a: .6 });
-      if (P.earthen) cap(S, S.dmg?.stats?.base_number_of_shield_walls_allowed);
-      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label, earth: P.earthen && S, near: p => segDist(p, a, b),
+      if (P.earthen) return shieldWall(S, a, b, c, dur);
+      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label,
         tick(dt, e) {
           for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
           if ((tk -= dt) > 0) return; tk = .5;
@@ -1232,6 +1264,7 @@ export function initScene(el, api) {
       fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
+      for (const o of [...objs]) if (o.earth && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
       if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
@@ -1511,6 +1544,7 @@ export function initScene(el, api) {
     if (C) ready.push(time + C / 1000);
     const run = K[S.kind] || K.area;
     run(S);
+    if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
     // Trickster's Shard: a spell you cast leaves a Fractured Mimic where you cast it, for its duration; at their limit they
     // all cast their spells, with their less damage, and are gone
     const TS = !auto && S.P.spell && S.dmg?.trig?.find(T => T.stats?.support_tricksters_shard_maximum_active_mimics);
@@ -2183,6 +2217,13 @@ export function initScene(el, api) {
     if (me.safe > 0) return;
     const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10;
     if (far <= (d.mon.aggro || 0) / 10) d.aggro = true;
+    const q = d.aggro && wallIn(d);   // a Shield Wall in the way: it walks to it and attacks it
+    if (q) {
+      const k = dist(d.pos, q.p), stop = q.r + SIM.body;
+      if (k > stop && v > 0 && !(d.st.pin > 0) && !api.still?.()) { const m = Math.min(k - stop, v * dt) / k; d.pos.x += (q.p.x - d.pos.x) * m; d.pos.z += (q.p.z - d.pos.z) * m; }
+      else if (d.wait <= 0 && k <= R + q.r && api.fight?.()) { d.wait = Math.max(.25, d.atk.period); d.lunge = 1; q.hurt(Object.values(d.atk.hits || {}).reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0)); }
+      return;
+    }
     if (d.aggro && v > 0 && far > R * .8 && !(d.st.pin > 0) && !api.still?.()) {
       const k = Math.min(far - R * .7, v * dt) / far; d.pos.x += (pp.x - d.pos.x) * k; d.pos.z += (pp.z - d.pos.z) * k;
       for (const o of dummies) {   // they do not walk into each other

@@ -133,6 +133,8 @@ export function gemStats(g, sum = {}) {
   const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
     for (const [k, x] of Object.entries(q || {})) st[k] = (st[k] || 0) + Math.trunc(x * quality / 1000);
+  const P = g.part && d.parts?.[g.part];   // a part of the gem (Earthshatter's spike): its own stats over the gem's
+  if (P) Object.assign(st, P.constant, P.levels?.[level] || P.levels?.[g.level]);
   return st;
 }
 // Spirit a gem reserves: its amount over (100% + reservation efficiency), the gem's own (quality) plus what passives
@@ -825,7 +827,9 @@ export function skill(g, b, treeGear) {
     ...(c['support_mana_flare_%_of_current_mana_consumed'] || c['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
     ...(c['support_battershout_physical_damage_equal_to_%_of_broken_armour'] || c['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] || c['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] ? unit('physical') : {}),
     ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['base_physical_damage_equal_to_%_of_totem_life'] ? unit('physical') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
-  out.totemLife = totem(g, treeGear)?.life;   // Tawhoa's Tending's explosion
+  out.totemLife = totem(g, treeGear)?.life;
+  // the parts an earthen object deals when it shatters (Earthshatter's spike, Forge Hammer's fissures), as the skill
+  if (gt.includes('CanCreateStoneElementals') && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts || {}).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));   // Tawhoa's Tending's explosion
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
     .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {}, wardCost: SK.skills[id].levels?.[g.level]?._cost?.Ward || 0 })));   // Runeforged Blades: its cost in Runic Ward
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's

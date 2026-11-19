@@ -377,6 +377,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         for r in ss_lvl.get(i, []):
             part_levels.setdefault(r['GemLevel'], {}).update({k: v for k, v in zip(map(sid, r['AdditionalStats']), r['AdditionalStatsValues']) if PART_RULE.search(k)})
     part_levels = {l: x for l, x in part_levels.items() if x}
+    # the gem's other parts with damage of their own (Earthshatter's spike, Forge Hammer's fissures): every stat of the
+    # part and its multiplier per level, as the skill's (stat_levels)
+    parts = {ss_tab[i]['Id']: {'constant': c, 'levels': lv} for i in more_sets for c, lv in [stat_levels([], [i])]
+             if any('_base_multiplier' in x for x in lv.values())}
     if part_levels:
         one = next(iter(part_levels.values()))
         for k in set.intersection(*map(set, part_levels.values())):
@@ -403,7 +407,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
         # what a meta gem does to the skill it uses: its own support part (GemEffects.AdditionalGrantedEffects named
         # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
-        **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}),
+        **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}), **({'parts': parts} if parts else {}),
         # the skill a support sets off (Fiery Death's explosion: TriggeredFieryDeathPlayer), its own constant stats
         **({'triggers': t} if g['kind'] == 'support' and (t := {ge_tab[x]['Id']: {sid(a): v for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])}
                                                                   for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}) else {}),
