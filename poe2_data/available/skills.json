@@ -2593,6 +2593,13 @@
   "base_critical_hit_damage_bonus": 70,
   "attack_damage_final_permyriad_per_rage": 100
  },
+ "archon_nature": {
+  "plant_skill_damage_+%": 25,
+  "chance_for_plants_to_be_overgrown_%": 100,
+  "plant_skill_effect_duration_+%_final_from_archon_of_nature": 200,
+  "plant_skill_limit_+": 2
+ },
+ "archon_nature_icon": "Art/2DArt/BuffIcons/ArchonNature.dds",
  "character_stats": {
   "level": 1,
   "is_player": 1,

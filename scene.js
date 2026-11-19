@@ -94,7 +94,7 @@ export function initScene(el, api) {
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
-  let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [];
+  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
   // ---------- HUD
@@ -131,11 +131,14 @@ export function initScene(el, api) {
 
   // ---------- skills of the build
   const profs = new Map(), cache = new Map();
+  // Nature's Archon (calc.js character() overgrow: its time; its stats from the game, api.archon) and a plant gem with them
+  const archonOn = () => time - archonAt < sheet().overgrow.archonTime, archonG = new WeakMap();
+  const withArchon = g => { if (!archonG.has(g)) archonG.set(g, { ...g, add: api.archon }); return archonG.get(g); };
   const prof = (g, inf) => { let P = profs.get(g.name); if (!P) profs.set(g.name, P = profile(inf.gem || { name: g.name }, inf.data || {})); return P; };
   function base(i) {
     const g = api.build().gems[i]; if (!g) return null;
     const c = cache.get(i); if (c && c.g === g && time - c.at < .5) return c.S;
-    const inf = api.info(g), G = api.geo(g), dmg = api.damage?.(g) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
+    const inf = api.info(g), G = api.geo(g), dmg = api.damage?.(archonOn() && inf.gem?.tags?.includes('plant') ? withArchon(g) : g) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
@@ -254,7 +257,7 @@ export function initScene(el, api) {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
-    timers = []; empower = []; buffs = []; fissures = []; charge = held = move = null; pp.y = 0;
+    timers = []; empower = []; buffs = []; fissures = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; dummies.forEach(restore); heal(); hudT = 0;
   }
@@ -854,6 +857,10 @@ export function initScene(el, api) {
     if (o.overgrown || o.dead) return; o.overgrown = true; const S = o.plant;
     fx.ring(o.c, .2, o.R, 'poison', .5); fx.emit(14, { p: { x: o.c.x, y: .1, z: o.c.z }, r: o.R * .8, v: .4, up: 2, life: .8, size: .25, c: 'poison' });
     say(t('{0} is Overgrown', S.label), 'poison');
+    const G = sheet().overgrow;   // a chance for Nature's Archon, not while one is on or during its recovery
+    if (time - archonAt >= G.archonTime + G.archonDelay && Math.random() * 100 < G.archon) {
+      archonAt = time; buffs.push({ label: t("Nature's Archon"), img: api.archonIcon, c: css('poison'), s: G.archonTime }); say(t('{0} active', t("Nature's Archon")), 'poison');
+    }
     const T = S.dmg.trig?.find(x => x.stats?.['triggered_by_support_explosive_growth_%']); if (!T || !spend(T)) return;
     const X = asTrig(S, T); later(T.stats.support_explosive_growth_explosion_delay_X_ms / 1000, () => boom(o.c, X.A, X));
   }
@@ -1448,7 +1455,7 @@ export function initScene(el, api) {
         off: () => out.remove() });
     },
     zone(S) {
-      const P = S.P, R = S.A, dur = Math.min(P.dur || SIM.groundTime, 12); let c = S.at;
+      const P = S.P, R = S.A, dur = P.plant && P.dur || Math.min(P.dur || SIM.groundTime, 12); let c = S.at;   // a plant lasts its own duration (Nature's Archon's 200% more)
       if (P.corpse) { c = useCorpse(S); if (!c) return; }
       fx.ring(c, .2, R, S.el, .45);
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
@@ -1462,7 +1469,7 @@ export function initScene(el, api) {
           area(c, R, { ...S, self: e }, { mult: .25, noPay: e.s > .6, noTouch: true });
         },
         off: () => dec.remove() });
-      if (z.plant && (Math.random() * 100 < G.now || z.inP && Math.random() * 100 < G.near)) overgrow(z);
+      if (z.plant && (Math.random() * 100 < G.now + (archonOn() ? api.archon['chance_for_plants_to_be_overgrown_%'] : 0) || z.inP && Math.random() * 100 < G.near)) overgrow(z);
     },
     dot(S) {
       const R = S.A; let c = S.at;
@@ -1846,7 +1853,7 @@ export function initScene(el, api) {
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : '')); }
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
-    for (const B of buffs) b.push(one(icon(B.name), B.c, B.label, '', B.s));
+    for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span class="s-txt" style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     return b.join('');

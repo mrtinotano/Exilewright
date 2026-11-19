@@ -267,7 +267,9 @@ export function character(b, sum) {
     // Plants Overgrow: a chance as each is created (passives), a chance as it enters your Presence (items), that Presence's
     // radius in metres (character.ot, its area scaled like calc's sheet)
     overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
-      r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10 },
+      r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
+      // an Archon lasts 10 s, then 20 s before another (KeywordPopups Archon); its increased duration, its delay's faster expiry
+      archonTime: 10 * pct('archon_duration_+%'), archonDelay: 20 / pct('archon_delay_expires_x%_faster') },
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
@@ -578,6 +580,8 @@ function more(fin, suffix, tags, type) {
 // 3186-6932 with it, x0.740 for every damage type. Multishot I (35% less) the same way: 2756-5995, x0.640
 const MEASURED_MORE = { 'Multishot I': 0.64 / 0.65, 'Multishot II': 0.74 / 0.75 };
 export function skill(g, b, treeGear) {
+  // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
+  if (g.add) { treeGear = { ...treeGear }; for (const [k, x] of Object.entries(g.add)) treeGear[k] = (treeGear[k] || 0) + x; }
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
@@ -768,7 +772,7 @@ export function skill(g, b, treeGear) {
   // (SkillStatMap: Duration INC / MORE) and the game texts say; detonation and totem time their own increased
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null, both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
-    + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
+    + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: both('number_of_chains') * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
