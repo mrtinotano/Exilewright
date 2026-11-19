@@ -252,22 +252,23 @@ $('charPanel').onchange = e => {
   if (d.quest) edit((e, b) => (b.quests ||= {})[d.quest] = e.target.type === 'checkbox' ? +e.target.checked : +e.target.value)(e);
 };
 $('charPanel').onclick = async e => {
-  const t = e.target.closest('[data-pick], [data-cls], [data-asc]'); if (!t) return;
-  if (t.dataset.pick) { picking = picking === t.dataset.pick ? null : t.dataset.pick; renderStats(); return; }
+  const el = e.target.closest('[data-pick], [data-cls], [data-asc]'); if (!el) return;
+  if (el.dataset.pick) { picking = picking === el.dataset.pick ? null : el.dataset.pick; renderStats(); return; }
   picking = null;
   const b = B();
-  if (t.dataset.asc) {
-    if (t.dataset.asc === b.asc) renderStats(); else edit((_, b) => { b.asc = t.dataset.asc; b.ascNodes = []; })(e);
+  if (el.dataset.asc) {
+    if (el.dataset.asc === b.asc) renderStats(); else edit((_, b) => { b.asc = el.dataset.asc; b.ascNodes = []; })(e);
     return;
   }
-  const cls = t.dataset.cls;
+  const cls = el.dataset.cls;
   if (cls === clsOf(b.asc)) { renderStats(); return; }
   const asc = cls, root = classRoot(cls);   // a new class starts without an ascendancy
   renderStats();  // close the list while asking
   let nodes = [];
   if (b.nodes.length > 1 && root === b.nodes[0]) nodes = b.nodes;   // same start node: the tree stays valid
   else if (b.nodes.length > 1) {
-    nodes = await moveTree(b.nodes, root, cls, t('{0} starts somewhere else on the tree.', cls));
+    const name = tn(ascs.find(a => a.class === cls)?.class_names) || cls;   // as the class list shows it
+    nodes = await moveTree(b.nodes, root, name, t('{0} starts somewhere else on the tree.', name));
     if (!nodes) return;
   }
   edit((_, b) => { b.asc = asc; b.ascNodes = []; setNodes(b, nodes); })(e);
