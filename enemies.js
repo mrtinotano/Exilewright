@@ -110,7 +110,8 @@ export function attackOf(m, level, key, rarity, ally = false) {
     key: sk ? key : 'basic', name: sk ? sk.name || set.label || plain(key) : t('Basic attack'), description: sk?.description || '',
     attack, melee: flags.includes('melee'), hits, dot, hasHit,
     dotDur: set.const?.base_skill_effect_duration ? set.const.base_skill_effect_duration / 1000 : null,
-    period, interval: Math.max(period, sk?.cooldown || 0), cooldown: sk?.cooldown || 0,
+    // stored uses (Balbala's Teleport Strike: 2) are spent one after another, each recharging over the cooldown
+    period, interval: Math.max(period, (sk?.cooldown || 0) / (sk?.uses || 1)), cooldown: sk?.cooldown || 0, uses: sk?.uses || 1,
     crit: sk?.crit ?? m.crit ?? 0, critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     area, unblockable: !!set.unblockable, ail: set.const || {},   // the skill's ailment chances and freeze multipliers
