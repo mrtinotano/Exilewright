@@ -851,6 +851,19 @@ export function initScene(el, api) {
       remove() { fx.drop(mesh); } };
     objs.push(e); return e;
   }
+  // Caltrops: a projectile of the supported skill that reaches the end of its flight leaves its caltrops, within its
+  // secondary radius, each a Hazard that hits the first enemy to step in its area and is gone, for its duration
+  function caltrops(S, at) {
+    const T = !S.src && S.dmg?.trig?.find(T => T.stats?.['triggered_by_caltrops_support_%']), ts = T?.stats; if (!T) return;
+    const X = asTrig(S, T), dur = sh(X).duration || ts.base_skill_effect_duration / 1000;
+    for (let k = 0; k < (sh(X).projectiles || ts.base_number_of_projectiles || 1); k++) {
+      const a = rnd(TAU), r = rnd(ts.active_skill_base_secondary_area_of_effect_radius / 10), p = { x: at.x + Math.sin(a) * r, z: at.z + Math.cos(a) * r };
+      const decal = fx.decal(p, X.A, 'patch', 'dust', { a: .8, k: 1 });
+      const e = thing(holder(p), dur, { name: X.name,
+        tick() { const d = dummies.find(d => !d.dead && dist(d.pos, p) <= X.A + SIM.body); if (d) { e.dead = true; area(p, X.A, X); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c: 'dust', c2: 'white' }); } },
+        off: () => decal.remove() });
+    }
+  }
   const tint = (m, c) => m.traverse(x => { if (x.material) x.material.color.copy(fx.color(c, x.isSprite ? 1.5 : 3)); });
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
@@ -906,7 +919,7 @@ export function initScene(el, api) {
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
           if (S.R && (pulse -= dt) <= 0) { pulse = .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: .5 }); }
         }
-        if (left <= 0) end(null);
+        if (left <= 0) { end(null); caltrops(S, m.position); }
       },
       remove() { fx.drop(m); } };
     objs.push(q); return q;
