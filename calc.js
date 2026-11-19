@@ -817,7 +817,7 @@ export function skill(g, b, treeGear) {
   // broken armour), Haemocrystals' (of the bleeding consumed) and the death explosions' (of the monster's life) known only in the scene, so a base of 100 there to scale
   const intel = attributes(treeGear, b.asc).int, unit = el => ({ [`spell_minimum_base_${el}_damage`]: 100, [`spell_maximum_base_${el}_damage`]: 100 });
   const baseOf = c => ({ ...Object.fromEntries(Object.entries(c).flatMap(([k, x]) => { const m = k.match(/^spell_(minimum|maximum)_base_(\w+)_damage_as_%_of_intelligence$/); return m ? [[`spell_${m[1]}_base_${m[2]}_damage`, x * intel / 100]] : []; })),
-    ...(c['support_mana_flare_%_of_current_mana_consumed'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
+    ...(c['support_mana_flare_%_of_current_mana_consumed'] || c['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
     ...(c['support_battershout_physical_damage_equal_to_%_of_broken_armour'] || c['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] || c['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] ? unit('physical') : {}),
     ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['base_physical_damage_equal_to_%_of_totem_life'] ? unit('physical') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
   out.totemLife = totem(g, treeGear)?.life;   // Tawhoa's Tending's explosion

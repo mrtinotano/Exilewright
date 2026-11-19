@@ -1146,6 +1146,10 @@ export function initScene(el, api) {
           n++;
           d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
+        // Burning Inscription: the curse's Runic Inscription, as it expires, leaves Ignited Ground (its area and time),
+        // igniting by a base of that share of your maximum mana through the build's modifiers
+        const T = S.dmg?.trig?.find(T => T.stats?.['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana']);
+        if (T) { const X = asTrig(S, T, scale(T.hits, me.maxM * T.stats['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana'] / 1e4)); X.raw = Object.fromEntries(Object.entries(X.dmg.hits).map(([e, [lo, hi]]) => [e, (lo + hi) / 2])); say(X.label, X.el); ground('burning', c, X.A, sh(X).duration || T.stats.base_skill_effect_duration / 1000, X); }
       });
     },
     mark(S) {
@@ -2176,7 +2180,7 @@ export function initScene(el, api) {
       if (Math.random() < dt * (3 + g.r * g.r * 3)) groundFx(g);
       if (g.tick > 0) continue;
       g.tick = .5; const a = GAIL[g.type]; if (!a) continue;
-      for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S);
+      for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S, 1, g.S?.raw);   // raw: a ground with a damage of its own (Burning Inscription)
     }
     vitals(dt); tickHazards(dt);
     for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME) charges[c] = 0;
