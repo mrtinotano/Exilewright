@@ -1339,7 +1339,7 @@ export function initScene(el, api) {
   bar.addEventListener('mouseleave', () => { tipEl.hidden = true; delete tipEl.dataset.i; });
   // your buffs as the game shows them, top left: its icon (the game's buff art, else the skill's), the count in its
   // corner, the seconds left under it, its name over it
-  const one = (img, c, title, n, s, bad) => `<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
+  const one = (img, c, title, n, s, bad, fill) => `<span class="s-buff${bad ? ' bad' : ''}${fill != null ? ' fill' : ''}" style="--c:${c}${fill != null ? `;--p:${fill.toFixed(1)}%` : ''}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
   function effects() {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
@@ -1350,12 +1350,13 @@ export function initScene(el, api) {
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span class="s-txt" style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     return b.join('');
   }
-  // the ailments on you, under them with a red frame: the game's icon, its magnitude and the seconds left; then the freeze
-  // and heavy stun bars while they fill
+  // the ailments on you, under them with a red frame: the game's icon, its magnitude and the seconds left. A buildup (freeze,
+  // electrocute) is that same icon filling up with its %, as the game shows it; heavy stun, which has no icon, a bar
   const ailing = () => Object.keys(me.st).filter(a => me.st[a] > 0)
     .map(a => one(api.ailmentIcon?.(a), css(PIP[a]), t(STATE[a]) + (me.mag[a] ? ` ${Math.round(me.mag[a])}%` : ''), '', me.st[a], true)).join('')
-    + Object.keys(me.bar).filter(a => me.bar[a] >= 1)
-      .map(a => `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
+    + Object.keys(me.bar).filter(a => me.bar[a] >= 1).map(a => api.ailmentIcon?.(a)
+      ? one(api.ailmentIcon(a), css(PIP[a]), `${t(STATE[a])} ${Math.floor(me.bar[a])}%`, `${Math.floor(me.bar[a])}%`, null, true, me.bar[a])
+      : `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
   function keysText() {
     const W = settings().input === 'wasd', mv = barNow().indexOf(MOVED);
     const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), W ? t('W A S D: move') : mv < 0 ? t('Move is not on the bar: click a slot to put it there') : t('{0}: move to the cursor while held', slotName(slotKeys()[mv])),
