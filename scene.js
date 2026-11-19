@@ -182,9 +182,10 @@ export function initScene(el, api) {
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
+  const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
   const coneHalf = S => (S.kind === 'cone' ? SIM.cone / 2 : 65) * Math.PI / 180;
   function aim(S, p) {
-    const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? SIM.travelRange : S.kind === 'slam' ? SIM.meleeRange : SIM.castRange;
+    const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange;
     let dx = p.x - pp.x, dz = p.z - pp.z, l = Math.hypot(dx, dz);
     if (l < .001) { dx = Math.sin(facing); dz = Math.cos(facing); l = 0; } else { dx /= l; dz /= l; }
     const k = S.src ? l : Math.min(l, max);
@@ -1087,12 +1088,12 @@ export function initScene(el, api) {
       });
     },
     strike(S) {
-      const P = S.P, reach = (P.dash ? SIM.dashRange : SIM.meleeRange) + .6, n = P.dash ? Math.max(1, S.spent) : 1;
+      const P = S.P, reach = (P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body, n = P.dash ? Math.max(1, S.spent) : 1;   // to the dummy's edge
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
       const go = (d, k) => {
         if (d.dead) return;
-        if (P.dash || dist(d.pos, pp) > SIM.meleeRange) {   // strikes that carry you to the target
+        if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
           const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
@@ -1104,7 +1105,7 @@ export function initScene(el, api) {
       go(first, 0);
     },
     sweep(S) {
-      const half = coneHalf(S), R = S.R || SIM.meleeRange, c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
+      const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
       fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .45 : .7 });
       fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
       for (const d of inside(c, R)) { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; if (Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half) hit(d, S); }
@@ -1435,8 +1436,8 @@ export function initScene(el, api) {
       case 'aura': case 'herald': if (S.R) circle(pp, S.R); break;
       case 'field': circle(pp, S.A); break;
       case 'meta': case 'minion': case 'buff': break;
-      case 'strike': { const reach = (P.dash ? SIM.dashRange : SIM.meleeRange) + .6, d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
-      case 'sweep': case 'cone': sector(S.R || SIM.meleeRange, coneHalf(S)); break;
+      case 'strike': { const reach = (P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body, d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
+      case 'sweep': case 'cone': sector(S.R || meleeR(S), coneHalf(S)); break;
       case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
       case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
       case 'wall': strip({ x: c.x + S.dz * SIM.wall / 2, z: c.z - S.dx * SIM.wall / 2 }, -S.dz, S.dx, SIM.wall, .6); break;

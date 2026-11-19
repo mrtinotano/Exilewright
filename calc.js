@@ -759,7 +759,11 @@ export function skill(g, b, treeGear) {
     chainRange: (st.arc_chain_distance ? st.arc_chain_distance / 10 : gt.includes('Projectile') ? 6 : 4) * (1 + both('chaining_range_+%') / 100),
     pierceMore: finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0, perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
     forkMore: finals['support_fork_forked_projectile_damage_+%_final'] || 0, bolts: sec('orb_of_storms_base_bolt_frequency_ms'), maxBolts: st.orb_of_storms_maximum_number_of_hits || null,
-    extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0 };
+    extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0,
+    // reach, in the game's tenths of a metre: a melee attack's is its weapon's range plus "+0.2 metres to Melee Strike
+    // Range" (melee_range_+); a dashing strike's its own (base_melee_dash_range), a blink's its distance
+    reach: tags.includes('melee') && w ? (w.range + both('melee_range_+')) / 10 : null, dash: st.base_melee_dash_range ? st.base_melee_dash_range / 10 : null,
+    travel: (st.blink_travel_distance || st.black_powder_blitz_travel_distance || 0) / 10 || null };
   // Leech (keywords.json Life / Mana Leech): a share of the hit's damage, in % (the stats are permyriad), recovered over one
   // second: of an attack's physical damage (supports, gear, the weapon's own), of a spell's whole damage; increased leech
   // amount and leech rate; Life Leech III's leech is not removed at full life
