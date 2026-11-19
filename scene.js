@@ -859,11 +859,11 @@ export function initScene(el, api) {
     for (const o of objs) {
       const T = !o.dead && o.earth && o.earth.dmg?.trig?.find(T => T.stats?.['triggered_by_support_hatching_elementals_%']), U = T?.support;
       if (!T?.minion || o.near(p) > U.support_hatching_elementals_base_radius / 10 || (o.kills = (o.kills || 0) + 1) < U.support_hatching_elementals_hatch_after_X_deaths_in_radius) continue;
-      o.kills = 0; if (!(Math.random() * 100 < (U['support_chance_to_trigger_hatching_elementals_%'] ?? 100))) continue;
+      o.kills = 0; if (Math.random() * 100 >= (U['support_chance_to_trigger_hatching_elementals_%'] ?? 100)) continue;
       o.dead = true; const at = o.a ? { x: (o.a.x + o.b.x) / 2, z: (o.a.z + o.b.z) / 2 } : { x: o.pos.x, z: o.pos.z }, X = asTrig(o.earth, T, T.minion.hits);
       X.dmg = { ...X.dmg, ...T.minion }; X.P = { ...X.P, ranged: false }; pop(at, 1, 'dust'); say(t('{0} shatters', o.earth.label), 'dust');
-      for (let k = 0; k < T.stats.support_hatching_elementals_number_of_elementals_per_hatch; k++)
-        if (objs.filter(x => x.kind === T.id && !x.dead).length < T.stats.maximum_hatching_elementals_allowed) minion(X, around(at, 1), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id });
+      const room = T.stats.maximum_hatching_elementals_allowed - objs.filter(x => x.kind === T.id && !x.dead).length;
+      for (let k = Math.min(T.stats.support_hatching_elementals_number_of_elementals_per_hatch, room); k > 0; k--) minion(X, around(at, 1), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id });
     }
   }
   function lob(mesh, from, to, dur, h, land, o = {}) {
