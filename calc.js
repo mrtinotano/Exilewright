@@ -222,6 +222,7 @@ export function character(b, sum) {
   const res = {};
   // the game lowers elemental resistances by the level of the area (ResistancePenaltyPerAreaLevel: none at first,
   // -60% from level 65 on): taken as the character's level
+  const thornsX = pct('thorns_damage_+%');
   const penalty = SK.resistance_penalty?.[Math.min(lvl, SK.resistance_penalty.length) - 1] || 0;
   for (const [k, others] of Object.entries({ fire: ['cold', 'lightning', 'chaos'], cold: ['fire', 'lightning', 'chaos'], lightning: ['fire', 'cold', 'chaos'], chaos: ['fire', 'cold', 'lightning'] })) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
@@ -260,8 +261,8 @@ export function character(b, sum) {
     missingBase: lifeBase == null,
     // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
     // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
-    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * pct('thorns_damage_+%'))) },
-      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX: pct('thorns_damage_+%') },
+    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
+      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
   };
 }
 
