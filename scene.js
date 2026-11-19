@@ -864,6 +864,26 @@ export function initScene(el, api) {
     const T = S.dmg.trig?.find(x => x.stats?.['triggered_by_support_explosive_growth_%']); if (!T || !spend(T)) return;
     const X = asTrig(S, T); later(T.stats.support_explosive_growth_explosion_delay_X_ms / 1000, () => boom(o.c, X.A, X));
   }
+  // as a plant is created: the passives' chance (certain under Nature's Archon), the item's if it is in your Presence;
+  // the item's again each time it enters your Presence
+  function planted(e) {
+    const G = sheet().overgrow; e.inP = dist(pp, e.c) <= G.r;
+    if (Math.random() * 100 < G.now + (archonOn() ? api.archon['chance_for_plants_to_be_overgrown_%'] : 0) || e.inP && Math.random() * 100 < G.near) overgrow(e);
+  }
+  function presence(e) { const G = sheet().overgrow, inP = dist(pp, e.c) <= G.r; if (inP !== e.inP && (e.inP = inP) && Math.random() * 100 < G.near) overgrow(e); }
+  // Toxic Growth: its Pustules land around the impact (its secondary radius), each hitting where it lands, then burst
+  // after their detonation time with the burst part's damage (calc.js parts)
+  const PUSTULE = new THREE.SphereGeometry(.28, 8, 6);
+  function pustules(S, c) {
+    const st = S.dmg.stats, n = sh(S).projectiles || 1, spread = (st.active_skill_base_secondary_area_of_effect_radius || 0) / 10, X = partOf(S, Object.keys(S.dmg.parts || {})[0]);
+    for (let k = 0; k < n; k++) {
+      const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
+      boom(q, S.A, S, { soft: true, noPay: k > 0 });
+      const m = new THREE.Mesh(PUSTULE, new THREE.MeshStandardMaterial({ color: 0x5f8a2a, emissive: 0x1d3008, roughness: .6 })); m.position.set(q.x, .25, q.z);
+      planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, tick: (dt, e) => presence(e),
+        end: () => { if (X) { say(t('{0} detonates', S.label), 'poison'); boom(q, X.A, X); } } }));
+    }
+  }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
   const limit = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
@@ -1188,6 +1208,7 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, R = S.A, h = hand();
       const shot = land => lob(P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, { trail: S.el });
       if (P.object) return shot(() => rod(S, c));
+      if (P.detonates && P.plant) return shot(() => pustules(S, c));
       if (P.detonates) {   // pods that burst after a moment (or at once when a detonator reaches them)
         return shot(() => {
           for (let i = 0; i < 3; i++) {
@@ -1460,16 +1481,15 @@ export function initScene(el, api) {
       fx.ring(c, .2, R, S.el, .45);
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
-      const G = sheet().overgrow, inP = () => dist(pp, c) <= G.r;
-      const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R, inP: P.plant && inP(),
+      const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
-          if (e.plant && inP() !== e.inP && (e.inP = !e.inP) && Math.random() * 100 < G.near) overgrow(e);
+          if (e.plant) presence(e);
           if (Math.random() < dt * R * 8) fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R * .9, v: .2, up: 1.4, life: .7, size: .22, c: S.el });
           if ((tk -= dt) > 0) return; tk = .5;
           area(c, R, { ...S, self: e }, { mult: .25, noPay: e.s > .6, noTouch: true });
         },
         off: () => dec.remove() });
-      if (z.plant && (Math.random() * 100 < G.now + (archonOn() ? api.archon['chance_for_plants_to_be_overgrown_%'] : 0) || z.inP && Math.random() * 100 < G.near)) overgrow(z);
+      if (z.plant) planted(z);
     },
     dot(S) {
       const R = S.A; let c = S.at;
