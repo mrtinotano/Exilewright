@@ -4,6 +4,7 @@
 import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
 import { SK } from './skilldata.js';
+import { statLinesEn } from './stats.js';
 import { enemy, attackOf, attacksOf } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
@@ -487,6 +488,11 @@ const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff
 const PLAIN = new Set(['support', 'damage', 'attack', 'cast', 'speed', 'spell', 'projectile', 'melee', 'area', 'of', 'effect', 'and', 'minion', 'skill', 'hit', 'ailment', 'elemental', '+%', 'final', ...DMG]);
 // the PoB2 mod names calc.js reads (mod(), dmgMods, DealNo..., NeverCrit)
 const USED = /^(?:(?:Physical|Fire|Cold|Lightning|Chaos|Elemental)?Damage|Speed|CooldownRecovery|CritChance|CritMultiplier|DamageGainAs\w+|Max\w+Damage|DealNo\w+|NeverCrit)$/;
+// or one the game's own text says is that and nothing else: "Supported Skills deal 35% less Damage" (Tremors'
+// support_unstable_earth_damage_+%_final), "Supported Grenade Skills deal...", "Hazards created by Supported Skills deal..."
+// (or speed: Tectonic Slams' "Supported Skills have 15% less Attack Speed")
+const PLAIN_TEXT = /^(?:Supported (?:\w+ )?Skills|Hazards created by Supported Skills) (?:deal|have) \d+% (?:more|less) (?:damage|attack speed|cast speed)$/i;
+const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) && PLAIN_TEXT.test(statLinesEn({ [k]: 10 })[0] || '');
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
   const all = { ...sum }, fin = {}, mods = [], finals = {};
@@ -495,12 +501,13 @@ export function withSupports(g, sum) {
     if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
     const lv = d?.levels?.[Object.keys(d?.levels || {})[0]] || {}, game = { ...(d?.constant || {}), ...lv };
     // the game's stats, except those PoB2 reads as a mod used here (or only under a condition): Bleed II's bleed chance,
-    // Fire Mastery's level, which PoB2 reads as mods the app has no use for or does not have
-    const read = new Set((p?.mods || []).filter(m => m[4] || USED.test(m[0])).map(m => m[5]));
+    // Fire Mastery's level, which PoB2 reads as mods the app has no use for or does not have. A condition of PoB2's
+    // where the game's text has none ("Supported Skills deal 50% more Damage": Zerphi's Infamy) does not count
+    const read = new Set((p?.mods || []).filter(m => m[4] ? !plainText(m[5]) : USED.test(m[0])).map(m => m[5]));
     for (const [k, val] of Object.entries({ ...game, ...(p?.stats || {}) })) {
       if (read.has(k) || k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
-      else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;
+      else if (plainMore(k, n) || plainText(k)) fin[k] = (fin[k] || 0) + val;
     }
     // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments())
     for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (k.includes('_final') && typeof val === 'number') finals[k] = (finals[k] || 0) + val;
@@ -622,10 +629,16 @@ export function skill(g, b, treeGear) {
   base.physical = base.physical.map(x => x * kept);
   // supports: "gain X% of damage as extra <type>" adds to that type, "deal no <type> damage" removes it, and some
   // only raise the top of the range (Heft)
-  const all = [0, 1].map(i => DMG.reduce((s, t) => s + base[t][i], 0));
+  // and the tree's, gear's and supports' game stats "gain X% of <all / elemental / a type of> damage as extra <type>"
+  // (non_skill_base_fire_damage_%_to_gain_as_chaos: Xoph's Pyre; _with_spells / _with_attacks only for those), of the
+  // damage after conversion
+  const pre = Object.fromEntries(DMG.map(t => [t, [...base[t]]])), all = [0, 1].map(i => DMG.reduce((s, t) => s + pre[t][i], 0));
+  const SRC = { elemental: ['fire', 'cold', 'lightning'], ...Object.fromEntries(DMG.map(t => [t, [t]])) };
+  const gain = (src, t) => ['', spell ? '_with_spells' : attack ? '_with_attacks' : '_none'].reduce((x, end) => x + v(sum, `non_skill_base_${src}_damage_%_to_gain_as_${t}${end}`), 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`);
   for (const t of DMG) {
-    const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
-    base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra, (base[t][1] + all[1] * extra) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
+    const extra = (mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) + gain('all', t)) / 100;
+    const from = [0, 1].map(i => Object.entries(SRC).reduce((x, [src, ts]) => x + gain(src, t) / 100 * ts.reduce((y, u) => y + pre[u][i], 0), 0));
+    base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra + from[0], (base[t][1] + all[1] * extra + from[1]) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
   // a totem's grenade: "increased Grenade Damage" does not count (the game's window, 16/11: the same 4311-9885 without
   // two Grenade Damage nodes; Volatile Grenades' fuse is not in it either), the grenade cooldown ones do (10.99 s)
