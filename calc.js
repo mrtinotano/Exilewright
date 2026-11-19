@@ -71,7 +71,18 @@ export function linkMetas(b) {
     for (const g of list) { g.sockets = n; g.supports = [...m.supports]; }
   }
 }
+// buffs a persistent skill's supports grant you while it is on (Precision, Clarity, Vitality, Herbalism: PoB2's
+// GlobalEffect Buff mods), as the stats of yours they are
+const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', 'support_clarity_mana_regeneration_rate_+%': 'mana_regeneration_rate_+%',
+  'support_vitality_life_regeneration_rate_per_minute_%': 'life_regeneration_rate_per_minute_%', 'support_herbalism_life_recovery_+%_from_life_flasks': 'flask_life_to_recover_+%' };
 export function skillStats(b) {
+  const out = motes(b);
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent'))
+    for (const n of g.supports || []) for (const [k, x] of Object.entries({ ...SK.skills[n]?.constant, ...Object.values(SK.skills[n]?.levels || {})[0] }))
+      if (GRANTS[k]) out[GRANTS[k]] = (out[GRANTS[k]] || 0) + x;
+  return out;
+}
+function motes(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};
   const motes = Object.fromEntries(ATTRS.map(a => [a, c.skill_specific_stat_description_mode || 0]));
