@@ -82,7 +82,7 @@ export function initScene(el, api) {
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
-  let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [];
+  let dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
   // ---------- HUD
@@ -236,7 +236,7 @@ export function initScene(el, api) {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
-    timers = []; empower = []; buffs = []; charge = held = move = null; pp.y = 0;
+    timers = []; empower = []; buffs = []; fissures = []; charge = held = move = null; pp.y = 0;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; dummies.forEach(restore); heal(); hudT = 0;
   }
@@ -968,7 +968,7 @@ export function initScene(el, api) {
   }
   // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
   // for that share of its life as fire in its area; Crater opens its fissures, a hit of its own each (their length and
-  // spread the slam's: the data gives none; ponytail: they do not last its duration nor take aftershocks)
+  // spread the slam's: the data gives none) that last its duration
   function landed(S, c) {
     for (const T of S.dmg?.trig || []) {
       const ts = T.stats || {};
@@ -980,16 +980,34 @@ export function initScene(el, api) {
         }
       }
       const n = T.support?.support_fissure_on_landing_create_X_fissures_on_impact;
-      if (n) { const X = asTrig(S, T), a0 = Math.atan2(S.dx, S.dz); say(X.label, X.el); for (let j = 0; j < n; j++) fissure(X, c, a0 + (j - (n - 1) / 2) * .5, 5, X.A, 1); }
+      if (n) { const X = asTrig(S, T), a0 = Math.atan2(S.dx, S.dz); say(X.label, X.el); for (let j = 0; j < n; j++) fissure(X, c, a0 + (j - (n - 1) / 2) * .5, 5, X.A, 1, { dur: sh(X).duration || T.stats.base_skill_effect_duration / 1000, max: T.stats.support_fissure_on_landing_maximum_fissure_count }); }
     }
   }
-  function fissure(S, from, ang, len, r = .8, mult = .5) {
+  // o.dur: a fissure that lasts (Crater's), up to o.max of them (the oldest gives way). A Slam that reaches one sets off an
+  // Aftershock along it, as keywords.json MoltenFissure has it (the rule the game states for its long-lasting fissures):
+  // its damage again to those on it, on to the fissures it crosses, each at most once per 0.2 s
+  function fissure(S, from, ang, len, r = .8, mult = .5, o = {}) {
     const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len }, seen = new Set();   // each enemy once
-    fx.strip(from, b, .9, 0x070605, 4, { dark: true, tex: 'beam', a: .9, y: .033 });
+    const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
+    if (o.dur) {
+      const mine = fissures.filter(f => f.S.name === S.name);
+      if (mine.length >= o.max) { const old = mine[0]; old.decal.t = old.decal.dur; fissures.splice(fissures.indexOf(old), 1); }
+      fissures.push({ a: { x: from.x, z: from.z }, b, S, r, mult, decal, end: time + o.dur, next: 0 });
+    }
     for (let k = 1; k <= len; k++) later(k * .06, () => {
       const p = { x: from.x + dx * k, z: from.z + dz * k };
       pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
     });
+  }
+  const ccw = (p, q, r) => (q.x - p.x) * (r.z - p.z) - (q.z - p.z) * (r.x - p.x);
+  const crosses = (f, g) => [segDist(g.a, f.a, f.b), segDist(g.b, f.a, f.b), segDist(f.a, g.a, g.b), segDist(f.b, g.a, g.b)].some(k => k < .3)
+    || ccw(f.a, f.b, g.a) * ccw(f.a, f.b, g.b) < 0 && ccw(g.a, g.b, f.a) * ccw(g.a, g.b, f.b) < 0;
+  function quake(c, R) { for (const f of [...fissures]) if (segDist(c, f.a, f.b) <= R) aftershock(f); }
+  function aftershock(f) {
+    if (time < f.next || !fissures.includes(f)) return; f.next = time + .2;
+    say(t('Aftershock of {0}', f.S.label), f.S.el); fx.strip(f.a, f.b, f.r * 2, f.S.el, .3, { a: .8 });
+    for (const d of dummies) if (!d.dead && segDist(d.pos, f.a, f.b) <= f.r + SIM.body) hit(d, f.S, { mult: f.mult, noPay: true });
+    for (const g of fissures) if (g !== f && time >= g.next && crosses(f, g)) later(.05, () => aftershock(g));
   }
   function slash(S, dx, dz, r = 2, half = .95) {
     fx.sector(pp, dx, dz, r, half, S.el, .2, { k: 2.6, a: .85, grow: true });
@@ -1175,6 +1193,7 @@ export function initScene(el, api) {
       const land = () => {
         if (S.R || P.attack) boom(to, S.A, S); else fx.ring(to, .2, 1.6, S.el, .4);
         if (P.ground) ground(P.ground, to, S.A, P.dur, S);
+        if (P.slams) quake(to, S.A);
         if (P.jump) landed(S, to);
       };
       if (P.blink && !P.jump) {
@@ -1196,7 +1215,7 @@ export function initScene(el, api) {
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
-        boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        quake(c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
         if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
@@ -2147,6 +2166,7 @@ export function initScene(el, api) {
     }
     for (let i = empower.length - 1; i >= 0; i--) if (empower[i].s != null && (empower[i].s -= dt) <= 0) empower.splice(i, 1);
     resolveGain(dt);
+    fissures = fissures.filter(f => f.end > time);
     for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt) <= 0) buffs.splice(i, 1);
 
     player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
