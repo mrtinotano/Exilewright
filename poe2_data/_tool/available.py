@@ -458,7 +458,8 @@ minion_level = [r['MinionLevel'] for r in sorted(load('MinionGemLevelScaling'), 
 minion_stats = {sid(r['MinionStat']).replace('virtual_minion_', 'minion_', 1): next(sid(x) for x in r['PlayerStat'] if x != r['MinionStat'])
                 for r in load('MinionStats') if not (r['MinionType'] or r['MinionType2'] or r['CompanionStat']) and any(x != r['MinionStat'] for x in r['PlayerStat'])}
 minion_intrinsic = {sid(r['Stat']): r['Value'] for r in load('PlayerMinionIntrinsicStats')}
-save('skills.json', {'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
+save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
+                     'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
                      # the icons of the ailments on you; frozen has no icon of its own (the "frozen" buff shows none): its art bufffrozen
                      'ailment_icons': {a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('freeze', 'frozen_damage_increase'))}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
 

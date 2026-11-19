@@ -134,14 +134,22 @@ export function initScene(el, api) {
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   const slots = () => api.build().gems.flatMap((_, i) => api.byHand(i) ? [i] : []);
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
-  // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game. -> gem index or null
+  // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
+  // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
+  // has Move. -> gem index, MOVED (-1) or null
+  const MOVE = '@move', MOVED = -1;
   function barNow() {
     const gems = api.build().gems, own = slots(), names = own.map(i => gems[i].name), B = api.bar?.() || {};
     const s = slotKeys().map((_, k) => B.slots?.[k] ?? null), seen = [...(B.seen || [])];
+    const free = () => s.findIndex(x => !x || x !== MOVE && !names.includes(x));
     let change = !B.slots;
-    for (const n of names) if (!seen.includes(n)) { seen.push(n); change = true; const k = s.findIndex(x => !x || !names.includes(x)); if (k >= 0) s[k] = n; }
+    if (!seen.includes(MOVE)) {   // once per bar: Move on left click, what was there to a free slot
+      seen.push(MOVE); change = true;
+      if (!s.includes(MOVE)) { const was = s[0]; s[0] = MOVE; const k = free(); if (was && k >= 0) s[k] = was; }
+    }
+    for (const n of names) if (!seen.includes(n)) { seen.push(n); change = true; const k = free(); if (k >= 0) s[k] = n; }
     if (change) api.setBar?.({ slots: s, seen });
-    return s.map(n => n ? (own.find(i => gems[i].name === n) ?? null) : null);
+    return s.map(n => n === MOVE ? MOVED : n ? (own.find(i => gems[i].name === n) ?? null) : null);
   }
   // a skill already on another slot swaps with the one here, as in the game
   function setSlot(k, name) { barNow(); const B = api.bar?.(); if (!B) return; const s = [...B.slots], j = name ? s.indexOf(name) : -1; if (j >= 0 && j !== k) s[j] = s[k]; s[k] = name; api.setBar({ ...B, slots: s }); hudT = 0; }
@@ -164,7 +172,7 @@ export function initScene(el, api) {
     b.forEach((on, n) => {
       if (on === !!padWas[n]) return;
       const k = PAD[n], key = 'pad' + n;
-      if (!on) { if (held?.key === key) release(); }
+      if (!on) unhold(key);
       else if (k != null) useSlot(k, key); else if (n === 1) roll(); else if (n === 14 || n === 15) drink(n - 14);
     });
     padWas = b;
@@ -1152,7 +1160,10 @@ export function initScene(el, api) {
     if (best) cursor.set(best.pos.x, 0, best.pos.z);
     return best;
   };
-  const useSlot = (k, key) => { const i = barNow()[k]; if (i == null) return; select(i, true, true); press(i, key); };
+  // a slot's key pressed: Move walks to the cursor while it is held, a skill is used
+  let walkKey = null;
+  const useSlot = (k, key) => { const i = barNow()[k]; if (i == null) return; if (i === MOVED) { walk = true; walkKey = key; goal = { x: cursor.x, z: cursor.z }; return; } select(i, true, true); press(i, key); };
+  const unhold = key => { if (held?.key === key) release(); if (walkKey === key) { walk = false; walkKey = null; } };
   addEventListener('keydown', e => {
     if (el.hidden || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     const c = e.code; inputOf(false);
@@ -1182,7 +1193,7 @@ export function initScene(el, api) {
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
   }
-  addEventListener('keyup', e => { keys[e.code] = false; if (held?.key === e.code) release(); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
+  addEventListener('keyup', e => { keys[e.code] = false; unhold(e.code); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = walk = false; if (held) release(); });
   dom.addEventListener('mousemove', e => {
     aimMouse(e); inputOf(false);
@@ -1193,13 +1204,10 @@ export function initScene(el, api) {
     if (e.button === 1) e.preventDefault();   // no auto-scroll
     if (e.altKey) { orbit = true; e.preventDefault(); return; }
     if (e.button === 0 && tpl.mon && (placing || e.ctrlKey)) { pick(true); place(cursor.x, cursor.z); return; }
-    const foe = pick();
-    // the left button walks, as in the game: its skill is used on an enemy under the cursor, or anywhere with Shift;
-    // moving with W A S D it only uses its skill
-    if (e.button === 0) { const i = barNow()[0], W = settings().input === 'wasd'; if (i != null && (foe || e.shiftKey || W)) useSlot(0, 'm0'); else if (!W) { walk = true; goal = { x: cursor.x, z: cursor.z }; } }
-    else if (e.button <= 2) useSlot(e.button, 'm' + e.button);
+    pick();
+    if (e.button <= 2) useSlot(e.button, 'm' + e.button);   // left click too: Move walks, as in the game, a skill there is used
   });
-  addEventListener('mouseup', e => { if (held?.key === 'm' + e.button) release(); if (e.button === 0) walk = false; orbit = false; });
+  addEventListener('mouseup', e => { unhold('m' + e.button); orbit = false; });
   dom.addEventListener('contextmenu', e => e.preventDefault());
   dom.addEventListener('wheel', e => { e.preventDefault(); camS.dist = clamp(camS.dist * (1 + Math.sign(e.deltaY) * .1), 8, 42); }, { passive: false });
   // clicking a slot opens the list of the skills to put on it, as in the game
@@ -1211,7 +1219,7 @@ export function initScene(el, api) {
   function openPick(k) {
     if (!pickEl.hidden && +pickEl.dataset.k === k) return closePick();
     const gems = api.build().gems, cur = barNow()[k], slot = bar.querySelector(`[data-k="${k}"]`); if (!slot) return;
-    put(pickEl, slots().map(i => { const inf = api.info(gems[i]); return `<button data-pick="${i}" title="${esc(inf.label)}"${i === cur ? ' class="on"' : ''}>${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false">` : esc(inf.label.slice(0, 3))}</button>`; }).join('')
+    put(pickEl, `<button data-pick="${MOVE}" title="${esc(t('Move'))}"${cur === MOVED ? ' class="on"' : ''}><img src="${esc(api.moveIcon?.() || '')}" alt="" draggable="false"></button>` + slots().map(i => { const inf = api.info(gems[i]); return `<button data-pick="${i}" title="${esc(inf.label)}"${i === cur ? ' class="on"' : ''}>${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false">` : esc(inf.label.slice(0, 3))}</button>`; }).join('')
       + `<button data-pick="" title="${esc(t('Empty'))}">✕</button>`);
     pickEl.dataset.k = k; pickEl.hidden = false; tipEl.hidden = true;
     const r = slot.getBoundingClientRect(), box = el.getBoundingClientRect(), w = pickEl.offsetWidth;
@@ -1221,7 +1229,7 @@ export function initScene(el, api) {
   function closePick() { pickEl.hidden = true; }
   pickEl.addEventListener('mousedown', e => {
     e.stopPropagation(); const b = e.target.closest('[data-pick]'); if (!b) return;
-    e.preventDefault(); setSlot(+pickEl.dataset.k, b.dataset.pick === '' ? null : api.build().gems[+b.dataset.pick].name); closePick();
+    const p = b.dataset.pick; e.preventDefault(); setSlot(+pickEl.dataset.k, p === '' ? null : p === MOVE ? MOVE : api.build().gems[+p].name); closePick();
   });
 
   // ---------- target reticle: the real area of the selected skill, where it would land
@@ -1287,9 +1295,10 @@ export function initScene(el, api) {
       else if (!unpaid.has(g.name)) { unpaid.add(g.name); untoggle(g.name); say(t('{0} stays off: it reserves {1} Spirit and {2} is left', api.info(g).label, r, free), 'dust'); }
     });
     const list = slots(), at = barNow();
-    if (!list.includes(sel)) sel = at.find(i => i != null) ?? list[0] ?? 0;
+    if (!list.includes(sel)) sel = at.find(i => i >= 0) ?? list[0] ?? 0;
     put(bar, `<span class="s-belt">${flaskHtml(0)}${flaskHtml(1)}${[0, 1, 2].map(charmHtml).join('')}</span>` + (list.length ? at.map((i, k) => {
       if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
+      if (i === MOVED) return `<button class="s-slot" data-k="${k}" title="${esc(t('Move'))}"><img src="${esc(api.moveIcon?.() || '')}" alt="" draggable="false" onerror="this.remove()"><b>${keyLabel(k)}</b></button>`;
       const g = gems[i], inf = api.info(g), P = prof(g, inf);
       return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span><b>${keyLabel(k)}</b></button>`;
     }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
@@ -1350,8 +1359,8 @@ export function initScene(el, api) {
     + Object.keys(me.bar).filter(a => me.bar[a] >= 1)
       .map(a => `<span class="s-meter" style="--c:${css(PIP[a])}"><i style="width:${me.bar[a].toFixed(1)}%"></i><b>${esc(t(STATE[a]))} ${Math.floor(me.bar[a])}%</b></span>`).join('');
   function keysText() {
-    const W = settings().input === 'wasd';
-    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), W ? t('W A S D: move · Left click: use its skill') : t('Left click: move, or use its skill on an enemy (Shift: anywhere)'),
+    const W = settings().input === 'wasd', mv = barNow().indexOf(MOVED);
+    const text = [t('Movement speed: {0} m/s', spd().toFixed(2)), W ? t('W A S D: move') : mv < 0 ? t('Move is not on the bar: click a slot to put it there') : t('{0}: move to the cursor while held', /^m\d$/.test(slotKeys()[mv]) ? t(['Left click', 'Middle click', 'Right click'][slotKeys()[mv][1]]) : keyName(slotKeys()[mv])),
       t('Mouse buttons and {0}: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill', slotKeys().slice(3).map(keyName).join(' ')),
       t('Alt+drag: orbit · Wheel: zoom · {0}: roll', keyName(settings().keys.roll)),
       t('{0} / {1}: life and mana flask', keyName(settings().keys.lifeFlask), keyName(settings().keys.manaFlask)),

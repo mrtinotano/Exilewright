@@ -1,4 +1,5 @@
 {
+ "move_icon": "Art/2DArt/SkillIcons/iconmoveonly.dds",
  "charge_icons": {
   "frenzy": "Art/2DArt/BuffIcons/chargedex.dds",
   "power": "Art/2DArt/BuffIcons/chargeint.dds",

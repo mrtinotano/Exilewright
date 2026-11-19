@@ -833,7 +833,6 @@
  "Not enough mana for {0}": "{0}のマナが足りない",
  "Shield": "エナジーシールド",
  "Empty": "空き",
- "Left click: move, or use its skill on an enemy (Shift: anywhere)": "左クリック: 移動、敵の上ならそのスキルを使用 (Shift: どこでも)",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ドラッグ: 回転 · ホイール: ズーム · {0}: ロール",
  "Ctrl+click: place {0}": "Ctrl+クリック: {0}を配置",
  "their keys: click a slot of the simulator bar to change them": "キー: シミュレーターのバーの枠をクリックで変更",
@@ -862,7 +861,10 @@
  "No controller detected: connect one and press any of its buttons.": "コントローラーが検出されない：接続していずれかのボタンを押す。",
  "With a controller: left stick moves, right stick aims (else the nearest enemy is the target), A X Y RB RT LB LT and the right stick click use the bar's skills, B rolls, D-pad left and right drink the life and mana flask.": "コントローラー：左スティックで移動、右スティックで照準（なければ最も近い敵が対象）、A X Y RB RT LB LT と右スティック押し込みでバーのスキル、B でロール、十字キー左右でライフとマナフラスコ。",
  "That key is taken: it is on the skill bar or moves you, and Esc stays as it is.": "そのキーは使用中：スキルバーか移動に使われており、Esc はそのまま。",
- "W A S D: move · Left click: use its skill": "W A S D：移動 · 左クリック：そのスキルを使う",
  "Mouse buttons and {0}: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill": "マウスボタンと {0}：カーソル位置でスキルを使う（長押しで繰り返し）· バーの枠をクリックでスキル変更",
- "Pick an enemy in the Enemies panel to place it": "敵パネルで敵を選んで配置する"
+ "Pick an enemy in the Enemies panel to place it": "敵パネルで敵を選んで配置する",
+ "Move": "移動する",
+ "W A S D: move": "W A S D：移動",
+ "{0}: move to the cursor while held": "{0}：押している間カーソルへ移動",
+ "Move is not on the bar: click a slot to put it there": "移動するがバーにない：枠をクリックして配置する"
 }

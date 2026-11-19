@@ -833,7 +833,6 @@
  "Not enough mana for {0}": "Nicht genug Mana für {0}",
  "Shield": "Schild",
  "Empty": "Leer",
- "Left click: move, or use its skill on an enemy (Shift: anywhere)": "Linksklick: bewegen oder seine Fertigkeit auf einen Gegner wirken (Shift: überall)",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ziehen: kreisen · Mausrad: Zoom · {0}: rollen",
  "Ctrl+click: place {0}": "Strg+Klick: {0} platzieren",
  "their keys: click a slot of the simulator bar to change them": "ihre Tasten: Klick auf ein Feld der Simulator-Leiste, um sie zu ändern",
@@ -862,7 +861,10 @@
  "No controller detected: connect one and press any of its buttons.": "Kein Controller erkannt: Schließe einen an und drücke eine seiner Tasten.",
  "With a controller: left stick moves, right stick aims (else the nearest enemy is the target), A X Y RB RT LB LT and the right stick click use the bar's skills, B rolls, D-pad left and right drink the life and mana flask.": "Mit Controller: Der linke Stick bewegt, der rechte zielt (sonst ist der nächste Gegner das Ziel), A X Y RB RT LB LT und der Klick des rechten Sticks setzen die Fertigkeiten der Leiste ein, B rollt, Steuerkreuz links und rechts trinken das Lebens- und Manafläschchen.",
  "That key is taken: it is on the skill bar or moves you, and Esc stays as it is.": "Diese Taste ist belegt: Sie liegt auf der Fertigkeitsleiste oder bewegt dich, und Esc bleibt, wie es ist.",
- "W A S D: move · Left click: use its skill": "W A S D: bewegen · Linksklick: seine Fertigkeit einsetzen",
  "Mouse buttons and {0}: use their skill at the cursor (hold to repeat) · click a slot of the bar to change its skill": "Maustasten und {0}: ihre Fertigkeit am Cursor einsetzen (halten zum Wiederholen) · Klick auf einen Platz der Leiste, um seine Fertigkeit zu ändern",
- "Pick an enemy in the Enemies panel to place it": "Wähle einen Gegner im Feld Gegner, um ihn zu platzieren"
+ "Pick an enemy in the Enemies panel to place it": "Wähle einen Gegner im Feld Gegner, um ihn zu platzieren",
+ "Move": "Bewegen",
+ "W A S D: move": "W A S D: bewegen",
+ "{0}: move to the cursor while held": "{0}: zum Cursor bewegen, solange gehalten",
+ "Move is not on the bar: click a slot to put it there": "Bewegen ist nicht auf der Leiste: Klicke auf einen Platz, um es dort abzulegen"
 }
