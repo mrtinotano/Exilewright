@@ -493,19 +493,19 @@ export function initScene(el, api) {
       hits = Object.fromEntries(Object.entries(hits).map(([e, [lo, hi]]) => [e, [lo * f, hi * f]]));
       const inf = api.info({ name: T.id }), els = Object.keys(Object.keys(hits).length ? hits : T.dot || {});
       const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
-      const c = { x: d.pos.x, z: d.pos.z }, R = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] }).radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10;   // with the build's area
+      const c = { x: d.pos.x, z: d.pos.z }, R = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] }).radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10, dur = sh(X).duration || ts.base_skill_effect_duration / 1000;   // with the build's area
       say(X.label, X.el);
       if (kind === 'fulminate') later((ts.explosion_delay_ms || 0) / 1000, () => boom(c, R, X));
       else if (kind === 'flare' || kind === 'discharge' || kind === 'batter') boom(c, R, X);
       else if (kind === 'decay' || kind === 'cry') {
         const o = d.dots.find(o => o.name === T.id), n = kind === 'cry' ? Math.min(10, (o?.stacks || 0) + ts.add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict) : 1;
-        dot(d, { ...X, mult: n, P: { ...X.P, dur: sh(X).duration || ts.base_skill_effect_duration / 1000 } }); d.dots.find(o => o.name === T.id).stacks = n;
-      } else if (kind === 'charged') ground('shocked', c, R, sh(X).duration || ts.base_skill_effect_duration / 1000, X);
+        dot(d, { ...X, mult: n, P: { ...X.P, dur } }).stacks = n;
+      } else if (kind === 'charged') ground('shocked', c, R, dur, X);
       else if (kind === 'crystal') for (let k = 0; k < (U.consume_bleed_to_create_X_haemocrystals || 1); k++) {
         if (crystals.length >= (U.support_haemocrystals_maximum_allowed_crystals || Infinity)) break;
         const a = Math.random() * Math.PI * 2, r = Math.random() * ts.support_haemocrystals_crystal_creation_radius / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
         crystals.push(q); fx.ring(q, .1, .35, 'blood', .3);
-        later(sh(X).duration || ts.base_skill_effect_duration / 1000, () => { crystals.splice(crystals.indexOf(q), 1); boom(q, R, X); });
+        later(dur, () => { crystals.splice(crystals.indexOf(q), 1); boom(q, R, X); });
       }
       else if (kind === 'current') { const e = near(d.pos, sh(X).chainRange || SIM.chainRange, e => e !== d); if (e) chain(chest(d), e, X, (sh(X).chains || 1) - 1, new Set([d])); }
       else if (kind === 'erupt') for (let k = 0; k < (ts.base_number_of_projectiles || 1); k++) {
@@ -648,7 +648,7 @@ export function initScene(el, api) {
   function dot(d, S) {
     const o = d.dots.find(o => o.name === S.name), s = S.P.dur || 5, v = dotOf(d, S);
     if (o) Object.assign(o, v, { s, S }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
-    d.by = S;
+    d.by = S; return d.dots.find(o => o.name === S.name);
   }
   // Things that react to what happens: meta gems fill their energy, persistent buffs grant charges.
   function metaWants(P) {
