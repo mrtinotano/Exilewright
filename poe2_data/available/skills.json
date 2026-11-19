@@ -11,7 +11,8 @@
   "shock": "Art/2DArt/BuffIcons/buffshocked.dds",
   "poison": "Art/2DArt/SkillIcons/iconpoisoned.dds",
   "bleed": "Art/2DArt/BuffIcons/buffbleed.dds",
-  "freeze": "Art/2DArt/BuffIcons/bufffrozen.dds"
+  "freeze": "Art/2DArt/BuffIcons/bufffrozen.dds",
+  "maim": "Art/2DArt/BuffIcons/MaimBuff.dds"
  },
  "monster_stats": [
   {

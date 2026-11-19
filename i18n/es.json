@@ -786,6 +786,7 @@
  "Exilewright {0} is the latest version.": "Exilewright {0} es la última versión.",
  "The updates could not be checked ({0}).": "No se han podido buscar actualizaciones ({0}).",
  "Electrocution": "Parálisis",
+ "Maimed": "Lisiado",
  "Pinned": "Retenido",
  "{0} cannot curse enemies above level {1}": "{0} no puede maldecir a enemigos de nivel superior a {1}",
  "No skill of the build is used by hand: they are always on.": "Ninguna habilidad de la build se usa a mano: están siempre activas.",

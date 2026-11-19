@@ -786,6 +786,7 @@
  "Exilewright {0} is the latest version.": "Exilewright {0} — последняя версия.",
  "The updates could not be checked ({0}).": "Не удалось проверить обновления ({0}).",
  "Electrocution": "Электризация",
+ "Maimed": "Увечье",
  "Pinned": "Пригвождение",
  "{0} cannot curse enemies above level {1}": "{0} не может проклинать врагов выше {1} уровня",
  "No skill of the build is used by hand: they are always on.": "Ни одно умение билда не используется вручную: все они всегда активны.",

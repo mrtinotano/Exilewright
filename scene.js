@@ -30,12 +30,13 @@ const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILME
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
 const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
-const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust' };
+const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
+const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
 const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
 const IMMUNE = 1;                         // note: keywords.json Consume: a consumed ailment cannot be inflicted again for 1 s
@@ -1450,7 +1451,7 @@ export function initScene(el, api) {
     const a = d.atk, c = withCharms(sheet());
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
-    if (Math.random() * 100 >= hitChance(d.stat.accuracy, c.evasion || 0)) return fx.text(above(), t('Evaded'), GREY, .32);
+    if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
     // a curse that lowers their damage (Enfeeble)
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
@@ -1470,7 +1471,8 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1;
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1,
+    maimed = () => me.st.maim > 0 ? 1 - MAIM.move / 100 : 1;   // maim slows only your movement
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
@@ -1480,7 +1482,7 @@ export function initScene(el, api) {
     if (a === 'freeze' || a === 'stun') { held = charge = goal = null; walk = false; }
     if (a === 'freeze') { me.st.chill = 0; fx.emit(22, { p: { x: pp.x, y: 1, z: pp.z }, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); }
     fx.text(above(), t(STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
-    charmUse(a === 'stun' ? 'stunned' : 'affected_by_' + a);
+    charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
   function ailed(d, raw) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
@@ -1515,6 +1517,9 @@ export function initScene(el, api) {
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * PL.HeavyStunDamageScale;
     if (!frozen()) build('stun', stun, D.stun, GAME.player_heavy_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     if (x('physical') && roll(A['local_chance_to_bleed_on_hit_%'] || 0) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
+    // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
+    const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);
+    if (roll(maim) && can('maim')) suffer('maim', MAIM.time);
     const pois = (A['base_chance_to_poison_on_hit_%'] || 0) + (A[d.atk.attack ? 'chance_to_poison_on_hit_with_attacks_%' : 'spells_chance_to_poison_on_hit_%'] || 0);
     if ((x('physical') || x('chaos')) && roll(pois) && can('poison')) suffer('poison', DUR.poison * D.dur.poison, { dot: dot('poison', 'chaos', x('physical') + x('chaos')) });
   }
@@ -1547,7 +1552,7 @@ export function initScene(el, api) {
   // them with half the monster's power (the glossary's KeywordPopups Charm). note: Silver Charm's slows are not the scene's
   // chill: nothing slows you here, so it is never used
   const CHARM_GAIN = .5, IMMUNE_TO = { utility_charm_freeze_immunity: 'freeze', utility_charm_bleeding_immunity: 'bleed', utility_charm_poison_immunity: 'poison',
-    utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun' };
+    utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun', utility_charm_slow_immunity: 'maim' };
   const charms = () => sheet().charms || [];
   const charmLeft = n => { const f = charms()[n]; if (!f) return 0; return me.cc[n] = Math.min(me.cc[n] ?? f.max, f.max); };
   const immune = a => me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
@@ -1577,7 +1582,7 @@ export function initScene(el, api) {
     const bz = R?.berserk, raging = bz && tog[bz.name] && me.rage > 0 && time - me.raged <= R.delay;
     return {
       res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
-      move: [spd() * act, spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
+      move: [spd() * act * maimed(), spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
       life: rec('life'), mana: rec('mana'), dot: [dot * (me.st.shock > 0 ? 1 + me.mag.shock / 100 : 1), 0],
       rage: rageMax() ? [rageNow(), 0] : null, guard: charms().some(f => f?.guard) ? [me.guard, 0] : null,
       berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
@@ -1759,10 +1764,10 @@ export function initScene(el, api) {
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(); }
     } else if (steer && !charge && !stuck()) {
       goal = null;
-      if (time - castAt > .3) { const v = spd() * slowed() * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
+      if (time - castAt > .3) { const v = spd() * slowed() * maimed() * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
     } else if (goal && !charge && !stuck()) {   // to the point clicked, following the cursor while the button is held
       if (walk) goal = { x: cursor.x, z: cursor.z };
-      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * dt);
+      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * dt);
       if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }

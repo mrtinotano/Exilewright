@@ -786,6 +786,7 @@
  "Exilewright {0} is the latest version.": "Exilewright {0} は最新バージョンです。",
  "The updates could not be checked ({0}).": "アップデートを確認できませんでした（{0}）。",
  "Electrocution": "麻痺",
+ "Maimed": "重傷",
  "Pinned": "足止め",
  "{0} cannot curse enemies above level {1}": "{0}はレベル{1}を超える敵を呪えない",
  "No skill of the build is used by hand: they are always on.": "このビルドに手動で使うスキルはありません：すべて常に有効です。",
