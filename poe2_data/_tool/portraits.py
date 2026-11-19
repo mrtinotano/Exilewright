@@ -2,7 +2,7 @@
 (poe2wiki.net, CC BY-NC-SA; the art is Grinding Gear Games'), as the game shows them: the game draws them from the
 character's 3D model, so the files have none. Saved as ../available/img/portraits/<name>.webp.
 Usage: python portraits.py   (run after available.py; again when a class or ascendancy is added)"""
-import hashlib, io, json, os, urllib.error, urllib.parse, urllib.request
+import hashlib, io, json, os, urllib.parse, urllib.request
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -28,6 +28,6 @@ missing = []
 for n in names:
     try:
         Image.open(io.BytesIO(get(file_url(n)))).convert('RGB').save(os.path.join(OUT, n.lower().replace(' ', '_') + '.webp'), 'WEBP', quality=90)
-    except (urllib.error.HTTPError, OSError):
+    except OSError:   # a 404 too (HTTPError)
         missing.append(n)
 print(len(names) - len(missing), 'portraits; missing:', missing)

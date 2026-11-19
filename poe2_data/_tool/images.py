@@ -18,7 +18,6 @@ tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), enco
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
 paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
-ui = set()   # UIImages names (the character panel's portraits come from portraits.py)
 # the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
 # frames), saved whole as ../available/img/tree/<role>.webp: the node frames per state and the group backgrounds
 def table(t):
@@ -41,7 +40,7 @@ PANEL = {k: 'Art/2DArt/UIImages/InGame/' + v for k, v in {
 # the art behind a group of the tree, by its mastery (PassiveSkillTreeMasteryArt.ActiveEffectImage), saved whole at
 # half size as ../available/img/mastery/<id>.webp
 MASTERY = {r['Id']: r['ActiveEffectImage'] for r in table('PassiveSkillTreeMasteryArt') if r['ActiveEffectImage']}
-ui |= set(TREE.values()) | set(PANEL.values()) | set(MASTERY.values())
+ui = set(TREE.values()) | set(PANEL.values()) | set(MASTERY.values())
 atlas = {}
 if ui:
     index = os.path.join(ROOT, 'files', 'art', 'uiimages1.txt')
