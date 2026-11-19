@@ -252,7 +252,7 @@ $('delBuild').onclick = async () => {
 $('charPanel').onchange = e => {
   const d = e.target.dataset;
   if (d.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e);
-  if (d.act === 'level' || d.act === 'zone') edit((e, b) => { const k = d.act === 'level' ? 'lvl' : 'zone', v = Math.round(+e.target.value); if (v >= 1) b[k] = Math.min(100, v); else delete b[k]; })(e);
+  if (d.act === 'level') edit((e, b) => { const v = Math.round(+e.target.value); if (v >= 1) b.lvl = Math.min(100, v); else delete b.lvl; })(e);
   if (d.quest) edit((e, b) => (b.quests ||= {})[d.quest] = e.target.type === 'checkbox' ? +e.target.checked : +e.target.value)(e);
 };
 $('charPanel').onclick = async e => {

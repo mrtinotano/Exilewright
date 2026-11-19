@@ -779,8 +779,6 @@
  "Press the shortcut again over it to put it in the other slot.": "Appuyez de nouveau sur le raccourci au-dessus pour le mettre dans l'autre emplacement.",
  "Your {0} grants {1}: it is not in the build.": "Votre {0} accorde {1} : ce n'est pas dans le build.",
  "Add": "Ajouter",
- "Area level {0}": "Niveau de la zone {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "Le niveau de la zone où se trouve le personnage : il fixe la pénalité de résistances. Laissez vide pour une zone du niveau du personnage.",
  "Update available: Exilewright {0}": "Mise à jour disponible : Exilewright {0}",
  "Check for updates": "Rechercher des mises à jour",
  "Checking…": "Recherche…",

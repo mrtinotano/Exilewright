@@ -779,8 +779,6 @@
  "Press the shortcut again over it to put it in the other slot.": "もう一度その上でショートカットを押すと、もう一方のスロットに装備します。",
  "Your {0} grants {1}: it is not in the build.": "{0}が{1}を付与しますが、ビルドに入っていません。",
  "Add": "追加",
- "Area level {0}": "エリアレベル {0}",
- "The level of the area the character is in: it sets the resistance penalty. Leave it empty for one of the character's level.": "キャラクターがいるエリアのレベルです。耐性ペナルティが決まります。空欄ならキャラクターのレベルのエリアになります。",
  "Update available: Exilewright {0}": "アップデートがあります: Exilewright {0}",
  "Check for updates": "アップデートを確認",
  "Checking…": "確認中…",
