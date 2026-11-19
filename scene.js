@@ -496,6 +496,8 @@ export function initScene(el, api) {
   // share of the bleeding's remaining damage; Charged Mark: a mark that activates leaves Shocked Ground where it was.
   // note: Corrupted Blood's debuffs share one duration, refreshed (the game times each one)
   const trigReady = {}, fields = { static: [], rift: [] }, crystals = [];
+  // a triggered skill's cooldown and stored uses: false while none is left
+  const spend = T => { if (!T.cooldown) return true; const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); return r.length < (T.uses || 1) && r.push(time + T.cooldown / 1000) > 0; };
   const KINDS = [['base_number_of_living_lightning_allowed', null], ['shocking_rift_number_of_pulses', 'rift'], ['grounding_shocks_pulse_delay_ms', 'static'],
     ['chance_to_trigger_volcanic_eruption', 'erupt'], ['number_of_chains', 'current'], ['triggered_by_support_electrocute_lineage_%', 'fulminate'],
     ['support_mana_flare_%_of_current_mana_consumed', 'flare'], ['spell_minimum_base_cold_damage_as_%_of_intelligence', 'discharge'],
@@ -513,7 +515,7 @@ export function initScene(el, api) {
       if (gone && !gone.length || kind === 'batter' && !has(d, 'armour') || kind === 'crystal' && !has(d, 'bleed')) continue;
       const near4 = kind === 'rift' && dummies.filter(e => !e.dead && !e.inRift && has(e, 'shock') && dist(e.pos, d.pos) <= U.try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy / 10);
       if (near4 && near4.length < U.consume_shock_of_X_enemies_to_trigger_shocking_rift) continue;
-      if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) continue; r.push(time + T.cooldown / 1000); }
+      if (!spend(T)) continue;
       let f = 1, hits = T.hits;
       if (kind === 'fulminate') f = d.max * (ts.skill_specific_stat_description_mode || 0) / 1e4;
       if (kind === 'flare') { const used = me.mana * ts['support_mana_flare_%_of_current_mana_consumed'] / 100; me.mana -= used; f = used / 100; }
@@ -878,7 +880,7 @@ export function initScene(el, api) {
   function slammed(S, c, R) {
     quake(c, R);
     const T = !S.src && S.dmg?.trig?.find(T => T.stats?.['triggered_by_briarpatch_support_on_slam_%']), ts = T?.stats; if (!T) return;
-    if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) return; r.push(time + T.cooldown / 1000); }
+    if (!spend(T)) return;
     const X = asTrig(S, T), dur = sh(X).duration || ts.base_skill_effect_duration / 1000; say(X.label, X.el);
     for (let k = 0; k < (T.support.create_X_briar_thorns_on_slam || 1); k++) hazardAt(X, around(c, R), dur, { arm: ts.briarpatches_arming_time_ms / 1000, early: ts['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'], c: 'poison' });
   }
