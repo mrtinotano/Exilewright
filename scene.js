@@ -26,6 +26,7 @@ function segDist(p, a, b) {
   const vx = b.x - a.x, vz = b.z - a.z, k = clamp(((p.x - a.x) * vx + (p.z - a.z) * vz) / (vx * vx + vz * vz || 1), 0, 1);
   return Math.hypot(p.x - a.x - vx * k, p.z - a.z - vz * k);
 }
+const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
 const NOHIT = new Set(['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
@@ -76,7 +77,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: { life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } }, bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -222,7 +223,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: { life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } }, bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -337,7 +338,7 @@ export function initScene(el, api) {
   // same ratios, less the monster's leech resistance, recovered over one second (faster with leech rate). Only one
   // instance recovers at a time: a new one is added to what is left (note: how the game joins them is not in the data)
   function leech(D, dealt, total, d) {
-    const k = Math.min(1, (GAME.leech_max_damage || Infinity) / (total || 1)) * (1 - (d.stat.leechRes || 0));
+    const k = Math.min(1, GAME.leech_max_damage / (total || 1)) * (1 - (d.stat.leechRes || 0));
     for (const r of ['life', 'mana']) {
       const x = D.leech?.[r], n = x && ((dealt.physical || 0) * x.phys + total * x.all) / 100 * x.more * k;
       if (!(n > 0)) continue;

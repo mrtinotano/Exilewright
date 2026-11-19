@@ -45,7 +45,7 @@ export function enemyStats(m, level, rarity, ally = false) {
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
   let dmg = Math.floor(row(ally ? 'ally_damage' : 'damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
-  const cap = K.monster_max_resistance ?? 75;
+  const cap = K.monster_max_resistance ?? 75, rar = rarityOf(m, rarity);
   return {
     level, life: Math.round((pool - part) * more('life')), es: Math.round(part * more('es')),
     armour: Math.round(row('armour', level) * (m.armour || 0)), evasion: Math.round(row('evasion', level) * (m.evasion || 0)),
@@ -57,8 +57,8 @@ export function enemyStats(m, level, rarity, ally = false) {
     // less its rarity lets slows, curses and exposure work on it
     ail: Math.floor(row('ailment', level)), poise: Math.floor(row('poise', level) * more('poise')),
     // how much less you leech from hitting it (DefaultMonsterStats LeechResistance, permyriad; its own column for rares and uniques)
-    leechRes: row(['rare', 'unique'].includes(rarityOf(m, rarity)) ? 'leech_rare' : 'leech', level) / 1e4,
-    slowEffect: more('slow'), curseEffect: more('curse'), expoEffect: more('exposure'), rarity: rarityOf(m, rarity),
+    leechRes: row(['rare', 'unique'].includes(rar) ? 'leech_rare' : 'leech', level) / 1e4,
+    slowEffect: more('slow'), curseEffect: more('curse'), expoEffect: more('exposure'), rarity: rar,
   };
 }
 
