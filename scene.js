@@ -577,7 +577,7 @@ export function initScene(el, api) {
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
-    grounds.push({ type, x: c.x, z: c.z, r, s: dur || GROUND_TIME[type] || SIM.groundTime, tick: .2, S, decal, dead: false });
+    grounds.push({ type, x: c.x, z: c.z, r, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false });
   }
   function groundFx(g) {
     const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;

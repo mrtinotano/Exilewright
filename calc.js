@@ -694,7 +694,7 @@ export function skill(g, b, treeGear) {
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
   }
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
@@ -704,7 +704,7 @@ export function skill(g, b, treeGear) {
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, finals, own, flags);
   const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
-  out.curse = curse ? curseOf(st, sum) : null;
+  out.curse = curse ? curseOf(st, sum, finals) : null;
   out.mark = mark ? markOf(st) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. Skill effect duration: the increased
@@ -713,7 +713,8 @@ export function skill(g, b, treeGear) {
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null;
   const durMore = Math.max(0, 1 + (v(sum, 'skill_effect_duration_+%') + v(st, 'skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
-  out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
+  out.shape = { chains: (v(st, 'number_of_chains') + v(sum, 'number_of_chains')) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
+    ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms'),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100) };
@@ -768,7 +769,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final'),
-    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final'), poisonTime: scale(['base_poison_duration_+%'], 'damaging_ailment_duration_+%_final'),
+    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final'), poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/),   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),
@@ -844,11 +845,11 @@ function markOf(st) {
 }
 // A curse on an enemy: what its gem's level gives (lower resistances and armour, less damage dealt, slower actions), times
 // "increased Curse effect" of the tree, gear and supports; the scene lowers it on rarer monsters (enemies.js curseEffect)
-function curseOf(st, sum) {
+function curseOf(st, sum, finals = {}) {
   const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, (st[`base_skill_buff_${e}_damage_resistance_%_to_apply`] || 0) + (e !== 'chaos' ? st['base_skill_buff_all_elements_resistance_%_to_apply'] || 0 : 0)]));
   return { res, armour: st['base_skill_buff_total_armour_-_to_grant'] || 0, damage: st['base_skill_buff_damage_+%_final_to_apply'] || 0,
     speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
-    effect: 1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100 };
+    effect: (1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100) * (1 + (finals['support_atziri_curse_effect_+%_final'] || 0) / 100) };   // Atziri's Allure: less
 }
 // self-check: a support's "more" chance multiplies the gem's own, "increased" ones add up
 { const a = ailments({ 'active_skill_ignite_chance_+%_final': 50 }, { 'ignite_chance_+%': 20 }, { 'support_ignition_chance_to_ignite_+%_final': 100 }, []);
