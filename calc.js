@@ -657,8 +657,9 @@ export function skill(g, b, treeGear) {
   const dmgTags = byTotem ? [...tags.filter(x => x !== 'grenade'), 'totem'] : tags;
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
-    * (1 + (inc(sum, 'damage_+%', dmgTags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot))) / 100);
+    * (1 + incOf(t, dot) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
     if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
@@ -697,6 +698,22 @@ export function skill(g, b, treeGear) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
   }
+  // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
+  // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
+  // increased) for "increased"; cap: the support's own most (Dauntless 45%, Burgeon 40%) or most stacks (Arakaali's 40).
+  // The "more damage against a state" calc.js already reads (ailments: vs, consume) are not repeated here
+  const critInc = inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit);
+  out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
+    .filter(([[name, kind, , fl, cond, stat]]) => Array.isArray(cond) && /^(?:(?:Physical|Elemental)?Damage|CritChance|CritMultiplier)$/.test(name) && /^(?:MORE|INC)$/.test(kind)
+      && fl.every(hit) && !/consume_enemy_|damage_\+%_final_(?:vs|against)_\w+_enemies$/.test(stat))
+    .map(([[name, kind, val, , cond0, stat], c]) => {
+      const secs = +stat.match(/past_(\d+)_seconds/)?.[1] || undefined, cond = cond0.map(x => ({ ...x, secs }));   // Pursuit III: "in the past 2 seconds"
+      const types = name === 'PhysicalDamage' ? ['physical'] : name === 'ElementalDamage' ? ['fire', 'cold', 'lightning'] : DMG;
+      // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40) or on the stacks (Culmination's 10)
+      const lim = Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal);
+      return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
+        w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 0, inc: kind === 'INC' };
+    });
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
@@ -736,6 +753,7 @@ export function skill(g, b, treeGear) {
     const all = spell ? both(`base_${r}_leech_from_all_spell_damage_permyriad`) / 100 : 0;
     return phys || all ? { phys, all, more: 1 + v(sum, `base_${r}_leech_amount_+%`) / 100, rate: 1 + v(sum, `base_${r}_leech_rate_+%`) / 100 } : null;
   };
+  out.enrage = v(sum, 'support_rageforged_consumes_X_rage_to_enrage_skill_use');   // Rageforged: Rage spent on a use to enrage it
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;

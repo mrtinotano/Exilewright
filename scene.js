@@ -313,8 +313,9 @@ export function initScene(el, api) {
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
-      crit = Math.random() * 100 < (D.crit || 0); const cm = crit ? 1 + ((D.critBonus || 0) + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;
-      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm; }
+      const W = when(D, d, S);
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit; const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
@@ -326,6 +327,7 @@ export function initScene(el, api) {
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
+    if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
     if (!S.src) { const G = sheet().rage?.gain; gainRage((G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? G?.melee || 0 : 0)); }
     d.by = S; damage(d, total, S);
     if (d.dead) return true;
@@ -333,6 +335,46 @@ export function initScene(el, api) {
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S);
     return true;
+  }
+  // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
+  // enemy's state and life, yours (low life is the game's 35%: DefaultLowStatusThresholdPercent), your charges and
+  // Rage, how far it is, how long you stood still or channelled, what you hit recently. A condition the scene does not
+  // have (combo, blind...) is not met. Each counts its points (stacks, quarter seconds...) up to the support's own most
+  const LOW = (GAME.low_pct ?? 35) / 100;
+  function condN(c, d, S) {
+    const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
+    const is = en ? { LowLife: lifeK(d) <= LOW, FullLife: d.life >= d.max, Frozen: st('freeze'), Bleeding: st('bleed'), Poisoned: st('poison'), Ignited: st('ignite'), Burning: st('ignite'),
+      Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Immobilised: st('immobilised'), ArmourFullyBroken: st('armour'),
+      Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity) }
+      : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
+        FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
+        Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
+        HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || 8), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || 8) };
+    const count = { Rage: S.enraged ? Infinity : me.rage, FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
+      StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0 };
+    let n;
+    if (c.type === 'ActorCondition' || c.type === 'Condition') n = is[v] ? 1 : 0;
+    else if (c.type === 'MultiplierThreshold') n = v in count && (count[v] >= (c.threshold || 0)) ? 1 : 0;
+    else if (c.type === 'Multiplier') n = v in count ? Math.floor(count[v] / (c.div || 1)) : 0;
+    else if (c.type === 'DistanceRamp') {   // [distance in tenths of a metre, share] points, as PoB2 has them (Longshot: "7m+")
+      const x = dist(pp, d.pos) * 10, R = c.ramp; let k = x <= R[0][0] ? R[0][1] : R[R.length - 1][1];
+      for (let i = 1; i < R.length; i++) if (x > R[i - 1][0] && x <= R[i][0]) k = R[i - 1][1] + (R[i][1] - R[i - 1][1]) * (x - R[i - 1][0]) / (R[i][0] - R[i - 1][0]);
+      n = k;
+    } else return 0;
+    return c.neg ? (n ? 0 : 1) : n;
+  }
+  function when(D, d, S) {
+    const W = { dmg: {}, crit: 1, critBonus: 1 };
+    for (const w of D.when || []) {
+      let n = w.cond.reduce((t, c) => t * condN(c, d, S), 1);
+      if (!n) continue;
+      if (w.stacks) n = Math.min(n, w.stacks);
+      const pct = w.cap != null ? Math.min(w.cap, w.val * n) : w.val * n;
+      if (w.what === 'damage') for (const el in w.w) W.dmg[el] = (W.dmg[el] ?? 1) * (1 + pct / 100 * w.w[el]);
+      else if (w.what === 'crit') W.crit *= 1 + pct / 100 * w.w;
+      else W.critBonus *= w.inc ? 1 + pct / Math.max(1, D.critBonus || 100) : 1 + pct / 100;
+    }
+    return W;
   }
   // Leech (keywords.json): a share of the damage the hit dealt (calc.js leech), as if it dealt at most 40,000 with the
   // same ratios, less the monster's leech resistance, recovered over one second (faster with leech rate). Only one
@@ -1147,6 +1189,9 @@ export function initScene(el, api) {
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);
     }
+    // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
+    S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
+    if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { me.rage -= S.dmg.enrage; S.enraged = true; }
     const run = K[S.kind] || K.area;
     run(S);
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
@@ -1837,6 +1882,8 @@ export function initScene(el, api) {
       if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
+    const step = Math.hypot(pp.x - (me.lastX ?? pp.x), pp.z - (me.lastZ ?? pp.z)); me.lastX = pp.x; me.lastZ = pp.z;
+    if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.movedAt = time; }
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor

@@ -157,7 +157,10 @@ def reading(body, val):
             continue
         x = x / float(div.group(1) if div else 1) * float(mult.group(1) if mult else 1)
         flags = sorted({f.lower() for f in re.findall(r'(?:ModFlag|KeywordFlag)\.(\w+)', rest)})
-        yield [name, kind or 'FLAG', int(x) if x == int(x) else round(x, 4), flags, 1 if 'type = ' in rest else 0]
+        # the conditions, as PoB2 tags them: [{type: ActorCondition, actor: enemy, var: Frozen}, {type: Condition, var:
+        # HaveMaximumRage, neg: true}, {type: MultiplierThreshold, var: Rage, threshold: 10}, {type: DistanceRamp, ramp: ...}]
+        cond = [Lua(rest, k.start()).value() for k in re.finditer(r'\{ ?type = ', rest)]
+        yield [name, kind or 'FLAG', int(x) if x == int(x) else round(x, 4), flags, cond or 0]
 
 
 shared = dict(re.findall(STAT_MAP % ('', ''), get('SkillStatMap.lua'), re.M | re.S))
