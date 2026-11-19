@@ -847,5 +847,6 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Einige Unterstützungen, deren Schaden die Spielfenster anders zeigen als ihre Werte: im Spiel gemessen, nicht aus den Dateien gelesen.",
  "Runic Ward": "Runenschutz",
  "{0} shatters": "{0} zerschmettert",
- "{0} returns": "{0} kehrt zurück"
+ "{0} returns": "{0} kehrt zurück",
+ "{0} detonates": "{0} detoniert"
 }

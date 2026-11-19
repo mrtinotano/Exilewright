@@ -134735,7 +134735,174 @@
    },
    "flags": [
     "never_shock"
-   ]
+   ],
+   "parts": {
+    "TriggeredShockingRiftFinalPulsePlayer": {
+     "constant": {},
+     "levels": {
+      "1": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 11
+      },
+      "2": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 15
+      },
+      "3": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 20
+      },
+      "4": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 26
+      },
+      "5": {
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 33
+      },
+      "6": {
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 40
+      },
+      "7": {
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 49
+      },
+      "8": {
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 58
+      },
+      "9": {
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 69
+      },
+      "10": {
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 80
+      },
+      "11": {
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 93
+      },
+      "12": {
+       "spell_minimum_base_lightning_damage": 6,
+       "spell_maximum_base_lightning_damage": 108
+      },
+      "13": {
+       "spell_minimum_base_lightning_damage": 7,
+       "spell_maximum_base_lightning_damage": 124
+      },
+      "14": {
+       "spell_minimum_base_lightning_damage": 7,
+       "spell_maximum_base_lightning_damage": 142
+      },
+      "15": {
+       "spell_minimum_base_lightning_damage": 9,
+       "spell_maximum_base_lightning_damage": 163
+      },
+      "16": {
+       "spell_minimum_base_lightning_damage": 10,
+       "spell_maximum_base_lightning_damage": 185
+      },
+      "17": {
+       "spell_minimum_base_lightning_damage": 11,
+       "spell_maximum_base_lightning_damage": 211
+      },
+      "18": {
+       "spell_minimum_base_lightning_damage": 13,
+       "spell_maximum_base_lightning_damage": 239
+      },
+      "19": {
+       "spell_minimum_base_lightning_damage": 14,
+       "spell_maximum_base_lightning_damage": 271
+      },
+      "20": {
+       "spell_minimum_base_lightning_damage": 16,
+       "spell_maximum_base_lightning_damage": 307
+      },
+      "21": {
+       "spell_minimum_base_lightning_damage": 18,
+       "spell_maximum_base_lightning_damage": 347
+      },
+      "22": {
+       "spell_minimum_base_lightning_damage": 21,
+       "spell_maximum_base_lightning_damage": 392
+      },
+      "23": {
+       "spell_minimum_base_lightning_damage": 23,
+       "spell_maximum_base_lightning_damage": 442
+      },
+      "24": {
+       "spell_minimum_base_lightning_damage": 26,
+       "spell_maximum_base_lightning_damage": 499
+      },
+      "25": {
+       "spell_minimum_base_lightning_damage": 30,
+       "spell_maximum_base_lightning_damage": 563
+      },
+      "26": {
+       "spell_minimum_base_lightning_damage": 33,
+       "spell_maximum_base_lightning_damage": 635
+      },
+      "27": {
+       "spell_minimum_base_lightning_damage": 38,
+       "spell_maximum_base_lightning_damage": 716
+      },
+      "28": {
+       "spell_minimum_base_lightning_damage": 42,
+       "spell_maximum_base_lightning_damage": 807
+      },
+      "29": {
+       "spell_minimum_base_lightning_damage": 48,
+       "spell_maximum_base_lightning_damage": 911
+      },
+      "30": {
+       "spell_minimum_base_lightning_damage": 54,
+       "spell_maximum_base_lightning_damage": 1028
+      },
+      "31": {
+       "spell_minimum_base_lightning_damage": 61,
+       "spell_maximum_base_lightning_damage": 1160
+      },
+      "32": {
+       "spell_minimum_base_lightning_damage": 69,
+       "spell_maximum_base_lightning_damage": 1310
+      },
+      "33": {
+       "spell_minimum_base_lightning_damage": 78,
+       "spell_maximum_base_lightning_damage": 1479
+      },
+      "34": {
+       "spell_minimum_base_lightning_damage": 88,
+       "spell_maximum_base_lightning_damage": 1672
+      },
+      "35": {
+       "spell_minimum_base_lightning_damage": 99,
+       "spell_maximum_base_lightning_damage": 1890
+      },
+      "36": {
+       "spell_minimum_base_lightning_damage": 113,
+       "spell_maximum_base_lightning_damage": 2139
+      },
+      "37": {
+       "spell_minimum_base_lightning_damage": 127,
+       "spell_maximum_base_lightning_damage": 2422
+      },
+      "38": {
+       "spell_minimum_base_lightning_damage": 144,
+       "spell_maximum_base_lightning_damage": 2744
+      },
+      "39": {
+       "spell_minimum_base_lightning_damage": 164,
+       "spell_maximum_base_lightning_damage": 3112
+      },
+      "40": {
+       "spell_minimum_base_lightning_damage": 186,
+       "spell_maximum_base_lightning_damage": 3531
+      }
+     }
+    }
+   }
   },
   "TriggeredCraterPlayer": {
    "name": "Crater",
@@ -136447,7 +136614,260 @@
     }
    },
    "radius": null,
-   "flags": null
+   "flags": null,
+   "parts": {
+    "TriggeredPoisonSporesExplosion": {
+     "constant": {
+      "base_chance_to_poison_on_hit_%": 100,
+      "base_skill_detonation_time": 15000,
+      "active_skill_base_area_of_effect_radius": 10,
+      "toxic_pustule_max_burst_damage_+%_final_from_stored_poison": 300,
+      "toxic_pustule_max_additional_burst_base_radius_+": 15
+     },
+     "levels": {
+      "1": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 17,
+       "_base_multiplier": 3800
+      },
+      "2": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 31,
+       "_base_multiplier": 4200
+      },
+      "3": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 5,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 53,
+       "_base_multiplier": 4600
+      },
+      "4": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 9,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 4,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 85,
+       "_base_multiplier": 5000
+      },
+      "5": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 12,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 6,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 127,
+       "_base_multiplier": 5400
+      },
+      "6": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 19,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 8,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 182,
+       "_base_multiplier": 5800
+      },
+      "7": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 26,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 12,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 258,
+       "_base_multiplier": 6200
+      },
+      "8": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 36,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 17,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 359,
+       "_base_multiplier": 6600
+      },
+      "9": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 49,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 24,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 491,
+       "_base_multiplier": 6900
+      },
+      "10": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 66,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 33,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 667,
+       "_base_multiplier": 7300
+      },
+      "11": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 89,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 43,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 895,
+       "_base_multiplier": 7600
+      },
+      "12": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 119,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 57,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1190,
+       "_base_multiplier": 8000
+      },
+      "13": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 157,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 76,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 1574,
+       "_base_multiplier": 8400
+      },
+      "14": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 206,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 99,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2064,
+       "_base_multiplier": 8800
+      },
+      "15": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 270,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 129,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 2697,
+       "_base_multiplier": 9300
+      },
+      "16": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 351,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 168,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 3512,
+       "_base_multiplier": 9800
+      },
+      "17": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 455,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 218,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 4552,
+       "_base_multiplier": 10200
+      },
+      "18": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 588,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 282,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 5872,
+       "_base_multiplier": 10800
+      },
+      "19": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 755,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 363,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 7555,
+       "_base_multiplier": 11300
+      },
+      "20": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 969,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 466,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 9691,
+       "_base_multiplier": 11900
+      },
+      "21": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1032,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 495,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 10308,
+       "_base_multiplier": 12400
+      },
+      "22": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1141,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 547,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 11402,
+       "_base_multiplier": 13100
+      },
+      "23": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1324,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 636,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 13248,
+       "_base_multiplier": 13700
+      },
+      "24": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1555,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 746,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 15550,
+       "_base_multiplier": 14400
+      },
+      "25": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1843,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 884,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 18423,
+       "_base_multiplier": 15100
+      },
+      "26": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 1971,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 946,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 19703,
+       "_base_multiplier": 15900
+      },
+      "27": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2107,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1012,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 21065,
+       "_base_multiplier": 16700
+      },
+      "28": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2252,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1081,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 22513,
+       "_base_multiplier": 17500
+      },
+      "29": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2405,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1154,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 24053,
+       "_base_multiplier": 18400
+      },
+      "30": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2568,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1233,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 25691,
+       "_base_multiplier": 19300
+      },
+      "31": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2721,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1305,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 27203,
+       "_base_multiplier": 20300
+      },
+      "32": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 2880,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1382,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 28804,
+       "_base_multiplier": 21300
+      },
+      "33": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3049,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1464,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 30496,
+       "_base_multiplier": 22300
+      },
+      "34": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3229,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1549,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 32285,
+       "_base_multiplier": 23500
+      },
+      "35": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3417,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1640,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 34180,
+       "_base_multiplier": 24600
+      },
+      "36": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3619,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1736,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 36179,
+       "_base_multiplier": 25900
+      },
+      "37": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 3829,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1838,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 38296,
+       "_base_multiplier": 27200
+      },
+      "38": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4053,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 1945,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 40530,
+       "_base_multiplier": 28500
+      },
+      "39": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4290,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2060,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 42896,
+       "_base_multiplier": 29900
+      },
+      "40": {
+       "toxic_pustule_burst_1%_more_damage_per_x_stored_poison": 4540,
+       "toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty": 2178,
+       "toxic_pustule_burst_base_radius_+1_per_x_stored_poison": 45395,
+       "_base_multiplier": 31400
+      }
+     }
+    }
+   }
   },
   "TriggeredDeadlyResolvePlayer": {
    "name": "Deadly Resolve",
@@ -137075,7 +137495,296 @@
     }
    },
    "radius": null,
-   "flags": null
+   "flags": null,
+   "parts": {
+    "TriggeredEmpoweredSparkColdInfusedPlayer": {
+     "constant": {
+      "_spell_crit": 200
+     },
+     "levels": {
+      "1": {
+       "base_number_of_projectiles": 12,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 7,
+       "spell_minimum_base_cold_damage": 5,
+       "spell_maximum_base_cold_damage": 7
+      },
+      "2": {
+       "base_number_of_projectiles": 12,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 9,
+       "spell_minimum_base_cold_damage": 7,
+       "spell_maximum_base_cold_damage": 10
+      },
+      "3": {
+       "base_number_of_projectiles": 12,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 11,
+       "spell_minimum_base_cold_damage": 9,
+       "spell_maximum_base_cold_damage": 14
+      },
+      "4": {
+       "base_number_of_projectiles": 12,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 14,
+       "spell_minimum_base_cold_damage": 12,
+       "spell_maximum_base_cold_damage": 17
+      },
+      "5": {
+       "base_number_of_projectiles": 13,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 17,
+       "spell_minimum_base_cold_damage": 15,
+       "spell_maximum_base_cold_damage": 22
+      },
+      "6": {
+       "base_number_of_projectiles": 13,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 21,
+       "spell_minimum_base_cold_damage": 18,
+       "spell_maximum_base_cold_damage": 27
+      },
+      "7": {
+       "base_number_of_projectiles": 13,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 25,
+       "spell_minimum_base_cold_damage": 21,
+       "spell_maximum_base_cold_damage": 32
+      },
+      "8": {
+       "base_number_of_projectiles": 13,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 30,
+       "spell_minimum_base_cold_damage": 25,
+       "spell_maximum_base_cold_damage": 38
+      },
+      "9": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 35,
+       "spell_minimum_base_cold_damage": 30,
+       "spell_maximum_base_cold_damage": 44
+      },
+      "10": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 41,
+       "spell_minimum_base_cold_damage": 34,
+       "spell_maximum_base_cold_damage": 52
+      },
+      "11": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 47,
+       "spell_minimum_base_cold_damage": 40,
+       "spell_maximum_base_cold_damage": 60
+      },
+      "12": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 54,
+       "spell_minimum_base_cold_damage": 46,
+       "spell_maximum_base_cold_damage": 68
+      },
+      "13": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 62,
+       "spell_minimum_base_cold_damage": 52,
+       "spell_maximum_base_cold_damage": 78
+      },
+      "14": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 70,
+       "spell_minimum_base_cold_damage": 59,
+       "spell_maximum_base_cold_damage": 89
+      },
+      "15": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 80,
+       "spell_minimum_base_cold_damage": 67,
+       "spell_maximum_base_cold_damage": 101
+      },
+      "16": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 90,
+       "spell_minimum_base_cold_damage": 76,
+       "spell_maximum_base_cold_damage": 114
+      },
+      "17": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 102,
+       "spell_minimum_base_cold_damage": 86,
+       "spell_maximum_base_cold_damage": 129
+      },
+      "18": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 6,
+       "spell_maximum_base_lightning_damage": 115,
+       "spell_minimum_base_cold_damage": 96,
+       "spell_maximum_base_cold_damage": 145
+      },
+      "19": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 7,
+       "spell_maximum_base_lightning_damage": 129,
+       "spell_minimum_base_cold_damage": 108,
+       "spell_maximum_base_cold_damage": 163
+      },
+      "20": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 8,
+       "spell_maximum_base_lightning_damage": 144,
+       "spell_minimum_base_cold_damage": 122,
+       "spell_maximum_base_cold_damage": 182
+      },
+      "21": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 9,
+       "spell_maximum_base_lightning_damage": 162,
+       "spell_minimum_base_cold_damage": 136,
+       "spell_maximum_base_cold_damage": 204
+      },
+      "22": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 10,
+       "spell_maximum_base_lightning_damage": 181,
+       "spell_minimum_base_cold_damage": 152,
+       "spell_maximum_base_cold_damage": 228
+      },
+      "23": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 11,
+       "spell_maximum_base_lightning_damage": 202,
+       "spell_minimum_base_cold_damage": 170,
+       "spell_maximum_base_cold_damage": 255
+      },
+      "24": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 12,
+       "spell_maximum_base_lightning_damage": 226,
+       "spell_minimum_base_cold_damage": 190,
+       "spell_maximum_base_cold_damage": 285
+      },
+      "25": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 13,
+       "spell_maximum_base_lightning_damage": 252,
+       "spell_minimum_base_cold_damage": 212,
+       "spell_maximum_base_cold_damage": 318
+      },
+      "26": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 15,
+       "spell_maximum_base_lightning_damage": 281,
+       "spell_minimum_base_cold_damage": 237,
+       "spell_maximum_base_cold_damage": 355
+      },
+      "27": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 16,
+       "spell_maximum_base_lightning_damage": 313,
+       "spell_minimum_base_cold_damage": 264,
+       "spell_maximum_base_cold_damage": 396
+      },
+      "28": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 18,
+       "spell_maximum_base_lightning_damage": 349,
+       "spell_minimum_base_cold_damage": 294,
+       "spell_maximum_base_cold_damage": 441
+      },
+      "29": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 20,
+       "spell_maximum_base_lightning_damage": 389,
+       "spell_minimum_base_cold_damage": 328,
+       "spell_maximum_base_cold_damage": 492
+      },
+      "30": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 23,
+       "spell_maximum_base_lightning_damage": 434,
+       "spell_minimum_base_cold_damage": 365,
+       "spell_maximum_base_cold_damage": 548
+      },
+      "31": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 25,
+       "spell_maximum_base_lightning_damage": 484,
+       "spell_minimum_base_cold_damage": 407,
+       "spell_maximum_base_cold_damage": 611
+      },
+      "32": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 28,
+       "spell_maximum_base_lightning_damage": 539,
+       "spell_minimum_base_cold_damage": 454,
+       "spell_maximum_base_cold_damage": 681
+      },
+      "33": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 32,
+       "spell_maximum_base_lightning_damage": 601,
+       "spell_minimum_base_cold_damage": 506,
+       "spell_maximum_base_cold_damage": 760
+      },
+      "34": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 35,
+       "spell_maximum_base_lightning_damage": 671,
+       "spell_minimum_base_cold_damage": 565,
+       "spell_maximum_base_cold_damage": 847
+      },
+      "35": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 39,
+       "spell_maximum_base_lightning_damage": 748,
+       "spell_minimum_base_cold_damage": 630,
+       "spell_maximum_base_cold_damage": 945
+      },
+      "36": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 44,
+       "spell_maximum_base_lightning_damage": 835,
+       "spell_minimum_base_cold_damage": 703,
+       "spell_maximum_base_cold_damage": 1054
+      },
+      "37": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 49,
+       "spell_maximum_base_lightning_damage": 932,
+       "spell_minimum_base_cold_damage": 785,
+       "spell_maximum_base_cold_damage": 1177
+      },
+      "38": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 55,
+       "spell_maximum_base_lightning_damage": 1041,
+       "spell_minimum_base_cold_damage": 876,
+       "spell_maximum_base_cold_damage": 1314
+      },
+      "39": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 61,
+       "spell_maximum_base_lightning_damage": 1163,
+       "spell_minimum_base_cold_damage": 979,
+       "spell_maximum_base_cold_damage": 1469
+      },
+      "40": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 68,
+       "spell_maximum_base_lightning_damage": 1300,
+       "spell_minimum_base_cold_damage": 1094,
+       "spell_maximum_base_cold_damage": 1642
+      }
+     }
+    }
+   }
   },
   "TriggeredEmpoweredSparkPlayerTwo": {
    "name": "Empowered Sparks",
@@ -137314,7 +138023,296 @@
     }
    },
    "radius": null,
-   "flags": null
+   "flags": null,
+   "parts": {
+    "TriggeredEmpoweredSparkColdInfusedPlayerTwo": {
+     "constant": {
+      "_spell_crit": 200
+     },
+     "levels": {
+      "1": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 7,
+       "spell_minimum_base_cold_damage": 5,
+       "spell_maximum_base_cold_damage": 7
+      },
+      "2": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 9,
+       "spell_minimum_base_cold_damage": 7,
+       "spell_maximum_base_cold_damage": 10
+      },
+      "3": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 11,
+       "spell_minimum_base_cold_damage": 9,
+       "spell_maximum_base_cold_damage": 14
+      },
+      "4": {
+       "base_number_of_projectiles": 14,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 14,
+       "spell_minimum_base_cold_damage": 12,
+       "spell_maximum_base_cold_damage": 17
+      },
+      "5": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 17,
+       "spell_minimum_base_cold_damage": 15,
+       "spell_maximum_base_cold_damage": 22
+      },
+      "6": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 21,
+       "spell_minimum_base_cold_damage": 18,
+       "spell_maximum_base_cold_damage": 27
+      },
+      "7": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 25,
+       "spell_minimum_base_cold_damage": 21,
+       "spell_maximum_base_cold_damage": 32
+      },
+      "8": {
+       "base_number_of_projectiles": 15,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 30,
+       "spell_minimum_base_cold_damage": 25,
+       "spell_maximum_base_cold_damage": 38
+      },
+      "9": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 35,
+       "spell_minimum_base_cold_damage": 30,
+       "spell_maximum_base_cold_damage": 44
+      },
+      "10": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 41,
+       "spell_minimum_base_cold_damage": 34,
+       "spell_maximum_base_cold_damage": 52
+      },
+      "11": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 47,
+       "spell_minimum_base_cold_damage": 40,
+       "spell_maximum_base_cold_damage": 60
+      },
+      "12": {
+       "base_number_of_projectiles": 16,
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 54,
+       "spell_minimum_base_cold_damage": 46,
+       "spell_maximum_base_cold_damage": 68
+      },
+      "13": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 62,
+       "spell_minimum_base_cold_damage": 52,
+       "spell_maximum_base_cold_damage": 78
+      },
+      "14": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 70,
+       "spell_minimum_base_cold_damage": 59,
+       "spell_maximum_base_cold_damage": 89
+      },
+      "15": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 80,
+       "spell_minimum_base_cold_damage": 67,
+       "spell_maximum_base_cold_damage": 101
+      },
+      "16": {
+       "base_number_of_projectiles": 17,
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 90,
+       "spell_minimum_base_cold_damage": 76,
+       "spell_maximum_base_cold_damage": 114
+      },
+      "17": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 102,
+       "spell_minimum_base_cold_damage": 86,
+       "spell_maximum_base_cold_damage": 129
+      },
+      "18": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 6,
+       "spell_maximum_base_lightning_damage": 115,
+       "spell_minimum_base_cold_damage": 96,
+       "spell_maximum_base_cold_damage": 145
+      },
+      "19": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 7,
+       "spell_maximum_base_lightning_damage": 129,
+       "spell_minimum_base_cold_damage": 108,
+       "spell_maximum_base_cold_damage": 163
+      },
+      "20": {
+       "base_number_of_projectiles": 18,
+       "spell_minimum_base_lightning_damage": 8,
+       "spell_maximum_base_lightning_damage": 144,
+       "spell_minimum_base_cold_damage": 122,
+       "spell_maximum_base_cold_damage": 182
+      },
+      "21": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 9,
+       "spell_maximum_base_lightning_damage": 162,
+       "spell_minimum_base_cold_damage": 136,
+       "spell_maximum_base_cold_damage": 204
+      },
+      "22": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 10,
+       "spell_maximum_base_lightning_damage": 181,
+       "spell_minimum_base_cold_damage": 152,
+       "spell_maximum_base_cold_damage": 228
+      },
+      "23": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 11,
+       "spell_maximum_base_lightning_damage": 202,
+       "spell_minimum_base_cold_damage": 170,
+       "spell_maximum_base_cold_damage": 255
+      },
+      "24": {
+       "base_number_of_projectiles": 19,
+       "spell_minimum_base_lightning_damage": 12,
+       "spell_maximum_base_lightning_damage": 226,
+       "spell_minimum_base_cold_damage": 190,
+       "spell_maximum_base_cold_damage": 285
+      },
+      "25": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 13,
+       "spell_maximum_base_lightning_damage": 252,
+       "spell_minimum_base_cold_damage": 212,
+       "spell_maximum_base_cold_damage": 318
+      },
+      "26": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 15,
+       "spell_maximum_base_lightning_damage": 281,
+       "spell_minimum_base_cold_damage": 237,
+       "spell_maximum_base_cold_damage": 355
+      },
+      "27": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 16,
+       "spell_maximum_base_lightning_damage": 313,
+       "spell_minimum_base_cold_damage": 264,
+       "spell_maximum_base_cold_damage": 396
+      },
+      "28": {
+       "base_number_of_projectiles": 20,
+       "spell_minimum_base_lightning_damage": 18,
+       "spell_maximum_base_lightning_damage": 349,
+       "spell_minimum_base_cold_damage": 294,
+       "spell_maximum_base_cold_damage": 441
+      },
+      "29": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 20,
+       "spell_maximum_base_lightning_damage": 389,
+       "spell_minimum_base_cold_damage": 328,
+       "spell_maximum_base_cold_damage": 492
+      },
+      "30": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 23,
+       "spell_maximum_base_lightning_damage": 434,
+       "spell_minimum_base_cold_damage": 365,
+       "spell_maximum_base_cold_damage": 548
+      },
+      "31": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 25,
+       "spell_maximum_base_lightning_damage": 484,
+       "spell_minimum_base_cold_damage": 407,
+       "spell_maximum_base_cold_damage": 611
+      },
+      "32": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 28,
+       "spell_maximum_base_lightning_damage": 539,
+       "spell_minimum_base_cold_damage": 454,
+       "spell_maximum_base_cold_damage": 681
+      },
+      "33": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 32,
+       "spell_maximum_base_lightning_damage": 601,
+       "spell_minimum_base_cold_damage": 506,
+       "spell_maximum_base_cold_damage": 760
+      },
+      "34": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 35,
+       "spell_maximum_base_lightning_damage": 671,
+       "spell_minimum_base_cold_damage": 565,
+       "spell_maximum_base_cold_damage": 847
+      },
+      "35": {
+       "base_number_of_projectiles": 21,
+       "spell_minimum_base_lightning_damage": 39,
+       "spell_maximum_base_lightning_damage": 748,
+       "spell_minimum_base_cold_damage": 630,
+       "spell_maximum_base_cold_damage": 945
+      },
+      "36": {
+       "base_number_of_projectiles": 22,
+       "spell_minimum_base_lightning_damage": 44,
+       "spell_maximum_base_lightning_damage": 835,
+       "spell_minimum_base_cold_damage": 703,
+       "spell_maximum_base_cold_damage": 1054
+      },
+      "37": {
+       "base_number_of_projectiles": 22,
+       "spell_minimum_base_lightning_damage": 49,
+       "spell_maximum_base_lightning_damage": 932,
+       "spell_minimum_base_cold_damage": 785,
+       "spell_maximum_base_cold_damage": 1177
+      },
+      "38": {
+       "base_number_of_projectiles": 22,
+       "spell_minimum_base_lightning_damage": 55,
+       "spell_maximum_base_lightning_damage": 1041,
+       "spell_minimum_base_cold_damage": 876,
+       "spell_maximum_base_cold_damage": 1314
+      },
+      "39": {
+       "base_number_of_projectiles": 22,
+       "spell_minimum_base_lightning_damage": 61,
+       "spell_maximum_base_lightning_damage": 1163,
+       "spell_minimum_base_cold_damage": 979,
+       "spell_maximum_base_cold_damage": 1469
+      },
+      "40": {
+       "base_number_of_projectiles": 22,
+       "spell_minimum_base_lightning_damage": 68,
+       "spell_maximum_base_lightning_damage": 1300,
+       "spell_minimum_base_cold_damage": 1094,
+       "spell_maximum_base_cold_damage": 1642
+      }
+     }
+    }
+   }
   },
   "TriggeredCatalysingDischargePlayer": {
    "name": "Catalysing Discharge",
@@ -137439,7 +138437,510 @@
     "39": 20,
     "40": 20
    },
-   "flags": null
+   "flags": null,
+   "parts": {
+    "TriggeredCatalysingDischargeFirePlayer": {
+     "constant": {
+      "_spell_crit": 600
+     },
+     "levels": {
+      "1": {
+       "spell_minimum_base_fire_damage": 7,
+       "spell_maximum_base_fire_damage": 10
+      },
+      "2": {
+       "spell_minimum_base_fire_damage": 9,
+       "spell_maximum_base_fire_damage": 13
+      },
+      "3": {
+       "spell_minimum_base_fire_damage": 12,
+       "spell_maximum_base_fire_damage": 18
+      },
+      "4": {
+       "spell_minimum_base_fire_damage": 16,
+       "spell_maximum_base_fire_damage": 23
+      },
+      "5": {
+       "spell_minimum_base_fire_damage": 20,
+       "spell_maximum_base_fire_damage": 30
+      },
+      "6": {
+       "spell_minimum_base_fire_damage": 24,
+       "spell_maximum_base_fire_damage": 37
+      },
+      "7": {
+       "spell_minimum_base_fire_damage": 30,
+       "spell_maximum_base_fire_damage": 45
+      },
+      "8": {
+       "spell_minimum_base_fire_damage": 36,
+       "spell_maximum_base_fire_damage": 53
+      },
+      "9": {
+       "spell_minimum_base_fire_damage": 42,
+       "spell_maximum_base_fire_damage": 63
+      },
+      "10": {
+       "spell_minimum_base_fire_damage": 50,
+       "spell_maximum_base_fire_damage": 75
+      },
+      "11": {
+       "spell_minimum_base_fire_damage": 58,
+       "spell_maximum_base_fire_damage": 88
+      },
+      "12": {
+       "spell_minimum_base_fire_damage": 68,
+       "spell_maximum_base_fire_damage": 102
+      },
+      "13": {
+       "spell_minimum_base_fire_damage": 79,
+       "spell_maximum_base_fire_damage": 118
+      },
+      "14": {
+       "spell_minimum_base_fire_damage": 91,
+       "spell_maximum_base_fire_damage": 137
+      },
+      "15": {
+       "spell_minimum_base_fire_damage": 105,
+       "spell_maximum_base_fire_damage": 158
+      },
+      "16": {
+       "spell_minimum_base_fire_damage": 121,
+       "spell_maximum_base_fire_damage": 182
+      },
+      "17": {
+       "spell_minimum_base_fire_damage": 139,
+       "spell_maximum_base_fire_damage": 208
+      },
+      "18": {
+       "spell_minimum_base_fire_damage": 159,
+       "spell_maximum_base_fire_damage": 239
+      },
+      "19": {
+       "spell_minimum_base_fire_damage": 182,
+       "spell_maximum_base_fire_damage": 274
+      },
+      "20": {
+       "spell_minimum_base_fire_damage": 209,
+       "spell_maximum_base_fire_damage": 313
+      },
+      "21": {
+       "spell_minimum_base_fire_damage": 239,
+       "spell_maximum_base_fire_damage": 358
+      },
+      "22": {
+       "spell_minimum_base_fire_damage": 273,
+       "spell_maximum_base_fire_damage": 409
+      },
+      "23": {
+       "spell_minimum_base_fire_damage": 311,
+       "spell_maximum_base_fire_damage": 467
+      },
+      "24": {
+       "spell_minimum_base_fire_damage": 356,
+       "spell_maximum_base_fire_damage": 533
+      },
+      "25": {
+       "spell_minimum_base_fire_damage": 406,
+       "spell_maximum_base_fire_damage": 609
+      },
+      "26": {
+       "spell_minimum_base_fire_damage": 464,
+       "spell_maximum_base_fire_damage": 696
+      },
+      "27": {
+       "spell_minimum_base_fire_damage": 530,
+       "spell_maximum_base_fire_damage": 795
+      },
+      "28": {
+       "spell_minimum_base_fire_damage": 606,
+       "spell_maximum_base_fire_damage": 909
+      },
+      "29": {
+       "spell_minimum_base_fire_damage": 693,
+       "spell_maximum_base_fire_damage": 1039
+      },
+      "30": {
+       "spell_minimum_base_fire_damage": 793,
+       "spell_maximum_base_fire_damage": 1189
+      },
+      "31": {
+       "spell_minimum_base_fire_damage": 908,
+       "spell_maximum_base_fire_damage": 1361
+      },
+      "32": {
+       "spell_minimum_base_fire_damage": 1040,
+       "spell_maximum_base_fire_damage": 1560
+      },
+      "33": {
+       "spell_minimum_base_fire_damage": 1192,
+       "spell_maximum_base_fire_damage": 1789
+      },
+      "34": {
+       "spell_minimum_base_fire_damage": 1368,
+       "spell_maximum_base_fire_damage": 2053
+      },
+      "35": {
+       "spell_minimum_base_fire_damage": 1572,
+       "spell_maximum_base_fire_damage": 2358
+      },
+      "36": {
+       "spell_minimum_base_fire_damage": 1807,
+       "spell_maximum_base_fire_damage": 2711
+      },
+      "37": {
+       "spell_minimum_base_fire_damage": 2080,
+       "spell_maximum_base_fire_damage": 3120
+      },
+      "38": {
+       "spell_minimum_base_fire_damage": 2397,
+       "spell_maximum_base_fire_damage": 3595
+      },
+      "39": {
+       "spell_minimum_base_fire_damage": 2764,
+       "spell_maximum_base_fire_damage": 4146
+      },
+      "40": {
+       "spell_minimum_base_fire_damage": 3192,
+       "spell_maximum_base_fire_damage": 4788
+      }
+     }
+    },
+    "TriggeredCatalysingDischargeLightningPlayer": {
+     "constant": {
+      "_spell_crit": 900
+     },
+     "levels": {
+      "1": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 16
+      },
+      "2": {
+       "spell_minimum_base_lightning_damage": 1,
+       "spell_maximum_base_lightning_damage": 21
+      },
+      "3": {
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 29
+      },
+      "4": {
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 37
+      },
+      "5": {
+       "spell_minimum_base_lightning_damage": 2,
+       "spell_maximum_base_lightning_damage": 47
+      },
+      "6": {
+       "spell_minimum_base_lightning_damage": 3,
+       "spell_maximum_base_lightning_damage": 58
+      },
+      "7": {
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 71
+      },
+      "8": {
+       "spell_minimum_base_lightning_damage": 4,
+       "spell_maximum_base_lightning_damage": 85
+      },
+      "9": {
+       "spell_minimum_base_lightning_damage": 5,
+       "spell_maximum_base_lightning_damage": 101
+      },
+      "10": {
+       "spell_minimum_base_lightning_damage": 6,
+       "spell_maximum_base_lightning_damage": 118
+      },
+      "11": {
+       "spell_minimum_base_lightning_damage": 7,
+       "spell_maximum_base_lightning_damage": 139
+      },
+      "12": {
+       "spell_minimum_base_lightning_damage": 9,
+       "spell_maximum_base_lightning_damage": 162
+      },
+      "13": {
+       "spell_minimum_base_lightning_damage": 10,
+       "spell_maximum_base_lightning_damage": 188
+      },
+      "14": {
+       "spell_minimum_base_lightning_damage": 11,
+       "spell_maximum_base_lightning_damage": 217
+      },
+      "15": {
+       "spell_minimum_base_lightning_damage": 13,
+       "spell_maximum_base_lightning_damage": 250
+      },
+      "16": {
+       "spell_minimum_base_lightning_damage": 15,
+       "spell_maximum_base_lightning_damage": 288
+      },
+      "17": {
+       "spell_minimum_base_lightning_damage": 17,
+       "spell_maximum_base_lightning_damage": 330
+      },
+      "18": {
+       "spell_minimum_base_lightning_damage": 20,
+       "spell_maximum_base_lightning_damage": 378
+      },
+      "19": {
+       "spell_minimum_base_lightning_damage": 23,
+       "spell_maximum_base_lightning_damage": 433
+      },
+      "20": {
+       "spell_minimum_base_lightning_damage": 26,
+       "spell_maximum_base_lightning_damage": 496
+      },
+      "21": {
+       "spell_minimum_base_lightning_damage": 30,
+       "spell_maximum_base_lightning_damage": 567
+      },
+      "22": {
+       "spell_minimum_base_lightning_damage": 34,
+       "spell_maximum_base_lightning_damage": 647
+      },
+      "23": {
+       "spell_minimum_base_lightning_damage": 39,
+       "spell_maximum_base_lightning_damage": 739
+      },
+      "24": {
+       "spell_minimum_base_lightning_damage": 44,
+       "spell_maximum_base_lightning_damage": 844
+      },
+      "25": {
+       "spell_minimum_base_lightning_damage": 51,
+       "spell_maximum_base_lightning_damage": 964
+      },
+      "26": {
+       "spell_minimum_base_lightning_damage": 58,
+       "spell_maximum_base_lightning_damage": 1102
+      },
+      "27": {
+       "spell_minimum_base_lightning_damage": 66,
+       "spell_maximum_base_lightning_damage": 1259
+      },
+      "28": {
+       "spell_minimum_base_lightning_damage": 76,
+       "spell_maximum_base_lightning_damage": 1439
+      },
+      "29": {
+       "spell_minimum_base_lightning_damage": 87,
+       "spell_maximum_base_lightning_damage": 1645
+      },
+      "30": {
+       "spell_minimum_base_lightning_damage": 99,
+       "spell_maximum_base_lightning_damage": 1883
+      },
+      "31": {
+       "spell_minimum_base_lightning_damage": 113,
+       "spell_maximum_base_lightning_damage": 2155
+      },
+      "32": {
+       "spell_minimum_base_lightning_damage": 130,
+       "spell_maximum_base_lightning_damage": 2470
+      },
+      "33": {
+       "spell_minimum_base_lightning_damage": 149,
+       "spell_maximum_base_lightning_damage": 2832
+      },
+      "34": {
+       "spell_minimum_base_lightning_damage": 171,
+       "spell_maximum_base_lightning_damage": 3250
+      },
+      "35": {
+       "spell_minimum_base_lightning_damage": 196,
+       "spell_maximum_base_lightning_damage": 3733
+      },
+      "36": {
+       "spell_minimum_base_lightning_damage": 226,
+       "spell_maximum_base_lightning_damage": 4292
+      },
+      "37": {
+       "spell_minimum_base_lightning_damage": 260,
+       "spell_maximum_base_lightning_damage": 4940
+      },
+      "38": {
+       "spell_minimum_base_lightning_damage": 300,
+       "spell_maximum_base_lightning_damage": 5692
+      },
+      "39": {
+       "spell_minimum_base_lightning_damage": 346,
+       "spell_maximum_base_lightning_damage": 6565
+      },
+      "40": {
+       "spell_minimum_base_lightning_damage": 399,
+       "spell_maximum_base_lightning_damage": 7581
+      }
+     }
+    },
+    "TriggeredCatalysingDischargeColdPlayer": {
+     "constant": {
+      "_spell_crit": 1100
+     },
+     "levels": {
+      "1": {
+       "spell_minimum_base_cold_damage": 6,
+       "spell_maximum_base_cold_damage": 9
+      },
+      "2": {
+       "spell_minimum_base_cold_damage": 8,
+       "spell_maximum_base_cold_damage": 12
+      },
+      "3": {
+       "spell_minimum_base_cold_damage": 11,
+       "spell_maximum_base_cold_damage": 16
+      },
+      "4": {
+       "spell_minimum_base_cold_damage": 14,
+       "spell_maximum_base_cold_damage": 21
+      },
+      "5": {
+       "spell_minimum_base_cold_damage": 18,
+       "spell_maximum_base_cold_damage": 26
+      },
+      "6": {
+       "spell_minimum_base_cold_damage": 22,
+       "spell_maximum_base_cold_damage": 33
+      },
+      "7": {
+       "spell_minimum_base_cold_damage": 27,
+       "spell_maximum_base_cold_damage": 40
+      },
+      "8": {
+       "spell_minimum_base_cold_damage": 32,
+       "spell_maximum_base_cold_damage": 48
+      },
+      "9": {
+       "spell_minimum_base_cold_damage": 38,
+       "spell_maximum_base_cold_damage": 57
+      },
+      "10": {
+       "spell_minimum_base_cold_damage": 45,
+       "spell_maximum_base_cold_damage": 67
+      },
+      "11": {
+       "spell_minimum_base_cold_damage": 52,
+       "spell_maximum_base_cold_damage": 78
+      },
+      "12": {
+       "spell_minimum_base_cold_damage": 61,
+       "spell_maximum_base_cold_damage": 91
+      },
+      "13": {
+       "spell_minimum_base_cold_damage": 70,
+       "spell_maximum_base_cold_damage": 106
+      },
+      "14": {
+       "spell_minimum_base_cold_damage": 82,
+       "spell_maximum_base_cold_damage": 122
+      },
+      "15": {
+       "spell_minimum_base_cold_damage": 94,
+       "spell_maximum_base_cold_damage": 141
+      },
+      "16": {
+       "spell_minimum_base_cold_damage": 108,
+       "spell_maximum_base_cold_damage": 162
+      },
+      "17": {
+       "spell_minimum_base_cold_damage": 124,
+       "spell_maximum_base_cold_damage": 186
+      },
+      "18": {
+       "spell_minimum_base_cold_damage": 142,
+       "spell_maximum_base_cold_damage": 213
+      },
+      "19": {
+       "spell_minimum_base_cold_damage": 163,
+       "spell_maximum_base_cold_damage": 244
+      },
+      "20": {
+       "spell_minimum_base_cold_damage": 186,
+       "spell_maximum_base_cold_damage": 279
+      },
+      "21": {
+       "spell_minimum_base_cold_damage": 213,
+       "spell_maximum_base_cold_damage": 319
+      },
+      "22": {
+       "spell_minimum_base_cold_damage": 243,
+       "spell_maximum_base_cold_damage": 365
+      },
+      "23": {
+       "spell_minimum_base_cold_damage": 278,
+       "spell_maximum_base_cold_damage": 417
+      },
+      "24": {
+       "spell_minimum_base_cold_damage": 317,
+       "spell_maximum_base_cold_damage": 476
+      },
+      "25": {
+       "spell_minimum_base_cold_damage": 363,
+       "spell_maximum_base_cold_damage": 544
+      },
+      "26": {
+       "spell_minimum_base_cold_damage": 414,
+       "spell_maximum_base_cold_damage": 621
+      },
+      "27": {
+       "spell_minimum_base_cold_damage": 473,
+       "spell_maximum_base_cold_damage": 710
+      },
+      "28": {
+       "spell_minimum_base_cold_damage": 541,
+       "spell_maximum_base_cold_damage": 811
+      },
+      "29": {
+       "spell_minimum_base_cold_damage": 619,
+       "spell_maximum_base_cold_damage": 928
+      },
+      "30": {
+       "spell_minimum_base_cold_damage": 708,
+       "spell_maximum_base_cold_damage": 1062
+      },
+      "31": {
+       "spell_minimum_base_cold_damage": 810,
+       "spell_maximum_base_cold_damage": 1215
+      },
+      "32": {
+       "spell_minimum_base_cold_damage": 928,
+       "spell_maximum_base_cold_damage": 1393
+      },
+      "33": {
+       "spell_minimum_base_cold_damage": 1065,
+       "spell_maximum_base_cold_damage": 1597
+      },
+      "34": {
+       "spell_minimum_base_cold_damage": 1222,
+       "spell_maximum_base_cold_damage": 1833
+      },
+      "35": {
+       "spell_minimum_base_cold_damage": 1403,
+       "spell_maximum_base_cold_damage": 2105
+      },
+      "36": {
+       "spell_minimum_base_cold_damage": 1614,
+       "spell_maximum_base_cold_damage": 2420
+      },
+      "37": {
+       "spell_minimum_base_cold_damage": 1857,
+       "spell_maximum_base_cold_damage": 2786
+      },
+      "38": {
+       "spell_minimum_base_cold_damage": 2140,
+       "spell_maximum_base_cold_damage": 3210
+      },
+      "39": {
+       "spell_minimum_base_cold_damage": 2468,
+       "spell_maximum_base_cold_damage": 3702
+      },
+      "40": {
+       "spell_minimum_base_cold_damage": 2850,
+       "spell_maximum_base_cold_damage": 4275
+      }
+     }
+    }
+   }
   },
   "TriggeredChargedMarkPlayer": {
    "name": "",

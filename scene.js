@@ -236,7 +236,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -831,6 +831,10 @@ export function initScene(el, api) {
     const e = GROUND_EL[g.type]; g.dead = true;
     say(t('{0} absorbs {1} and gains {2}', S.label, t(GROUND[g.type]), t(cap(e))), e);
     fx.ring(at, g.r, .3, e, .45); fx.emit(30, { p: { x: g.x, y: .2, z: g.z }, r: g.r, v: .5, up: 3, life: .7, size: .25, c: e, c2: 'white' });
+    // Catalysing Elements: boosted by the ground, the skill sets off Catalysing Discharge of its element where you are,
+    // that part's own damage (calc.js trig parts), its cooldown
+    const T = !S.src && S.dmg?.trig?.find(T => T.parts?.[`TriggeredCatalysingDischarge${cap(e)}Player`]), D = T?.parts[`TriggeredCatalysingDischarge${cap(e)}Player`];
+    if (D && spend(T)) { const X = asTrig(S, { ...T, ...D, id: T.id }, D.hits); say(X.label, e); boom(at, X.A, X); }
     return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])] };
   }
 
@@ -845,10 +849,10 @@ export function initScene(el, api) {
   const holder = c => { const g = new THREE.Group(); g.position.set(c.x, 0, c.z); return g; };
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
-  const cap = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
+  const limit = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
   function earth(S, c, max, spike) {
-    cap(S, max);
+    limit(S, max);
     const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
     m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
     pop(c, .6, 'dust');
@@ -876,6 +880,19 @@ export function initScene(el, api) {
       for (const d of inside(p, X.A)) if (!seen.has(d)) { seen.add(d); hit(d, X); }
     } });
   }
+  // a Toxic Pustule stores the poison dealt to its enemy; poisoned, its time runs out faster (1% per its amount of the
+  // poison per minute); it bursts for 1% more damage per its amount stored and +0.1 m per its amount, up to their most
+  // (Poison Spores' explosion stats, as their names read)
+  function pustule(d, dt) {
+    const U = d.pustule, st = U.st, pd = d.st.poison > 0 && d.burn.poison ? d.burn.poison.dps : 0;
+    U.stored += pd * dt; U.left -= dt * (1 + pd * 60 / (st['toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty'] || Infinity) / 100);
+    if (Math.random() < dt * 6) fx.emit(1, { p: { x: d.pos.x, y: 1.5 * d.sc, z: d.pos.z }, r: .2, v: .2, up: .5, life: .6, size: .22, c: 'poison' });
+    if (U.left > 0) return;
+    d.pustule = null;
+    const more = Math.min(st['toxic_pustule_max_burst_damage_+%_final_from_stored_poison'] || 0, U.stored / (st['toxic_pustule_burst_1%_more_damage_per_x_stored_poison'] || Infinity));
+    const R = U.X.A + Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, U.stored / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10;
+    say(t('{0} detonates', U.X.label), 'poison'); boom({ x: d.pos.x, z: d.pos.z }, R, { ...U.X, mult: U.X.mult * (1 + more / 100) });
+  }
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}); return D && { ...S, dmg: { ...D, trig: [] }, A: (D.stats.active_skill_base_area_of_effect_radius || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -883,7 +900,7 @@ export function initScene(el, api) {
   // when slammed, less within its first 0.5 s when enemies break it
   function shieldWall(S, a, b, c, dur) {
     const st = S.dmg.stats, r = (st.active_skill_base_secondary_area_of_effect_radius || 10) / 10, len = dist(a, b), n = Math.max(1, Math.round(len / (2 * r))), g = holder(c), born = time;
-    cap(S, st.base_number_of_shield_walls_allowed);
+    limit(S, st.base_number_of_shield_walls_allowed);
     const segs = Array.from({ length: n }, (_, i) => {
       const k = (i + .5) / n, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k };
       const m = new THREE.Mesh(new THREE.BoxGeometry(len / n * .95, 1.3, .45), new THREE.MeshStandardMaterial({ color: 0x6b5a48, roughness: .95, flatShading: true }));
@@ -1858,6 +1875,7 @@ export function initScene(el, api) {
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
     if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); boom(d.pos, M.R, M.S); } }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
+    if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const add = (v, noEs) => { const k = v.dps * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
@@ -1952,6 +1970,13 @@ export function initScene(el, api) {
       if (LL && T.minion && S.els.includes('lightning') && Math.random() * 100 < LL && objs.filter(x => x.kind === T.id && !x.dead).length < T.stats.base_number_of_living_lightning_allowed && spend(T)) {
         const X = asTrig(S, T, T.minion.hits); X.dmg = { ...X.dmg, ...T.minion }; X.P = { ...X.P, ranged: false };
         minion(X, around(d.pos, 1.5), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id, attacks: T.stats.living_lightning_maximum_number_of_attacks, chains: T.shape?.chains ?? T.stats.number_of_chains });
+      }
+      // Poison Spores: a hit attaches a Toxic Pustule to the enemy (its chance, cooldown), which detonates after its time
+      // (calc.js trig parts: the explosion); the poison on that enemy is stored in it (dot ticks in update)
+      const PS = T.stats?.['triggered_pustule_from_poison_spores_on_hit_chance_%'], PX = PS && T.parts?.TriggeredPoisonSporesExplosion;
+      if (PX && !d.pustule && Math.random() * 100 < PS && spend(T)) {
+        const st = PX.stats; d.pustule = { X: asTrig(S, { ...T, ...PX, id: T.id }, PX.hits), st, left: (PX.shape?.detonate ?? st.base_skill_detonation_time / 1000), stored: 0 };
+        say(d.pustule.X.label, 'poison');
       }
       // Fist of Kalguur: the boosted slam's first hit on an enemy leaves its rune there (up to its limit, the oldest goes),
       // erupting as an aftershock after its duration; its cooldown

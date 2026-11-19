@@ -446,7 +446,9 @@ for g in gems:
                            'triggered_by': g['name'], 'types': kinds, 'tags': sorted(t.lower() for t in kinds if t in TAG_OF),
                            'cast_time_ms': x['CastTime'], 'constant': const, 'levels': levels or None,
                            'radius': {l: st.get(AOE, const.get(AOE)) for l, st in levels.items() if AOE in st or AOE in const} or None,
-                           'flags': sorted(k for k in map(sid, ss_tab[x['StatSet']]['ImplicitStats']) if PART_FLAG.search(k)) or None}
+                           'flags': sorted(k for k in map(sid, ss_tab[x['StatSet']]['ImplicitStats']) if PART_FLAG.search(k)) or None,
+                           # its other parts (Catalysing Discharge per element, Poison Spores' explosion): their stats per level
+                           **({'parts': {ss_tab[i]['Id']: dict(zip(('constant', 'levels'), stat_levels([], [i]))) for i in x['AdditionalStatSets']}} if x['AdditionalStatSets'] else {})}
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])
 cs = {c['Id']: c['Text'] for c in load('ClientStrings')}

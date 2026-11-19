@@ -847,5 +847,6 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Quelques soutiens dont les fenêtres du jeu affichent les dégâts autrement que leurs statistiques : mesurés en jeu, pas lus dans ses fichiers.",
  "Runic Ward": "Sauvegarde runique",
  "{0} shatters": "{0} se fracasse",
- "{0} returns": "{0} revient"
+ "{0} returns": "{0} revient",
+ "{0} detonates": "{0} détone"
 }

@@ -847,5 +847,6 @@
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Alguns reforços cujo dano as janelas do jogo mostram de forma diferente dos seus atributos: medido no jogo, não lido dos arquivos.",
  "Runic Ward": "Salvaguarda Rúnica",
  "{0} shatters": "{0} se despedaça",
- "{0} returns": "{0} retorna"
+ "{0} returns": "{0} retorna",
+ "{0} detonates": "{0} detona"
 }
