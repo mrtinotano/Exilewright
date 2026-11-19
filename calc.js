@@ -585,7 +585,16 @@ export function skill(g, b, treeGear) {
     const step = (x, f) => f < 1 ? Math.ceil(x * f) : Math.floor(x * f), raw = baseCost * supMult + v(sum, 'base_mana_cost_+');
     const inc1 = 1 + (inc(sum, 'mana_cost_+%', tags) - v(sum, 'base_mana_cost_-%') + v(sum, 'base_cost_+%')) / 100;
     const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100), eff = 1 + v(sum, 'base_mana_cost_efficiency_+%') / 100;
-    out.cost = perSec ? Math.max(0, raw * inc1 * more1 / eff) : Math.max(0, Math.round(step(step(Math.floor(raw), inc1), more1) / eff));
+    const moreCost = 1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100;   // Efficiency: "more Cost", every resource
+    // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
+    // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
+    const toLife = Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%')) / 100;
+    out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
+    if (toLife) {
+      const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + v(sum, 'base_cost_+%') / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
+      out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost) : Math.max(0, step(step(step(life, inc2), more2), moreCost));
+      out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
+    }
     out.costPerSecond = perSec;
   } else out.cost = 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
@@ -681,7 +690,7 @@ export function skill(g, b, treeGear) {
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0)) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: v(st, 'number_of_chains') + v(sum, 'number_of_chains'),
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + v(sum, 'number_of_additional_projectiles') + v(st, 'number_of_additional_projectiles') : null,
-    detonate: sec('base_skill_detonation_time', 1 + v(sum, 'grenade_fuse_duration_+%') / 100), curseDelay: sec('curse_delay_duration_ms'),
+    detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms'),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100) };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   const mn = out.minion = SK.minions[g.name] ? minionOf(g, st, sum, fin) : null;
@@ -835,11 +844,12 @@ function curseOf(st, sum) {
 { const c = skill({ name: 'Cluster Grenade', level: 17, quality: 16, supports: ['Payload'] }, { gems: [], items: {} }, { 'grenade_skill_cooldown_speed_+%': 45, 'grenade_skill_cooldown_count_+': 1 });
   console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2, 'cooldown and uses', c); }
 console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
-// self-check: mana cost. Orb of Storms 20 costs 129; Shock Conduction II's x1.2 makes it 154 (154.8 down), 10% reduced
+// self-check: mana cost. Orb of Storms 20 costs 129 (Efficiency I's 30% less: 91, up; Lifetap: 129 life instead); Shock Conduction II's x1.2 makes it 154 (154.8 down), 10% reduced
 // 139 (138.6 up), 25% cost efficiency 111; Runic Tempering costs per second, not rounded
 { const b = { gems: [], items: {} }, orb = sum => skill({ name: 'Orb of Storms', level: 20, supports: ['Shock Conduction II'] }, b, sum).cost;
   console.assert(skill({ name: 'Orb of Storms', level: 20 }, b, {}).cost === 129 && orb({}) === 154 && orb({ 'base_mana_cost_-%': 10 }) === 139 && orb({ 'base_mana_cost_-%': 10, 'base_mana_cost_efficiency_+%': 25 }) === 111
-    && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true, 'mana cost'); }
+    && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true
+    && skill({ name: 'Orb of Storms', level: 20, supports: ['Efficiency I'] }, b, {}).cost === 91 && skill({ name: 'Orb of Storms', level: 20, supports: ['Lifetap'] }, b, {}).lifeCost === 129, 'mana cost'); }
 
 export function snapshot(b, sum) {
   const c = character(b, sum), r = recovery(c, sum), R = c.res;

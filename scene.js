@@ -1106,9 +1106,10 @@ export function initScene(el, api) {
       }
     }
     if (!auto && me.maxM && !tog[S.name]) {
-      const cost = (S.dmg?.cost || 0) * (S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1);
+      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, life = (S.dmg?.lifeCost || 0) * per;
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
-      me.mana -= cost; gainRage(sheet().rage?.gain.use);
+      if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
+      me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);
     }
     const run = K[S.kind] || K.area;
     run(S);
@@ -1318,7 +1319,8 @@ export function initScene(el, api) {
   function tipOf(i) {
     const S = mk(i); if (!S) return '';
     const G = S.G, P = S.P, rows = [];
-    if (S.dmg?.cost) rows.push(`${t('Cost')} ${S.dmg.costPerSecond ? fmt(S.dmg.cost, 1) + '/s' : short(S.dmg.cost)} ${t('Mana')}`);
+    const per = x => S.dmg.costPerSecond ? fmt(x, 1) + '/s' : short(x);
+    if (S.dmg?.cost || S.dmg?.lifeCost) rows.push(`${t('Cost')} ${[S.dmg.cost && `${per(S.dmg.cost)} ${t('Mana')}`, S.dmg.lifeCost && `${per(S.dmg.lifeCost)} ${t('Life')}`].filter(Boolean).join(' · ')}`);
     if (S.R) rows.push(`${t('radius')} ${S.R.toFixed(2)} m`);
     else if (AREAL.has(S.kind) || S.kind === 'projectile' && S.aoe) rows.push(`${t('radius')} ${SIM.area.toFixed(2)} m (${t('simulated')})`);
     if (S.kind === 'projectile') rows.push(G.speed ? `${G.speed.toFixed(1)} m/s · ${t('range')} ${G.range.toFixed(1)} m` : `${SIM.projSpeed} m/s · ${t('range')} ${SIM.projRange} m (${t('simulated')})`);

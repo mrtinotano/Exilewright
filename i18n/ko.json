@@ -795,6 +795,7 @@
  "Keys and statistics of the simulator": "시뮬레이터 키와 통계",
  "Rage": "격노",
  "Not enough mana for {0}": "{0}에 필요한 마나가 부족합니다",
+ "Not enough life for {0}": "{0}에 필요한 생명력이 부족합니다",
  "Shield": "보호막",
  "Empty": "비어 있음",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+드래그: 회전 · 휠: 확대/축소 · {0}: 구르기",

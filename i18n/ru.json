@@ -795,6 +795,7 @@
  "Keys and statistics of the simulator": "Клавиши и статистика симулятора",
  "Rage": "Свирепость",
  "Not enough mana for {0}": "Недостаточно маны для {0}",
+ "Not enough life for {0}": "Недостаточно здоровья для {0}",
  "Shield": "Щит",
  "Empty": "Пусто",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt + перетаскивание: вращение · Колесо: масштаб · {0}: кувырок",

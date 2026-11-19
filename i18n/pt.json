@@ -795,6 +795,7 @@
  "Keys and statistics of the simulator": "Teclas e estatísticas do simulador",
  "Rage": "Fúria",
  "Not enough mana for {0}": "Mana insuficiente para {0}",
+ "Not enough life for {0}": "Vida insuficiente para {0}",
  "Shield": "Escudo",
  "Empty": "Vazio",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+arrastar: orbitar · Roda: zoom · {0}: girar",

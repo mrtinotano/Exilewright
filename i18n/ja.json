@@ -795,6 +795,7 @@
  "Keys and statistics of the simulator": "シミュレーターのキーと統計",
  "Rage": "憤怒",
  "Not enough mana for {0}": "{0}のマナが足りない",
+ "Not enough life for {0}": "{0}のライフが足りない",
  "Shield": "エナジーシールド",
  "Empty": "空き",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ドラッグ: 回転 · ホイール: ズーム · {0}: ロール",

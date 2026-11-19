@@ -795,6 +795,7 @@
  "Keys and statistics of the simulator": "ปุ่มและสถิติของเครื่องจำลอง",
  "Rage": "คลั่ง",
  "Not enough mana for {0}": "มานาไม่พอสำหรับ {0}",
+ "Not enough life for {0}": "พลังชีวิตไม่พอสำหรับ {0}",
  "Shield": "โล่พลังงาน",
  "Empty": "ว่าง",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ลาก: หมุนกล้อง · ล้อเมาส์: ซูม · {0}: กลิ้งหลบ",
