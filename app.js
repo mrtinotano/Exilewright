@@ -135,14 +135,16 @@ function inc(sum, suffix, tags) {
 }
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
-  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || [], sum = withSupports(g, treeSum()).sum;  // supports' area / speed count
+  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || [], { sum, finals } = withSupports(g, treeSum());  // supports' area / speed count
+  // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
+  const moreArea = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('area_of_effect_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
   const base = d.radius?.[g.level];
   const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) / 10;
   return {
     radiusFromData: base != null,
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
     // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
-    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, 1 + inc(sum, 'area_of_effect_+%', tags) / 100))) / 10 : 0,
+    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0,
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,
