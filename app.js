@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf, flaskOf, charmOf } from './items.js';
 import { initSkills } from './skills.js';
@@ -138,7 +138,7 @@ function geo(g) {
   const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || d.tags || [], { sum, finals } = withSupports(g, treeSum());  // supports' area / speed count
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
   const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
-  const R = d.radius && Object.values(d.radius), base = d.radius?.[g.level] ?? (R?.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
+  const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
   const moreSpeed = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
   const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) * moreSpeed / 10;
   return {
@@ -158,12 +158,12 @@ function renderStats() {
   const b = B();
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them
   const points = Math.max(0, b.nodes.length - 1);  // the class start node is free
-  // the level typed in the panel or imported with the build; else one passive point per level.
-  // note: that reads the 24 points quests give as levels too, so a character with them needs its level typed
-  b.level = b.lvl || Math.min(100, 1 + points);
+  // Manual: the level typed in the panel or imported with the build; Auto: the one the points need (Path of Building 2)
+  const need = requiredLevel(points);
+  b.level = b.lvl || need;
   const sum = treeSum();   // after the level: the campaign rewards counted by default go by it
   renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
-  renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, pending, picking,
+  renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, need, pending, picking,
     classes: CLASSES, ascOptions: [clsOf(b.asc), ...ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name)], portrait: portraitOf(b.asc),
     ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel });
 }
@@ -256,6 +256,7 @@ $('charPanel').onchange = e => {
   if (d.quest) edit((e, b) => (b.quests ||= {})[d.quest] = e.target.type === 'checkbox' ? +e.target.checked : +e.target.value)(e);
 };
 $('charPanel').onclick = async e => {
+  if (e.target.dataset.act === 'lvlmode') return edit((e, b) => { if (b.lvl) delete b.lvl; else b.lvl = b.level; })(e);   // Auto <-> Manual
   const el = e.target.closest('[data-pick], [data-cls], [data-asc]'); if (!el) return;
   if (el.dataset.pick) { picking = picking === el.dataset.pick ? null : el.dataset.pick; renderStats(); return; }
   picking = null;

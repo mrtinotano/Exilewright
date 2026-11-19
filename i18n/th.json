@@ -48,7 +48,6 @@
  "Maximum {0}%": "สูงสุด {0}%",
  "Build name": "ชื่อบิลด์",
  "Base class": "คลาสพื้นฐาน",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "เพิ่มขึ้นเองเมื่อจัดสรรแต้มทรี: {0} แต้มพาสซีฟ (1 ต่อเลเวล)",
  "Level {0}": "เลเวล {0}",
  "Strength": "Strength",
  "Dexterity": "Dexterity",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "ถือเป็นสิ่งที่ตัวละครสวมใส่: สิ่งที่คุณคัดลอกต่อจากนี้จะถูกเปรียบเทียบกับมัน",
  "Area Penalty": "บทลงโทษของพื้นที่",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "ค่าต้านทานธาตุจะลดลงในพื้นที่เลเวลสูงกว่า: ที่นี่คือพื้นที่เลเวลเดียวกับคุณ",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "พิมพ์เลเวลตัวละครเพื่อกำหนดเอง เว้นว่างไว้เพื่อให้กลับไปตามทรี",
  "Campaign rewards": "รางวัลแคมเปญ",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "สิ่งที่เควสต์ในแคมเปญมอบให้ตัวละครถาวร นับตามเลเวลพื้นที่ของแต่ละเควสต์ ส่วนตัวเลือกจะนับเมื่อคุณเลือกแล้วเท่านั้น",
  "Quality": "ค่าคุณภาพ",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "การฟื้นฟูมานาต่อวินาที",
  "Damage over time taken per second": "ความเสียหายต่อเนื่องที่ได้รับต่อวินาที",
  "{0}: life lost per second": "{0}: พลังชีวิตที่เสียต่อวินาที",
- "{0} needs {1} Combo": "{0} ต้องใช้คอมโบ {1}"
+ "{0} needs {1} Combo": "{0} ต้องใช้คอมโบ {1}",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "อัตโนมัติ: เลเวลที่แต้มพาสซีฟ {0} แต้มต้องการ โดยนับแต้มพาสซีฟที่ได้จากเควสต์ของแต่ละองก์ (ตามที่ Path of Building 2 ประเมิน) กำหนดเอง: เลเวลที่คุณพิมพ์",
+ "The allocated points need level {0}.": "แต้มที่จัดสรรต้องการเลเวล {0}",
+ "Auto": "อัตโนมัติ",
+ "Manual": "กำหนดเอง"
 }

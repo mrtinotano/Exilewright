@@ -48,7 +48,6 @@
  "Maximum {0}%": "Máximo {0}%",
  "Build name": "Nombre de la build",
  "Base class": "Clase base",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "Sube solo al asignar puntos en el árbol: {0} puntos de pasiva (1 por nivel)",
  "Level {0}": "Nivel {0}",
  "Strength": "Fuerza",
  "Dexterity": "Destreza",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "Tomado como lo que lleva el personaje: lo que copies después se compara con él",
  "Area Penalty": "Penalización de zona",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Las resistencias elementales bajan en las zonas de más nivel: aquí, una zona de tu nivel",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Escribe el nivel de tu personaje para fijarlo tú; déjalo vacío para que vuelva a seguir al árbol.",
  "Campaign rewards": "Recompensas de la campaña",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "Lo que las misiones de la campaña dejan en el personaje para siempre. Se cuentan desde el nivel de la zona de cada una; una elección, solo cuando la haces.",
  "Quality": "Calidad",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "Recuperación de maná por segundo",
  "Damage over time taken per second": "Daño degenerativo recibido por segundo",
  "{0}: life lost per second": "{0}: vida perdida por segundo",
- "{0} needs {1} Combo": "{0} necesita {1} de combo"
+ "{0} needs {1} Combo": "{0} necesita {1} de combo",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Auto: el nivel que piden tus {0} puntos de pasiva, contando los puntos de pasiva que dan las misiones de cada acto (como lo estima Path of Building 2). Manual: el nivel que escribas.",
+ "The allocated points need level {0}.": "Los puntos asignados piden nivel {0}.",
+ "Auto": "Auto",
+ "Manual": "Manual"
 }

@@ -48,7 +48,6 @@
  "Maximum {0}%": "Максимум {0}%",
  "Build name": "Название билда",
  "Base class": "Базовый класс",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "Растёт сам при распределении очков дерева: {0} пассивных очков (1 за уровень)",
  "Level {0}": "Уровень {0}",
  "Strength": "Сила",
  "Dexterity": "Ловкость",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "Принято как надетое на персонаже: следующее скопированное будет сравниваться с ним",
  "Area Penalty": "Штраф области",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Сопротивления стихиям ниже в областях более высокого уровня: здесь — область вашего уровня",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Введите уровень персонажа, чтобы задать его вручную; оставьте пустым, чтобы снова следовать дереву.",
  "Campaign rewards": "Награды кампании",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "Что задания кампании навсегда оставляют персонажу. Учитывается по уровню области каждого из них; выбор — только после того, как вы его сделаете.",
  "Quality": "Качество",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "Восстановление маны в секунду",
  "Damage over time taken per second": "Получаемый урон со временем в секунду",
  "{0}: life lost per second": "{0}: потеря здоровья в секунду",
- "{0} needs {1} Combo": "{0}: нужно {1} комбо"
+ "{0} needs {1} Combo": "{0}: нужно {1} комбо",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Авто: уровень, который нужен для {0} пассивных очков, с учётом пассивных очков за задания каждого акта (как оценивает Path of Building 2). Вручную: уровень, который вы введёте.",
+ "The allocated points need level {0}.": "Распределённым очкам нужен уровень {0}.",
+ "Auto": "Авто",
+ "Manual": "Вручную"
 }

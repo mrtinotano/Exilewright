@@ -13,6 +13,18 @@ import { enemy, attackOf, attacksOf } from './enemies.js';
 // on; a choice among several only once made.
 const reward = rowReader(SK.quest_rewards || []);
 export const QUESTS = (SK.quests || []).map(q => ({ ...q, options: q.options.map(text => ({ text, ...reward(text.split('\n').map(l => l.trim()).filter(Boolean)) })) }));
+// the level the allocated passive points need, as Path of Building 2 estimates it (Build.lua EstimatePlayerProgress):
+// a point per level after the first, less the passive points the quests of each act give, the act taken as reached
+const ACTS = (SK.quest_points || []).reduce((A, q) => { const a = A[q.act] ||= { level: q.level, qp: A[q.act - 1].qp }; a.qp += q.points; a.level = Math.max(a.level, q.level); return A; }, [{ level: 1, qp: 0 }]);
+export function requiredLevel(points) {
+  let level = 1;
+  for (let i = 0; i < ACTS.length; i++) {
+    level = Math.min(Math.max(points + 1 - ACTS[i].qp, ACTS[i].level), 100);
+    if (i === ACTS.length - 1 || level <= ACTS[i + 1].level) break;
+  }
+  return level;
+}
+console.assert(requiredLevel(0) === 1 && requiredLevel(20) === 17 && requiredLevel(123) === 100, 'requiredLevel');
 export const questPick = (b, q) => b.quests?.[q.key] ?? (q.pick || (b.level || 1) < q.level ? 0 : 1);
 export function questStats(b) {
   const sum = {};

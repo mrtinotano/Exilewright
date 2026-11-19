@@ -48,7 +48,6 @@
  "Maximum {0}%": "最大 {0}%",
  "Build name": "配置名稱",
  "Base class": "基礎職業",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "配置天賦點時自動提升：{0} 天賦點（每級 1 點）",
  "Level {0}": "等級 {0}",
  "Strength": "力量",
  "Dexterity": "敏捷",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "視為角色身上的裝備：之後複製的物品會與它比較",
  "Area Penalty": "區域懲罰",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "在較高等級的區域中元素抗性會降低：此處以你等級的區域計算",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "輸入角色等級以自行設定；留空則再次依照天賦樹計算。",
  "Campaign rewards": "劇情獎勵",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "劇情任務永久留在角色身上的效果。從各任務區域的等級開始計入；選擇類獎勵只在你做出選擇後計入。",
  "Quality": "品質",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "每秒魔力恢復",
  "Damage over time taken per second": "每秒承受的持續傷害",
  "{0}: life lost per second": "{0}：每秒失去的生命",
- "{0} needs {1} Combo": "{0}需要{1}連擊"
+ "{0} needs {1} Combo": "{0}需要{1}連擊",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動：{0} 天賦點所需的等級，計入各章任務給予的天賦點（如 Path of Building 2 的估算）。手動：你輸入的等級。",
+ "The allocated points need level {0}.": "已配置的點數需要等級 {0}。",
+ "Auto": "自動",
+ "Manual": "手動"
 }

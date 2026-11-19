@@ -196,6 +196,10 @@ src = get('QuestRewards.lua')
 quests = [{'key': 'quest' + q['Description'] + q['Area'] + q['Info'], 'act': q['Description'], 'area': q['Area'], 'info': q['Info'], 'level': q['AreaLevel'],
            'options': q.get('Options') or [q['Stat']], **({'pick': 1} if q.get('Options') else {})}
           for q in Lua(src, src.index('{')).value() if q['useConfig']]
+# ...and the ones that are passive points: what Path of Building 2 estimates the level from (Build.lua EstimatePlayerProgress;
+# act: its act, the Cruel ones after the three of Normal)
+quest_points = [{'act': q['Act'] + (3 if q.get('Type') == 'Cruel' else 0), 'level': q['AreaLevel'], 'points': q['questPoints']}
+                for q in Lua(src, src.index('{')).value() if q.get('questPoints')]
 assert any(q['options'] == ['+30 to Spirit'] for q in quests) and any(q.get('pick') for q in quests), 'QuestRewards.lua'
 
 # ---- minions ----------------------------------------------------------------------------------------------------------
@@ -214,7 +218,7 @@ for path in ('Skills/act_str.lua', 'Skills/act_dex.lua', 'Skills/act_int.lua', '
 assert minions['Raise Zombie'] == ['Metadata/Monsters/Zombies/PlayerSummoned/PlayerSummonedZombie_'] and 'Skeletal Warrior' in minions, 'Minions.txt / minionList'
 
 dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists) - game data (c) Grinding Gear Games',
-      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'minions': minions}, 'pob2.json')
+      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions}, 'pob2.json')
 print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
 print(f'{len(minions)} minion gems with their monster')
 print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')

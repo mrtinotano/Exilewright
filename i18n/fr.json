@@ -48,7 +48,6 @@
  "Maximum {0}%": "Maximum {0}%",
  "Build name": "Nom du build",
  "Base class": "Classe de base",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "Monte tout seul à mesure que vous allouez des points de l'arbre : {0} points de talents passifs (1 par niveau)",
  "Level {0}": "Niveau {0}",
  "Strength": "Force",
  "Dexterity": "Dextérité",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "Pris comme ce que porte le personnage : ce que vous copierez ensuite sera comparé à lui",
  "Area Penalty": "Pénalité de zone",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "Les résistances élémentaires sont plus basses dans les zones de niveau supérieur : ici, une zone de votre niveau",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "Tapez le niveau de votre personnage pour le fixer vous-même ; laissez vide pour suivre à nouveau l'arbre.",
  "Campaign rewards": "Récompenses de la campagne",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "Ce que les quêtes de la campagne laissent définitivement au personnage. Compté à partir du niveau de la zone de chacune ; un choix, seulement une fois fait.",
  "Quality": "Qualité",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "Récupération de mana par seconde",
  "Damage over time taken per second": "Dégâts sur la durée subis par seconde",
  "{0}: life lost per second": "{0} : vie perdue par seconde",
- "{0} needs {1} Combo": "{0} a besoin de {1} d'Enchaînement"
+ "{0} needs {1} Combo": "{0} a besoin de {1} d'Enchaînement",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Auto : le niveau que demandent vos {0} points de talents passifs, en comptant les points de talents passifs que donnent les quêtes de chaque acte (comme l'estime Path of Building 2). Manuel : le niveau que vous tapez.",
+ "The allocated points need level {0}.": "Les points alloués demandent le niveau {0}.",
+ "Auto": "Auto",
+ "Manual": "Manuel"
 }

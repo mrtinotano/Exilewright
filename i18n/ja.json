@@ -48,7 +48,6 @@
  "Maximum {0}%": "最大{0}%",
  "Build name": "ビルド名",
  "Base class": "基本クラス",
- "Goes up on its own as you allocate tree points: {0} passive points (1 per level)": "ツリーにポイントを割り振ると自動で上がります: パッシブポイント{0}（1レベルにつき1）",
  "Level {0}": "レベル{0}",
  "Strength": "筋力",
  "Dexterity": "器用さ",
@@ -607,7 +606,6 @@
  "Taken as what the character wears: what you copy next is compared with it": "キャラクターの装備として登録: 次にコピーしたものはこれと比較されます",
  "Area Penalty": "エリアペナルティ",
  "Elemental resistances are lower in areas of a higher level: here, an area of your level": "高レベルのエリアでは元素耐性が下がります: ここでは自分のレベルのエリア",
- "Type your character's level to set it yourself; leave it empty to follow the tree again.": "キャラクターのレベルを入力して自分で設定します。空欄にするとツリーに従います。",
  "Campaign rewards": "キャンペーン報酬",
  "What the quests of the campaign leave on the character for good. Counted from the level of each one's area; a choice only once you make it.": "キャンペーンのクエストでキャラクターに永続的に付与されるもの。各クエストのエリアのレベルから計算されます。選択式のものは選んだ後のみ。",
  "Quality": "品質",
@@ -831,5 +829,9 @@
  "Mana Recovery per second": "毎秒マナ回復",
  "Damage over time taken per second": "毎秒受ける継続ダメージ",
  "{0}: life lost per second": "{0}：毎秒失うライフ",
- "{0} needs {1} Combo": "{0}には{1}コンボが必要です"
+ "{0} needs {1} Combo": "{0}には{1}コンボが必要です",
+ "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動: パッシブポイント{0}に必要なレベル。各章のクエストで得られるパッシブポイントを含みます（Path of Building 2 の推定と同じ）。手動: 入力したレベル。",
+ "The allocated points need level {0}.": "割り振ったポイントにはレベル{0}が必要です。",
+ "Auto": "自動",
+ "Manual": "手動"
 }

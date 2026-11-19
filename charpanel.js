@@ -13,7 +13,7 @@ const NO_BASE = 'The class base life/mana is missing: it comes from regenerating
 const ico = k => `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${k}.webp" alt="">`;
 
 // editable in place: name (input), base class and ascendancy (each row opens its list); level follows the tree
-export function renderChar(el, b, sum, { asc, cls, points, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {
+export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {
   const c = character(b, sum), R = c.res;
   const questsOpen = el.querySelector('.cp-quests')?.open;   // drawn anew at every change: stays as it was left
   const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (${t('Not understood: it is not counted')})`)].map(esc).join(' · ');
@@ -27,7 +27,7 @@ export function renderChar(el, b, sum, { asc, cls, points, pending, classes = []
       <div class="cp-id">
         <button class="cp-pick${picking === 'cls' ? ' open' : ''}" data-pick="cls" title="${t('Base class')}">${esc(cls ? clsLabel(cls) : '—')}</button>
         <button class="cp-pick${picking === 'asc' ? ' open' : ''}" data-pick="asc" title="${t('Ascendancy')}">${esc(asc ? ascLabel(asc) : '—')}</button>
-        <div title="${t('Goes up on its own as you allocate tree points: {0} passive points (1 per level)', points)}. ${t('Type your character\'s level to set it yourself; leave it empty to follow the tree again.')}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}</div>
+        <div class="cp-level${b.lvl && b.lvl < need ? ' over' : ''}" title="${t('Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.', points)}${b.lvl && b.lvl < need ? ' ' + t('The allocated points need level {0}.', need) : ''}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}<button class="cp-auto" data-act="lvlmode">${t(b.lvl ? 'Manual' : 'Auto')}</button></div>
       </div>
       <div class="cp-portrait" title="${esc(asc ? ascLabel(asc) : '')}"${portrait ? ` style="background-image:url('poe2_data/available/img/${esc(portrait)}')"` : ''}>${portrait ? '' : esc((asc ? ascLabel(asc) : '?')[0])}</div>
       <div class="cp-id cp-attr"><div class="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div></div>
