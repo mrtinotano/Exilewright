@@ -96,13 +96,17 @@ const first = (...xs) => xs.find(x => x != null) ?? null;
 // Strength requirement" is strength_skill_gem_level_+: every word before _skill_gem_level_+ a tag of the gem) and what
 // its quality gives (skills.json quality, and alt_quality for who has "Gem Quality grants Socketed Skills an
 // additional effect": per 1000 quality, whole numbers only). _level and _quality are the ones used.
-// note: levels a support adds to its skill and those for corrupted gems are not counted
+// note: the levels corrupted gems get are not counted
 export function gemStats(g, sum = {}) {
   const d = SK.skills[g.name] || {}, tags = GEM[g.name]?.tags || [], end = '_skill_gem_level_+';
-  const fits = w => w === 'all' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
+  // (a support's "+1 to Level of Supported Fire Skills": supported_fire_skill_gem_level_+; supported_active_: any)
+  const fits = w => w === 'all' || w === 'supported' || w === 'active' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
   let level = g.level;
   for (const [k, x] of Object.entries(sum)) if (k.endsWith(end) && k.slice(0, -end.length).split('_').every(fits)) level += x;
-  const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+');
+  // Uhtred's: only with exactly no / one / two other supports modifying it
+  const others = (g.supports || []).filter(Boolean).length - 1;
+  level += v(sum, `supported_active_skill_gem_level_+_if_${['no', 'one', 'two'][others]}_other_support${others === 1 ? '' : 's'}`);
+  const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+', 'supported_active_skill_gem_quality_%');
   const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
     for (const [k, x] of Object.entries(q || {})) st[k] = (st[k] || 0) + Math.trunc(x * quality / 1000);
@@ -482,14 +486,19 @@ const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff
 // support's name and words the calculation knows (..._distance_based_pin_damage: Pin buildup, not damage;
 // ..._randomise_higher_damage; ..._detonation_damage) is left out: it is not a plain multiplier of the skill.
 const PLAIN = new Set(['support', 'damage', 'attack', 'cast', 'speed', 'spell', 'projectile', 'melee', 'area', 'of', 'effect', 'and', 'minion', 'skill', 'hit', 'ailment', 'elemental', '+%', 'final', ...DMG]);
+// the PoB2 mod names calc.js reads (mod(), dmgMods, DealNo..., NeverCrit)
+const USED = /^(?:(?:Physical|Fire|Cold|Lightning|Chaos|Elemental)?Damage|Speed|CooldownRecovery|CritChance|CritMultiplier|DamageGainAs\w+|Max\w+Damage|DealNo\w+|NeverCrit)$/;
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
   const all = { ...sum }, fin = {}, mods = [], finals = {};
   for (const n of g.supports || []) {
     const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
     if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
-    const lv = d?.levels?.[Object.keys(d?.levels || {})[0]] || {};
-    for (const [k, val] of Object.entries(p ? p.stats || {} : { ...(d.constant || {}), ...lv })) {
+    const lv = d?.levels?.[Object.keys(d?.levels || {})[0]] || {}, game = { ...(d?.constant || {}), ...lv };
+    // the game's stats, except those PoB2 reads as a mod used here (or only under a condition): Bleed II's bleed chance,
+    // Fire Mastery's level, which PoB2 reads as mods the app has no use for or does not have
+    const read = new Set((p?.mods || []).filter(m => m[4] || USED.test(m[0])).map(m => m[5]));
+    for (const [k, val] of Object.entries(p ? { ...Object.fromEntries(Object.entries(game).filter(([k]) => !read.has(k))), ...(p.stats || {}) } : game)) {
       if (k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) all[k] = (all[k] || 0) + val;
       else if (plainMore(k, n)) fin[k] = (fin[k] || 0) + val;

@@ -180,7 +180,8 @@ for path in ('Skills/sup_str.lua', 'Skills/sup_dex.lua', 'Skills/sup_int.lua'):
         text = src[pos:found[n + 1][2] if n + 1 < len(found) else len(src)]
         text = text[text.find('statMap = {'):text.find('baseFlags = {')] if 'statMap = {' in text else ''
         own = dict(re.findall(STAT_MAP % ('\t' * 4, '\t' * 4), text, re.M | re.S))
-        mods = [m for stat in list(stats) if stat in own or stat in shared for m in reading(own.get(stat, shared.get(stat)), stats.pop(stat))]
+        # each mod with the game stat it reads (calc.js uses the game's stat where it does not use the mod)
+        mods = [[*m, stat] for stat in list(stats) if stat in own or stat in shared for m in reading(own.get(stat, shared.get(stat)), stats.pop(stat))]
         supports[name] = {k: v for k, v in {'text': s.get('description'), 'stats': stats, 'mods': mods}.items() if v}
 
 # ---- campaign rewards -----------------------------------------------------------------------------------------------
