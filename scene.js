@@ -1705,11 +1705,8 @@ export function initScene(el, api) {
     }
     if (d.wait > 0 || dist(d.pos, pp) > R) return;
     // with stored uses it strikes at its own speed while one is left; each used one recharges over the cooldown
-    const A = d.atk; d.ready = (d.ready || []).filter(at => at > time);
-    if (A.uses > 1) { const used = d.ready.length; d.ready.push(time + A.cooldown);
-      d.wait = Math.max(.25, used + 1 < A.uses ? A.period : Math.min(...d.ready) - time); }
-    else d.wait = Math.max(.25, A.interval);
-    strike(d);
+    const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; d.ready.push(time + A.cooldown);
+    d.wait = Math.max(.25, A.period, used + 1 < A.uses ? 0 : Math.min(...d.ready) - time); strike(d);
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
   function vitals(dt) {

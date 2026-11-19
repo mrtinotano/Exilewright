@@ -106,12 +106,13 @@ export function attackOf(m, level, key, rarity, ally = false) {
   const own = sk && sk.cast !== 1 ? sk.cast : null;
   // (and with the monster's own attack speed mods: Raging Spirit's 40% more)
   const A = m.attack_speed || {}, period = attack ? own ?? m.attack_time / (1 + (sk?.speed || 0) / 100) / (1 + (A['attack_speed_+%'] || 0) / 100) / (1 + (A['active_skill_attack_speed_+%_final'] || 0) / 100) : sk?.cast || 1;
+  const uses = sk?.uses || 1;
   return {
     key: sk ? key : 'basic', name: sk ? sk.name || set.label || plain(key) : t('Basic attack'), description: sk?.description || '',
     attack, melee: flags.includes('melee'), hits, dot, hasHit,
     dotDur: set.const?.base_skill_effect_duration ? set.const.base_skill_effect_duration / 1000 : null,
     // stored uses (Balbala's Teleport Strike: 2) are spent one after another, each recharging over the cooldown
-    period, interval: Math.max(period, (sk?.cooldown || 0) / (sk?.uses || 1)), cooldown: sk?.cooldown || 0, uses: sk?.uses || 1,
+    period, interval: Math.max(period, (sk?.cooldown || 0) / uses), cooldown: sk?.cooldown || 0, uses,
     crit: sk?.crit ?? m.crit ?? 0, critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     area, unblockable: !!set.unblockable, ail: set.const || {},   // the skill's ailment chances and freeze multipliers
