@@ -846,5 +846,6 @@
  "The order in which effects that happen at once are applied, and the game's rounding.": "同時に起こる効果が適用される順序と、ゲームの端数処理。",
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "ゲームのウィンドウが能力値と違うダメージを表示する一部のサポート: ファイルから読んだのではなく、ゲーム内で測定した値です。",
  "Runic Ward": "ルーンワード",
- "{0} shatters": "{0}が粉砕される"
+ "{0} shatters": "{0}が粉砕される",
+ "{0} returns": "{0}が戻る"
 }

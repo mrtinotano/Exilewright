@@ -846,5 +846,6 @@
  "The order in which effects that happen at once are applied, and the game's rounding.": "El orden en que se aplican los efectos que ocurren a la vez, y los redondeos del juego.",
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Algunos soportes cuyo daño las ventanas del juego muestran distinto de lo que dicen sus estadísticas: medido en el juego, no leído de sus archivos.",
  "Runic Ward": "Barrera rúnica",
- "{0} shatters": "{0} se hace añicos"
+ "{0} shatters": "{0} se hace añicos",
+ "{0} returns": "{0} vuelve"
 }

@@ -846,5 +846,6 @@
  "The order in which effects that happen at once are applied, and the game's rounding.": "同時發生的效果套用的順序，以及遊戲的四捨五入。",
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "少數輔助的傷害在遊戲視窗中顯示與其數值不同：是在遊戲中測得，而非從檔案讀取。",
  "Runic Ward": "符文保護",
- "{0} shatters": "{0}粉碎了"
+ "{0} shatters": "{0}粉碎了",
+ "{0} returns": "{0}返回"
 }

@@ -846,5 +846,6 @@
  "The order in which effects that happen at once are applied, and the game's rounding.": "Порядок применения одновременных эффектов и округления игры.",
  "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Несколько поддержек, урон которых окна игры показывают иначе, чем их характеристики: измерено в игре, а не прочитано из её файлов.",
  "Runic Ward": "Рунический барьер",
- "{0} shatters": "{0} разбивается"
+ "{0} shatters": "{0} разбивается",
+ "{0} returns": "{0} возвращается"
 }

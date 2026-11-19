@@ -862,6 +862,20 @@ export function initScene(el, api) {
         for (let k = 0; k < n; k++) later(k * .08, () => fissure(X, c, a0 + k * TAU / n, 5, X.A, 1, { dur: X.dmg.stats.base_skill_effect_duration / 1000, max: S.dmg.stats.forge_hammer_base_maximum_number_of_fissures }));
       } });
   }
+  // the hammer flies back to you at its speed, hitting each enemy within its area on the way once (ponytail: the path
+  // to where you stand when it leaves; follow you if it matters)
+  function recall(S, h) {
+    const X = partOf(S, 'ForgeHammerRecallPlayer'), from = { x: h.pos.x, z: h.pos.z }, to = { x: pp.x, z: pp.z }, seen = new Set(), len = dist(from, to);
+    h.dead = true; say(t('{0} returns', S.label), S.el); if (!X) return;
+    nextCdX = 1 + (X.dmg.stats['supplementary_stat_container_attack_speed_+%_final'] || 0) / 100;
+    const m = new THREE.Mesh(EARTH.hammer, new THREE.MeshStandardMaterial({ color: 0x3a3430, emissive: 0x5a1a04, roughness: .9, flatShading: true }));
+    m.position.set(from.x, 1, from.z);
+    thing(m, len / ((S.dmg.stats.forge_hammer_hammer_speed || 300) / 10), { tick(dt, e) {
+      const k = Math.min(1, e.s / e.dur), p = { x: from.x + (to.x - from.x) * k, z: from.z + (to.z - from.z) * k };
+      m.position.set(p.x, 1, p.z); m.rotation.x += dt * 14;
+      for (const d of inside(p, X.A)) if (!seen.has(d)) { seen.add(d); hit(d, X); }
+    } });
+  }
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}); return D && { ...S, dmg: { ...D, trig: [] }, A: (D.stats.active_skill_base_area_of_effect_radius || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -1482,6 +1496,10 @@ export function initScene(el, api) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
+    // Forge Hammer: used again while its hammer is lodged, it recalls it (its Recall part, its more attack speed) and its
+    // cooldown starts over
+    const lodged = !auto && S.dmg?.stats?.forge_hammer_maximum_hammers && objs.find(o => o.earth && o.name === S.name && !o.dead);
+    if (lodged) { recall(S, lodged); cdReady[S.name] = []; return true; }
     // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
     const C = !auto && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     if (C && ready.length >= (S.dmg.uses || 1)) return false;
