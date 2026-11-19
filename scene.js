@@ -873,11 +873,10 @@ export function initScene(el, api) {
     const segs = Array.from({ length: n }, (_, i) => {
       const k = (i + .5) / n, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k };
       const m = new THREE.Mesh(new THREE.BoxGeometry(len / n * .95, 1.3, .45), new THREE.MeshStandardMaterial({ color: 0x6b5a48, roughness: .95, flatShading: true }));
-      m.position.set(p.x - c.x, .65, p.z - c.z); m.rotation.y = Math.atan2(-(b.z - a.z), b.x - a.x); m.castShadow = true; g.add(m);
+      m.position.set(p.x - c.x, .65, p.z - c.z); m.rotation.y = Math.atan2(-(b.z - a.z), b.x - a.x); m.castShadow = true; g.add(m); pop(p, .5, 'dust');
       return { p, r, m, life: st.shield_wall_maximum_life || 1, hurt(n) { if ((this.life -= n) <= 0) blow(this, time - born < .5 ? 1 + (st['shield_wall_damage_+%_final_for_first_500_ms_when_not_killed_by_self'] || 0) / 100 : 1); } };
     });
     const blow = (q, mult) => { if (q.life === -1) return; q.life = -1; q.m.visible = false; pop(q.p, r, 'dust'); boom(q.p, r, { ...S, mult: S.mult * mult }); if (segs.every(x => x.life === -1)) e.dead = true; };
-    for (const q of segs) pop(q.p, .5, 'dust');
     const e = thing(g, dur, { name: S.name, earth: S, segs, a, b, near: p => segDist(p, a, b),
       shatter(how) { say(t('{0} shatters', S.label), 'dust'); for (const q of segs) blow(q, how === 'slam' ? 1 + (st['shield_wall_damage_+%_final_when_slammed'] || 0) / 100 : 1); } });
   }
