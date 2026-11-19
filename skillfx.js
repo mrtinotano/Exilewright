@@ -1,4 +1,4 @@
-// Behaviour profile of every skill for the 3D scene, and the synergies between the skills of a build.
+// Behaviour profile of every skill for the 3D scene.
 // Everything is derived from the game's own gem tags and ActiveSkillTypes (gems.json) plus the geometry in skills.json.
 // What the data does not express lives in two clearly separated places: NAMED (a few iconic interactions) and
 // SIM (simulation defaults: the data has no damage, cast time, fuse time or ailment chance, so the scene counts
@@ -195,45 +195,3 @@ export function chips(P) {
   return c;
 }
 
-// Synergies between the skills of a build: [{ a, b, text, args }] with a/b = gem indexes (b may be null).
-// `list` = [{ label, P }] in build order.
-export function synergies(list) {
-  const out = [], seen = new Set();
-  const add = (a, b, text, ...args) => { const k = a + '|' + b + '|' + text; if (!seen.has(k)) { seen.add(k); out.push({ a, b, text, args }); } };
-  const hits = P => !['curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise'].includes(P.kind);
-  list.forEach((A, i) => list.forEach((B, j) => {
-    if (i === j) return;
-    const a = A.P, b = B.P;
-    // A sets a state up, B cashes it in.
-    for (const s of [...b.consumes, ...b.bonus]) {
-      const sets = s === 'curse' ? a.kind === 'curse' : a.applies.includes(s);
-      if (sets) add(i, j, b.consumes.includes(s) ? '{0} inflicts {2} → {1} consumes it for a bigger hit' : '{0} inflicts {2} → {1} hits those enemies harder', A.label, B.label, STATE[s]);
-    }
-    if (b.detonator && a.kind === 'grenade') add(i, j, '{1} detonates the grenades of {0} at once', A.label, B.label);
-    if (b.detonator && a.ground === 'gas') add(i, j, '{1} detonates the gas cloud of {0}', A.label, B.label);
-    if (b.els.includes('fire') && hits(b) && a.ground === 'gas' && !b.detonator) add(i, j, 'Fire from {1} explodes the gas cloud of {0}', A.label, B.label);
-    if (b.els.includes('fire') && hits(b) && a.ground === 'oil') add(i, j, 'Fire from {1} sets the oil of {0} ablaze', A.label, B.label);
-    if (b.absorbs && GROUND_EL[a.ground]) add(i, j, '{1} absorbs the {2} left by {0} and gains its element', A.label, B.label, GROUND[a.ground]);
-    if (a.kind === 'curse' && hits(b) && a.els.some(e => (b.els.length ? b.els : [b.el]).includes(e))) add(i, j, '{0}: cursed enemies take more damage from {1}', A.label, B.label);
-    if (a.kind === 'orb' && a.detonates && hits(b) && b.els.includes(a.el)) add(i, j, '{0} applies exposure with each pulse → {1} hits those enemies harder', A.label, B.label);
-    if (a.kind === 'mark' && a.gain && hits(b)) add(i, j, 'A critical hit of {1} consumes {0}: more critical damage and a {2} charge', A.label, B.label, CHARGE[a.gain]);
-    if (a.kind === 'herald' && b.applies.includes(AILMENT[a.el])) add(i, j, '{1} inflicts {2} → kills trigger the explosion of {0}', A.label, B.label, STATE[AILMENT[a.el]]);
-    if (a.gain && b.spend.includes(a.gain)) add(i, j, '{0} generates {2} charges → {1} spends them', A.label, B.label, CHARGE[a.gain]);
-    if (a.empowers && a.kind === 'warcry' && b.attack && b.melee && hits(b)) add(i, j, '{0} empowers {1}: it repeats as an aftershock', A.label, B.label);
-    if (a.repeats && b[a.repeats]) add(i, j, '{0} makes {1} repeat', A.label, B.label);
-    if (a.empowers && a.kind === 'buff' && a.els.length && b.attack && hits(b)) add(i, j, '{0} infuses the next use of {1} with its element', A.label, B.label);
-    if (a.kind === 'meta' && b.triggerable && b.spell && hits(b) && (!a.els.length || list.some(X => X.P.applies.includes(AILMENT[a.els[0]])))) add(i, j, '{0} casts {1} by itself when it fills its energy', A.label, B.label);
-    if (a.corpse && b.kind === 'minion') add(i, j, '{0} can use the corpses of your enemies and of {1}', A.label, B.label);
-    if (a.name === 'Frostbolt' && b.from === 'Frostbolt') add(i, j, '{1} cast near a {0} erupts from the projectile', A.label, B.label);
-    if (a.kind === 'wall' && a.els.includes('fire') && b.kind === 'projectile') add(i, j, 'Projectiles of {1} fired through {0} gain fire', A.label, B.label);
-    if (a.crystal && hits(b)) add(i, null, 'The ice crystals of {0} explode when your skills hit them', A.label);
-    if (a.object && a.els.includes('lightning') && b.chains && b.els.includes('lightning')) add(i, j, 'Lightning of {1} chains to {0}, which pulses over its whole area', A.label, B.label);
-    if (a.kind === 'orb' && a.chains && b.els.includes('lightning') && hits(b)) add(i, j, '{0} fires an extra bolt when you use {1} next to it', A.label, B.label);
-    if (a.spread && b.dotHit && b.els.includes('chaos')) add(i, j, '{0} spreads on death together with {1}', A.label, B.label);
-  }));
-  list.forEach((A, i) => {
-    if (A.P.corpse && !list.some(B => B.P.kind === 'minion')) add(i, null, '{0} needs corpses: kill dummies first (or press C)', A.label);
-    if (A.P.needsCharges && !list.some(B => A.P.spend.includes(B.P.gain))) add(i, null, '{0} needs charges and nothing in the build generates them (press G in the scene)', A.label);
-  });
-  return out;
-}

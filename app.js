@@ -1,6 +1,6 @@
 import { t, tn, fmt, lang } from './i18n.js';
 import { initScene } from './scene.js';
-import { profile, chips, synergies } from './skillfx.js';
+import { profile, chips } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
@@ -186,7 +186,8 @@ function renderSceneSkills() {
   const list = b.gems.map(g => { const inf = gemInfo(g); return { g, inf, label: inf.label, P: profile(inf.gem, inf.data) }; });
   const key = i => scene3d?.keyOf(i) || '';   // the key of the simulator's bar it is on
   const opts = (o, v) => Object.entries(o).map(([k, name]) => `<option value="${k}" ${k == v ? 'selected' : ''}>${t(name)}</option>`).join('');
-  const live = (g, i) => byHand(b, i) && !SK.skills[g.name]?.totem && skillDmg(g).dps != null;   // a totem's damage is its own
+  // on top: the skills with damage per second and those that raise or lower stats (buffs, auras, heralds, curses, marks, warcries)
+  const STATS = new Set(['buff', 'aura', 'herald', 'curse', 'mark', 'warcry']), live = (g, P) => skillDmg(g).dps != null || STATS.has(P.kind);
   const card = ({ g, inf, P }, i) => {
     const G = geo(g), s = skillDmg(g), shape = g.shape || 'auto';
     const num = (k, v, tip) => `<input type="number" step="0.1" min="0" data-i="${i}" data-k="${k}" value="${v}" title="${tip}">`;
@@ -198,7 +199,7 @@ function renderSceneSkills() {
     return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
       <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key(i) ? `<i>${key(i)}</i>` : ''}</span>
         <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
-        <b class="sdps" data-dps="${i}">${s.dps != null ? fmt(s.dps) : '—'} <small>DPS</small></b></div>
+        ${s.dps != null ? `<b class="sdps" data-dps="${i}">${fmt(s.dps)} <small>DPS</small></b>` : ''}</div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
       ${facts ? `<div class="sk-facts">${facts}</div>` : ''}
       <div class="sk-edit"><select data-i="${i}" data-k="shape" title="${t('How the scene casts it: Auto follows the game data of the gem')}">${opts(SHAPES, shape)}</select>
@@ -206,16 +207,10 @@ function renderSceneSkills() {
         ${shape === 'cone' || shape === 'line' ? `<label>${shape === 'cone' ? t('angle°') : t('width m')}${num('width', g.width, t('the game does not give this value: manual value'))}<small>${t('manual')}</small></label>` : ''}</div>
     </div>`;
   };
-  const cards = [], rest = []; list.forEach((x, i) => (live(x.g, i) ? cards : rest).push(card(x, i)));
-  const syn = synergies(list), name = i => `<b>${esc(list[i].label)}</b>`;
-  const line = x => `<li data-card="${x.a}">${t(x.text, name(x.a), x.b == null ? '' : name(x.b), x.args[2] ? `<i>${esc(t(x.args[2]))}</i>` : '')}</li>`;
+  const cards = [], rest = []; list.forEach((x, i) => (live(x.g, x.P) ? cards : rest).push(card(x, i)));
   $('sceneList').innerHTML = `<h3>${t('Skills')} <small class="note">${t('their keys: click a slot of the simulator bar to change them')}</small></h3>
-    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills used by hand deals damage.' : 'Add skills in the Skills tab.')}</p>`}
-    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: their damage does not change while you play')}</summary>${rest.join('')}</details>` : ''}
-    ${list.length > 1 ? `<h3>${t('Synergies in this build')} <small class="note">${syn.length}</small></h3>
-      ${syn.length ? `<ul class="syn">${syn.slice(0, 14).map(line).join('')}</ul>${syn.length > 14 ? `<details class="syn-more"><summary>${t('{0} more', syn.length - 14)}</summary><ul class="syn">${syn.slice(14).map(line).join('')}</ul></details>` : ''}`
-        : `<p class="note">${t('No combos found between these skills yet.')}</p>`}` : ''}
-    <p class="note">${t('Areas, speeds and durations come from the game data, like the damage of your skills and the enemy; ailment chance, combo bonuses and how enemy attacks look use fixed scene values.')}</p>`;
+    ${cards.join('') || `<p class="note">${t(list.length ? 'None of your skills deals damage or changes stats.' : 'Add skills in the Skills tab.')}</p>`}
+    ${rest.length ? `<details class="syn-more"><summary>${t('Other skills: no damage and no stats of their own')}</summary>${rest.join('')}</details>` : ''}`;
   syncEnemy(); renderEnemy();
 }
 // skill info window: anything with data-tip="<gem index>"
