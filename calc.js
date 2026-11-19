@@ -492,7 +492,8 @@ const USED = /^(?:(?:Physical|Fire|Cold|Lightning|Chaos|Elemental)?Damage|Speed|
 // support_unstable_earth_damage_+%_final), "Supported Grenade Skills deal...", "Hazards created by Supported Skills deal..."
 // (or speed: Tectonic Slams' "Supported Skills have 15% less Attack Speed")
 const PLAIN_TEXT = /^(?:Supported (?:\w+ )?Skills|Hazards created by Supported Skills) (?:deal|have) \d+% (?:more|less) (?:damage|attack speed|cast speed)$/i;
-const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) && PLAIN_TEXT.test(statLinesEn({ [k]: 10 })[0] || '');
+const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) &&   // only the endings more() reads
+  PLAIN_TEXT.test(statLinesEn({ [k]: 10 })[0] || '');
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 export function withSupports(g, sum) {
   const all = { ...sum }, fin = {}, mods = [], finals = {};
@@ -632,11 +633,11 @@ export function skill(g, b, treeGear) {
   // and the tree's, gear's and supports' game stats "gain X% of <all / elemental / a type of> damage as extra <type>"
   // (non_skill_base_fire_damage_%_to_gain_as_chaos: Xoph's Pyre; _with_spells / _with_attacks only for those), of the
   // damage after conversion
-  const pre = Object.fromEntries(DMG.map(t => [t, [...base[t]]])), all = [0, 1].map(i => DMG.reduce((s, t) => s + pre[t][i], 0));
-  const SRC = { elemental: ['fire', 'cold', 'lightning'], ...Object.fromEntries(DMG.map(t => [t, [t]])) };
-  const gain = (src, t) => ['', spell ? '_with_spells' : attack ? '_with_attacks' : '_none'].reduce((x, end) => x + v(sum, `non_skill_base_${src}_damage_%_to_gain_as_${t}${end}`), 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`);
+  const pre = { ...base }, all = [0, 1].map(i => DMG.reduce((s, t) => s + pre[t][i], 0));
+  const SRC = { all: DMG, elemental: ['fire', 'cold', 'lightning'], ...Object.fromEntries(DMG.map(t => [t, [t]])) }, end = spell ? '_with_spells' : attack ? '_with_attacks' : null;
+  const gain = (src, t, k = `non_skill_base_${src}_damage_%_to_gain_as_${t}`) => v(sum, k) + (end ? v(sum, k + end) : 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`);
   for (const t of DMG) {
-    const extra = (mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) + gain('all', t)) / 100;
+    const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     const from = [0, 1].map(i => Object.entries(SRC).reduce((x, [src, ts]) => x + gain(src, t) / 100 * ts.reduce((y, u) => y + pre[u][i], 0), 0));
     base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra + from[0], (base[t][1] + all[1] * extra + from[1]) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
