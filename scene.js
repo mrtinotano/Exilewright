@@ -287,7 +287,9 @@ export function initScene(el, api) {
     const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
-      const acc = sheet().accuracy;
+      // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
+      // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
+      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (1 - far * (c.accuracyFalloff || 0) / 100);
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
