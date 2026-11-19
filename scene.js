@@ -122,7 +122,8 @@ export function initScene(el, api) {
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || (inf.gem?.tags || []).includes('area'), dmg, elemental: (inf.gem?.tags || []).some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const tags = inf.gem?.tags || [];
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
@@ -322,7 +323,8 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit; if (crit) (me.critAt ||= {})[S.name] = time;   // Inexorable Critical starts again const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit; if (crit) (me.critAt ||= {})[S.name] = time;
+      const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src !== 'minionHit' && buffs.find(b => b.gain)?.gain;   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (B) raw[B.el] = (raw[B.el] || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * B.pct / 100;
       const dealt = {};
@@ -1232,7 +1234,7 @@ export function initScene(el, api) {
     }
     const run = K[S.kind] || K.area;
     run(S);
-    used.push({ name: S.name, elemental: S.elemental, t: time }); if (used.length > 50) used.shift();
+    used.push({ name: S.name, elemental: S.elemental, t: time }); while (used[0]?.t < time - RECENT) used.shift();
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
@@ -1250,7 +1252,7 @@ export function initScene(el, api) {
   const useTime = b => {
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.speed;
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX;
-    if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); }
+    if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); while (reloads[0]?.t < time - 8) reloads.shift(); }
     return t;
   };
   function press(i, key) {
