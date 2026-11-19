@@ -35,6 +35,7 @@ const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', 
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
+const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
@@ -88,7 +89,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, runes: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -242,8 +243,8 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined }); }
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [] }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -1444,6 +1445,13 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
+      // Fist of Kalguur: a Slam spends a share of its cost as Ward for a Runic Boost (Empowered): part of its damage
+      // gained as physical, and its rune on the first enemy it hits
+      const FK = P.slams && S.dmg?.trig?.find(T => T.stats?.['triggered_by_fist_of_kalguur_support_%']), wc = FK && (S.dmg.cost || 0) * FK.support['support_slam_spend_%_supported_skill_cost_as_ward_for_runic_boost'] / 100;
+      if (FK && me.ward >= wc) {
+        me.ward -= wc; const g = FK.support['runic_boosted_attack_damage_%_gained_as_physical'] / 100, H = S.dmg.hits, sum = j => Object.values(H).reduce((a, h) => a + h[j], 0), ph = H.physical || [0, 0];
+        S.dmg = { ...S.dmg, hits: { ...H, physical: [ph[0] + sum(0) * g, ph[1] + sum(1) * g] } }; S.rune = FK;
+      }
     }
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
@@ -1818,6 +1826,8 @@ export function initScene(el, api) {
     const other = n - chaos; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     me.life -= left;
+    // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
+    if (me.life < 1 && me.ward > 0 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; me.life = 1; }
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -1840,6 +1850,20 @@ export function initScene(el, api) {
   }
   function thornHit(S, d) {
     for (const T of S.dmg?.trig || []) {
+      // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
+      // enemy, for its Ward cost
+      if (T.stats?.['triggered_by_support_rune_forged_blades_%'] && d.st.armour > 0 && me.ward >= (T.wardCost || 0)) {
+        me.ward -= T.wardCost || 0; clear(d, 'armour');
+        const X = asTrig(S, T), n = sh(X).projectiles || T.stats.base_number_of_projectiles; say(X.label, 'physical');
+        for (let k = 0; k < n; k++) { const a = k * TAU / n; shoot(X, d.pos, Math.sin(a), Math.cos(a), { seen: [d] }); }
+      }
+      // Fist of Kalguur: the boosted slam's first hit on an enemy leaves its rune there (up to its limit, the oldest goes),
+      // erupting as an aftershock after its duration; its cooldown
+      if (S.rune === T && spend(T)) {
+        S.rune = null; const X = asTrig(S, T), at = { x: d.pos.x, z: d.pos.z }, R = me.runes, lim = T.support.base_number_of_runic_aftershocks_allowed || 1;
+        R.push(at); if (R.length > lim) R.shift(); say(X.label, 'physical');
+        later(T.shape?.duration || T.stats.base_skill_effect_duration / 1000, () => { const k = R.indexOf(at); if (k < 0) return; R.splice(k, 1); boom(at, X.A, X); });
+      }
       const n = T.support?.trigger_spiked_gauntlets_for_X_hits_after_thorns_trigger, D = n && me.quill < n && thornsOf();
       if (D && !spend(T)) continue;
       if (D) { me.quill++; const Q = asTrig(S, T), X = { ...thornX(D, Q.label), name: T.id, A: Q.A }; say(Q.label, 'dust'); later(.05, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
@@ -2018,7 +2042,7 @@ export function initScene(el, api) {
       res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
       move: [spd() * act * maimed(), spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
       life: rec('life'), mana: rec('mana'), dot: [dot * (me.st.shock > 0 ? 1 + me.mag.shock / 100 : 1), 0],
-      rage: rageMax() ? [rageNow(), 0] : null, guard: me.guard > 0 || charms().some(f => f?.guard) ? [me.guard, 0] : null,
+      rage: rageMax() ? [rageNow(), 0] : null, ward: me.maxW ? [me.ward, 0] : null, guard: me.guard > 0 || charms().some(f => f?.guard) ? [me.guard, 0] : null,
       berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
       // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff (not a
       // totem's or a minion's, nor one a meta gem uses: those act by themselves)
@@ -2132,6 +2156,8 @@ export function initScene(el, api) {
     const c = sheet(), L = c.life || 0, E = c.es || 0; me.known = c.life != null;
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
+    const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? (me.ward || 0) / me.maxW * W : W; me.maxW = W; }
+    me.ward = Math.min(W, (me.ward || 0) + W * WARD_REGEN / 100 * dt);
     me.safe = Math.max(0, me.safe - dt);
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
     for (const a in me.lock) me.lock[a] -= dt;

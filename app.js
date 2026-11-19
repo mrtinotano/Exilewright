@@ -974,7 +974,7 @@ function onLive(L) {
     ${row(t('Movement speed'), L.move, ' m/s', true, 1)}${row(t('Action speed'), L.action, '%')}${row(t('Damage taken'), L.taken, '%', false)}
     ${row(t('Total Life Recovery per second'), L.life, '', true, 1)}${row(t('Mana Recovery per second'), L.mana, '', true, 1)}${row(t('Damage over time taken per second'), L.dot, '', false, 1)}
     ${L.berserk ? row(t('{0}: life lost per second', esc(L.berserk.name)), L.berserk.v, '', false, 1) : ''}
-    ${L.rage ? row(t('Attack damage from Rage'), L.rage, '%') : ''}${L.guard ? row(t('Guard'), L.guard, '') : ''}</table>`;
+    ${L.rage ? row(t('Attack damage from Rage'), L.rage, '%') : ''}${L.ward ? row(t('Runic Ward'), L.ward, '') : ''}${L.guard ? row(t('Guard'), L.guard, '') : ''}</table>`;
   if (html !== liveHtml) $('simChar').innerHTML = liveHtml = html;
   B().gems.forEach((g, i) => {   // the cards' damage per second, as it is now
     const el = document.querySelector(`#sceneList [data-dps="${i}"]`), s = skillDmg(g); if (!el || s.dps == null) return;

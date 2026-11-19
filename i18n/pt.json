@@ -844,5 +844,6 @@
  "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "Interações que o jogo não descreve com exatidão, como se uma Eletrificação sobre outra ativa os gatilhos, ou quando acontece o primeiro pulso de um campo.",
  "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "Animações, tempo do servidor e latência: cada uso leva o tempo de ataque ou de conjuração da habilidade, sem nada no meio.",
  "The order in which effects that happen at once are applied, and the game's rounding.": "A ordem em que efeitos simultâneos são aplicados, e os arredondamentos do jogo.",
- "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Alguns reforços cujo dano as janelas do jogo mostram de forma diferente dos seus atributos: medido no jogo, não lido dos arquivos."
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Alguns reforços cujo dano as janelas do jogo mostram de forma diferente dos seus atributos: medido no jogo, não lido dos arquivos.",
+ "Runic Ward": "Salvaguarda Rúnica"
 }

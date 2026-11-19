@@ -844,5 +844,6 @@
  "Interactions the game does not describe exactly, such as whether a shock over a shock sets off triggers, or when a field's first pulse happens.": "Wechselwirkungen, die das Spiel nicht genau beschreibt, etwa ob ein Schock über einem Schock Auslöser aktiviert oder wann der erste Puls eines Feldes kommt.",
  "Animations, server timing and latency: each use takes the skill's attack or cast time, with nothing else in between.": "Animationen, Server-Timing und Latenz: Jede Verwendung dauert die Angriffs- oder Zauberzeit der Fertigkeit, ohne etwas dazwischen.",
  "The order in which effects that happen at once are applied, and the game's rounding.": "Die Reihenfolge, in der gleichzeitige Effekte angewendet werden, und die Rundungen des Spiels.",
- "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Einige Unterstützungen, deren Schaden die Spielfenster anders zeigen als ihre Werte: im Spiel gemessen, nicht aus den Dateien gelesen."
+ "A few supports whose damage the game's windows show otherwise than their stats: measured in the game, not read from its files.": "Einige Unterstützungen, deren Schaden die Spielfenster anders zeigen als ihre Werte: im Spiel gemessen, nicht aus den Dateien gelesen.",
+ "Runic Ward": "Runenschutz"
 }

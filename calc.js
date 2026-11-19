@@ -261,6 +261,8 @@ export function character(b, sum) {
     missingBase: lifeBase == null,
     // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
     // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
+    // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
+    get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
   };
@@ -416,8 +418,7 @@ export function sheet(b, sum) {
   const cut = x => x ? armourReduction(x, lvl) : 0;
   // block: its cap is character.ot's 50% plus "maximum Block chance"
   const blockMax = (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%');
-  // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
-  const ward = (v(sum, 'base_maximum_ward') + (c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%');
+  const ward = c.ward;
   // ailment durations on you: the ailment's own, the elemental ones' and all ailments' ("reduced" stats count down)
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
   const selfDur = e => v(sum, `base_self_${e}_duration_-%`) + eleAil - allAil;
@@ -827,7 +828,7 @@ export function skill(g, b, treeGear) {
     ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['base_physical_damage_equal_to_%_of_totem_life'] ? unit('physical') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
   out.totemLife = totem(g, treeGear)?.life;   // Tawhoa's Tending's explosion
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
-    .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {} })));
+    .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {}, wardCost: SK.skills[id].levels?.[g.level]?._cost?.Ward })));   // Runeforged Blades: its cost in Runic Ward
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
   out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
