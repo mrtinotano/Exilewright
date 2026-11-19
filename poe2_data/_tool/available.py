@@ -428,6 +428,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
 # the skills supports set off (Shocking Rift, Volcanic Eruption, Fiery Death...) as skills of their own, under their
 # GrantedEffects id: per level, as they take the level of the skill the support is on (Path of Building 2,
 # CalcActiveSkill: "Active skills granted by support gems inherit the level of the skill that support applied to")
+AOE = 'active_skill_base_area_of_effect_radius'
 TAG_OF = {'Attack', 'Spell', 'Area', 'Projectile', 'Melee', 'Duration', 'Fire', 'Cold', 'Lightning', 'Physical', 'Chaos'}
 for g in gems:
     if g['kind'] != 'support' or not skills.get(g['name'], {}).get('triggers'):
@@ -440,7 +441,7 @@ for g in gems:
         skills[x['Id']] = {'name': a.get('DisplayedName'), **(tr(active_skills_tr, x['ActiveSkill'], 'DisplayedName', 'name') if a else {}),
                            'triggered_by': g['name'], 'types': kinds, 'tags': sorted(t.lower() for t in kinds if t in TAG_OF),
                            'cast_time_ms': x['CastTime'], 'constant': const, 'levels': levels or None,
-                           'radius': {l: st.get('active_skill_base_area_of_effect_radius', const.get('active_skill_base_area_of_effect_radius')) for l, st in levels.items()} if 'active_skill_base_area_of_effect_radius' in const else None,
+                           'radius': {l: st.get(AOE, const.get(AOE)) for l, st in levels.items() if AOE in st or AOE in const} or None,
                            'flags': sorted(k for k in map(sid, ss_tab[x['StatSet']]['ImplicitStats']) if PART_FLAG.search(k)) or None}
 ot = text('metadata', 'characters', 'character.ot')
 base_speed = int(ot.split('Pathfinding')[1].split('base_speed')[1].split('=')[1].split()[0])

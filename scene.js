@@ -330,6 +330,7 @@ export function initScene(el, api) {
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
+      if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); }
       if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
@@ -453,21 +454,37 @@ export function initScene(el, api) {
   // Electromagnetism consumes the shock of every enemy within its radius when at least that many are shocked there
   // (not already in a rift) for a Shocking Rift: its pulses, interval (faster per shock consumed) and more damage per
   // pulse performed; Volcanic Eruption, on a strike hitting an ignited enemy: its projectiles land around it
-  // (min / max distance) and burst (note: their flight time is not in the data, the scene's delayed-impact time)
+  // (min / max distance) and burst (note: their flight time is not in the data, the scene's delayed-impact time);
+  // Voltaic Fulmination (Eonyr's Thunder): an enemy killed while electrocuted explodes after its delay, a share of its
+  // maximum life (PoB2: corpseExplosionLifeMultiplier) as lightning; Mana Flare: a crit consumes that share of your
+  // current mana as fire damage around the enemy; Elemental Discharge: a hit consumes the enemy's ignite, freeze and
+  // shock for damage of those elements only. Their base damage scaled from calc.js's (100 for a share, Int for Discharge)
   const trigReady = {}, fields = { static: [], rift: [] };
+  const ON = { rift: 'shock', static: 'shock', current: 'shock', erupt: 'ignitedHit', fulminate: 'electrocuteKill', flare: 'crit', discharge: 'hit' };
+  const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
     for (const T of S?.dmg?.trig || []) {
       const ts = T.stats || {}, U = T.support, kind = ts.shocking_rift_number_of_pulses ? 'rift' : ts.grounding_shocks_pulse_delay_ms ? 'static'
-        : ts.chance_to_trigger_volcanic_eruption ? 'erupt' : ts.number_of_chains ? 'current' : null;
-      if (!kind || T.reason || (kind === 'erupt') !== (on === 'ignitedHit')) continue;
+        : ts.chance_to_trigger_volcanic_eruption ? 'erupt' : ts.number_of_chains ? 'current' : ts['triggered_by_support_electrocute_lineage_%'] ? 'fulminate'
+        : ts['support_mana_flare_%_of_current_mana_consumed'] ? 'flare' : ts['spell_minimum_base_cold_damage_as_%_of_intelligence'] ? 'discharge' : null;
+      if (!kind || T.reason || ON[kind] !== on) continue;
+      const gone = kind === 'discharge' && Object.keys(DISCHARGE).filter(a => has(d, a));
+      if (gone && !gone.length) continue;
       const near4 = kind === 'rift' && dummies.filter(e => !e.dead && !e.inRift && has(e, 'shock') && dist(e.pos, d.pos) <= U.try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy / 10);
       if (near4 && near4.length < U.consume_shock_of_X_enemies_to_trigger_shocking_rift) continue;
       if (T.cooldown) { const r = trigReady[T.id] = (trigReady[T.id] || []).filter(at => at > time); if (r.length >= (T.uses || 1)) continue; r.push(time + T.cooldown / 1000); }
-      const inf = api.info({ name: T.id }), els = Object.keys(T.hits);
-      const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
-      const c = { x: d.pos.x, z: d.pos.z }, R = (ts.active_skill_base_area_of_effect_radius || 0) / 10;
+      let f = 1, hits = T.hits;
+      if (kind === 'fulminate') f = d.max * (ts.skill_specific_stat_description_mode || 0) / 1e4;
+      if (kind === 'flare') { const used = me.mana * ts['support_mana_flare_%_of_current_mana_consumed'] / 100; me.mana -= used; f = used / 100; }
+      if (gone) { for (const a of gone) clear(d, a); hits = Object.fromEntries(gone.map(a => DISCHARGE[a]).filter(e => T.hits[e]).map(e => [e, T.hits[e]])); }
+      hits = Object.fromEntries(Object.entries(hits).map(([e, [lo, hi]]) => [e, [lo * f, hi * f]]));
+      const inf = api.info({ name: T.id }), els = Object.keys(hits);
+      const X = { ...S, name: T.id, label: inf.label, P: prof({ name: T.id }, inf), dmg: { ...T, hits, trig: [] }, src: 'trigger', el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1, spent: 0, stage: null };
+      const c = { x: d.pos.x, z: d.pos.z }, R = api.geo({ name: T.id, level: S.g?.level || 1, supports: [] }).radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10;   // with the build's area
       say(X.label, X.el);
-      if (kind === 'current') { const e = near(d.pos, sh(X).chainRange || SIM.chainRange, e => e !== d); if (e) chain(chest(d), e, X, (sh(X).chains || 1) - 1, new Set([d])); }
+      if (kind === 'fulminate') later((ts.explosion_delay_ms || 0) / 1000, () => boom(c, R, X));
+      else if (kind === 'flare' || kind === 'discharge') boom(c, R, X);
+      else if (kind === 'current') { const e = near(d.pos, sh(X).chainRange || SIM.chainRange, e => e !== d); if (e) chain(chest(d), e, X, (sh(X).chains || 1) - 1, new Set([d])); }
       else if (kind === 'erupt') for (let k = 0; k < (ts.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(ts.skill_mortar_minimum_projectile_distance, ts.skill_mortar_maximum_projectile_distance) / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
         later(SIM.meteor, () => boom(q, R, X));
@@ -641,6 +658,7 @@ export function initScene(el, api) {
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     if (st.shock > 0) gainBuff(S, 'shockKill');
+    if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
     deathBlast(d, frozen, S);
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);

@@ -559,7 +559,7 @@ export function skill(g, b, treeGear) {
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
   const { sum, fin, mods, finals } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
-  const st = gemStats(g, sum);
+  const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
   const ownTotem = !own.includes('meta') && d.totem || null, gt = G.types || [];
@@ -800,8 +800,14 @@ export function skill(g, b, treeGear) {
   out.lifeOnKill = sup('support_cannibalism_recover_%_maximum_life_on_kill');
   // the skills its supports set off (Coursing Current, Static Shocks, Electromagnetism, Volcanic Eruption...), at this
   // gem's level (PoB2: granted skills inherit the level of the skill the support is on), with the tree's and gear's modifiers
+  // Base damage that is not in the skill's levels: Elemental Discharge's, a share of your Intelligence (PoB2's PercentStat
+  // Int); Mana Flare's (of the mana it consumes) and Voltaic Fulmination's (of the enemy's maximum life) known only in the
+  // scene, so a base of 100 there to scale
+  const intel = attributes(treeGear, b.asc).int, unit = el => ({ [`spell_minimum_base_${el}_damage`]: 100, [`spell_maximum_base_${el}_damage`]: 100 });
+  const baseOf = c => ({ ...Object.fromEntries(Object.entries(c).flatMap(([k, x]) => { const m = k.match(/^spell_(minimum|maximum)_base_(\w+)_damage_as_%_of_intelligence$/); return m ? [[`spell_${m[1]}_base_${m[2]}_damage`, x * intel / 100]] : []; })),
+    ...(c['support_mana_flare_%_of_current_mana_consumed'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}) });
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
-    .map(id => ({ ...skill({ name: id, level: g.level, supports: [] }, b, treeGear), id, support: SK.skills[n].constant || {} })));
+    .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {} })));
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
   out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
