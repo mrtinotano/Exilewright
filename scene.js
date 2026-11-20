@@ -3678,7 +3678,7 @@ export function initScene(el, api) {
     const TN = onS('Time of Need')?.dmg?.stats;
     if (TN && time - (me.needAt ??= time) >= TN.base_cooldown_modifiable_repeat_interval_ms / 1000) {
       me.needAt = time; me.life = Math.min(me.maxL, me.life + TN.skill_time_of_need_gain_x_life);
-      for (const a of ['ignite', 'chill', 'freeze', 'shock', 'electrocute']) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; }
+      for (const a of EL_AIL) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; }
       fx.ring(pp, 1.5, .2, 'gold', .5); hudT = 0;
     }
     // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
