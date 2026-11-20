@@ -1745,6 +1745,9 @@ export function initScene(el, api) {
           boom(q, r, S);
         }); }
         else boom(c, R, S);
+        // Tremors: its independent chances for one, two and three more Aftershocks, each the slam's damage in its area after it (keywords.json)
+        const TR = !S.src && S.dmg?.sum, n = TR ? [['one', 1, ''], ['two', 2, 's'], ['three', 3, 's']].reduce((n, [w, k, p]) => n + (Math.random() * 100 < (TR[`support_slam_chance_for_${w}_additional_aftershock${p}_%`] || 0) ? k : 0), 0) : 0;
+        for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R, S); });
         // Tectonic Slams: its Aftershocks ahead and to each side of the slam, at once, with its less damage and area
         const TC = !S.src && S.dmg?.sum?.number_of_dual_cascade_aftershocks;
         if (TC) {
