@@ -1186,7 +1186,7 @@ export function initScene(el, api) {
     // collected, its faster life regeneration for its duration
     // Grim Feast: a Reviving minion slain in your Presence (its chance) leaves a Grim Remnant storing its % of the minion's
     // maximum life; collected, it adds to the life you hold, up to its most (see grim)
-    'Grim Feast': { c: 'chaos', get: (s, k, S) => { me.grim = Math.min(s.grim_remnant_max_health_stored, (me.grim || 0) + S.store * k); } },
+    'Grim Feast': { c: 'chaos', get: (s, k, S) => { me.grim = Math.min(s.grim_remnant_max_health_stored, me.grim + S.store * k); } },
     Rip: { c: 'blood', get: (s, k, S) => { const su = S.dmg.sum; me.rip = { rate: su['rip_support_life_regeneration_rate_+%'] * k, until: time + su.rip_support_buff_base_duration / 1000 }; } },
   };
   const leechIn = (r, n) => { const q = me.leech[r]; q.left += n; q.rate = q.left; };   // over one second, as Leech
@@ -2970,7 +2970,7 @@ export function initScene(el, api) {
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
   }
   function grim(S) {
-    let n = me.grim || 0, k = 0; me.grim = 0;
+    let n = me.grim, k = 0; me.grim = 0;
     me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n) return !!X; n -= f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
     fx.ring(pp, .3, 2, 'chaos', .5); say(t('{0}: {1} Revived', S.label, k), 'chaos');
   }

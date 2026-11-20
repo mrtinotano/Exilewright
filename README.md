@@ -64,8 +64,10 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   for the items with the most of each of the best modifiers; the weighted search Path of Building makes opens on the
   site with one link (it runs there when you are logged in).
   Or *Chosen modifiers*: the item must have every modifier picked, each with at least the value typed (the ones of
-  the item worn to start from); the site lists them cheapest first. The Equipment tab has the same as one button under
-  an item: the same or better, up to a price.
+  the item worn to start from), each kind its own (implicit, fractured, crafted, enchantment, rune, desecrated…), of
+  the same base or any. The search starts from the dearest under the price and goes down to 10, shown cheapest first.
+  The Equipment tab has the same under an item: a box for each of its modifiers, a price and its currency, and the
+  results in the item window.
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
 **Equipment comparison** (Settings) says whether an item is better than what the character wears: hold the pointer over an item in
@@ -124,7 +126,11 @@ monsters, none above the gem's level limit), Exposure lowers resistances by its 
 critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
 speed the planner calculates for a totem, up to the build's totem limit. Minions are the game's monster their gem raises,
-at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers.
+at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers,
+and their life (the allies' life at their level times their monster's, with your increased and more minion life):
+enemies nearer to a minion than to you attack it, and it dies at none left. Bone Offering shields them while its spike
+stands, Grim Feast gathers the life of the persistent ones slain in your Presence for its Grim Resurrection, and
+Healing Runes spends Runic Ward to heal them.
 Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Skills with mechanics of their own follow
 their gem's numbers too: Glory built from the enemy's Power (Banners, Hammer of the Gods, Walking Calamity), Banners and
 Rite of Restoration's Sigil buffing you while you stand in them (the Sigil gaining stages from the mana you spend there),
