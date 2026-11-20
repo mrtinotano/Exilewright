@@ -383,7 +383,7 @@ export function initScene(el, api) {
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
-    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
+    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = o.stunX ?? 1;
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
     if (!o.noPay) {
@@ -489,6 +489,8 @@ export function initScene(el, api) {
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
+    if (own && !S.src) { if (S.name === 'Wing Blast') wingBlast(S, d); if (S.vb) discharge(S.vb, d); if (P.melee && me.lunar?.until > time) moonbeams(d); }
+    if (own && d.curse?.name === 'Repulsion' && S.name !== 'Repulsion' && S.src !== 'repulsion') repulse(d);
     if (d.agony && S.src !== 'agony' && (d.agony.n += total * d.agony.pct / 100) >= d.life) agonyEnds(d);   // Inevitable Agony
     // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
     // shatter in its explosion. note: how long the shards last is not in the data, until they shatter here
@@ -950,6 +952,51 @@ export function initScene(el, api) {
     const c = { x: d.pos.x, z: d.pos.z }, R = X.A * Math.sqrt(1 + Math.min(500, xs['blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%'] * Math.floor(n / xs['blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final'])) / 100);
     fx.explode(V(c.x, .8, c.z), R, 'blood'); boom(c, R, { ...X, mult: S.mult });
     for (const e of inside(c, R)) damage(e, n * xs['blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss'] / 100, X, false, true);
+  }
+  // Wing Blast: its hit Heavy Stuns an enemy Primed for it (keywords.json PrimedStun), which releases its shockwave (its
+  // part; more from a Unique enemy) and has its chance to grant you a Power Charge. note: its knockback and leap back are
+  // not simulated
+  function wingBlast(S, d) {
+    if ((d.bar.stun || 0) < PRIMED[d.stat.rarity]) return;
+    const st = S.dmg.stats, X = partOf(S, 'WingBlastStunExplosionPlayer'), c = { x: d.pos.x, z: d.pos.z };
+    d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun });
+    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats['wing_blast_shockwave_damage_+%_final_if_created_from_unique'] / 100 : 1), src: 'shockwave' }); }
+    if (Math.random() * 100 < st['wing_blast_chance_to_gain_power_charge_on_stun_%']) gainCharge('power', S.label);
+  }
+  // Repulsion: its curse inflicts its Fragility; a hit of yours on the cursed enemy removes it for an explosion there
+  // (its own damage and area) with more stun buildup per Fragility, and that enemy cannot be cursed by it for its time.
+  // note: its knockback is not simulated
+  function repulse(d) {
+    const C = d.curse, RS = C.S, st = RS.dmg.stats, c = { x: d.pos.x, z: d.pos.z };
+    d.curse = null; d.noRepulse = time + st.repulsion_curse_when_detonated_prevent_curse_for_X_ms / 1000;
+    fx.ring(c, .3, RS.A, 'gold', .4);
+    const D = granted('Repulsion Wave', RS.g?.level), X = D && { ...asTrig(RS, { ...D, id: 'Repulsion Wave' }), label: RS.label, src: 'repulsion' }; if (!X) return;
+    later(.05, () => boom(c, RS.A, X, { stunX: 1 + st['curse_repulsion_shockwave_hit_damage_stun_multiplier_+%_final_per_fragility_on_special_object'] * st.curse_repulsion_applies_X_fragility / 100 }));
+  }
+  // Voltaic Barrier: a projectile of yours through its wall is energised; its hit discharges the part's chaining
+  // lightning to up to its most other enemies within its radius of the one hit, each beam chaining its number of times
+  function discharge(X, d) {
+    const n = X.dmg.stats.voltaic_barrier_trigger_maximum_number_of_extra_targets, seen = new Set([d]);
+    for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.stats.number_of_chains || 0, seen);
+  }
+  // Lunar Blessing: it spends all your Rage, its buff longer by its time per Rage spent, gaining its % of all damage as
+  // extra cold. While on, a melee hit of yours calls down Moonbeams (its part) after its delay: the first on the enemy
+  // hit, its extra ones on enemies within its secondary radius, each its time apart.
+  // note: one volley at a time here (its same-target prevention is 0); the werewolf form itself is not simulated
+  function lunar(S) {
+    const st = S.dmg.stats, n = me.rage, dur = durOf(S) + n * st.skill_lunar_blessing_extend_buff_by_X_ms_per_rage / 1000;
+    me.rage = 0; me.lunar = { until: time + dur, S, busy: 0 };
+    setBuff({ label: S.label, name: 'lunar', c: css('cold'), s: dur, gain: { el: 'cold', pct: st['wolf_lunar_blessing_all_damage_%_to_gain_as_cold_damage'] } });
+    fx.ring(pp, .3, S.A, 'cold', .5); fx.pillar(pp, .5, 4, 'cold', .5, 2); say(t('{0} active', S.label), 'cold');
+  }
+  function moonbeams(d) {
+    const L = me.lunar, X = L && partOf(L.S, 'WolfLunarBlessingBeamAttackPlayer'); if (!X || time < L.busy) return;
+    const xs = X.dmg.stats, wait = xs.wolf_lunar_blessing_beam_attack_delay_ms / 1000, step = xs.wolf_lunar_blessing_beam_attack_delay_between_beams_ms / 1000, R2 = radOf(X, 'secondary');
+    L.busy = time + wait + step * xs.wolf_lunar_blessing_beam_attack_extra_beams_to_trigger;
+    for (let k = 0; k <= xs.wolf_lunar_blessing_beam_attack_extra_beams_to_trigger; k++) later(wait + k * step, () => {
+      const e = k ? nearest(d.pos, 9, e => dist(e.pos, d.pos) <= R2)[Math.floor(rnd(3))] || d : d; if (e.dead) return;
+      const c = { x: e.pos.x, z: e.pos.z }; fx.streak(V(c.x, 9, c.z), V(c.x, .1, c.z), 'cold', .2, .1, 1); boom(c, X.A, { ...X, mult: L.S.mult, src: 'moonbeam' }, { soft: true });
+    });
   }
   // Harbinger of Madness: an enemy your melee hits kill (no more than once every its time) and a Rare or Unique one your
   // melee attacks hit (its chance) give an Unstable Apparition that charges the nearest other enemy and explodes in its
@@ -1586,6 +1633,7 @@ export function initScene(el, api) {
             cur = { ...cur, els: [...new Set([...cur.els, 'fire'])], el: 'fire', ail: [...new Set([...cur.ail, 'ignite'])], fired: true, ...(add && H ? { dmg: { ...cur.dmg, hits: { ...H, fire: [F[0] + add[0], F[1] + add[1]] } } } : {}) }; tint(m, 'fire');
             say(t('{0} gains fire through {1}', S.label, w.label), 'fire'); break;
           }
+          if (!cur.vb) for (const w of objs) if (w.volt && !w.dead && segDist(m.position, w.a, w.b) < .45) { cur = { ...cur, vb: { ...w.volt, mult: w.S.mult } }; tint(m, 'lightning'); say(t('{0} is energised by {1}', S.label, w.label), 'lightning'); break; }
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
@@ -1921,12 +1969,16 @@ export function initScene(el, api) {
       if (P.earthen) { fx.strip(a, b, 1.2, S.el, dur, { a: .6 }); return shieldWall(S, a, b, c, dur); }
       // its own limit (Flame Wall's 3); a wall with damage over time burns those in it (its damage per second), else hits
       limit(o => o.wall && o.name === S.name, S.dmg?.stats?.number_of_allowed_firewalls);
+      // Voltaic Barrier: its own limit, its hits every its interval (not the scene's lesser ones), and it energises the
+      // projectiles fired through it (discharge)
+      const VS = S.dmg?.stats?.voltaic_barrier_damage_interval_ms, volt = VS && partOf(S, 'VoltaicBarrierTriggeredChainLightningPlayer');
+      if (VS) limit(o => o.wall && o.name === S.name, S.dmg.stats.voltaic_barrier_active_actions_limit);
       const strip = fx.strip(a, b, 1.2, S.el, dur, { a: .6 }), burns = Object.keys(S.dmg?.dot || {}).length > 0;
-      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label, S,
+      thing(holder(c), dur, { wall: true, fire, volt, a, b, name: S.name, label: S.label, S,
         tick(dt, e) {
           for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
-          if ((tk -= dt) > 0) return; tk = burns ? .2 : .5;
-          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) burns ? dot(d, { ...S, P: { ...S.P, dur: .3 } }) : hit(d, { ...S, self: e }, { mult: .3, noPay: true });
+          if ((tk -= dt) > 0) return; tk = burns ? .2 : VS ? VS / 1000 : .5;
+          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) burns ? dot(d, { ...S, P: { ...S.P, dur: .3 } }) : hit(d, { ...S, self: e }, { mult: VS ? 1 : .3, noPay: true });
         }, off: () => { strip.dur = Math.min(strip.dur, strip.t); } });   // a wall over the limit goes
     },
     curse(S) {
@@ -1937,10 +1989,11 @@ export function initScene(el, api) {
         fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
         const C = S.dmg?.curse; let n = 0;
         const curseOn = (d, quiet) => {
+          if (d.noRepulse > time && S.name === 'Repulsion') return;
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
           const s = (sh(S).duration || SIM.curseTime) * (S.curseX || 1);
-          d.curse = { s, full: s, label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -1957,6 +2010,7 @@ export function initScene(el, api) {
       markOn(d, S); say(t('{0} marks the target', S.label), 'mark');
     },
     warcry(S) {
+      if (S.name === 'Lunar Blessing') return lunar(S);
       // Echoing Cry: it Echoes its times after its delay, its area larger each time (its description: "grows larger")
       const ES = !S.echoK && S.dmg?.sum || {}, EN = ES.base_warcry_echo_X_times;
       for (let k = 1; k <= (EN || 0); k++) later(k * ES.warcry_echo_delay_ms_from_support / 1000, () => K.warcry({ ...S, echoK: k, from: { x: pp.x, z: pp.z }, A: S.A * Math.sqrt(1 + (ES['warcry_echo_area_of_effect_+%_final_per_repeat'] || 0) * k / 100) }));

@@ -148,7 +148,9 @@ Encase in Jade with Jade Heritage's stacks, Midnight Zenith's crystals (with the
 of Building 2's stat set), Fragments Of The Past's volcano and its Ice Fragments, Ice Shards' shards that arm and grow stronger, Blood Hunt's
 explosion of the Blood Loss an enemy has taken, Decompose's growing gas cloud exploding with its own fire and
 the corpse's life as chaos, Blind (Flash Grenade) lowering an enemy's accuracy and evasion, Called Shots marking an enemy every
-five seconds and passing a consumed Mark on, Wardbound Minions and Rigwald's Ferocity by weapon set. The ≡ button opens a combat log: the last hits, kills
+five seconds and passing a consumed Mark on, Voltaic Barrier energising the projectiles fired through it to discharge
+chaining lightning, Repulsion's curse detonating on your hit, Wing Blast's shockwave on a Primed enemy, Lunar Blessing's
+Moonbeams, Wardbound Minions and Rigwald's Ferocity by weapon set. The ≡ button opens a combat log: the last hits, kills
 and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
 as the game does. Where the data leaves something out (a time, a count),
 the code says so in a `note:` comment. Numbers that use a value of the

@@ -611,7 +611,9 @@ export function skill(g, b, treeGear) {
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
   const ownTotem = !own.includes('meta') && d.totem || null, gt = G.types || [];
-  const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
+  // a warcry's part with damage (Fortifying Cry's shockwave, Ancestral Cry's projectiles, Lunar Blessing's Moonbeams) is
+  // an attack with the weapon (PoB2's baseFlags attack), though the warcry itself is not
+  const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem') || !!g.part && gt.includes('Warcry'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];

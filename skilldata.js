@@ -13,4 +13,7 @@ const own = st => Object.fromEntries(Object.entries(st).map(([k, x]) => k === 'c
 for (const [name, sets] of Object.entries(POB.stat_sets || {})) for (const [part, P] of Object.entries(sets)) {
   const S = SK.skills[name]; if (S) (S.parts ||= {})[part] = { constant: P.constant, levels: Object.fromEntries(Object.entries(P.levels).map(([n, st]) => [n, own(st)])) };
 }
+// Repulsion's explosion is a skill of its own, a physical attack not based on the weapon (PoB2 Skills/other.lua
+// CurseOfRepulsionShockwavePlayer, "Repulsion Wave"); the dump lays its numbers (its damage, crit) over the gem's
+if (SK.skills.Repulsion) SK.skills['Repulsion Wave'] = { ...SK.skills.Repulsion, triggered_by: 'Repulsion', types: ['Attack', 'Area', 'Physical', 'NonWeaponAttack', 'Triggered'], tags: ['attack', 'area', 'physical'] };
 export { SK };

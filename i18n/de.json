@@ -381,6 +381,7 @@
  "{0} finds nothing to consume ({1})": "{0} findet nichts zum Verbrauchen ({1})",
  "{0} fires an extra bolt": "{0} feuert einen zusätzlichen Blitz ab",
  "{0} gains fire through {1}": "{0} erhält Feuer durch {1}",
+ "{0} is energised by {1}": "{1} lädt {0} auf",
  "{0} gains {1} from {2}": "{0} erhält {1} durch {2}",
  "{0} hits harder: {1}": "{0} trifft härter: {1}",
  "{0} marks the target": "{0} markiert das Ziel",
