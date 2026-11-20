@@ -1663,7 +1663,7 @@ export function initScene(el, api) {
         if (P.jump) landed(S, at);
         // Stampede: its leaping slam at the end (its part), setting off the Jagged Ground within it, each exploding
         const SS = partOf(S, 'StampedeSlamPlayer');
-        if (SS) { boom(at, SS.A, { ...SS, mult: S.mult }); slammed(SS, at, SS.A); for (const g of grounds) if (!g.dead && g.type === 'jagged' && dist(g, at) <= SS.A + g.r) { g.dead = true; boom({ x: g.x, z: g.z }, g.r, S, { soft: true }); } }
+        if (SS) { boom(at, SS.A, { ...SS, mult: S.mult }); slammed(SS, at, SS.A); for (const g of grounds) if (!g.dead && g.type === 'jagged' && dist(g, at) <= SS.A + g.r) { g.dead = true; boom(g, g.r, S, { soft: true }); } }
         // Molten Crash: its Molten Fissures (its part, up to its limit, lasting its duration), one more for the Rage it
         // consumes on landing if you have it, then its second slam setting them off
         // note: one fissure without Rage is the description's plural read at its least; their length is not in the data
@@ -2201,6 +2201,20 @@ export function initScene(el, api) {
     });
     if (l <= reach) eatAll();
     else if (l <= reach + st.base_melee_dash_range / 10) move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { boom(at, S.A, S); eatAll(); } };
+  };
+  // Thrashing Vines: its growth area at the target (its limit, its duration), a vine crashing in it every its share of the
+  // cast time, onto an enemy in it if there is one, hitting its secondary area
+  // note: the Overgrown ("wet") vines are not simulated
+  K.vines = S => {
+    const st = S.dmg?.stats || {}, c = { ...S.at }, R = S.A, r = radOf(S), every = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * st['awakened_forest_spawn_vines_per_X%_cast_time'] / 100;
+    const was = objs.find(o => o.forest && o.name === S.name && !o.dead && dist(o.c, c) <= R); if (was) { was.s = 0; return; }   // sustained: the same area goes on
+    limit(o => o.forest && o.name === S.name, st.base_number_of_awakened_forests_allowed);
+    const ring = fx.decal(c, R, 'outline', 'poison', { a: .35, rot: 0 }); let k = 0;
+    thing(holder(c), durOf(S), { name: S.name, forest: true, c, off: () => ring.remove(), tick(dt) {
+      if ((k -= dt) > 0) return; k = every;
+      const d = near(c, R), q = d ? { x: d.pos.x, z: d.pos.z } : around(c, R);
+      fx.pillar(q, r * .4, 2.4, 'poison', .3, 2); later(.2, () => boom(q, r, S, { soft: true }));
+    } });
   };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
@@ -3223,7 +3237,7 @@ export function initScene(el, api) {
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
       if (m.S) {
         fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
-        if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', { x: pp.x, z: pp.z }, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
+        if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', pp, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); }
