@@ -368,14 +368,7 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
-      // Mantra of Destruction: its Empowered attack's share of damage as extra chaos, and the Purple Flames' per stack
-      const GC2 = (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0);
-      if (GC2) raw.chaos = (raw.chaos || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GC2 / 100;
       if (S.P.attack && !S.src && raw.physical) briarStore(raw.physical);
-      // Mana Tempest, Charged Shots, Volt, Thrill of the Kill: their share of all damage as extra lightning
-      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
-      const GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0);
-      if (GL) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GL / 100;
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
       // Trinity: more elemental damage per 30 Affinity of any type (its text; the stat's name says 50); a hit dealing
@@ -386,7 +379,13 @@ export function initScene(el, api) {
         for (const e of ELEM) if (raw[e]) raw[e] *= k;
         if (top) for (const e of ELEM) { if (e === top) { me.aff[e] = Math.min(TRINITY_MAX, me.aff[e] + TR.trinity_resonance_to_grant); me.affAt[e] = time; } else me.aff[e] = Math.max(0, me.aff[e] - TR.trinity_loss_per_hit); }
       }
-      const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
+      // shares of all damage gained as extra damage of a type, each of the damage before any of them: the buffs'; Mantra
+      // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
+      // and Thrill of the Kill as lightning
+      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
+      const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
+        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0) }];
+      const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
       if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
