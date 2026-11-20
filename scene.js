@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'wither']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -95,7 +95,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -162,7 +162,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).includes('Banner') ? [i] : []);
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') ? [i] : []);   // Temporal Rift: on, and cast
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -261,7 +261,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { kaom: null, calamity: null, chayula: null, demon: null, arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { kaom: null, calamity: null, chayula: null, demon: null, rifts: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -2550,6 +2550,13 @@ export function initScene(el, api) {
       fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
     } }));
   };
+  // Temporal Rift: an afterimage of you every its interval, up to its most (vitals); used, you go back to the oldest, with
+  // the life, mana and energy shield you had then
+  K.trift = S => {
+    const o = me.rifts[0]; if (!o) return; fx.ring(pp, .2, 1.5, S.el, .4);
+    pp.x = o.x; pp.z = o.z; Object.assign(me, { life: o.life, mana: o.mana, es: o.es }); me.rifts = [];
+    fx.ring(pp, 1.5, .2, S.el, .4); say(t('{0} active', S.label), S.el);
+  };
   // Mana Drain: Leeches its amount of mana from the enemy at your aim, at its leech rate, and Hinders it
   K.drain = S => {
     const st = S.dmg.stats, d = near(S.at, 2); if (!d) return;
@@ -3638,6 +3645,10 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     leylines(dt); bells(dt); boils(); regulation();
+    const TRF = onS('Temporal Rift')?.dmg?.stats;
+    if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
+      me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
+    }
     // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
     // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when
     // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
