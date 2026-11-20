@@ -18,6 +18,7 @@ import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from '.
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
+import { SK } from './skilldata.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -640,6 +641,8 @@ export function initScene(el, api) {
     decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
+    const CS = on === 'mark' && S?.called;
+    if (CS && Math.random() * 100 < (SK.skills['Called Shots'].meta_support?.['your_marks_spread_to_a_nearby_enemies_on_consume_%_chance'] || 0)) later(.1, () => { const e = unmarked(d.pos, CALLED.spread)[0]; if (e) markOn(e, S); });
     for (const T of S?.dmg?.trig || []) {
       const ts = T.stats || {}, U = T.support, kind = KINDS.find(([k]) => ts[k])?.[1];
       if (!kind || T.reason && kind !== 'charged' || ON[kind] !== on) continue;   // Charged Mark only leaves ground
@@ -854,6 +857,21 @@ export function initScene(el, api) {
     const o = d.dots.find(o => o.name === S.name), s = S.P.dur || 5, v = dotOf(d, S);
     if (o) Object.assign(o, v, { s, S }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
     d.by = S; return d.dots.find(o => o.name === S.name);
+  }
+  function markOn(d, S) {
+    d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
+    fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
+  }
+  // Called Shots: while it is on, every five seconds a Mark placed in it marks its number of unmarked enemies within its
+  // radius, the nearest; a consumed one passes (its meta_support's chance) to the nearest unmarked enemy within 3 m of
+  // that one. note: the five seconds and the 3 m are poe2db's text, not in the app's data; the "at most once every few
+  // seconds" of the passing is not either, so it is not limited
+  const CALLED = { every: 5, spread: 3 };
+  const unmarked = (p, r) => dummies.filter(e => !e.dead && !e.mark && dist(e.pos, p) <= r).sort((a, b) => dist(a.pos, p) - dist(b.pos, p));
+  function called() {
+    const CS = onS('Called Shots'); if (!CS || time - (me.calledAt ?? -99) < CALLED.every) return;
+    me.calledAt = time;
+    api.build().gems.forEach((g, i) => { const S = g.meta === 'Called Shots' && base(i); if (S?.kind === 'mark') for (const d of unmarked(pp, CS.A).slice(0, CS.dmg.stats.deadeye_meta_marks_number_of_enemies_to_mark)) markOn(d, { ...S, called: CS }); });
   }
   // Things that react to what happens: meta gems fill their energy, persistent buffs grant charges.
   function metaWants(P) {
@@ -1667,7 +1685,10 @@ export function initScene(el, api) {
     pop(c, 1, S.el); area(c, 1, { ...S, self: e }, { noTouch: true });
   }
   const ICE = new THREE.ConeGeometry(.32, 1.5, 5);
-  function crystal(S, p, dur, B = S) {   // B: the skill its burst is (Grim Pillars' explosion part)
+  // life: a crystal with its own (Midnight Zenith's) takes the average of each hit's damage and bursts at none left
+  // (note: what its defences take off is not in the data); else any hit bursts it
+  const avgHit = by => Object.values(by.dmg?.hits || {}).reduce((t, [a, b]) => t + (a + b) / 2, 0) * (by.mult ?? 1);
+  function crystal(S, p, dur, B = S, life = 0) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
     m.position.set(p.x, .75, p.z); m.rotation.set(rnd(-.15, .15), rnd(TAU), rnd(-.15, .15)); m.scale.setScalar(.01); m.castShadow = true;
     fx.emit(8, { p: { x: p.x, y: .2, z: p.z }, r: .3, v: 1, up: 2, life: .5, size: .16, c: 'ice' });
@@ -1675,6 +1696,7 @@ export function initScene(el, api) {
     const e = thing(m, dur, { r: .4, name: S.name, ice: true,
       tick(dt, e) { const s = ease(Math.min(1, e.s * 5)); m.scale.set(s, s * h, s); },
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
+        if (life > 0 && (life -= avgHit(by)) > 0) return;
         e.dead = true;
         later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, B.A, { ...B, self: e, src: 'crystal' });
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
@@ -1911,10 +1933,8 @@ export function initScene(el, api) {
     },
     mark(S) {
       const d = near(S.at, SIM.snap); if (!d) return toast(t('No enemy at the cursor'));
-      for (const e of dummies) if (e.mark) e.mark = null;   // one mark at a time
-      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
-      fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
-      say(t('{0} marks the target', S.label), 'mark');
+      for (const e of dummies) if (e.mark && !e.mark.S.called) e.mark = null;   // one mark at a time (besides Called Shots')
+      markOn(d, S); say(t('{0} marks the target', S.label), 'mark');
     },
     warcry(S) {
       // Echoing Cry: it Echoes its times after its delay, its area larger each time (its description: "grows larger")
@@ -2394,6 +2414,25 @@ export function initScene(el, api) {
           if (X && (tk -= dt) <= 0) { tk = every; spray(one, X); } },
         off: () => dec.remove() });
     },
+    // Fragments Of The Past: a Verisium volcano at the target, its own limit, hitting its area on the eruption; it fires its
+    // Ice Fragments (their part's number) every its interval for its duration, and its additional ones on the eruption.
+    // A fragment lands between its least and most distance of the volcano, on the nearest enemy there if one is (its
+    // auto-aim), and detonates after its time over its area. note: the cone the fragments fly in is not followed
+    fragments(S) {
+      const st = S.dmg?.stats || {}, c = S.at, X = partOf(S, 'FragmentsOfThePastFragmentPlayer'), xs = X?.dmg?.stats || {}, n = sh(X || S).projectiles || 1;
+      const lo = (xs.ice_fragment_min_chunk_distance || 0) / 10, hi = (xs.ice_fragment_max_chunk_distance || 0) / 10, wait = (xs.base_skill_detonation_time || 0) / 1000;
+      limit(o => o.fragments, st.base_number_of_ice_volcanos_allowed);
+      const fire = k => { for (let j = 0; j < k; j++) {
+        const d = near(c, hi), a = rnd(TAU), r = lo + Math.sqrt(rnd()) * (hi - lo), q = d && dist(d.pos, c) >= lo ? { x: d.pos.x, z: d.pos.z } : { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
+        lob(fx.orb('cold', .14), V(c.x, 1.2, c.z), V(q.x, .1, q.z), .5, 2.4, () => { const m = fx.decal(q, .35, 'ring', 'cold', { a: .8 }); later(wait, () => { m.remove(); boom(q, X.A, { ...X, mult: S.mult }, { soft: true }); }); }, { trail: 'cold' }); } };
+      boom(c, S.A, S); fx.pillar(c, .4, 2.4, 'gold', .5, 2);
+      if (X) fire(n + (st.ice_volcano_eruption_additional_ice_fragment_projectiles || 0));
+      const dec = fx.decal(c, S.A, 'cracks', 'gold', { a: .7 }), every = st.ice_volcano_fires_projectiles_every_x_ms / 1000; let tk = every;
+      thing(holder(c), durOf(S), { name: S.name, fragments: true, r: S.A,
+        tick(dt) { if (Math.random() < dt * 6) fx.emit(1, { p: { x: c.x, y: .4, z: c.z }, r: S.A * .5, v: .4, up: 2, life: .8, size: .3, c: 'cold', c2: 'gold' });
+          if (X && (tk -= dt) <= 0) { tk = every; fire(n); } },
+        off: () => dec.remove() });
+    },
     beam(S) {
       const L = S.R || 10, c = S.from, b = { x: c.x + S.dx * L, z: c.z + S.dz * L };   // note: 1 m wide, the scene's: the data gives no width
       fx.strip(c, b, 1, S.el, .35); fx.bolt(V(c.x, 1.1, c.z), V(b.x, 1.1, b.z), S.el, .2, .05, 0);
@@ -2721,16 +2760,17 @@ export function initScene(el, api) {
   }
   // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its petals, and a killing one its
   // Power's (midnight_star_gain_ice_seeds_equal_to_enemy_power_on_kill_with_critical_hit); at its number they are consumed
-  // for its crystals within its radius of that enemy, up to its most. note: its Crystal stat set (duration, most, explosion
-  // radius) is not in the app's data: those are PoB2's (Skills/other.lua MidnightStarPlayer); its crits give no petals
-  const ZENITH = { dur: 10, most: 10, R: 2.2 };
+  // for its crystals within its radius of that enemy, up to its most, each with its life and cold explosion: its Crystal
+  // stat set, which the game's tables leave out, is PoB2's (Skills/other.lua MidnightStarPlayer: pob2.json stat_sets, a
+  // part of the skill in skilldata.js). Its crits give no petals
   function zenith(d) {
     const S = onS('Midnight Zenith'); if (!S) return;
     const st = S.dmg.stats, need = st.midnight_star_attempt_to_consume_x_ice_seeds_to_create_an_ice_crystal_each_time_you_gain_ice_seeds;
     const n = (/rare|unique/.test(d.stat.rarity) ? st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy : 0) + (d.dead ? POWER[d.stat.rarity] || 1 : 0);
     if (!n || (me.seeds = (me.seeds || 0) + n) < need) return;
     me.seeds -= need;
-    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) { limit(o => o.ice && o.name === S.name, ZENITH.most); crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), ZENITH.dur, { ...S, A: ZENITH.R }); }
+    const X = partOf(S, 'Crystal'), xs = X?.dmg.stats; if (!X) return;
+    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) { limit(o => o.ice && o.name === S.name, xs.midnight_star_max_ice_crystals); crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(X), X, xs.frost_wall_maximum_life); }
   }
   // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
@@ -4234,6 +4274,7 @@ export function initScene(el, api) {
     if (!onS('Future-Past')) me.fpAt = null; else me.fpAt ??= time;   // its Hindsight from when it is on
     // Blasphemy: while it is on, the curses socketed in it curse the enemies within their own area around you, at its less
     // effect. note: its own radius in the data (1 m) is not used: the curse's
+    called();
     const BL = onS('Blasphemy');
     if (BL) api.build().gems.forEach((g, i) => {
       const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;

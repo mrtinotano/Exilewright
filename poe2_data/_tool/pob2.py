@@ -217,8 +217,26 @@ for path in ('Skills/act_str.lua', 'Skills/act_dex.lua', 'Skills/act_int.lua', '
             minions.setdefault(name, ids)
 assert minions['Raise Zombie'] == ['Metadata/Monsters/Zombies/PlayerSummoned/PlayerSummonedZombie_'] and 'Skeletal Warrior' in minions, 'Minions.txt / minionList'
 
-dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists) - game data (c) Grinding Gear Games',
-      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions}, 'pob2.json')
+# ---- stat sets the game's tables leave out ---------------------------------------------------------------------------
+# A skill's second stat set that the dump does not have (Midnight Zenith's Crystal: its cold damage, life, duration,
+# most): its constant stats and, per gem level, its stats (statInterpolation 1 = the number as it is)
+def stat_set(path, skill, label):
+    for sid, sk, _ in entries(get(path), 'skills'):
+        if sid != skill:
+            continue
+        for st in sk['statSets'].values():
+            if st['label'] == label:
+                names = st['stats'] if isinstance(st['stats'], list) else [st['stats'][k] for k in sorted(k for k in st['stats'] if isinstance(k, int))]
+                return {'constant': {k: v for k, v in st.get('constantStats', [])},
+                        'levels': {n: {**dict(zip(names, (r[i + 1] for i in range(len(names)) if i + 1 in r))), **({'critChance': r['critChance']} if 'critChance' in r else {})}
+                                   for n, r in st['levels'].items()}}
+
+
+stat_sets = {'Midnight Zenith': {'Crystal': stat_set('Skills/other.lua', 'MidnightStarPlayer', 'Crystal')}}
+assert stat_sets['Midnight Zenith']['Crystal']['levels'][20]['frost_wall_maximum_life'] == 4768, 'MidnightStarPlayer Crystal'
+
+dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists, stat sets) - game data (c) Grinding Gear Games',
+      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions, 'stat_sets': stat_sets}, 'pob2.json')
 print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
 print(f'{len(minions)} minion gems with their monster')
 print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')
