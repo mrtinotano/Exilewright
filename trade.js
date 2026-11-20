@@ -285,7 +285,7 @@ async function search(out, seen, { league, slot, items, value, per, tick }, plan
 // attribute or a resistance: the item's total of it, as the price check asks); a unique: that unique. Cheapest first,
 // the first `per` read and rated. -> findGear's answer, with body (the search, to open on the site) and left (lines the
 // site has no stat for)
-export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, per = 20, tick }) {
+export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, tick }) {
   const { known, desecrated, total } = await statIndex();
   const asked = lines.map(l => ({ l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
     : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) })).filter(x => x.ids.length);
@@ -293,7 +293,6 @@ export async function findLike({ league, cls, unique, base, slot, items, value, 
     stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(({ l, ids }) => ids.map(id => ({ id, ...l.value > 0 && { value: { min: l.value } } }))) }] : [],
     filters: filters(cls, price, level) }, sort: { price: 'asc' } };
   const out = { found: [], searches: [], unread: 0, errors: [], body, left: lines.length - asked.length };
-  tick?.('Searching the trade site ({0} of {1})…', 1, 1);
-  await search(out, new Set(), { league, slot, items, value, per: Math.min(per, 10), tick }, { body });
+  await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body });
   return out;
 }

@@ -483,7 +483,7 @@ $('treePts').onclick = async e => {
   }
   const el = e.target.closest('[data-mode]'); if (!el) return;
   mode = +el.dataset.mode;
-  if (mode && mode !== (B().wset === 2 ? 2 : 1)) swapSet(B());   // the set of the passives is the set in hand (its weapons too)
+  if (mode) swapSet(B(), mode);   // the set of the passives is the set in hand (its weapons too)
   save(); renderSide(); drawTree();
 };
 const walkable = (id, root) => N[id] && !N[id].ascendancy && (!ROOTS.has(id) || id === root);
@@ -991,7 +991,7 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
-  swapSet: () => { swapSet(B()); save(); renderSide(); return B().wset; },
+  swapSet: () => { swapSet(B(), B().wset === 2 ? 1 : 2); save(); renderSide(); return B().wset; },
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),

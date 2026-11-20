@@ -197,7 +197,7 @@ export function initOpt(el, ctx) {
     try {
       const res = await findLike({ league, cls: sel.cls, ...same && { unique: worn.unique, base: worn.base }, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()),
         lines: likeOf(sel.slot), price, level, state, tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
-      G[id] = { res, like: true, league, price, level, state, cls: sel.cls };
+      G[id] = { res, like: true, league, state };
       if (res.errors.some(e => e.kind === 'offline')) netStart(true);
     } finally { if (busy === me) busy = null; render(); }
   }
@@ -235,14 +235,15 @@ export function initOpt(el, ctx) {
       ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
   }
   // the modifiers picked for the slot: each with the least it must have, a list to add more, and the worn item's to start from
+  const lk = o => o.hash ?? 'd:' + o.en;   // a line's key: its stat, or a desecrated one's wording
   const hashed = s => s.replace(/\d+(?:[.,]\d+)?/g, '#');   // a line without its numbers: the number is the box's
   function likeHtml(b, sel) {
-    const list = likeOf(sel.slot), worn = b.items?.[sel.slot], have = new Set(list.map(l => l.hash ?? 'd:' + l.en));
-    const more = affixLines(sel.cls).filter(o => !have.has(o.hash ?? 'd:' + o.en));
+    const list = likeOf(sel.slot), worn = b.items?.[sel.slot], have = new Set(list.map(lk));
+    const more = affixLines(sel.cls).filter(o => !have.has(lk(o)));
     return `<div class="likes">${list.map((l, i) => `<div class="likerow"><span>${esc(hashed(l.text))}</span>
         <label>${t('at least')} <input type="number" step="any" value="${l.value || ''}" placeholder="—" data-like="${i}"></label><button data-do="unlike" data-i="${i}" title="${t('Remove')}">✕</button></div>`).join('')
       || `<p class="note">${t('Pick the modifiers the item must have, each with the least of it.')}</p>`}</div>
-      <div class="optrow"><select data-addlike><option value="">${t('+ Modifier')}</option>${more.map(o => opt(o.hash ?? 'd:' + o.en, hashed(o.text), false)).join('')}</select>
+      <div class="optrow"><select data-addlike><option value="">${t('+ Modifier')}</option>${more.map(o => opt(lk(o), hashed(o.text), false)).join('')}</select>
         <button data-do="fromWorn"${worn && classOf(worn) === sel.cls ? '' : ' disabled'}>${t('The modifiers of the item worn')}</button>
         ${list.length ? `<button data-do="clearLike">${t('Clear')}</button>` : ''}</div>`;
   }
@@ -293,7 +294,7 @@ export function initOpt(el, ctx) {
     else if ('gem' in d) { S.gem[ctx.id()] = +x.value; delete typed.sockets; T = U = null; other = true; }
     else if ('cls' in d) S.cls[gearSel(ctx.build()).slot] = x.value;
     else if (d.like != null) { const l = likeOf(gearSel(ctx.build()).slot)[+d.like]; if (l) l.value = +x.value || 0; }
-    else if ('addlike' in d) { const sel = gearSel(ctx.build()), o = x.value && affixLines(sel.cls).find(o => String(o.hash ?? 'd:' + o.en) === x.value); if (!o) return; likeOf(sel.slot).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); }
+    else if ('addlike' in d) { const sel = gearSel(ctx.build()), o = x.value && affixLines(sel.cls).find(o => String(lk(o)) === x.value); if (!o) return; likeOf(sel.slot).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); }
     else return;
     if (run && other) run.stop = true;
     keep(); render();
@@ -335,8 +336,8 @@ export function initOpt(el, ctx) {
   render.money = () => CURRENCY.map(c => [c, moneyName(c)]);
   // from the Equipment tab: items like the one worn in `slot`, or better, up to that price
   render.like = (slot, max, currency) => {
-    const it = ctx.build().items?.[slot]; if (!it || !SEARCH_SLOTS.includes(slot)) return;
-    Object.assign(S, { slot, how: 'like', max: max ?? S.max, currency: currency ?? S.currency });
+    const it = ctx.build().items?.[slot]; if (!it) return;
+    Object.assign(S, { slot, how: 'like', max, currency });
     if (CATEGORY[classOf(it)]) S.cls[slot] = classOf(it);
     S.like[slot] = wornLines(it); keep(); render();
     if (net?.leagues?.length && !busy) runLike(); else pendingLike = true;   // the leagues are still on their way

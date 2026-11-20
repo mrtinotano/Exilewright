@@ -397,7 +397,8 @@ export const bothHands = (weapon, giant) => { const w = BASE[weapon?.base];
   return !!w?.tags.includes('twohand') && !w.tags.includes('bow') && !(giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class)); };
 // Weapon sets (the game's I and II): the set not in use waits in b.swap (its weapon and off hand) and b.wset is the one
 // in use; switching trades them, so everything else only ever sees the set in hand
-export function swapSet(b) {
+export function swapSet(b, n) {
+  if (n === (b.wset === 2 ? 2 : 1)) return;   // that set is in hand already
   const items = b.items ||= {}, other = b.swap || {};
   b.swap = { ...items.weapon && { weapon: items.weapon }, ...items.offhand && { offhand: items.offhand } };
   for (const k of ['weapon', 'offhand']) if (other[k]) items[k] = other[k]; else delete items[k];
@@ -449,8 +450,8 @@ export function priceLines(it) {
     const A = AFFIX[m.id]; if (!A) continue;
     const local = A.stats.some(([id]) => id.startsWith('local_'));
     if (A.desecrated) {
-      const en = statLinesEn(Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]])));
-      if (en.length === 1) out.set('d:' + en[0], { en: en[0], text: statLines(Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]]))).join(' / '), value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
+      const st = Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]])), en = statLinesEn(st);
+      if (en.length === 1) out.set('d:' + en[0], { en: en[0], text: statLines(st).join(' / '), value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
       continue;
     }
     for (const p of parts(m.id, A.stats)) {
@@ -747,12 +748,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
-    if (t.dataset.act === 'like') { const m = el.querySelector('[data-act="likemax"]'); buy.max = m?.value ?? buy.max; trade.go(t.dataset.slot, buy.max, buy.cur); return; }
+    if (t.dataset.act === 'like') return trade.go(t.dataset.slot, buy.max, buy.cur);
     if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
     if (t.dataset.act === 'clear') { keep(getBuild(), items[t.dataset.slot]); delete items[t.dataset.slot]; }
     else if (t.dataset.act === 'wear') { const it = getBuild().stash?.[+t.dataset.i], to = it && whereTo(it); if (!to) return; put(to, it); sel = to; }
     else if (t.dataset.act === 'drop') getBuild().stash.splice(+t.dataset.i, 1);
-    else if (t.dataset.act === 'wset') { if (+t.dataset.n === (getBuild().wset === 2 ? 2 : 1)) return; swapSet(getBuild()); }
+    else if (t.dataset.act === 'wset') swapSet(getBuild(), +t.dataset.n);
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
     else return;
     changed(); render();
