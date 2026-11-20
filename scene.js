@@ -31,7 +31,7 @@ const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } 
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);   // one use per key press
 const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
-const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
+const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
@@ -1854,7 +1854,8 @@ export function initScene(el, api) {
         const curseOn = (d, quiet) => {
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
-          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          const s = (sh(S).duration || SIM.curseTime) * (S.curseX || 1);
+          d.curse = { s, full: s, label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -2453,6 +2454,13 @@ export function initScene(el, api) {
         if (dist(pp, c) > R) { e.dead = true; boom(c, R, W, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
       } });
   }
+  // Hexblast: detonates the curses of the enemies in its area that have run at least half their duration, up to its most
+  // explosions: each its hit in its secondary area around that enemy, the curse removed
+  K.hexblast = S => {
+    const st = S.dmg.stats, r = S.A * st.active_skill_base_secondary_area_of_effect_radius / st.active_skill_base_area_of_effect_radius;
+    fx.ring(S.at, .3, S.A, 'curse', .35);
+    for (const d of inside(S.at, S.A).filter(d => d.curse && d.curse.s <= d.curse.full / 2).slice(0, st.hexblast_maximum_number_of_explosions)) { d.curse = null; boom({ x: d.pos.x, z: d.pos.z }, r, S); }
+  };
   K.twister = S => {
     const st = S.dmg?.stats || {}, W = objs.find(o => o.whirl && !o.dead && dist(o.c, pp) <= o.R()), n = (sh(S).projectiles || 1) + (W ? W.stage : 0);
     if (W) W.dead = true;   // it consumes the Whirlwind: one more twister per stage, more damage per stage
