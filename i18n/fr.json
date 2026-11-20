@@ -864,5 +864,6 @@
  "{0} needs {1} Energy": "{0} a besoin de {1} d'Énergie",
  "Flame of Chayula": "Flamme de Chayula",
  "{0} needs {1} Unbound Fury": "{0} a besoin de {1} de Furie déchaînée",
- "Supported Skills cannot be used unless you have been stationary for {0} seconds": "Les Aptitudes modifiées ne peuvent être utilisées à moins d'avoir été stationnaire pendant {0} secondes"
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "Les Aptitudes modifiées ne peuvent être utilisées à moins d'avoir été stationnaire pendant {0} secondes",
+ "{0} needs a Minion": "{0} a besoin d'une Créature"
 }

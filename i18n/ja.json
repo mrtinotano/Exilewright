@@ -864,5 +864,6 @@
  "{0} needs {1} Energy": "{0}には{1}エネルギーが必要です",
  "Flame of Chayula": "チャユラの炎",
  "{0} needs {1} Unbound Fury": "{0}には{1}アンバウンドフューリーが必要です",
- "Supported Skills cannot be used unless you have been stationary for {0} seconds": "サポートされたスキルはプレイヤーが{0}秒間静止状態でなければ使用できない"
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "サポートされたスキルはプレイヤーが{0}秒間静止状態でなければ使用できない",
+ "{0} needs a Minion": "{0}にはミニオンが必要です"
 }

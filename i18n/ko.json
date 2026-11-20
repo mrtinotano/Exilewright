@@ -864,5 +864,6 @@
  "{0} needs {1} Energy": "{0}에 에너지 {1} 필요",
  "Flame of Chayula": "차율라의 화염",
  "{0} needs {1} Unbound Fury": "{0}에 족쇄 풀린 광분 {1} 필요",
- "Supported Skills cannot be used unless you have been stationary for {0} seconds": "{0}초 이상 정지 상태였어야만 보조 대상 스킬 사용 가능"
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "{0}초 이상 정지 상태였어야만 보조 대상 스킬 사용 가능",
+ "{0} needs a Minion": "{0}에 소환수 필요"
 }
