@@ -108,6 +108,7 @@ export function initScene(el, api) {
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
+  const rains = {};   // Rain of Arrows: the latest rain of each skill
   let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], byS = {}, hover = null, lastHit = null, topD = null, surges = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
@@ -864,7 +865,10 @@ export function initScene(el, api) {
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
   function markOn(d, S) {
-    d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
+    // Living Bomb, Untether: up to their most seeds at a time, the oldest gives way
+    const LB = S.dmg?.stats?.living_bomb_base_number_of_bombs_allowed;
+    if (LB) { const on = dummies.filter(e => e !== d && e.mark?.name === S.name).sort((a, b) => a.mark.at - b.mark.at); while (on.length >= LB) on.shift().mark = null; }
+    d.mark = { at: time, s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
     fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
   }
   // Called Shots: while it is on, every five seconds a Mark placed in it marks its number of unmarked enemies within its
@@ -1923,9 +1927,11 @@ export function initScene(el, api) {
         fx.streak(h, V(h.x + S.dx * 2, 15, h.z + S.dz * 2), S.el, .25, .04, 2); fx.telegraph(c, R, S.el, .5);
         // Rain of Arrows: its arrows (more per frenzy charge spent by its multiplier), its delay between them and the
         // radius of each, each a hit of its own; else the scene's volley
-        const rs = S.dmg?.stats || {}, RA = rs.rain_of_arrows_delay_per_arrow, ar = RA ? radOf(S) : .75;
+        // one rain at a time (its own limit): a new one ends the arrows the last has left to fall
+        const rs = S.dmg?.stats || {}, RA = rs.rain_of_arrows_delay_per_arrow, ar = RA ? radOf(S) : .75, id = rains[S.name] = (rains[S.name] || 0) + (rs.base_number_of_arrow_rains_allowed === 1 ? 1 : 0);
         const n = RA ? Math.round((sh(S).projectiles || rs.base_number_of_projectiles) * (1 + S.spent * rs.rain_of_arrows_projectile_count_multiplier_per_frenzy_charge / 100)) : 22 + S.spent * 8;
         for (let i = 0; i < n; i++) later(.42 + i * (RA ? RA / 1000 : .034), () => {
+          if (rains[S.name] !== id) return;
           const a = rnd(TAU), r = Math.sqrt(rnd()) * R, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
           fx.streak(V(q.x + 1.5, 12, q.z - 1), V(q.x, 0, q.z), S.el, .13, .025, 1.6);
           later(.13, () => { fx.ring(q, .1, ar, S.el, .25, { a: .7 }); fx.emit(4, { p: { x: q.x, y: .1, z: q.z }, v: 1.5, up: 1.5, life: .3, size: .12, c: S.el, c2: 'white' }); area(q, ar, S, { mult: RA ? 1 : .5, noTouch: i % 4 > 0 }); });
@@ -2155,9 +2161,11 @@ export function initScene(el, api) {
       // travelled (up to its most at its full range), its final cone part too
       const P = S.P, to = S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'], crash = far != null;
       const land = (at = to) => {
-        const Y = crash ? { ...S, mult: S.mult * (1 + far * Math.min(1, dist(from, at) / (sh(S).travel ?? SIM.travelRange)) / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
-        if (S.R || P.attack) boom(at, S.A, Y); else fx.ring(at, .2, 1.6, S.el, .4);
-        if (X) boom(at, X.A, { ...X, mult: Y.mult });
+        const k = Math.min(1, dist(from, at) / (sh(S).travel ?? SIM.travelRange)), Y = crash ? { ...S, mult: S.mult * (1 + far * k / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
+        // fully charged (its whole range run): its more stun buildup
+        const FS = k >= 1 && S.dmg?.stats?.['shield_charge_hit_damage_stun_multiplier_when_fully_charged_+%_final'], so = FS ? { stunX: 1 + FS / 100 } : {};
+        if (S.R || P.attack) boom(at, S.A, Y, so); else fx.ring(at, .2, 1.6, S.el, .4);
+        if (X) boom(at, X.A, { ...X, mult: Y.mult }, so);
         if (P.ground) ground(P.ground, at, S.A, P.dur, S);
         if (P.slams) slammed(S, at, S.A);
         if (P.jump) landed(S, at);
@@ -3042,7 +3050,7 @@ export function initScene(el, api) {
     for (let k = 0; k < (sh(S).projectiles || 1); k++) {
       const c = around(S.at, R);
       later(k * st.siege_cascade_fall_time_ms / 1000, () => {
-        limit(o => o.stormblast, st.stormblast_maximum_active_bolt_count);
+        limit(o => o.stormblast, st.stormblast_bolts_maximum_active_bolt_count);
         const m = fx.orb('lightning', .12); m.position.set(c.x, .3, c.z); fx.streak(V(c.x, 6, c.z), V(c.x, .3, c.z), 'lightning', .1, .04, 1);
         thing(m, durOf(S), { name: S.name, stormblast: true, r: .3,
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; pop(c, X.A, 'lightning'); boom(c, X.A, { ...X, mult: S.mult }); } } });
