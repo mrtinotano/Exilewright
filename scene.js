@@ -3267,7 +3267,7 @@ export function initScene(el, api) {
     const i = byName("Valako's Charge"), S = i >= 0 && mk(i), st = S && S.dmg?.stats;
     if (!st || (me.valako = (me.valako || 0) + n) < st.cast_on_damage_taken_threshold || !spend({ id: S.name, cooldown: S.dmg.cooldown, uses: S.dmg.uses })) return;
     const X = partOf(S, 'ValakosChargeArcPlayer'), e = near(pp, sh(X).chainRange || SIM.chainRange); me.valako = 0; say(S.label, 'lightning');
-    if (e) chain(V(pp.x, 1.2, pp.z), e, { ...X, src: 'trigger' }, (sh(X).chains || X.dmg.stats.number_of_chains || 1) - 1);
+    if (e) chain(V(pp.x, 1.2, pp.z), e, { ...X, src: 'trigger' }, (sh(X).chains || 1) - 1);
   }
   function retaliate(d) {
     const D = thornsOf(); if (!D || d.dead) return;
