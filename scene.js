@@ -371,6 +371,8 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
+      const IM = S.dmg?.stats?.['active_skill_damage_+%_final_vs_immobilised_enemies'];   // Siege Cascade: more against the immobilised
+      if (IM && has(d, 'immobilised')) for (const e in raw) raw[e] *= 1 + IM / 100;
       if (S.P.attack && !S.src && raw.physical) briarStore(raw.physical);
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
@@ -417,7 +419,11 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     d.by = S; damage(d, total, S);
-    if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) { const w = d.wither = (d.wither || []).filter(u => u > time); w.push(time + 4); if (w.length > WITHER.max) w.shift(); }   // its "for 4 seconds"
+    const wither = s => { const w = d.wither = (d.wither || []).filter(u => u > time); w.push(time + s); if (w.length > WITHER.max) w.shift(); };
+    if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) wither(4);   // its "for 4 seconds"
+    // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
+    const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
+    if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) wither(S.dmg.sum.support_withered_base_duration_ms / 1000);
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
@@ -1809,7 +1815,10 @@ export function initScene(el, api) {
       if (X) later(dur, () => { boom(c, X.A, X, { soft: true }); ground('chilled', c, X.A, GROUND_TIME.chilled, X); });
     },
     slam(S) {
-      const P = S.P, c = S.at, R = stageR(S);
+      // Supercharged Slam: a stage per its share of the channel, each its more damage (its own area, not the scene's growth)
+      const SC = S.dmg?.stats?.channelled_slam_max_stages, cs = SC ? Math.round((S.stage || 0) * SC) : 0;
+      if (SC) S = { ...S, mult: S.mult * (1 + cs * S.dmg.stats['channelled_slam_damage_+%_final_per_stage'] / 100) };
+      const P = S.P, c = S.at, R = SC ? S.A : stageR(S);
       later(.12, () => {
         // Sunder: a sequence of its areas in front of you, each larger by its step, up to its number of enemies in each
         // releasing its shockwave (its part); a hit on fully broken armour Sunders it (its more physical damage taken)
@@ -1822,6 +1831,9 @@ export function initScene(el, api) {
           boom(q, r, S);
         }); }
         else boom(c, R, S);
+        // Supercharged Slam: an Aftershock per stage, each its delay later and its radius larger per previous one
+        const ps = S.dmg?.part || {};
+        for (let k = 1; k <= cs; k++) later(k * ps.aftershock_delay_ms / 1000, () => boom(c, R + k * ps['aftershock_radius_+_per_previous_aftershock'] / 10, S));
         // Tremors: its independent chances for one, two and three more Aftershocks, each the slam's damage in its area after it (keywords.json)
         const TR = !S.src && S.dmg?.sum, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) ? k : 0), 0) : 0;
         for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R, S); });

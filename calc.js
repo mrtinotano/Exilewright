@@ -786,7 +786,7 @@ export function skill(g, b, treeGear) {
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
-  const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
+  const part = out.part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };   // the skill's other part's stats (Supercharged Slam's Aftershocks)
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), own, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
   if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
