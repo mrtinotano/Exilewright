@@ -209,7 +209,11 @@ export function initScene(el, api) {
   const gemBy = n => api.build().gems.find(g => g.name === n);
   const labelOf = name => { const g = api.build().gems.find(g => g.name === name); return g ? api.info(g).label : name; };
   const NONE = { P: profile(null), name: '', label: '', el: 'physical', els: [], ail: [], mult: 1, src: 'none' };
-  const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
+  // Flameblast: its stages (the charge's share of its most), each its radius more and its more damage
+  // note: the scene's charge fills them in its 1.6 s, not one per cast time
+  const blast = S => Math.round((S.stage || 0) * S.dmg.stats.flameblast_maximum_stages);
+  const stageR = S => S.stage == null ? S.A : S.dmg?.stats?.flameblast_maximum_stages ? S.A + blast(S) * S.dmg.stats['vaal_flameblast_radius_+_per_stage'] / 10
+    : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
   const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body;   // to the dummy's edge
   const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
@@ -2557,7 +2561,7 @@ export function initScene(el, api) {
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
       for (const d of eaten) eat(d, 'chaos');
       S.chaosX = eaten.length && 1 + ((PF['support_chaos_damage_+%_final_if_corpse_consumed_on_use'] || 0) + eaten.length * (PF['support_chaos_damage_+%_final_per_corpse_consumed_on_use'] || 0)) / 100;
-      if (S.stage != null && !P.ownStages) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
+      if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
