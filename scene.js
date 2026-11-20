@@ -1810,7 +1810,7 @@ export function initScene(el, api) {
     lob(fx.arrow(S.el), hand(), V(c.x, .1, c.z), .5, 4, () => {
       boom(c, S.A, S); shake = .4; if (!X) return;
       const xs = X.dmg.stats, n = xs.solaris_spear_number_of_pulses || 1, every = (xs.solaris_spear_pulse_delay_ms || 200) / 1000, dur = n * every;
-      if (Y) ground('burning', c, X.A, dur, Y, { per: (Y.dmg.stats['solaris_spear_ground_expands_to_+%_final_by_skill_end'] || 0) / dur, max: Y.dmg.stats['solaris_spear_ground_expands_to_+%_final_by_skill_end'] || 0 });
+      const gx = Y?.dmg.stats['solaris_spear_ground_expands_to_+%_final_by_skill_end'] || 0; if (Y) ground('burning', c, X.A, dur, Y, { per: gx / dur, max: gx });
       for (let k = 0; k < n; k++) later(k * every, () => { fx.pillar(c, X.A * .4, 14, 'gold', .2); boom(c, X.A, X, { soft: true }); });
     }, { trail: 'fire' });
   };
@@ -1890,7 +1890,7 @@ export function initScene(el, api) {
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
       hudT = 0;
     }
-    const KA = !auto && P.melee && me.kaom && time < me.kaom.until && me.kaom;
+    const KA = !auto && P.melee && time < me.kaom?.until && me.kaom;
     if (KA && P.slams) { S.mult *= 1 + ANCESTRAL.slam / 100; S.A *= Math.sqrt(1 + ANCESTRAL.area / 100); }
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
     const CB = S.dmg?.combo;
