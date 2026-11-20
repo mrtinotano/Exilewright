@@ -1694,6 +1694,13 @@ export function initScene(el, api) {
       const P = S.P, R = S.A, fall = S.dmg?.stats?.comet_fall_time_ms, delay = fall ? fall / 1000 : P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
       const d = P.attack ? near(S.at, SIM.snap) : null, c = d ? { x: d.pos.x, z: d.pos.z } : S.at;
       fx.telegraph(c, R, S.el, delay);
+      // Skyfall: where it lands, its Temporary Minions (more with a Verisium Infusion consumed: its infused part's),
+      // up to its limit, for its duration
+      const st = S.dmg?.stats || {}, VM = st.verisium_comet_number_of_minions_to_create;
+      if (VM) later(delay, () => {
+        const n = VM + (S.infs?.includes('verisium') ? partOf(S, 'SkyfallInfusedPlayer')?.dmg.stats.verisium_comet_number_of_minions_to_create || 0 : 0);
+        const mine = objs.filter(o => o.kind === S.name && !o.dead); for (let k = 0; k < n; k++) { if (mine.length >= (st.base_number_of_verisium_octopus_minions_allowed || n)) mine.shift().dead = true; mine.push(minion(S, around(c, R), sh(S).duration || st.base_skill_effect_duration / 1000, { kind: S.name })); }
+      });
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
       const fly = Math.min(.4, delay);
       later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));

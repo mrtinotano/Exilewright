@@ -76,6 +76,7 @@ const NAMED = {
   'Volcano': { kind: 'volcano', stages: true, ownStages: true },
   'Snap': { kind: 'snap', consumes: ['freeze', 'shock', 'ignite'] },
   'Ember Fusillade': { kind: 'ember' },
+  'Skyfall': { kind: 'meteor' },
 };
 
 export function profile(gem, d = {}) {
@@ -134,7 +135,7 @@ export function profile(gem, d = {}) {
   // consume (Ice Nova, Arc, Firestorm's three...), as its description says them
   const desc = gem?.description || '';
   const leaves = desc.match(/leav(?:es|ing) behind an? (?:\[(Cold|Fire|Lightning)\] \[ElementalInfusion|\[ElementalInfusion\|(Cold|Fire|Lightning) Infusion\])/)?.slice(1).find(Boolean)?.toLowerCase() || null;
-  const infuses = /Consume\]? all three types of \[ElementalInfusion/.test(desc) ? ['fire', 'cold', 'lightning'] : [...desc.matchAll(/Consumes?\]? an? \[(Cold|Fire|Lightning)\] \[ElementalInfusion/g)].map(m => m[1].toLowerCase());
+  const infuses = /Consume\]? all three types of \[ElementalInfusion/.test(desc) ? ['fire', 'cold', 'lightning'] : [...desc.matchAll(/Consumes?\]? an? \[(?:(Cold|Fire|Lightning)\] \[ElementalInfusion|(Verisium)Infusion)/g)].map(m => (m[1] || m[2]).toLowerCase());
   const spend = ['Frenzy', 'Power', 'Endurance'].filter(c => has(`SkillConsumes${c}ChargesOnUse`)).map(c => c.toLowerCase());
   const a = gem?.attr || {};
   const gain = has('GeneratesCharges') ? ((a.int || 0) >= (a.dex || 0) && (a.int || 0) >= (a.str || 0) ? 'power' : (a.dex || 0) >= (a.str || 0) ? 'frenzy' : 'endurance') : null;
