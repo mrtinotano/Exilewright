@@ -274,7 +274,7 @@ async function asLines(lines) {
     stats: asked.length ? [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }] : [] };
 }
 // the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
-// by the modifiers themselves: "Query is too complex")
+// by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
 const DEAREST = { price: 'desc' };
 // Items better than `item`, from the Equipment tab: every line it has (asLines), of its kind of item (`base`: of its
 // base; a unique: that unique), up to the price, the first 10 down from the dearest, each with how far over the item's
@@ -294,7 +294,7 @@ export async function findBetter({ league, item, base, price, level, state, tick
     const theirs = new Map(priceLines(l.item).map(x => [lineKey(x), x.value]));
     found.push({ ...l, up: mine.length ? mine.reduce((a, x) => a + (theirs.get(lineKey(x)) ?? x.value) / x.value, 0) / mine.length - 1 : 0 });
   }
-  return { found, body, left };
+  return { found: found.reverse(), body, left };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
@@ -325,5 +325,6 @@ export async function findLike({ league, cls, unique, base, slot, items, value, 
   const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price, level) }, sort: DEAREST };
   const out = { found: [], searches: [], unread: 0, errors: [], body, left };
   await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body });
+  out.found.reverse();
   return out;
 }
