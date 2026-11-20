@@ -722,7 +722,7 @@ export function initScene(el, api) {
     return ['hit'];
   }
   // the skill a meta gem triggers: the build's first triggerable spell (Feral Invocation: a Shapeshifting attack)
-  const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.feral ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
+  const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.manaPer ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
   // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power
   // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
@@ -1602,7 +1602,7 @@ export function initScene(el, api) {
       if (S.kind === 'meta') {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy_per_monster_power_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
-        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent, feral: !!st.feral_invocation_gain_1_energy_per_X_mana_spent });
+        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion') for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
@@ -2303,9 +2303,8 @@ export function initScene(el, api) {
         me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; S.cone = FS.incinerate_cone_angle;
         S.mult *= 1 + Math.min(FS.incinerate_maximum_stages, Math.floor((time - me.fuelFrom) * 1000 / FS.incinerate_gain_stage_every_x_ms)) * FS['incinerate_damage_+%_final_per_stage'] / 100;
       }
-      for (const k in tog) { const T = tog[k]; if (T.manaPer && cost > 0) { const j = trigOf(T); if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
       me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.sigil && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
-      if (cost > 0) fuelUp(S, cost);
+      if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
