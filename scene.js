@@ -2352,7 +2352,7 @@ export function initScene(el, api) {
       tick(dt, e) {
         if (dist(c, pp) <= e.R) e.outAt = time;
         me.mana -= (me.maxM * (st._cost?.ManaPercentPerSecond || 0) / 100 + e.per) * dt;
-        if (me.mana <= 0 || !tempest()) { me.mana = Math.max(0, me.mana); e.dead = true; }
+        if (me.mana <= 0 || time - e.outAt >= e.linger) { me.mana = Math.max(0, me.mana); e.dead = true; }
       } });
   };
   // Feast of Flesh: consumes up to its number of corpses around you; each recovers its life and mana over its recovery duration
