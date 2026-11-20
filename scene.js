@@ -1608,7 +1608,7 @@ export function initScene(el, api) {
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
       } };
     const L = S.dmg?.minionLife;
-    if (L > 0) Object.assign(e, { decoy: true, max: L, segs: [{ p: e.pos, r: .3, life: L, hurt(n) { fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
+    if (L > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .3, life: L, hurt(n) { fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
   // Plague Bearer: while on, stores its % of the poison damage you deal, up to its most; used again, it unleashes the

@@ -999,15 +999,20 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 // (floor(monsterAllyLifeTable[level] * minionData.life)). note: no game window checked against it yet
 function minionLife(st, sum, id) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1]; if (!m || !level) return null;
-  const ms = {}; for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && /^max(imum)?_life_\+%_final/.test(to) && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
-  return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100) * Object.values(ms).reduce((t, x) => t * (1 + x / 100), 1));
+  const ms = minionStats(st, sum, {});
+  return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
+    * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1));
+}
+// the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
+function minionStats(st, sum, ms) {
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  return ms;
 }
 function minionOf(st, sum, fin, id) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1];
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
-  const a = attackOf(m, level, key, 'normal', true), ms = { ...SK.minion_intrinsic };
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  const a = attackOf(m, level, key, 'normal', true), ms = minionStats(st, sum, { ...SK.minion_intrinsic });
   const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
   // added damage, then physical converted and gained as other types, as for the character
   const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
