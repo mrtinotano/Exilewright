@@ -2660,7 +2660,7 @@ export function initScene(el, api) {
         if (by.src || by.name === S.name || time < next) return; next = time + st.bell_shockwave_cooldown_ms / 1000;
         const p = { x: e.pos.x, z: e.pos.z }; fx.ring(p, .3, S.A, 'gold', .35); boom(p, S.A, { ...S, self: e }, { soft: true });
         for (const d of inside(p, S.A)) if ((d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
-        if (++hits > st.bell_hit_limit) e.dead = true;
+        if (++hits >= st.bell_hit_limit) e.dead = true;
       } });
   }
   // Tempest Bell: dropped at the target (its impact hit), it stays its duration, up to its most; your hits on it set off
