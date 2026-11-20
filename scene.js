@@ -17,6 +17,7 @@ import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance,
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
+import { armourItems } from './items.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -98,7 +99,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -264,7 +265,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { pinn: null, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { pinn: null, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -3254,8 +3255,11 @@ export function initScene(el, api) {
     if (!me.known) return;   // without the class base life there is no pool to empty: the numbers still show what gets through
     if (me.guard > 0) { const g = Math.min(me.guard, n), k = 1 - g / n; me.guard -= g; n *= k; chaos *= k; }   // a charm's guard takes it before anything
     // energy shield takes the damage first; chaos damage removes twice as much of it
-    const other = n - chaos; let e = Math.min(me.es, other), left = other - e; me.es -= e;
+    const other = n - chaos, es0 = me.es; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
+    // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
+    const BK = d && es0 > me.es && onS('Barkskin');
+    if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
     me.life -= left;
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
@@ -3418,6 +3422,8 @@ export function initScene(el, api) {
   }
   function struck(d) {
     const a = d.atk; let c = withCharms(sheet());
+    me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
+    if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
     if (!a.unblockable && activeBlock(d, a)) return;
