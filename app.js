@@ -156,7 +156,7 @@ function geo(g) {
     duration: (d.duration_ms || 0) / 1000,
   };
 }
-const playerSpeed = () => SK.player_base_speed * (1 + (treeSum()['base_movement_velocity_+%'] || 0) / 100) / 10;
+const playerSpeed = (more = 0) => SK.player_base_speed * (1 + ((treeSum()['base_movement_velocity_+%'] || 0) + more) / 100) / 10;   // more: a Banner's
 function renderStats() {
   const b = B();
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them

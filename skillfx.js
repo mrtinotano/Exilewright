@@ -56,7 +56,7 @@ export const KIND = {
   curse: 'Curse', mark: 'Mark', warcry: 'Warcry', herald: 'Herald', aura: 'Persistent buff', meta: 'Meta trigger',
   minion: 'Minions', raise: 'Minions from corpses', totem: 'Totem', travel: 'Travel', nova: 'Nova', slam: 'Slam',
   strike: 'Strike', sweep: 'Melee area', wave: 'Fissure wave', cone: 'Cone', zone: 'Lingering area', storm: 'Storm',
-  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)', ember: 'Projectile',
+  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)', ember: 'Projectile', banner: 'Aura',
 };
 export const CHARGE = { frenzy: 'Frenzy', power: 'Power', endurance: 'Endurance' };
 
@@ -77,6 +77,7 @@ const NAMED = {
   'Snap': { kind: 'snap', consumes: ['freeze', 'shock', 'ignite'] },
   'Ember Fusillade': { kind: 'ember' },
   'Skyfall': { kind: 'meteor' },
+  'War Banner': { kind: 'banner' }, 'Defiance Banner': { kind: 'banner' }, 'Dread Banner': { kind: 'banner' },
 };
 
 export function profile(gem, d = {}) {
