@@ -2511,12 +2511,12 @@ export function initScene(el, api) {
     const st = S.dmg.stats, X = partOf(S, 'EntangleVinePlayer'), xs = X.dmg.stats, ang = Math.atan2(S.dx, S.dz), a = { x: pp.x, z: pp.z }, b = { x: a.x + Math.sin(ang) * S.A, z: a.z + Math.cos(ang) * S.A }, dur = durOf(S);
     limit(o => o.entangle && o.name === S.name, st.base_number_of_entangle_roots_allowed);
     fissure(S, a, ang, S.A, radOf(S), 1, { dur, max: st.base_number_of_entangle_roots_allowed });
-    let k = 0; const vines = [];
+    let k = 0, vines = [];
     planted(thing(holder(a), dur, { name: S.name, entangle: true, plant: S, c: { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 }, R: S.A / 2, tick(dt, e) {
       presence(e); if (e.overgrown) e.s += dt * st['entangle_duration_speed_+%_when_wet'] / 100;
       if ((k -= dt) > 0) return; k = st.entangle_apply_vines_every_X_ms / 1000;
-      const live = vines.filter(v => v.until > time), max = xs.entangle_vines_maximum_number_of_vines_allowed + (e.overgrown ? xs.entangle_vines_additional_number_of_vines_allowed_when_wet : 0);
-      vines.length = 0; vines.push(...live); if (live.length >= max) return;
+      vines = vines.filter(v => v.until > time);
+      if (vines.length >= xs.entangle_vines_maximum_number_of_vines_allowed + (e.overgrown ? xs.entangle_vines_additional_number_of_vines_allowed_when_wet : 0)) return;
       const d = dummies.filter(d => !d.dead && segDist(d.pos, a, b) <= X.A + SIM.body).sort((p, q) => p.vined.length - q.vined.length)[0]; if (!d) return;
       const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] }; vines.push(v); d.vined.push(v);
       fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
