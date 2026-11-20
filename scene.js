@@ -929,10 +929,12 @@ export function initScene(el, api) {
   // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
   // others take its own small hit
+  // a share of a monster's life dealt as one element over an area, as it is (no bonus of the scene's or the build's)
+  const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
     fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
-    if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); if (n > 0) area(c, X.A, { ...X, el: 'physical', els: ['physical'], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { physical: [n, n] } } }, { noPay: true, noTouch: true }); });
+    if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
   function cull(d, S) {
@@ -1061,8 +1063,8 @@ export function initScene(el, api) {
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
-    const KG = S && !S.src && ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]);
-    if (KG) for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
+    const KG = S && !S.src ? ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]) : [];
+    for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
@@ -1093,7 +1095,7 @@ export function initScene(el, api) {
       for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) e.dots.push({ ...o, s: 5, ...dotOf(e, o.S) }); e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
-    if (S.P.gain && !S.P.corpse && !S.src && !KG?.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
+    if (S.P.gain && !S.P.corpse && !S.src && !KG.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
     event('kill', p, S);
     if (!S?.src) remnantOn('kill', d);
     if (S?.mantra) { const M = S.mantra, n = Math.min(10, (time < me.purple?.until ? me.purple.n : 0) + 1); me.purple = { n, pct: M.flame, until: time + M.flameFor }; setBuff({ label: t('Purple Flame of Chayula'), name: 'purple', c: css('chaos'), s: M.flameFor }); }   // up to 10 (keywords.json)
@@ -1152,7 +1154,7 @@ export function initScene(el, api) {
         const X = partOf(g.S, 'CorpsewadeCorpseCloudExplosionPlayer'), gs = g.S.dmg?.stats || {}, n = (g.corpse || 0) * (gs.corpse_explosion_monster_life_permillage_chaos || 0) / 1000;
         later(X ? (gs.explosion_delay_ms || 0) / 1000 : .08, () => {
           boom(g, g.r, X ? { ...X, mult: g.S.mult, src: 'cloud' } : { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
-          if (n > 0) area(g, g.r, { ...g.S, el: 'chaos', els: ['chaos'], ail: [], src: 'cloud', dmg: { ...g.S.dmg, hits: { chaos: [n, n] } } }, { noPay: true });   // the corpse's life: no bonus of the scene's
+          lifeBlast(g, g.r, g.S, 'chaos', n);
         });
       } else if (g.type === 'oil' && fire) {
         g.dead = true; say(t('{0}: the oil catches fire', S.label), 'fire');
@@ -2416,7 +2418,7 @@ export function initScene(el, api) {
       const cs = S.dmg?.stats || {}, CP = c.life && cs.corpse_explosion_monster_life_permillage_physical;
       if (CP) {
         const n = c.life * CP / 1000; fx.telegraph(c, R, S.el, (cs.explosion_delay_ms || 0) / 1000);
-        return later((cs.explosion_delay_ms || 0) / 1000, () => { boom(c, R, S); area(c, R, { ...S, el: 'physical', els: ['physical'], ail: [], src: 'corpse', dmg: { ...S.dmg, hits: { physical: [n, n] } } }, { noPay: true, noTouch: true }); });
+        return later((cs.explosion_delay_ms || 0) / 1000, () => { boom(c, R, S); lifeBlast(c, R, S, 'physical', n); });
       }
       if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
         const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
@@ -3457,7 +3459,7 @@ export function initScene(el, api) {
     const su = S.dmg?.sum, VO = !auto && su?.support_static_charge_maximum_charge;
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
-    const run = S.dmg?.stats?.['skeletal_chains_aoe_%_health_dealt_as_chaos_damage'] || S.dmg?.stats?.['skeletal_chains_aoe_%_health_dealt_as_physical_damage'] ? pact : K[S.kind] || K.area;
+    const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : K[S.kind] || K.area;
     run(S); whirl(S);
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration
