@@ -373,7 +373,6 @@ export function initScene(el, api) {
     }
     if (real && !S.src && cull(d, S)) return true;
     const M = d.mark;
-    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
@@ -454,6 +453,8 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     d.by = S; damage(d, total, S);
+    // Living Bomb: its seed bursts once the damage dealt to the enemy reaches its share of the enemy's ailment threshold
+    if (M?.bomb && d.mark === M && S.src !== 'mark' && (M.hits += total) >= d.stat.ail * M.S.dmg.stats['living_bomb_damage_threshold_%_of_ailment_threshold'] / 100) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) withers(d, 4);   // its "for 4 seconds"
     // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
     const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
