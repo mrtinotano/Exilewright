@@ -1742,7 +1742,10 @@ export function initScene(el, api) {
       const P = S.P;
       if (P.corpse && !useCorpse(S)) return;
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
-      if (P.repeats) { empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n: 2 + S.spent, label: S.label, name: S.name, s: 12 }); say(t('{0}: your next skill repeats {1} times', S.label, 2 + S.spent), 'gold'); }
+      // Barrage: its repeats, more per frenzy charge consumed, each with its less damage
+      // note: without the data's numbers (Unleash), the scene's 2 repeats, one more per charge spent
+      if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
+        empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
       else { setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
     },
@@ -1980,7 +1983,7 @@ export function initScene(el, api) {
           S.els = [...new Set([...S.els, E.el])]; S.el = E.el; S.ail = [...new Set([...S.ail, ...ailOf([E.el])])]; empower.splice(k, 1);
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; empower.splice(k, 1); }
+        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
       // Fist of Kalguur: a Slam spends a share of its cost as Ward for a Runic Boost (Empowered): part of its damage
@@ -2048,7 +2051,7 @@ export function initScene(el, api) {
     }
     used.push({ name: S.name, elemental: S.elemental, t: time }); while (used[0]?.t < time - RECENT) used.shift();
     if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
-    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, from: { x: pp.x, z: pp.z } }); }); }
+    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
