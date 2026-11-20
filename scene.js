@@ -308,6 +308,8 @@ export function initScene(el, api) {
   const has = (d, s) => s === 'curse' ? !!d.curse : s === 'mark' ? !!d.mark
     : s === 'immobilised' ? ['freeze', 'stun', 'electrocute', 'pin'].some(k => d.st[k] > 0) : d.st[s] > 0;
   const markOff = d => { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); };   // a Mark activated
+  const uniqueMore = (d, pct) => d.stat.rarity === 'unique' ? 1 + (pct || 0) / 100 : 1;   // a "more if created from a Unique" stat
+  const eatFreeze = (d, S) => { clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true); };   // a Freeze consumed
   const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
   const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
   const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
@@ -977,7 +979,7 @@ export function initScene(el, api) {
     if ((d.bar.stun || 0) < PRIMED[d.stat.rarity]) return;
     const [id, uq] = SHOCKWAVE[S.name], st = S.dmg.stats, X = partOf(S, id), c = { x: d.pos.x, z: d.pos.z };
     d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun });
-    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats[uq] / 100 : 1), src: 'shockwave' }); }
+    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * uniqueMore(d, X.dmg.stats[uq]), src: 'shockwave' }); }
     if (Math.random() * 100 < st['wing_blast_chance_to_gain_power_charge_on_stun_%']) gainCharge('power', S.label);
   }
   // Repulsion: its curse inflicts its Fragility; a hit of yours on the cursed enemy removes it for an explosion there
@@ -1635,16 +1637,15 @@ export function initScene(el, api) {
   function snipeBlast(S, d, p, mult) {
     if (d) hit(d, S, { mult });
     const fr = d && !d.dead && has(d, 'freeze'), X = partOf(S, fr ? 'SnipeFrozenExplosionPlayer' : 'SnipeExplosionPlayer');
-    if (fr) { clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true); }
-    pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (fr && d.stat.rarity === 'unique' ? 1 + X.dmg.stats['snipe_damage_+%_final_if_created_from_unique'] / 100 : 1) }, { noPay: true });
+    if (fr) eatFreeze(d, S);
+    pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (fr ? uniqueMore(d, X.dmg.stats['snipe_damage_+%_final_if_created_from_unique']) : 1) }, { noPay: true });
   }
   // Fragmentation Rounds: a bolt reaching a Frozen enemy Consumes the Freeze for an explosion of shrapnel around it (its
   // part, more from a Unique). note: its bolts setting off Ice Crystals are not simulated
   function shrapnel(S, d) {
     const X = has(d, 'freeze') && partOf(S, 'FragmentationRoundsFreezeShatterPlayer'); if (!X) return;
-    clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true);
-    const p = { x: d.pos.x, z: d.pos.z };
-    pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique'] / 100 : 1) }, { noPay: true });
+    eatFreeze(d, S); const p = { x: d.pos.x, z: d.pos.z };
+    pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * uniqueMore(d, X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique']) }, { noPay: true });
   }
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
@@ -2274,7 +2275,7 @@ export function initScene(el, api) {
         fx.ring(c, .3, pr, S.el, .4, { a: .6 }); let n = ES;
         for (const d of inside(c, pr).sort((p, q) => dist(p.pos, c) - dist(q.pos, c))) for (const s of ['freeze', 'shock', 'ignite']) if (n > 0 && has(d, s)) {
           n--; clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true);
-          const X = by[s], p = { x: d.pos.x, z: d.pos.z }, gm = d.stat.rarity === 'unique' ? 1 + st['elemental_sundering_damage_+%_final_if_created_from_unique'] / 100 : 1;
+          const X = by[s], p = { x: d.pos.x, z: d.pos.z }, gm = uniqueMore(d, st['elemental_sundering_damage_+%_final_if_created_from_unique']);
           later(.1, () => { pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * gm }, { noPay: true }); });
         }
         return;
@@ -2609,7 +2610,7 @@ export function initScene(el, api) {
       const a = A.find(a => d.st[a] > 0), el = SIPHON[a][0], X = a === 'freeze' ? S : partOf(S, `Snap${cap(el)}Player`) || S, spread = S.G?.radius2 || S.A * 2;
       const blast = (e, depth) => {
         if (e.dead || !(e.st[a] > 0)) return; clear(e, a);
-        const Y = { ...X, mult: X.mult * (e.stat.rarity === 'unique' ? 1 + (st['snap_damage_+%_final_if_created_from_unique'] || 0) / 100 : 1) };
+        const Y = { ...X, mult: X.mult * uniqueMore(e, st['snap_damage_+%_final_if_created_from_unique']) };
         fx.pillar(e.pos, .4, 3, el, .3); boom(e.pos, S.A, Y);
         if (depth === 1) { infRemnant(el, e.pos); if (Math.random() * 100 < (st['chance_%_to_spawn_another_infusion_remnant'] || 0)) infRemnant(el, around(e.pos, SIM.pickup)); }
         if (depth < (st.snap_maximum_proliferation_depth || 1)) for (const o of dummies) if (o !== e && !o.dead && o.st[a] > 0 && dist(o.pos, e.pos) <= spread)

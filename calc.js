@@ -684,7 +684,7 @@ export function skill(g, b, treeGear) {
     return D ? n + x * Math.floor((D === 'both' ? shield.armour + shield.evasion : shield[D]) / m[1]) : n; }, 0);
   // a thrown flask (the Concoctions): with empty hands (PoB2's weaponTypes "None"), its own damage (main_hand_weapon_*),
   // attack time and critical chance
-  const flaskThrow = attack && !!d.weapons?.includes('') && !!st.main_hand_base_weapon_attack_duration_ms;
+  const flaskThrow = attack && d.weapons?.includes('') && st.main_hand_base_weapon_attack_duration_ms;
   const nonWeapon = attack && (d.types || gt).includes('NonWeaponAttack') || flaskThrow;   // Deadly Resolve, Fan the Flames, Conductive Runes: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w && !nonWeapon && !shield) out.reason = 'Equip a weapon to calculate the attack damage';
