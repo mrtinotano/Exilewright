@@ -30,7 +30,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
-const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade']);
+const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -2684,6 +2684,13 @@ export function initScene(el, api) {
     const g = Math.min(me.maxL * n * S.dmg.stats['maximum_life_%_damage_absorbed_per_jade_consumed'] / 100, 2 * me.maxL);   // keywords.json Guard: up to 200% of your life
     if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); }
     fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'cold', .5); say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
+  };
+  // Wardbound Minions: it spends all your Runic Ward (its cost with it), one caster per its Ward spent, up to its most,
+  // each for its duration and at most its number of casts
+  K.wardbound = S => {
+    const st = S.dmg.stats, n = Math.min(Math.floor(((st._cost?.Ward || 0) + me.ward) / st.wardbound_minions_summon_minion_for_every_X_runic_ward_spent), st.base_number_of_wardbound_minions_allowed);
+    spendWard(me.ward);
+    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
   };
   // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its seeds; at its number they
   // are consumed for its crystals within its radius of that enemy. note: the seeds for a killing critical hit, and how
