@@ -272,7 +272,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -486,6 +486,7 @@ export function initScene(el, api) {
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
+    if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     if (d.agony && S.src !== 'agony' && (d.agony.n += total * d.agony.pct / 100) >= d.life) agonyEnds(d);   // Inevitable Agony
     // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
     // shatter in its explosion. note: how long the shards last is not in the data, until they shatter here
@@ -936,6 +937,17 @@ export function initScene(el, api) {
     if (!full && (d.bar.stun || 0) < st['hunters_mark_%_of_max_threshold_to_trigger_explosion_on_death']) return;
     d.mark = null; say(M.label, 'blood');
     boom({ x: d.pos.x, z: d.pos.z }, M.R * Math.sqrt(1 + st['hunters_mark_explosion_area_of_effect_+%_final_from_buildup'] * k / 100), { ...X, mult: X.mult * (1 + st['hunters_mark_buildup_%_as_explosion_damage_+%_final'] * k / 100) });
+  }
+  // Blood Hunt: its hit on an enemy with at least its Blood Loss (keywords.json BloodLoss: the physical damage over time
+  // it has taken) consumes it and its bleeding in a blood explosion (its part), the area larger by its % per its amount
+  // consumed, up to 500%, and the enemies in it losing its % of that Blood Loss as life
+  function bloodHunt(S, d) {
+    const st = S.dmg.stats, X = partOf(S, 'BloodHuntExplosionPlayer'), xs = X?.dmg.stats, n = d.blood || 0;
+    if (!X || n < st.blood_hunt_X_blood_loss_consumed_to_explode) return;
+    d.blood = 0; clear(d, 'bleed'); delete d.burn.bleed;
+    const c = { x: d.pos.x, z: d.pos.z }, R = X.A * Math.sqrt(1 + Math.min(500, xs['blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%'] * Math.floor(n / xs['blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final'])) / 100);
+    fx.explode(V(c.x, .8, c.z), R, 'blood'); boom(c, R, { ...X, mult: S.mult });
+    for (const e of inside(c, R)) damage(e, n * xs['blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss'] / 100, X, false, true);
   }
   // Harbinger of Madness: an enemy your melee hits kill (no more than once every its time) and a Rare or Unique one your
   // melee attacks hit (its chance) give an Unstable Apparition that charges the nearest other enemy and explodes in its
@@ -1416,14 +1428,15 @@ export function initScene(el, api) {
   }
   // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone, for dur s;
   // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
-  // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes)
+  // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes);
+  // o.more(t): its damage multiplier t s after arming (Ice Shards)
   function hazardAt(X, p, dur, o = {}) {
     const arm = o.arm || 0, c = o.c || 'dust', reach = o.reach || X.A;
     const decal = fx.decal(p, reach, 'patch', c, { a: .8, k: 1 });
     const e = thing(holder(p), dur, { name: X.name, hazard: true,
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
-        const S2 = e.s < .5 && o.early ? { ...X, mult: X.mult * (1 + o.early / 100) } : X; e.set = true;
+        const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true;
         later(o.delay || 0, () => { e.dead = true; area(p, X.A, S2); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
@@ -1613,7 +1626,7 @@ export function initScene(el, api) {
         if (e.s >= life) { e.dead = true; return; }
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
-        if (k > stop) { const v = Math.min(k - stop, 5.5 * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] / 100) } : MS;
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) / 100); sw = 1;
@@ -1636,6 +1649,7 @@ export function initScene(el, api) {
       const B = objs.find(o => o.bone && !o.dead);
       if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
+      n *= o.taken || 1;   // an Empowered Zombie's less damage taken
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
@@ -1993,12 +2007,13 @@ export function initScene(el, api) {
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
-    // (its more hit damage) and two more (its less damage taken and more speed: not simulated)
+    // (its more hit damage, less damage taken and more movement speed) and two more
     raise(S) {
       const r = Math.max(S.A, SIM.snap), list = corpses(S.at, r).slice(0, S.R ? 4 : 1 + S.spent);
       const st = S.dmg?.stats || {}, life = durOf(S) || SIM.minionTime, emp = st['power_charged_zombie_hit_damage_+%_final'];
-      const raise = (X, p) => { limit(o => o.kind === S.name, st.base_number_of_zombies_allowed); minion(X, p, life, { kind: S.name }); };
-      if (!list.length && emp != null && charges.power > 0) { charges.power--; chargesSpent(1); for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1)); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
+      const raise = (X, p, o) => { limit(o => o.kind === S.name, st.base_number_of_zombies_allowed); minion(X, p, life, { kind: S.name, ...o }); };
+      const E = { taken: 1 - st['power_charged_zombie_damage_taken_-%_final'] / 100, speed: 1 + st['power_charged_zombie_movement_speed_+%_final'] / 100 };
+      if (!list.length && emp != null && charges.power > 0) { charges.power--; chargesSpent(1); for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1), k ? {} : E); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
       if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
       for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); raise(S, p); }
       say(t('{0}: {1} raised from corpses', S.label, list.length), S.el);
@@ -2909,6 +2924,17 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
+  // Ice Shards: each bolt of its clip strikes the ground at the target (its hit there) and leaves a shard, up to the
+  // shards' limit, that arms after its time and explodes (its part) when an enemy comes within its detection radius;
+  // armed longer, more damage, up to its more after its bonus delay. note: the data has no time a shard lasts (the
+  // scene's) nor how its more grows (here evenly over the delay), and the bolt's hit covers the scene's half metre
+  K.shards = S => {
+    const X = partOf(S, 'IceShardsShardPlayer'), xs = X?.dmg.stats, c = around(S.at, .5); if (!X) return;
+    fx.streak(hand(), V(c.x, .1, c.z), 'cold', .1, .04, 1); boom(c, .5, S, { soft: true });
+    limit(o => o.hazard && o.name === S.name, xs.permafrost_shard_limit);
+    hazardAt({ ...X, mult: S.mult }, c, SIM.lifetime, { arm: xs.permafrost_shard_arming_time_ms / 1000, reach: xs.permafrost_shard_detection_base_area_of_effect_radius / 10, c: 'cold',
+      more: t => 1 + xs['permafrost_shard_damage_+%_final_after_1_second'] / 100 * Math.min(1, t / (xs.permafrost_shard_bonus_damage_delay_ms / 1000)) });
+  };
   // Stormblast Bolts: its bolts land within its secondary radius of the target and lie there charged for its duration (up
   // to its most); a detonator explodes them in its part. note: their impact without a detonator is not simulated
   K.stormblast = S => {
@@ -3720,6 +3746,7 @@ export function initScene(el, api) {
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
       d.dots.forEach(v => add(v));
+      d.blood = (d.blood || 0) + ((st.bleed > 0 && d.burn.bleed?.dps || 0) + d.dots.reduce((t, v) => t + (v.el === 'physical' ? v.dps : 0), 0)) * shocked(d) * .5;   // Blood Loss
       if (n > 0) {
         const fl = d.flash; floatN(d, n * .5, el, { sim, low: true });
         damage(d, past * .5, d.by || NONE, true, true); if (!d.dead) damage(d, (n - past) * .5, d.by || NONE, true); d.flash = fl; if (d.dead) return;

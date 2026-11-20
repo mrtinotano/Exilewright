@@ -128,7 +128,7 @@ Totems use their gem's own attack or spell, or the gem placed in them (Mortar Ca
 speed the planner calculates for a totem, up to the build's totem limit. Minions are the game's monster their gem raises,
 at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers,
 and their life (the allies' life at their level times their monster's, with your increased and more minion life):
-enemies nearer to a minion than to you attack it, and it dies at none left. Bone Offering shields them while its spike
+enemies nearer to a minion than to you attack it, and it dies at none left. An Empowered Zombie takes less damage and moves faster. Bone Offering shields them while its spike
 stands, Grim Feast gathers the life of the persistent ones slain in your Presence for its Grim Resurrection, and
 Healing Runes spends Runic Ward to heal them.
 Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Skills with mechanics of their own follow
@@ -145,7 +145,8 @@ Weapon's Combust and the corpse cores of Volatile and Bitter Dead, the ice cryst
 Requiem's Anguish, Hollow Form's images, Tempest Bell's shockwaves, Earthquake's Jagged Ground and its Aftershock,
 Explosive Spear's lodged spear and its cross, Bonestorm's spikes, Mirror of Refraction's mirrors, Stormblast Bolts,
 Encase in Jade with Jade Heritage's stacks, Midnight Zenith's crystals (with their life and cold explosion, from Path
-of Building 2's stat set), Fragments Of The Past's volcano and its Ice Fragments, Called Shots marking an enemy every
+of Building 2's stat set), Fragments Of The Past's volcano and its Ice Fragments, Ice Shards' shards that arm and grow stronger, Blood Hunt's
+explosion of the Blood Loss an enemy has taken, Called Shots marking an enemy every
 five seconds and passing a consumed Mark on, Wardbound Minions and Rigwald's Ferocity by weapon set. The ≡ button opens a combat log: the last hits, kills
 and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
 as the game does. Where the data leaves something out (a time, a count),
