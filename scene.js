@@ -458,7 +458,7 @@ export function initScene(el, api) {
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
-    d.by = S; damage(d, total, S);
+    const full = d.life >= d.max; d.by = S; damage(d, total, S);
     // Living Bomb: its seed bursts once the damage dealt to the enemy reaches its share of the enemy's ailment threshold
     if (M?.bomb && d.mark === M && S.src !== 'mark' && (M.hits += total) >= d.stat.ail * M.S.dmg.stats['living_bomb_damage_threshold_%_of_ailment_threshold'] / 100) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) withers(d, 4);   // its "for 4 seconds"
@@ -467,7 +467,7 @@ export function initScene(el, api) {
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
-    if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
+    if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S, d); if (crit) event('crit', d.pos, S, d);
     return true;
@@ -748,7 +748,7 @@ export function initScene(el, api) {
     if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
-    if (x('physical') && !N.bleed && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
+    if (x('physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1))) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
@@ -3672,6 +3672,14 @@ export function initScene(el, api) {
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
+    }
+    // Time of Need: while on, every its interval it heals its life and removes your elemental ailments
+    // note: its interval is "modifiable", the cooldown recovery rate of the build is not applied to it here
+    const TN = onS('Time of Need')?.dmg?.stats;
+    if (TN && time - (me.needAt ??= time) >= TN.base_cooldown_modifiable_repeat_interval_ms / 1000) {
+      me.needAt = time; me.life = Math.min(me.maxL, me.life + TN.skill_time_of_need_gain_x_life);
+      for (const a of ['ignite', 'chill', 'freeze', 'shock', 'electrocute']) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; }
+      fx.ring(pp, 1.5, .2, 'gold', .5); hudT = 0;
     }
     // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
     // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when

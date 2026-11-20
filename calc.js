@@ -925,7 +925,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
-    bleed: all('base_chance_to_inflict_bleeding_%'), poison: all('base_chance_to_poison_on_hit_%'),
+    bleed: all('base_chance_to_inflict_bleeding_%'), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'), poison: all('base_chance_to_poison_on_hit_%'),
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
     maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
     maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),
