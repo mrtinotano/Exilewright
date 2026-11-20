@@ -368,9 +368,9 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
-      // Mana Tempest, Charged Shots, Thrill of the Kill: their share of all damage as extra lightning
+      // Mana Tempest, Charged Shots, Volt, Thrill of the Kill: their share of all damage as extra lightning
       const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
-      const GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0);
+      const GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0);
       if (GL) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GL / 100;
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
@@ -2583,6 +2583,11 @@ export function initScene(el, api) {
       if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el); }
       else if (len === 4 && n === 3) S.times = 3;
     }
+    // Volt: its Voltaic Charge from how far you moved since its last use (its gain a metre, up to its most), spent for
+    // its share of damage as extra lightning per 10
+    const VO = !auto && S.dmg?.sum?.support_static_charge_maximum_charge, su = S.dmg?.sum;
+    S.volt = VO && Math.floor(Math.min(VO, (me.trav - ((me.voltAt ||= {})[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
+    if (VO) me.voltAt[S.name] = me.trav;
     const run = K[S.kind] || K.area;
     run(S);
     if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
@@ -2598,6 +2603,9 @@ export function initScene(el, api) {
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
+    // Jagged Ground: a slam consumes its Endurance Charges for Jagged Ground in its area for its duration
+    const JG = !auto && P.slams && su?.support_consume_X_endurance_charges_on_use;
+    if (JG && charges.endurance >= JG) { charges.endurance -= JG; later(.12, () => ground('jagged', S.at, S.A, su.support_jagged_ground_base_duration_ms / 1000, S)); }
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
     const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
     if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
