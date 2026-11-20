@@ -41,7 +41,8 @@ const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill 
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
-const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
+const DAZE = { time: 8, stun: 50 };
+const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
 const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const TRINITY_MAX = 100;   // note: keywords.json Affinity: a maximum of 100 of each type
@@ -96,7 +97,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -254,7 +255,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = 0; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -262,7 +263,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { kaom: null, calamity: null, chayula: null, demon: null, rifts: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -464,6 +465,8 @@ export function initScene(el, api) {
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) withers(d, 4);   // its "for 4 seconds"
     // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
     const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
+    const AW = !S.src && S.dmg?.stats?.apply_x_wither_on_hit;   // Chaos Bolt: its Withered stacks on hit, for its duration
+    for (let k = 0; k < (AW || 0); k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
@@ -748,7 +751,14 @@ export function initScene(el, api) {
     if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
-    if (x('physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1))) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
+    // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding
+    // is more effective per Incision removed recently
+    if (x('physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (d.inc || 0))) {
+      me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
+      const ri = me.incs.reduce((t, u) => t + u.n, 0);
+      inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) });
+    }
+    if (A.incision) d.inc = Math.min(INCISION.max, (d.inc || 0) + A.incision);
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
