@@ -279,7 +279,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { jade: 0, jadeIn: null, seeds: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -2692,6 +2692,17 @@ export function initScene(el, api) {
     spendWard(me.ward);
     for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
   };
+  // Queen's Procession: while it is on and you sprint, the swarm hits everything in its area every its interval, its more
+  // damage per Swarm's Advance; a use that hits grants one (up to its most) and hits you for its self damage. note: losing
+  // them all 4 s after the sprint ends is poe2db's text (the data has no number for it)
+  function locusts(S, dt) {
+    const st = S.dmg.stats; me.locustAt = time;
+    if ((me.locustIn = (me.locustIn ?? 0) - dt) > 0) return;
+    me.locustIn = st.base_cooldown_modifiable_repeat_interval_ms / 1000; fx.ring(pp, .3, S.A, 'physical', .3, { a: .5 });
+    if (!area({ x: pp.x, z: pp.z }, S.A, { ...S, mult: S.mult * (1 + (me.locust || 0) * st['locust_dash_damage_+%_final_per_stack'] / 100) })) return;
+    me.locust = Math.min(st.maximum_locust_stacks, (me.locust || 0) + 1);
+    hurt(rnd(st.active_skill_minimum_physical_self_damage_to_take, st.active_skill_maximum_physical_self_damage_to_take), 0, 'physical', false, null);
+  }
   // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its petals, and a killing one its
   // Power's (midnight_star_gain_ice_seeds_equal_to_enemy_power_on_kill_with_critical_hit); at its number they are consumed
   // for its crystals within its radius of that enemy, up to its most. note: its Crystal stat set (duration, most, explosion
@@ -3579,6 +3590,7 @@ export function initScene(el, api) {
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
+    if (me.locust) b.push(one(icon("Queen's Procession"), css('physical'), t("Swarm's Advance"), me.locust));
     if (me.heat) b.push(`<span class="s-txt" style="--c:${css('fire')}">${t('Heat')} ${Math.floor(me.heat)}</span>`);
     if (seen()) b.push(one(icon('Future-Past'), css('gold'), api.info({ name: 'Future-Past' }).label));
     if (me.ghost >= 1) b.push(one(icon('Ghost Dance'), css('ice'), t('Ghost Shroud'), Math.floor(me.ghost)));
@@ -4170,7 +4182,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); mirrors(dt); jade(dt); boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
@@ -4306,8 +4318,10 @@ export function initScene(el, api) {
       const C = sheet().sprint, go = steer || (() => { const x = cursor.x - pp.x, z = cursor.z - pp.z, l = Math.hypot(x, z); return l > .3 ? { x: x / l, z: z / l } : null; })();
       if (castAt > me.sprint.at || stuck() || (!rollHeld() && time - me.sprint.at >= C.min / 1000)) me.sprint = null;
       else {
-        if (go) { let da = Math.atan2(go.x, go.z) - facing; da = Math.atan2(Math.sin(da), Math.cos(da)); const turn = C.turn * Math.PI / 180 * dt; facing += clamp(da, -turn, turn); }
+        const QP = onS("Queen's Procession"), qs = QP?.dmg.stats;
+        if (go) { let da = Math.atan2(go.x, go.z) - facing; da = Math.atan2(Math.sin(da), Math.cos(da)); const turn = (qs?.locust_sprint_turn_rate || C.turn) * Math.PI / 180 * dt; facing += clamp(da, -turn, turn); }
         const v = spd() * (1 + C.speed / 100) * slowed() * maimed() * dt; pp.x += Math.sin(facing) * v; pp.z += Math.cos(facing) * v; moving = true; goal = null;
+        if (QP) locusts(QP, dt);
       }
     } else if (steer && !charge && !stuck()) {
       goal = null;
