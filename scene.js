@@ -2412,6 +2412,11 @@ export function initScene(el, api) {
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
     if (!auto) {
+      // Cadence: each use a stack of its more attack speed (useTime); a use at its most stacks makes the skill unusable
+      // for its time, and they are lost. note: how long a stack lasts is not in its data, they last until then
+      const CD = S.dmg?.sum?.support_measured_speed_maximum_stacks, cad = CD && ((me.cad ||= {})[S.name] ||= { n: 0, off: 0 });
+      if (cad && time < cad.off) return false;
+      if (cad && ++cad.n > CD) { cad.n = 0; cad.off = time + S.dmg.sum.support_measured_speed_disabled_ms / 1000; say(t('{0} off', S.label), 'dust'); return false; }
       // Dauntless: not until you have stood still for its time
       const DS = S.dmg?.sum?.skill_cannot_be_used_unless_stationary_for_X_ms;
       if (DS && time - (me.movedAt ?? -99) < DS / 1000) { toast(`${S.label}: ${t('Supported Skills cannot be used unless you have been stationary for {0} seconds', DS / 1000)}`); return false; }
@@ -2631,7 +2636,7 @@ export function initScene(el, api) {
   const clips = {}, cdReady = {};
   const useTime = b => {
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
-    let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX;
+    let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100);
     if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); while (reloads[0]?.t < time - 8) reloads.shift(); }
     return t;
   };
