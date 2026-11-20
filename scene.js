@@ -544,6 +544,7 @@ export function initScene(el, api) {
   // Broken Armour of each enemy it reaches for a burst of that share of the broken armour; Haemocrystals: a hit
   // consumes bleeding for crystals around the enemy (up to the most allowed) that burst after their duration, each that
   // share of the bleeding's remaining damage; Charged Mark: a mark that activates leaves Shocked Ground where it was.
+  // Smash to Smithereens: a heavy stun triggers its burst around the enemy, its fire breaking armour (its share).
   // note: Corrupted Blood's debuffs share one duration, refreshed (the game times each one)
   const trigReady = {}, fields = { static: [], rift: [] }, crystals = [];
   // a triggered skill's cooldown and stored uses: false while none is left
@@ -553,9 +554,9 @@ export function initScene(el, api) {
     ['support_mana_flare_%_of_current_mana_consumed', 'flare'], ['spell_minimum_base_cold_damage_as_%_of_intelligence', 'discharge'],
     ['base_chaos_damage_to_deal_per_minute', 'decay'], ['add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict', 'cry'],
     ['support_battershout_physical_damage_equal_to_%_of_broken_armour', 'batter'], ['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage', 'crystal'],
-    ['chance_to_trigger_shocked_ground_on_mark_activated_%', 'charged']];
+    ['chance_to_trigger_shocked_ground_on_mark_activated_%', 'charged'], ['trigger_on_heavy_stun_%', 'smash']];
   const ON = { rift: 'shock', static: 'shock', current: 'shock', erupt: 'ignitedHit', fulminate: 'electrocuteKill', flare: 'crit', discharge: 'hit',
-    decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark' };
+    decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
     for (const T of S?.dmg?.trig || []) {
@@ -576,7 +577,7 @@ export function initScene(el, api) {
       const c = { x: d.pos.x, z: d.pos.z }, R = X.G.radius || (ts.active_skill_base_area_of_effect_radius || 0) / 10, dur = sh(X).duration || ts.base_skill_effect_duration / 1000;   // with the build's area
       say(X.label, X.el);
       if (kind === 'fulminate') later((ts.explosion_delay_ms || 0) / 1000, () => boom(c, R, X));
-      else if (kind === 'flare' || kind === 'discharge' || kind === 'batter') boom(c, R, X);
+      else if (kind === 'flare' || kind === 'discharge' || kind === 'batter' || kind === 'smash') boom(c, R, X);
       else if (kind === 'decay' || kind === 'cry') {
         const o = d.dots.find(o => o.name === T.id), n = kind === 'cry' ? Math.min(10, (o?.stacks || 0) + ts.add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict) : 1;
         dot(d, { ...X, mult: n, P: { ...X.P, dur } }).stacks = n;
@@ -707,7 +708,7 @@ export function initScene(el, api) {
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Tumult's consumed frenzy charge; Uul-Netol's Embrace: its share of chaos
+    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
@@ -724,6 +725,7 @@ export function initScene(el, api) {
     if (d.bar[a] < 100) return;
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
+    if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
     // Vanguard: heavy stunning with a supported skill grants its Guard per 10 Strength for its duration
