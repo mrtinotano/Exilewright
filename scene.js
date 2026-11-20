@@ -1845,16 +1845,20 @@ export function initScene(el, api) {
       }
     },
     storm(S) {
-      const P = S.P, c = S.at, st = S.dmg?.stats || {}, dur = sh(S).duration || Math.min(P.dur || 4, 10);
+      // Morgana's Tempest: the storm moves from you to the target at its speed (its more), one more allowed, with its less
+      // damage and area
+      const su = S.src ? {} : S.dmg?.sum || {}, MV = su.support_storm_base_movement_speed, to = S.at;
+      if (MV) S = { ...S, mult: S.mult * (1 + su['support_approaching_storms_damage_+%_final'] / 100) };
+      const P = S.P, c = MV ? { x: pp.x, z: pp.z } : S.at, st = S.dmg?.stats || {}, dur = sh(S).duration || Math.min(P.dur || 4, 10), shrink = MV ? Math.sqrt(1 + su['support_approaching_storms_area_of_effect_+%_final'] / 100) : 1;
       if (P.wind) return vortex(S, c, S.A, dur);
       // its own limit, impact interval (and variance), fall time and re-hit interval on one enemy (Firestorm, Icestorm,
       // Thunderstorm); the scene's when a storm gives none
       const max = Object.entries(st).find(([k]) => /_max(?:imum)?_number_of_storms$/.test(k))?.[1] || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
         vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
         again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
-      limit(o => o.stormOf === S.name, max);
+      limit(o => o.stormOf === S.name, max + (su['support_storm_skill_limit_+'] || 0));
       // Firestorm's consumed Infusions: Fire, a larger area and more frequent bolts; Cold and Lightning, their own bolts too
-      const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0), R = G0.R;
+      const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = (G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0)) * shrink, R = G0.R * shrink;
       const extra = (S.infs || []).filter(e => e !== 'fire').map(e => infPart(S, e)).filter(Boolean);
       const out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
       // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
@@ -1870,6 +1874,7 @@ export function initScene(el, api) {
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
+          if (MV) { const l = dist(c, to), v = Math.min(l, MV / 10 * (1 + su['support_approaching_storms_movement_speed_+%_final'] / 100) * dt); if (l > .01) { c.x += (to.x - c.x) / l * v; c.z += (to.z - c.z) / l * v; out.move(c); } }
           for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
           if (wet) for (const d of inside(c, Z)) d.wet = { ...wet, until: time + .2 };
           if ((tk -= dt) > 0) return; tk = (every + rnd(-vary, vary)) / (fi ? 1 + (st['firestorm_bolt_frequency_+%_if_consumed_fire_infusion'] || 0) / 100 : 1);
