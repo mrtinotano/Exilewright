@@ -638,13 +638,14 @@ export function initScene(el, api) {
       d.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
       if (AL.ignite || roll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
     }
-    if (x('lightning') && !N.shock && (AL.shock || roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance))) {
+    const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
+    if (x('lightning') && !N.shock && (AL.shock || roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100)))) {
       inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
     }
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze * (1 + (d.mark?.D?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
@@ -1245,6 +1246,9 @@ export function initScene(el, api) {
   }
 
   // ---------- how each kind of skill plays out. S carries the aim: S.from, S.at, S.dx, S.dz.
+  // a storm's area and its strikes' radius: the larger and the smaller of its two radii (Firestorm's area is its
+  // secondary, Thunderstorm's its main); with one, the scene's area around strikes of that radius
+  const stormGeo = S => { const r2 = S.G?.radius2; return r2 ? { Z: Math.max(S.A, r2), R: Math.min(S.A, r2) } : { Z: Math.max(S.A * 2.4, SIM.stormArea), R: S.A }; };
   const K = {
     projectile(S) {
       const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2, a0 = Math.atan2(S.dx, S.dz), spread = S.P.wander ? .45 : .13, h = hand();
@@ -1512,18 +1516,31 @@ export function initScene(el, api) {
       }
     },
     storm(S) {
-      const P = S.P, c = S.at, R = S.A, dur = Math.min(P.dur || 4, 10);
-      if (P.wind) return vortex(S, c, R, dur);
-      const old = objs.filter(o => o.stormOf === S.name && !o.dead); if (old.length >= 2) old[0].dead = true;
-      const Z = Math.max(R * 2.4, SIM.stormArea), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
+      const P = S.P, c = S.at, st = S.dmg?.stats || {}, dur = sh(S).duration || Math.min(P.dur || 4, 10);
+      if (P.wind) return vortex(S, c, S.A, dur);
+      // its own limit, impact interval (and variance), fall time and re-hit interval on one enemy (Firestorm, Icestorm,
+      // Thunderstorm); the scene's when a storm gives none
+      const of = re => Object.entries(st).find(([k]) => re.test(k))?.[1];
+      const max = of(/_max(?:imum)?_number_of_storms$/) || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
+        vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
+        again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
+      const old = objs.filter(o => o.stormOf === S.name && !o.dead); while (old.length >= max) old.shift().dead = true;
+      const { Z, R } = stormGeo(S), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
+      // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
+      const wet = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'] != null && { shock: st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
           for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
-          if ((tk -= dt) > 0) return; tk = .17;
+          if (wet) for (const d of inside(c, Z)) d.wet = { ...wet, until: time + .2 };
+          if ((tk -= dt) > 0) return; tk = every + rnd(-vary, vary);
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
-          later(bolt ? 0 : .16, () => { pop(q, R, S.el); area(q, R, { ...S, self: e }, { mult: .6 }); });
+          later(bolt ? 0 : fall, () => {
+            pop(q, R, S.el);
+            for (const d of inside(q, R)) if (!(time - (hitAt.get(d) ?? -99) < again)) { hitAt.set(d, time); hit(d, { ...S, self: e }); }
+            touch(q, R, { ...S, self: e });
+          });
         },
         off: () => out.remove() });
     },
@@ -1863,7 +1880,7 @@ export function initScene(el, api) {
       case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
       case 'wave': S.A > 3 ? strip(pp, S.dx, S.dz, S.A, 2.4) : strip(pp, S.dx, S.dz, Math.max(1, S.A * 2) * 6 + S.A, Math.max(.6, S.A * 2)); break;
       case 'wall': { const L = sh(S).wall || SIM.wall; strip({ x: c.x + S.dz * L / 2, z: c.z - S.dx * L / 2 }, -S.dz, S.dx, L, .6); break; }
-      case 'storm': circle(c, P.wind ? S.A : Math.max(S.A * 2.4, SIM.stormArea)); break;
+      case 'storm': circle(c, P.wind ? S.A : stormGeo(S).Z); break;
       case 'slam': circle(c, stageR(S)); break;
       case 'totem': circle(c, P.ballista || P.ranged ? .6 : S.R || SIM.totemArea); break;
       case 'raise': circle(c, Math.max(S.A, SIM.snap)); break;

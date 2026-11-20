@@ -146,6 +146,8 @@ function geo(g) {
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
     // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
     radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0,
+    // its secondary radius (a storm's area, Firestorm's; or its strikes', Thunderstorm's), with the same modifiers
+    radius2: (r2 => r2 ? Math.floor(r2 * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0)(d.levels?.[g.level]?.active_skill_base_secondary_area_of_effect_radius ?? d.constant?.active_skill_base_secondary_area_of_effect_radius),
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,
