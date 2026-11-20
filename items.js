@@ -266,6 +266,15 @@ const rarityWord = w => {
   const like = x => { let n = 0; while (n < x.length && x[n] === w[n]) n++; return x === w || x.endsWith(w) || n >= Math.max(3, Math.min(x.length, w.length) - 2); };
   return RARITIES[RARITY_WORDS.map(ws => ws.findIndex(like)).find(i => i >= 0)] || null;
 };
+// corruptLine: the line that says an item is corrupted, in any language: a word of the glossary's "Corrupted Items"
+// (KW.Corrupted) as the item's text words it, which may end otherwise ("Corrupto" / "Objetos corruptos", "Осквернено" /
+// "Осквернённые предметы"), or part of it where it is one word ("コラプト" / "コラプトアイテム")
+const CORRUPT = Object.entries(KW.Corrupted || {}).filter(([k, v]) => k.startsWith('term') && typeof v === 'string').flatMap(([, v]) => v.toLowerCase().replace(/ё/g, 'е').split(/\s+/));
+const corruptLine = l => {
+  l = l.trim().toLowerCase().replace(/ё/g, 'е'); if (l.length < 2 || /[\s\d:：]/.test(l)) return false;
+  return CORRUPT.some(w => { let n = 0; while (n < w.length && w[n] === l[n]) n++; return w.includes(l) || n >= 2 && n >= Math.min(w.length, l.length) - 2; });
+};
+console.assert(['Corrupted', 'Corrupto', 'Осквернено', 'コラプト', '已汙染', 'Verderbt'].every(corruptLine) && !['Corrupted Blood', 'Corona', 'Rarity: Rare'].some(corruptLine), 'corruptLine');
 const NAMED = new Map();   // every name the data has for a base (English, then the translations), in lower case
 for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
   for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
@@ -389,7 +398,9 @@ export function parseItem(text) {
   im.missed = own1.missed;
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
     name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)),
-    rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text), corrupted: /^Rarity:/m.test(text) ? raw.includes('Corrupted') : null };   // corrupted: English text only
+    rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text), corrupted: raw.some(corruptLine),
+    mirrored: raw.includes('Mirrored'), sanctified: raw.includes('Sanctified'),   // note: English text only (META)
+    sockets: raw.map(l => l.match(/^[^:：]+[:：]\s*(S(?:\s+S)*)\s*$/)?.[1].split(/\s+/).length).find(Boolean) || 0 };
 }
 
 // ---------- what a slot can have and what the trade site lists (gear search, trade.js)

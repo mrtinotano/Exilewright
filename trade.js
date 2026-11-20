@@ -220,7 +220,23 @@ export async function priceUnid({ league, item, rarity, ilvl, corrupted, state =
     sort: { price: 'asc' } });
   return { total: s.total, prices: await cheapest(s), id: s.id, ilvl: rarity !== 'unique' && ilvl };
 }
-export async function priceOf({ league, item, text = '', state = 'available', near = 10, deep = false }) {
+// what else an item like it must be, as Exiled Exchange 2 asks: a non-unique one no unique (of its base); not
+// corrupted when it is not (a corrupted one: either, as corruption can add or spoil); not mirrored nor sanctified
+// unless it is (a non-unique); at least its rune sockets when corrupted (the only way past its base's); at least its
+// quality where quality is worth something: a flask's over 20, a charm's 10 or more, a weapon's or armour's over 20
+// but on a rare one (whose crafting is done)
+const QUALITY = { Charms: 10, 'Life Flasks': 21, 'Mana Flasks': 21 };
+function sameAs(r) {
+  const unique = !!r.item.unique, cls = classOf(r.item), q = r.item.quality || 0, cat = CATEGORY[cls] || '';
+  const atQ = q >= (QUALITY[cls] ?? (/^(weapon|armour)\./.test(cat) && r.rarity !== 'rare' ? 21 : Infinity));
+  return {
+    type_filters: { ...!unique && { rarity: { option: 'nonunique' } }, ...atQ && { quality: { min: q } } },
+    misc_filters: { ...!r.corrupted && { corrupted: { option: 'false' } }, ...!unique && !r.mirrored && { mirrored: { option: 'false' } },
+      ...!unique && !r.sanctified && !r.corrupted && { sanctified: { option: 'false' } } },
+    equipment_filters: { ...r.corrupted && r.sockets && { rune_sockets: { min: r.sockets } } } };
+}
+// r: parseItem's (its item, rarity, corrupted...); item alone: as an identified one, nothing else asked of it
+export async function priceOf({ league, item, r = null, text = '', state = 'available', near = 10, deep = false }) {
   const props = propsOf(text);
   const { desecrated, idsOf } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
@@ -230,8 +246,10 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
   // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
   const cat = !item.unique && Object.keys(props).length && CATEGORY[classOf(item)];
   const query = { status: { option: state }, ...(!cat && { type: item.base }), ...(item.unique && { name: item.unique }) };
-  const filters = { ...cat && { type_filters: { filters: { category: { option: cat } } } },
-    ...Object.keys(props).length && { equipment_filters: { filters: Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) } } };
+  const also = r ? sameAs({ ...r, item }) : {}, group = (k, f) => Object.keys(f).length ? { [k]: { filters: f } } : {};
+  const filters = { ...group('type_filters', { ...also.type_filters, ...cat && { category: { option: cat } } }),
+    ...group('equipment_filters', { ...also.equipment_filters, ...Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) }),
+    ...group('misc_filters', also.misc_filters || {}) };
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
   // at most pct(i) % under its number. Cheapest first
   const search = (k, pct) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters,
