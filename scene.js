@@ -3401,12 +3401,13 @@ export function initScene(el, api) {
     else if (c === K.swap && api.swapSet) { const n = api.swapSet(); fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap
     else if (c === K.roll) roll();
   });
+  const rollHeld = () => !!keys[settings().keys.roll] || !!padWas[1], SK_CHAR = () => api.charStats?.() || {};
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
   function roll() {
     if (move || rollCd > 0 || stuck()) return;
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
@@ -3898,6 +3899,7 @@ export function initScene(el, api) {
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     if (dealt.lightning > 0) valako(dealt.lightning);
     const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
+    if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
@@ -3918,7 +3920,7 @@ export function initScene(el, api) {
     if (!fresh) return;
     if (a === 'freeze' || a === 'stun' || a === 'electrocute') { held = charge = goal = null; walk = false; }   // they stop what you are doing
     if (a === 'freeze') { me.st.chill = 0; fx.emit(22, { p: { x: pp.x, y: 1, z: pp.z }, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); }
-    fx.text(above(), t(a === 'stun' ? 'Light Stun' : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
+    fx.text(above(), t(a === 'stun' ? (o.heavy ? 'Heavy Stun' : 'Light Stun') : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
   function ailed(d, raw, dealt) {
@@ -4294,7 +4296,16 @@ export function initScene(el, api) {
         if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', pp, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
-      if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); }
+      if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); if (m.roll && rollHeld()) { me.sprint = { at: time }; say(t('Sprinting'), 'gold'); } }
+    } else if (me.sprint) {
+      // Sprint: after a roll, while its key stays held (at least its least time), toward W A S D / the stick or the cursor,
+      // turning at its turn rate, faster by its movement speed (character.ot, plus the tree's and gear's); using a skill ends it
+      const S0 = me.sprint, C = SK_CHAR(), go = steer || (() => { const x = cursor.x - pp.x, z = cursor.z - pp.z, l = Math.hypot(x, z); return l > .3 ? { x: x / l, z: z / l } : null; })();
+      if (castAt > S0.at || stuck() || (!rollHeld() && time - S0.at >= C.dodge_roll_sprint_minimum_time_ms / 1000)) me.sprint = null;
+      else {
+        if (go) { let da = Math.atan2(go.x, go.z) - facing; da = Math.atan2(Math.sin(da), Math.cos(da)); const turn = C.dodge_roll_sprint_turn_rate * Math.PI / 180 * dt; facing += clamp(da, -turn, turn); }
+        const v = spd() * (1 + sheet().sprint / 100) * slowed() * maimed() * dt; pp.x += Math.sin(facing) * v; pp.z += Math.cos(facing) * v; moving = true; goal = null;
+      }
     } else if (steer && !charge && !stuck()) {
       goal = null;
       if (time - castAt > .3) { const v = spd() * slowed() * maimed() * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
