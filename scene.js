@@ -362,7 +362,7 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit; if (crit) (me.critAt ||= {})[S.name] = time;
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges'); if (crit) (me.critAt ||= {})[S.name] = time;
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
@@ -2670,7 +2670,7 @@ export function initScene(el, api) {
   const clips = {}, cdReady = {};
   const useTime = b => {
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
-    let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100);
+    let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100);
     if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); while (reloads[0]?.t < time - 8) reloads.shift(); }
     return t;
   };
@@ -3127,6 +3127,15 @@ export function initScene(el, api) {
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
   const blocked = () => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); };
+  // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
+  // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
+  // note: its increased skill speed is applied as more here
+  const regulate = (c, k) => { const v = charges[c] > 0 && onS('Charge Regulation')?.dmg.stats[k]; return 1 + (v || 0) / 100; };
+  function regulation() {
+    const st = onS('Charge Regulation')?.dmg.stats; if (!st) { me.regAt = null; return; }
+    if (time - (me.regAt ??= time) < st.consume_frenzy_power_and_endurance_charge_every_x_ms / 1000) return;
+    me.regAt = time; for (const c of ['frenzy', 'power', 'endurance']) if (charges[c] > 0) charges[c]--;
+  }
   // Magma Barrier: while on, its increased block chance (withCharms), and its lava fills over its charge-up time; a
   // block with your shield raised once it is full spends it on Magma Spray, its cone toward the attacker, and an
   // Endurance Charge
@@ -3309,7 +3318,8 @@ export function initScene(el, api) {
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
-    if (AE || MR || WE || PL) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100), evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100), res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
+    const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
+    if (AE || MR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
     if (!Object.keys(add).length || !c.res) return c;
@@ -3421,12 +3431,12 @@ export function initScene(el, api) {
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
   function vitals(dt) {
-    const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100); me.known = c.life != null;
+    const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges'); me.known = c.life != null;
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
-    leylines(dt); bells(dt); boils();
+    leylines(dt); bells(dt); boils(); regulation();
     const MB = magma()?.dmg.stats; me.lava = MB ? Math.min(1, (me.lava || 0) + dt * 1000 / (MB.igneous_shield_charge_up_time_ms * (1 + MB['igneous_shield_charge_up_time_+%'] / 100))) : 0;
     for (const S of remnantSkills()) { const R = REMNANT[S.name], s = rstats(S); if (R.spawn && time - (remnantAt[S.name] ?? -99) >= R.spawn(s) / 1000) { remnantAt[S.name] = time; remnant(S, around(pp, s.breach_flame_spawn_radius / 10)); } }   // Flames, Blooms
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley
