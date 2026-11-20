@@ -679,6 +679,8 @@
  "the planner is not running": "規劃器未在執行",
  "{0} already exists in the game folder. Replace it?": "遊戲資料夾中已有 {0}。要取代嗎？",
  "{0} listed in {1}": "{1} 中有 {0} 件上架",
+ "{0} unidentified ones like it listed in {1}": "{1}中有 {0} 件相似的未鑑定物品出售",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "{1}中有 {0} 件相似的未鑑定物品出售，物品等級 {2} 以上",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "快捷鍵需要包含 Ctrl 或 Alt，因此不會佔用遊戲單獨使用的按鍵。遊戲在視窗化全螢幕且規劃器開啟時可用。",
  "Red": "紅色",
  "Green": "綠色",

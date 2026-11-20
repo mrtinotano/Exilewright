@@ -1,6 +1,6 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
-import { t, tn, lang, fmt } from './i18n.js';
+import { t, tn, lang, fmt, KW } from './i18n.js';
 import { statLines, statLinesEn, shownLines } from './stats.js';
 import { diff, impactHtml, impactLine, impactText } from './impact.js';
 
@@ -253,6 +253,19 @@ const META = /^\p{L}[\p{L}\p{M}' ()]*[:：](\s|$)|^(Corrupted|Mirrored|Unidentif
 const TAG = /\s*\(([\p{L}\p{M}]+)\)$/u;
 const TAGS = { implicit: 'implicit', rune: 'skip', enchant: 'skip', crafted: 'explicit', fractured: 'explicit', desecrated: 'explicit', augmented: 'explicit' };
 const UNID = /^(Unidentified|Sin identificar|Non identifié|Nicht identifiziert|Não identificado|Неопознано)$/i;   // not English: to be confirmed in the game
+// the four rarities in every language, in order (normal, magic, rare, unique): the glossary's Rarity text names each
+// before its colour in brackets ("normal (gris), mágica (azul), rara (amarillo) o única (marrón)")
+const RARITIES = ['normal', 'magic', 'rare', 'unique'];
+const RARITY_WORDS = Object.values(KW.Rarity || {}).filter((v, i, a) => typeof v === 'string' && Object.keys(KW.Rarity)[i].startsWith('def'))
+  .map(d => [...d.matchAll(/([^\s,、，]+)\s*[(（]/g)].map(m => m[1].toLowerCase())).filter(w => w.length === 4);
+// rarityWord: a rarity line's word ("Única", "Unique", "ユニーク") -> 'unique'...: the glossary's word, or one that starts as it
+// does (its gender or case may differ: única / único, уникальными / уникальный), or the end of it (in Thai and
+// Chinese the word before runs into it)
+const rarityWord = w => {
+  w = (w || '').trim().toLowerCase(); if (!w) return null;
+  const like = x => { let n = 0; while (n < x.length && x[n] === w[n]) n++; return x === w || x.endsWith(w) || n >= Math.max(3, Math.min(x.length, w.length) - 2); };
+  return RARITIES[RARITY_WORDS.map(ws => ws.findIndex(like)).find(i => i >= 0)] || null;
+};
 const NAMED = new Map();   // every name the data has for a base (English, then the translations), in lower case
 for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
   for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
@@ -262,6 +275,9 @@ const anyOf = domain => once(domain, () => D.affixes.filter(a => a.domain === do
 const anyImplicit = () => once('implicit', () => Object.entries(D.implicits).flatMap(([id, st]) => shapes('implicit:' + id, st)));
 // a belt's own charm slots, which no table gives ("Has 3 Charm Slots"): as a stat, in the words of the game
 const CHARM_SLOTS = [1, 2, 3].flatMap(v => shapes('local_charm_slots', [['local_charm_slots', v, v]]));
+// the item level: "Item Level: 82", in another language the one block of a single "label: number" line
+const itemLevel = text => +(text.match(/^Item Level: (\d+)/m)?.[1] || text.replace(/\r/g, '').split(/\n-{4,}\n/).map(b => b.trim().split('\n'))
+  .find(b => b.length === 1 && /^[^:：]+[:：]\s*\d+$/.test(b[0]))?.[0].match(/(\d+)$/)[1] || 0) || null;
 // text copied from the game (Ctrl+C on an item) or from Path of Building
 // -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
 export function parseItem(text) {
@@ -372,7 +388,8 @@ export function parseItem(text) {
   own1.found.forEach(toExtra);
   im.missed = own1.missed;
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
-    name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)) };
+    name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)),
+    rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text) };
 }
 
 // ---------- what a slot can have and what the trade site lists (gear search, trade.js)

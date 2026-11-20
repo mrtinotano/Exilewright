@@ -93,7 +93,9 @@ yours, as Exiled Exchange 2 searches them: the same unique, the same kind of wea
 or defences are asked), or the same base (rings, amulets, belts), with its modifiers (crafted, fractured and
 desecrated ones too; attributes and resistances as the item's total) and its weapon damage or defences, each at
 most 10% under yours and with no top (Settings: "Numbers down to"; a number never goes past 1 towards 0, so a "+1"
-line is always asked for), every one of them (a unique: the lines that can roll otherwise). With "Thorough search"
+line is always asked for), every one of them (a unique: the lines that can roll otherwise). An unidentified item (often sold so,
+dearer as a gamble) is priced as the unidentified ones listed of its base and rarity, of its item level or more (not
+for a unique), corrupted or not as it is. With "Thorough search"
 (Settings), when nothing like that is listed, it goes line by line lowering that one's minimum alone (5% by 5%, down
 to 30%) and searches with each at the % that found something, else with any one line left out. Still nothing: there
 is none. Next to the pointer it lists what the 5 cheapest alike ones ask (as the site ranks the listings whatever

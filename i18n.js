@@ -27,7 +27,7 @@ export const cap = s => s[0].toUpperCase() + s.slice(1);
 
 // the game's keyword markup in a description: "[Ignite|ignited]" ("[Fire]": the word is its own key)
 const KWRE = /\[([^\]|]+)(?:\|([^\]]*))?\]/g;
-const KW = await fetch('poe2_data/available/keywords.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
+export const KW = await fetch('poe2_data/available/keywords.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
 const escKw = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 export const kwPlain = s => (s || '').replace(KWRE, (m, k, x) => x ?? k);
 // as HTML: a keyword the game explains on hover (KeywordPopups) shows that explanation as its tooltip (escaping

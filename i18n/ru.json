@@ -679,6 +679,8 @@
  "the planner is not running": "планировщик не запущен",
  "{0} already exists in the game folder. Replace it?": "{0} уже есть в папке игры. Заменить?",
  "{0} listed in {1}": "{0} в продаже в лиге {1}",
+ "{0} unidentified ones like it listed in {1}": "{0} похожих неопознанных в продаже в {1}",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "{0} похожих неопознанных в продаже в {1}, уровень предмета {2} и выше",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "Сочетание должно включать Ctrl или Alt, чтобы не занимать клавишу, которую игра использует отдельно. Работает, когда игра в оконном полноэкранном режиме, а планировщик открыт.",
  "Red": "Красный",
  "Green": "Зелёный",

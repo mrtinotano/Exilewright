@@ -679,6 +679,8 @@
  "the planner is not running": "แพลนเนอร์ไม่ได้ทำงานอยู่",
  "{0} already exists in the game folder. Replace it?": "{0} มีอยู่ในโฟลเดอร์เกมแล้ว จะแทนที่ไหม?",
  "{0} listed in {1}": "วางขาย {0} ชิ้นใน {1}",
+ "{0} unidentified ones like it listed in {1}": "ไอเทมที่ยังไม่ได้ระบุแบบเดียวกัน {0} ชิ้นวางขายใน {1}",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "ไอเทมที่ยังไม่ได้ระบุแบบเดียวกัน {0} ชิ้นวางขายใน {1} เลเวลไอเทม {2} ขึ้นไป",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "ปุ่มลัดต้องมี Ctrl หรือ Alt จึงไม่ไปทับปุ่มที่เกมใช้เดี่ยวๆ ใช้ได้เมื่อเกมอยู่ในโหมดเต็มจอแบบหน้าต่างและเปิดแพลนเนอร์ไว้",
  "Red": "แดง",
  "Green": "เขียว",

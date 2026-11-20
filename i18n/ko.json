@@ -679,6 +679,8 @@
  "the planner is not running": "플래너가 실행 중이 아닙니다",
  "{0} already exists in the game folder. Replace it?": "{0}이(가) 게임 폴더에 이미 있습니다. 바꿀까요?",
  "{0} listed in {1}": "{1}에 {0}개 등록",
+ "{0} unidentified ones like it listed in {1}": "{1}에서 판매 중인 비슷한 미확인 아이템 {0}개",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "{1}에서 판매 중인 비슷한 미확인 아이템 {0}개, 아이템 레벨 {2} 이상",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "단축키에는 Ctrl 또는 Alt가 필요하므로 게임이 단독으로 쓰는 키를 차지하지 않습니다. 게임이 창 모드 전체 화면이고 플래너가 열려 있을 때 작동합니다.",
  "Red": "빨강",
  "Green": "초록",

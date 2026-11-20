@@ -679,6 +679,8 @@
  "the planner is not running": "o planejador não está em execução",
  "{0} already exists in the game folder. Replace it?": "{0} já existe na pasta do jogo. Substituir?",
  "{0} listed in {1}": "{0} à venda em {1}",
+ "{0} unidentified ones like it listed in {1}": "{0} não identificados parecidos à venda em {1}",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "{0} não identificados parecidos à venda em {1}, nível do item {2} ou mais",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "O atalho precisa de Ctrl ou Alt, assim nunca ocupa uma tecla que o jogo usa sozinha. Funciona com o jogo em tela cheia em janela e o planejador aberto.",
  "Red": "Vermelho",
  "Green": "Verde",

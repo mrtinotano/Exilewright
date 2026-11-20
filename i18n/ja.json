@@ -679,6 +679,8 @@
  "the planner is not running": "プランナーが起動していません",
  "{0} already exists in the game folder. Replace it?": "{0}はゲームのフォルダーに既にあります。置き換えますか?",
  "{0} listed in {1}": "{1}に{0}件出品",
+ "{0} unidentified ones like it listed in {1}": "{1}で販売中の似た未鑑定品: {0}",
+ "{0} unidentified ones like it listed in {1}, item level {2} or more": "{1}で販売中の似た未鑑定品: {0}（アイテムレベル{2}以上）",
  "The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.": "ショートカットにはCtrlかAltが必要です。ゲームが単独で使うキーを奪わないためです。ゲームがウィンドウ化フルスクリーンで、プランナーが開いているときに使えます。",
  "Red": "赤",
  "Green": "緑",
