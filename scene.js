@@ -375,6 +375,8 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
+      const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
+      if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((d.bar.stun || 0) / 5) / 100;
       // Lightning Conduit: more damage to a shocked enemy, per 5% more damage it takes from the shock
       const LC = has(d, 'shock') && S.dmg?.stats?.['lightning_conduit_damage_+%_final_per_5%_increased_damage_taken_from_shock'];
       if (LC) for (const e in raw) raw[e] *= 1 + LC * (shocked(d) - 1) * 20 / 100;
