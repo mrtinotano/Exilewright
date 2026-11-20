@@ -1383,6 +1383,7 @@ export function initScene(el, api) {
   // goes; for its duration
   // up to a limit: the oldest of the objects f picks gives way
   const limit = (f, max) => { const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
+  const SPEAR = new THREE.CylinderGeometry(.03, .03, 1.3, 5), SPEAR_M = new THREE.MeshStandardMaterial({ color: 0x8a8070, metalness: .6, roughness: .5 });
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
   function earth(S, c, max, spike) {
     limit(o => o.earth && o.name === S.name, max);
@@ -1517,15 +1518,15 @@ export function initScene(el, api) {
   // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone, for dur s;
   // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
   // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes);
-  // o.more(t): its damage multiplier t s after arming (Ice Shards)
+  // o.more(t): its damage multiplier t s after arming (Ice Shards); o.mesh: what stands there; o.then(p): after it goes off
   function hazardAt(X, p, dur, o = {}) {
-    const arm = o.arm || 0, c = o.c || 'dust', reach = o.reach || X.A;
-    const decal = fx.decal(p, reach, 'patch', c, { a: .8, k: 1 });
-    const e = thing(holder(p), dur, { name: X.name, hazard: true,
+    const arm = o.arm || 0, c = o.c || 'dust', reach = o.reach || X.A, g = holder(p);
+    const decal = fx.decal(p, reach, 'patch', c, { a: .8, k: 1 }); if (o.mesh) g.add(o.mesh);
+    const e = thing(g, dur, { name: X.name, hazard: true,
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
         const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true;
-        later(o.delay || 0, () => { e.dead = true; area(p, X.A, S2); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
+        later(o.delay || 0, () => { e.dead = true; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
   }
@@ -2442,6 +2443,21 @@ export function initScene(el, api) {
     },
     zone(S) {
       const P = S.P, R = S.A, dur = P.plant && P.dur || Math.min(P.dur || SIM.groundTime, 12); let c = S.at;   // a plant lasts its own duration (Nature's Archon's 200% more)
+      // Spearfield: its spears burst out of the ground in front of you across its area, up to its most (the oldest give
+      // way); each stays its duration or explodes when an enemy touches it, hitting around it (its secondary radius) with
+      // its less damage within its first 0.5 s, and Maims (its additional slow)
+      // note: one spear per its spacing across its radius (our reading of spear_wall_cm_per_spear), in the half circle ahead
+      const SF = S.dmg?.stats?.spear_wall_maximum_active_spears;
+      if (SF) {
+        const st = S.dmg.stats, X = { ...S, A: radOf(S) }, a0 = Math.atan2(S.dx, S.dz), from = S.from, n = Math.round(R * 100 / st.spear_wall_cm_per_spear);
+        for (let k = 0; k < n; k++) {
+          const a = a0 + rnd(-Math.PI / 2, Math.PI / 2), r = Math.sqrt(rnd(.04, 1)) * R, p = { x: from.x + Math.sin(a) * r, z: from.z + Math.cos(a) * r };
+          const m = new THREE.Mesh(SPEAR, SPEAR_M); m.position.y = .55; m.rotation.set(rnd(-.25, .25), 0, rnd(-.25, .25));
+          later(r / R * .25, () => { limit(o => o.hazard && o.name === S.name, SF); pop(p, .3, 'dust'); hazardAt(X, p, durOf(S), { reach: .25, mesh: m, early: st['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'],
+            then: q => { for (const d of inside(q, X.A)) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + st['spearfield_maim_slows_an_additional_%'] }); } }); });
+        }
+        return;
+      }
       if (P.corpse) { c = useCorpse(S); if (!c) return; }
       fx.ring(c, .2, R, S.el, .45);
       // its ground grows its % a second up to its most (Decompose); a cloud made of a corpse keeps that monster's life
