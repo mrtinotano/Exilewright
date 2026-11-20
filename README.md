@@ -131,7 +131,9 @@ for Shattering Spite, Unbound Fury, Splinter Totem and Greatwood, Spectral Volle
 Chayula and Ancient Blooms of Into the Breach and Wildwood's Gifts, crossbow Heat (Rapid Shot builds it, grenades and
 Incendiary Shot consume it), the Surges and Elemental Expression, Whirling Slash's Whirlwind that Twister consumes, the
 visages of Moment of Vulnerability, Hexblast detonating curses, Lightning Spear's and Shockchain Arrow's bursts, Temper
-Weapon's Combust and the corpse cores of Volatile and Bitter Dead. The ≡ button opens a combat log: the last hits, kills
+Weapon's Combust and the corpse cores of Volatile and Bitter Dead, the ice crystals of Grim Pillars and Frozen Locus,
+Requiem's Anguish, Hollow Form's images, Tempest Bell's shockwaves, Earthquake's Jagged Ground and its Aftershock,
+Explosive Spear's lodged spear and its cross, and Bonestorm's spikes. The ≡ button opens a combat log: the last hits, kills
 and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
 as the game does. Where the data leaves something out (a time, a count),
 the code says so in a `note:` comment. Numbers that use a value of the
