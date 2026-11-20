@@ -2642,7 +2642,7 @@ export function initScene(el, api) {
   // that stored damage, its area more by how full it is. note: the stored damage as it is, not scaled by the skill's modifiers
   K.iron = S => {
     const st = S.dmg.stats, n = me.iron || 0; if (!n) return toast(t('{0}: nothing stored', S.label));
-    const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * 100 * n / st.warding_steel_maximum_stored_mitigated_physical_damage / 100);
+    const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * n / st.warding_steel_maximum_stored_mitigated_physical_damage);
     me.iron = 0; boom({ x: pp.x, z: pp.z }, R, { ...S, els: ['physical'], el: 'physical', dmg: { ...S.dmg, hits: { physical: [n, n] } } });
   };
   // Time Freeze: time stops for the enemies in its area, for its duration. note: the shorter stop for an enemy stopped
