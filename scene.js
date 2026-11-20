@@ -30,7 +30,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper']);   // one use per key press
-const NOHIT = new Set(['temper', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
+const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -2507,6 +2507,20 @@ export function initScene(el, api) {
   // area), up to its most; your hits break them for its explosion part. Frozen Locus: one Ice Crystal where you aim (its
   // reach), its strike hitting around it; breaking it explodes with the strike. note: Frozen Locus's leap back is not
   // simulated; enemies do not attack the crystals
+  // Hollow Form: channelled, fleeting images of you near the target, each performing a socketed melee attack (another of
+  // your melee attacks, neither channelled nor conditional) once at the enemy closest to it, with its less damage; a set
+  // per the attack's use time at its less attack speed, a Power Charge consumed adds its images
+  K.hollow = S => {
+    const st = S.dmg.stats, j = api.build().gems.findIndex((g, j) => { const b = g.name !== S.name && base(j); return b && b.P.melee && b.P.attack && !b.P.channel && !api.info(g).gem?.types?.includes('HasUsageCondition'); });
+    if (j < 0 || time - (me.hollowAt ?? -9) < useTime(base(j)) / (1 + st['mantra_of_illusions_triggered_skill_attack_speed_+%_final'] / 100)) return;
+    me.hollowAt = time;
+    for (let k = 1 + (S.spent ? st.mantra_of_illusions_bonus_illusions_when_consuming_power_charge : 0); k > 0; k--) {
+      const p = around(S.at, 1.5), f = makeMinion(fx, 'arcane'); f.group.position.set(p.x, 0, p.z); thing(f.group, .7, { name: S.name });
+      // ponytail: the image attacks from where it stands by moving you there for the use (aim reads your position)
+      later(.1 * k, () => { const d = nearest(p, 1, () => true)[0], o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z;
+        use(j, { at: d ? { x: d.pos.x, z: d.pos.z } : S.at, src: 'meta', more: 1 + st['mantra_of_illusions_triggered_skill_damage_+%_final'] / 100 }); pp.x = o.x; pp.z = o.z; });
+    }
+  };
   K.pillars = S => {
     const st = S.dmg.stats, n = st.grim_pillars_number_of_pillars_to_create || 1, X = partOf(S, 'GrimPillarsExplodePlayer');
     const r = n > 1 ? S.A : 0, c = n > 1 ? pp : around(S.at, 0), hr = n > 1 ? st.active_skill_base_secondary_area_of_effect_radius / 10 : S.A;
@@ -2910,7 +2924,7 @@ export function initScene(el, api) {
     // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
     const C = !auto && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     if (C && ready.length >= (S.dmg.uses || 1)) return false;
-    Object.assign(S, o);
+    Object.assign(S, o); if (o.more) S.mult *= o.more;
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
