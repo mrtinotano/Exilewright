@@ -2813,7 +2813,7 @@ export function initScene(el, api) {
     // use gains its fire (Explosive, Cluster Grenade) or its more ignite effect (Incendiary Shot). note: the Heat a bolt
     // builds and the time maximum Heat stops you are not in the data: one a use, no stop
     const HS = S.dmg?.stats || {}, HC = HS.consume_X_heat_on_skill_use;
-    if (!S.src && HS.maximum_number_of_crossbow_heat_stacks) { me.heat = Math.min(HS.maximum_number_of_crossbow_heat_stacks, (me.heat || 0) + 1); me.heatAt = time; }
+    if (!S.src && HS.maximum_number_of_crossbow_heat_stacks) { me.heat = Math.min(HS.maximum_number_of_crossbow_heat_stacks, me.heat + 1); me.heatAt = time; }
     S.heated = !S.src && HC > 0 && me.heat >= HC; if (S.heated) me.heat -= HC;
     S.surges = !S.src && S.P.attack && !S.P.melee && S.P.ranged && surges.length ? surgeTake() : null;
     // Uhtred's Constellation: more damage per different skill with a cooldown used in the last 8 seconds
