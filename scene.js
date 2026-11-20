@@ -1080,7 +1080,7 @@ export function initScene(el, api) {
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
-    grounds.push({ type, x: c.x, z: c.z, r, r0: r, age: 0, grow, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false });
+    const g = { type, x: c.x, z: c.z, r, r0: r, age: 0, grow, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false }; grounds.push(g); return g;
   }
   function groundFx(g) {
     const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;
@@ -2101,8 +2101,15 @@ export function initScene(el, api) {
         });
         // the earthen object it leaves: Earthshatter's spike where its fissure ends, Forge Hammer's hammer where it lands
         if (P.earthen) { const spike = !!st.spike_slam_max_spikes; earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike); }
-        if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
-        if (P.aftershock) { fx.telegraph(c, R * 1.5, S.el, 1.6); later(1.6, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * 1.5, { ...S, mult: S.mult * 1.5 }); }); }
+        // Earthquake: its Jagged Ground (its tertiary radius and duration, up to its most patches, never on one of its own)
+        // erupts at its end in its Aftershock part. note: the Aftershock hits the patch's area (its own radius is smaller)
+        if (P.aftershock) {
+          const r = st.active_skill_base_tertiary_area_of_effect_radius / 10 || R, dur = st.skill_jagged_ground_base_duration_ms / 1000, X = partOf(S, 'EarthquakeAftershockPlayer') || S, mine = grounds.filter(g => !g.dead && g.quake === S.name);
+          if (mine.length < (st.base_number_of_earthquakes_allowed || 1) && !mine.some(g => dist(g, c) < g.r + r)) {
+            ground('jagged', c, r, dur, S).quake = S.name; fx.telegraph(c, r, S.el, dur);
+            later(dur, () => { say(t('Aftershock of {0}', S.label), S.el); pop(c, r, S.el); boom(c, r, { ...X, mult: S.mult }); });
+          }
+        } else if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.fan && S.spent) { const a0 = Math.atan2(S.dx, S.dz), n = 1 + S.spent * 2; for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .22; shoot({ ...S, aoe: false, P: { ...P, explodes: false } }, c, Math.sin(a), Math.cos(a), { speed: 20, range: 11 }); } }
       });
     },
