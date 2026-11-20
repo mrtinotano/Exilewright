@@ -149,7 +149,7 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), spear: !!inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
@@ -248,7 +248,7 @@ export function initScene(el, api) {
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
   const clean = d => { d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
-    const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
+    const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
@@ -336,6 +336,7 @@ export function initScene(el, api) {
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
+    if (S.spear && !S.src && sheet().lances) d.lances = Math.min(LANCES_MAX, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
@@ -2070,6 +2071,19 @@ export function initScene(el, api) {
         e.paid = 0; e.at = time; e.banner = give(++e.stage); fx.ring(c, .3, R, 'gold', .4); say(`${S.label}: ${t('Stage {0}', e.stage)}`, 'gold');
       } });
   };
+  // Shattering Spite: the Bloodstone Lances on each enemy within its share of your Presence's area are destroyed, each
+  // enemy's exploding around it for its more damage per lance; from 5 lances its increased area per lance, from 10 its
+  // life leech of the physical attack damage
+  K.spite = S => {
+    const st = S.dmg?.stats || {}, R = sheet().overgrow.r * Math.sqrt(st['shattering_spite_%_of_presence_radius'] / 100), L = st['shattering_spite_life_leech_%_with_10_lances'];
+    fx.ring(pp, .3, R, 'blood', .5);
+    for (const d of inside(pp, R)) {
+      const n = d.lances || 0; if (!n) continue; d.lances = 0;
+      const p = { x: d.pos.x, z: d.pos.z }, A = S.A * (n >= 5 ? Math.sqrt(1 + st['shattering_spite_area_+%_per_lance_with_at_least_5_lances'] * n / 100) : 1), lf = S.dmg.leech?.life;
+      const dmg = n >= 10 ? { ...S.dmg, leech: { ...S.dmg.leech, life: { all: 0, more: 1, rate: 1, ...lf, phys: (lf?.phys || 0) + L } } } : S.dmg;
+      pop(p, A, 'blood'); boom(p, A, { ...S, dmg, mult: S.mult * (1 + st['damage_per_bloodstone_lance_+%_final'] * n / 100) });
+    }
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -2212,6 +2226,7 @@ export function initScene(el, api) {
   // Glory (keywords.json): each skill that requires it builds its own, up to what it requires, from its Glorious actions:
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
+  const LANCES_MAX = 30;   // note: Atziri's Contempt's text, up to 30 lances on each target
   const SEQ_GAP = 2, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
   const trinity = () => onS('Trinity')?.dmg?.stats;
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
