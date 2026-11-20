@@ -93,7 +93,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, trav: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -2029,8 +2029,9 @@ export function initScene(el, api) {
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
     // Echoing Cry: usable once you have travelled its distance since its last use
     const MV = !auto && S.dmg?.sum?.skill_unusable_until_moved_X_distance;
-    if (MV && (me.trav || 0) - (me.travAt[S.name] ?? -Infinity) < MV / 10) { toast(t('{0}: move {1} m first', S.label, Math.ceil(MV / 10 - ((me.trav || 0) - (me.travAt[S.name] ?? 0))))); return false; }
-    if (MV) me.travAt[S.name] = me.trav || 0;
+    const left = MV && MV / 10 - (me.trav - (me.travAt[S.name] ?? -Infinity));
+    if (left > 0) { toast(t('{0}: move {1} m first', S.label, Math.ceil(left))); return false; }
+    if (MV) me.travAt[S.name] = me.trav;
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
@@ -2914,7 +2915,7 @@ export function initScene(el, api) {
     }
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
     const step = Math.hypot(pp.x - (me.lastX ?? pp.x), pp.z - (me.lastZ ?? pp.z)); me.lastX = pp.x; me.lastZ = pp.z;
-    if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.trav = (me.trav || 0) + step; me.movedAt = time; }
+    if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.trav += step; me.movedAt = time; }
     const KA = me.kaom; if (KA && time < KA.until && (KA.walked += step) >= KA.every) { KA.walked = 0; fx.ring(pp, .2, KA.S.A, 'fire', .35); boom({ x: pp.x, z: pp.z }, KA.S.A, KA.S, { soft: true }); }
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
