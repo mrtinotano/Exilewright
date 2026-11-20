@@ -1738,6 +1738,12 @@ export function initScene(el, api) {
           boom(q, r, S);
         }); }
         else boom(c, R, S);
+        // Tectonic Slams: its Aftershocks ahead and to each side of the slam, at once, with its less damage and area
+        const TC = !S.src && S.dmg?.sum?.number_of_dual_cascade_aftershocks;
+        if (TC) {
+          const su = S.dmg.sum, r = R * Math.sqrt(1 + su['aftershock_area_of_effect_+%_final_from_support_dual_cascade_aftershocks'] / 100), W = { ...S, mult: S.mult * (1 + su['aftershock_damage_+%_final_from_support_dual_cascade_aftershocks'] / 100) };
+          for (const a of [0, Math.PI / 2, -Math.PI / 2]) for (let k = 1; k <= TC; k++) { const q = Math.atan2(S.dx, S.dz) + a, l = R + r * (2 * k - 1); boom({ x: c.x + Math.sin(q) * l, z: c.z + Math.cos(q) * l }, r, W, { soft: true }); }
+        }
         // Furious Slam: its pair of shockwaves after its delay, each its angle off your aim, its spacing of its area away;
         // with its Rage to spend, its enraged part instead, larger, leaving Jagged Ground for its duration
         const FS = S.dmg?.stats?.bear_slam_spend_X_rage_for_stronger_slam;
