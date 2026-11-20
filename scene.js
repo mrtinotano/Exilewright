@@ -280,6 +280,7 @@ export function initScene(el, api) {
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; dummies.forEach(restore); heal(); hudT = 0;
   }
+  const nearest = (p, n, ok) => dummies.filter(e => !e.dead && ok(e)).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, n);   // the n living enemies nearest p
   function near(p, r, ok) {
     let best = null, bd = r;
     for (const d of dummies) if (!d.dead && (!ok || ok(d))) { const k = dist(d.pos, p); if (k <= bd) { bd = k; best = d; } }
@@ -964,7 +965,7 @@ export function initScene(el, api) {
     const S = { ...b, src: 'herald', ail: ailOf(T.P.els) };
     say(t('{0} explodes on the kill', T.label), T.el);
     if (T.P.el === 'lightning') {   // bolts on the enemies around instead of one blast
-      dummies.filter(e => !e.dead && dist(e.pos, p) <= 7).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, b.dmg?.stats?.herald_of_thunder_storm_max_hits ?? 3).forEach((e, k) => later(k * .08, () => {
+      nearest(p, b.dmg?.stats?.herald_of_thunder_storm_max_hits ?? 3, e => dist(e.pos, p) <= 7).forEach((e, k) => later(k * .08, () => {
         fx.bolt(V(e.pos.x + rnd(-1.5, 1.5), 13, e.pos.z + rnd(-1.5, 1.5)), V(e.pos.x, 0, e.pos.z), 'lightning', .22, .07, .5); pop(e.pos, 1.1, 'lightning'); area(e.pos, 1.1, S);
       }));
     } else boom(p, SIM.heraldR, S);
@@ -1378,7 +1379,7 @@ export function initScene(el, api) {
         chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
         const by = chest(hitD);
-        for (const e of dummies.filter(e => !e.dead && !seen.has(e) && dist(e.pos, hitD.pos) <= S.A).sort((a, b) => dist(a.pos, hitD.pos) - dist(b.pos, hitD.pos)).slice(0, D.extraTargets || 0)) {
+        for (const e of nearest(hitD.pos, D.extraTargets || 0, e => !seen.has(e) && dist(e.pos, hitD.pos) <= S.A)) {
           seen.add(e); fx.bolt(by, chest(e), cur.el, .18); hit(e, cur, { mult: mult() });
         }
       }
@@ -1614,7 +1615,7 @@ export function initScene(el, api) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand(), n = (sh(S).chains || 0) + (S.addChains || 0);   // Arc's chains from a Lightning Infusion
       // Exsanguinate: its tendrils, each on another of the enemies nearest your aim. note: its cone's angle is not in the data
       const B = d && S.dmg?.stats?.blood_tendrils_beam_count;
-      if (B) dummies.filter(e => !e.dead && dist(e.pos, S.from) <= SIM.castRange).sort((a, b) => dist(a.pos, S.at) - dist(b.pos, S.at)).slice(0, B).forEach(e => chain(h, e, S, n));
+      if (B) nearest(S.at, B, e => dist(e.pos, S.from) <= SIM.castRange).forEach(e => chain(h, e, S, n));
       else if (d) chain(h, d, S, n);
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
