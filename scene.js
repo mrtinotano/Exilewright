@@ -279,7 +279,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { pinn: null, iron: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { pinn: null, iron: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -3309,6 +3309,7 @@ export function initScene(el, api) {
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
+    if (seen()) b.push(one(icon('Future-Past'), css('gold'), api.info({ name: 'Future-Past' }).label));
     if (me.ghost >= 1) b.push(one(icon('Ghost Dance'), css('ice'), t('Ghost Shroud'), Math.floor(me.ghost)));
     if (me.aegis > 0) b.push(one(icon('Sorcery Ward'), css('arcane'), api.info({ name: 'Sorcery Ward' }).label, Math.round(me.aegis)));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
@@ -3437,6 +3438,7 @@ export function initScene(el, api) {
     me.life -= left;
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
+    if (me.life < 1 && time < me.sight) me.life = 1;   // Future-Past's Sight Beyond Sight
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -3594,12 +3596,18 @@ export function initScene(el, api) {
     } else { R.blocked = time; spray(d); }
     blocked(d); return true;
   }
+  const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
   function struck(d) {
     const a = d.atk; let c = withCharms(sheet());
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
-    if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
+    // Future-Past: after its Hindsight (its duration) Hinekora's Foresight keeps the roll from avoiding hits; a hit while
+    // rolling restores your life first and grants Sight Beyond Sight (its secondary duration: you cannot die), then
+    // Hindsight again. note: her copy (foresight_clone_duration_ms) is a look the scene does not have
+    const FP = onS('Future-Past'), foresight = seen();
+    if (move && !move.S && !a.area && !foresight) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);
+    if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }   // the dodge roll avoids strikes and projectiles
     if (!a.unblockable && activeBlock(d, a)) return;
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     if (Math.random() * 100 < blockChance(c, a)) return blocked(d);
@@ -3900,6 +3908,7 @@ export function initScene(el, api) {
     // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
     // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when
     // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
+    if (!onS('Future-Past')) me.fpAt = null; else me.fpAt ??= time;   // its Hindsight from when it is on
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
