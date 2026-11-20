@@ -676,9 +676,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
     return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique];
-      return `<div class="stashit ${l.rarity}"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">
-        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b><small>${esc((itemParts(l.item, false)?.expl || l.mods).join(' · '))}</small>${impactLine(gain(slot, l.item, 'buy' + i), 3)}</span>
-        ${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>`; }).join('')
+      return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
+        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b><div class="bmods">${(itemParts(l.item, false)?.expl || l.mods).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(gain(slot, l.item, 'buy' + i), 3)}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <p class="note"><a href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a></p>`;

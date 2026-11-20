@@ -374,7 +374,12 @@
   .stash { display:flex; flex-direction:column; gap:2px; max-width:470px; max-height:320px; overflow-y:auto; border:1px solid #3a342c; background:#0b0b0b; }
   .stashit { display:flex; align-items:center; gap:8px; padding:3px 6px; border-bottom:1px solid #1c1a17; font-size:12px; } .stashit > span { flex:1; display:flex; flex-direction:column; }
   .stashit img { width:34px; height:34px; object-fit:contain; flex:none; } .stashit small { color:#888; } .stashit button { cursor:pointer; padding:2px 8px; }
-  .stashit .up { color:#7fd07f; } .buyp { white-space:nowrap; font-size:12px; text-align:center; } .buyp img { width:18px; height:18px; vertical-align:middle; }
+  .stashit .up { color:#7fd07f; } .likebuy .stash { max-width:none; max-height:560px; margin-top:8px; }
+  /* an item found on the trade site: its modifiers one per line in the game's blue, its price big and centred */
+  .buyit { padding:8px 10px; gap:12px; align-items:flex-start; } .buyit .bmods { margin:3px 0; font-size:12px; line-height:1.45; color:#8888ff; }
+  .buyl { flex:none; width:96px; display:flex; flex-direction:column; align-items:center; gap:6px; } .stashit.buyit .buyl > img { width:56px; height:56px; }
+  .buyp { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:0 5px; text-align:center; color:#c8b88a; font-size:12px; line-height:1.3; }
+  .stashit.buyit .buyp b { font-size:20px; color:#fff; } .stashit.buyit .buyp img { width:28px; height:28px; }
   .stashit.magic b { color:#8888ff; } .stashit.rare b { color:#ffff77; } .stashit.unique b { color:#af6025; }
   .picklist span { display:flex; flex-direction:column; color:#c8c8c8; }
   .picklist small { color:#7f7f7f; font-size:11px; }
