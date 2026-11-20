@@ -857,5 +857,6 @@
  "Glory": "Ruhm",
  "{0} needs {1} Glory": "{0} braucht {1} Ruhm",
  "Culling Strike": "Todesstoß",
- "Not enough Runic Ward for {0}": "Nicht genug Runenschutz für {0}"
+ "Not enough Runic Ward for {0}": "Nicht genug Runenschutz für {0}",
+ "{0}: move {1} m first": "{0}: zuerst {1} m bewegen"
 }

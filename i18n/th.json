@@ -857,5 +857,6 @@
  "Glory": "บารมี",
  "{0} needs {1} Glory": "{0} ต้องใช้บารมี {1}",
  "Culling Strike": "จู่โจมปลิดชีพ",
- "Not enough Runic Ward for {0}": "วอร์ดอักขระไม่พอสำหรับ {0}"
+ "Not enough Runic Ward for {0}": "วอร์ดอักขระไม่พอสำหรับ {0}",
+ "{0}: move {1} m first": "{0}: เคลื่อนที่ {1} ม. ก่อน"
 }
