@@ -2328,7 +2328,7 @@ export function initScene(el, api) {
     lob(fx.arrow('lightning'), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
       boom(c, S.A, X); const m = fx.orb('lightning', .14); m.position.set(c.x, 1.2, c.z);
       let tk = 0;
-      const blow = e => { if (e.blown) return; e.blown = e.dead = true; const list = inside(c, R); for (let k = 0; k < st.overcharged_spear_detonate_number_of_beams && list.length; k++) chain(m.position.clone(), list[k % list.length], { ...X, self: e }, 0);
+      const blow = e => { e.dead = true; const list = inside(c, R); for (let k = 0; k < st.overcharged_spear_detonate_number_of_beams && list.length; k++) chain(m.position.clone(), list[k % list.length], { ...X, self: e }, 0);
         if (I) ground('shocked', c, radOf(I, 'tertiary'), I.dmg.stats.base_secondary_skill_effect_duration / 1000, X); };
       thing(m, durOf(X), { lanceOf: S.name, name: S.name, r: .5,
         tick(dt, e) { if ((tk -= dt) > 0) return; tk = st.overcharged_spear_base_frequency_ms / 1000; const d = near(c, R); if (d) chain(m.position.clone(), d, { ...X, self: e }, 0); },
