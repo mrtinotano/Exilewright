@@ -1603,9 +1603,9 @@ export function initScene(el, api) {
     travel(S) {
       // Shield Charge: it crashes into the first enemy on its path and stops there, its more damage from the distance
       // travelled (up to its most at its full range), its final cone part too
-      const P = S.P, to = S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'];
+      const P = S.P, to = S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'], crash = far != null;
       const land = (at = to) => {
-        const Y = far != null ? { ...S, mult: S.mult * (1 + far * Math.min(1, dist(from, at) / (sh(S).travel ?? SIM.travelRange)) / 100) } : S, X = far != null && partOf(S, 'ShieldChargeFinalConePlayer');
+        const Y = crash ? { ...S, mult: S.mult * (1 + far * Math.min(1, dist(from, at) / (sh(S).travel ?? SIM.travelRange)) / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
         if (S.R || P.attack) boom(at, S.A, Y); else fx.ring(at, .2, 1.6, S.el, .4);
         if (X) boom(at, X.A, { ...X, mult: Y.mult });
         if (P.ground) ground(P.ground, at, S.A, P.dur, S);
@@ -1616,7 +1616,7 @@ export function initScene(el, api) {
         fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
         fx.bolt(V(from.x, 1, from.z), V(to.x, 1, to.z), S.el, .2, .05, .15);
         pp.x = to.x; pp.z = to.z; fx.pillar(to, .6, 3.5, S.el, .35); land();
-      } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set(), crash: far != null };
+      } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set(), crash };
     },
     nova(S) {
       const P = S.P; let c = S.src ? S.at : S.from;
@@ -2944,7 +2944,7 @@ export function initScene(el, api) {
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
       if (m.S) {
         fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
-        if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { m.seen.add(d); if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } hit(d, m.S, { mult: .6, noPay: true }); }
+        if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); }
     } else if (steer && !charge && !stuck()) {
