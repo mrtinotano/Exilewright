@@ -29,8 +29,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -257,7 +257,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = d.halt = 0; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -2638,6 +2638,12 @@ export function initScene(el, api) {
   const demon = () => me.demon ? Math.min(10, Math.floor(time - me.demon.at)) : 0;
   const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); me.demon = null; };
   K.demon = S => { if (me.demon) return demonOff(); me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name }; say(t('{0} on', S.label), 'fire'); };
+  // Time Freeze: time stops for the enemies in its area, for its duration. note: the shorter stop for an enemy stopped
+  // before (within its resistance duration) is not sized in the data, nor do their ailments pause here
+  K.tfreeze = S => {
+    const dur = durOf(S); for (const d of inside(pp, S.A)) d.halt = time + dur;
+    fx.ring(pp, .3, S.A, 'white', .7, { k: 2 }); say(t('{0} active', S.label), 'white');
+  };
   // Pinnacle of Power: for its duration per power charge consumed, its more elemental damage per charge
   // note: its elemental ailments from the other damage types are not simulated
   K.pinnacle = S => {
@@ -3701,7 +3707,7 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
-    if (d.st.freeze > 0 || d.st.stun > 0 || d.st.electrocute > 0) { d.wind = null; return; }   // frozen, heavily stunned and electrocuted enemies cannot act
+    if (d.st.freeze > 0 || d.st.stun > 0 || d.st.electrocute > 0 || d.halt > time) { d.wind = null; return; }   // frozen, heavily stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
     let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
