@@ -1555,7 +1555,16 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
         slammed(S, c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
-        if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
+        // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
+        // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
+        // note: the branching of its fissures is not drawn
+        const st = S.dmg?.stats || {}, stars = st.empyrean_descent_number_of_explosions, X = stars && partOf(S, 'StarbornOnslaughtExplosions');
+        if (stars) for (let k = 0; k < (st.base_number_of_fissures || 1); k++) fissure(S, c, Math.atan2(S.dx, S.dz) + k * TAU / st.base_number_of_fissures, 5, .8, .5, { dur: sh(S).duration || st.base_skill_effect_duration / 1000, max: st.volcanic_fissure_base_maximum_number_of_fissures });
+        else if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
+        if (X) for (let k = 0; k < stars; k++) later((st.empyrean_descent_secondary_explosions_initial_delay_ms + k * st.empyrean_descent_secondary_explosions_delay_ms) / 1000, () => {
+          const a = rnd(TAU), r = rnd(st.empyrean_descent_secondary_explosions_inner_radius / 10, st.empyrean_descent_secondary_explosions_outer_radius / 10), q = V(c.x + Math.sin(a) * r, 0, c.z + Math.cos(a) * r);
+          fx.streak(V(q.x + 2, 13, q.z - 1.5), q, 'cold', .16, .07, 1.8); later(.16, () => { pop(q, X.A, 'cold'); area(q, X.A, X); });
+        });
         // the earthen object it leaves: Earthshatter's spike where its fissure ends, Forge Hammer's hammer where it lands
         if (P.earthen) { const st = S.dmg?.stats || {}, spike = !!st.spike_slam_max_spikes; earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike); }
         if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
