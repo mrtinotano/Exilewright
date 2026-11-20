@@ -1225,6 +1225,8 @@ export function initScene(el, api) {
     else if (g.type === 'caustic') fx.emit(1, { p, r, v: .1, up: .7, life: .9, size: .2, c: 'poison' });
     else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: 1, size: .14, c: 'holy' });
   }
+  // S with element e added, as the one it now deals most (got: the one it picked up)
+  const withEl = (S, e) => ({ ...S, els: [...new Set([...S.els, e])], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])], got: e });
   // A wind skill picks up the elemental ground it passes over.
   function absorb(S, at, r) {
     const g = grounds.find(g => !g.dead && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
@@ -1236,7 +1238,7 @@ export function initScene(el, api) {
     // that part's own damage (calc.js trig parts), its cooldown
     const k = `TriggeredCatalysingDischarge${cap(e)}Player`, T = !S.src && S.dmg?.trig?.find(T => T.parts?.[k]), D = T && T.parts[k];
     if (D && spend(T)) { const X = asTrig(S, { ...T, ...D, id: T.id }, D.hits); say(X.label, e); boom(at, X.A, X); }
-    return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])], got: e };
+    return withEl(S, e);
   }
 
   // ---------- things that live in the scene for a while
@@ -2785,14 +2787,14 @@ export function initScene(el, api) {
   // not say);
   // Blind and the knockback are not simulated
   function whirl(S) {
-    const lance = !partOf(S, 'WhirlingSlashSandstormPlayer'), W = partOf(S, lance ? 'WhirlwindLanceStormPlayer' : 'WhirlingSlashSandstormPlayer'), st = W?.dmg.stats; if (!W) return;
+    const WS = partOf(S, 'WhirlingSlashSandstormPlayer'), lance = !WS, W = WS || partOf(S, 'WhirlwindLanceStormPlayer'), st = W?.dmg.stats; if (!W) return;
     const top = st.sandstorm_swipe_max_stages;
     if (!lance) { const o = objs.find(o => o.whirl && !o.lance && !o.dead); if (o) { o.stage = Math.min(top, o.stage + 1); return; } }
     const c = lance ? { ...S.at } : { x: pp.x, z: pp.z }, slow = new Map();
     // its share of all its damage as the element it picked up (the slash's own, from the ground under you)
     const gain = A => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), k = st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered'] / 100, h = H[A.got] || [0, 0];
       return { ...A, dmg: { ...A.dmg, hits: { ...H, [A.got]: [h[0] + all[0] * k, h[1] + all[1] * k] } } }; };
-    const X0 = S.got ? gain({ ...W, els: [...W.els, S.got], el: S.got, ail: [...new Set([...W.ail, ...ailOf([S.got])])], got: S.got }) : W;
+    const X0 = S.got ? gain(withEl(W, S.got)) : W;
     const make = () => {
       if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms);
       const e = thing(holder(c), lance ? durOf(W) : Infinity, { whirl: true, lance, stage: lance ? top + (S.spent ? 1 : 0) : 1, c, out: !lance || dist(pp, c) > W.A, X: X0,
@@ -3493,7 +3495,7 @@ export function initScene(el, api) {
           // the fragments' hit: the attack's, at their part's multiplier over the attack's own (note: the data has them
           // as a spell part, with no weapon damage of their own)
           const fm = E.X.dmg.stats._base_multiplier / (S.dmg.stats?._base_multiplier || 10000);
-          S.dmg = { ...S.dmg, hits: H }; S.els = [...new Set([...S.els, 'cold'])]; S.el = 'cold'; S.ail = [...new Set([...S.ail, ...ailOf(['cold'])])];
+          const { els, el, ail } = withEl(S, 'cold'); Object.assign(S, { els, el, ail, dmg: { ...S.dmg, hits: H } });
           S.icetip = { ...E.X, dmg: { ...E.X.dmg, hits: scale(H, fm) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
           say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (--E.uses <= 0) empower.splice(k, 1);
         }
