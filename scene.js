@@ -1696,7 +1696,7 @@ export function initScene(el, api) {
       const W = S.chain0 && partOf({ ...S, dmg: S.chain0 }, 'PrimalStrikesStagWavePlayer');
       if (W && shocked0) {
         const ws = S.chain0.stats, len = W.A, half = radOf(W), m = S.final ? 1 + ws['primal_strikes_stag_stampede_damage_+%_final'] / 100 : 1;
-        if (S.final) first.st.shock = 0; else first.st.shock = Math.max(first.st.shock, DUR.shock);
+        first.st.shock = S.final ? 0 : Math.max(first.st.shock, DUR.shock);
         const k = S.final ? S.dmg.stats.primal_strikes_number_of_stags : ws.primal_strikes_number_of_stags, gap = ws.primal_strikes_stag_volley_spacing / 10;
         for (let j = 0; j < k; j++) later(j * ws.primal_strikes_stag_volley_delay_ms / 1000, () => {
           const o = (j - (k - 1) / 2) * gap, a = { x: pp.x - S.dz * o, z: pp.z + S.dx * o }, b = { x: a.x + S.dx * len, z: a.z + S.dz * len };
@@ -2154,8 +2154,7 @@ export function initScene(el, api) {
     // an attack chain (Ice Strike, Tempest Flurry, Primal Strikes): its uses in quick succession step through it, the last
     // being its final part (its first), Tempest Flurry's third striking three times
     // note: "quick succession" has no time in the data; SEQ_GAP s here
-    const FN = !auto && S.dmg?.parts && S.dmg.stats?.statset_index_for_final_animation_combo_index != null;
-    if (FN) {
+    if (!auto && S.dmg?.parts && S.dmg.stats?.statset_index_for_final_animation_combo_index != null) {
       const len = S.dmg.stats.statset_index_for_third_animation_combo_index != null ? 4 : 3, q = (me.seq ||= {})[S.name], n = q && time - q.at < SEQ_GAP ? q.n % len + 1 : 1;
       me.seq[S.name] = { n, at: time }; S.chain0 = S.dmg;
       if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el); }
