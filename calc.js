@@ -496,6 +496,12 @@ function panel(own, sum, used, derived, hide) {
 }
 
 const DMG = ['physical', 'fire', 'cold', 'lightning', 'chaos'];
+// the enemy states of "damage against <state> enemies" stats, as the scene's conditions (scene.js condN) name them
+const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_enemies: 'Burning', chilled_enemies: 'Chilled', ignited_enemies: 'Ignited',
+  shocked_enemies: 'Shocked', poisoned_enemies: 'Poisoned', bleeding_enemies: 'Bleeding', electrocuted_enemies: 'Electrocuted', pinned_enemies: 'Pinned',
+  immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
+  enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
+  enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -761,6 +767,12 @@ export function skill(g, b, treeGear) {
     });
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: 1 / (1 + critInc / 100) });
+  // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
+  // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
+  for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
+    const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']);
+    if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)])) });
+  }
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
@@ -768,6 +780,10 @@ export function skill(g, b, treeGear) {
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), own, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
   if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
+  // "Attacks ... Maim on Hit": none for other skills; a skill whose own description says its hits Maim (Spearfield,
+  // Artillery Ballista: "[Maim|Maiming]"; not one that Maims with its final hit only, Rapid Assault, nor a minion's)
+  if (!attack) out.ail.maim = out.ail.maimPoisoned = out.ail.maimBleeding = 0;
+  if (/\[Maim/.test(G.description || '') && !/final[^.]*\[Maim/.test(G.description) && !own.includes('minion')) out.ail.maim = 100;
   const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
   out.curse = curse ? curseOf(st, sum, finals) : null;
   out.mark = mark ? markOf(st) : null;
@@ -845,7 +861,7 @@ export function skill(g, b, treeGear) {
   // bursts (Toxic Growth's Pustules), as the skill
   if ((gt.includes('CanCreateStoneElementals') || own.includes('plant')) && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts || {}).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
-    .map(id => ({ ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {}, wardCost: SK.skills[id].levels?.[g.level]?._cost?.Ward || 0,
+    .map(id => maimsBy(n, { ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {}, wardCost: SK.skills[id].levels?.[g.level]?._cost?.Ward || 0,
       parts: Object.fromEntries(Object.keys(SK.skills[id].parts || {}).map(p => [p, skill({ name: id, level: g.level, supports: [], part: p }, b, treeGear)])) })));   // Runeforged Blades: its cost in Runic Ward; its other parts (Catalysing Discharge per element)
   // the skills supports set off on a kill (Fiery Death, Bone Shrapnel, Frozen Spite): their own stats and the support's
   out.onKill = (g.supports || []).flatMap(n => Object.values(SK.skills[n]?.triggers || {}).map(t => ({ ...SK.skills[n].constant, ...t })));
@@ -875,6 +891,8 @@ export function skill(g, b, treeGear) {
 // chances (bleeding and poison need one: the game's glossary), "increased" (inc) and "more" (more) chance, buildup, effect
 // and duration. The 3D scene rolls them against each enemy's thresholds (scene.js). Conditional ones (vs marked, wet,
 // electrocuted enemies...) are left out.
+// a support's triggered skill whose hits the support's description says Maim (Brambleslam's brambles)
+const maimsBy = (n, T) => { if (/\[Maim/.test(GEM[n]?.description || '') && T.ail) T.ail = { ...T.ail, maim: 100 }; return T; };
 function ailments(st, sum, finals, tags, flags = new Set()) {
   const all = k => (st[k] || 0) + (sum[k] || 0) + (finals[k] || 0), F = k => flags.has(k);
   const keys = [...new Set([...Object.keys(st), ...Object.keys(sum), ...Object.keys(finals)])];
@@ -898,7 +916,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   return {
     bleed: all('base_chance_to_inflict_bleeding_%'), poison: all('base_chance_to_poison_on_hit_%'),
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
-    maim: all('maim_on_hit_%'), maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimCrit: false,
+    maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
+    maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),
+    maimMore: all('spearfield_maim_slows_an_additional_%'),   // Spearfield's maims slow more
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
     freeze: scale(['hit_damage_freeze_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'),
