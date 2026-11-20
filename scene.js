@@ -2266,6 +2266,9 @@ export function initScene(el, api) {
         // note: the branching of its fissures is not drawn
         const st = S.dmg?.stats || {}, stars = st.empyrean_descent_number_of_explosions, X = stars && partOf(S, 'StarbornOnslaughtExplosions');
         if (stars) for (let k = 0; k < (st.base_number_of_fissures || 1); k++) fissure(S, c, Math.atan2(S.dx, S.dz) + k * TAU / st.base_number_of_fissures, 5, .8, .5, { dur: sh(S).duration || st.base_skill_effect_duration / 1000, max: st.volcanic_fissure_base_maximum_number_of_fissures });
+        // Fury of the Mountain: each pound a Molten Fissure off at random within its cone in front of you, lasting its
+        // duration up to its most (note: one per pound, the data gives no number; their length is the scene's)
+        else if (st.fury_of_the_mountain_base_maximum_number_of_fissures) { const h = st.bear_fury_of_the_mountain_front_facing_cone_angle * Math.PI / 360; fissure(S, c, Math.atan2(S.dx, S.dz) + rnd(-h, h), 5, S.A, 1, { dur: durOf(S), max: st.fury_of_the_mountain_base_maximum_number_of_fissures }); }
         else if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
         if (X) for (let k = 0; k < stars; k++) later((st.empyrean_descent_secondary_explosions_initial_delay_ms + k * st.empyrean_descent_secondary_explosions_delay_ms) / 1000, () => {
           const a = rnd(TAU), r = rnd(st.empyrean_descent_secondary_explosions_inner_radius / 10, st.empyrean_descent_secondary_explosions_outer_radius / 10), q = V(c.x + Math.sin(a) * r, 0, c.z + Math.cos(a) * r);
