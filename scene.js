@@ -2328,7 +2328,7 @@ export function initScene(el, api) {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
-    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floorme.arctic : '')); }   // Trinity: its Affinity, fire / cold / lightning
+    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : '')); }   // Trinity: its Affinity, fire / cold / lightning
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
@@ -2454,7 +2454,7 @@ export function initScene(el, api) {
   // note: that damage as the gem gives it, without your spell modifiers
   const arcticS = () => { const i = tog['Arctic Armour'] ? byName('Arctic Armour') : -1; return i >= 0 ? base(i) : null; };
   function arctic(d) {
-    const S = arcticS(), n = Math.floorme.arctic; if (!S || !n || d.dead) return;
+    const S = arcticS(), n = Math.floor(me.arctic); if (!S || !n || d.dead) return;
     const st = S.dmg.stats; me.arctic--; fx.ring(pp, .2, 1.6, 'cold', .35);
     hit(d, { ...S, dmg: { ...S.dmg, hits: { cold: [st.arctic_armour_minimum_added_cold_damage_per_stack * n, st.arctic_armour_maximum_added_cold_damage_per_stack * n] } } }, { noPay: true });
   }
