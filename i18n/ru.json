@@ -863,5 +863,6 @@
  "Seal": "Печать",
  "{0} needs {1} Energy": "{0}: нужно {1} Энергии",
  "Flame of Chayula": "Огонь Чаюлы",
- "{0} needs {1} Unbound Fury": "{0}: нужно {1} Безудержной ярости"
+ "{0} needs {1} Unbound Fury": "{0}: нужно {1} Безудержной ярости",
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "Усиленные умения не могут быть использованы, если вы не находились на месте в течение {0} секунд(-ы)"
 }

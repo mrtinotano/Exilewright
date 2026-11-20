@@ -863,5 +863,6 @@
  "Seal": "Siegel",
  "{0} needs {1} Energy": "{0} braucht {1} Energie",
  "Flame of Chayula": "Flamme von Chayula",
- "{0} needs {1} Unbound Fury": "{0} braucht {1} Unbändigen Zorn"
+ "{0} needs {1} Unbound Fury": "{0} braucht {1} Unbändigen Zorn",
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "Unterstützte Fertigkeiten können erst benutzt werden, wenn Ihr für {0} Sekunden im Stand seid"
 }

@@ -863,5 +863,6 @@
  "Seal": "Selo",
  "{0} needs {1} Energy": "{0} precisa de {1} de Energia",
  "Flame of Chayula": "Chama de Chayula",
- "{0} needs {1} Unbound Fury": "{0} precisa de {1} de Furor Liberto"
+ "{0} needs {1} Unbound Fury": "{0} precisa de {1} de Furor Liberto",
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "Habilidades reforçadas não podem ser usadas a menos que você tenha ficado imóvel por {0} segundos"
 }

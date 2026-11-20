@@ -863,5 +863,6 @@
  "Seal": "ผนึก",
  "{0} needs {1} Energy": "{0} ต้องใช้พลังงาน {1}",
  "Flame of Chayula": "เพลิงแห่งชายูล่า",
- "{0} needs {1} Unbound Fury": "{0} ต้องใช้โทสะไร้พันธะ {1}"
+ "{0} needs {1} Unbound Fury": "{0} ต้องใช้โทสะไร้พันธะ {1}",
+ "Supported Skills cannot be used unless you have been stationary for {0} seconds": "สกิลที่เสริม ไม่สามารถใช้งานได้เว้นแต่คุณจะ อยู่กับที่ {0} วินาที"
 }

@@ -2411,6 +2411,9 @@ export function initScene(el, api) {
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
     if (!auto) {
+      // Dauntless: not until you have stood still for its time
+      const DS = !auto && S.dmg?.sum?.skill_cannot_be_used_unless_stationary_for_X_ms;
+      if (DS && time - (me.movedAt ?? -99) < DS / 1000) { toast(`${S.label}: ${t('Supported Skills cannot be used unless you have been stationary for {0} seconds', DS / 1000)}`); return false; }
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
       const ch = S.dmg?.ail?.charge || {};
       // Inhibitor: the skill consumes no charges nor Infusions, and deals its more damage per kind of either you have
