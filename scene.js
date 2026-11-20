@@ -374,7 +374,7 @@ export function initScene(el, api) {
       }
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
-      if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); }
+      if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); }
       if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
@@ -758,9 +758,23 @@ export function initScene(el, api) {
     d.mark = null; say(M.label, 'blood');
     boom({ x: d.pos.x, z: d.pos.z }, M.R * Math.sqrt(1 + st['hunters_mark_explosion_area_of_effect_+%_final_from_buildup'] * k / 100), { ...X, mult: X.mult * (1 + st['hunters_mark_buildup_%_as_explosion_damage_+%_final'] * k / 100) });
   }
+  // Harbinger of Madness: an enemy your melee hits kill (no more than once every its time) and a Rare or Unique one your
+  // melee attacks hit (its chance) give an Unstable Apparition that charges the nearest other enemy and explodes in its
+  // area: its damage, more per the Power of that enemy, plus its share of a slain one's life as physical
+  // note: the build's modifiers to its damage are not applied
+  function harbinger(d, S, slain) {
+    const H = onS('Harbinger of Madness'), st = H?.dmg?.stats; if (!st || S?.src || !S?.P.melee) return;
+    if (slain ? time - (me.harbAt ?? -9) < st.skill_grants_spawn_harbinger_of_madness_orb_on_melee_kill_once_per_timer_ms / 1000
+      : !(S.dmg?.attack && POWER[d.stat.rarity] >= POWER.rare && Math.random() * 100 < st['unique_chance_to_spawn_harbinger_of_madness_orb_on_hitting_rare_or_unique_enemy_with_melee_attacks_%'])) return;
+    if (slain) me.harbAt = time;
+    const k = 1 + st['harbinger_of_madness_damage_+%_final_per_power_of_source_enemy'] * POWER[d.stat.rarity || 'normal'] / 100, add = slain ? d.max * st['harbinger_of_madness_additional_damage_from_%_source_enemy_life'] / 100 : 0;
+    const X = { ...H, mult: 1, dmg: { ...H.dmg, hits: { physical: [st.secondary_minimum_base_physical_damage * k + add, st.secondary_maximum_base_physical_damage * k + add] } } };
+    const from = { x: d.pos.x, z: d.pos.z }, e = near(from, 12, e => e !== d), to = e ? { x: e.pos.x, z: e.pos.z } : around(from, 3);
+    lob(fx.orb('chaos', .2), V(from.x, 1, from.z), V(to.x, .4, to.z), .5, .5, () => boom(to, X.A, X), { trail: 'chaos' });
+  }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
-    houndBlow(d, false);
+    houndBlow(d, false); harbinger(d, S, true);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
     if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
