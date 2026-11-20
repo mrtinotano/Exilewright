@@ -608,7 +608,7 @@ export function initScene(el, api) {
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
-    siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a);
+    siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
@@ -748,8 +748,17 @@ export function initScene(el, api) {
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
     return true;
   }
+  // Bloodhound's Mark: the marked enemy heavily stunned, or killed after enough blood loss (its % of the stun threshold),
+  // consumes it for Blood Explosion there, its more damage and area up to its most from the buildup
+  function houndBlow(d, full) {
+    const M = d.mark, X = M?.hound; if (!X) return; const st = X.dmg.stats, k = full ? 1 : Math.min(1, (d.bar.stun || 0) / 100);
+    if (!full && (d.bar.stun || 0) < st['hunters_mark_%_of_max_threshold_to_trigger_explosion_on_death']) return;
+    d.mark = null; say(M.label, 'blood');
+    boom({ x: d.pos.x, z: d.pos.z }, M.R * Math.sqrt(1 + st['hunters_mark_explosion_area_of_effect_+%_final_from_buildup'] * k / 100), { ...X, mult: X.mult * (1 + st['hunters_mark_buildup_%_as_explosion_damage_+%_final'] * k / 100) });
+  }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    houndBlow(d, false);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
     if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
@@ -1505,7 +1514,7 @@ export function initScene(el, api) {
     mark(S) {
       const d = near(S.at, SIM.snap); if (!d) return toast(t('No enemy at the cursor'));
       for (const e of dummies) if (e.mark) e.mark = null;   // one mark at a time
-      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) } };
+      d.mark = { s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
       fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
       say(t('{0} marks the target', S.label), 'mark');
     },
@@ -2405,13 +2414,15 @@ export function initScene(el, api) {
     // the bars empty after a while without buildup (monster.ot poise decay)
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
-    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); bombed(M, d.pos); } }
+    if (d.mark && !(d.mark.hound && st.bleed > 0) && (d.mark.s -= dt) <= 0) {   // Bloodhound's Mark lasts while they bleed
+      const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); bombed(M, d.pos); } }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const add = (v, noEs) => { const k = v.dps * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a], a !== 'ignite');
+      const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
       d.dots.forEach(v => add(v));
       if (n > 0) {
         const fl = d.flash; floatN(d, n * .5, el, { sim, low: true });
