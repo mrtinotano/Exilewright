@@ -770,8 +770,10 @@ export function initScene(el, api) {
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
     if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
     if (x('fire') && S.els.includes('fire') && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
+      // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
+      const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
-      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
+      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
