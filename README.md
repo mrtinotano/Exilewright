@@ -137,7 +137,9 @@ Incendiary Shot consume it), the Surges and Elemental Expression, Whirling Slash
 visages of Moment of Vulnerability, Hexblast detonating curses, Lightning Spear's and Shockchain Arrow's bursts, Temper
 Weapon's Combust and the corpse cores of Volatile and Bitter Dead, the ice crystals of Grim Pillars and Frozen Locus,
 Requiem's Anguish, Hollow Form's images, Tempest Bell's shockwaves, Earthquake's Jagged Ground and its Aftershock,
-Explosive Spear's lodged spear and its cross, and Bonestorm's spikes. The ≡ button opens a combat log: the last hits, kills
+Explosive Spear's lodged spear and its cross, Bonestorm's spikes, Mirror of Refraction's mirrors, Stormblast Bolts,
+Encase in Jade with Jade Heritage's stacks, Midnight Zenith's crystals, Wardbound Minions and Rigwald's Ferocity by
+weapon set. The ≡ button opens a combat log: the last hits, kills
 and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
 as the game does. Where the data leaves something out (a time, a count),
 the code says so in a `note:` comment. Numbers that use a value of the
