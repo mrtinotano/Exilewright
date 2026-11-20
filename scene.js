@@ -697,6 +697,9 @@ export function initScene(el, api) {
     // Combat Frenzy: a frenzy charge on freezing, electrocuting or pinning an enemy, once every its cooldown
     const CF = ['freeze', 'electrocute', 'pin'].includes(a) && onS('Combat Frenzy');
     if (CF && time - (me.cfAt ?? -99) >= CF.dmg.stats.skill_combat_frenzy_x_ms_cooldown / 1000) { me.cfAt = time; gainCharge('frenzy', CF.label); }
+    // Breachlord's Rift: freezing or electrocuting breaks its share of the enemy's armour
+    const BR = (a === 'freeze' || a === 'electrocute') && d.stat.armour > 0 && !(d.st.armour > 0) && S.dmg?.sum?.['support_break_%_armour_on_freeze_or_electrocute'];
+    if (BR && (d.cut = (d.cut || 0) + d.stat.armour * BR / 100) >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, { dur: BROKEN.time }); }
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
