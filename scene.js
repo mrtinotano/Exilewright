@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -367,6 +367,8 @@ export function initScene(el, api) {
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
+      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest();   // Mana Tempest: its share of all damage as extra lightning
+      if (MT) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] / 100;
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
       // Trinity: more elemental damage per 30 Affinity of any type (its text; the stat's name says 50); a hit dealing
@@ -2336,6 +2338,23 @@ export function initScene(el, api) {
         end: e => { if (I) blow(e); } });
     }, { trail: 'lightning' });
   };
+  // Mana Tempest: its storm where you cast it; while you are in it, or for its linger after you leave, your mana-costing
+  // spells gain its share of their damage as lightning. It drains its % of your maximum mana a second plus its % of the
+  // mana you spend in it, added to that each second; it ends once you are out past its linger or out of mana.
+  // note: its empowered spells' split to more targets is not simulated
+  const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
+  K.tempest = S => {
+    const st = S.dmg.stats, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'outline', 'lightning', { a: .45, rot: .3 });
+    if (me.tempest) me.tempest.dead = true;
+    fx.ring(c, .2, S.A, 'lightning', .5); say(t('{0} active', S.label), 'lightning');
+    me.tempest = thing(holder(c), Infinity, { S, c, R: S.A, per: 0, outAt: time, linger: st.mana_tempest_effects_linger_X_ms / 1000, off: () => ring.remove(),
+      spend(n) { this.per += n * st['mana_tempest_mana_cost_%_to_add_to_cost_per_second'] / 100; },
+      tick(dt, e) {
+        if (dist(c, pp) <= e.R) e.outAt = time;
+        me.mana -= (me.maxM * (st._cost?.ManaPercentPerSecond || 0) / 100 + e.per) * dt;
+        if (me.mana <= 0 || !tempest()) { me.mana = Math.max(0, me.mana); e.dead = true; }
+      } });
+  };
   // Feast of Flesh: consumes up to its number of corpses around you; each recovers its life and mana over its recovery duration
   K.feast = S => {
     const st = S.dmg?.stats || {}, list = corpses(pp, S.A).slice(0, st.feast_of_flesh_number_of_corpses), T = st.feast_of_flesh_recovery_duration / 1000;
@@ -2473,7 +2492,7 @@ export function initScene(el, api) {
         me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; S.cone = FS.incinerate_cone_angle;
         S.mult *= 1 + Math.min(FS.incinerate_maximum_stages, Math.floor((time - me.fuelFrom) * 1000 / FS.incinerate_gain_stage_every_x_ms)) * FS['incinerate_damage_+%_final_per_stage'] / 100;
       }
-      me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.sigil && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
