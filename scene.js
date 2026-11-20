@@ -1361,7 +1361,9 @@ export function initScene(el, api) {
   // ones that split or fork) burst at the end of their flight with that skill's hit of the kind (its part, else its own).
   // note: the level of the triggered skill is not in the data: the attack's own
   const SURGE_OF = { fire: 'Elemental Surge', cold: 'Elemental Surge', lightning: 'Elemental Surge', chaos: 'Chaotic Surge' };
-  const surgeDmg = (name, level = 1) => api.damage?.({ name, level, supports: [] });
+  // a skill the build is granted (not one of its gems), as calc.js has it: the same object each time, for app.js's cache
+  const grants = {}, granted = (name, level = 1, part) => api.damage?.(grants[name + level + part] ??= { name, level, supports: [], part });
+  const surgeDmg = granted;
   function surgeGain(name, el, n) {
     const st = n > 0 && surgeDmg(name)?.stats; if (!st) return;
     surges = surges.filter(s => s.until > time);
@@ -1385,13 +1387,37 @@ export function initScene(el, api) {
   // enemy, a bolt of lightning chaining from it or a wave of icy projectiles toward it, each as likely as your Strength,
   // Dexterity and Intelligence (the wave's spread: a look only). note: the level of the triggered skill is not in the data: the attack's own
   function expression(d, S) {
-    const D = sheet().expression && api.damage?.({ name: 'Elemental Expression', level: S.g?.level || 1, supports: [] });
+    const D = sheet().expression && granted('Elemental Expression', S.g?.level);
     if (!D || !spend({ id: 'Elemental Expression', cooldown: D.cooldown, uses: D.uses })) return;
     const a = sheet().attrs || {}, r = Math.random() * ((a.str || 0) + (a.dex || 0) + (a.int || 0)), el = r < a.str ? 'Fire' : r < a.str + a.dex ? 'Lightning' : 'Cold';
     const X = partOf(asTrig(S, { ...D, id: 'Elemental Expression' }), `ElementalExpression${el}Player`); if (!X) return;
     if (el === 'Fire') boom(d.pos, X.A, X);
     else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.stats.number_of_chains);
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
+  }
+  // Doedre's Undoing: the curse's area stays for the curse's duration (up to its most areas), cursing the enemies that
+  // enter it, and spawns Witchtoads in it at its interval (up to its most at once); a toad leaps at an enemy and explodes
+  // there (Dark Consequences: its part, at the curse's level). note: how close an enemy must be for a toad to leap and how
+  // long the leap takes are not in the data: in the area, half a second
+  function doedre(S, c, R, curseOn) {
+    const su = S.dmg.sum, D = granted("Doedre's Undoing", S.g?.level, 'ChaosFrogExplosionPlayer'); if (!D) return;
+    const X = asTrig(S, { ...D, id: "Doedre's Undoing" }), toads = [], dec = fx.decal(c, R, 'rune', 'curse', { a: .45, spin: .4 }); let tk = 0;
+    X.A = (D.stats.active_skill_base_area_of_effect_radius || 10) / 10;
+    limit(o => o.doedre, su.maximum_curse_zones_allowed);
+    thing(holder(c), sh(S).duration || SIM.curseTime, { name: S.name, doedre: true,
+      tick(dt) {
+        for (const d of inside(c, R)) if (d.curse?.label !== S.label) curseOn(d, true);
+        for (const q of toads) {
+          if (q.jump) continue;
+          if (Math.random() < dt * 3) fx.emit(1, { p: { x: q.p.x, y: .15, z: q.p.z }, v: .3, up: 1, life: .5, size: .25, c: 'chaos' });
+          const d = near(c, R); if (!d) continue;
+          q.jump = true; const p = { x: d.pos.x, z: d.pos.z }; fx.bolt(V(q.p.x, .3, q.p.z), V(p.x, .3, p.z), 'chaos', .5);
+          later(.5, () => { boom(p, X.A, X); toads.splice(toads.indexOf(q), 1); });
+        }
+        if ((tk -= dt) > 0 || toads.length >= su.max_toads_per_doedre_cursed_ground) return;
+        tk = su.doedre_cursed_ground_toad_spawn_interval_ms / 1000; toads.push({ p: around(c, R * .8) });
+      },
+      off: () => dec.remove() });
   }
   // Caltrops: a projectile of the supported skill that reaches the end of its flight leaves its caltrops within its
   // secondary radius, for its duration
@@ -1798,13 +1824,15 @@ export function initScene(el, api) {
       fx.telegraph(c, R, 'curse', wait);
       later(wait, () => {
         fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
-        const list = inside(c, R);
         const C = S.dmg?.curse; let n = 0;
-        for (const d of list) {
-          if (C?.maxLevel && d.level > C.maxLevel) { say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); continue; }
+        const curseOn = (d, quiet) => {
+          if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
-          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' }); }
+          d.curse = { s: (sh(S).duration || SIM.curseTime) * (S.curseX || 1), label: S.label, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+        };
+        inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
+        if (S.dmg?.sum?.max_toads_per_doedre_cursed_ground) doedre(S, c, R, curseOn);
         // Burning Inscription: the curse's Runic Inscription, as it expires, leaves Ignited Ground (its area and time),
         // igniting by a base of that share of your maximum mana through the build's modifiers
         const T = S.dmg?.trig?.find(T => T.stats?.['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana']);
@@ -2152,6 +2180,7 @@ export function initScene(el, api) {
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
       if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed);
+      limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals);   // Profane Ritual: up to its most rituals
       const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
           if (e.plant) presence(e);
