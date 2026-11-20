@@ -857,6 +857,7 @@ export function initScene(el, api) {
     } else boom(p, SIM.heraldR, S);
   }
   const revive = d => { restore(d); fx.ring(d.pos, 1.2 * d.sc, .3, 'gold', .4, { a: .5 }); };
+  const corpses = (p, r) => dummies.filter(d => d.corpse > 0 && dist(d.pos, p) <= r);
   const corpseAt = (p, r) => { let best = null, bd = r; for (const d of dummies) if (d.corpse > 0) { const k = dist(d.pos, p); if (k <= bd) { bd = k; best = d; } } return best; };
   function eat(d, c) {
     d.corpse = 0; d.back = SIM.respawn; d.fig.group.visible = false;
@@ -1401,7 +1402,7 @@ export function initScene(el, api) {
       const ts = T.stats || {};
       if (ts.corpse_explosion_monster_life_permillage_fire) {
         const wait = (ts.explosion_delay_ms || 0) / 1000;
-        for (const d of dummies.filter(d => d.corpse > 0 && dist(d.pos, c) <= ts.active_skill_base_secondary_area_of_effect_radius / 10).slice(0, ts.detonate_on_landing_maximum_number_of_corpses_to_detonate)) {
+        for (const d of corpses(c, ts.active_skill_base_secondary_area_of_effect_radius / 10).slice(0, ts.detonate_on_landing_maximum_number_of_corpses_to_detonate)) {
           const p = { x: d.pos.x, z: d.pos.z }, X = asTrig(S, T, scale(T.hits, d.max * ts.corpse_explosion_monster_life_permillage_fire / 1e5));
           eat(d, 'fire'); fx.telegraph(p, X.A, 'fire', wait); later(wait, () => boom(p, X.A, X));
         }
@@ -1635,7 +1636,7 @@ export function initScene(el, api) {
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
     // (its more hit damage) and two more (its less damage taken and more speed: not simulated)
     raise(S) {
-      const r = Math.max(S.A, SIM.snap), list = dummies.filter(d => d.corpse > 0 && dist(d.pos, S.at) <= r).slice(0, S.R ? 4 : 1 + S.spent);
+      const r = Math.max(S.A, SIM.snap), list = corpses(S.at, r).slice(0, S.R ? 4 : 1 + S.spent);
       const st = S.dmg?.stats || {}, life = durOf(S) || SIM.minionTime, emp = st['power_charged_zombie_hit_damage_+%_final'];
       const raise = (X, p) => { limit(o => o.kind === S.name, st.base_number_of_zombies_allowed); minion(X, p, life, { kind: S.name }); };
       if (!list.length && emp != null && charges.power > 0) { charges.power--; for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1)); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
@@ -2317,16 +2318,16 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
-  // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
   // Feast of Flesh: consumes up to its number of corpses around you; each recovers its life and mana over its recovery duration
   K.feast = S => {
-    const st = S.dmg?.stats || {}, list = dummies.filter(d => d.corpse > 0 && dist(d.pos, pp) <= S.A).slice(0, st.feast_of_flesh_number_of_corpses), T = st.feast_of_flesh_recovery_duration / 1000;
+    const st = S.dmg?.stats || {}, list = corpses(pp, S.A).slice(0, st.feast_of_flesh_number_of_corpses), T = st.feast_of_flesh_recovery_duration / 1000;
     if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
     for (const d of list) eat(d, 'blood');
     const L = list.length * st.feast_of_flesh_recover_X_life_per_corpse_consumed / T, M = list.length * st.feast_of_flesh_recover_X_mana_per_corpse_consumed / T;
     thing(holder(pp), T, { tick: dt => { me.life = gain(me.life, me.maxL, L * dt); me.mana = gain(me.mana, me.maxM, M * dt); } });
     fx.ring(pp, .2, S.A, 'blood', .5); say(`${S.label}: ${list.length}`, 'blood');
   };
+  // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
   const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
   K.cstaff = S => {
     const on = time < me.cstaff?.until, n = S.spent;
