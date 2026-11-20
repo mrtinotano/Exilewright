@@ -845,6 +845,8 @@ export function initScene(el, api) {
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
     if (!S?.src) remnantOn('kill', d);
+    const RP = !S?.src && S?.P?.melee && d.st.bleed > 0 && S.dmg?.sum?.['create_life_remnant_on_melee_kill_bleeding_enemy_%'];
+    if (RP && Math.random() * 100 < RP) remnant({ ...S, name: 'Rip' }, around(d.pos, S.dmg.sum.rip_support_life_remnant_creation_radius / 10));
     if (Math.random() * 100 < (S?.dmg?.sum?.['create_verisium_remmant_on_kill_enemy_%'] || 0)) infRemnant('verisium', p, { dur: (S.dmg.sum.base_remnant_duration_ms || 0) / 1000 });   // Runic Extraction
     hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
@@ -1023,6 +1025,9 @@ export function initScene(el, api) {
       { c: 'gold', get: (s, k) => charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + s.ancient_gifts_charm_charges_restored * k); }) },
       { c: 'cold', get: (s, k) => flaskGain(1, s.ancient_gifts_mana_flask_charges_restored * k) },
       { c: 'blood', get: (s, k) => flaskGain(0, s.ancient_gifts_life_flask_charges_restored * k) }] },
+    // Rip: a killing blow of a supported melee attack on a bleeding enemy, its chance for a Blood Remnant within its radius;
+    // collected, its faster life regeneration for its duration
+    Rip: { c: 'blood', get: (s, k, S) => { const su = S.dmg.sum; me.rip = { rate: su['rip_support_life_regeneration_rate_+%'] * k, until: time + su.rip_support_buff_base_duration / 1000 }; } },
   };
   const leechIn = (r, n) => { const q = me.leech[r]; q.left += n; q.rate = q.left; };   // over one second, as Leech
   const flaskGain = (n, k) => { const f = flasks()[n]; if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + k); };
@@ -1047,7 +1052,7 @@ export function initScene(el, api) {
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
     fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
     if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
-    later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
+    later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k, S); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
   }
   // a hit of yours (each skill no more than once in its time; Mana Remnants on a critical hit on an enemy with an elemental
   // ailment, Sanguine Revelry on a bleeding one), a kill (its chance, under the same condition), a heavy stun (Kalguur's
@@ -3448,7 +3453,7 @@ export function initScene(el, api) {
     if (S.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
-    if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * dt);
+    if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt);   // Rip's faster regeneration
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;
