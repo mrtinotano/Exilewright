@@ -2055,6 +2055,21 @@ export function initScene(el, api) {
     Y.more = me.ward > 0 && Y.units.some(u => dist(u, pp) <= r) ? L['skill_leylines_spell_damage_+%_final'] : 0;
     if (Y.more && (me.ward -= L.skill_leylines_ward_degeneration_per_minute / 60 * dt) <= 0) { me.ward = 0; clear(); Y.back = time + L.skill_leylines_respawn_time_ms / 1000; }
   }
+  // Rite of Restoration: its Sigil (its limit, its duration); standing in it you regenerate its life and have its more
+  // armour, evasion and energy shield per stage; the mana you spend in it gains a stage for each its % of your maximum,
+  // at most one a second, up to its most
+  // note: that it starts at its first stage is not in the data
+  K.sigil = S => {
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = S.A, g = holder(c), ring = fx.decal(c, R, 'outline', 'gold', { a: .4, rot: 0 }), glow = fx.decal(c, R, 'patch', 'gold', { a: .12, k: 1 });
+    limit(o => o.sigil && o.name === S.name, st.base_number_of_sigil_of_power_allowed);
+    const give = n => ({ 'armour_evasion_+%_final': n * st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'], 'energy_shield_+%_final': n * st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'], life_regeneration_per_minute: n * st.sacred_ground_life_regeneration_for_allies_per_minute_per_stage });
+    fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
+    const e = thing(g, durOf(S), { name: S.name, sigil: true, banner: give(1), R, c, stage: 1, paid: 0, at: time, off: () => { ring.remove(); glow.remove(); },
+      spend(n) {
+        e.paid += n; if (e.stage >= st.circle_of_power_max_stages || time - e.at < st.circle_of_power_minimum_time_between_stage_increases_ms / 1000 || e.paid < me.maxM * st['base_circle_of_power_mana_%_spend_per_upgrade'] / 100) return;
+        e.paid = 0; e.at = time; e.banner = give(++e.stage); fx.ring(c, .3, R, 'gold', .4); say(`${S.label}: ${t('Stage {0}', e.stage)}`, 'gold');
+      } });
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -2145,7 +2160,7 @@ export function initScene(el, api) {
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
       if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
       if (fuel) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
-      me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.sigil && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) fuelUp(S, cost);
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
@@ -2935,12 +2950,13 @@ export function initScene(el, api) {
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
   function vitals(dt) {
-    const c = sheet(), L = c.life || 0, E = c.es || 0; me.known = c.life != null;
+    const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100); me.known = c.life != null;
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     leylines(dt);
+    const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
