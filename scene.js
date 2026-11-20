@@ -935,7 +935,7 @@ export function initScene(el, api) {
     minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
   }
   function kill(d, S) {
-    d.dead = true; stats.kills++; record('kill', S?.label || '?', d.mon.name, 0, 'gold'); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -3323,8 +3323,8 @@ export function initScene(el, api) {
   const GREY = '#c8c0b0';
   function clogHtml() {
     if (clogEl.hidden) return;
-    const tot = Object.values(byS).reduce((a, b) => a + b.n, 0) || 1, line = l => l.k === 'hit' ? `${esc(l.src)} → ${esc(l.tgt)}: <b>${short(l.n)}</b>${l.x > 1 ? ` (×${l.x})` : ''}`
-      : l.k === 'kill' ? esc(t('{0} kills {1}', l.src, l.tgt)) : l.k === 'taken' ? `${esc(l.src)} → ${esc(t('You'))}: <b>−${short(l.n)}</b>${l.x > 1 ? ` (×${l.x})` : ''}` : `${esc(l.src)}: ${esc(l.tgt)}`;
+    const tot = Object.values(byS).reduce((a, b) => a + b.n, 0) || 1, xN = l => l.x > 1 ? ` (×${l.x})` : '', line = l => l.k === 'hit' ? `${esc(l.src)} → ${esc(l.tgt)}: <b>${short(l.n)}</b>${xN(l)}`
+      : l.k === 'kill' ? esc(t('{0} kills {1}', l.src, l.tgt)) : l.k === 'taken' ? `${esc(l.src)} → ${esc(t('You'))}: <b>−${short(l.n)}</b>${xN(l)}` : `${esc(l.src)}: ${esc(l.tgt)}`;
     put(clogEl, `<b>${t('Combat log')}</b> <button class="s-clr" data-clear>${t('Reset')}</button><table>`
       + Object.entries(byS).sort((a, b) => b[1].n - a[1].n).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${short(v.n)}</td><td>${v.x}×</td><td>${(v.n / tot * 100).toFixed(1)}%</td></tr>`).join('')
       + `</table><p>${t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)}</p>`
@@ -3341,8 +3341,8 @@ export function initScene(el, api) {
   function hurt(n, chaos, el, crit, d) {
     if (!(n > 0)) return;
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
-    stats.taken += n; me.hurt = time; record('taken', d?.mon.name || '?', '', n, css(el === 'physical' ? 'blood' : el)); shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
-    const c = el === 'physical' ? 'blood' : el;
+    stats.taken += n; me.hurt = time; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
+    const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
     if (!me.known) return;   // without the class base life there is no pool to empty: the numbers still show what gets through
