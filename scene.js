@@ -340,6 +340,7 @@ export function initScene(el, api) {
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
+    if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
     if (!o.noPay) {
       const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
@@ -2097,6 +2098,8 @@ export function initScene(el, api) {
       lob(fx.orb(E ? 'lightning' : 'dust', .12), hand(), V(q.x, .1, q.z), .4, 2.4, () => { boom(q, X.A, X); if (!E) ground('oil', q, X.A, X.P.dur, X); }, { trail: E ? 'lightning' : 'dust' });
     });
   };
+  K.parry = S => { me.parry = { S, until: time + PARRY_WAIT }; fx.ring(pp, .3, .9, 'white', .3, { a: .5 }); };
+  K.shield = S => { me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -2239,7 +2242,7 @@ export function initScene(el, api) {
   // Glory (keywords.json): each skill that requires it builds its own, up to what it requires, from its Glorious actions:
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
-  const SEQ_GAP = 2, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
+  const SEQ_GAP = 2, PARRY_WAIT = 1, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
   const trinity = () => onS('Trinity')?.dmg?.stats;
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
@@ -2291,6 +2294,8 @@ export function initScene(el, api) {
   }
   function release() {
     const c = charge; charge = null; held = null;
+    const RS = me.raised; me.raised = null;   // Raise Shield: its Shield Bash when released soon after a block
+    if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z } });
     const P = c && base(c.i)?.P; if (!P) return;
     if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2, held: c.s })) cd = useTime(base(c.i));
   }
@@ -2706,10 +2711,26 @@ export function initScene(el, api) {
     const X = E.X, l = dist(d.pos, pp) || 1, k = 1 + Math.floor((sheet().armour || 0) / X.dmg.stats['dangerous_resolve_attack_damage_+1%_final_per_X_armour']) / 100;
     say(X.label, X.el); K.sweep({ ...X, mult: k, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l, R: X.A, cone: X.dmg.stats.dangerous_resolve_cone_angle });
   }
+  // Active Block: a readied Parry blocks the next blockable hit from within its distance (for projectiles or not) and
+  // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
+  // every one, and released within its retaliation time after one it bashes the enemies close to you
+  // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
+  function activeBlock(d, a) {
+    const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised;
+    if (!P && !R) return false;
+    if (P) {
+      const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
+      if (l > far + SIM.body * d.sc) return false;
+      me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
+      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + st.base_parry_duration_ms / 1000 };
+    } else R.blocked = time;
+    fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); return true;
+  }
   function struck(d) {
     const a = d.atk, c = withCharms(sheet());
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
+    if (!a.unblockable && activeBlock(d, a)) return;
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
     // a curse that lowers their damage (Enfeeble)
