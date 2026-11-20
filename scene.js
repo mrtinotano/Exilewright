@@ -2253,6 +2253,20 @@ export function initScene(el, api) {
       fx.pillar(q, r * .4, 2.4, 'poison', .3, 2); later(.2, () => boom(q, r, S, { soft: true }));
     } });
   };
+  // Cross Slash: two gouges in front of you, each its angle apart across your aim, its length and its secondary width,
+  // each hitting on its own, as you leap back its offset; a Marked enemy hit by both has its Mark activated and takes the
+  // shockwave (its part) after its delay
+  // note: its Ice Fragments are not simulated
+  K.cross = S => {
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, w = radOf(S), a0 = Math.atan2(S.dx, S.dz), half = st.wolf_cross_slash_angle / 2 * Math.PI / 180, X = partOf(S, 'WolfCrossSlashMarkConsumedPlayer'), both = new Map();
+    for (const sgn of [-1, 1]) {
+      const a = a0 + sgn * half, b = { x: c.x + Math.sin(a) * S.A, z: c.z + Math.cos(a) * S.A };
+      fx.strip(c, b, w * 2, S.el, .4, { a: .7 });
+      for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w + SIM.body) { hit(d, S); both.set(d, (both.get(d) || 0) + 1); }
+    }
+    for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
+    const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
