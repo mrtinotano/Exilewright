@@ -1534,11 +1534,14 @@ export function initScene(el, api) {
       }
       if (P.rainy && S.R >= 1.5) {   // a volley goes up and comes down over the whole area
         fx.streak(h, V(h.x + S.dx * 2, 15, h.z + S.dz * 2), S.el, .25, .04, 2); fx.telegraph(c, R, S.el, .5);
-        const n = 22 + S.spent * 8;
-        for (let i = 0; i < n; i++) later(.42 + i * .034, () => {
+        // Rain of Arrows: its arrows (more per frenzy charge spent by its multiplier), its delay between them and the
+        // radius of each, each a hit of its own; else the scene's volley
+        const rs = S.dmg?.stats || {}, RA = rs.rain_of_arrows_delay_per_arrow, ar = RA ? radOf(S) : .75;
+        const n = RA ? Math.round((sh(S).projectiles || rs.base_number_of_projectiles) * (1 + S.spent * rs.rain_of_arrows_projectile_count_multiplier_per_frenzy_charge / 100)) : 22 + S.spent * 8;
+        for (let i = 0; i < n; i++) later(.42 + i * (RA ? RA / 1000 : .034), () => {
           const a = rnd(TAU), r = Math.sqrt(rnd()) * R, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
           fx.streak(V(q.x + 1.5, 12, q.z - 1), V(q.x, 0, q.z), S.el, .13, .025, 1.6);
-          later(.13, () => { fx.ring(q, .1, .75, S.el, .25, { a: .7 }); fx.emit(4, { p: { x: q.x, y: .1, z: q.z }, v: 1.5, up: 1.5, life: .3, size: .12, c: S.el, c2: 'white' }); area(q, .75, S, { mult: .5, noTouch: i % 4 > 0 }); });
+          later(.13, () => { fx.ring(q, .1, ar, S.el, .25, { a: .7 }); fx.emit(4, { p: { x: q.x, y: .1, z: q.z }, v: 1.5, up: 1.5, life: .3, size: .12, c: S.el, c2: 'white' }); area(q, ar, S, { mult: RA ? 1 : .5, noTouch: i % 4 > 0 }); });
         });
         return;
       }
