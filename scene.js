@@ -703,6 +703,7 @@ export function initScene(el, api) {
       }
     }
   }
+  const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -818,6 +819,11 @@ export function initScene(el, api) {
       inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) });   // Concoct
     }
     if (A.incision) d.inc = Math.min(INCISION.max, (d.inc || 0) + A.incision);
+    // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction) aggravates the bleeding the enemy
+    // has, treated as moving for the rest of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra
+    // bleeding damage is not simulated, nor Herald of Blood's and Rusted Spikes' chances
+    const AG = S.P.attack && S.dmg?.stats?.['base_aggravate_bleeding_on_attack_hit_chance_%'];
+    if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
@@ -1230,7 +1236,7 @@ export function initScene(el, api) {
     // that part's own damage (calc.js trig parts), its cooldown
     const k = `TriggeredCatalysingDischarge${cap(e)}Player`, T = !S.src && S.dmg?.trig?.find(T => T.parts?.[k]), D = T && T.parts[k];
     if (D && spend(T)) { const X = asTrig(S, { ...T, ...D, id: T.id }, D.hits); say(X.label, e); boom(at, X.A, X); }
-    return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])] };
+    return { ...S, els: [...S.els, e], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])], got: e };
   }
 
   // ---------- things that live in the scene for a while
@@ -1647,6 +1653,18 @@ export function initScene(el, api) {
     consume(d, S, 'freeze'); const p = { x: d.pos.x, z: d.pos.z };
     pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * uniqueMore(d, X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique']) }, { noPay: true });
   }
+  // Ice-Tipped Arrows: where an empowered projectile hits, its number of ice fragments scatter forward in its cone,
+  // each landing between its least and most distance, and explode after its detonation time (its fragment part)
+  function iceFrags(X, p, a0) {
+    const st = X.dmg.stats, n = st.base_number_of_projectiles, cone = st.ballistic_ice_chunk_cone_angle / 10 * Math.PI / 180;
+    for (let k = 0; k < n; k++) {
+      const a = a0 + (n > 1 ? k / (n - 1) - .5 : 0) * cone, r = rnd(st.ice_fragment_min_chunk_distance, st.ice_fragment_max_chunk_distance) / 10, to = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
+      lob(fx.orb('cold', .1), new THREE.Vector3(p.x, .8, p.z), new THREE.Vector3(to.x, .1, to.z), .3, .6, () => {
+        const dec = fx.decal(to, X.A, 'patch', 'cold', { a: .6, k: 1 });
+        later(Math.max(0, st.base_skill_detonation_time / 1000 - .3), () => { dec.remove(); pop(to, X.A, 'ice'); boom(to, X.A, X, { noPay: true }); });
+      });
+    }
+  }
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
@@ -1699,7 +1717,7 @@ export function initScene(el, api) {
           if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
-            seen.add(d); shrapnel(cur, d);
+            seen.add(d); shrapnel(cur, d); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
             if (N) {
@@ -1719,7 +1737,7 @@ export function initScene(el, api) {
         if (q.dead) return;
         fx.emit(slow ? 2 : 1, { p: m.position, v: .4, life: .35, size: slow ? .3 : .16, c: cur.el, c2: 'white', drag: 1 });
         if (slow) {
-          if (P.absorbs) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
+          if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
           if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
           if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, radOf(BG, 'tertiary'), BG.dmg.shape?.duration || 4, BG); }
@@ -2212,10 +2230,12 @@ export function initScene(el, api) {
     },
     travel(S) {
       // Shield Charge: it crashes into the first enemy on its path and stops there, its more damage from the distance
-      // travelled (up to its most at its full range), its final cone part too
-      const P = S.P, to = S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'], crash = far != null;
+      // travelled (up to its most at its full range), its final cone part too; it runs on its extra distance past where
+      // you aimed (note: as a straight run on, its slowing down is not simulated)
+      const SE = (S.dmg?.stats?.shield_charge_extra_distance || 0) / 10;
+      const P = S.P, to = SE ? { x: S.at.x + S.dx * SE, z: S.at.z + S.dz * SE } : S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'], crash = far != null;
       const land = (at = to) => {
-        const k = Math.min(1, dist(from, at) / (sh(S).travel ?? SIM.travelRange)), Y = crash ? { ...S, mult: S.mult * (1 + far * k / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
+        const k = Math.min(1, dist(from, at) / ((sh(S).travel ?? SIM.travelRange) + SE)), Y = crash ? { ...S, mult: S.mult * (1 + far * k / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
         // fully charged (its whole range run): its more stun buildup
         const FS = k >= 1 && S.dmg?.stats?.['shield_charge_hit_damage_stun_multiplier_when_fully_charged_+%_final'], so = FS ? { stunX: 1 + FS / 100 } : {};
         if (S.R || P.attack) boom(at, S.A, Y, so); else fx.ring(at, .2, 1.6, S.el, .4);
@@ -2521,7 +2541,10 @@ export function initScene(el, api) {
       if (P.corpse && !useCorpse(S)) return;
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       // Barrage: repeats from its stats (else the scene's 2, one more per charge spent: Unleash), each with its less damage
-      if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
+      // Ice-Tipped Arrows: its number of your next projectile attacks are empowered, for its duration (icetip)
+      const IT = partOf(S, 'IceTippedArrowsIceFragmentPlayer');
+      if (IT) { const uses = S.dmg.stats.shearing_bolts_number_of_empowered_attacks; empower = empower.filter(e => e.type !== 'icetip'); empower.push({ type: 'icetip', label: S.label, name: S.name, el: 'cold', uses, s: durOf(S), X: IT, cv: S.dmg.stats['shearing_bolts_non_skill_base_physical_damage_%_to_convert_to_cold'] }); say(t('{0} active', S.label) + ` ×${uses}`, 'cold'); }
+      else if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
         empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
       else { setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
@@ -2755,20 +2778,34 @@ export function initScene(el, api) {
   // note: Blind and elemental Whirlwinds are not simulated
   // Whirling Slash: its slash kicks up a Whirlwind around you (its storm part), one more stage for each use while it is up,
   // up to its most, its area growing per stage; enemies in it are Slowed. Leaving it collapses it: its hit there, more
-  // damage per stage. Twister consumes it
+  // damage per stage. Whirlwind Lance: one where its spear lands, at its most stages (one more with a Frenzy Charge
+  // spent), for its duration, up to its most at a time; entering it collapses it. A Whirlwind over elemental ground
+  // gains its share of all its damage as that element. Twister consumes one
   // note: the first slash is its first stage; its larger area and more damage count the stages after it (the data does
   // not say);
   // Blind and the knockback are not simulated
   function whirl(S) {
-    const W = partOf(S, 'WhirlingSlashSandstormPlayer'), st = W?.dmg.stats; if (!W) return;
-    const o = objs.find(o => o.whirl && !o.dead); if (o) { o.stage = Math.min(st.sandstorm_swipe_max_stages, o.stage + 1); return; }
-    const c = { x: pp.x, z: pp.z }, slow = new Map();
-    const e = thing(holder(c), Infinity, { whirl: true, stage: 1, c, R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
-      tick(dt) {
-        const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: 'dust', smoke: true, a: .3 });
-        standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'], .1);
-        if (dist(pp, c) > R) { e.dead = true; boom(c, R, W, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
-      } });
+    const lance = !partOf(S, 'WhirlingSlashSandstormPlayer'), W = partOf(S, lance ? 'WhirlwindLanceStormPlayer' : 'WhirlingSlashSandstormPlayer'), st = W?.dmg.stats; if (!W) return;
+    const top = st.sandstorm_swipe_max_stages;
+    if (!lance) { const o = objs.find(o => o.whirl && !o.lance && !o.dead); if (o) { o.stage = Math.min(top, o.stage + 1); return; } }
+    const c = lance ? { ...S.at } : { x: pp.x, z: pp.z }, slow = new Map();
+    // its share of all its damage as the element it picked up (the slash's own, from the ground under you)
+    const gain = A => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), k = st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered'] / 100, h = H[A.got] || [0, 0];
+      return { ...A, dmg: { ...A.dmg, hits: { ...H, [A.got]: [h[0] + all[0] * k, h[1] + all[1] * k] } } }; };
+    const X0 = S.got ? gain({ ...W, els: [...W.els, S.got], el: S.got, ail: [...new Set([...W.ail, ...ailOf([S.got])])], got: S.got }) : W;
+    const make = () => {
+      if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms);
+      const e = thing(holder(c), lance ? durOf(W) : Infinity, { whirl: true, lance, stage: lance ? top + (S.spent ? 1 : 0) : 1, c, out: !lance || dist(pp, c) > W.A, X: X0,
+        R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
+        tick(dt) {
+          const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: e.X.el === 'physical' ? 'dust' : e.X.el, smoke: true, a: .3 });
+          standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'], .1);
+          const A = absorb(e.X, c, R); if (A !== e.X) e.X = gain(A);
+          const there = dist(pp, c) <= R; if (!there) e.out = true;
+          if (lance ? there && e.out : !there) { e.dead = true; boom(c, R, e.X, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
+        } });
+    };
+    if (lance) later(dist(pp, c) / (S.G?.speed || SIM.projSpeed), make); else make();
   }
   // Hexblast: detonates the curses of the enemies in its area that have run at least half their duration, up to its most
   // explosions: each its hit in its secondary area around that enemy, the curse removed
@@ -3447,6 +3484,19 @@ export function initScene(el, api) {
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
+        // Ice-Tipped Arrows: its share of the attack's physical damage as cold (note: all of the hit's physical, its
+        // modifiers kept: the weapon's base alone is not told apart here), its fragments on each hit (iceFrags). note:
+        // a Frenzy Charge bypassing its cooldown is not simulated
+        else if (E.type === 'icetip' && P.attack && P.ranged && hits && S.dmg) {
+          const H = { ...S.dmg.hits }, ph = H.physical, cv = (E.cv ?? 100) / 100;
+          if (ph) { const c = H.cold || [0, 0]; H.cold = [c[0] + ph[0] * cv, c[1] + ph[1] * cv]; H.physical = [ph[0] * (1 - cv), ph[1] * (1 - cv)]; if (cv >= 1) delete H.physical; }
+          // the fragments' hit: the attack's, at their part's multiplier over the attack's own (note: the data has them
+          // as a spell part, with no weapon damage of their own)
+          const fm = E.X.dmg.stats._base_multiplier / (S.dmg.stats?._base_multiplier || 10000);
+          S.dmg = { ...S.dmg, hits: H }; S.els = [...new Set([...S.els, 'cold'])]; S.el = 'cold'; S.ail = [...new Set([...S.ail, ...ailOf(['cold'])])];
+          S.icetip = { ...E.X, dmg: { ...E.X.dmg, hits: scale(H, fm) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
+          say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (--E.uses <= 0) empower.splice(k, 1);
+        }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
       // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time, up to its most; casting it breaks them,
@@ -3957,7 +4007,7 @@ export function initScene(el, api) {
     if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
-      const add = (v, noEs) => { const k = v.dps * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
+      const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a], a !== 'ignite');
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
