@@ -1675,7 +1675,7 @@ export function initScene(el, api) {
       });
     },
     strike(S) {
-      const P = S.P, reach = strikeR(S), n = P.dash ? Math.max(1, S.spent) : 1;
+      const P = S.P, reach = strikeR(S), n = S.times || (P.dash ? Math.max(1, S.spent) : 1);
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
       const go = (d, k) => {
@@ -1689,7 +1689,21 @@ export function initScene(el, api) {
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); }
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
+      const shocked0 = first.st.shock > 0;
       go(first, 0);
+      // Primal Strikes: its first two attacks on a shocked enemy refresh the shock and conjure a charging spirit (its stag
+      // part); its final consumes the shock for its stampede of them, its more damage, a volley every its delay apart
+      const W = S.chain0 && partOf({ ...S, dmg: S.chain0 }, 'PrimalStrikesStagWavePlayer');
+      if (W && shocked0) {
+        const ws = S.chain0.stats, len = W.A, half = radOf(W), m = S.final ? 1 + ws['primal_strikes_stag_stampede_damage_+%_final'] / 100 : 1;
+        if (S.final) first.st.shock = 0; else first.st.shock = Math.max(first.st.shock, DUR.shock);
+        const k = S.final ? S.dmg.stats.primal_strikes_number_of_stags : ws.primal_strikes_number_of_stags, gap = ws.primal_strikes_stag_volley_spacing / 10;
+        for (let j = 0; j < k; j++) later(j * ws.primal_strikes_stag_volley_delay_ms / 1000, () => {
+          const o = (j - (k - 1) / 2) * gap, a = { x: pp.x - S.dz * o, z: pp.z + S.dx * o }, b = { x: a.x + S.dx * len, z: a.z + S.dz * len };
+          fx.strip(a, b, half * 2, 'lightning', .45, { a: .6 });
+          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= half + SIM.body) later(dist(d.pos, a) / len * .35, () => hit(d, { ...W, mult: S.mult * m }));
+        });
+      }
       // Killing Palm: its target culled, it dashes on to strike the other cullable enemies within its dash range
       if (S.P.culls && first.dead) dummies.filter(e => cullable(e, S) && dist(e.pos, pp) <= (S.dmg?.stats?.base_melee_dash_range || 0) / 10).forEach((e, k) => later((k + 1) * .13, () => go(e, k + 1)));
       // Ancestrally Boosted: it targets its additional enemies in reach too; Kaom's Strikes trigger Volcanic Eruption, its
@@ -2137,6 +2151,16 @@ export function initScene(el, api) {
     }
     if (C) ready.push(time + C / 1000);
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
+    // an attack chain (Ice Strike, Tempest Flurry, Primal Strikes): its uses in quick succession step through it, the last
+    // being its final part (its first), Tempest Flurry's third striking three times
+    // note: "quick succession" has no time in the data; SEQ_GAP s here
+    const FN = !auto && S.dmg?.parts && S.dmg.stats?.statset_index_for_final_animation_combo_index != null;
+    if (FN) {
+      const len = S.dmg.stats.statset_index_for_third_animation_combo_index != null ? 4 : 3, q = (me.seq ||= {})[S.name], n = q && time - q.at < SEQ_GAP ? q.n % len + 1 : 1;
+      me.seq[S.name] = { n, at: time }; S.chain0 = S.dmg;
+      if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el); }
+      else if (len === 4 && n === 3) S.times = 3;
+    }
     const run = K[S.kind] || K.area;
     run(S);
     if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
@@ -2158,7 +2182,7 @@ export function initScene(el, api) {
   // Glory (keywords.json): each skill that requires it builds its own, up to what it requires, from its Glorious actions:
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
-  const GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
+  const SEQ_GAP = 2, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
   const trinity = () => onS('Trinity')?.dmg?.stats;
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };

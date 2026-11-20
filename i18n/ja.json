@@ -858,5 +858,6 @@
  "{0} needs {1} Glory": "{0}には{1}グローリーが必要です",
  "Culling Strike": "カリングストライク",
  "Not enough Runic Ward for {0}": "{0}のルーンワードが足りない",
- "{0}: move {1} m first": "{0}：先に{1}m移動してください"
+ "{0}: move {1} m first": "{0}：先に{1}m移動してください",
+ "{0}: Final Strike": "{0}：最終ストライク"
 }
