@@ -71,6 +71,7 @@ const NAMED = {
   'Contagion': { spread: true },
   'Living Bomb': { kind: 'mark', bomb: true }, Untether: { kind: 'mark', bomb: true },
   'Flicker Strike': { dash: true },
+  'Lightning Spear': { explodes: false, aoe: false },   // its radius is where its bolts seek (scene.js spearBurst)
   'Cluster Grenade': { cluster: 4 },
   'Earthquake': { aftershock: true },
   'Volcano': { kind: 'volcano', stages: true, ownStages: true },

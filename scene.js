@@ -169,7 +169,7 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), spear: inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
@@ -1305,6 +1305,15 @@ export function initScene(el, api) {
   function stores(st, U, pd, dt) { U.stored += pd * dt; return dt * pd * 60 / (st['toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty'] || Infinity) / 100; }
   const burst = (st, n) => ({ more: 1 + Math.min(st['toxic_pustule_max_burst_damage_+%_final_from_stored_poison'] || 0, n / (st['toxic_pustule_burst_1%_more_damage_per_x_stored_poison'] || Infinity)) / 100,
     r: Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, n / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10 });
+  // Lightning Spear: where it hits it bursts, its bolts (its secondary part's projectiles) striking as many other enemies
+  // in its area; with a Frenzy Charge spent it first splits into its more copies, each hitting another enemy there and
+  // bursting too. note: the bolts strike at once (their flight is a look only)
+  function spearBurst(S, d) {
+    const X = S.dmg?.parts?.LightningSpearSecondaryProjectilePlayer && partOf(S, 'LightningSpearSecondaryProjectilePlayer'); if (!X) return;
+    const copies = nearest(d.pos, S.spent ? S.dmg.stats.lightning_spear_additional_number_to_split_when_charged : 0, e => e !== d && dist(e.pos, d.pos) <= S.A);
+    for (const e of copies) { fx.bolt(chest(d), chest(e), S.el, .18); hit(e, S); }
+    for (const c of [d, ...copies]) for (const e of nearest(c.pos, sh(X).projectiles || 1, e => e !== c && dist(e.pos, c.pos) <= S.A)) { fx.bolt(chest(c), chest(e), 'lightning', .18); hit(e, X); }
+  }
   // the part a consumed Infusion of that kind brings (Spark's cold-infused sparks, Comet's blast, Firestorm's ice and
   // lightning bolts, Fireball's firebolts...): the one named after it, else the skill's one infused or secondary part
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
@@ -1503,7 +1512,7 @@ export function initScene(el, api) {
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
         if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
       }
-      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); }
+      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); spearBurst(cur, hitD); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
