@@ -1413,9 +1413,10 @@ export function initScene(el, api) {
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
-            if (D.split && !o.split) {
+            const TS = S.P.spell && !S.src && S.dmg?.cost > 0 && tempest(), N = (D.split || 0) + (TS ? TS.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets : 0);   // Mana Tempest
+            if (N && !o.split) {
               o.split = true;
-              for (const e of nearest(d.pos, D.split, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
+              for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
             else if (pierced < pierceN) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }
@@ -2546,7 +2547,7 @@ export function initScene(el, api) {
   // Mana Tempest: its storm where you cast it; while you are in it, or for its linger after you leave, your mana-costing
   // spells gain its share of their damage as lightning. It drains its % of your maximum mana a second plus its % of the
   // mana you spend in it, added to that each second; it ends once you are out past its linger or out of mana.
-  // note: its empowered spells' split to more targets is not simulated
+  // Its empowered spells' projectiles split toward its additional targets (shoot). note: other spells' split is not simulated
   const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
   K.tempest = S => {
     const st = S.dmg.stats, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'outline', 'lightning', { a: .45, rot: .3 });
