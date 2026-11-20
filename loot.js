@@ -161,7 +161,7 @@ export function initLoot(el, ctx) {
     show({ name, lines: [t(s.deep ? 'Searching the trade site (thorough search: it can take longer)…' : 'Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = unid ? await priceUnid({ ...r, league, state: s.state }) : await priceOf({ league, item: r.item, r, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
+      const p = unid ? await priceUnid({ ...r, league, state: s.state }) : await priceOf({ league, r, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
         ...s.deep || unid ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const cost = x => `${x.amount} ${t(x.currency)}`;

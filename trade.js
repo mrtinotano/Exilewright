@@ -235,8 +235,9 @@ function sameAs(r) {
       ...!unique && !r.sanctified && !r.corrupted && { sanctified: { option: 'false' } } },
     equipment_filters: { ...r.corrupted && r.sockets && { rune_sockets: { min: r.sockets } } } };
 }
-// r: parseItem's (its item, rarity, corrupted...); item alone: as an identified one, nothing else asked of it
-export async function priceOf({ league, item, r = null, text = '', state = 'available', near = 10, deep = false }) {
+// r: parseItem's (its item, rarity, corrupted...)
+export async function priceOf({ league, r, text = '', state = 'available', near = 10, deep = false }) {
+  const item = r.item;
   const props = propsOf(text);
   const { desecrated, idsOf } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
@@ -246,10 +247,10 @@ export async function priceOf({ league, item, r = null, text = '', state = 'avai
   // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
   const cat = !item.unique && Object.keys(props).length && CATEGORY[classOf(item)];
   const query = { status: { option: state }, ...(!cat && { type: item.base }), ...(item.unique && { name: item.unique }) };
-  const also = r ? sameAs({ ...r, item }) : {}, group = (k, f) => Object.keys(f).length ? { [k]: { filters: f } } : {};
+  const also = sameAs(r), group = (k, f) => Object.keys(f).length ? { [k]: { filters: f } } : {};
   const filters = { ...group('type_filters', { ...also.type_filters, ...cat && { category: { option: cat } } }),
     ...group('equipment_filters', { ...also.equipment_filters, ...Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) }),
-    ...group('misc_filters', also.misc_filters || {}) };
+    ...group('misc_filters', also.misc_filters) };
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
   // at most pct(i) % under its number. Cheapest first
   const search = (k, pct) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters,
