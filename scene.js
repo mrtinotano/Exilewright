@@ -38,6 +38,7 @@ const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fu
 const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
+const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
 const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
@@ -249,7 +250,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
+    Object.assign(me, { kaom: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -1467,6 +1468,16 @@ export function initScene(el, api) {
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
       if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
+      // Ancestral Cry: you embody Kaom for its duration (its more per endurance charge, which it removes): Volcanic Steps
+      // every so far you travel (its shockwave), your melee Strikes and Slams Ancestrally Boosted, a Strike triggering
+      // Volcanic Eruption (its projectile part)
+      const st = S.dmg?.stats || {}, every = st.ancestral_cry_triggers_shockwave_every_X_units_travelled;
+      if (every) {
+        const n = charges.endurance; charges.endurance = 0;
+        me.kaom = { S, walked: 0, every: every / 10, more: st.ancestral_cry_empowered_attacks_strike_X_additional_enemies || 0, X: partOf(S, 'AncestralCryProjectilePlayer'),
+          until: time + (sh(S).duration || (st.base_skill_effect_duration || 0) / 1000) * (1 + (st['ancestral_cry_duration_+%_final_per_removable_endurance_charge'] || 0) * n / 100) };
+        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('fire'), s: me.kaom.until - time });
+      }
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
       const k = S.name;
@@ -1568,6 +1579,14 @@ export function initScene(el, api) {
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
       go(first, 0);
+      // Ancestrally Boosted: it targets its additional enemies in reach too; Kaom's Strikes trigger Volcanic Eruption, its
+      // projectiles landing between their least and most distance around the target
+      for (const e of dummies.filter(e => !e.dead && e !== first && dist(e.pos, pp) <= reach + SIM.body).slice(0, S.addTargets || 0)) { const l = dist(e.pos, pp) || 1; slash(S, (e.pos.x - pp.x) / l, (e.pos.z - pp.z) / l); hit(e, S); }
+      const X = S.kaom?.X, xs = X?.dmg.stats;
+      if (X) for (let k = sh(X).projectiles || xs.base_number_of_projectiles || 1; k > 0; k--) {
+        const a = rnd(TAU), r = rnd(xs.skill_mortar_minimum_projectile_distance / 10, xs.skill_mortar_maximum_projectile_distance / 10), q = { x: first.pos.x + Math.sin(a) * r, z: first.pos.z + Math.cos(a) * r };
+        lob(fx.orb('fire', .15), V(first.pos.x, 1, first.pos.z), V(q.x, .1, q.z), .45, 2, () => boom(q, X.A, X), { trail: 'fire' });
+      }
     },
     sweep(S) {
       const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
@@ -1784,6 +1803,17 @@ export function initScene(el, api) {
   };
   K.cone = K.sweep;
   K.herald = K.aura = K.meta = K.minion = K.field = K.toggle;
+  // Spear of Solaris: the spear lands at the target and hits its area, then its skybeam pulses there (its pulse part: its
+  // number of pulses, its delay) over Ignited Ground that expands to its +% area by the skill's end (its ground part)
+  K.solaris = S => {
+    const c = { x: S.at.x, z: S.at.z }, X = partOf(S, 'SpearOfSolarisPulsePlayer'), Y = partOf(S, 'SpearOfSolarisGroundPlayer');
+    lob(fx.arrow(S.el), hand(), V(c.x, .1, c.z), .5, 4, () => {
+      boom(c, S.A, S); shake = .4; if (!X) return;
+      const xs = X.dmg.stats, n = xs.solaris_spear_number_of_pulses || 1, every = (xs.solaris_spear_pulse_delay_ms || 200) / 1000, dur = n * every;
+      if (Y) ground('burning', c, X.A, dur, Y, { per: (Y.dmg.stats['solaris_spear_ground_expands_to_+%_final_by_skill_end'] || 0) / dur, max: Y.dmg.stats['solaris_spear_ground_expands_to_+%_final_by_skill_end'] || 0 });
+      for (let k = 0; k < n; k++) later(k * every, () => { fx.pillar(c, X.A * .4, 14, 'gold', .2); boom(c, X.A, X, { soft: true }); });
+    }, { trail: 'fire' });
+  };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
   K.banner = S => {
@@ -1860,6 +1890,9 @@ export function initScene(el, api) {
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
       hudT = 0;
     }
+    const KA = !auto && P.melee && me.kaom && time < me.kaom.until && me.kaom;
+    if (KA && P.slams) { S.mult *= 1 + ANCESTRAL.slam / 100; S.A *= Math.sqrt(1 + ANCESTRAL.area / 100); }
+    else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
@@ -2728,6 +2761,7 @@ export function initScene(el, api) {
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
     const step = Math.hypot(pp.x - (me.lastX ?? pp.x), pp.z - (me.lastZ ?? pp.z)); me.lastX = pp.x; me.lastZ = pp.z;
     if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.movedAt = time; }
+    const KA = me.kaom; if (KA && time < KA.until && (KA.walked += step) >= KA.every) { KA.walked = 0; fx.ring(pp, .2, KA.S.A, 'fire', .35); boom({ x: pp.x, z: pp.z }, KA.S.A, KA.S, { soft: true }); }
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor
