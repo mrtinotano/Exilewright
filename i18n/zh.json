@@ -869,5 +869,8 @@
  "Purple Flame of Chayula": "夏烏拉之紫炎",
  "Ghost Shroud": "幽魂屍布",
  "Daze": "目眩",
- "{0}: nothing stored": "{0}：沒有儲存的傷害"
+ "{0}: nothing stored": "{0}：沒有儲存的傷害",
+ "Combat log": "战斗日志",
+ "{0} kills {1}": "{0}击杀了{1}",
+ "You": "你"
 }

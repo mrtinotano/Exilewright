@@ -869,5 +869,8 @@
  "Purple Flame of Chayula": "紫のチャユラの炎",
  "Ghost Shroud": "ゴーストシュラウド",
  "Daze": "眩暈",
- "{0}: nothing stored": "{0}: 貯めたダメージなし"
+ "{0}: nothing stored": "{0}: 貯めたダメージなし",
+ "Combat log": "戦闘ログ",
+ "{0} kills {1}": "{0}が{1}を倒した",
+ "You": "あなた"
 }

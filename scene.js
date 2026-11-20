@@ -105,7 +105,7 @@ export function initScene(el, api) {
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
-  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [];
+  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], byS = {}, hover = null, lastHit = null;
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
   // ---------- HUD
@@ -122,9 +122,21 @@ export function initScene(el, api) {
   note.innerHTML = `<b>${t('About the simulator')}</b><p>${t("The simulator uses the game's own data (skills, supports, monsters, game constants) and Path of Building 2's formulas, but not all of the game's internal workings can be known: it may not be 100% accurate. Use it to compare, and check in the game what matters.")}</p>`
     + `<p>${t('What cannot be checked:')}</p><ul>${NOT_KNOWN.map(x => `<li>${t(x)}</li>`).join('')}</ul>`;
   warn.onclick = () => { note.hidden = !note.hidden; warn.classList.toggle('on', !note.hidden); };
+  // the combat log: the last hits by skill and enemy, what hit you and what you avoided, with the damage of each skill
+  const logBtn = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help', textContent: '≡', title: t('Combat log') }));
+  const clogEl = el.appendChild(Object.assign(document.createElement('div'), { className: 's-note s-clog', hidden: true }));
+  logBtn.onclick = () => { clogEl.hidden = !clogEl.hidden; logBtn.classList.toggle('on', !clogEl.hidden); };
+  clogEl.onclick = e => { if (e.target.dataset.clear != null) { clog = []; byS = {}; } };
+  // a line per source and target: what they do within a second of their last line adds to it (damage over time ticks)
+  const record = (k, src, tgt, n = 0, c = 'gold') => {
+    const l = clog.slice(-8).find(l => l.k === k && l.src === src && l.tgt === tgt && time - l.at < 1);
+    if (l) { l.n += n; l.x++; l.at = time; return; }
+    clog.push({ k, src, tgt, n, c, x: 1, at: time }); if (clog.length > 150) clog.shift();
+  };
   const logEl = div('s-log'), lifeEl = div('s-life'), manaEl = div('s-mana'), bar = div('s-bar'), tipEl = div('s-tip'), toastEl = div('s-toast');
   tipEl.hidden = true;
   const pickEl = div('s-pick'); pickEl.hidden = true;
+  const tgtEl = div('s-target');
   const shown = new Map(), put = (node, html) => { if (shown.get(node) !== html) { shown.set(node, html); node.innerHTML = html; } };
   const say = (text, c = 'gold') => {
     const l = logs[logs.length - 1];
@@ -279,7 +291,7 @@ export function initScene(el, api) {
     hazards.forEach(h => h.decal.remove()); hazards = [];
     timers = []; empower = []; buffs = []; fissures = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0;
     for (const k in charges) charges[k] = 0;
-    stats.kills = stats.dealt = stats.taken = stats.deaths = 0; dummies.forEach(restore); heal(); hudT = 0;
+    stats.kills = stats.dealt = stats.taken = stats.deaths = 0; clog = []; byS = {}; lastHit = null; dummies.forEach(restore); heal(); hudT = 0;
   }
   const nearest = (p, n, ok) => dummies.filter(e => !e.dead && ok(e)).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, n);   // the n living enemies nearest p
   function near(p, r, ok) {
@@ -323,7 +335,8 @@ export function initScene(el, api) {
   // noEs: bleeding and poison, which bypass energy shield (keywords.json)
   function damage(d, n, S, quiet, noEs) {
     if (d.dead || !(n > 0)) return;
-    stats.dealt += Math.min(n, d.life + (noEs ? 0 : d.es));
+    const got = Math.min(n, d.life + (noEs ? 0 : d.es)), src = S?.label || '?', B = byS[src] ||= { n: 0, x: 0 };
+    stats.dealt += got; B.n += got; B.x++; lastHit = d; record('hit', src, d.mon.name, got, css(S?.el || 'physical'));
     d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
     const e = noEs ? 0 : Math.min(d.es, n); d.es -= e; d.life -= n - e;
     if (d.life <= 0) { ash(d, -d.life, S); kill(d, S); }
@@ -922,7 +935,7 @@ export function initScene(el, api) {
     minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
   }
   function kill(d, S) {
-    d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; record('kill', S?.label || '?', d.mon.name, 0, 'gold'); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -2557,7 +2570,7 @@ export function initScene(el, api) {
   // Archmage: while it is on, your non-channelling spells cost its share of your maximum mana more and gain its share of
   // their damage as lightning per 100 maximum mana
   const archmage = S => S.P.spell && !S.P.channel && !S.src && onS('Archmage')?.dmg.stats;
-  const empowered = S => S.P.spell && !S.src && S.dmg?.cost > 0 && tempest();   // a mana-costing spell of yours in its storm
+  const empowered = S => S.P.spell && !S.src && S.dmg?.cost > 0 && tempest() || null;   // a mana-costing spell of yours in its storm
   const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
   K.tempest = S => {
     const st = S.dmg.stats, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'outline', 'lightning', { a: .45, rot: .3 });
@@ -3060,7 +3073,7 @@ export function initScene(el, api) {
   addEventListener('keyup', e => { keys[e.code] = false; unhold(e.code); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = walk = false; if (held) release(); });
   dom.addEventListener('mousemove', e => {
-    aimMouse(e); inputOf(false);
+    aimMouse(e); inputOf(false); hover = pick();
     if (orbit) { camS.yaw -= e.movementX * .006; camS.pitch = clamp(camS.pitch + e.movementY * .005, .35, 1.45); }
   });
   dom.addEventListener('mousedown', e => {
@@ -3168,7 +3181,7 @@ export function initScene(el, api) {
     }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
-    keysText();
+    keysText(); clogHtml(); targetHtml();
     // your life and energy shield (the left orb, energy shield as its ring), mana and the Spirit left unreserved (the right
     // one, with Rage), as the game shows them
     const c = sheet(), rm = rageMax(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
@@ -3308,10 +3321,27 @@ export function initScene(el, api) {
   const reachOf = d => REACH[d.atk.shape] || Math.max(d.atk.reach + .8, 2.2) * d.sc;
   const above = () => ({ x: pp.x, y: 2.5, z: pp.z });
   const GREY = '#c8c0b0';
+  function clogHtml() {
+    if (clogEl.hidden) return;
+    const tot = Object.values(byS).reduce((a, b) => a + b.n, 0) || 1, line = l => l.k === 'hit' ? `${esc(l.src)} → ${esc(l.tgt)}: <b>${short(l.n)}</b>${l.x > 1 ? ` (×${l.x})` : ''}`
+      : l.k === 'kill' ? esc(t('{0} kills {1}', l.src, l.tgt)) : l.k === 'taken' ? `${esc(l.src)} → ${esc(t('You'))}: <b>−${short(l.n)}</b>${l.x > 1 ? ` (×${l.x})` : ''}` : `${esc(l.src)}: ${esc(l.tgt)}`;
+    put(clogEl, `<b>${t('Combat log')}</b> <button class="s-clr" data-clear>${t('Reset')}</button><table>`
+      + Object.entries(byS).sort((a, b) => b[1].n - a[1].n).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${short(v.n)}</td><td>${v.x}×</td><td>${(v.n / tot * 100).toFixed(1)}%</td></tr>`).join('')
+      + `</table><p>${t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)}</p>`
+      + clog.slice(-60).reverse().map(l => `<div style="--c:${l.c}"><small>${l.at.toFixed(1)}s</small> ${line(l)}</div>`).join(''));
+  }
+  // the enemy under the cursor, else the last one hit, as the game's bar at the top of the screen: name by rarity, life, shield
+  const RARE = { normal: '#c8c8c8', magic: '#8888ff', rare: '#ffff77', unique: '#af6025' };
+  function targetHtml() {
+    const d = hover && !hover.dead ? hover : lastHit && !lastHit.dead ? lastHit : null;
+    tgtEl.hidden = !d; if (!d) return;
+    const p = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1);
+    put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div><small>${t('Lv. {0}', d.level)}</small>`);
+  }
   function hurt(n, chaos, el, crit, d) {
     if (!(n > 0)) return;
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
-    stats.taken += n; me.hurt = time; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
+    stats.taken += n; me.hurt = time; record('taken', d?.mon.name || '?', '', n, css(el === 'physical' ? 'blood' : el)); shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
     const c = el === 'physical' ? 'blood' : el;
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
@@ -3452,7 +3482,7 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
-  const blocked = () => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); };   // Cast / Curse on Block: its energy per block
+  const blocked = d => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here
@@ -3481,17 +3511,17 @@ export function initScene(el, api) {
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + st.base_parry_duration_ms / 1000 };
     } else { R.blocked = time; spray(d); }
-    blocked(); return true;
+    blocked(d); return true;
   }
   function struck(d) {
     const a = d.atk; let c = withCharms(sheet());
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
-    if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
+    if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
     if (!a.unblockable && activeBlock(d, a)) return;
-    if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
-    if (Math.random() * 100 < blockChance(c, a)) return blocked();
+    if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (Math.random() * 100 < blockChance(c, a)) return blocked(d);
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };

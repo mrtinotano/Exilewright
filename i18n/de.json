@@ -869,5 +869,8 @@
  "Purple Flame of Chayula": "Violette Flamme von Chayula",
  "Ghost Shroud": "Geisterschleier",
  "Daze": "Benommenheit",
- "{0}: nothing stored": "{0}: kein gespeicherter Schaden"
+ "{0}: nothing stored": "{0}: kein gespeicherter Schaden",
+ "Combat log": "Kampfprotokoll",
+ "{0} kills {1}": "{0} tötet {1}",
+ "You": "Du"
 }

@@ -869,5 +869,8 @@
  "Purple Flame of Chayula": "차율라의 보라색 화염",
  "Ghost Shroud": "유령 연막",
  "Daze": "혼미",
- "{0}: nothing stored": "{0}: 저장된 피해 없음"
+ "{0}: nothing stored": "{0}: 저장된 피해 없음",
+ "Combat log": "전투 기록",
+ "{0} kills {1}": "{0}(이)가 {1} 처치",
+ "You": "당신"
 }
