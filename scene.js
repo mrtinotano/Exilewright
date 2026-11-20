@@ -995,7 +995,22 @@ export function initScene(el, api) {
         me.life = gain(me.life, me.maxL, me.maxL * (s['sanguine_revelry_remnant_restore_%_permyriad_of_max_life_per_5_current_rage'] || 0) / 1e6 * k * Math.floor(me.rage / 5)); } },
     'Remnants of Kalguur': { c: 'gold', kill: s => s['ward_remnants_chance_to_spawn_orb_on_killing_enemy_%'], stun: s => s['ward_remnants_chance_to_spawn_remnant_on_stun_%'],
       stunCd: s => s.ward_remnants_spawn_remnant_on_stun_cooldown_ms, get: (s, k) => { me.ward = overflow(me.ward, me.maxW, s.ward_remnants_gain_per_globe * k); } },
+    // Into the Breach, Wildwood's Gifts: while on, a Flame of Chayula / an Ancient Bloom appears within its spawn radius of
+    // you every its interval, one of their kinds (keywords.json FlamesOfChayula, AncientBlooms): the Flames leech their %
+    // of your maximum life or mana, or grant their % of damage as extra chaos, stacking; the Blooms grant their charges to
+    // your charms, your mana flask or your life flask
+    // note: the chaos buff's 8 s and 10 stacks are the keyword's text; which kind appears is random here
+    'Into the Breach': { spawn: s => s.breach_flame_spawn_rate_ms, kinds: [
+      { c: 'blood', get: (s, k) => leechIn('life', me.maxL * s['breach_flame_life_leech_%'] / 100 * k) },
+      { c: 'cold', get: (s, k) => leechIn('mana', me.maxM * s['breach_flame_mana_leech_%'] / 100 * k) },
+      { c: 'chaos', get: (s, k) => { const n = Math.min(10, (buffs.find(b => b.name === 'chayulaFlame')?.n || 0) + 1); setBuff({ label: t('Flame of Chayula'), name: 'chayulaFlame', n, c: css('chaos'), s: 8, gain: { el: 'chaos', pct: n * s['breach_flame_chaos_addition_%'] * k } }); } }] },
+    "Wildwood's Gifts": { spawn: s => s.breach_flame_spawn_rate_ms, kinds: [
+      { c: 'gold', get: (s, k) => charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + s.ancient_gifts_charm_charges_restored * k); }) },
+      { c: 'cold', get: (s, k) => flaskGain(1, s.ancient_gifts_mana_flask_charges_restored * k) },
+      { c: 'blood', get: (s, k) => flaskGain(0, s.ancient_gifts_life_flask_charges_restored * k) }] },
   };
+  const leechIn = (r, n) => { const q = me.leech[r]; q.left += n; q.rate = q.left; };   // over one second, as Leech
+  const flaskGain = (n, k) => { const f = flasks()[n]; if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + k); };
   const OVERFLOW = 1.5;   // keywords.json Overflow: "can be recovered up to 1.5 times that maximum"
   const gain = (v, max, n) => Math.max(v, Math.min(max, v + n)), overflow = (v, max, n) => gain(v, max * OVERFLOW, n);   // what is already above the top stays
   const EL_AIL = ['ignite', 'chill', 'freeze', 'shock', 'electrocute'];   // keywords.json ElementalAilments
@@ -1007,10 +1022,10 @@ export function initScene(el, api) {
     const s = rstats(S), R = REMNANT[S.name], n = 1 + (Math.random() * 100 < (s['chance_%_to_create_additional_remnant'] || 0) ? 1 : 0);
     const reach = SIM.pickup * (1 + (s['remnant_pickup_range_+%'] || 0) / 100);
     for (let j = 0; j < n; j++) {
-      const c = j ? around(p, SIM.pickup) : { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(R.c, 2.2), fog: false }));
+      const V = R.kinds ? R.kinds[Math.floor(rnd(R.kinds.length))] : R, c = j ? around(p, SIM.pickup) : { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(V.c, 2.2), fog: false }));
       m.position.set(c.x, .5, c.z);
       thing(m, (s.base_remnant_duration_ms || SIM.lifetime * 1000) / 1000, { name: S.name, c,
-        tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, R, c); } } });
+        tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, V, c); } } });
     }
   }
   function collect(S, R, c) {
@@ -1024,7 +1039,8 @@ export function initScene(el, api) {
   // chance, its cooldown)
   function remnantOn(type, d, crit) {
     for (const S of remnantSkills()) {
-      const R = REMNANT[S.name], s = rstats(S), ok = (!R.ail || EL_AIL.some(a => d.st[a] > 0)) && (!R.bleed || d.st.bleed > 0);
+      const R = REMNANT[S.name], s = rstats(S); if (R.spawn) continue;
+      const ok = (!R.ail || EL_AIL.some(a => d.st[a] > 0)) && (!R.bleed || d.st.bleed > 0);
       if (type === 'hit') { const ms = R.every?.(s); if (ok && ms && (!R.crit || crit) && time - (remnantAt[S.name] ?? -99) >= ms / 1000) { remnantAt[S.name] = time; remnant(S, d.pos); } }
       else if (type === 'kill') { if (ok && Math.random() * 100 < (R.kill(s) || 0)) remnant(S, d.pos); }
       else if (R.stun && time - (remnantAt[S.name] ?? -99) >= (R.stunCd(s) || 0) / 1000 && Math.random() * 100 < (R.stun(s) || 0)) { remnantAt[S.name] = time; remnant(S, d.pos); }
@@ -3155,6 +3171,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     leylines(dt); bells(dt);
+    for (const S of remnantSkills()) { const R = REMNANT[S.name], s = rstats(S); if (R.spawn && time - (remnantAt[S.name] ?? -99) >= R.spawn(s) / 1000) { remnantAt[S.name] = time; remnant(S, around(pp, s.breach_flame_spawn_radius / 10)); } }   // Flames, Blooms
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
