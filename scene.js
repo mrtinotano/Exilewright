@@ -1309,7 +1309,7 @@ export function initScene(el, api) {
   // in its area; with a Frenzy Charge spent it first splits into its more copies, each hitting another enemy there and
   // bursting too. note: the bolts strike at once (their flight is a look only)
   function spearBurst(S, d) {
-    const X = S.dmg?.parts?.LightningSpearSecondaryProjectilePlayer && partOf(S, 'LightningSpearSecondaryProjectilePlayer'); if (!X) return;
+    const X = partOf(S, 'LightningSpearSecondaryProjectilePlayer'); if (!X) return;
     const copies = nearest(d.pos, S.spent ? S.dmg.stats.lightning_spear_additional_number_to_split_when_charged : 0, e => e !== d && dist(e.pos, d.pos) <= S.A);
     for (const e of copies) { fx.bolt(chest(d), chest(e), S.el, .18); hit(e, S); }
     for (const c of [d, ...copies]) for (const e of nearest(c.pos, sh(X).projectiles || 1, e => e !== c && dist(e.pos, c.pos) <= S.A)) { fx.bolt(chest(c), chest(e), 'lightning', .18); hit(e, X); }
