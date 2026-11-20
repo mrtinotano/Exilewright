@@ -1139,6 +1139,7 @@ export function initScene(el, api) {
   // duration; walking over one collects it. Its effect +%, chance for one more, delay and pickup range are the gem's stats
   // with its supports' (Remnant Potency, Harmonic / Magnetic Remnants); Selfless Remnants gives it to your allies instead
   const REMNANT = {
+    'Lingering Illusion': { c: 'arcane', get: (s, k, S) => gainCharge('power', S.label) },   // its copy's Remnant
     'Life Remnants': { c: 'blood', kill: s => s['life_remnants_chance_to_spawn_orb_on_killing_enemy_%'], every: s => s.life_remnants_spawn_remnant_on_hit_vs_enemy_every_X_ms,
       get: (s, k) => { me.life = overflow(me.life, me.maxL, s.life_remnants_gain_per_globe * k); } },
     'Mana Remnants': { c: 'lightning', ail: true, kill: s => s['mana_remnants_chance_to_spawn_orb_on_killing_enemy_with_elemental_ailment_%'], crit: true,
@@ -1198,7 +1199,7 @@ export function initScene(el, api) {
       const R = REMNANT[S.name], s = rstats(S); if (R.spawn) continue;
       const ok = (!R.ail || EL_AIL.some(a => d.st[a] > 0)) && (!R.bleed || d.st.bleed > 0);
       if (type === 'hit') { const ms = R.every?.(s); if (ok && ms && (!R.crit || crit) && time - (remnantAt[S.name] ?? -99) >= ms / 1000) { remnantAt[S.name] = time; remnant(S, d.pos); } }
-      else if (type === 'kill') { if (ok && Math.random() * 100 < (R.kill(s) || 0)) remnant(S, d.pos); }
+      else if (type === 'kill') { if (ok && Math.random() * 100 < (R.kill?.(s) || 0)) remnant(S, d.pos); }
       else if (R.stun && time - (remnantAt[S.name] ?? -99) >= (R.stunCd(s) || 0) / 1000 && Math.random() * 100 < (R.stun(s) || 0)) { remnantAt[S.name] = time; remnant(S, d.pos); }
     }
   }
@@ -1314,8 +1315,16 @@ export function initScene(el, api) {
   }
   // the Shield Wall segment between enemy d and you, the nearest
   const wallIn = d => { let best = null, k = dist(d.pos, pp);
-    for (const o of objs) if (o.segs && !o.dead) for (const q of o.segs) if (q.life > 0 && dist(d.pos, q.p) < k && segDist(q.p, d.pos, pp) < q.r + SIM.body) { best = q; k = dist(d.pos, q.p); }
+    for (const o of objs) if (o.segs && !o.dead) for (const q of o.segs) if (q.life > 0 && dist(d.pos, q.p) < k && (o.decoy || segDist(q.p, d.pos, pp) < q.r + SIM.body)) { best = q; k = dist(d.pos, q.p); }
     return best; };
+  // Lingering Illusion: while it is on, a roll leaves a copy of you where it began, for its duration, with its share of
+  // your maximum life; enemies nearer to it than to you attack it, and one they destroy drops its Remnant (a power charge)
+  function illusion(S, p) {
+    const st = S.dmg.stats, f = makeMinion(fx, 'arcane'); f.group.position.set(p.x, 0, p.z);
+    const q = { p, r: .3, life: Math.max(1, me.maxL * st['lingering_illusion_clone_base_maximum_life_%_of_owner_maximum_life'] / 100),
+      hurt(n) { if (q.life > 0 && (q.life -= n) <= 0) { e.dead = true; pop(p, .6, 'arcane'); remnant(S, p); } } };
+    const e = thing(f.group, durOf(S), { name: S.name, decoy: true, segs: [q] });
+  }
   // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
   // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
   function hatch(p) {
@@ -3135,6 +3144,7 @@ export function initScene(el, api) {
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25 }; rollCd = .7; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
+    const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
     // Trail of Caltrops: its number of drops, the first at its share of the dodge and the others at its interval after it
     const TC = onS('Trail of Caltrops'), st = TC?.dmg.stats;
     if (TC) Object.assign(move, { TC, drops: Array.from({ length: st.caltrops_on_dodge_X_triggers }, (_, k) => (st['caltrops_on_dodge_first_trigger_at_%_dodge'] + k * st['caltrops_on_dodge_trigger_interval_%_dodge']) / 100) });
