@@ -836,7 +836,7 @@ export function initScene(el, api) {
   }
   // the skill a meta gem triggers: the build's first triggerable spell (Feral Invocation: a Shapeshifting attack)
   const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.manaPer ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
-  // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power
+  // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power (per block: Cast / Curse on Block)
   // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers
@@ -1809,7 +1809,7 @@ export function initScene(el, api) {
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
-        const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy_per_monster_power_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
+        const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
@@ -3434,7 +3434,7 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
-  const blocked = () => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); };
+  const blocked = () => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here
@@ -3471,7 +3471,7 @@ export function initScene(el, api) {
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
-    if (!a.unblockable && activeBlock(d, a)) return;
+    if (!a.unblockable && activeBlock(d, a)) return event('block', pp, {});
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) return blocked();
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
