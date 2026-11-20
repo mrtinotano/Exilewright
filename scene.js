@@ -1516,7 +1516,9 @@ export function initScene(el, api) {
       const list = inside(c, R);
       for (const o of [...objs]) if (o.earth && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
-      if (S.P.empowers) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses: 2, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label), 'gold'); }
+      // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2)
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, uses = per ? Math.floor(Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0)) / per) : 2;
+      if (S.P.empowers && uses) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
       // Ancestral Cry: you embody Kaom for its duration (its more per endurance charge, which it removes): Volcanic Steps
       // every so far you travel (its shockwave), your melee Strikes and Slams Ancestrally Boosted, a Strike triggering
