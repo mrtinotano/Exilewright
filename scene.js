@@ -421,10 +421,11 @@ export function initScene(el, api) {
       }
       // shares of all damage gained as extra damage of a type, each of the damage before any of them: the buffs'; Mantra
       // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
-      // and Thrill of the Kill as lightning
+      // Thrill of the Kill and Archmage as lightning
       const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
-        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
+        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -2548,6 +2549,9 @@ export function initScene(el, api) {
   // spells gain its share of their damage as lightning. It drains its % of your maximum mana a second plus its % of the
   // mana you spend in it, added to that each second; it ends once you are out past its linger or out of mana.
   // Its empowered spells' projectiles split toward its additional targets (shoot). note: other spells' split is not simulated
+  // Archmage: while it is on, your non-channelling spells cost its share of your maximum mana more and gain its share of
+  // their damage as lightning per 100 maximum mana
+  const archmage = S => S.P.spell && !S.P.channel && !S.src && onS('Archmage')?.dmg.stats;
   const empowered = S => S.P.spell && !S.src && S.dmg?.cost > 0 && tempest();   // a mana-costing spell of yours in its storm
   const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
   K.tempest = S => {
@@ -2775,7 +2779,8 @@ export function initScene(el, api) {
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
-      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100), LP = S.dmg?.lifePerRecent,
+      const AM = archmage(S), per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent,
+        cost = (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
         life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
       // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
