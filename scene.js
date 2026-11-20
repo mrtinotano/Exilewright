@@ -463,7 +463,7 @@ export function initScene(el, api) {
   function gainBuff(S, on) {
     for (const G of S?.dmg?.gains || []) if (G.on === on) {
       const label = api.info({ name: G.name })?.label || G.name;
-      buffs = buffs.filter(b => b.label !== label); buffs.push({ label, name: G.name, c: css(G.el), s: G.time, gain: G, sup: true });
+      setBuff({ label, name: G.name, c: css(G.el), s: G.time, gain: G, sup: true });
     }
   }
   // a support's triggered skill (calc.js trig) as a skill of the scene, its hits scaled where the scene knows its base
