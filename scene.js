@@ -368,8 +368,9 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
-      // Mana Tempest, Charged Shots: their share of all damage as extra lightning
-      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0);
+      // Mana Tempest, Charged Shots, Thrill of the Kill: their share of all damage as extra lightning
+      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
+      const GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (TK ? TK['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] : 0);
       if (GL) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GL / 100;
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
@@ -672,7 +673,7 @@ export function initScene(el, api) {
       if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100)))) {
+    if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (time < me.thrill?.until ? me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] : 0) / 100)))) {
       inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
     }
@@ -774,6 +775,8 @@ export function initScene(el, api) {
   };
   function cull(d, S) {
     if (!cullable(d, S)) return false; const X = gst(S);
+    // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
+    if (X.support_thrill_of_the_kill_buff_base_duration_ms && d.st.shock > 0) { me.thrill = { X, until: time + X.support_thrill_of_the_kill_buff_base_duration_ms / 1000 }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: X.support_thrill_of_the_kill_buff_base_duration_ms / 1000 }); }
     fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
     return true;
