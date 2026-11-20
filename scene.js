@@ -1283,8 +1283,8 @@ export function initScene(el, api) {
             dot(d, { ...cur, P });
             for (const el of cur.els) if (!S.els.includes(el)) dot(d, { ...cur, P, name: cur.name + el, els: [el], dmg: { ...cur.dmg, dot: { [el]: ts.active_skill_base_elemental_damage_to_deal_per_minute / 60 * scale } } });
           }
-          if ((tk -= dt) <= 0) { tk = .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); }
-        } else if ((tk -= dt) <= 0) { tk = o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
+        }
+        if ((tk -= dt) <= 0) { tk = DOT ? .4 : o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); if (!DOT) area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
       } });
   }
   // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
