@@ -2809,6 +2809,20 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
+  // Stormblast Bolts: its bolts land within its secondary radius of the target and lie there charged for its duration (up
+  // to its most); a detonator explodes them in its part. note: their impact without a detonator is not simulated
+  K.stormblast = S => {
+    const st = S.dmg.stats, X = partOf(S, 'StormblastBoltsExplosionPlayer') || S, R = radOf(S, 'secondary');
+    for (let k = 0; k < (sh(S).projectiles || 1); k++) {
+      const c = around(S.at, R);
+      later(k * st.siege_cascade_fall_time_ms / 1000, () => {
+        limit(o => o.stormblast, st.stormblast_maximum_active_bolt_count);
+        const m = fx.orb('lightning', .12); m.position.set(c.x, .3, c.z); fx.streak(V(c.x, 6, c.z), V(c.x, .3, c.z), 'lightning', .1, .04, 1);
+        thing(m, durOf(S), { name: S.name, stormblast: true, r: .3,
+          touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; pop(c, X.A, 'lightning'); boom(c, X.A, { ...X, mult: S.mult }); } } });
+      });
+    }
+  };
   // Storm Lance: the spear lands at the target (its area), lodges and zaps an enemy within its secondary radius every
   // its frequency for its duration; a detonator unleashes its volley of bolts and ends it. With a frenzy charge spent:
   // its infused part, faster and shorter, that detonates itself at the end and leaves Shocked Ground (its third radius,
