@@ -1847,7 +1847,7 @@ export function initScene(el, api) {
     storm(S) {
       // Morgana's Tempest: the storm moves from you to the target at its speed (its more), one more allowed, with its less
       // damage and area
-      const su = S.src ? {} : S.dmg?.sum || {}, MV = su.support_storm_base_movement_speed, to = S.at;
+      const su = S.src ? {} : S.dmg?.sum || {}, MV = su.support_storm_base_movement_speed && su.support_storm_base_movement_speed / 10 * (1 + su['support_approaching_storms_movement_speed_+%_final'] / 100), to = S.at;
       if (MV) S = { ...S, mult: S.mult * (1 + su['support_approaching_storms_damage_+%_final'] / 100) };
       const P = S.P, c = MV ? { x: pp.x, z: pp.z } : S.at, st = S.dmg?.stats || {}, dur = sh(S).duration || Math.min(P.dur || 4, 10), shrink = MV ? Math.sqrt(1 + su['support_approaching_storms_area_of_effect_+%_final'] / 100) : 1;
       if (P.wind) return vortex(S, c, S.A, dur);
@@ -1874,7 +1874,7 @@ export function initScene(el, api) {
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
-          if (MV) { const l = dist(c, to), v = Math.min(l, MV / 10 * (1 + su['support_approaching_storms_movement_speed_+%_final'] / 100) * dt); if (l > .01) { c.x += (to.x - c.x) / l * v; c.z += (to.z - c.z) / l * v; out.move(c); } }
+          if (MV) { const l = dist(c, to), v = Math.min(l, MV * dt); if (l > .01) { c.x += (to.x - c.x) / l * v; c.z += (to.z - c.z) / l * v; out.move(c); } }
           for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
           if (wet) for (const d of inside(c, Z)) d.wet = { ...wet, until: time + .2 };
           if ((tk -= dt) > 0) return; tk = (every + rnd(-vary, vary)) / (fi ? 1 + (st['firestorm_bolt_frequency_+%_if_consumed_fire_infusion'] || 0) / 100 : 1);
