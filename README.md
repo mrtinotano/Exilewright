@@ -39,7 +39,8 @@ the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top
 Maxroll, poe2db; pastebin and rentry to import) through `serve.py`, plus JSON files; Import also takes the builds saved
 in Path of Building 2 on the same computer (how a character of your account gets here: import it there, save it, pick
 it in Import). Items copied in the game with Ctrl+C can
-be pasted in Equipment. **.build file for the game** (in Export) saves the build for the in-game build planner (0.5+, folder
+be pasted in Equipment. Equipment has the game's two weapon sets (tabs I and II, a key swaps them in the Simulator):
+the passives of each set and the stats follow the set in hand; a two-handed weapon shows in both hands, as in the game. **.build file for the game** (in Export) saves the build for the in-game build planner (0.5+, folder
 `Documents/My Games/Path of Exile 2/BuildPlanner`): tree, ascendancy and gems with supports; gem levels and gear
 travel as notes, since the format has no fields for them (layout as Path of Building 2 writes it).
 
@@ -62,6 +63,9 @@ of a skill, toughness, life, energy shield, armour, evasion, resistances…
   the build and ranks them by what they change. Without a login the site only takes simple searches, so the app asks
   for the items with the most of each of the best modifiers; the weighted search Path of Building makes opens on the
   site with one link (it runs there when you are logged in).
+  Or *Chosen modifiers*: the item must have every modifier picked, each with at least the value typed (the ones of
+  the item worn to start from); the site lists them cheapest first. The Equipment tab has the same as one button under
+  an item: the same or better, up to a price.
   The app keeps to the site's rate limits, so a search takes a few seconds.
 
 **Equipment comparison** (Settings) says whether an item is better than what the character wears: hold the pointer over an item in
