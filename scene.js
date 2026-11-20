@@ -1360,10 +1360,10 @@ export function initScene(el, api) {
   // non-melee projectile attack consumes one of each kind: its projectiles (Gemini Surge's: its number per use; not the
   // ones that split or fork) burst at the end of their flight with that skill's hit of the kind (its part, else its own).
   // note: the level of the triggered skill is not in the data: the attack's own
-  const SURGE_OF = { fire: 'Elemental Surge', cold: 'Elemental Surge', lightning: 'Elemental Surge', chaos: 'Chaotic Surge' }, surgeD = {};
-  const surgeDmg = (name, level) => { const k = name + level, c = surgeD[k]; return c && time - c.at < 1 ? c.D : (surgeD[k] = { at: time, D: api.damage?.({ name, level, supports: [] }) }).D; };
+  const SURGE_OF = { fire: 'Elemental Surge', cold: 'Elemental Surge', lightning: 'Elemental Surge', chaos: 'Chaotic Surge' };
+  const surgeDmg = (name, level = 1) => api.damage?.({ name, level, supports: [] });
   function surgeGain(name, el, n) {
-    const st = n > 0 && api.damage?.({ name, level: 1, supports: [] })?.stats; if (!st) return;
+    const st = n > 0 && surgeDmg(name)?.stats; if (!st) return;
     surges = surges.filter(s => s.until > time);
     for (let have = surges.filter(s => s.name === name && s.el === el).length; n > 0 && have < st.maximum_number_of_instilling_stacks; n--, have++)
       surges.push({ name, el, until: time + st.base_skill_effect_duration / 1000 });
@@ -1372,8 +1372,8 @@ export function initScene(el, api) {
   const chargesSpent = n => { const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n); };
   const gemini = () => { const U = sheet().surge?.reload, el = (me.gem = !me.gem) ? 'cold' : 'fire'; if (U) surgeGain('Gemini Surge', el, U[el]); };
   function surgeTake() {
-    surges = surges.filter(s => s.until > time); const took = [];
-    for (const s of [...surges]) if (!took.some(o => o.name === s.name && o.el === s.el)) { took.push({ ...s, n: s.name === 'Gemini Surge' ? api.damage?.({ name: s.name, level: 1, supports: [] })?.stats.surge_can_apply_to_X_number_of_projectiles_per_skill_use : Infinity }); surges.splice(surges.indexOf(s), 1); }
+    const took = [], G = surgeDmg('Gemini Surge')?.stats.surge_can_apply_to_X_number_of_projectiles_per_skill_use;
+    surges = surges.filter(s => s.until > time && (took.some(o => o.name === s.name && o.el === s.el) || !took.push({ ...s, n: s.name === 'Gemini Surge' ? G : Infinity })));
     return took;
   }
   function surgeBlast(S, s, p) {
@@ -3252,8 +3252,8 @@ export function initScene(el, api) {
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
     for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${Math.floor(T.energy)}/${Math.ceil(T.need)}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '')); }   // Trinity: its Affinity, fire / cold / lightning
-    for (const s of surges.filter((s, i, a) => s.until > time && a.findIndex(o => o.name === s.name && o.el === s.el) === i))
-      b.push(one(api.info({ name: s.name }).icon, css(s.el), `${api.info({ name: s.name }).label}: ${t(s.el[0].toUpperCase() + s.el.slice(1))}`, surges.filter(o => o.name === s.name && o.el === s.el && o.until > time).length, s.until - time));
+    const sg = {}; for (const s of surges) if (s.until > time) (sg[s.name + s.el] ??= { s, n: 0 }).n++;
+    for (const { s, n } of Object.values(sg)) { const I = api.info({ name: s.name }); b.push(one(I.icon, css(s.el), `${I.label}: ${t(s.el[0].toUpperCase() + s.el.slice(1))}`, n, s.until - time)); }
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
