@@ -39,8 +39,8 @@ const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic War
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
-const MAIM = { move: 30, evasion: 15, time: 4 };
-const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
 const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
 const IMMUNE = 1;                         // note: keywords.json Consume: a consumed ailment cannot be inflicted again for 1 s
@@ -150,7 +150,8 @@ export function initScene(el, api) {
     const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
-  const sh = S => S.dmg?.shape || {};   // the gem's own chains, projectiles and times (calc.js)
+  const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
+  const sh = S => S.dmg?.shape || {}, durOf = S => sh(S).duration || (S.dmg?.stats?.base_skill_effect_duration || 0) / 1000;   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
   // What is used by hand gets a slot (calc.js byHand); persistent skills are on while their spirit is reserved, so the
@@ -1259,7 +1260,6 @@ export function initScene(el, api) {
       },
       end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
   }
-  // o: its speed, hit interval, share of the damage and how far it seeks (Archon of Chayula's)
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c); let cur = S, tk = .2;
     const e = thing(g, dur, { name: S.name,
@@ -1481,8 +1481,8 @@ export function initScene(el, api) {
       if (every) {
         const n = charges.endurance; charges.endurance = 0;
         me.kaom = { S, walked: 0, every: every / 10, more: st.ancestral_cry_empowered_attacks_strike_X_additional_enemies || 0, X: partOf(S, 'AncestralCryProjectilePlayer'),
-          until: time + (sh(S).duration || (st.base_skill_effect_duration || 0) / 1000) * (1 + (st['ancestral_cry_duration_+%_final_per_removable_endurance_charge'] || 0) * n / 100) };
-        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('fire'), s: me.kaom.until - time });
+          until: time + durOf(S) * (1 + (st['ancestral_cry_duration_+%_final_per_removable_endurance_charge'] || 0) * n / 100) };
+        setBuff({ label: S.label, name: S.name, c: css('fire'), s: me.kaom.until - time });
       }
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
@@ -1700,7 +1700,7 @@ export function initScene(el, api) {
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       if (P.repeats) { empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n: 2 + S.spent, label: S.label, name: S.name, s: 12 }); say(t('{0}: your next skill repeats {1} times', S.label, 2 + S.spent), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
-      else { buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
+      else { setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
     },
     area(S) {
       const P = S.P, R = S.A; let c = S.at;
@@ -1708,7 +1708,7 @@ export function initScene(el, api) {
       if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
         const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
         thing(holder(pp), P.dur, { off: () => dec.remove() });
-        buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css(S.el), s: P.dur }); say(t('{0} active', S.label), S.el);
+        setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur }); say(t('{0} active', S.label), S.el);
         return;
       }
       if (P.consumes.length && S.R >= 6) {   // strikes only the enemies that carry the state, wherever they stand in range
@@ -1834,9 +1834,9 @@ export function initScene(el, api) {
   // its time; you gain its % of damage as fire and its Rage regeneration
   // note: without Bear form in the scene, its effects are never suppressed; a small meteor's area the data does not give: 1 m
   K.calamity = S => {
-    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000, L = partOf(S, 'WalkingCalamityMeteorLargePlayer'), last = new Map(); let tk = 0, n = 0;
+    const st = S.dmg?.stats || {}, dur = durOf(S), L = partOf(S, 'WalkingCalamityMeteorLargePlayer'), last = new Map(); let tk = 0, n = 0;
     me.calamity = { until: time + dur, rage: st.walking_calamity_base_rage_regeneration_per_minute || 0 };
-    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('fire'), s: dur, sup: true, gain: { el: 'fire', pct: st['walking_calamity_non_skill_base_all_damage_%_to_gain_as_fire'] || 0 } });
+    setBuff({ label: S.label, name: S.name, c: css('fire'), s: dur, sup: true, gain: { el: 'fire', pct: st['walking_calamity_non_skill_base_all_damage_%_to_gain_as_fire'] || 0 } });
     fx.ring(pp, .3, S.A, 'fire', .6); shake = .3;
     thing(holder(pp), dur, { name: S.name, tick(dt) {
       if ((tk -= dt) > 0) return;
@@ -1852,17 +1852,17 @@ export function initScene(el, api) {
   // (its bolts at random intervals within its least and most, each in its secondary radius), its meteor (its fire part,
   // after its time to impact) or its static field (its lightning part's pulses, then its final strike)
   K.apocalypse = S => {
-    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000, F = partOf(S, 'ApocalypseFirePlayer'), L = partOf(S, 'ApocalypseLightningPlayer'), LF = partOf(S, 'ApocalypseLightningFinalStrikePlayer');
-    const r2 = (S.G?.radius2 || .8); let tk = 0;
-    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('lightning'), s: dur });
+    const st = S.dmg?.stats || {}, dur = durOf(S), F = partOf(S, 'ApocalypseFirePlayer'), L = partOf(S, 'ApocalypseLightningPlayer'), LF = partOf(S, 'ApocalypseLightningFinalStrikePlayer');
+    const r2 = S.G?.radius2 || .8; let tk = 0;
+    setBuff({ label: S.label, name: S.name, c: css('lightning'), s: dur });
     const one = [
       c => { let w = 0; for (let k = 0; k < (st.unleash_blizzard_number_of_bolts || 1); k++) { w += rnd(st.unleash_blizzard_minimum_bolt_frequency_ms, st.unleash_blizzard_maximum_bolt_frequency_ms) / 1000; const q = around(c, 2); later(w, () => { fx.streak(V(q.x + 2, 13, q.z - 1.5), V(q.x, 0, q.z), 'cold', .12, .06, 1.8); later(.16, () => { pop(q, r2, 'cold'); area(q, r2, S); }); }); } },
-      F && (c => { const w = (F.dmg.stats.unleash_meteor_time_till_impact_ms || 2000) / 1000; fx.telegraph(c, F.A, 'fire', w); later(w, () => { pop(c, F.A, 'fire'); boom(c, F.A, F); shake = .3; }); }),
-      L && (c => { const n = L.dmg.stats.unleash_static_field_number_of_pluses || 1, w = (L.dmg.stats.unleash_static_field_time_till_final_strike_ms || 3000) / 1000, dec = fx.decal(c, L.A, 'rune', 'lightning', { a: .5, spin: .5 });
+      F && (c => { const w = F.dmg.stats.unleash_meteor_time_till_impact_ms / 1000; fx.telegraph(c, F.A, 'fire', w); later(w, () => { pop(c, F.A, 'fire'); boom(c, F.A, F); shake = .3; }); }),
+      L && (c => { const n = L.dmg.stats.unleash_static_field_number_of_pluses || 1, w = L.dmg.stats.unleash_static_field_time_till_final_strike_ms / 1000, dec = fx.decal(c, L.A, 'rune', 'lightning', { a: .5, spin: .5 });
         for (let k = 0; k < n; k++) later(k * w / n, () => area(c, L.A, L)); later(w, () => { dec.remove(); fx.bolt(V(c.x, 14, c.z), V(c.x, 0, c.z), 'lightning', .3, .12, .5); if (LF) boom(c, L.A, LF); }); }),
     ].filter(Boolean);
     thing(holder(pp), dur, { name: S.name, tick(dt) {
-      if ((tk -= dt) > 0) return; tk = (st.unleash_the_elements_base_trigger_frequency_ms || 750) / 1000;
+      if ((tk -= dt) > 0) return; tk = st.unleash_the_elements_base_trigger_frequency_ms / 1000;
       const d = near(pp, S.A); if (d) one[Math.floor(rnd(one.length))]({ x: d.pos.x, z: d.pos.z });
     } });
   };
@@ -1870,13 +1870,13 @@ export function initScene(el, api) {
   // at its interval Chayula's Will, a chaos tornado that seeks the enemies within its secondary radius at its speed and
   // hits in its area at its interval
   K.chayula = S => {
-    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000; let tk = 0;
+    const st = S.dmg?.stats || {}, dur = durOf(S); let tk = 0;
     me.chayula = { until: time + dur, more: st['archon_of_chayula_physical_and_chaos_damage_+%_final'] || 0, wither: st['archon_of_chayula_withered_on_hit_for_4_seconds_%_chance'] || 0 };
-    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('chaos'), s: dur });
+    setBuff({ label: S.label, name: S.name, c: css('chaos'), s: dur });
     fx.ring(pp, .3, 3, 'chaos', .6);
     thing(holder(pp), dur, { name: S.name, tick(dt, e) {
-      if ((tk -= dt) > 0) return; tk = (st.archon_of_chayula_spawn_chaos_tornado_interval_ms || 3000) / 1000;
-      vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: (st.archon_chayula_storm_movement_speed || 13) / 10, every: (st.archon_of_chayula_tornado_attack_interval_ms || 400) / 1000, mult: 1, seek: S.G?.radius2 || 9 });
+      if ((tk -= dt) > 0) return; tk = st.archon_of_chayula_spawn_chaos_tornado_interval_ms / 1000;
+      vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: st.archon_chayula_storm_movement_speed / 10, every: st.archon_of_chayula_tornado_attack_interval_ms / 1000, mult: 1, seek: S.G?.radius2 || 9 });
     } });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
@@ -1888,7 +1888,7 @@ export function initScene(el, api) {
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
     const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
     g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
-    thing(g, sh(S).duration || (st.base_skill_effect_duration || 0) / 1000, { name: S.name, banner: give, R, c, tick(dt) { flag.rotation.y = Math.sin(time * 2) * .15; }, off: () => ring.remove() });
+    thing(g, durOf(S), { name: S.name, banner: give, R, c, tick(dt) { flag.rotation.y = Math.sin(time * 2) * .15; }, off: () => ring.remove() });
   };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
