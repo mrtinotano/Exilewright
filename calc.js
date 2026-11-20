@@ -134,6 +134,10 @@ export function gemStats(g, sum = {}) {
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
     for (const [k, x] of Object.entries(q || {})) st[k] = (st[k] || 0) + Math.trunc(x * quality / 1000);
   const P = g.part && d.parts?.[g.part];   // a part of the gem (Earthshatter's spike): its own stats over the gem's
+  // a part converting its damage itself: its conversion instead of the gem's (Elemental Sundering's fire and lightning
+  // explosions, the gem's own the cold one)
+  const conv = k => k.startsWith('active_skill_base_physical_damage_%_to_convert_to_');
+  if (P && Object.keys(P.constant || {}).some(conv)) for (const k in st) if (conv(k)) delete st[k];
   if (P) Object.assign(st, P.constant, P.levels?.[level] || P.levels?.[g.level]);
   return st;
 }

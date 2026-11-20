@@ -2215,6 +2215,22 @@ export function initScene(el, api) {
       const P = S.P; let c = S.src ? S.at : S.from;
       if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
       const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
+      // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
+      // first, each an explosion of that element around the enemy (the cold one the gem's, the others its parts), up to its
+      // most, with its more damage from a Unique
+      // note: its pulse's radius is PoB2's (Skills/act_dex.lua ElementalSunderingPlayer "Pulse": 50), scaled as its explosion's;
+      // the ailments of allies and corpses are not in the scene
+      const ES = S.dmg?.stats?.elemental_sundering_number_of_explosion_allowed;
+      if (ES) {
+        const st = S.dmg.stats, pr = 5 * S.A / (st.active_skill_base_area_of_effect_radius / 10), by = { freeze: S, ignite: partOf(S, 'ElementalSunderingFirePlayer'), shock: partOf(S, 'ElementalSunderingLightningPlayer') };
+        fx.ring(c, .3, pr, S.el, .4, { a: .6 }); let n = ES;
+        for (const d of inside(c, pr).sort((p, q) => dist(p.pos, c) - dist(q.pos, c))) for (const s of ['freeze', 'shock', 'ignite']) if (n > 0 && has(d, s)) {
+          n--; clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true);
+          const X = by[s], p = { x: d.pos.x, z: d.pos.z }, gm = d.stat.rarity === 'unique' ? 1 + st['elemental_sundering_damage_+%_final_if_created_from_unique'] / 100 : 1;
+          later(.1, () => { pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * gm }, { noPay: true }); });
+        }
+        return;
+      }
       fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
       fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
       for (const d of inside(c, R)) later(dist(d.pos, c) / R * dur, () => hit(d, S));   // the wave reaches the near ones first
