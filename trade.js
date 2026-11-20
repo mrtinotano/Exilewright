@@ -104,7 +104,7 @@ async function statIndex() {
   // item's total of it, any other as a normal, crafted, fractured or desecrated modifier alike
   const idsOf = l => l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
     : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
-  return { known, desecrated, total, idsOf };
+  return { known, desecrated, idsOf };
 }
 export async function withIds(wants) {
   const { known, desecrated } = await statIndex();
@@ -269,7 +269,7 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
 // having it), of its kind of item (`base`: of its base; a unique: that unique), up to the price. note: its implicits
 // and runes are not asked: the data has no trade stat for them. The cheapest `read` of them are
 // read and ranked by how far over the item's own numbers their lines go (the mean of theirs / its), the first `n` shown.
-// -> { found: [{ ...listing, up (that mean - 1) }] best first, total, body (the search, to open on the site), left (lines the site has no stat for) }
+// -> { found: [{ ...listing, up (that mean - 1) }] best first, body (the search, to open on the site), left (lines the site has no stat for) }
 const lineKey = l => l.hash ?? 'd:' + l.en;
 export async function findBetter({ league, item, base, price, level, state, read = 30, n = 10, tick }) {
   const { known, desecrated } = await statIndex(), lines = priceLines(item).filter(l => l.varies)
@@ -288,7 +288,7 @@ export async function findBetter({ league, item, base, price, level, state, read
     }
   }
   found.sort((a, b) => b.up - a.up);
-  return { found: found.slice(0, n), total: s.total, body, left: lines.length - asked.length };
+  return { found: found.slice(0, n), body, left: lines.length - asked.length };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
