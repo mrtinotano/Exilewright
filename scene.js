@@ -365,6 +365,7 @@ export function initScene(el, api) {
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
+      if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       // Trinity: more elemental damage per 30 Affinity of any type (its text; the stat's name says 50); a hit dealing
       // elemental damage gains Affinity of its highest elemental type and loses some of the others
       const TR = !S.src && trinity();
@@ -611,6 +612,7 @@ export function initScene(el, api) {
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
+    if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const UA = unboundS(); if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
     siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
@@ -656,23 +658,23 @@ export function initScene(el, api) {
   // like freeze, only from skills that say so. o: { crit, stunX } of the hit.
   // note: freeze buildup is measured against poise, as Path of Building 2 does (the glossary says Ailment Threshold)
   function afflict(d, S, raw, o = {}) {
-    const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
+    const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
     if (x('fire') && S.els.includes('fire') && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       d.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
-      if (AL.ignite || roll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
+      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (x('lightning') && !N.shock && (AL.shock || roll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100)))) {
+    if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100)))) {
       inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
     }
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', x('cold') * GC.FreezeDamageScale * A.freeze * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
-    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
     if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
@@ -2377,6 +2379,14 @@ export function initScene(el, api) {
     }
     if (C) ready.push(time + C / 1000);
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
+    // Unbound Avatar: usable at its Unbound Fury, which it consumes to make you Unbound for its duration: its more elemental
+    // damage, elemental ailment chance and freeze / electrocute buildup
+    const UF = !auto && S.dmg?.stats?.ailment_bearer_required_stacks_to_use;
+    if (UF) {
+      if ((me.fury || 0) < UF) { toast(t('{0} needs {1} Unbound Fury', S.label, UF)); return false; }
+      const st = S.dmg.stats; me.fury = 0;
+      me.unbound = { until: time + durOf(S), more: 1 + st['ailment_bearer_elemental_damage_+%_final'] / 100, chance: 1 + st['unbound_ailment_elemental_ailment_chance_+%_final'] / 100, build: 1 + st['unbound_ailment_hit_damage_elemental_immobilisation_multiplier_+%_final'] / 100 };
+    }
     // Spell Totem: it consumes its number of Power and Endurance Charges in any combination, for its more damage per Power
     // Charge and its more totem duration per Endurance Charge
     // note: which it takes first is the player's choice; Power Charges first here. The totem's life is not simulated
@@ -2429,6 +2439,7 @@ export function initScene(el, api) {
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
   const SEQ_GAP = 2, PARRY_WAIT = 1, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
   const trinity = () => onS('Trinity')?.dmg?.stats;
+  const unboundS = () => { const i = byName('Unbound Avatar'); return i >= 0 ? base(i)?.dmg?.stats : null; };   // Unbound Fury is gained while it is in the build
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
   const gloryOf = () => slots().map(base).filter(S => S && gloryNeed(S));
