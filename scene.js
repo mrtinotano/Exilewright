@@ -942,6 +942,7 @@ export function initScene(el, api) {
   // over one grants the Infusion for 20 s (its increased duration) or until a skill consumes it, up to the most of each
   // kind, with its chance of one more (calc.js infusion). A skill that can consume one does on use (skillfx infuses),
   // its own kind first, else a Verisium one; its chance not to remove it, the power charge it may grant
+  const chanAt = {}, chanInf = {};
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
   function infRemnant(el, p) {
@@ -1099,7 +1100,11 @@ export function initScene(el, api) {
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
-    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0;
+    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0, spd = speed, burn = 0;
+    // Ball Lightning: its hits on the enemies around it at its frequency; with a Fire Infusion consumed it slows down over
+    // time, leaves Ignited Ground at its interval and explodes where it ends (its infused parts)
+    const bst = S.dmg?.stats || {}, every = bst.ball_lightning_base_hit_frequency_ms / 1000, fi = S.infs?.includes('fire') && bst.ball_lightning_infused_acceleration != null;
+    const BG = fi && partOf(S, 'BallLightningIgnitedGround'), BX = fi && partOf(S, 'BallLightningInfusedExplosionPlayer');
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -1128,11 +1133,14 @@ export function initScene(el, api) {
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
       update(dt) {
         if (P.wander) { a0 += rnd(-1, 1) * 9 * dt; dx = Math.sin(a0); dz = Math.cos(a0); m.rotation.y = a0; }
-        let stepLeft = Math.min(left, speed * dt); left -= stepLeft; trail += stepLeft;
+        if (fi) spd = Math.max(.3, spd * (1 + bst.ball_lightning_infused_acceleration / 100 * dt));
+        let stepLeft = Math.min(left, spd * dt); left -= stepLeft; trail += stepLeft;
         while (stepLeft > 0 && !q.dead) {
           const s = Math.min(.3, stepLeft); stepLeft -= s; m.position.x += dx * s; m.position.z += dz * s;
           if (!cur.fired) for (const w of objs) if (w.wall && w.fire && !w.dead && segDist(m.position, w.a, w.b) < .45) {   // through a wall of fire
-            cur = { ...cur, els: [...new Set([...cur.els, 'fire'])], el: 'fire', ail: [...new Set([...cur.ail, 'ignite'])], fired: true }; tint(m, 'fire');
+            // its added fire damage: Flame Wall's own hit as calc.js has it (note: with Flame Wall's modifiers, not the projectile's)
+            const add = w.S?.dmg?.hits?.fire, H = cur.dmg?.hits, F = H?.fire || [0, 0];
+            cur = { ...cur, els: [...new Set([...cur.els, 'fire'])], el: 'fire', ail: [...new Set([...cur.ail, 'ignite'])], fired: true, ...(add && H ? { dmg: { ...cur.dmg, hits: { ...H, fire: [F[0] + add[0], F[1] + add[1]] } } } : {}) }; tint(m, 'fire');
             say(t('{0} gains fire through {1}', S.label, w.label), 'fire'); break;
           }
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
@@ -1152,9 +1160,10 @@ export function initScene(el, api) {
         if (slow) {
           if (P.absorbs) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
-          if (S.R && (pulse -= dt) <= 0) { pulse = .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: .5 }); }
+          if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
+          if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, (BG.dmg.stats.active_skill_base_tertiary_area_of_effect_radius || 10) / 10, BG.dmg.shape?.duration || 4, BG); }
         }
-        if (left <= 0) { end(null); caltrops(S, m.position); }
+        if (left <= 0) { end(null); caltrops(S, m.position); if (BX) boom({ x: m.position.x, z: m.position.z }, (BX.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, BX); }
       },
       remove() { fx.drop(m); } };
     objs.push(q); return q;
@@ -1215,7 +1224,9 @@ export function initScene(el, api) {
       tick(dt, e) { const s = ease(Math.min(1, e.s * 5)); m.scale.set(s, s * h, s); },
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
         e.dead = true;
-        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, S.A, { ...S, self: e, src: 'crystal' }); });
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, S.A, { ...S, self: e, src: 'crystal' });
+          const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
+          if (X) boom(p, (X.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, { ...X, self: e, src: 'crystal' }); });
       },
       end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
   }
@@ -1387,14 +1398,16 @@ export function initScene(el, api) {
         return;
       }
       const fire = S.els.includes('fire'); let tk = 0;
-      fx.strip(a, b, 1.2, S.el, dur, { a: .6 });
-      if (P.earthen) return shieldWall(S, a, b, c, dur);
-      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label,
+      if (P.earthen) { fx.strip(a, b, 1.2, S.el, dur, { a: .6 }); return shieldWall(S, a, b, c, dur); }
+      // its own limit (Flame Wall's 3); a wall with damage over time burns those in it (its damage per second), else hits
+      const mine = objs.filter(o => o.wall && o.name === S.name && !o.dead); while (mine.length >= (S.dmg?.stats?.number_of_allowed_firewalls || Infinity)) mine.shift().dead = true;
+      const strip = fx.strip(a, b, 1.2, S.el, dur, { a: .6 }), burns = Object.keys(S.dmg?.dot || {}).length > 0;
+      thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label, S,
         tick(dt, e) {
           for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
-          if ((tk -= dt) > 0) return; tk = .5;
-          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) hit(d, { ...S, self: e }, { mult: .3, noPay: true });
-        } });
+          if ((tk -= dt) > 0) return; tk = burns ? .2 : .5;
+          for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) burns ? dot(d, { ...S, P: { ...S.P, dur: .3 } }) : hit(d, { ...S, self: e }, { mult: .3, noPay: true });
+        }, off: () => { strip.dur = Math.min(strip.dur, strip.t); } });   // a wall over the limit goes
     },
     curse(S) {
       const c = S.at, R = S.A;
@@ -1539,6 +1552,9 @@ export function initScene(el, api) {
       fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
       for (const d of inside(c, R)) { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; if (Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half) hit(d, S); }
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
+      // Incinerate's Fire Infusion: Ignited Ground in front of you as its channelling starts (its ground part)
+      const X = S.fresh && S.infs?.includes('fire') && infPart(S, 'fire');
+      if (X) ground('burning', { x: c.x + S.dx * R * .6, z: c.z + S.dz * R * .6 }, (X.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, X.dmg.shape?.duration || GROUND_TIME.burning, X);
     },
     wave(S) {
       const R = S.A, c = S.from;
@@ -1706,7 +1722,10 @@ export function initScene(el, api) {
       const inhib = S.dmg?.sum?.['support_inhibitor_damage_+%_final_per_charge_type_or_infusion_type'];
       if (inhib) S.mult *= 1 + inhib * (Object.values(charges).filter(Boolean).length + Object.keys(me.inf).filter(e => infNow(e).length).length) / 100;
       // the Infusions it can consume: one of each kind it names (Firestorm all three)
-      S.infs = !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
+      // (a channelled skill once as its channelling starts, keeping them while it goes on: Incinerate)
+      const going = P.channel && time - (chanAt[S.name] ?? -9) <= SIM.channelTick * 2; if (P.channel) chanAt[S.name] = time;
+      S.infs = going ? chanInf[S.name] || [] : !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
+      if (P.channel && !going) { chanInf[S.name] = S.infs; S.fresh = true; }
       const st = S.dmg?.stats || {}, arc = st['arc_damage_+%_final_from_infusion_consumption'], fs = st['firestorm_damage_+%_if_consumed_fire_infusion'];
       if (arc && S.infs.includes('lightning')) { S.mult *= 1 + arc / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
