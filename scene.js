@@ -1363,9 +1363,8 @@ export function initScene(el, api) {
   const SURGE_OF = { fire: 'Elemental Surge', cold: 'Elemental Surge', lightning: 'Elemental Surge', chaos: 'Chaotic Surge' };
   // a skill the build is granted (not one of its gems), as calc.js has it: the same object each time, for app.js's cache
   const grants = {}, granted = (name, level = 1, part) => api.damage?.(grants[name + level + part] ??= { name, level, supports: [], part });
-  const surgeDmg = granted;
   function surgeGain(name, el, n) {
-    const st = n > 0 && surgeDmg(name)?.stats; if (!st) return;
+    const st = n > 0 && granted(name)?.stats; if (!st) return;
     surges = surges.filter(s => s.until > time);
     for (let have = surges.filter(s => s.name === name && s.el === el).length; n > 0 && have < st.maximum_number_of_instilling_stacks; n--, have++)
       surges.push({ name, el, until: time + st.base_skill_effect_duration / 1000 });
@@ -1374,12 +1373,12 @@ export function initScene(el, api) {
   const chargesSpent = n => { const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n); };
   const gemini = () => { const U = sheet().surge?.reload, el = (me.gem = !me.gem) ? 'cold' : 'fire'; if (U) surgeGain('Gemini Surge', el, U[el]); };
   function surgeTake() {
-    const took = [], G = surgeDmg('Gemini Surge')?.stats.surge_can_apply_to_X_number_of_projectiles_per_skill_use;
+    const took = [], G = granted('Gemini Surge')?.stats.surge_can_apply_to_X_number_of_projectiles_per_skill_use;
     surges = surges.filter(s => s.until > time && (took.some(o => o.name === s.name && o.el === s.el) || !took.push({ ...s, n: s.name === 'Gemini Surge' ? G : Infinity })));
     return took;
   }
   function surgeBlast(S, s, p) {
-    const D = surgeDmg(s.name, S.g?.level || 1); if (!D) return;
+    const D = granted(s.name, S.g?.level); if (!D) return;
     const B = asTrig(S, { ...D, id: s.name }), id = Object.keys(D.parts || {}).find(k => k.toLowerCase().includes(s.el)), X = id ? { ...partOf(B, id), A: B.A } : B;
     fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X);
   }
