@@ -699,7 +699,7 @@ export function initScene(el, api) {
     if (CF && time - (me.cfAt ?? -99) >= CF.dmg.stats.skill_combat_frenzy_x_ms_cooldown / 1000) { me.cfAt = time; gainCharge('frenzy', CF.label); }
     // Breachlord's Rift: freezing or electrocuting breaks its share of the enemy's armour
     const BR = (a === 'freeze' || a === 'electrocute') && d.stat.armour > 0 && !(d.st.armour > 0) && S.dmg?.sum?.['support_break_%_armour_on_freeze_or_electrocute'];
-    if (BR && (d.cut = (d.cut || 0) + d.stat.armour * BR / 100) >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, { dur: BROKEN.time }); }
+    if (BR && (d.cut = (d.cut || 0) + d.stat.armour * BR / 100) >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, {}); }
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
@@ -1412,6 +1412,11 @@ export function initScene(el, api) {
           }
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
+            // Split: its first hit splits it toward that many other enemies around; the split ones split no more
+            if (D.split && !o.split) {
+              o.split = true;
+              for (const e of nearest(d.pos, D.split, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
+            }
             if (slow) hit(d, cur);
             else if (pierced < pierceN) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }
             else if (forked < (D.forks || 0)) {
