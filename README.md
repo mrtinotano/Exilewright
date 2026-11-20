@@ -121,7 +121,15 @@ critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
 speed the planner calculates for a totem, up to the build's totem limit. Minions are the game's monster their gem raises,
 at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers.
-Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Numbers that use a value of the
+Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Skills with mechanics of their own follow
+their gem's numbers too: Glory built from the enemy's Power (Banners, Hammer of the Gods, Walking Calamity), Banners and
+Rite of Restoration's Sigil buffing you while you stand in them (the Sigil gaining stages from the mana you spend there),
+Energy for Cast on X and the Invocations (centienergy per Power of the enemy, up to 1 per 10 ms of the triggered spell's use
+time), attack chains (Ice Strike, Tempest Flurry, Primal Strikes) stepping to their final strike, Seals that repeat a spell
+(Unleash), Parry and Raise Shield blocking actively, Leylines draining Runic Ward for more spell damage, Bloodstone Lances
+for Shattering Spite, Unbound Fury, Splinter Totem and Greatwood, Spectral Volley's lingering projectiles, and the Flames of
+Chayula and Ancient Blooms of Into the Breach and Wildwood's Gifts. Where the data leaves something out (a time, a count),
+the code says so in a `note:` comment. Numbers that use a value of the
 scene and not of the game (a consumed state the skill gives no number for, a minion with no damaging skill) are drawn with "~".
 
 **Settings** (its own tab): the price check shortcut, its league, seller and ±%, the equipment comparison, the keys of the Simulator, and General
