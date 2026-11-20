@@ -1350,6 +1350,15 @@ export function initScene(el, api) {
       } };
     objs.push(e); return e;
   }
+  // Plague Bearer: while on, stores its % of the poison damage you deal, up to its most; used again, it unleashes the
+  // stored damage around you, its area larger by its % per percent of its most it holds (its incubation)
+  // note: the nova deals the stored amount as one chaos hit (how the game turns it into a hit is not in its data)
+  function plagueStore(n) { const st = onS('Plague Bearer')?.dmg.stats; if (st) me.plague = Math.min(st.plague_bearer_maximum_stored_poison_damage, (me.plague || 0) + n * st['plague_bearer_gains_%_of_damage_from_inflicted_poisons'] / 100); }
+  function plague(S) {
+    const st = S.dmg.stats, n = me.plague || 0, R = S.A * Math.sqrt(1 + n / st.plague_bearer_maximum_stored_poison_damage * 100 * st['plague_bearer_nova_area_+%_final_per_incubation_%'] / 100);
+    me.plague = 0; fx.ring(pp, .2, R, 'poison', .55); say(S.label, 'poison');
+    if (n > 0) area(pp, R, { ...S, el: 'chaos', els: ['chaos'], dmg: { ...S.dmg, hits: { chaos: [n, n] } } });
+  }
   // Pain Offering: skewers your nearest minion on a bone spike; the minions within its area attack and cast faster and
   // deal more damage for its duration. note: its increased speed and damage are applied as more here
   const painOn = m => objs.find(o => o.pain && !o.dead && dist(o.pos, m.pos) <= o.R)?.pain;
@@ -1653,6 +1662,7 @@ export function initScene(el, api) {
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
       const k = S.name;
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
+      if (tog[k] && S.dmg?.stats?.plague_bearer_maximum_stored_poison_damage) return plague(S);   // Plague Bearer: used, it unleashes
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
@@ -2962,6 +2972,7 @@ export function initScene(el, api) {
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const add = (v, noEs) => { const k = v.dps * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a], a !== 'ignite');
+      if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
       d.dots.forEach(v => add(v));
       if (n > 0) {
