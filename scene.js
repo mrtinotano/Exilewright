@@ -953,10 +953,10 @@ export function initScene(el, api) {
   }
   // Siphon Elements, while on: a chance of a Remnant of that kind when you freeze (per Power of the enemy), ignite a
   // target not ignited or shock one not shocked
-  const SIPHON = { freeze: 'cold', ignite: 'fire', shock: 'lightning' };
+  const SIPHON = { freeze: ['cold', 'freezing'], ignite: ['fire', 'igniting'], shock: ['lightning', 'shocking'] };
   function siphon(a, d) {
-    const g = tog['Siphon Elements'] && gemBy('Siphon Elements'), st = g && api.damage?.(g)?.stats, el = SIPHON[a]; if (!st || !el) return;
-    if (Math.random() * 100 < (st[`infusion_remnants_%_chance_to_spawn_${el}_infusion_on_${a === 'freeze' ? 'freezing' : a === 'ignite' ? 'igniting' : 'shocking'}_an_enemy`] || 0) * (a === 'freeze' ? POWER[d.stat.rarity] || 1 : 1))
+    const g = tog['Siphon Elements'] && gemBy('Siphon Elements'), st = g && api.damage?.(g)?.stats, [el, v] = SIPHON[a] || []; if (!st || !el) return;
+    if (Math.random() * 100 < (st[`infusion_remnants_%_chance_to_spawn_${el}_infusion_on_${v}_an_enemy`] || 0) * (a === 'freeze' ? POWER[d.stat.rarity] || 1 : 1))
       infRemnant(el, d.pos, { range: st['remnant_pickup_range_+%'] });
   }
   const bombed = (M, p) => { boom(p, M.R, M.S); if (M.S.P.leaves) infRemnant(M.S.P.leaves, p); };   // Living Bomb's seed
@@ -1684,9 +1684,9 @@ export function initScene(el, api) {
     // spreads, after its delay, to the enemies within its secondary radius with the same ailment, consuming theirs; those
     // do not spread further (its proliferation depth of 2)
     snap(S) {
-      const st = S.dmg?.stats || {}, A = ['freeze', 'shock', 'ignite'], d = near(S.at, SIM.snap, e => A.some(a => e.st[a] > 0));
+      const st = S.dmg?.stats || {}, A = S.P.consumes, d = near(S.at, SIM.snap, e => A.some(a => e.st[a] > 0));
       if (!d) return toast(t('{0} finds nothing to consume ({1})', S.label, A.map(a => t(STATE[a])).join(', ')));
-      const a = A.find(a => d.st[a] > 0), el = SIPHON[a], X = a === 'freeze' ? S : partOf(S, `Snap${cap(el)}Player`) || S, spread = S.G?.radius2 || S.A * 2;
+      const a = A.find(a => d.st[a] > 0), el = SIPHON[a][0], X = a === 'freeze' ? S : partOf(S, `Snap${cap(el)}Player`) || S, spread = S.G?.radius2 || S.A * 2;
       const blast = (e, depth) => {
         if (e.dead || !(e.st[a] > 0)) return; clear(e, a);
         const Y = { ...X, mult: X.mult * (e.stat.rarity === 'unique' ? 1 + (st['snap_damage_+%_final_if_created_from_unique'] || 0) / 100 : 1) };
