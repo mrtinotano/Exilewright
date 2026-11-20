@@ -89,7 +89,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -247,7 +247,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99 }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -381,7 +381,7 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     d.by = S; damage(d, total, S);
-    if (!S.src) thornHit(S, d);
+    if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
@@ -589,7 +589,7 @@ export function initScene(el, api) {
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
-    siphon(a, d);
+    siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a);
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
@@ -1608,6 +1608,14 @@ export function initScene(el, api) {
       const out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
       // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
       const ws = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], wet = ws != null && { shock: ws, freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
+      // Icestorm: the chill and freeze of the enemies in front of you are consumed, each improving its bolts (per chill;
+      // per Power of the frozen enemy): the next bolts are its improved part, a larger area
+      // note: "in front of you" the data does not size: within cast range, on the side of the target
+      const IX = st.firestorm_improved_bolts_per_chill_consumed != null && partOf(S, 'IcestormEmpoweredPlayer'); let imp = 0;
+      if (IX) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= SIM.castRange && (d.pos.x - pp.x) * (c.x - pp.x) + (d.pos.z - pp.z) * (c.z - pp.z) > 0) {
+        if (d.st.freeze > 0) { clear(d, 'freeze'); imp += (st.firestorm_improved_bolts_per_monster_power_of_freeze_consumed || 0) * (POWER[d.stat.rarity] || 1); }
+        if (d.st.chill > 0) { clear(d, 'chill'); imp += st.firestorm_improved_bolts_per_chill_consumed; }
+      }
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
@@ -1617,10 +1625,11 @@ export function initScene(el, api) {
           for (const X of extra) { const q2 = around(c, Z); fx.bolt(V(q2.x, 12, q2.z), V(q2.x, 0, q2.z), X.el, .18, .05, .4); later(fall, () => { pop(q2, X.A, X.el); area(q2, X.A, { ...X, self: e }); }); }
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
+          const B = imp > 0 && imp-- ? IX : S, BR = B === S ? R : B.A;
           later(bolt ? 0 : fall, () => {
-            pop(q, R, S.el);
-            for (const d of inside(q, R)) if (time - (hitAt.get(d) ?? -99) >= again) { hitAt.set(d, time); hit(d, { ...S, self: e }); }
-            touch(q, R, { ...S, self: e });
+            pop(q, BR, S.el);
+            for (const d of inside(q, BR)) if (time - (hitAt.get(d) ?? -99) >= again) { hitAt.set(d, time); hit(d, { ...B, self: e }); }
+            touch(q, BR, { ...B, self: e });
           });
         },
         off: () => out.remove() });
@@ -1817,9 +1826,17 @@ export function initScene(el, api) {
       // gained as physical, and its rune on the first enemy it hits
       const FK = P.slams && S.dmg?.trig?.find(T => T.stats?.['triggered_by_fist_of_kalguur_support_%']), wc = FK && (S.dmg.cost || 0) * FK.support['support_slam_spend_%_supported_skill_cost_as_ward_for_runic_boost'] / 100;
       if (FK && me.ward >= wc) {
-        me.ward -= wc; const g = FK.support['runic_boosted_attack_damage_%_gained_as_physical'] / 100, H = S.dmg.hits, sum = j => Object.values(H).reduce((a, h) => a + h[j], 0), ph = H.physical || [0, 0];
+        me.ward -= wc; gloryPaid('ward', wc); const g = FK.support['runic_boosted_attack_damage_%_gained_as_physical'] / 100, H = S.dmg.hits, sum = j => Object.values(H).reduce((a, h) => a + h[j], 0), ph = H.physical || [0, 0];
         S.dmg = { ...S.dmg, hits: { ...H, physical: [ph[0] + sum(0) * g, ph[1] + sum(1) * g] } }; S.rune = FK;
       }
+    }
+    // Glory: its requirement to use; spent on use, unless its chance not to (or to keep 40% of it)
+    const GN = !auto && gloryNeed(S);
+    if (GN) {
+      if ((me.glory[S.name] || 0) < GN) { toast(t('{0} needs {1} Glory', S.label, Math.ceil(GN))); return false; }
+      const st = { ...S.dmg.sum, ...S.dmg.stats };
+      if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
+      hudT = 0;
     }
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
@@ -1832,7 +1849,7 @@ export function initScene(el, api) {
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
       if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
       if (fuel) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
-      me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);
+      me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) fuelUp(S, cost);
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
@@ -1872,6 +1889,26 @@ export function initScene(el, api) {
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
   }
+  // Glory (keywords.json): each skill that requires it builds its own, up to what it requires, from its Glorious actions:
+  // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
+  // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
+  const GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
+  const gloryNeed = S => { const st = S?.dmg?.stats || {}, X = S?.dmg?.sum || {}, n = st.active_skill_requires_X_glory ?? X.active_skill_requires_X_glory; return n ? n * (1 + (X['support_glory_required_+%_final'] || st['support_glory_required_+%_final'] || 0) / 100) : 0; };
+  const gloryOf = () => slots().map(base).filter(S => S && gloryNeed(S));
+  function gloryAdd(S, n) {
+    if (!(n > 0) || (!/Banner/.test(S.name) && objs.some(o => o.name === S.name && !o.dead))) return;
+    const max = gloryNeed(S), v = me.glory[S.name] || 0; if (v >= max) return;
+    me.glory[S.name] = Math.min(max, v + n); me.gloryAt[S.name] = time; hudT = 0;
+  }
+  function glory(d, ev) {
+    for (const S of gloryOf()) {
+      const st = { ...S.dmg.sum, ...S.dmg.stats }, k = (st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0) + (st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0);
+      const seen = d.gloryAt ||= {}; if (!k || time - (seen[S.name] ?? -9) < GLORY_EVERY) continue;
+      seen[S.name] = time; gloryAdd(S, k / 100 * (POWER[d.stat.rarity] || 1));
+    }
+  }
+  // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
+  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = { ...S.dmg.sum, ...S.dmg.stats }; gloryAdd(S, n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
   // Incinerate gains its fuel from the mana spent on any other skill (its ms per mana), up to its most, not while it is used
   const fueling = n => time - (me.fuelAt[n] ?? -9) <= SIM.channelTick * 2;
   function fuelUp(S, mana) {
@@ -2069,8 +2106,8 @@ export function initScene(el, api) {
     put(bar, `<span class="s-belt">${flaskHtml(0)}${flaskHtml(1)}${[0, 1, 2].map(charmHtml).join('')}</span>` + (list.length ? at.map((i, k) => {
       if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
       if (i === MOVED) return `<button class="s-slot" data-k="${k}" title="${esc(t('Move'))}">${moveImg}<b>${keyLabel(k)}</b></button>`;
-      const g = gems[i], inf = api.info(g), P = prof(g, inf);
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span><b>${keyLabel(k)}</b></button>`;
+      const g = gems[i], inf = api.info(g), P = prof(g, inf), GN = gloryNeed(base(i)), gl = GN && Math.floor(me.glory[g.name] || 0);
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}${GN && gl < GN ? ' dim' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${GN ? `<i class="gl" title="${esc(t('Glory'))}">${gl}/${Math.ceil(GN)}</i>` : ''}<b>${keyLabel(k)}</b></button>`;
     }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
@@ -2222,7 +2259,7 @@ export function initScene(el, api) {
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     me.life -= left;
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
-    if (me.life < 1 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; me.life = 1; }
+    if (me.life < 1 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; gloryPaid('ward', 1 - me.life); me.life = 1; }
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -2248,7 +2285,7 @@ export function initScene(el, api) {
       // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
       // enemy, for its Ward cost
       if (T.stats?.['triggered_by_support_rune_forged_blades_%'] && d.st.armour > 0 && me.ward >= T.wardCost) {
-        me.ward -= T.wardCost; clear(d, 'armour');
+        me.ward -= T.wardCost; gloryPaid('ward', T.wardCost); clear(d, 'armour');
         const X = asTrig(S, T), n = sh(X).projectiles || T.stats.base_number_of_projectiles; say(X.label, 'physical');
         for (let k = 0; k < n; k++) { const a = k * TAU / n; shoot(X, d.pos, Math.sin(a), Math.cos(a), { seen: [d] }); }
       }
@@ -2576,6 +2613,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
+    for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
     for (const a in me.lock) me.lock[a] -= dt;

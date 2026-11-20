@@ -853,5 +853,7 @@
  "{0} detonates": "{0} detoniert",
  "{0}: the Remnant affects your allies": "{0}: Der Überrest wirkt auf Eure Verbündeten",
  "Not enough fuel for {0}": "Nicht genug Brennstoff für {0}",
- "Stage {0}": "Phase {0}"
+ "Stage {0}": "Phase {0}",
+ "Glory": "Ruhm",
+ "{0} needs {1} Glory": "{0} braucht {1} Ruhm"
 }

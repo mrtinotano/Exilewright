@@ -853,5 +853,7 @@
  "{0} detonates": "{0}引爆",
  "{0}: the Remnant affects your allies": "{0}：痕跡作用於你的友軍",
  "Not enough fuel for {0}": "燃料不足，無法使用{0}",
- "Stage {0}": "第{0}層"
+ "Stage {0}": "第{0}層",
+ "Glory": "榮耀",
+ "{0} needs {1} Glory": "{0}需要{1}榮耀"
 }
