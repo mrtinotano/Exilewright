@@ -444,7 +444,7 @@ export function initScene(el, api) {
       const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, ...(S.gains || []), { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -2663,6 +2663,23 @@ export function initScene(el, api) {
         if (++hits > st.bell_hit_limit) e.dead = true;
       } });
   }
+  // Tempest Bell: dropped at the target (its impact hit), it stays its duration, up to its most; your hits on it set off
+  // its shockwave part around it (at most once every its cooldown, up to its hit limit), each elemental ailment it has
+  // taken adding its % of the damage as that element. note: a hit of an element is an ailment of it on the bell (its
+  // ailment threshold is not simulated), and knockback's larger shockwave area is not
+  K.tbell = S => {
+    const st = S.dmg.stats, X = partOf(S, 'TempestBellShockwavePlayer'), xs = X?.dmg?.stats || {}, c = { x: S.at.x, z: S.at.z }, ail = new Set();
+    boom(c, S.A, S); limit(o => o.tbell, st.base_number_of_tempest_bells_allowed);
+    const g = holder(c), m = new THREE.Mesh(BELL, new THREE.MeshStandardMaterial({ color: 0x9fb8d8, emissive: 0x1a2a40, side: THREE.DoubleSide })); m.scale.setScalar(3); m.position.y = .8; g.add(m);
+    let hits = 0, next = 0;
+    const e = thing(g, durOf(S), { name: S.name, tbell: true, r: .8,
+      touch(by) {
+        if (!X || by.name === S.name || time < next) return; next = time + xs.bell_shockwave_cooldown_ms / 1000;
+        for (const el of ['fire', 'cold', 'lightning']) if (by.els.includes(el)) ail.add(el);
+        fx.ring(c, .3, X.A, 'ice', .35); boom(c, X.A, { ...X, self: e, gains: [...ail].map(el => ({ el, pct: xs['tempest_bell_physical_damage_%_as_elemental_per_ailment'] })) }, { soft: true });
+        if (++hits >= st.bell_hit_limit) e.dead = true;
+      } });
+  };
   // Disengage: its cone of spearpoints in front of you (its radius, its angle) as you leap back its path distance; each
   // Parried enemy it hits has the debuff consumed for its shockwave part and grants you its Frenzy Charges
   K.disengage = S => {
