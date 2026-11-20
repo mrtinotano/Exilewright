@@ -503,7 +503,7 @@ export function initScene(el, api) {
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
-    event('hit', d.pos, S, d); if (crit) event('crit', d.pos, S, d);
+    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src && P.melee) expression(d, S); }
     return true;
   }
   // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
@@ -1380,6 +1380,18 @@ export function initScene(el, api) {
     const D = surgeDmg(s.name, S.g?.level || 1); if (!D) return;
     const B = asTrig(S, { ...D, id: s.name }), id = Object.keys(D.parts || {}).find(k => k.toLowerCase().includes(s.el)), X = id ? { ...partOf(B, id), A: B.A } : B;
     fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X);
+  }
+  // Elemental Expression (the Invoker's): a melee critical hit triggers it, within its cooldown: a fiery explosion at the
+  // enemy, a bolt of lightning chaining from it or a wave of icy projectiles toward it, each as likely as your Strength,
+  // Dexterity and Intelligence (the wave's spread: a look only). note: the level of the triggered skill is not in the data: the attack's own
+  function expression(d, S) {
+    const D = sheet().expression && api.damage?.({ name: 'Elemental Expression', level: S.g?.level || 1, supports: [] });
+    if (!D || !spend({ id: 'Elemental Expression', cooldown: D.cooldown, uses: D.uses })) return;
+    const a = sheet().attrs || {}, r = Math.random() * ((a.str || 0) + (a.dex || 0) + (a.int || 0)), el = r < a.str ? 'Fire' : r < a.str + a.dex ? 'Lightning' : 'Cold';
+    const X = partOf(asTrig(S, { ...D, id: 'Elemental Expression' }), `ElementalExpression${el}Player`); if (!X) return;
+    if (el === 'Fire') boom(d.pos, X.A, X);
+    else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.stats.number_of_chains);
+    else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
   }
   // Caltrops: a projectile of the supported skill that reaches the end of its flight leaves its caltrops within its
   // secondary radius, for its duration
