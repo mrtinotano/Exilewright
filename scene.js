@@ -2432,7 +2432,8 @@ export function initScene(el, api) {
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
-      if (eaten.length) { for (const d of eaten) eat(d, 'chaos'); S.chaosX = 1 + ((PF['support_chaos_damage_+%_final_if_corpse_consumed_on_use'] || 0) + eaten.length * (PF['support_chaos_damage_+%_final_per_corpse_consumed_on_use'] || 0)) / 100; }
+      for (const d of eaten) eat(d, 'chaos');
+      S.chaosX = eaten.length && 1 + ((PF['support_chaos_damage_+%_final_if_corpse_consumed_on_use'] || 0) + eaten.length * (PF['support_chaos_damage_+%_final_per_corpse_consumed_on_use'] || 0)) / 100;
       if (S.stage != null && !P.ownStages) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
@@ -2506,7 +2507,7 @@ export function initScene(el, api) {
       // Charged Shots: every its number of uses, its share of the cost back and its share of damage as extra lightning
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
-      if (shot) S.charged = S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
+      S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
       me.mana -= cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
