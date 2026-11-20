@@ -368,8 +368,9 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
-      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest();   // Mana Tempest: its share of all damage as extra lightning
-      if (MT) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] / 100;
+      // Mana Tempest, Charged Shots: their share of all damage as extra lightning
+      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0);
+      if (GL) raw.lightning = (raw.lightning || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GL / 100;
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
       // Trinity: more elemental damage per 30 Affinity of any type (its text; the stat's name says 50); a hit dealing
@@ -2502,7 +2503,11 @@ export function initScene(el, api) {
         me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; S.cone = FS.incinerate_cone_angle;
         S.mult *= 1 + Math.min(FS.incinerate_maximum_stages, Math.floor((time - me.fuelFrom) * 1000 / FS.incinerate_gain_stage_every_x_ms)) * FS['incinerate_damage_+%_final_per_stage'] / 100;
       }
-      me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      // Charged Shots: every its number of uses, its share of the cost back and its share of damage as extra lightning
+      const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
+      const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
+      if (shot) S.charged = S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
+      me.mana -= cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
