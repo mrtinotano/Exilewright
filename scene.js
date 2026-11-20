@@ -2162,6 +2162,21 @@ export function initScene(el, api) {
     const l = st.leap_maximum_allowed_path_distance / 10;
     move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .3, h: 1.2, S, seen: new Set() };
   };
+  // Devour: a corpse or a Cullable enemy (culled) at the target and up to its number of other corpses within its area
+  // there, each restoring its life and granting a Power Charge; one beyond your reach and within its dash range you leap
+  // to, hitting its area where you land
+  // note: over how long its life is regenerated is not in the data; at once here
+  K.devour = S => {
+    const st = S.dmg?.stats || {}, C = { ...S, P: { ...S.P, culls: true } }, e = corpseAt(S.at, SIM.snap) || near(S.at, SIM.snap, d => cullable(d, C));
+    if (!e) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
+    const p = { x: e.pos.x, z: e.pos.z }, l = dist(p, pp), reach = meleeR(S) + SIM.body;
+    const eatAll = () => [e, ...dummies.filter(d => d !== e && d.corpse > 0 && dist(d.pos, p) <= S.A).slice(0, st.wyvern_devour_max_extra_corpses_to_consume)].forEach(d => {
+      if (d.corpse > 0) eat(d, S.el); else if (!cull(d, C)) return;
+      me.life = gain(me.life, me.maxL, st.wyvern_devour_life_restoration); chargeBy('power', S);
+    });
+    if (l <= reach) eatAll();
+    else if (l <= reach + st.base_melee_dash_range / 10) move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { boom(at, S.A, S); eatAll(); } };
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
