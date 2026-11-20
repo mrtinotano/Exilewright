@@ -400,9 +400,9 @@ export function initScene(el, api) {
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
-      const LX = LC && !S.src && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
       if (LC && !S.src) clear(d, 'shock');
-      if (LX && !S.conduit) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
+      const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
+      if (LX) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
         for (let k = 0; k < LX; k++) { const e = L[k % L.length]; later(.1 * (k + 1), () => { if (!e.dead) { fx.bolt(V(e.pos.x, 12, e.pos.z), V(e.pos.x, 0, e.pos.z), S.el, .2, .06, .5); hit(e, { ...S, src: 'conduit' }); } }); } }
       if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
