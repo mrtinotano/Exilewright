@@ -319,7 +319,18 @@ export function initScene(el, api) {
     stats.dealt += Math.min(n, d.life + (noEs ? 0 : d.es));
     d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
     const e = noEs ? 0 : Math.min(d.es, n); d.es -= e; d.life -= n - e;
-    if (d.life <= 0) kill(d, S);
+    if (d.life <= 0) { ash(d, -d.life, S); kill(d, S); }
+  }
+  // Herald of Ash: an attack (not a herald's) that overkills an enemy by its share of its maximum life explodes there,
+  // its area Burning the other enemies in it for its share of the overkill per minute, for its duration
+  function ash(d, over, S) {
+    const H = S?.P?.attack && S.src !== 'herald' && onS('Herald of Ash'), st = H && H.dmg.stats;
+    if (!st || over < d.max * st['herald_of_ash_overkill_threshold_%'] / 100) return;
+    const p = { x: d.pos.x, z: d.pos.z }; pop(p, H.A, 'fire'); say(t('{0} explodes on the kill', H.label), 'fire');
+    for (const e of inside(p, H.A)) if (e !== d) {
+      const v = { s: durOf(H), name: H.name, label: H.label, S: H, el: 'fire', dps: takes(e, 'fire', over * st['herald_of_ash_burning_%_overkill_damage_per_minute'] / 100 / 60, false) };
+      const o = e.dots.find(x => x.name === H.name); if (o) Object.assign(o, v); else e.dots.push(v);
+    }
   }
   function pay(d, S, s, consumed) {
     const c = PIP[s];
@@ -877,7 +888,7 @@ export function initScene(el, api) {
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
-      const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];
+      const T = tog[k], a = T.kind === 'herald' && k !== 'Herald of Ash' && AILMENT[T.P.el];   // Herald of Ash: ash()
       if (a && st[a] > 0) later(.1, () => herald(T, p));
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
