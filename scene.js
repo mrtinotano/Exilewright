@@ -3096,6 +3096,8 @@ export function initScene(el, api) {
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
+    if (me.ghost >= 1) b.push(one(icon('Ghost Dance'), css('ice'), t('Ghost Shroud'), Math.floor(me.ghost)));
+    if (me.aegis > 0) b.push(one(icon('Sorcery Ward'), css('arcane'), api.info({ name: 'Sorcery Ward' }).label, Math.round(me.aegis)));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
     if (charge) { const P = base(charge.i)?.P, k = Math.min(1, charge.s / (P?.perfect ? 1 : 1.6)); b.push(`<span class="s-txt" style="--c:${P?.perfect && Math.abs(charge.s - 1) < .2 ? '#fff' : css('gold')}">${t('Charging {0}%', Math.round(k * 100))}</span>`); }
     return b.join('');
@@ -3363,9 +3365,11 @@ export function initScene(el, api) {
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {};
     for (const el in a.hits) {
-      const [lo, hi] = a.hits[el], got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
+      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
+      if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
+    if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
@@ -3634,6 +3638,15 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     leylines(dt); bells(dt); boils(); regulation();
+    // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
+    // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when
+    // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
+    const SW = onS('Sorcery Ward')?.dmg.stats, GD = onS('Ghost Dance')?.dmg.stats;
+    if (!SW) me.aegis = 0; else if (time - (me.aegisAt ?? -99) >= SW.aegis_recharge_delay_ms / 1000) me.aegis = ((c.armour || 0) + (c.evasion || 0)) * SW['aegis_unique_shield_max_value_from_%_armour_evasion'] / 100;
+    if (!GD) me.ghost = 0; else {
+      me.ghost = Math.min(GD.ghost_dance_max_stacks, (me.ghost || 0) + dt * 1000 / GD.base_cooldown_modifiable_repeat_interval_ms);
+      if (time - (me.ghostAt ?? -99) <= RECENT) me.es = Math.min(me.maxE, me.es + (c.evasion || 0) * GD['skill_base_ghost_dance_grants_%_evasion_as_es_regeneration_per_minute_if_have_lost_ghost_dance_shroud_recently'] / 100 / 60 * dt);
+    }
     if (me.demon) { me.life -= demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60 * dt; if (me.life <= 1) { me.life = 1; demonOff(); } }
     const MB = magma()?.dmg.stats; me.lava = MB ? Math.min(1, (me.lava || 0) + dt * 1000 / (MB.igneous_shield_charge_up_time_ms * (1 + MB['igneous_shield_charge_up_time_+%'] / 100))) : 0;
     for (const S of remnantSkills()) { const R = REMNANT[S.name], s = rstats(S); if (R.spawn && time - (remnantAt[S.name] ?? -99) >= R.spawn(s) / 1000) { remnantAt[S.name] = time; remnant(S, around(pp, s.breach_flame_spawn_radius / 10)); } }   // Flames, Blooms
