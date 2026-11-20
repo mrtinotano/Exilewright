@@ -2670,6 +2670,26 @@ export function initScene(el, api) {
         if (++hits >= st.bell_hit_limit) e.dead = true;
       } });
   }
+  // Explosive Spear: its spear lodges where it lands (up to its most) and explodes in its part at the end of its
+  // detonation time, or at once when Detonated; a Frenzy Charge consumed explodes it on landing in its infused part: a
+  // cross of its arms (its radius long, its secondary width), with Ignited Ground (its tertiary radius, its duration).
+  // note: its piercing on the way is not simulated
+  K.espear = S => {
+    const st = S.dmg.stats, c = { x: S.at.x, z: S.at.z }, X = partOf(S, 'ExplosiveSpearExplodePlayer') || S, I = S.spent && partOf(S, 'ExplosiveSpearInfusedExplodePlayer');
+    lob(fx.arrow(S.el), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
+      if (I) {
+        const is = I.dmg.stats, L = I.A, w = is.active_skill_base_secondary_area_of_effect_radius / 10, a0 = Math.atan2(S.dx, S.dz);
+        for (const a of [a0, a0 + Math.PI / 2]) {
+          const u = { x: Math.sin(a) * L, z: Math.cos(a) * L }, p = { x: c.x - u.x, z: c.z - u.z }, q = { x: c.x + u.x, z: c.z + u.z };
+          fx.strip(p, q, w * 2, 'fire', .4, { a: .8 }); for (const d of dummies) if (!d.dead && segDist(d.pos, p, q) <= w) hit(d, I);
+        }
+        return ground('burning', c, is.active_skill_base_tertiary_area_of_effect_radius / 10, durOf(I), I);
+      }
+      limit(o => o.espear, st.base_number_of_remote_spear_mines_allowed);
+      const m = fx.arrow(S.el); m.position.set(c.x, .4, c.z); m.rotation.x = -1.1;
+      const e = thing(m, st.base_skill_detonation_time / 1000, { name: S.name, espear: true, r: .4, touch(by) { if (by.P.detonator && by.name !== S.name) e.s = e.dur; }, end: () => { pop(c, X.A, 'fire'); boom(c, X.A, X); } });
+    });
+  };
   // Tempest Bell: dropped at the target (its impact hit), it stays its duration, up to its most; your hits on it set off
   // its shockwave part around it (at most once every its cooldown, up to its hit limit), each elemental ailment it has
   // taken adding its % of the damage as that element. note: a hit of an element is an ailment of it on the bell (its
@@ -3000,7 +3020,7 @@ export function initScene(el, api) {
       const sv = S.spent && st['spiral_volley_damage_+%_final_when_frenzy_charges_consumed'];
       if (sv) { S.mult *= (1 + sv / 100) * (1 + S.spent * st['spiral_volley_damage_+%_final_per_frenzy_charge_consumed'] / 100); S.addChains = S.spent * st.spiral_volley_X_chains_per_frenzy_charge_consumed; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
-      if (!inhib) for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; chargesSpent(charges[c]); charges[c] = 0; }
+      if (!inhib) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n); charges[c] -= n; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
