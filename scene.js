@@ -643,7 +643,7 @@ export function initScene(el, api) {
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - (C?.res[el] || 0) * k;
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u > time)).length : 0;
-    return enemyTakes(st, el, r, isHit) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + BROKEN.taken / 100 : 1) * (1 + W * WITHER.per / 100);
+    return enemyTakes(st, el, r, isHit) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) / 100 : 1) * (1 + W * WITHER.per / 100);
   }
   // What one hit does with ailments, as the game rolls it: its damage before the enemy's mitigation (raw, per type) against the
   // enemy's Elemental Ailment Threshold (chance to shock, flammability for ignite, chill magnitude) and poise (freeze and heavy
@@ -1629,7 +1629,17 @@ export function initScene(el, api) {
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
-        slammed(S, c, R); boom(c, R, S); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        // Sunder: a sequence of its areas in front of you, each larger by its step, up to its number of enemies in each
+        // releasing its shockwave (its part); a hit on fully broken armour Sunders it (its more physical damage taken)
+        const SW = S.dmg?.stats?.sunder_wave_max_steps;
+        if (SW) { const ss = S.dmg.stats, X = partOf(S, 'SunderShockwavePlayer'), XR = X && radOf(X); for (let k = 0; k < SW; k++) later(k * .12, () => {
+          const r = R + k * ss['sunder_wave_radius_+_per_step'] / 10, q = { x: c.x + S.dx * R * 1.8 * k, z: c.z + S.dz * R * 1.8 * k };
+          for (const d of inside(q, r)) if (d.st.armour > 0) d.sunder = { pct: ss.sunder_armor_break_extra_magnitude, until: time + durOf(S) };
+          if (X) for (const d of inside(q, r).slice(0, ss.sunder_shockwave_limit_per_cascade)) boom({ x: d.pos.x, z: d.pos.z }, XR, X, { soft: true });
+          boom(q, r, S);
+        }); }
+        else boom(c, R, S);
+        slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
         // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
         // note: the branching of its fissures is not drawn
