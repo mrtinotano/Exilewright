@@ -641,8 +641,7 @@ export function initScene(el, api) {
     decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
-    const CS = on === 'mark' && S?.called;
-    if (CS && Math.random() * 100 < (SK.skills['Called Shots'].meta_support?.['your_marks_spread_to_a_nearby_enemies_on_consume_%_chance'] || 0)) later(.1, () => { const e = unmarked(d.pos, CALLED.spread)[0]; if (e) markOn(e, S); });
+    if (on === 'mark' && S?.called && Math.random() * 100 < (SK.skills['Called Shots'].meta_support?.['your_marks_spread_to_a_nearby_enemies_on_consume_%_chance'] || 0)) later(.1, () => { const e = unmarked(d.pos, CALLED.spread)[0]; if (e) markOn(e, S); });
     for (const T of S?.dmg?.trig || []) {
       const ts = T.stats || {}, U = T.support, kind = KINDS.find(([k]) => ts[k])?.[1];
       if (!kind || T.reason && kind !== 'charged' || ON[kind] !== on) continue;   // Charged Mark only leaves ground
