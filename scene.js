@@ -309,7 +309,7 @@ export function initScene(el, api) {
     : s === 'immobilised' ? ['freeze', 'stun', 'electrocute', 'pin'].some(k => d.st[k] > 0) : d.st[s] > 0;
   const markOff = d => { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); };   // a Mark activated
   const uniqueMore = (d, pct) => d.stat.rarity === 'unique' ? 1 + (pct || 0) / 100 : 1;   // a "more if created from a Unique" stat
-  const eatFreeze = (d, S) => { clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true); };   // a Freeze consumed
+  const consume = (d, S, s) => { clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true); };   // a state consumed
   const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
   const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
   const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
@@ -393,7 +393,7 @@ export function initScene(el, api) {
     if (!o.noPay) {
       const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
-        clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true);
+        consume(d, S, s);
         const c = C[s];
         if (!c) { m += SIM.consume; continue; }
         g *= 1 + ((c.any || 0) + (c[uniq ? 'unique' : 'non_unique'] || 0)) / 100; stunX *= 1 + (c.stun || 0) / 100;
@@ -1637,14 +1637,14 @@ export function initScene(el, api) {
   function snipeBlast(S, d, p, mult) {
     if (d) hit(d, S, { mult });
     const fr = d && !d.dead && has(d, 'freeze'), X = partOf(S, fr ? 'SnipeFrozenExplosionPlayer' : 'SnipeExplosionPlayer');
-    if (fr) eatFreeze(d, S);
+    if (fr) consume(d, S, 'freeze');
     pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (fr ? uniqueMore(d, X.dmg.stats['snipe_damage_+%_final_if_created_from_unique']) : 1) }, { noPay: true });
   }
   // Fragmentation Rounds: a bolt reaching a Frozen enemy Consumes the Freeze for an explosion of shrapnel around it (its
   // part, more from a Unique). note: its bolts setting off Ice Crystals are not simulated
   function shrapnel(S, d) {
     const X = has(d, 'freeze') && partOf(S, 'FragmentationRoundsFreezeShatterPlayer'); if (!X) return;
-    eatFreeze(d, S); const p = { x: d.pos.x, z: d.pos.z };
+    consume(d, S, 'freeze'); const p = { x: d.pos.x, z: d.pos.z };
     pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * uniqueMore(d, X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique']) }, { noPay: true });
   }
   function shoot(S, from, dx, dz, o = {}) {
@@ -2274,7 +2274,7 @@ export function initScene(el, api) {
         const st = S.dmg.stats, pr = 5 * S.A / (st.active_skill_base_area_of_effect_radius / 10), by = { freeze: S, ignite: partOf(S, 'ElementalSunderingFirePlayer'), shock: partOf(S, 'ElementalSunderingLightningPlayer') };
         fx.ring(c, .3, pr, S.el, .4, { a: .6 }); let n = ES;
         for (const d of inside(c, pr).sort((p, q) => dist(p.pos, c) - dist(q.pos, c))) for (const s of ['freeze', 'shock', 'ignite']) if (n > 0 && has(d, s)) {
-          n--; clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true);
+          n--; consume(d, S, s);
           const X = by[s], p = { x: d.pos.x, z: d.pos.z }, gm = uniqueMore(d, st['elemental_sundering_damage_+%_final_if_created_from_unique']);
           later(.1, () => { pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * gm }, { noPay: true }); });
         }
