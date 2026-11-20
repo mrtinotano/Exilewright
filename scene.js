@@ -254,7 +254,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { kaom: null, calamity: null, chayula: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {} }); }
+    Object.assign(me, { kaom: null, calamity: null, chayula: null, arctic: 0, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -2328,7 +2328,7 @@ export function initScene(el, api) {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
-    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : '')); }   // Trinity: its Affinity, fire / cold / lightning
+    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic || 0) : '')); }   // Trinity: its Affinity, fire / cold / lightning
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));
@@ -2449,6 +2449,15 @@ export function initScene(el, api) {
     return Object.values(hits).some(([, hi]) => hi > 0) ? { ...T, hits } : null;
   }
   const thornX = (D, label) => { const els = Object.keys(D.hits).filter(e => D.hits[e][1] > 0); return { name: 'Thorns', label, P: THORN_P, G: {}, A: SIM.area, dmg: { attack: false, dot: {}, trig: [], ...D }, src: 'thorns', el: els.find(e => e !== 'physical') || els[0], els, ail: [], mult: 1, gm: 1, spent: 0 }; };
+  // Arctic Armour: while on, a stage every its interval you stand still, up to its most; a melee hit you take removes one
+  // for a burst of ice at the attacker, its cold damage per stage the barrier had
+  // note: that damage as the gem gives it, without your spell modifiers
+  const arcticS = () => { const i = tog['Arctic Armour'] ? byName('Arctic Armour') : -1; return i >= 0 ? base(i) : null; };
+  function arctic(d) {
+    const S = arcticS(), n = Math.floor(me.arctic || 0); if (!S || !n || d.dead) return;
+    const st = S.dmg.stats; me.arctic--; fx.ring(pp, .2, 1.6, 'cold', .35);
+    hit(d, { ...S, dmg: { ...S.dmg, hits: { cold: [st.arctic_armour_minimum_added_cold_damage_per_stack * n, st.arctic_armour_maximum_added_cold_damage_per_stack * n] } } }, { noPay: true });
+  }
   function retaliate(d) {
     const D = thornsOf(); if (!D || d.dead) return;
     fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
@@ -2528,7 +2537,7 @@ export function initScene(el, api) {
     }
     hurt(total, chaos, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
-    resolve(d); if (a.melee) retaliate(d); ailed(d, raw, dealt);
+    resolve(d); if (a.melee) { retaliate(d); arctic(d); } ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -2790,6 +2799,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
+    const AA = arcticS()?.dmg?.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, (me.arctic || 0) + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
     const TR = trinity(); if (TR) for (const e of ELEM) if (time - (me.affAt[e] ?? -99) > TR.trinity_resonance_decay_delay_ms / 1000) me.aff[e] = Math.max(0, me.aff[e] - TR.trinity_resonance_loss_per_second * dt);
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
