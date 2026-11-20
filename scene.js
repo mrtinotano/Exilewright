@@ -1545,6 +1545,7 @@ export function initScene(el, api) {
             cur = { ...cur, els: [...new Set([...cur.els, 'fire'])], el: 'fire', ail: [...new Set([...cur.ail, 'ignite'])], fired: true, ...(add && H ? { dmg: { ...cur.dmg, hits: { ...H, fire: [F[0] + add[0], F[1] + add[1]] } } } : {}) }; tint(m, 'fire');
             say(t('{0} gains fire through {1}', S.label, w.label), 'fire'); break;
           }
+          if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
@@ -2668,6 +2669,22 @@ export function initScene(el, api) {
         const p = { x: e.pos.x, z: e.pos.z }; fx.ring(p, .3, S.A, 'gold', .35); boom(p, S.A, { ...S, self: e }, { soft: true });
         for (const d of inside(p, S.A)) if ((d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
         if (++hits >= st.bell_hit_limit) e.dead = true;
+      } });
+  }
+  // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
+  // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
+  // the copies can shatter other mirrors in turn
+  const MIRROR = new THREE.BoxGeometry(.5, .9, .05);
+  function mirrors(dt) {
+    const S = onS('Mirror of Refraction'), st = S?.dmg?.stats; if (!st) return;
+    if ((me.mirrorIn = (me.mirrorIn ?? 0) - dt) > 0) return;
+    me.mirrorIn = st.base_cooldown_modifiable_repeat_interval_ms / 1000; limit(o => o.mirror, st.base_mirror_of_refraction_limit);
+    const g = holder(around(pp, sheet().overgrow.r * .8)), m = new THREE.Mesh(MIRROR, new THREE.MeshStandardMaterial({ color: 0xbfe3ff, emissive: 0x204060, metalness: .9, roughness: .1 }));
+    m.position.y = 1; g.add(m);
+    const e = thing(g, st.base_skill_effect_duration / 1000, { name: S.name, mirror: true, r: .35, tick() { m.rotation.y = time * .8; },
+      shatter(by, o) {
+        e.dead = true; const p = { x: e.pos.x, z: e.pos.z }, n = st.base_number_of_projectiles; fx.flash(V(p.x, 1, p.z), 'white', 10, .2, 5);
+        for (let k = 0; k < n; k++) shoot(by, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { seen: o.seen });
       } });
   }
   // Bonestorm: channelled, it conjures bone spikes (note: one per the scene's channel tick, the data has no rate), up to
@@ -4101,7 +4118,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); mirrors(dt); boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
