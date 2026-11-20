@@ -470,7 +470,7 @@ export function initScene(el, api) {
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) withers(d, 4);   // its "for 4 seconds"
     // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
     const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
-    weaken(d, S.dmg?.stats?.apply_X_stacks_of_critical_weakness_on_hit || 0);   // Kelari, the Tainted Sands
+    weaken(d, S.dmg?.stats?.apply_X_stacks_of_critical_weakness_on_hit);   // Kelari, the Tainted Sands
     const AW = !S.src && S.dmg?.stats?.apply_x_wither_on_hit;   // Chaos Bolt: its Withered stacks on hit, for its duration
     for (let k = 0; k < AW; k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
