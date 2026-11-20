@@ -1655,16 +1655,15 @@ export function initScene(el, api) {
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0)), uses = per ? Math.floor(mp / per) : 2;
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = per ? Math.floor(mp / per) : 2;
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
       const wc = ws.wolf_warcry_empowered_attack_cold_damage_min_per_5_power_up_to_cap, k5 = wc && Math.floor(mp / 5);
       if (wc && uses) { empower = empower.filter(e => e.type !== 'cold'); empower.push({ type: 'cold', label: S.label, name: S.name, uses, s: 12, add: [wc * k5, ws.wolf_warcry_empowered_attack_cold_damage_max_per_5_power_up_to_cap * k5], chill: (ws.base_secondary_skill_effect_duration || 0) / 1000 }); say(t('{0} gains {1} from {2}', t('Attack'), t('Cold'), S.label) + ` ×${uses}`, 'cold'); }
-      else if (S.P.empowers && uses && !ws.shielding_cry_grant_X_guard_per_5_mp) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
+      else if (S.P.empowers && uses && !FG) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
       // Fortifying Cry: its Guard per 5 Power of the enemies in its area (up to its cap); its Empowered melee attacks (one
       // per its Power, up to its cap) trigger its Shield Wave where they land. note: any melee attack, not only shield ones
-      const FG = ws.shielding_cry_grant_X_guard_per_5_mp, pw = list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0);
       if (FG) {
         const g = Math.min(FG * Math.floor(Math.min(pw, ws.shielding_cry_grant_X_guard_per_5_mp_mp_cap) / 5), 2 * (me.maxL || 0)), n = Math.floor(Math.min(pw, ws.shielding_cry_an_additional_empowered_attack_per_X_mp_mp_cap) / ws.shielding_cry_an_additional_empowered_attack_per_X_mp);
         if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); }
