@@ -1229,7 +1229,7 @@ export function initScene(el, api) {
   function minion(S, p, life, o = {}) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
     // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies
-    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 }, ranged = S.P.ranged;
+    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 * S.mult }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
@@ -1537,10 +1537,16 @@ export function initScene(el, api) {
       else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
     },
+    // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
+    // (its more hit damage) and two more
+    // note: the Empowered one's less damage taken and more movement speed are not simulated
     raise(S) {
       const r = Math.max(S.A, SIM.snap), list = dummies.filter(d => d.corpse > 0 && dist(d.pos, S.at) <= r).slice(0, S.R ? 4 : 1 + S.spent);
+      const st = S.dmg?.stats || {}, life = durOf(S) || SIM.minionTime, emp = st['power_charged_zombie_hit_damage_+%_final'];
+      const raise = (X, p) => { const mine = objs.filter(o => o.kind === S.name && !o.dead); while (st.base_number_of_zombies_allowed && mine.length >= st.base_number_of_zombies_allowed) mine.shift().dead = true; minion(X, p, life, { kind: S.name }); };
+      if (!list.length && emp != null && charges.power > 0) { charges.power--; for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1)); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
       if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
-      for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); minion(S, p, SIM.minionTime); }
+      for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); raise(S, p); }
       say(t('{0}: {1} raised from corpses', S.label, list.length), S.el);
     },
     // A totem uses its gem's own attack or spell (Shockwave Totem, Artillery Ballista), or a meta totem the gem in it (Mortar
@@ -1742,8 +1748,7 @@ export function initScene(el, api) {
       const P = S.P;
       if (P.corpse && !useCorpse(S)) return;
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
-      // Barrage: its repeats, more per frenzy charge consumed, each with its less damage
-      // note: without the data's numbers (Unleash), the scene's 2 repeats, one more per charge spent
+      // Barrage: repeats from its stats (else the scene's 2, one more per charge spent: Unleash), each with its less damage
       if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
         empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
