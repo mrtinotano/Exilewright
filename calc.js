@@ -660,11 +660,11 @@ export function skill(g, b, treeGear) {
     out.costPerSecond = perSec;
   } else out.cost = 0;
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
-  else if (attack && !w) out.reason = 'Equip a weapon to calculate the attack damage';
+  else if (attack && !w && !gt.includes('NonWeaponAttack')) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
   // "Attack damage of this skill is 20% of Default Attack Damage" (Volcanic Eruption): PoB2's baseMultiplier too
   const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
-  const base = {}, nonWeapon = attack && d.types?.includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
+  const base = {}, nonWeapon = attack && (d.types || gt).includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   for (const t of DMG) {
     let lo = 0, hi = 0;
     if (attack && (w || nonWeapon)) {   // a non-weapon attack needs no weapon in hand
