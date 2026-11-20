@@ -337,11 +337,11 @@ export function initOpt(el, ctx) {
   render.price = priceHtml;
   // from the Equipment tab: items better than the one worn in `slot`, up to that price (trade.js findBetter), in the
   // league and with the sellers picked here. -> its answer and the league, or { error } (the text to show)
-  render.better = async (slot, max, currency, base, tick) => {
+  render.better = async (slot, max, currency, base, skip, tick) => {
     const b = ctx.build();
     try {
       const ls = net?.leagues?.length ? net.leagues : await leagues(), league = ls.includes(S.league) ? S.league : ls[0];
-      const res = await findBetter({ league, item: b.items[slot], base, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, level: levelFor(b),
+      const res = await findBetter({ league, item: b.items[slot], base, skip, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, level: levelFor(b),
         state: STATUS[S.state] ? S.state : 'securable', tick: (text, ...a) => tick(t(text, ...a)) });
       return { ...res, league };
     } catch (e) { if (!e.kind) throw e; return { error: errText(e) }; }

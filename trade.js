@@ -282,8 +282,8 @@ const DEAREST = { price: 'desc' };
 // trade stat for them.
 // -> { found: [{ ...listing, up (that mean - 1) }], body (the search, to open on the site), left (lines the site has no stat for) }
 const lineKey = l => l.hash ?? 'd:' + l.en;
-export async function findBetter({ league, item, base, price, level, state, tick }) {
-  const { stats, asked, left } = await asLines(priceLines(item).filter(l => l.varies)), mine = asked.filter(x => x.value > 0);
+export async function findBetter({ league, item, base, skip = [], price, level, state, tick }) {   // skip: lines left out (lineKey)
+  const { stats, asked, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l))))), mine = asked.filter(x => x.value > 0);
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);

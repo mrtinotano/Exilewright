@@ -893,5 +893,6 @@
  "Sprinting": "Спринт",
  "Swarm's Advance": "Продвижение роя",
  "How much higher its modifiers are than yours, on average": "Насколько его модификаторы выше ваших, в среднем",
- "Only this base": "Только эта основа"
+ "Only this base": "Только эта основа",
+ "Modifiers it must have, at least as high as yours": "Обязательные модификаторы, не ниже ваших"
 }

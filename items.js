@@ -518,7 +518,8 @@ export function tradeItem({ name, base: baseName, lines }) {
   else imp.forEach(l => missed.add(l.text));
   // desecrated lines: by their wording, among the desecrated modifiers the base can have (the site gives no hash of ours)
   const des = lines.filter(l => l.kind === 'desecrated'), rest = lines.filter(l => l.kind !== 'implicit' && l.kind !== 'desecrated');
-  const dm = des.length ? matchLines(des.map(l => l.text), D.affixes.filter(a => a.desecrated && canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family) : { found: [], missed: [] };
+  const byText = (ls, f) => ls.length ? matchLines(ls, D.affixes.filter(f).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family) : { found: [], missed: [] };
+  const dm = byText(des.map(l => l.text), a => a.desecrated && canRoll(a, base, true));
   dm.missed.forEach(l => missed.add(l));
   if (u) {   // a unique has its own modifiers: only their rolls are read
     for (const l of rest) { const m = u.mods.find(m => parts(m.id, m.stats).some(p => p.hash === l.hash)), on = m && item.mods.find(x => x.id === m.id);
@@ -553,7 +554,12 @@ export function tradeItem({ name, base: baseName, lines }) {
   }
   // the numbers as listed, not cut to the tier's range: an item keeps what it rolled before a patch changed the tier
   // ("Impregnable", level 75, 43% increased Armour; 45-50% since 18/11)
-  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: f.values })).concat(dm.found.map(f => ({ id: f.key, values: f.raw })));
+  // a line under a name the data does not have (a revealed desecrated modifier the site lists among the explicit ones,
+  // "+1 to maximum number of Summoned Ballista Totems"; "+3 to Level of all Attack Skills"): by its wording, among the
+  // modifiers of the item's kind
+  const late = byText(rest.map(l => l.text).filter(x => missed.has(x)), a => a.domain === base.domain || a.desecrated && canRoll(a, base, true));
+  late.found.forEach(f => missed.delete(f.src));
+  item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: f.values })).concat([...dm.found, ...late.found].map(f => ({ id: f.key, values: f.raw })));
   return { item, slots: base.slots, missed: [...missed] };
 }
 
@@ -661,13 +667,15 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
           return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
-      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
+      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
+        <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
+          return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
         </div><div class="likego"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';
-  const buy = { max: '', cur: '', base: false };   // the price typed for the trade search
+  const buy = { max: '', cur: '', base: false, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
@@ -754,6 +762,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'likemax') { buy.max = t.value; return; }
     if (t.dataset.act === 'likecur') { buy.cur = t.value; return; }
     if (t.dataset.act === 'likebase') { buy.base = t.checked; return; }
+    if (t.dataset.act === 'likeline') { buy.skip[t.checked ? 'delete' : 'add'](t.dataset.k); return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
       if (o) equip(slot, o.v);
@@ -780,7 +789,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'like') {
       const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
       render();
-      trade.find(me.slot, buy.max, buy.cur, buy.base, text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
+      trade.find(me.slot, buy.max, buy.cur, buy.base, [...buy.skip], text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
         .then(res => { if (better === me) { me.res = res; render(); } });
       return;
     }

@@ -893,5 +893,6 @@
  "Sprinting": "달리기",
  "Swarm's Advance": "무리의 전진",
  "How much higher its modifiers are than yours, on average": "옵션이 평균적으로 당신 것보다 얼마나 높은지",
- "Only this base": "이 베이스만"
+ "Only this base": "이 베이스만",
+ "Modifiers it must have, at least as high as yours": "있어야 할 옵션 (당신 것 이상)"
 }
