@@ -56,7 +56,7 @@ export const KIND = {
   curse: 'Curse', mark: 'Mark', warcry: 'Warcry', herald: 'Herald', aura: 'Persistent buff', meta: 'Meta trigger',
   minion: 'Minions', raise: 'Minions from corpses', totem: 'Totem', travel: 'Travel', nova: 'Nova', slam: 'Slam',
   strike: 'Strike', sweep: 'Melee area', wave: 'Fissure wave', cone: 'Cone', zone: 'Lingering area', storm: 'Storm',
-  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area',
+  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)',
 };
 export const CHARGE = { frenzy: 'Frenzy', power: 'Power', endurance: 'Endurance' };
 
@@ -74,6 +74,7 @@ const NAMED = {
   'Cluster Grenade': { cluster: 4 },
   'Earthquake': { aftershock: true },
   'Volcano': { kind: 'volcano', stages: true, ownStages: true },
+  'Snap': { kind: 'snap', consumes: ['freeze', 'shock', 'ignite'] },
 };
 
 export function profile(gem, d = {}) {

@@ -589,6 +589,7 @@ export function initScene(el, api) {
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
+    siphon(a, d);
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
       const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); buffs = buffs.filter(b => !b.gain || b.sup);
@@ -740,6 +741,7 @@ export function initScene(el, api) {
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
     if (!S?.src) remnantOn('kill', d);
+    if (Math.random() * 100 < (S?.dmg?.sum?.['create_verisium_remmant_on_kill_enemy_%'] || 0)) infRemnant('verisium', p, { dur: (S.dmg.sum.base_remnant_duration_ms || 0) / 1000 });   // Runic Extraction
     hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
@@ -945,9 +947,17 @@ export function initScene(el, api) {
   const chanAt = {}, chanInf = {};
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
-  function infRemnant(el, p) {
-    const c = { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(INF_C[el], 2.2), fog: false })); m.position.set(c.x, .5, c.z);
-    thing(m, SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= SIM.pickup) { e.dead = true; infGain(el, c); } } });
+  function infRemnant(el, p, o = {}) {   // o: its pickup range +% (Siphon Elements), its duration (Runic Extraction's)
+    const c = { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(INF_C[el], 2.2), fog: false })), reach = SIM.pickup * (1 + (o.range || 0) / 100); m.position.set(c.x, .5, c.z);
+    thing(m, o.dur || SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; infGain(el, c); } } });
+  }
+  // Siphon Elements, while on: a chance of a Remnant of that kind when you freeze (per Power of the enemy), ignite a
+  // target not ignited or shock one not shocked
+  const SIPHON = { freeze: 'cold', ignite: 'fire', shock: 'lightning' };
+  function siphon(a, d) {
+    const g = tog['Siphon Elements'] && gemBy('Siphon Elements'), st = g && api.damage?.(g)?.stats, el = SIPHON[a]; if (!st || !el) return;
+    if (Math.random() * 100 < (st[`infusion_remnants_%_chance_to_spawn_${el}_infusion_on_${a === 'freeze' ? 'freezing' : a === 'ignite' ? 'igniting' : 'shocking'}_an_enemy`] || 0) * (a === 'freeze' ? POWER[d.stat.rarity] || 1 : 1))
+      infRemnant(el, d.pos, { range: st['remnant_pickup_range_+%'] });
   }
   const bombed = (M, p) => { boom(p, M.R, M.S); if (M.S.P.leaves) infRemnant(M.S.P.leaves, p); };   // Living Bomb's seed
   function infGain(el, c) {
@@ -1669,6 +1679,24 @@ export function initScene(el, api) {
       const fly = Math.min(.4, delay);
       later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));
     },
+    // Snap: consumes the freeze, shock or ignite of the enemy at the cursor for a blast of that element (its cold hit, or
+    // its lightning / fire part), more from a unique; it leaves that kind's Infusion Remnant (its chance of one more) and
+    // spreads, after its delay, to the enemies within its secondary radius with the same ailment, consuming theirs; those
+    // do not spread further (its proliferation depth of 2)
+    snap(S) {
+      const st = S.dmg?.stats || {}, A = ['freeze', 'shock', 'ignite'], d = near(S.at, SIM.snap, e => A.some(a => e.st[a] > 0));
+      if (!d) return toast(t('{0} finds nothing to consume ({1})', S.label, A.map(a => t(STATE[a])).join(', ')));
+      const a = A.find(a => d.st[a] > 0), el = SIPHON[a], X = a === 'freeze' ? S : partOf(S, `Snap${cap(el)}Player`) || S, spread = S.G?.radius2 || S.A * 2;
+      const blast = (e, depth) => {
+        if (e.dead || !(e.st[a] > 0)) return; clear(e, a);
+        const Y = { ...X, mult: X.mult * (e.stat.rarity === 'unique' ? 1 + (st['snap_damage_+%_final_if_created_from_unique'] || 0) / 100 : 1) };
+        fx.pillar(e.pos, .4, 3, el, .3); boom(e.pos, S.A, Y);
+        if (depth === 1) { infRemnant(el, e.pos); if (Math.random() * 100 < (st['chance_%_to_spawn_another_infusion_remnant'] || 0)) infRemnant(el, around(e.pos, SIM.pickup)); }
+        if (depth < (st.snap_maximum_proliferation_depth || 1)) for (const o of dummies) if (o !== e && !o.dead && o.st[a] > 0 && dist(o.pos, e.pos) <= spread)
+          later(((st.snap_proliferation_base_delay_ms || 0) + rnd(st.snap_proliferation_delay_range_ms || 0)) / 1000, () => blast(o, depth + 1));
+      };
+      blast(d, 1);
+    },
     // Volcano: channelled, a stage each cast time (its % of it) up to its most; on release it rises at the target and
     // erupts with its more damage and its additional projectiles per stage after the first, then sprays its
     // projectiles every interval for its duration (and when slammed: its slam part); its own limit. Each projectile
@@ -1787,6 +1815,7 @@ export function initScene(el, api) {
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
     if (C) ready.push(time + C / 1000);
+    for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
     const run = K[S.kind] || K.area;
     run(S);
     if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
