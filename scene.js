@@ -739,7 +739,7 @@ export function initScene(el, api) {
     const j = trigOf(T), n = j < 0 ? 0 : Math.floor(T.energy / T.need);
     if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need)));
     T.energy -= n * T.need; say(t('{0} triggers {1}', T.label, base(j).label), T.el);
-    for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta' }));
+    for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
   }
   function event(type, p, S, d) {
     if (S.src === 'meta') return;
@@ -753,7 +753,7 @@ export function initScene(el, api) {
         const at = { x: p.x, z: p.z };
         say(t('{0} triggers {1}', T.label, base(j).label), T.el);
         fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
-        later(.12, () => use(j, { at, src: 'meta' }));
+        later(.12, () => use(j, { at, src: 'meta', rand: T.rand }));
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
   }
@@ -1621,6 +1621,7 @@ export function initScene(el, api) {
       if (S.kind === 'meta') {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy_per_monster_power_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
+        if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion') for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
@@ -2308,6 +2309,8 @@ export function initScene(el, api) {
     if (C && ready.length >= (S.dmg.uses || 1)) return false;
     Object.assign(S, o);
     aim(S, o.at || cursor);
+    // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
+    if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
     if (!auto) {
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
       const ch = S.dmg?.ail?.charge || {};
