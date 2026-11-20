@@ -808,7 +808,7 @@ export function initScene(el, api) {
   }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
-    houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true);
+    houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
     if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
@@ -2148,6 +2148,20 @@ export function initScene(el, api) {
   // you; standing over one with Runic Ward, your spells deal its more damage and the Ward drains at its rate; running
   // out of it dissipates them for its reappearance time
   // note: how many leylines there are and how they lie is not in the data; one straight line through you here
+  // Blood Boil: while it is on, each enemy in your Presence gains a boil every its interval; one that dies with boils
+  // pops after its delay, Corrupted Blood (its % of that enemy's life a minute, physical) on the enemies in its area,
+  // larger per boil. note: whose life it takes is not in the data, the scene takes the slain enemy's
+  function boils() {
+    const i = tog['Blood Boil'] ? api.build().gems.findIndex(g => g.name === 'Blood Boil') : -1, S = i >= 0 && base(i), st = S?.dmg?.stats; if (!st) return;
+    for (const d of inside(pp, sheet().overgrow.r)) if ((d.boilAt ??= time) + st.blood_boil_application_interval_ms / 1000 <= time) { d.boilAt = time; d.boils = (d.boils || 0) + 1; d.boilS = S; }
+  }
+  function popBoils(d) {
+    const n = d.boils, S = d.boilS, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * S?.dmg.stats['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000; d.boils = 0; d.boilAt = null; if (!n) return;
+    later(S.dmg.stats.blood_boil_explosion_delay_ms / 1000, () => {
+      const R = S.A * Math.sqrt(1 + n * S.dmg.stats['blood_boil_explosion_area_+%_final_per_boil'] / 100); fx.ring(p, .2, R, 'blood', .5);
+      for (const e of inside(p, R)) dot(e, { ...S, mult: 1, els: ['physical'], dmg: { ...S.dmg, dot: { physical: dps } }, P: { ...S.P, dur: durOf(S) } });
+    });
+  }
   function leylines(dt) {
     const L = onS('Leylines')?.dmg?.stats, Y = me.ley ||= { units: [], back: 0 }, clear = () => { Y.units.forEach(u => u.decal.remove()); Y.units = []; Y.more = 0; };
     if (!L) return clear();
@@ -3278,7 +3292,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
-    leylines(dt); bells(dt);
+    leylines(dt); bells(dt); boils();
     for (const S of remnantSkills()) { const R = REMNANT[S.name], s = rstats(S); if (R.spawn && time - (remnantAt[S.name] ?? -99) >= R.spawn(s) / 1000) { remnantAt[S.name] = time; remnant(S, around(pp, s.breach_flame_spawn_radius / 10)); } }   // Flames, Blooms
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
