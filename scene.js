@@ -2291,6 +2291,14 @@ export function initScene(el, api) {
       limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed); minion(S, p, durOf(S), { kind: S.name });
     }
   };
+  // Toxic Domain: its Toxic Bloom around you for its duration; in it you regenerate its life and your skills cost more
+  // note: the Toxic Pustules it attaches are not simulated (their explosion is not in its data)
+  K.domain = S => {
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'patch', 'poison', { a: .3, k: 1 });
+    limit(o => o.banner && o.name === S.name, 1);
+    thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
+    fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -2381,7 +2389,7 @@ export function initScene(el, api) {
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
-      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, LP = S.dmg?.lifePerRecent,
+      const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100), LP = S.dmg?.lifePerRecent,
         life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
       const WC = S.dmg?.stats?._cost?.Ward || 0;   // a Runic Ward cost (Conductive Runes)
