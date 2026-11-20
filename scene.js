@@ -1634,8 +1634,9 @@ export function initScene(el, api) {
         const SW = S.dmg?.stats?.sunder_wave_max_steps;
         if (SW) { const ss = S.dmg.stats, X = partOf(S, 'SunderShockwavePlayer'), XR = X && radOf(X); for (let k = 0; k < SW; k++) later(k * .12, () => {
           const r = R + k * ss['sunder_wave_radius_+_per_step'] / 10, q = { x: c.x + S.dx * R * 1.8 * k, z: c.z + S.dz * R * 1.8 * k };
-          for (const d of inside(q, r)) if (d.st.armour > 0) d.sunder = { pct: ss.sunder_armor_break_extra_magnitude, until: time + durOf(S) };
-          if (X) for (const d of inside(q, r).slice(0, ss.sunder_shockwave_limit_per_cascade)) boom({ x: d.pos.x, z: d.pos.z }, XR, X, { soft: true });
+          const there = inside(q, r);
+          for (const d of there) if (d.st.armour > 0) d.sunder = { pct: ss.sunder_armor_break_extra_magnitude, until: time + durOf(S) };
+          if (X) for (const d of there.slice(0, ss.sunder_shockwave_limit_per_cascade)) boom({ x: d.pos.x, z: d.pos.z }, XR, X, { soft: true });
           boom(q, r, S);
         }); }
         else boom(c, R, S);
