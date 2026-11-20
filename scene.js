@@ -2334,6 +2334,15 @@ export function initScene(el, api) {
       const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p;
       S.totemMult = 1 + p * st['spell_totem_damage_+%_final_per_power_charge_consumed'] / 100; S.totemTime = 1 + (NC - p) * st['spell_totem_totem_duration_+%_final_per_endurance_charge_consumed'] / 100;
     }
+    // Spectral Volley: a supported projectile attack you use deals its less damage and leaves a Spectral Projectile, up to
+    // its most; they all fire, with their more damage, one every its delay, once none has been created for its duration
+    // note: one Spectral Projectile per use here
+    const SV = !auto && P.attack && P.kind === 'projectile' && S.dmg?.sum?.support_spectral_arrows_maximum_spectral_arrows;
+    if (SV) {
+      const su = S.dmg.sum, m0 = S.mult; S.mult *= 1 + su['support_spectral_arrows_damage_+%_final_with_non_spectral_projectiles'] / 100;
+      me.spectral = { S: { ...S, mult: m0 * (1 + su['support_spectral_arrows_damage_+%_final_with_spectral_projectiles'] / 100) }, n: Math.min(SV, (me.spectral?.n || 0) + 1), at: time, wait: su.support_spectral_arrows_base_duration_ms / 1000, every: su.support_spectral_arrows_delay_between_projectiles_ms / 1000 };
+      fx.glow({ x: pp.x, y: 2.4, z: pp.z }, .6, 'holy', .3);
+    }
     // an attack chain (Ice Strike, Tempest Flurry, Primal Strikes): its uses in quick succession step through it, the last
     // being its final part (its first), Tempest Flurry's third striking three times
     // note: "quick succession" has no time in the data; SEQ_GAP s here
@@ -3129,6 +3138,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     leylines(dt); bells(dt);
+    const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const d = near(pp, 15), l = d ? dist(d.pos, pp) || 1 : 1; K.projectile({ ...SP.S, spent: 0, from: { x: pp.x, z: pp.z }, dx: d ? (d.pos.x - pp.x) / l : SP.S.dx, dz: d ? (d.pos.z - pp.z) / l : SP.S.dz }); }); }   // Spectral Volley
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
