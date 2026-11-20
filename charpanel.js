@@ -60,7 +60,7 @@ const TAGS = { attack: 'Attack', spell: 'Spell', area: 'AoE', projectile: 'Proje
 const HIDDEN_TAGS = new Set(['grants_active_skill', 'strength', 'dexterity', 'intelligence', 'repeatable', 'support', 'gem']);
 
 export function skillTip(G, g, b, sum, geo) {
-  const s = skill(g, b, sum), st = s.stats, G2 = geo?.(g) || {};
+  const s = skill(g, b, sum), st = s.stats, G2 = geo?.(g) || {}, sp = reservation(g, sum, b);
   const tags = (G.tags || []).filter(t => !HIDDEN_TAGS.has(t)).map(x => TAGS[x] ? t(TAGS[x]) : x.replace(/_/g, ' ')).join(', ');
   const lines = shownLines(st, g.name);
   const cost = st._cost && Object.entries(st._cost).map(([k, val]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', val)).join(', ');
@@ -68,7 +68,7 @@ export function skillTip(G, g, b, sum, geo) {
     ['Level', st._level],
     st._quality && ['Quality', st._quality + '%'],
     cost && ['Cost', cost],
-    st._spirit && ['Reservation', t('{0} spirit', reservation(g, sum))],
+    sp && ['Reservation', t('{0} spirit', sp)],
     s.attack ? st._base_multiplier && ['Attack damage', t('{0}% of base damage', f(st._base_multiplier / 100, 0))] : null,
     !s.attack && G.types?.includes('Spell') && ['Cast time', s.castTime ? f(s.castTime / 1000) + ' s' : '—'],
     s.crit != null && ['Critical hit chance', f(s.crit) + '%'],
