@@ -422,7 +422,7 @@ export function initScene(el, api) {
       // shares of all damage gained as extra damage of a type, each of the damage before any of them: the buffs'; Mantra
       // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
       // and Thrill of the Kill as lightning
-      const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
+      const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
@@ -1413,8 +1413,8 @@ export function initScene(el, api) {
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
-            const TS = S.P.spell && !S.src && S.dmg?.cost > 0 && tempest(), N = (D.split || 0) + (TS ? TS.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets : 0);   // Mana Tempest
-            if (N && !o.split) {
+            const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
+            if (N) {
               o.split = true;
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
@@ -2548,6 +2548,7 @@ export function initScene(el, api) {
   // spells gain its share of their damage as lightning. It drains its % of your maximum mana a second plus its % of the
   // mana you spend in it, added to that each second; it ends once you are out past its linger or out of mana.
   // Its empowered spells' projectiles split toward its additional targets (shoot). note: other spells' split is not simulated
+  const empowered = S => S.P.spell && !S.src && S.dmg?.cost > 0 && tempest();   // a mana-costing spell of yours in its storm
   const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
   K.tempest = S => {
     const st = S.dmg.stats, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'outline', 'lightning', { a: .45, rot: .3 });
