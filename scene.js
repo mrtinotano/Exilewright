@@ -691,7 +691,7 @@ export function initScene(el, api) {
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
-      if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
+      if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); scavenge(d); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -2924,9 +2924,15 @@ export function initScene(el, api) {
   // Morrigan's Insight: the supported skill's hit on a frozen enemy consumes the freeze for Nature's Exchange (its cooldown):
   // its Guard and cold thorns for its duration
   const THORN_P = profile({ name: 'Thorns', tags: ['physical'] }, {});
+  // Scavenged Plating: while on, fully breaking an enemy's armour grants stacks by its rarity (its text: 1, 2, 5, 10)
+  // for its duration; each stack is its more armour and its physical thorns
+  const PLATES = { normal: 1, magic: 2, rare: 5, unique: 10 }, plating = () => onS('Scavenged Plating')?.dmg.stats;
+  const plates = () => (me.plates = (me.plates || []).filter(p => p.until > time)).reduce((n, p) => n + p.n, 0);
+  function scavenge(d) { const S = onS('Scavenged Plating'); if (S) { (me.plates ||= []).push({ n: PLATES[d.stat.rarity] || 1, until: time + durOf(S) }); say(`${S.label}: ${plates()}`, 'dust'); } }
   function thornsOf() {
-    const T = sheet().thorns || { hits: {} }, N = buffs.find(b => b.thorns), hits = { ...T.hits };
+    const T = sheet().thorns || { hits: {} }, N = buffs.find(b => b.thorns), hits = { ...T.hits }, SP = plating(), n = SP && plates();
     if (N) hits.cold = N.thorns.map(x => x * (T.thornsX || 1));
+    if (n) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + n * SP[k ? 'scavenged_plating_thorns_maximum_physical_damage' : 'scavenged_plating_thorns_minimum_physical_damage'] * (T.thornsX || 1));
     return Object.values(hits).some(([, hi]) => hi > 0) ? { ...T, hits } : null;
   }
   const thornX = (D, label) => { const els = Object.keys(D.hits).filter(e => D.hits[e][1] > 0); return { name: 'Thorns', label, P: THORN_P, G: {}, A: SIM.area, dmg: { attack: false, dot: {}, trig: [], ...D }, src: 'thorns', el: els.find(e => e !== 'physical') || els[0], els, ail: [], mult: 1, gm: 1, spent: 0 }; };
@@ -3185,8 +3191,8 @@ export function initScene(el, api) {
   }
   // your resistances with those of the charms in use
   function withCharms(c) {
-    const AE = banner('armour_evasion_+%_final'), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
-    if (AE || MR || WE) c = { ...c, armour: c.armour * (1 + AE / 100), evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100), res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
+    const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
+    if (AE || MR || WE || PL) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100), evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100), res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
     if (!Object.keys(add).length || !c.res) return c;
