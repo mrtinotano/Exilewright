@@ -29,7 +29,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -39,7 +39,8 @@ const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic War
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
-const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const MAIM = { move: 30, evasion: 15, time: 4 };
+const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
 const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
 const IMMUNE = 1;                         // note: keywords.json Consume: a consumed ailment cannot be inflicted again for 1 s
@@ -250,7 +251,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { kaom: null, calamity: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
+    Object.assign(me, { kaom: null, calamity: null, chayula: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -356,6 +357,7 @@ export function initScene(el, api) {
       crit = Math.random() * 100 < (D.crit || 0) * W.crit; if (crit) (me.critAt ||= {})[S.name] = time;
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); }
@@ -385,6 +387,7 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     d.by = S; damage(d, total, S);
+    if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) { const w = d.wither = (d.wither || []).filter(u => u > time); w.push(time + 4); if (w.length > WITHER.max) w.shift(); }   // its "for 4 seconds"
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
@@ -627,7 +630,8 @@ export function initScene(el, api) {
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || C?.armour)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - (C?.armour || 0) * k) };
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - (C?.res[el] || 0) * k;
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
-    return enemyTakes(st, el, r, isHit) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + BROKEN.taken / 100 : 1);
+    const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u > time)).length : 0;
+    return enemyTakes(st, el, r, isHit) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + BROKEN.taken / 100 : 1) * (1 + W * WITHER.per / 100);
   }
   // What one hit does with ailments, as the game rolls it: its damage before the enemy's mitigation (raw, per type) against the
   // enemy's Elemental Ailment Threshold (chance to shock, flammability for ignite, chill magnitude) and poise (freeze and heavy
@@ -1255,7 +1259,8 @@ export function initScene(el, api) {
       },
       end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
   }
-  function vortex(S, c, R, dur) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
+  // o: its speed, hit interval, share of the damage and how far it seeks (Archon of Chayula's)
+  function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c); let cur = S, tk = .2;
     const e = thing(g, dur, { name: S.name,
       tick(dt, e) {
@@ -1264,10 +1269,10 @@ export function initScene(el, api) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
-        const d = near(p, 9);
-        if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * 1.3 * dt; p.z += (d.pos.z - p.z) / k * 1.3 * dt; } }
+        const d = near(p, o.seek || 9), v = o.speed || 1.3;
+        if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
         if (S.P.absorbs) cur = absorb(cur, p, R);
-        if ((tk -= dt) <= 0) { tk = .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: .4 }); }
+        if ((tk -= dt) <= 0) { tk = o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
       } });
   }
   // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
@@ -1841,6 +1846,37 @@ export function initScene(el, api) {
       const d = pick[Math.floor(rnd(pick.length))], q = d ? { x: d.pos.x, z: d.pos.z } : around(pp, S.A), X = big ? L : S, r = big ? L.A : 1;
       if (big && d) last.set(d, time);
       fx.streak(V(q.x + 2, 13, q.z - 1.5), V(q.x, 0, q.z), 'fire', big ? .3 : .14, .07, 1.8); later(.16, () => { pop(q, r, 'fire'); area(q, r, X); });
+    } });
+  };
+  // Apocalypse: for its duration, at its interval, one of its Elemental skills around an enemy near you: its Hailstorm
+  // (its bolts at random intervals within its least and most, each in its secondary radius), its meteor (its fire part,
+  // after its time to impact) or its static field (its lightning part's pulses, then its final strike)
+  K.apocalypse = S => {
+    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000, F = partOf(S, 'ApocalypseFirePlayer'), L = partOf(S, 'ApocalypseLightningPlayer'), LF = partOf(S, 'ApocalypseLightningFinalStrikePlayer');
+    const r2 = (S.G?.radius2 || .8); let tk = 0;
+    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('lightning'), s: dur });
+    const one = [
+      c => { let w = 0; for (let k = 0; k < (st.unleash_blizzard_number_of_bolts || 1); k++) { w += rnd(st.unleash_blizzard_minimum_bolt_frequency_ms, st.unleash_blizzard_maximum_bolt_frequency_ms) / 1000; const q = around(c, 2); later(w, () => { fx.streak(V(q.x + 2, 13, q.z - 1.5), V(q.x, 0, q.z), 'cold', .12, .06, 1.8); later(.16, () => { pop(q, r2, 'cold'); area(q, r2, S); }); }); } },
+      F && (c => { const w = (F.dmg.stats.unleash_meteor_time_till_impact_ms || 2000) / 1000; fx.telegraph(c, F.A, 'fire', w); later(w, () => { pop(c, F.A, 'fire'); boom(c, F.A, F); shake = .3; }); }),
+      L && (c => { const n = L.dmg.stats.unleash_static_field_number_of_pluses || 1, w = (L.dmg.stats.unleash_static_field_time_till_final_strike_ms || 3000) / 1000, dec = fx.decal(c, L.A, 'rune', 'lightning', { a: .5, spin: .5 });
+        for (let k = 0; k < n; k++) later(k * w / n, () => area(c, L.A, L)); later(w, () => { dec.remove(); fx.bolt(V(c.x, 14, c.z), V(c.x, 0, c.z), 'lightning', .3, .12, .5); if (LF) boom(c, L.A, LF); }); }),
+    ].filter(Boolean);
+    thing(holder(pp), dur, { name: S.name, tick(dt) {
+      if ((tk -= dt) > 0) return; tk = (st.unleash_the_elements_base_trigger_frequency_ms || 750) / 1000;
+      const d = near(pp, S.A); if (d) one[Math.floor(rnd(one.length))]({ x: d.pos.x, z: d.pos.z });
+    } });
+  };
+  // Archon of Chayula: for its duration you are his Archon: more physical and chaos damage, its chance to Wither on hit, and
+  // at its interval Chayula's Will, a chaos tornado that seeks the enemies within its secondary radius at its speed and
+  // hits in its area at its interval
+  K.chayula = S => {
+    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000; let tk = 0;
+    me.chayula = { until: time + dur, more: st['archon_of_chayula_physical_and_chaos_damage_+%_final'] || 0, wither: st['archon_of_chayula_withered_on_hit_for_4_seconds_%_chance'] || 0 };
+    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('chaos'), s: dur });
+    fx.ring(pp, .3, 3, 'chaos', .6);
+    thing(holder(pp), dur, { name: S.name, tick(dt, e) {
+      if ((tk -= dt) > 0) return; tk = (st.archon_of_chayula_spawn_chaos_tornado_interval_ms || 3000) / 1000;
+      vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: (st.archon_chayula_storm_movement_speed || 13) / 10, every: (st.archon_of_chayula_tornado_attack_interval_ms || 400) / 1000, mult: 1, seek: S.G?.radius2 || 9 });
     } });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
