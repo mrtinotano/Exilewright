@@ -944,7 +944,7 @@ export function initScene(el, api) {
   // over one grants the Infusion for 20 s (its increased duration) or until a skill consumes it, up to the most of each
   // kind, with its chance of one more (calc.js infusion). A skill that can consume one does on use (skillfx infuses),
   // its own kind first, else a Verisium one; its chance not to remove it, the power charge it may grant
-  const chanAt = {}, chanInf = {};
+  const chanAt = {}, chanInf = {}, fus = {};   // fus: Ember Fusillade's Embers
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
   function infRemnant(el, p, o = {}) {   // o: its pickup range +% (Siphon Elements), its duration (Runic Extraction's)
@@ -1108,6 +1108,16 @@ export function initScene(el, api) {
     for (let k = 0; k < (T.support.create_X_briar_thorns_on_slam || 1); k++) hazardAt(X, around(c, R), dur, { arm: ts.briarpatches_arming_time_ms / 1000, early: ts['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'], c: 'poison' });
   }
   const tint = (m, c) => m.traverse(x => { if (x.material) x.material.color.copy(fx.color(c, x.isSprite ? 1.5 : 3)); });
+  // Frost Darts: a dart that hits a chilled or frozen enemy drops chunks of ice that hit where they land (its mortar part);
+  // with a Cold Infusion consumed each dart lodges in the enemy and explodes (its explosion part), creating its mortars
+  // note: how long a dart stays lodged and where the chunks land the data does not say: half a second, around the enemy
+  function darts(S, d) {
+    const M = partOf(S, 'FrostDartsIceMortarPlayer'); if (!M) return;
+    const mortar = () => { const q = around(d.pos, 1.2); lob(fx.orb('ice', .1), V(d.pos.x, 1.4, d.pos.z), V(q.x, .1, q.z), .4, 1.5, () => boom(q, M.A, M, { soft: true })); };
+    if (has(d, 'chill') || has(d, 'freeze')) mortar();
+    const X = S.infs?.includes('cold') && partOf(S, 'FrostDartsExplodePlayer');
+    if (X) later(.5, () => { if (d.dead) return; boom(d.pos, X.A, X); for (let k = X.dmg.stats.frost_darts_explode_creates_X_mortars || 0; k > 0; k--) mortar(); });
+  }
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
@@ -1138,7 +1148,7 @@ export function initScene(el, api) {
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
         if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
       }
-      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); }
+      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
@@ -1678,6 +1688,34 @@ export function initScene(el, api) {
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
       const fly = Math.min(.4, delay);
       later(delay - fly, () => lob(fx.orb(S.el, clamp(R * .3, .3, .9)), V(c.x + 6, 24, c.z - 5), V(c.x, .3, c.z), fly, 0, () => { boom(c, R, S); shake = .5; }, { trail: S.el, big: true }));
+    },
+    // Ember Fusillade: each cast conjures an Ember over you, up to its most, and starts the time of all of them again; when
+    // it runs out the whole Fusillade launches, one after another (its delay): the first at the enemy last targeted, the
+    // next at different ones within its targeting radius, each exploding in its area with its more damage per Ember fired
+    // before it. A Lightning Infusion consumed makes the Fusillade's impacts send beams that Chain (its beam part)
+    ember(S) {
+      const st = S.dmg?.stats || {}; let F = fus[S.name];
+      if (!F || !objs.includes(F.e)) {
+        const g = new THREE.Group();
+        F = fus[S.name] = { g, n: 0, beam: false, e: thing(g, Infinity, { name: S.name, tick(dt, e) {
+          g.position.set(pp.x, 0, pp.z); g.rotation.y += dt * 1.5;
+          if (time < F.at) return; e.dead = true;
+          const first = near(F.at0, SIM.snap) || near(pp, SIM.castRange), seen = new Set(), every = (st.blazing_cluster_delay_between_projectiles_ms || 100) / 1000, R2 = (st.blazing_cluster_subsequent_targeting_radius || 0) / 10;
+          const X = F.beam && partOf(F.S, 'EmberFusilladeBeamPlayer');
+          for (let k = 0; k < F.n; k++) later(k * every, () => {
+            const d = k && first ? dummies.find(e => !e.dead && !seen.has(e) && dist(e.pos, first.pos) <= R2) || first : first; if (d) seen.add(d);
+            const to = d ? { x: d.pos.x, z: d.pos.z } : around(pp, 4), Y = { ...F.S, mult: F.S.mult * (1 + (st['ember_fusillade_damage_+%_final_per_ember_fired'] || 0) * k / 100) };
+            lob(fx.orb('fire', .16), V(pp.x, 2.4, pp.z), V(to.x, .2, to.z), .35, 1.2, () => {
+              boom(to, S.A, Y);
+              const e2 = X && near(to, 6); if (e2) chain(V(to.x, 1, to.z), e2, X, sh(X).chains || 0);
+            }, { trail: 'fire' });
+          });
+        } }) };
+      }
+      if (F.n < (st.blazing_cluster_maximum_number_of_projectiles_allowed || 1)) {
+        const m = fx.orb('fire', .16), a = F.n * 1.3; m.position.set(Math.sin(a) * .8, 2.4 + (F.n % 3) * .15, Math.cos(a) * .8); F.g.add(m); F.n++;
+      }
+      F.at = time + (sh(S).duration || 1.3); F.at0 = { x: S.at.x, z: S.at.z }; F.S = S; if (S.infs?.includes('lightning')) F.beam = true;
     },
     // Snap: consumes the freeze, shock or ignite of the enemy at the cursor for a blast of that element (its cold hit, or
     // its lightning / fire part), more from a unique; it leaves that kind's Infusion Remnant (its chance of one more) and
