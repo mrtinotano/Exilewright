@@ -612,7 +612,7 @@ export function initScene(el, api) {
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
-    if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const UA = unboundS(); if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
+    if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const i = byName('Unbound Avatar'), UA = i >= 0 && base(i)?.dmg?.stats; if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
     siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
@@ -2439,7 +2439,6 @@ export function initScene(el, api) {
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
   const SEQ_GAP = 2, PARRY_WAIT = 1, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
   const trinity = () => onS('Trinity')?.dmg?.stats;
-  const unboundS = () => { const i = byName('Unbound Avatar'); return i >= 0 ? base(i)?.dmg?.stats : null; };   // Unbound Fury is gained while it is in the build
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
   const gloryOf = () => slots().map(base).filter(S => S && gloryNeed(S));
