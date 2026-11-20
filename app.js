@@ -140,14 +140,15 @@ function geo(g) {
   const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
   const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
   const moreSpeed = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
+  const rad = b => b ? Math.floor(b * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0;
   const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) * moreSpeed / 10;
   return {
     radiusFromData: base != null,
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
     // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
-    radius: base != null ? Math.floor(base * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0,
+    radius: base != null ? rad(base) : 0,
     // its secondary radius (a storm's area, Firestorm's; or its strikes', Thunderstorm's), with the same modifiers
-    radius2: (r2 => r2 ? Math.floor(r2 * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0)(d.levels?.[g.level]?.active_skill_base_secondary_area_of_effect_radius ?? d.constant?.active_skill_base_secondary_area_of_effect_radius),
+    radius2: rad(d.levels?.[g.level]?.active_skill_base_secondary_area_of_effect_radius ?? d.constant?.active_skill_base_secondary_area_of_effect_radius),
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,

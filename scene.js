@@ -1520,14 +1520,13 @@ export function initScene(el, api) {
       if (P.wind) return vortex(S, c, S.A, dur);
       // its own limit, impact interval (and variance), fall time and re-hit interval on one enemy (Firestorm, Icestorm,
       // Thunderstorm); the scene's when a storm gives none
-      const of = re => Object.entries(st).find(([k]) => re.test(k))?.[1];
-      const max = of(/_max(?:imum)?_number_of_storms$/) || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
+      const max = Object.entries(st).find(([k]) => /_max(?:imum)?_number_of_storms$/.test(k))?.[1] || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
         vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
         again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
       const old = objs.filter(o => o.stormOf === S.name && !o.dead); while (old.length >= max) old.shift().dead = true;
       const { Z, R } = stormGeo(S), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
       // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
-      const wet = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'] != null && { shock: st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
+      const ws = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], wet = ws != null && { shock: ws, freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
       let tk = 0;
       thing(holder(c), dur, { stormOf: S.name, name: S.name,
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
@@ -1538,7 +1537,7 @@ export function initScene(el, api) {
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
           later(bolt ? 0 : fall, () => {
             pop(q, R, S.el);
-            for (const d of inside(q, R)) if (!(time - (hitAt.get(d) ?? -99) < again)) { hitAt.set(d, time); hit(d, { ...S, self: e }); }
+            for (const d of inside(q, R)) if (time - (hitAt.get(d) ?? -99) >= again) { hitAt.set(d, time); hit(d, { ...S, self: e }); }
             touch(q, R, { ...S, self: e });
           });
         },
