@@ -551,11 +551,13 @@ const PLAIN_TEXT = /^(?:Supported (?:\w+ )?Skills|Hazards created by Supported S
 const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) &&   // only the endings more() reads
   PLAIN_TEXT.test(statLinesEn({ [k]: 10 })[0] || '');
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
-export function withSupports(g, sum) {
+// wset: the weapon set in hand, for the mods only there (Rigwald's Ferocity)
+export function withSupports(g, sum, wset) {
   const all = { ...sum }, fin = {}, mods = [], finals = {}, twice = new Set();
   for (const n of g.supports || []) {
     const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
-    if (p) mods.push(...(p.mods || []).filter(m => !m[4]));
+    const inSet = m => m[4].every(c => c.type === 'Condition' && c.var === 'WeaponSet' + (wset === 2 ? 2 : 1));
+    if (p) mods.push(...(p.mods || []).filter(m => !m[4] || inSet(m)));
     const lv = d?.levels?.[Object.keys(d?.levels || {})[0]] || {}, game = { ...(d?.constant || {}), ...lv };
     // the game's stats, except those PoB2 reads as a mod used here (or only under a condition): Bleed II's bleed chance,
     // Fire Mastery's level, which PoB2 reads as mods the app has no use for or does not have. A condition of PoB2's
@@ -604,7 +606,7 @@ export function skill(g, b, treeGear) {
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
-  const { sum, fin, mods, finals, twice = new Set() } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear);
+  const { sum, fin, mods, finals, twice = new Set() } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear, b?.wset);
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
