@@ -264,31 +264,37 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
   out.found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
   return out;
 }
-// Items better than `item`, from the Equipment tab: every line it has, each its own condition as the kind of modifier
-// it is there (normal, fractured, crafted, desecrated: the site's groups), at least its number (a negative one: just
-// having it), of its kind of item (`base`: of its base; a unique: that unique), up to the price. note: its implicits
-// and runes are not asked: the data has no trade stat for them. The cheapest `read` of them are
-// read and ranked by how far over the item's own numbers their lines go (the mean of theirs / its), the first `n` shown.
-// -> { found: [{ ...listing, up (that mean - 1) }] best first, body (the search, to open on the site), left (lines the site has no stat for) }
+// The lines of an item (priceLines, or picked by hand: { hash | en (desecrated), kind, value }) as the site's
+// conditions: every one of them, each as the kind of modifier it is (normal, fractured, crafted, desecrated: the site's
+// groups; none given: normal) and at least its number (a negative one, or 0: just having it). -> { stats, asked, left }
+async function asLines(lines) {
+  const { known, desecrated } = await statIndex(), kind = l => `${l.kind || 'explicit'}.stat_${l.hash}`;
+  const asked = lines.map(l => ({ ...l, id: l.en ? desecrated(l.en) : known && !known.has(kind(l)) ? null : kind(l) })).filter(l => l.id);
+  return { asked, left: lines.length - asked.length,
+    stats: asked.length ? [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }] : [] };
+}
+// the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
+// by the modifiers themselves: "Query is too complex")
+const DEAREST = { price: 'desc' };
+// Items better than `item`, from the Equipment tab: every line it has (asLines), of its kind of item (`base`: of its
+// base; a unique: that unique), up to the price, the first 10 down from the dearest, each with how far over the item's
+// own numbers its lines go (the mean of theirs / its). note: its implicits and runes are not asked: the data has no
+// trade stat for them.
+// -> { found: [{ ...listing, up (that mean - 1) }], body (the search, to open on the site), left (lines the site has no stat for) }
 const lineKey = l => l.hash ?? 'd:' + l.en;
-export async function findBetter({ league, item, base, price, level, state, read = 30, n = 10, tick }) {
-  const { known, desecrated } = await statIndex(), lines = priceLines(item).filter(l => l.varies)
-    .map(l => ({ ...l, id: l.en ? desecrated(l.en) : known && !known.has(`${l.kind}.stat_${l.hash}`) ? null : `${l.kind}.stat_${l.hash}` })), asked = lines.filter(l => l.id);
+export async function findBetter({ league, item, base, price, level, state, tick }) {
+  const { stats, asked, left } = await asLines(priceLines(item).filter(l => l.varies)), mine = asked.filter(x => x.value > 0);
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
-    stats: [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }],
-    filters: filters(classOf(item), price, level) }, sort: { price: 'asc' } };
+    stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
-  const s = await call('search?league=' + encodeURIComponent(league), body), todo = (s.result || []).slice(0, read), found = [];
-  for (let i = 0; i < todo.length; i += 10) {   // the site gives 10 at a time
-    tick?.('Reading {0} items…', Math.min(todo.length, i + 10));
-    for (const r of (await call(`fetch?ids=${todo.slice(i, i + 10).join()}&query=${s.id}`)).result || []) {
-      const l = r && readListing(r); if (!l?.item) continue;
-      const theirs = new Map(priceLines(l.item).map(x => [lineKey(x), x.value])), mine = asked.filter(x => x.value > 0);
-      found.push({ ...l, up: mine.length ? mine.reduce((a, x) => a + (theirs.get(lineKey(x)) ?? x.value) / x.value, 0) / mine.length - 1 : 0 });
-    }
+  const s = await call('search?league=' + encodeURIComponent(league), body), found = [];
+  tick?.('Reading {0} items…', Math.min(10, s.result?.length || 0));
+  if (s.result?.length) for (const r of (await call(`fetch?ids=${s.result.slice(0, 10).join()}&query=${s.id}`)).result || []) {
+    const l = r && readListing(r); if (!l?.item) continue;
+    const theirs = new Map(priceLines(l.item).map(x => [lineKey(x), x.value]));
+    found.push({ ...l, up: mine.length ? mine.reduce((a, x) => a + (theirs.get(lineKey(x)) ?? x.value) / x.value, 0) / mine.length - 1 : 0 });
   }
-  found.sort((a, b) => b.up - a.up);
-  return { found: found.slice(0, n), body, left: lines.length - asked.length };
+  return { found, body, left };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
@@ -311,18 +317,13 @@ async function search(out, seen, { league, slot, items, value, per, tick }, plan
     out.errors.push(e); return false;
   }
 }
-// Items like one, or with the lines picked by hand: lines [{ hash | en (desecrated), value }] (priceLines), all of
-// them, each at least its number (0: just having it), as a normal, crafted, fractured or desecrated modifier alike (an
-// attribute or a resistance: the item's total of it, as the price check asks); a unique: that unique. Cheapest first,
-// the first `per` read and rated. -> findGear's answer, with body (the search, to open on the site) and left (lines the
-// site has no stat for)
+// Items with the lines picked by hand (the Optimizer's Chosen modifiers: asLines); a unique: that unique. The first
+// `per` down from the dearest under the price, read and rated. -> findGear's answer, with body (the search, to open on
+// the site) and left (lines the site has no stat for)
 export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, tick }) {
-  const { idsOf } = await statIndex();
-  const asked = lines.map(l => ({ l, ids: idsOf(l) })).filter(x => x.ids.length);
-  const body = { query: { status: { option: state }, ...unique && { name: unique, type: base },
-    stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(({ l, ids }) => ids.map(id => ({ id, ...l.value > 0 && { value: { min: l.value } } }))) }] : [],
-    filters: filters(cls, price, level) }, sort: { price: 'asc' } };
-  const out = { found: [], searches: [], unread: 0, errors: [], body, left: lines.length - asked.length };
+  const { stats, left } = await asLines(lines);
+  const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price, level) }, sort: DEAREST };
+  const out = { found: [], searches: [], unread: 0, errors: [], body, left };
   await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body });
   return out;
 }

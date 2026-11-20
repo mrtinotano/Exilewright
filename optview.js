@@ -7,7 +7,7 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines } from './items.js';
+import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, itemParts } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery } from './trade.js';
 
@@ -188,7 +188,7 @@ export function initOpt(el, ctx) {
   }
   // the search for items with the modifiers picked (or the worn item's: one like it or better), cheapest first
   const likeOf = slot => S.like[slot] ||= [];
-  const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, text, value }) => ({ hash, en, text, value: Math.round(value * 100) / 100 }));
+  const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, kind, text, value }) => ({ hash, en, kind, text, value: Math.round(value * 100) / 100 }));
   async function runLike() {
     const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), level = levelFor(b), state = STATUS[S.state] ? S.state : 'securable';
     const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => wornLines(worn).some(w => w.hash === l.hash && w.en === l.en));
@@ -214,9 +214,9 @@ export function initOpt(el, ctx) {
     const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
       filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
     const card = ({ l, i, v }) => {
-      const off = new Set(l.missed);
+      const off = new Set(l.missed), p = l.item && itemParts(l.item, false);   // its modifiers in the game's language, what was not read as the site words it
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
-        <div class="gmods">${l.mods.map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
+        <div class="gmods">${(p ? [...p.impl, ...p.expl, ...l.missed] : l.mods).map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
         ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
         <div class="gfoot"><div class="gval">${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</div>
           <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
@@ -229,7 +229,7 @@ export function initOpt(el, ctx) {
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
       ${res.found.length && !list.length ? `<p class="note">${t('None of the items found improves the current gear.')}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
-      ${hit.like ? `<p class="note"><a href="${esc(siteQuery(league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a></p>` : ''}
+      ${hit.like ? `<a class="golink" href="${esc(siteQuery(league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
       ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.')}</p>` : ''}
       ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;

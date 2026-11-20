@@ -162,7 +162,7 @@ export function charmOf(it, sum = {}) {
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
 const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
 // en: English, as Path of Building reads it; otherwise the page's language, as the game shows it (the .build notes)
-function itemParts(it, en = true) {
+export function itemParts(it, en = true) {
   const base = BASE[it.base];
   if (!base) return null;
   const say = en ? statLinesEn : statLines, lines = (stats, vals) => linesIn(say, stats, vals);
@@ -669,6 +669,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
+  // a listing's modifiers in the game's language (what the planner read of them; the rest as the site words them)
+  const modsOf = l => { const p = l.item && itemParts(l.item, false); return p ? [...p.impl, ...p.expl, ...l.missed] : l.mods; };
   // the items found better than the one worn (trade.find): best first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
   function betterHtml(slot) {
@@ -677,10 +679,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
     return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique];
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
-        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b><div class="bmods">${(itemParts(l.item, false)?.expl || l.mods).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(gain(slot, l.item, 'buy' + i), 3)}</span></div>`; }).join('')
+        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b><div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(gain(slot, l.item, 'buy' + i), 3)}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
-      <p class="note"><a href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a></p>`;
+      <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;
   }
   function stashHtml() {
     const list = getBuild().stash || [];
