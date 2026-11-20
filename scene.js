@@ -29,8 +29,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'agony']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'agony']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -2743,6 +2743,13 @@ export function initScene(el, api) {
   function agonyEnds(d) { const A = d.agony; d.agony = null; if (A.n > 0) { fx.ring(d.pos, .2, 1.2, 'chaos', .4); damage(d, A.n, { ...A.S, src: 'agony' }, false, true); } }
   // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
   // that stored damage, its area more by how full it is. note: the stored damage as it is, not scaled by the skill's modifiers
+  // Ritual Sacrifice: a Rare (or Unique) monster's corpse at the cursor is consumed, else you stab yourself for its share
+  // of your life; either way its buff, for its duration. note: the monster modifiers it grants are not in the scene
+  K.sacrifice = S => {
+    const d = corpseAt(S.at, Math.max(S.A, SIM.snap)), rare = d && POWER[d.stat.rarity] >= POWER.rare;
+    if (rare) eat(d, 'blood'); else { me.life = Math.max(1, me.life - me.maxL * S.dmg.stats['head_hunt_%_life_to_remove_on_self_stab'] / 100); fx.emit(10, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 1.5, up: 1, life: .4, size: .14, c: 'blood' }); }
+    setBuff({ label: S.label, name: S.name, c: css('blood'), s: durOf(S) });
+  };
   K.iron = S => {
     const st = S.dmg.stats, n = me.iron || 0; if (!n) return toast(t('{0}: nothing stored', S.label));
     const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * n / st.warding_steel_maximum_stored_mitigated_physical_damage);
