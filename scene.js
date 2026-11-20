@@ -1522,7 +1522,12 @@ export function initScene(el, api) {
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
       const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, uses = per ? Math.floor(Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0)) / per) : 2;
-      if (S.P.empowers && uses) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
+      // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
+      // Ground for its secondary duration
+      // note: that added damage as the gem gives it, without your modifiers
+      const wc = ws.wolf_warcry_empowered_attack_cold_damage_min_per_5_power_up_to_cap, k5 = wc && Math.floor(Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0)) / 5);
+      if (wc && uses) { empower = empower.filter(e => e.type !== 'cold'); empower.push({ type: 'cold', label: S.label, name: S.name, uses, s: 12, add: [wc * k5, ws.wolf_warcry_empowered_attack_cold_damage_max_per_5_power_up_to_cap * k5], chill: (ws.base_secondary_skill_effect_duration || 0) / 1000 }); say(t('{0} gains {1} from {2}', t('Attack'), t('Cold'), S.label) + ` ×${uses}`, 'cold'); }
+      else if (S.P.empowers && uses) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
       // Ancestral Cry: you embody Kaom for its duration (its more per endurance charge, which it removes): Volcanic Steps
       // every so far you travel (its shockwave), your melee Strikes and Slams Ancestrally Boosted, a Strike triggering
@@ -1615,7 +1620,7 @@ export function initScene(el, api) {
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
       later(.12, () => {
-        slammed(S, c, R); boom(c, R, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        slammed(S, c, R); boom(c, R, S); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
         // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
         // note: the branching of its fissures is not drawn
@@ -2004,6 +2009,9 @@ export function initScene(el, api) {
         if (E.type === 'infuse' && P.attack && hits) {
           S.els = [...new Set([...S.els, E.el])]; S.el = E.el; S.ail = [...new Set([...S.ail, ...ailOf([E.el])])]; empower.splice(k, 1);
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
+        } else if (E.type === 'cold' && P.attack && hits && S.dmg) {
+          const h = S.dmg.hits.cold || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, cold: [h[0] + E.add[0], h[1] + E.add[1]] } }; S.els = [...new Set([...S.els, 'cold'])]; if (P.slams) S.chillFor = E.chill;
+          if (--E.uses <= 0) empower.splice(k, 1);
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
