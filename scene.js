@@ -397,7 +397,6 @@ export function initScene(el, api) {
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
       if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((d.bar.stun || 0) / 5) / 100;
-      if (S.fireGain) raw.fire = (raw.fire || 0) + Object.values(raw).reduce((t, v) => t + v, 0) * S.fireGain / 100;
       const AT = d.attr >= 1 && attr();   // Attrition
       if (AT) for (const e in raw) raw[e] *= 1 + AT['skill_attrition_hit_damage_+%_final_vs_rare_or_unique_enemy_per_second_ever_in_presence_up_to_max'] * Math.floor(d.attr) / 100;
       // Vorana's Siege: more against an Isolated enemy, none of its allies within 6 m (keywords.json Isolated)
@@ -425,7 +424,7 @@ export function initScene(el, api) {
       // and Thrill of the Kill as lightning
       const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
-        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0) }];
+        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
