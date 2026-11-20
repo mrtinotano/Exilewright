@@ -1611,6 +1611,17 @@ export function initScene(el, api) {
         if (P.ground) ground(P.ground, at, S.A, P.dur, S);
         if (P.slams) slammed(S, at, S.A);
         if (P.jump) landed(S, at);
+        // Molten Crash: its Molten Fissures (its part, up to its limit, lasting its duration), one more for the Rage it
+        // consumes on landing if you have it, then its second slam setting them off
+        // note: one fissure without Rage is the description's plural read at its least; their length is not in the data
+        const ms = S.dmg?.stats, mc = ms?.molten_crash_max_number_of_fissures;
+        if (mc) {
+          const X = partOf(S, 'MoltenCrashFissurePlayer') || S, cost = ms.molten_crash_optionally_consume_X_rage_for_fissures, more = me.rage >= cost ? ms.molten_crash_number_of_additional_fissures_from_rage_consumption : 0;
+          if (more) me.rage -= cost;
+          const n = 1 + more, a0 = Math.atan2(S.dx, S.dz);
+          for (let j = 0; j < n; j++) fissure(X, at, a0 + (j - (n - 1) / 2) * .5, 5, X.A, 1, { dur: sh(S).duration || ms.base_skill_effect_duration / 1000, max: mc });
+          later(.3, () => { boom(at, S.A, Y); slammed(S, at, S.A); });
+        }
       };
       if (P.blink && !P.jump) {
         fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
@@ -1990,7 +2001,7 @@ export function initScene(el, api) {
   K.magma = S => {
     const st = S.dmg?.stats || {}, l = Math.hypot(S.at.x - pp.x, S.at.z - pp.z) || 1, k = clamp(l, st.magma_orb_target_distance_absolute_minimum / 10, st.magma_orb_target_distance_absolute_maximum / 10);
     const bounce = (from, to, left) => lob(fx.orb('fire', .25), V(from.x, from.y ?? 1.2, from.z), V(to.x, .2, to.z), .35, 1.4, () => {
-      pop(to, S.A, 'fire'); boom(to, S.A, S); quake(to, S.A); for (const o of objs) if (o.volcano && !o.dead && dist(o.pos, to) <= S.A + o.r) o.volcano();
+      pop(to, S.A, 'fire'); boom(to, S.A, S); slammed(S, to, S.A);
       if (left > 0) bounce({ x: to.x, y: .2, z: to.z }, { x: to.x + S.dx * st.magma_orb_base_bounce_range / 10, z: to.z + S.dz * st.magma_orb_base_bounce_range / 10 }, left - 1);
     }, { trail: 'fire' });
     bounce({ x: pp.x, z: pp.z }, { x: pp.x + S.dx * k, z: pp.z + S.dz * k }, sh(S).chains ?? st.number_of_chains ?? 0);
