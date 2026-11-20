@@ -1707,6 +1707,13 @@ export function initScene(el, api) {
         fx.emit(50, { p: { x: c.x, y: .3, z: c.z }, r: .8, dir: V(S.dx * R * 2.4, .5, S.dz * R * 2.4), v: 1.5, life: .45, size: .3, c: S.el, c2: 'white', drag: .6 });
         for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= 1.2 + SIM.body) later(dist(d.pos, c) / R * .3, () => hit(d, S));
         later(.15, () => touch({ x: (c.x + b.x) / 2, z: (c.z + b.z) / 2 }, R / 2, S));
+      } else if (S.dmg?.stats?.upheaval_number_of_spikes) {   // Glacial Cascade: its bursts from its offset over its length,
+        // closer together at first (its ease-in), each larger by its radius per stage, the last its final spike (its part)
+        const gs = S.dmg.stats, n = gs.upheaval_number_of_spikes, off = gs.cascade_attack_starting_distance_offset / 10, len = gs.cascade_attack_base_total_distance / 10, X = partOf(S, 'GlacialCascadeLastSpikePlayer');
+        for (let i = 1; i <= n; i++) later(i * .07, () => {
+          const k = off + (len - off) * (i / n) ** (gs['cascade_attack_ease_in_exponent_%'] / 100), p = { x: c.x + S.dx * k, z: c.z + S.dz * k }, last = i === n && X;
+          fx.pillar(p, R * .5, 1.5 + i * .25, S.el, .3, 2.4); boom(p, last ? X.A : R + i * gs['cascade_attack_radius_per_stage_+1_per_100'] / 1000, last || S, { soft: !last });
+        });
       } else {   // eruptions that walk away from you; the last one is the big one
         const n = 6, st = Math.max(1, R * 2);
         for (let i = 1; i <= n; i++) later(i * .09, () => {
