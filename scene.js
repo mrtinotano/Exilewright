@@ -2741,8 +2741,6 @@ export function initScene(el, api) {
     fx.ring(S.at, .3, S.A, 'chaos', .5);
   };
   function agonyEnds(d) { const A = d.agony; d.agony = null; if (A.n > 0) { fx.ring(d.pos, .2, 1.2, 'chaos', .4); damage(d, A.n, { ...A.S, src: 'agony' }, false, true); } }
-  // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
-  // that stored damage, its area more by how full it is. note: the stored damage as it is, not scaled by the skill's modifiers
   // Ritual Sacrifice: a Rare (or Unique) monster's corpse at the cursor is consumed, else you stab yourself for its share
   // of your life; either way its buff, for its duration. note: the monster modifiers it grants are not in the scene
   K.sacrifice = S => {
@@ -2750,6 +2748,8 @@ export function initScene(el, api) {
     if (rare) eat(d, 'blood'); else { me.life = Math.max(1, me.life - me.maxL * S.dmg.stats['head_hunt_%_life_to_remove_on_self_stab'] / 100); fx.emit(10, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 1.5, up: 1, life: .4, size: .14, c: 'blood' }); }
     setBuff({ label: S.label, name: S.name, c: css('blood'), s: durOf(S) });
   };
+  // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
+  // that stored damage, its area more by how full it is. note: the stored damage as it is, not scaled by the skill's modifiers
   K.iron = S => {
     const st = S.dmg.stats, n = me.iron || 0; if (!n) return toast(t('{0}: nothing stored', S.label));
     const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * n / st.warding_steel_maximum_stored_mitigated_physical_damage);
