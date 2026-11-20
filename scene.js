@@ -2897,8 +2897,6 @@ export function initScene(el, api) {
     const TC = onS('Trail of Caltrops'), st = TC?.dmg.stats;
     if (TC) Object.assign(move, { TC, drops: Array.from({ length: st.caltrops_on_dodge_X_triggers }, (_, k) => (st['caltrops_on_dodge_first_trigger_at_%_dodge'] + k * st['caltrops_on_dodge_trigger_interval_%_dodge']) / 100) });
   }
-  // its caltrops (its projectiles) within its secondary radius of you, for its duration
-  function caltropsOf(S) { const st = S.dmg.stats; for (let k = 0; k < (sh(S).projectiles || st.base_number_of_projectiles || 1); k++) hazardAt(S, around(pp, radOf(S)), durOf(S)); }
   addEventListener('keyup', e => { keys[e.code] = false; unhold(e.code); if (e.key === 'Alt' && !el.hidden) e.preventDefault(); });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; orbit = walk = false; if (held) release(); });
   dom.addEventListener('mousemove', e => {
@@ -3676,7 +3674,8 @@ export function initScene(el, api) {
     steer = P?.move || (wasd ? onGround((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0)) : null);
     if (move) {
       const m = move; m.k = Math.min(1, m.k + dt / m.dur); moving = true;
-      while (m.drops?.[0] <= m.k) { m.drops.shift(); caltropsOf(m.TC); }
+      // Trail of Caltrops: its caltrops (its projectiles) within its secondary radius of you, for its duration
+      while (m.drops?.[0] <= m.k) { m.drops.shift(); const S = m.TC; for (let k = 0; k < (sh(S).projectiles || S.dmg.stats.base_number_of_projectiles || 1); k++) hazardAt(S, around(pp, radOf(S)), durOf(S)); }
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
       if (m.S) {
         fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
