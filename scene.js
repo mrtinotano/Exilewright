@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -2318,6 +2318,15 @@ export function initScene(el, api) {
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
   // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
+  // Feast of Flesh: consumes up to its number of corpses around you; each recovers its life and mana over its recovery duration
+  K.feast = S => {
+    const st = S.dmg?.stats || {}, list = dummies.filter(d => d.corpse > 0 && dist(d.pos, pp) <= S.A).slice(0, st.feast_of_flesh_number_of_corpses), T = st.feast_of_flesh_recovery_duration / 1000;
+    if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
+    for (const d of list) eat(d, 'blood');
+    const L = list.length * st.feast_of_flesh_recover_X_life_per_corpse_consumed / T, M = list.length * st.feast_of_flesh_recover_X_mana_per_corpse_consumed / T;
+    thing(holder(pp), T, { tick: dt => { me.life = gain(me.life, me.maxL, L * dt); me.mana = gain(me.mana, me.maxM, M * dt); } });
+    fx.ring(pp, .2, S.A, 'blood', .5); say(`${S.label}: ${list.length}`, 'blood');
+  };
   const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
   K.cstaff = S => {
     const on = time < me.cstaff?.until, n = S.spent;
