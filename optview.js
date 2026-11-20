@@ -9,7 +9,7 @@ import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
-import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, leagues, weighted, siteQuery } from './trade.js';
+import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery } from './trade.js';
 
 const KEY = 'poe2opt';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -35,7 +35,7 @@ export function initOpt(el, ctx) {
   let thinking = false;          // supports being worked out
   let msg = {};                  // what the last action did, per card
   const G = {};                  // gear found, per build + slot + class + objective
-  let net = null, pendingLike = false;                // the trade site: { leagues, offline }
+  let net = null;                // the trade site: { leagues, offline }
   const wantMemo = { key: '', list: [] };
 
   // ---------- the build and the objective
@@ -172,7 +172,7 @@ export function initOpt(el, ctx) {
     if (net && !again) return;
     const me = net = { leagues: null, offline: false };
     leagues().then(l => { me.leagues = l; }, e => { me.leagues = []; me.offline = e.kind === 'offline'; })
-      .then(() => { if (net !== me || el.hidden) return; render(); if (pendingLike && me.leagues.length && !busy) { pendingLike = false; runLike(); } });
+      .then(() => { if (net !== me || el.hidden) return; render(); });
   }
   async function runGear() {
     const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel), league = leagueNow(), price = priceNow(), level = levelFor(b), state = STATUS[S.state] ? S.state : 'securable';
@@ -206,9 +206,9 @@ export function initOpt(el, ctx) {
   function found(b, g, sel, hit) {
     const { res, league } = hit, key = gk(), items = b.items || {}, value = valueOf(b, g, key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
     // only what raises the stat over what the character wears (an empty slot: anything that counts)
-    // the modifiers picked: only the better ones too, cheapest first (as the site lists them)
+    // the modifiers picked: every item found, cheapest first (as the site lists them)
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
-      .filter(x => x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
+      .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
     // the item itself on the site: its base (a unique: and its name), its seller and its price
     const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
@@ -334,13 +334,17 @@ export function initOpt(el, ctx) {
     }
   };
   render.money = () => CURRENCY.map(c => [c, moneyName(c)]);
-  // from the Equipment tab: items like the one worn in `slot`, or better, up to that price
-  render.like = (slot, max, currency) => {
-    const it = ctx.build().items?.[slot]; if (!it) return;
-    Object.assign(S, { slot, how: 'like', max, currency });
-    if (CATEGORY[classOf(it)]) S.cls[slot] = classOf(it);
-    S.like[slot] = wornLines(it); keep(); render();
-    if (net?.leagues?.length && !busy) runLike(); else pendingLike = true;   // the leagues are still on their way
+  render.price = priceHtml;
+  // from the Equipment tab: items better than the one worn in `slot`, up to that price (trade.js findBetter), in the
+  // league and with the sellers picked here. -> its answer and the league, or { error } (the text to show)
+  render.better = async (slot, max, currency, base, tick) => {
+    const b = ctx.build();
+    try {
+      const ls = net?.leagues?.length ? net.leagues : await leagues(), league = ls.includes(S.league) ? S.league : ls[0];
+      const res = await findBetter({ league, item: b.items[slot], base, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, level: levelFor(b),
+        state: STATUS[S.state] ? S.state : 'securable', tick: (text, ...a) => tick(t(text, ...a)) });
+      return { ...res, league };
+    } catch (e) { if (!e.kind) throw e; return { error: errText(e) }; }
   };
   return render;
 }

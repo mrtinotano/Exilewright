@@ -99,7 +99,12 @@ async function statIndex() {
     for (const e of groups.find(g => g.id === 'explicit')?.entries || []) text.set(e.id, shape(e.text));
     for (const e of groups.find(g => g.id === 'pseudo')?.entries || []) if (/ total to /.test(e.text)) totals.set(shape(e.text.replace(' total to ', ' to ')), e.id);
   } catch (e) { if (!(e instanceof TradeError)) throw e; }
-  return { known, desecrated: en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null, total: hash => totals.get(text.get('explicit.stat_' + hash)) || null };
+  const desecrated = en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null, total = hash => totals.get(text.get('explicit.stat_' + hash)) || null;
+  // the site's stats for one of priceLines' lines: a desecrated one by its wording, an attribute or a resistance as the
+  // item's total of it, any other as a normal, crafted, fractured or desecrated modifier alike
+  const idsOf = l => l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
+    : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
+  return { known, desecrated, total, idsOf };
 }
 export async function withIds(wants) {
   const { known, desecrated } = await statIndex();
@@ -202,9 +207,9 @@ export function propsOf(text) {
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
 export async function priceOf({ league, item, text = '', state = 'available', near = 10, deep = false }) {
   const props = propsOf(text);
-  const { known, desecrated, total } = await statIndex();
+  const { desecrated, idsOf } = await statIndex();
   const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
-    .map(l => ({ ...l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)] : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) }))
+    .map(l => ({ ...l, ids: idsOf(l) }))
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   // a rare weapon or armour whose damage or defence is asked: any base of its kind, as Exiled Exchange 2 asks (the
   // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
@@ -259,6 +264,32 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
   out.found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
   return out;
 }
+// Items better than `item`, from the Equipment tab: every line it has, each its own condition as the kind of modifier
+// it is there (normal, fractured, crafted, desecrated: the site's groups), at least its number (a negative one: just
+// having it), of its kind of item (`base`: of its base; a unique: that unique), up to the price. note: its implicits
+// and runes are not asked: the data has no trade stat for them. The cheapest `read` of them are
+// read and ranked by how far over the item's own numbers their lines go (the mean of theirs / its), the first `n` shown.
+// -> { found: [{ ...listing, up (that mean - 1) }] best first, total, body (the search, to open on the site), left (lines the site has no stat for) }
+const lineKey = l => l.hash ?? 'd:' + l.en;
+export async function findBetter({ league, item, base, price, level, state, read = 30, n = 10, tick }) {
+  const { known, desecrated } = await statIndex(), lines = priceLines(item).filter(l => l.varies)
+    .map(l => ({ ...l, id: l.en ? desecrated(l.en) : known && !known.has(`${l.kind}.stat_${l.hash}`) ? null : `${l.kind}.stat_${l.hash}` })), asked = lines.filter(l => l.id);
+  const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
+    stats: [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }],
+    filters: filters(classOf(item), price, level) }, sort: { price: 'asc' } };
+  tick?.('Searching the trade site ({0} of {1})…', 1, 1);
+  const s = await call('search?league=' + encodeURIComponent(league), body), todo = (s.result || []).slice(0, read), found = [];
+  for (let i = 0; i < todo.length; i += 10) {   // the site gives 10 at a time
+    tick?.('Reading {0} items…', Math.min(todo.length, i + 10));
+    for (const r of (await call(`fetch?ids=${todo.slice(i, i + 10).join()}&query=${s.id}`)).result || []) {
+      const l = r && readListing(r); if (!l?.item) continue;
+      const theirs = new Map(priceLines(l.item).map(x => [lineKey(x), x.value])), mine = asked.filter(x => x.value > 0);
+      found.push({ ...l, up: mine.length ? mine.reduce((a, x) => a + (theirs.get(lineKey(x)) ?? x.value) / x.value, 0) / mine.length - 1 : 0 });
+    }
+  }
+  found.sort((a, b) => b.up - a.up);
+  return { found: found.slice(0, n), total: s.total, body, left: lines.length - asked.length };
+}
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
   try {
@@ -286,9 +317,8 @@ async function search(out, seen, { league, slot, items, value, per, tick }, plan
 // the first `per` read and rated. -> findGear's answer, with body (the search, to open on the site) and left (lines the
 // site has no stat for)
 export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, tick }) {
-  const { known, desecrated, total } = await statIndex();
-  const asked = lines.map(l => ({ l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
-    : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) })).filter(x => x.ids.length);
+  const { idsOf } = await statIndex();
+  const asked = lines.map(l => ({ l, ids: idsOf(l) })).filter(x => x.ids.length);
   const body = { query: { status: { option: state }, ...unique && { name: unique, type: base },
     stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(({ l, ids }) => ids.map(id => ({ id, ...l.value > 0 && { value: { min: l.value } } }))) }] : [],
     filters: filters(cls, price, level) }, sort: { price: 'asc' } };

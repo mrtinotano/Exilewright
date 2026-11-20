@@ -891,5 +891,7 @@
  "Jade": "Jade",
  "{0}: {1} Jade consumed": "{0}: {1} de jade consumido",
  "Sprinting": "Esprintar",
- "Swarm's Advance": "Avance del enjambre"
+ "Swarm's Advance": "Avance del enjambre",
+ "How much higher its modifiers are than yours, on average": "Cuánto más altos son sus modificadores que los tuyos, de media",
+ "Only this base": "Solo esta base"
 }

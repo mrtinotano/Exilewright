@@ -891,5 +891,7 @@
  "Jade": "หยก",
  "{0}: {1} Jade consumed": "{0}: ใช้หยก {1}",
  "Sprinting": "วิ่ง",
- "Swarm's Advance": "ฝูงรุกคืบ"
+ "Swarm's Advance": "ฝูงรุกคืบ",
+ "How much higher its modifiers are than yours, on average": "ม็อดของมันสูงกว่าของคุณเท่าไรโดยเฉลี่ย",
+ "Only this base": "เฉพาะเบสนี้"
 }

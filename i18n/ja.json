@@ -891,5 +891,7 @@
  "Jade": "ヒスイ",
  "{0}: {1} Jade consumed": "{0}: ヒスイを{1}消費",
  "Sprinting": "スプリント",
- "Swarm's Advance": "スウォームアドバンス"
+ "Swarm's Advance": "スウォームアドバンス",
+ "How much higher its modifiers are than yours, on average": "モディファイアが平均であなたのものよりどれだけ高いか",
+ "Only this base": "このベースのみ"
 }

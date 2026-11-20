@@ -169,7 +169,7 @@ function itemParts(it, en = true) {
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
   const impl = base.implicits.filter(id => !radiusOnly(D.implicits[id])).flatMap((id, i) => lines(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i]))));
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
-  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang));
+  const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang).map(l => en && m.kind ? `{${m.kind}}${l}` : l));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
   const rune = it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
@@ -224,7 +224,7 @@ function matchLines(lines, cands, family = () => null) {
       const out = off > 0, bout = best?.off > 0;
       if (!best || out < bout || out === bout && (c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off)) best = { c, values, off };
     }
-    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values), raw: best.values }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
+    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values), raw: best.values, src: lines[i] }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
     else missed.push(lines[i++]);
   }
   return { found, missed };
@@ -281,14 +281,16 @@ export function parseItem(text) {
   // name and tier), which also gives the range of each roll right after its number: "34(33-38)% increased Spirit", and
   // a note after a dash where there is one: "Used when you become Frozen — Unscalable Value". Path of Building opens a
   // rune's line with "{enchant}{rune}": closed by "(rune)" here, as the game's text has it
-  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => rest && /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : rest)
+  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => !rest ? rest : /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : /\{(fractured|crafted)\}/.test(tags) ? `${rest} (${tags.match(/\{(fractured|crafted)\}/)[1]})` : rest)
     .replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').trim()).filter(Boolean);
   let impl = [], expl = [];
   const tagged = new Map();   // rune and enchantment lines -> as the text has them
+  const kinds = new Map();    // a fractured or crafted modifier's line -> that (the trade site asks each kind apart)
+  const kindOf = (l, k) => { if (k === 'fractured' || k === 'crafted') { l = l.replace(TAG, ''); kinds.set(l, k); } return l; };
   const pi = body.findIndex(l => /^Implicits: \d+$/.test(l));
   if (pi >= 0) {   // Path of Building: "Implicits: N", then N implicit lines (its runes among them), then the rest
     const n = +body[pi].split(' ')[1], rune = l => TAGS[l.match(TAG)?.[1]] === 'skip' && !!tagged.set(l.replace(TAG, ''), l);
-    impl = body.slice(pi + 1, pi + 1 + n).filter(l => !rune(l)); expl = body.slice(pi + 1 + n).filter(l => !rune(l));
+    impl = body.slice(pi + 1, pi + 1 + n).filter(l => !rune(l)); expl = body.slice(pi + 1 + n).filter(l => !rune(l)).map(l => kindOf(l, l.match(TAG)?.[1]));
   } else {
     // the game: implicits end in "(implicit)", runes and enchantments in "(rune)" / "(enchant)". In
     // another language the tag is another word: a block whose lines all end in the same one is taken for the
@@ -304,7 +306,7 @@ export function parseItem(text) {
       const own = lines.length > 0 && tags.every(x => x && x === tags[0] && !TAGS[x]), mine = [];
       lines.forEach((l, i) => {
         const kind = own ? 'implicit' : TAGS[tags[i]] || 'explicit', line = tags[i] ? l.replace(TAG, '') : l;
-        if (kind === 'skip') tagged.set(line, l); else (kind === 'explicit' ? expl : mine).push(line);
+        if (kind === 'skip') tagged.set(line, l); else (kind === 'explicit' ? expl : mine).push(kindOf(line, tags[i]));
       });
       impl = own ? [...mine, ...impl] : [...impl, ...mine];
     }
@@ -356,7 +358,7 @@ export function parseItem(text) {
     ex = own(u);
     ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
-  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw }));   // as the item has them (filled)
+  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }));   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
   // data does not give the base, "Has 1 Charm Slot") is read as one of any item of its kind: a modifier, or for an
   // implicit line any base's implicit too, counted as its stats (item.extra, as runes)
@@ -451,13 +453,14 @@ export function priceLines(it) {
     const local = A.stats.some(([id]) => id.startsWith('local_'));
     if (A.desecrated) {
       const st = Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]])), en = statLinesEn(st);
-      if (en.length === 1) out.set('d:' + en[0], { en: en[0], text: statLines(st).join(' / '), value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
+      if (en.length === 1) out.set('d:' + en[0], { en: en[0], kind: 'desecrated', text: statLines(st).join(' / '), value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
       continue;
     }
     for (const p of parts(m.id, A.stats)) {
-      const a = p.at.find(Boolean), v = a ? m.values[a.k] * Math.abs(a.scale) : 0, s = a && A.stats[a.k];
+      const at = p.at.filter(Boolean), a = at[0], s = a && A.stats[a.k];
+      const v = at.length ? at.reduce((x, y) => x + m.values[y.k] * Math.abs(y.scale), 0) / at.length : 0;   // "Adds # to #": the mean, as the site filters it
       const text = statLines(Object.fromEntries(p.at.filter(Boolean).map(x => [A.stats[x.k][0], m.values[x.k]]))).join(' / ');
-      out.set(p.hash, { hash: p.hash, text, value: v, varies: !it.unique || !!s && s[1] !== s[2], local });
+      out.set(p.hash, { hash: p.hash, kind: m.kind || 'explicit', text, value: v, varies: !it.unique || !!s && s[1] !== s[2], local });
     }
   }
   return [...out.values()];
@@ -658,14 +661,28 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
           return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
-        </div><button data-act="like" data-slot="${slot}">${t('Find a better one on the trade site')}</button></div>` : ''}</section>`;
+        </div><div class="likego"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';
-  const buy = { max: '', cur: '' };   // the price typed for the trade search
+  const buy = { max: '', cur: '', base: false };   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
+  // the items found better than the one worn (trade.find): best first, each with its price, what it changes and Equip
+  let better = null;   // { slot, text (while searching), res }
+  function betterHtml(slot) {
+    const { text, res } = better;
+    if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
+    if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
+    return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique];
+      return `<div class="stashit ${l.rarity}"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">
+        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b><small>${esc((itemParts(l.item, false)?.expl || l.mods).join(' · '))}</small>${impactLine(gain(slot, l.item, 'buy' + i), 3)}</span>
+        ${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>`; }).join('')
+      || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
+      ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
+      <p class="note"><a href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a></p>`;
+  }
   function stashHtml() {
     const list = getBuild().stash || [];
     return `<h3>${t('Saved items')}</h3>${list.length ? `<div class="stash">${list.map((it, i) => {
@@ -735,6 +752,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     const t = e.target, items = getBuild().items ||= {}, slot = t.dataset.slot;
     if (t.dataset.act === 'likemax') { buy.max = t.value; return; }
     if (t.dataset.act === 'likecur') { buy.cur = t.value; return; }
+    if (t.dataset.act === 'likebase') { buy.base = t.checked; return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
       if (o) equip(slot, o.v);
@@ -758,7 +776,14 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
-    if (t.dataset.act === 'like') return trade.go(t.dataset.slot, buy.max, buy.cur);
+    if (t.dataset.act === 'like') {
+      const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
+      render();
+      trade.find(me.slot, buy.max, buy.cur, buy.base, text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
+        .then(res => { if (better === me) { me.res = res; render(); } });
+      return;
+    }
+    if (t.dataset.act === 'wearbuy') { const it = better?.res?.found[+t.dataset.i]?.item; if (!it) return; put(better.slot, structuredClone(it)); sel = better.slot; better = null; changed(); render(); return; }
     if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
     if (t.dataset.act === 'clear') { keep(getBuild(), items[t.dataset.slot]); delete items[t.dataset.slot]; }
     else if (t.dataset.act === 'wear') { const it = getBuild().stash?.[+t.dataset.i], to = it && whereTo(it); if (!to) return; put(to, it); sel = to; }
@@ -783,6 +808,8 @@ console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSoc
 // ...and written back the same way (a build exported to Path of Building keeps its runes)
 { const g = parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nImplicits: 1\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield').item;
   console.assert(parseItem(itemText(g))?.item.extra?.['base_fire_damage_resistance_%'] === 18 && /^\{enchant\}\{rune\}\+18% to Fire Resistance$/m.test(itemText(g)), 'itemText: runes', itemText(g)); }
+{ const g = parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nImplicits: 0\n{fractured}+40 to maximum Energy Shield').item;   // a fractured modifier stays one
+  console.assert(g.mods[0]?.kind === 'fractured' && /^\{fractured\}\+40 to maximum Energy Shield$/m.test(itemText(g)) && priceLines(g)[0]?.kind === 'fractured', 'parseItem: fractured', g.mods); }
 // ...and a rune no modifier is worded like
 console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem Level: 70\n--------\n32% increased Life and Mana Recovery from Flasks (rune)')
   ?.item.extra?.['flask_life_and_mana_to_recover_+%'] === 32, 'parseItem: a rune of its own wording');

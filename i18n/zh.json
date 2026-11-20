@@ -891,5 +891,7 @@
  "Jade": "翠玉",
  "{0}: {1} Jade consumed": "{0}：消耗 {1} 翠玉",
  "Sprinting": "衝刺",
- "Swarm's Advance": "群落進擊"
+ "Swarm's Advance": "群落進擊",
+ "How much higher its modifiers are than yours, on average": "其詞綴平均比你的高多少",
+ "Only this base": "僅限此基底"
 }
