@@ -44,7 +44,7 @@ export const ELEMENTS = ['fire', 'cold', 'lightning', 'chaos', 'physical'];
 export const AILMENT = { fire: 'ignite', cold: 'freeze', lightning: 'shock', chaos: 'poison', physical: 'bleed' };
 export const STATE = {
   ignite: 'Ignite', chill: 'Chill', freeze: 'Freeze', shock: 'Shock', poison: 'Poison', bleed: 'Bleeding',
-  armour: 'Broken Armour', stun: 'Heavy Stun', curse: 'Curse', mark: 'Mark', expo: 'Exposure', electrocute: 'Electrocution', pin: 'Pinned', maim: 'Maimed',
+  armour: 'Broken Armour', stun: 'Heavy Stun', curse: 'Curse', mark: 'Mark', expo: 'Exposure', electrocute: 'Electrocution', pin: 'Pinned', maim: 'Maimed', blind: 'Blind',
 };
 export const GROUND = {
   burning: 'Ignited Ground', chilled: 'Chilled Ground', shocked: 'Shocked Ground', oil: 'Oil', gas: 'Gas cloud',

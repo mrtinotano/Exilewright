@@ -33,7 +33,7 @@ const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILME
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
 const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
-const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
+const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
@@ -41,7 +41,8 @@ const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic War
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
-const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const MAIM = { move: 30, evasion: 15, time: 4 };
+const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
@@ -378,7 +379,7 @@ export function initScene(el, api) {
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
-      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
@@ -486,6 +487,7 @@ export function initScene(el, api) {
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
+    if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     if (d.agony && S.src !== 'agony' && (d.agony.n += total * d.agony.pct / 100) >= d.life) agonyEnds(d);   // Inevitable Agony
     // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
@@ -524,7 +526,7 @@ export function initScene(el, api) {
   function condN(c, d, S) {
     const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
     const is = en ? { LowLife: lifeK(d) <= LOW, FullLife: d.life >= d.max, Frozen: st('freeze'), Bleeding: st('bleed'), Poisoned: st('poison'), Ignited: st('ignite'), Burning: st('ignite'),
-      Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
+      Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity) }
       : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
@@ -1056,7 +1058,7 @@ export function initScene(el, api) {
   function useCorpse(S) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
-    const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); if (S.P.gain) chargeBy(S.P.gain, S);
+    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; eat(d, S.el); if (S.P.gain) chargeBy(S.P.gain, S);   // life: the corpse's monster's
     return p;
   }
 
@@ -1075,7 +1077,12 @@ export function initScene(el, api) {
       if (g.dead || dist(g, c) > R + g.r) continue;
       if (g.type === 'gas') {
         g.dead = true; say(t('{0}: the gas cloud explodes', S.label), 'fire');
-        later(.08, () => boom(g, g.r, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' }));
+        // Decompose's: its explosion part after its delay, and its permillage of the corpse's life as chaos damage
+        const X = partOf(g.S, 'CorpsewadeCorpseCloudExplosionPlayer'), gs = g.S.dmg?.stats || {}, n = (g.corpse || 0) * (gs.corpse_explosion_monster_life_permillage_chaos || 0) / 1000;
+        later(X ? (gs.explosion_delay_ms || 0) / 1000 : .08, () => {
+          boom(g, g.r, X ? { ...X, mult: g.S.mult, src: 'cloud' } : { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
+          if (n > 0) area(g, g.r, { ...g.S, el: 'chaos', els: ['chaos'], ail: [], src: 'cloud', dmg: { ...g.S.dmg, hits: { chaos: [n, n] } } }, { noPay: true });   // the corpse's life: no bonus of the scene's
+        });
       } else if (g.type === 'oil' && fire) {
         g.dead = true; say(t('{0}: the oil catches fire', S.label), 'fire');
         fx.explode(g, g.r, 'fire', { soft: true }); ground('burning', g, g.r, GROUND_TIME.burning, { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
@@ -2289,7 +2296,9 @@ export function initScene(el, api) {
       const P = S.P, R = S.A, dur = P.plant && P.dur || Math.min(P.dur || SIM.groundTime, 12); let c = S.at;   // a plant lasts its own duration (Nature's Archon's 200% more)
       if (P.corpse) { c = useCorpse(S); if (!c) return; }
       fx.ring(c, .2, R, S.el, .45);
-      if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
+      // its ground grows its % a second up to its most (Decompose); a cloud made of a corpse keeps that monster's life
+      const zs = S.dmg?.stats || {}, gr = zs['active_skill_ground_effect_area_of_effect_+%_final_per_second'];
+      if (P.ground) { ground(P.ground, c, R, dur, S, gr && { per: gr, max: zs['active_skill_ground_effect_area_of_effect_+%_final_per_second_max'] }).corpse = c.life; area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
       if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed);
       limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals ?? S.dmg?.stats?.number_of_poison_cloud_allowed);   // Profane Ritual, Decompose: up to their most
@@ -3996,7 +4005,7 @@ export function initScene(el, api) {
     if (move && !move.S && !a.area && !foresight) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
     if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }
     if (!a.unblockable && activeBlock(d, a)) return;
-    if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     if (Math.random() * 100 < blockChance(c, a)) return blocked(d);
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);

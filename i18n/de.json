@@ -785,6 +785,7 @@
  "The updates could not be checked ({0}).": "Die Suche nach Updates ist fehlgeschlagen ({0}).",
  "Electrocution": "Elektrisiert",
  "Maimed": "Verstümmelt",
+ "Blind": "Blenden",
  "Pinned": "Festgesetzt",
  "{0} cannot curse enemies above level {1}": "{0} kann Gegner über Stufe {1} nicht verfluchen",
  "No skill of the build is used by hand: they are always on.": "Keine Fertigkeit des Builds wird von Hand eingesetzt: Sie sind immer aktiv.",
