@@ -703,7 +703,8 @@ export function skill(g, b, treeGear) {
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
+  const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
