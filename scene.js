@@ -680,11 +680,11 @@ export function initScene(el, api) {
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
-      inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
+      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
       const SCn = S.dmg.sum?.['support_%_chance_to_shock_nearby_enemy_on_shock'];
-      if (SCn) for (const e of inside(d.pos, S.dmg.sum.shock_nearby_enemy_base_area_of_effect_radius / 10)) if (e !== d && roll(SCn)) inflict(e, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect });
+      if (SCn) for (const e of inside(d.pos, S.dmg.sum.shock_nearby_enemy_base_area_of_effect_radius / 10)) if (e !== d && roll(SCn)) inflict(e, 'shock', S, 1, raw, so);
     }
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
@@ -701,7 +701,7 @@ export function initScene(el, api) {
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Uul-Netol's Embrace: its share of chaos   // Tumult's consumed frenzy charge
+    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Tumult's consumed frenzy charge; Uul-Netol's Embrace: its share of chaos
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
