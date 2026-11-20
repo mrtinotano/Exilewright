@@ -279,7 +279,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { jade: 0, jadeIn: null, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { jade: 0, jadeIn: null, seeds: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -468,6 +468,7 @@ export function initScene(el, api) {
       d.mark = null; trigger(M.S, 'mark', d); fx.ring(d.pos, .3, 1.5, 'mark', .35);
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
+    if (crit && own && /rare|unique/.test(d.stat.rarity) && onS('Midnight Zenith')) zenith(onS('Midnight Zenith'), d);
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
@@ -2684,6 +2685,15 @@ export function initScene(el, api) {
     if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); }
     fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'cold', .5); say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
   };
+  // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its seeds; at its number they
+  // are consumed for its crystals within its radius of that enemy. note: the seeds for a killing critical hit, and how
+  // long the crystals last, are not in the data: only the first is counted, and they stay until something hits them
+  function zenith(S, d) {
+    const st = S.dmg.stats, need = st.midnight_star_attempt_to_consume_x_ice_seeds_to_create_an_ice_crystal_each_time_you_gain_ice_seeds;
+    if ((me.seeds = (me.seeds || 0) + st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy) < need) return;
+    me.seeds -= need; 
+    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(S) || Infinity);
+  }
   // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
   // the copies can shatter other mirrors in turn
