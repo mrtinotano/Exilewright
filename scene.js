@@ -29,8 +29,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
-const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
+const NOHIT = new Set(['temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -101,7 +101,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -180,7 +180,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || g.name === 'Iron Ward' ? [i] : []);   // Temporal Rift, Iron Ward: on, and used
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast'].includes(g.name) ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection): on, and used
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -1184,6 +1184,9 @@ export function initScene(el, api) {
       { c: 'blood', get: (s, k) => flaskGain(0, s.ancient_gifts_life_flask_charges_restored * k) }] },
     // Rip: a killing blow of a supported melee attack on a bleeding enemy, its chance for a Blood Remnant within its radius;
     // collected, its faster life regeneration for its duration
+    // Grim Feast: a Reviving minion slain in your Presence (its chance) leaves a Grim Remnant storing its % of the minion's
+    // maximum life; collected, it adds to the life you hold, up to its most (see grim)
+    'Grim Feast': { c: 'chaos', get: (s, k, S) => { me.grim = Math.min(s.grim_remnant_max_health_stored, (me.grim || 0) + S.store * k); } },
     Rip: { c: 'blood', get: (s, k, S) => { const su = S.dmg.sum; me.rip = { rate: su['rip_support_life_regeneration_rate_+%'] * k, until: time + su.rip_support_buff_base_duration / 1000 }; } },
   };
   const leechIn = (r, n) => { const q = me.leech[r]; q.left += n; q.rate = q.left; };   // over one second, as Leech
@@ -1606,9 +1609,17 @@ export function initScene(el, api) {
       remove() {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
+        if (e.keep && e.slain) fallen(S, e);
       } };
     const L = S.dmg?.minionLife;
-    if (L > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .3, life: L, hurt(n) { fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
+    if (L > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .3, life: L, max: L, hurt(n) {
+      // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
+      // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
+      // explosion's damage is not in its data
+      const B = objs.find(o => o.bone && !o.dead);
+      if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
+        n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
+      fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
   // Plague Bearer: while on, stores its % of the poison damage you deal, up to its most; used again, it unleashes the
@@ -1948,6 +1959,7 @@ export function initScene(el, api) {
       const k = S.name;
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
       if (tog[k] && k === 'Plague Bearer') return plague(S);   // Plague Bearer: used, it unleashes
+      if (tog[k] && k === 'Grim Feast') return grim(S);   // Grim Feast: used, Grim Resurrection
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
@@ -2945,6 +2957,23 @@ export function initScene(el, api) {
   K.pain = S => offer(S, 'pain', S.dmg.stats.base_number_of_pain_offerings_allowed);
   // Soul Offering: while its spike stands, your spells deal its more damage. note: its increased spell damage is applied as more
   K.soul = S => offer(S, 'soul', S.dmg.stats.base_number_of_power_offerings_allowed);
+  // Bone Offering: a minion becomes its bone spike for its duration, up to its limit; see minion's hurt
+  // note: the scene's spike is not attacked (its life is not in the data), so its shields last its duration
+  K.bone = S => offer(S, 'bone', S.dmg.stats.base_number_of_bone_offerings_allowed);
+  // Grim Feast: a slain persistent minion waits to be Revived; in your Presence, while Grim Feast is on, it leaves its
+  // Grim Remnant. Used again (Grim Resurrection), the life you hold Revives the dead minions, oldest first, up to that
+  // much total life of theirs; it is all consumed. note: the game's own Revive after a delay is not in the data
+  // (PoB2 MinionRevivalTimeBase), so the scene's minions come back only this way or by using their skill again
+  function fallen(S, e) {
+    me.fallen.push({ name: S.name, life: e.segs[0].max });
+    const G = onS('Grim Feast'), s = G && rstats(G);
+    if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
+  }
+  function grim(S) {
+    let n = me.grim || 0, k = 0; me.grim = 0;
+    me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n) return !!X; n -= f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
+    fx.ring(pp, .3, 2, 'chaos', .5); say(t('{0}: {1} Revived', S.label, k), 'chaos');
+  }
   // Wither: channelled, its area drifts toward where you aim at its speed; each use Withers the enemies in it
   K.wither = S => {
     const st = S.dmg.stats, W = me.wither, c = W && time - W.t < .5 ? W : { x: S.at.x, z: S.at.z }, l = dist(c, S.at), v = Math.min(l, st.wither_channeled_move_targeting_area_X_units_per_second / 10 * (time - (W?.t ?? time)));
@@ -4213,6 +4242,14 @@ export function initScene(el, api) {
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
+    // Healing Runes: while the buff it supports is on, every its interval you lose up to its % of your maximum Ward and
+    // heal its % of what you lost, split between your minions not on full life. note: who counts as nearby is not in
+    // its data (the scene's: all your minions; you are not healed), nor whether Ward is lost with none to heal (here it is not)
+    const HR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.support_healing_runes_healing_pulse_interval_ms)?.dmg.sum;
+    if (HR && time - (me.runesAt ?? -99) >= HR.support_healing_runes_healing_pulse_interval_ms / 1000) {
+      me.runesAt = time; const hurt = objs.filter(o => o.minion && !o.dead && o.segs?.[0].life < o.segs[0].max), w = Math.min(me.ward, me.maxW * HR['support_healing_runes_maximum_ward_spent_per_pulse_%'] / 100);
+      if (hurt.length && w > 0) { me.ward -= w; for (const o of hurt) { const g = o.segs[0]; g.life = Math.min(g.max, g.life + w * HR['support_healing_runes_healing_per_ward_spent_%'] / 100 / hurt.length); fx.glow({ x: o.pos.x, y: 1, z: o.pos.z }, .6, 'gold', .3); } }
+    }
     // Ravenous Swarm: while it is on and an enemy is in its area, a swarm emerges from you at its interval, for its
     // duration, up to its most (the oldest gives way). note: the cooldown rate that speeds it up is not in the scene
     const RS = onS('Ravenous Swarm'), rs = RS?.dmg.stats;

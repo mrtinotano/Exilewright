@@ -401,6 +401,7 @@
  "{0}: your next skill repeats {1} times": "{0}: tu siguiente habilidad se repite {1} veces",
  "{0}: {1} enemies cursed": "{0}: {1} enemigos malditos",
  "{0}: {1} raised from corpses": "{0}: esbirros alzados de cadáveres ×{1}",
+ "{0}: {1} Revived": "{0}: {1} esbirros revividos",
  "Accuracy": "Precisión",
  "Basic attack": "Ataque básico",
  "Beast": "Bestia",

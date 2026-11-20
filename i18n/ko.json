@@ -401,6 +401,7 @@
  "{0}: your next skill repeats {1} times": "{0}: 다음 스킬이 {1}회 반복",
  "{0}: {1} enemies cursed": "{0}: 적 {1}명 저주",
  "{0}: {1} raised from corpses": "{0}: 시신에서 {1} 소환",
+ "{0}: {1} Revived": "{0}: 소환수 {1}마리 부활",
  "Accuracy": "정확도",
  "Basic attack": "기본 공격",
  "Beast": "야수",

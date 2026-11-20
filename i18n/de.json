@@ -401,6 +401,7 @@
  "{0}: your next skill repeats {1} times": "{0}: deine nächste Fertigkeit wiederholt sich {1}-mal",
  "{0}: {1} enemies cursed": "{0}: {1} Gegner verflucht",
  "{0}: {1} raised from corpses": "{0}: {1} aus Leichen erweckt",
+ "{0}: {1} Revived": "{0}: {1} Kreaturen wiederbelebt",
  "Accuracy": "Treffgenauigkeit",
  "Basic attack": "Normaler Angriff",
  "Beast": "Bestie",

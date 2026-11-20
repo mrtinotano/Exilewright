@@ -401,6 +401,7 @@
  "{0}: your next skill repeats {1} times": "{0}：你的下一個技能重複 {1} 次",
  "{0}: {1} enemies cursed": "{0}：{1} 名敵人受詛咒",
  "{0}: {1} raised from corpses": "{0}：從屍體召喚了 {1} 個召喚物",
+ "{0}: {1} Revived": "{0}：復甦了 {1} 個召喚物",
  "Accuracy": "命中值",
  "Basic attack": "基本攻擊",
  "Beast": "野獸",
