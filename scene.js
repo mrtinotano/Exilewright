@@ -2470,6 +2470,23 @@ export function initScene(el, api) {
     fx.ring(S.at, .3, S.A, 'curse', .35);
     for (const d of inside(S.at, S.A).filter(d => d.curse && d.curse.s <= d.curse.full / 2).slice(0, st.hexblast_maximum_number_of_explosions)) { d.curse = null; boom({ x: d.pos.x, z: d.pos.z }, r, S); }
   };
+  // Volatile / Bitter Dead: consumes its corpses (up to its number) where you aim, each a core for its duration that seeks
+  // the nearest enemy, its aura part hitting those around it (its Ignite / Chill), and explodes at its end (its explosion
+  // part). note: the core's speed and how often its aura hits are not in the data: 3 m/s, every 0.5 s
+  K.volatile = S => {
+    const ks = Object.keys(S.dmg.parts || {}), X = partOf(S, ks.find(k => /Explosion/.test(k))), U = partOf(S, ks.find(k => /Aura/.test(k)));
+    const list = corpses(S.at, Math.max(S.A, SIM.snap)).slice(0, S.dmg.stats.volatile_dead_base_number_of_corpses_to_consume);
+    if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
+    for (const d of list) {
+      eat(d, S.el); const m = fx.orb(S.el, .3); m.position.set(d.pos.x, 1, d.pos.z); let tk = 0;
+      thing(m, durOf(S), { name: S.name,
+        tick(dt) {
+          const p = m.position, e = near(p, 15); if (e) { const k = dist(e.pos, p); if (k > .5) { p.x += (e.pos.x - p.x) / k * 3 * dt; p.z += (e.pos.z - p.z) / k * 3 * dt; } }
+          if ((tk -= dt) <= 0 && U) { tk = .5; fx.ring(p, .2, U.A, S.el, .3, { a: .4 }); area(p, U.A, U); }
+        },
+        end: () => X && boom({ x: m.position.x, z: m.position.z }, X.A, X) });
+    }
+  };
   K.twister = S => {
     const st = S.dmg?.stats || {}, W = objs.find(o => o.whirl && !o.dead && dist(o.c, pp) <= o.R()), n = (sh(S).projectiles || 1) + (W ? W.stage : 0);
     if (W) W.dead = true;   // it consumes the Whirlwind: one more twister per stage, more damage per stage
