@@ -1307,6 +1307,20 @@ export function initScene(el, api) {
   function stores(st, U, pd, dt) { U.stored += pd * dt; return dt * pd * 60 / (st['toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty'] || Infinity) / 100; }
   const burst = (st, n) => ({ more: 1 + Math.min(st['toxic_pustule_max_burst_damage_+%_final_from_stored_poison'] || 0, n / (st['toxic_pustule_burst_1%_more_damage_per_x_stored_poison'] || Infinity)) / 100,
     r: Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, n / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10 });
+  // Shockchain Arrow: its hit on an enemy with a lightning ailment releases its shockwave (its explosion part) there and
+  // consumes the Shock, then chains its more times on to such enemies near, each releasing a shockwave; after the last it
+  // lodges there as a Lightning Rod (up to its most). note: its homing is not simulated
+  function shockchain(S, d) {
+    const X = partOf(S, 'ShockchainArrowExplosionPlayer'); if (!X) return;
+    const st = S.dmg.stats, lit = e => has(e, 'shock') || has(e, 'electrocute'), seen = new Set([d]), wave = e => { boom({ x: e.pos.x, z: e.pos.z }, X.A, X); clear(e, 'shock'); };
+    let at = d, n = lit(d) ? st.shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy : 0;
+    if (n) wave(d);
+    for (; n > 0; n--) {
+      const e = near(at.pos, sh(S).chainRange || SIM.chainRange, e => !seen.has(e) && lit(e)); if (!e) break;
+      seen.add(e); fx.bolt(chest(at), chest(e), 'lightning', .18); hit(e, S); wave(e); at = e;
+    }
+    limit(o => o.rod && o.name === S.name, st.number_of_lightning_rods_allowed); rod(S, { x: at.pos.x, z: at.pos.z });
+  }
   // Lightning Spear: where it hits it bursts, its bolts (its secondary part's projectiles) striking as many other enemies
   // in its area; with a Frenzy Charge spent it first splits into its more copies, each hitting another enemy there and
   // bursting too. note: the bolts strike at once (their flight is a look only)
@@ -1748,7 +1762,7 @@ export function initScene(el, api) {
       // Exsanguinate: its tendrils, each on another of the enemies nearest your aim. note: its cone's angle is not in the data
       const B = d && S.dmg?.stats?.blood_tendrils_beam_count;
       if (B) nearest(S.at, B, e => dist(e.pos, S.from) <= SIM.castRange).forEach(e => chain(h, e, S, n));
-      else if (d) chain(h, d, S, n);
+      else if (d) { chain(h, d, S, n); shockchain(S, d); }
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
     rain(S) {
