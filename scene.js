@@ -3860,6 +3860,12 @@ export function initScene(el, api) {
     // Sorcery Ward: a barrier of its share of your armour and evasion taking the elemental damage of hits, back to full its
     // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when
     // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
+    // Ravenous Swarm: while it is on and an enemy is in its area, a swarm emerges from you at its interval, for its
+    // duration, up to its most (the oldest gives way). note: the cooldown rate that speeds it up is not in the scene
+    const RS = onS('Ravenous Swarm'), rs = RS?.dmg.stats;
+    if (rs && near(pp, RS.A) && time - (me.swarmAt ?? -99) >= rs.base_cooldown_modifiable_repeat_interval_ms / 1000) {
+      me.swarmAt = time; limit(o => o.kind === RS.name, rs.ravenous_swarm_maximum_swarm_count); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
+    }
     const SW = onS('Sorcery Ward')?.dmg.stats, GD = onS('Ghost Dance')?.dmg.stats;
     if (!SW) me.aegis = 0; else if (time - (me.aegisAt ?? -99) >= SW.aegis_recharge_delay_ms / 1000) me.aegis = ((c.armour || 0) + (c.evasion || 0)) * SW['aegis_unique_shield_max_value_from_%_armour_evasion'] / 100;
     if (!GD) me.ghost = 0; else {
