@@ -363,6 +363,9 @@ export function initScene(el, api) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
       crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges'); if (crit) (me.critAt ||= {})[S.name] = time;
+      // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
+      const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
+      if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
@@ -679,6 +682,9 @@ export function initScene(el, api) {
     if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
       inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
+      // Shock Conduction: its chance to shock each other enemy within its radius too
+      const SCn = S.dmg.sum?.['support_%_chance_to_shock_nearby_enemy_on_shock'];
+      if (SCn) for (const e of inside(d.pos, S.dmg.sum.shock_nearby_enemy_base_area_of_effect_radius / 10)) if (e !== d && roll(SCn)) inflict(e, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect });
     }
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
@@ -695,7 +701,7 @@ export function initScene(el, api) {
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100) * A.breakMore;   // Tumult's consumed frenzy charge
+    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Uul-Netol's Embrace: its share of chaos   // Tumult's consumed frenzy charge
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
@@ -828,8 +834,10 @@ export function initScene(el, api) {
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
     if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
-    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain); });
-    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain); });
+    // Bounty: a killing blow of a supported skill grants its more flask and charm charges
+    const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
+    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask')); });
+    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain * bk('charm')); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     if (st.shock > 0) gainBuff(S, 'shockKill');
@@ -2485,7 +2493,7 @@ export function initScene(el, api) {
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
-    S.mantra = null;   // a Mantra of Destruction Empowerment is for this use only
+    S.mantra = null; S.leapt = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
     if (!auto) {
       // Cadence: each use a stack of its more attack speed (useTime); a use at its most stacks makes the skill unusable
       // for its time, and they are lost. note: how long a stack lasts is not in its data, they last until then
