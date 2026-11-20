@@ -253,9 +253,8 @@ export function initScene(el, api) {
     Object.assign(me, { kaom: null, calamity: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
-  // Rage gained while already at its most builds Glory (Walking Calamity)
-  // note: the data gives no rate: one Glory per Rage
-  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) gloryPaid('rage', over); }
+  // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
+  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
   // your death, by an enemy or by your own life loss: everything restored
   function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
@@ -1994,7 +1993,7 @@ export function initScene(el, api) {
     }
   }
   // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
-  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = gst(S); gloryAdd(S, what === 'rage' ? n * +(S.name === 'Walking Calamity') : n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
+  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = gst(S); gloryAdd(S, n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
   // Incinerate gains its fuel from the mana spent on any other skill (its ms per mana), up to its most, not while it is used
   const fueling = n => time - (me.fuelAt[n] ?? -9) <= SIM.channelTick * 2;
   function fuelUp(S, mana) {
