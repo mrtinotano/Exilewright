@@ -205,6 +205,11 @@ export function propsOf(text) {
   return Object.fromEntries(Object.entries(p).filter(([, v]) => v > 0).map(([k, v]) => [k, Math.round(v * 10) / 10]));
 }
 console.assert(JSON.stringify(propsOf('Physical Damage: 280-615 (augmented)\nAttacks per Second: 1.40')) === '{"pdps":626.5}', 'propsOf');
+// what the cheapest listings of search s ask (at most MANY), but those skip(item) says to leave out
+async function cheapest(s, skip = () => false) {
+  const ids = (s.result || []).slice(0, MANY);
+  return ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price && !skip(r.item)).map(r => r.listing.price) : [];
+}
 // an unidentified item (sold so, since its modifiers are a gamble): the unidentified ones of its base and rarity listed,
 // of its item level or more (a higher one can roll better modifiers; a unique's does not matter), corrupted or not as
 // it is (English text only: else either). -> as priceOf
@@ -213,9 +218,7 @@ export async function priceUnid({ league, item, rarity, ilvl, corrupted, state =
     type_filters: { filters: { rarity: { option: rarity === 'normal' || !rarity ? 'nonunique' : rarity }, ...ilvl && rarity !== 'unique' && { ilvl: { min: ilvl } } } },
     misc_filters: { filters: { identified: { option: 'false' }, ...corrupted != null && { corrupted: { option: String(corrupted) } } } } } },
     sort: { price: 'asc' } });
-  const ids = (s.result || []).slice(0, MANY);
-  const prices = ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price).map(r => r.listing.price) : [];
-  return { total: s.total, near: null, within: 0, of: 0, raised: 0, upTo: 0, prices, id: s.id, ilvl: rarity !== 'unique' && ilvl };
+  return { total: s.total, prices: await cheapest(s), id: s.id, ilvl: rarity !== 'unique' && ilvl };
 }
 export async function priceOf({ league, item, text = '', state = 'available', near = 10, deep = false }) {
   const props = propsOf(text);
@@ -257,8 +260,7 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
     .some(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || ''));
   const sided = n || Object.keys(props).length;
   // what the cheapest alike ones ask (as Exiled Exchange 2 lists them): no range worked out of them
-  const ids = (s.result || []).slice(0, MANY);
-  const prices = ids.length ? ((await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []).filter(r => r?.listing?.price && !more(r.item)).map(r => r.listing.price) : [];
+  const prices = await cheapest(s, more);
   const raised = Object.values(wide);
   return { total: s.total, near: sided ? near : null, within: k, of: n, raised: raised.length, upTo: Math.max(0, ...raised), prices, id: s.id };
 }

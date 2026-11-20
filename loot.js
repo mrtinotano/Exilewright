@@ -157,12 +157,11 @@ export function initLoot(el, ctx) {
     const r = parseItem(text.replace(/\r/g, '').trim());
     if (!r) return show({ lines: [t('That is not item text, or the planner does not have its base.')] });
     const name = r.name || nameOf(r.item), s = settings();
-    // unidentified: priced as the unidentified ones like it are (corrupted: the English text's word only)
-    const unid = r.unidentified && { rarity: r.rarity, ilvl: r.ilvl, corrupted: /^Rarity:/m.test(text) ? /^Corrupted$/m.test(text) : null };
+    const unid = r.unidentified && r;   // priced as the unidentified ones like it are
     show({ name, lines: [t(s.deep ? 'Searching the trade site (thorough search: it can take longer)…' : 'Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = unid ? await priceUnid({ league, item: r.item, ...unid, state: s.state }) : await priceOf({ league, item: r.item, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
+      const p = unid ? await priceUnid({ ...r, league, state: s.state }) : await priceOf({ league, item: r.item, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
         ...s.deep || unid ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const cost = x => `${x.amount} ${t(x.currency)}`;

@@ -256,8 +256,8 @@ const UNID = /^(Unidentified|Sin identificar|Non identifié|Nicht identifiziert|
 // the four rarities in every language, in order (normal, magic, rare, unique): the glossary's Rarity text names each
 // before its colour in brackets ("normal (gris), mágica (azul), rara (amarillo) o única (marrón)")
 const RARITIES = ['normal', 'magic', 'rare', 'unique'];
-const RARITY_WORDS = Object.values(KW.Rarity || {}).filter((v, i, a) => typeof v === 'string' && Object.keys(KW.Rarity)[i].startsWith('def'))
-  .map(d => [...d.matchAll(/([^\s,、，]+)\s*[(（]/g)].map(m => m[1].toLowerCase())).filter(w => w.length === 4);
+const RARITY_WORDS = Object.entries(KW.Rarity || {}).filter(([k, v]) => k.startsWith('def') && typeof v === 'string')
+  .map(([, d]) => [...d.matchAll(/([^\s,、，]+)\s*[(（]/g)].map(m => m[1].toLowerCase())).filter(w => w.length === 4);
 // rarityWord: a rarity line's word ("Única", "Unique", "ユニーク") -> 'unique'...: the glossary's word, or one that starts as it
 // does (its gender or case may differ: única / único, уникальными / уникальный), or the end of it (in Thai and
 // Chinese the word before runs into it)
@@ -389,7 +389,7 @@ export function parseItem(text) {
   im.missed = own1.missed;
   return { item, slots: base.slots, missed: [...im.missed, ...ex.missed, ...left.map(l => tagged.get(l))].filter(l => !noise(l)),
     name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)),
-    rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text) };
+    rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text), corrupted: /^Rarity:/m.test(text) ? raw.includes('Corrupted') : null };   // corrupted: English text only
 }
 
 // ---------- what a slot can have and what the trade site lists (gear search, trade.js)
