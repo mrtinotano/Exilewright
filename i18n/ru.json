@@ -851,5 +851,6 @@
  "Nature's Archon": "Архонт природы",
  "{0} returns": "{0} возвращается",
  "{0} detonates": "{0} детонирует",
- "{0}: the Remnant affects your allies": "{0}: сгусток действует на ваших союзников"
+ "{0}: the Remnant affects your allies": "{0}: сгусток действует на ваших союзников",
+ "Not enough fuel for {0}": "Недостаточно топлива для {0}"
 }

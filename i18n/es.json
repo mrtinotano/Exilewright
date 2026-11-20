@@ -851,5 +851,6 @@
  "Nature's Archon": "Arconte de la naturaleza",
  "{0} returns": "{0} vuelve",
  "{0} detonates": "{0} detona",
- "{0}: the Remnant affects your allies": "{0}: el remanente afecta a tus aliados"
+ "{0}: the Remnant affects your allies": "{0}: el remanente afecta a tus aliados",
+ "Not enough fuel for {0}": "No hay combustible suficiente para {0}"
 }

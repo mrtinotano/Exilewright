@@ -851,5 +851,6 @@
  "Nature's Archon": "อาร์คอนพงไพร",
  "{0} returns": "{0} กลับมา",
  "{0} detonates": "{0} จุดระเบิด",
- "{0}: the Remnant affects your allies": "{0}: หยาดส่งผลต่อพันธมิตรของคุณ"
+ "{0}: the Remnant affects your allies": "{0}: หยาดส่งผลต่อพันธมิตรของคุณ",
+ "Not enough fuel for {0}": "เชื้อเพลิงไม่พอสำหรับ {0}"
 }

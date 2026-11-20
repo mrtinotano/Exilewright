@@ -89,7 +89,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [] };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -247,7 +247,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [] }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -1650,7 +1650,12 @@ export function initScene(el, api) {
         life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
+      // Incinerate's fuel: it needs its least to start and burns one second per second channelled
+      const FS = S.dmg?.stats, F = FS?.incinerate_maximum_fuel && (me.fuel[S.name] || 0), going = fueling(S.name);
+      if (F === 0 || F && (F <= 0 || !going && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
+      if (F) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
       me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);
+      if (cost > 0) fuelUp(S, cost);
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
@@ -1687,6 +1692,14 @@ export function initScene(el, api) {
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
+  }
+  // Incinerate gains its fuel from the mana spent on any other skill (its ms per mana), up to its most, not while it is used
+  const fueling = n => time - (me.fuelAt[n] ?? -9) <= SIM.channelTick * 2;
+  function fuelUp(S, mana) {
+    for (const g of api.build().gems) {
+      const st = g.name !== S.name && !fueling(g.name) && api.damage?.(g)?.stats, k = st?.incinerate_fuel_gain_per_mana_spent;
+      if (k) me.fuel[g.name] = Math.min(st.incinerate_maximum_fuel / 1000, (me.fuel[g.name] || 0) + mana * k / 1000);
+    }
   }
   function fire(i) {
     const b = base(i);
