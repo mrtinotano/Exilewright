@@ -1015,10 +1015,11 @@ export function initScene(el, api) {
   }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
-  const limit = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
+  // up to a limit: the oldest of the objects f picks gives way
+  const limit = (f, max) => { const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
   function earth(S, c, max, spike) {
-    limit(S, max);
+    limit(o => o.earth && o.name === S.name, max);
     const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
     m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
     pop(c, .6, 'dust');
@@ -1072,7 +1073,7 @@ export function initScene(el, api) {
   // when slammed, less within its first 0.5 s when enemies break it
   function shieldWall(S, a, b, c, dur) {
     const st = S.dmg.stats, r = (st.active_skill_base_secondary_area_of_effect_radius || 10) / 10, len = dist(a, b), n = Math.max(1, Math.round(len / (2 * r))), g = holder(c), born = time;
-    limit(S, st.base_number_of_shield_walls_allowed);
+    limit(o => o.earth && o.name === S.name, st.base_number_of_shield_walls_allowed);
     const segs = Array.from({ length: n }, (_, i) => {
       const k = (i + .5) / n, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k };
       const m = new THREE.Mesh(new THREE.BoxGeometry(len / n * .95, 1.3, .45), new THREE.MeshStandardMaterial({ color: 0x6b5a48, roughness: .95, flatShading: true }));
@@ -1293,7 +1294,7 @@ export function initScene(el, api) {
   // note: an absorbed element's damage per second scales as the skill's physical one does
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c), ts = S.dmg?.stats || {}, pull = ts['tornado_pull_strength_%'], DOT = Object.keys(S.dmg?.dot || {}).length > 0; let cur = S, tk = .2, pt = 0;
-    if (ts.number_of_tornados_allowed) { const old = objs.filter(x => x.vortex && x.name === S.name && !x.dead); while (old.length >= ts.number_of_tornados_allowed) old.shift().dead = true; }
+    limit(x => x.vortex && x.name === S.name, ts.number_of_tornados_allowed);
     const e = thing(g, dur, { name: S.name, vortex: true,
       tick(dt, e) {
         const p = g.position, col = cur.el === 'physical' ? 'dust' : cur.el;
@@ -1435,7 +1436,7 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
       // one at a time (Frost Bomb: its limit); Frost Bomb's exposure grows each pulse (its compounding magnitude) up to its cap
       const st = S.dmg?.stats || {}, cmp = st.active_skill_all_elemental_exposure_compounding_magnitude, eff = S.dmg?.ail?.expo.effect ?? 1;
-      const mine = objs.filter(o => o.orbOf === S.name && !o.dead); while (mine.length >= (st.base_maximum_number_of_frost_bombs || 1)) mine.shift().dead = true;
+      limit(o => o.orbOf === S.name, st.base_maximum_number_of_frost_bombs || 1);
       const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
       fx.ring(c, .2, 1.4, S.el, .4);
       let tk = .4;
@@ -1472,7 +1473,7 @@ export function initScene(el, api) {
       const fire = S.els.includes('fire'); let tk = 0;
       if (P.earthen) { fx.strip(a, b, 1.2, S.el, dur, { a: .6 }); return shieldWall(S, a, b, c, dur); }
       // its own limit (Flame Wall's 3); a wall with damage over time burns those in it (its damage per second), else hits
-      const mine = objs.filter(o => o.wall && o.name === S.name && !o.dead); while (mine.length >= (S.dmg?.stats?.number_of_allowed_firewalls || Infinity)) mine.shift().dead = true;
+      limit(o => o.wall && o.name === S.name, S.dmg?.stats?.number_of_allowed_firewalls);
       const strip = fx.strip(a, b, 1.2, S.el, dur, { a: .6 }), burns = Object.keys(S.dmg?.dot || {}).length > 0;
       thing(holder(c), dur, { wall: true, fire, a, b, name: S.name, label: S.label, S,
         tick(dt, e) {
@@ -1538,12 +1539,11 @@ export function initScene(el, api) {
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
-    // (its more hit damage) and two more
-    // note: the Empowered one's less damage taken and more movement speed are not simulated
+    // (its more hit damage) and two more (its less damage taken and more speed: not simulated)
     raise(S) {
       const r = Math.max(S.A, SIM.snap), list = dummies.filter(d => d.corpse > 0 && dist(d.pos, S.at) <= r).slice(0, S.R ? 4 : 1 + S.spent);
       const st = S.dmg?.stats || {}, life = durOf(S) || SIM.minionTime, emp = st['power_charged_zombie_hit_damage_+%_final'];
-      const raise = (X, p) => { const mine = objs.filter(o => o.kind === S.name && !o.dead); while (st.base_number_of_zombies_allowed && mine.length >= st.base_number_of_zombies_allowed) mine.shift().dead = true; minion(X, p, life, { kind: S.name }); };
+      const raise = (X, p) => { limit(o => o.kind === S.name, st.base_number_of_zombies_allowed); minion(X, p, life, { kind: S.name }); };
       if (!list.length && emp != null && charges.power > 0) { charges.power--; for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1)); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
       if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
       for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); raise(S, p); }
@@ -1687,7 +1687,7 @@ export function initScene(el, api) {
       const max = Object.entries(st).find(([k]) => /_max(?:imum)?_number_of_storms$/.test(k))?.[1] || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
         vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
         again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
-      const old = objs.filter(o => o.stormOf === S.name && !o.dead); while (old.length >= max) old.shift().dead = true;
+      limit(o => o.stormOf === S.name, max);
       // Firestorm's consumed Infusions: Fire, a larger area and more frequent bolts; Cold and Lightning, their own bolts too
       const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0), R = G0.R;
       const extra = (S.infs || []).filter(e => e !== 'fire').map(e => infPart(S, e)).filter(Boolean);
@@ -1787,7 +1787,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, VM = st.verisium_comet_number_of_minions_to_create;
       if (VM) later(delay, () => {
         const n = VM + (S.infs?.includes('verisium') ? partOf(S, 'SkyfallInfusedPlayer')?.dmg.stats.verisium_comet_number_of_minions_to_create || 0 : 0);
-        const mine = objs.filter(o => o.kind === S.name && !o.dead); for (let k = 0; k < n; k++) { if (mine.length >= (st.base_number_of_verisium_octopus_minions_allowed || n)) mine.shift().dead = true; mine.push(minion(S, around(c, R), sh(S).duration || st.base_skill_effect_duration / 1000, { kind: S.name })); }
+        for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_verisium_octopus_minions_allowed); minion(S, around(c, R), durOf(S), { kind: S.name }); }
       });
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
       const fly = Math.min(.4, delay);
@@ -1848,7 +1848,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, c = S.at, step = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * (st['volcano_gain_stage_every_%_of_cast_time'] || 100) / 100;
       const n = Math.min(st.volcano_maximum_number_of_stages || 1, 1 + Math.floor((S.held || 0) / step)), X = partOf(S, 'VolcanoProjectilePlayer'), XS = partOf(S, 'VolcanoSlamPlayer');
       const one = sh(X || S).projectiles || 1, spread = S.G?.radius2 || 3;
-      const old = objs.filter(o => o.volcano && o.name === S.name && !o.dead); while (old.length >= (st.volcano_base_number_of_geysers_allowed || 1)) old.shift().dead = true;
+      limit(o => o.volcano && o.name === S.name, st.volcano_base_number_of_geysers_allowed || 1);
       const spray = (k, Y) => { for (let j = 0; j < k; j++) { const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
         lob(fx.orb('fire', .14), V(c.x, 1.2, c.z), V(q.x, .1, q.z), .5, 2.4, () => boom(q, Y.A, { ...Y, mult: S.mult }, { soft: true }), { trail: 'fire' }); } };
       fx.text({ x: c.x, y: 2.4, z: c.z }, t('Stage {0}', n), css('fire'));
