@@ -868,5 +868,6 @@
  "{0} needs a Minion": "{0} braucht eine Kreatur",
  "Purple Flame of Chayula": "Violette Flamme von Chayula",
  "Ghost Shroud": "Geisterschleier",
- "Daze": "Benommenheit"
+ "Daze": "Benommenheit",
+ "{0}: nothing stored": "{0}: kein gespeicherter Schaden"
 }

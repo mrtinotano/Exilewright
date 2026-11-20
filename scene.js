@@ -29,8 +29,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -166,7 +166,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') ? [i] : []);   // Temporal Rift: on, and cast
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || g.name === 'Iron Ward' ? [i] : []);   // Temporal Rift, Iron Ward: on, and used
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -265,7 +265,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { pinn: null, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { pinn: null, iron: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -2638,6 +2638,13 @@ export function initScene(el, api) {
   const demon = () => me.demon ? Math.min(10, Math.floor(time - me.demon.at)) : 0;
   const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); me.demon = null; };
   K.demon = S => { if (me.demon) return demonOff(); me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name }; say(t('{0} on', S.label), 'fire'); };
+  // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
+  // that stored damage, its area more by how full it is. note: the stored damage as it is, not scaled by the skill's modifiers
+  K.iron = S => {
+    const st = S.dmg.stats, n = me.iron || 0; if (!n) return toast(t('{0}: nothing stored', S.label));
+    const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * 100 * n / st.warding_steel_maximum_stored_mitigated_physical_damage / 100);
+    me.iron = 0; boom({ x: pp.x, z: pp.z }, R, { ...S, els: ['physical'], el: 'physical', dmg: { ...S.dmg, hits: { physical: [n, n] } } });
+  };
   // Time Freeze: time stops for the enemies in its area, for its duration. note: the shorter stop for an enemy stopped
   // before (within its resistance duration) is not sized in the data, nor do their ailments pause here
   K.tfreeze = S => {
@@ -2959,7 +2966,7 @@ export function initScene(el, api) {
     return t;
   };
   function press(i, key) {
-    const b = api.byHand(i) && base(i); if (!b || move) return;
+    const b = slots().includes(i) && base(i); if (!b || move) return;   // what has a slot: by hand, Banners, Temporal Rift, Iron Ward
     held = null;
     if (b.P.stages && b.P.channel) { charge = { i, s: 0 }; held = { i, key }; return; }   // charge while held, release to fire
     if (b.P.toggle || b.kind === 'field') { use(i); return; }
@@ -3472,10 +3479,11 @@ export function initScene(el, api) {
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // a curse that lowers their damage (Enfeeble)
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
-    let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {};
+    let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
+      if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
