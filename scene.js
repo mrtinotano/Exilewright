@@ -1405,7 +1405,9 @@ export function initScene(el, api) {
     },
     orb(S) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
-      for (const o of objs) if (o.orbOf === S.name) o.dead = true;   // one at a time
+      // one at a time (Frost Bomb: its limit); Frost Bomb's exposure grows each pulse (its compounding magnitude) up to its cap
+      const st = S.dmg?.stats || {}, cmp = st.active_skill_all_elemental_exposure_compounding_magnitude, eff = S.dmg?.ail?.expo.effect ?? 1;
+      const mine = objs.filter(o => o.orbOf === S.name && !o.dead); while (mine.length >= (st.base_maximum_number_of_frost_bombs || 1)) mine.shift().dead = true;
       const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
       fx.ring(c, .2, 1.4, S.el, .4);
       let tk = .4;
@@ -1413,7 +1415,7 @@ export function initScene(el, api) {
         tick(dt, e) {
           m.position.y = 1.3 + Math.sin(e.s * 3) * .08; if (P.detonates) m.userData.core.scale.setScalar(.3 * (1 + e.s / dur * .7));
           if ((tk -= dt) > 0) return;
-          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
+          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, cmp && d.st.expo > 0 && d.expo ? Math.min(st.active_skill_all_elemental_exposure_compounding_magnitude_cap * eff, d.expo.mag + cmp * eff) : expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
           else if (P.chains) { tk = sh(S).bolts || .9; e.zap(); }
           else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
         },
