@@ -110,7 +110,8 @@ after the monster's defences, and ailments follow the game's rules (`GameConstan
 and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
 threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a
 while after one), bleeding and poison need a chance from the skill or the build, Armour Break lowers its armour until it
-is Fully Broken, Electrocute and Pin build up from the skills that can inflict them. Each skill keeps its own rules: what it
+is Fully Broken, Electrocute and Pin build up from the skills that can inflict them, and Maim (from the skill, the weapon,
+the tree, on fully breaking armour or once Pin ends) slows their movement and lowers their evasion. Each skill keeps its own rules: what it
 never or always inflicts, the more damage it deals when it consumes a state or hits one (frozen, shocked, immobilised...),
 against unique enemies or per charge spent. Curses apply their gem's resistances, armour, damage and speed (less on rarer
 monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, and marks add their

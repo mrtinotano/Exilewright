@@ -326,7 +326,7 @@ export function initScene(el, api) {
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (1 - far * (c.accuracyFalloff || 0) / 100);
-      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = 1;
@@ -398,7 +398,7 @@ export function initScene(el, api) {
   function condN(c, d, S) {
     const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
     const is = en ? { LowLife: lifeK(d) <= LOW, FullLife: d.life >= d.max, Frozen: st('freeze'), Bleeding: st('bleed'), Poisoned: st('poison'), Ignited: st('ignite'), Burning: st('ignite'),
-      Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Immobilised: st('immobilised'), ArmourFullyBroken: st('armour'),
+      Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Immobilised: st('immobilised'), ArmourFullyBroken: st('armour'),
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity) }
       : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
@@ -599,7 +599,7 @@ export function initScene(el, api) {
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; if (!S.src) remnantOn('stun', d); }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
-    else if (a === 'electrocute' || a === 'pin') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
+    else if (a === 'electrocute' || a === 'pin' || a === 'maim') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
     else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
     else if (a === 'ignite') fx.emit(8, { p, r: .25, v: .5, up: 2.2, life: .5, size: .32, c: 'fire', c2: 'ember' });
     event(a, d.pos, S);
@@ -652,12 +652,14 @@ export function initScene(el, api) {
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
     if (x('physical') && !N.bleed && roll(A.bleed)) inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect });
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
+    if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time });
+    if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
     const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100) * A.breakMore;   // Tumult's consumed frenzy charge
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
-      if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); }
+      if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -1958,6 +1960,7 @@ export function initScene(el, api) {
       } else if ((d.back -= dt) <= 0) revive(d);
       return;
     }
+    if (st.pin > 0 && st.pin <= dt && d.unpin) { inflict(d, 'maim', d.unpin.S, 1, null, { dur: d.unpin.s }); d.unpin = null; }
     for (const k in st) if (st[k] > 0) st[k] -= dt;
     for (const k in d.lock) d.lock[k] -= dt;
     for (const k in d.imm) d.imm[k] -= dt;
@@ -2346,10 +2349,12 @@ export function initScene(el, api) {
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
     let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
+    // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
+    const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), maim = d.st.maim > 0 ? Math.max(SLOW_FLOOR / ks, 1 - MAIM.move * d.stat.slowEffect / 100) : 1;
     d.wait -= dt;
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
     if (me.safe > 0) return;
-    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10;
+    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10 * maim;
     if (far <= (d.mon.aggro || 0) / 10) d.aggro = true;
     const q = d.aggro && wallIn(d);   // a Shield Wall in the way: it walks to it and attacks it
     if (q) {

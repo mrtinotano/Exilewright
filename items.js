@@ -78,6 +78,8 @@ function local(item) {
     r.range = w.range;
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
+    // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)
+    r.onHit = { maim: s['local_maim_on_hit_%'] || 0, maimCrit: !!s.local_always_maim_on_crit, bleed: s.local_bleed_on_hit ? 100 : s['local_chance_to_bleed_on_hit_%'] || 0 };
     r.tags = base.tags;   // mace, bow, onehand...: what kind of weapon it is
   }
   if (base.flask) r.flask = base.flask;

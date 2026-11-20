@@ -767,6 +767,7 @@ export function skill(g, b, treeGear) {
   const part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), own, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
+  if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
   const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
   out.curse = curse ? curseOf(st, sum, finals) : null;
   out.mark = mark ? markOf(st) : null;
@@ -896,6 +897,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
     bleed: all('base_chance_to_inflict_bleeding_%'), poison: all('base_chance_to_poison_on_hit_%'),
+    // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
+    maim: all('maim_on_hit_%'), maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimCrit: false,
+    maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
     freeze: scale(['hit_damage_freeze_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'),
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
