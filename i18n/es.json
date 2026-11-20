@@ -872,5 +872,6 @@
  "{0}: nothing stored": "{0}: no hay daño almacenado",
  "Combat log": "Registro de combate",
  "{0} kills {1}": "{0} mata a {1}",
- "You": "Tú"
+ "You": "Tú",
+ "Heat": "Calor"
 }

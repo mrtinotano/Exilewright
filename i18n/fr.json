@@ -872,5 +872,6 @@
  "{0}: nothing stored": "{0} : aucun dégât emmagasiné",
  "Combat log": "Journal de combat",
  "{0} kills {1}": "{0} tue {1}",
- "You": "Vous"
+ "You": "Vous",
+ "Heat": "Chaleur"
 }

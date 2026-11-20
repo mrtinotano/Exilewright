@@ -274,6 +274,7 @@ export function character(b, sum) {
       archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster') },
     // Elemental Infusions (keywords.json): the most of each kind (Verisium's: the most of any one), their duration,
     // the chances of one more on collecting, of not removing it when consumed, and what consuming one grants
+    heat: { delay: CHAR.heat_base_delay_before_decay_ms / 1000, rate: CHAR.heat_base_decay_rate_ms / 1000 },   // crossbow Heat: held a while, then lost one at a time
     infusion: { max: Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, (CHAR.base_maximum_infusions || 0) + v(sum, `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
       time: pct('infusion_duration_+%'), more: v(sum, 'additional_infusion_gain_chance_%') + v(sum, 'chance_%_for_extra_infusion_on_infused_remnant_pickup'),
       keep: v(sum, 'chance_to_not_consume_infusion_%'), power: v(sum, 'gain_a_power_charge_when_you_consume_an_elemental_infusion') > 0 },
