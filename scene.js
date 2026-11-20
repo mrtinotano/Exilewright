@@ -1146,6 +1146,7 @@ export function initScene(el, api) {
     for (let k = 0; k < n; k++) {
       const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
       boom(q, S.A, S, { soft: true, noPay: k > 0 });
+      limit(o => o.plant && o.name === S.name, st.number_of_poisonbloom_arrow_bloom_allowed);   // Toxic Growth: up to its most pustules
       const m = new THREE.Mesh(PUSTULE, new THREE.MeshStandardMaterial({ color: 0x5f8a2a, emissive: 0x1d3008, roughness: .6 })); m.position.set(q.x, .25, q.z);
       // Overgrown, a Pustule grows as though dealing its poison per minute: stored, it detonates faster and harder (as poisoned)
       planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, stored: 0,
@@ -2232,7 +2233,7 @@ export function initScene(el, api) {
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
       if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed);
-      limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals);   // Profane Ritual: up to its most rituals
+      limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals ?? S.dmg?.stats?.number_of_poison_cloud_allowed);   // Profane Ritual, Decompose: up to their most
       const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
           if (e.plant) presence(e);
