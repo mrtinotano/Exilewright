@@ -2220,6 +2220,22 @@ export function initScene(el, api) {
       // most, with its more damage from a Unique
       // note: its pulse's radius is PoB2's (Skills/act_dex.lua ElementalSunderingPlayer "Pulse": 50), scaled as its explosion's;
       // the ailments of allies and corpses are not in the scene
+      // Bone Cage: its ring of bone spikes around you (up to its rings, a new one ends the last) for its duration; a spike an
+      // enemy touches breaks (its chance: 100%), hitting and Pinning the enemies within its secondary radius
+      // note: its spikes stand side by side around the ring, their number the scene's (the data gives none)
+      const BC = S.dmg?.stats?.ring_of_bone_maximum_number_of_rings;
+      if (BC) {
+        const r = radOf(S), n = Math.max(3, Math.round(Math.PI * R / r)), g = holder(c), mat = new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: .7, flatShading: true });
+        limit(o => o.cage && o.name === S.name, BC);
+        const spikes = Array.from({ length: n }, (_, k) => {
+          const a = k * TAU / n, m = new THREE.Mesh(EARTH.spike, mat); m.position.set(Math.sin(a) * R, .45, Math.cos(a) * R); m.scale.set(.5, .6, .5); m.castShadow = true; g.add(m);
+          return { m, p: { x: c.x + Math.sin(a) * R, z: c.z + Math.cos(a) * R } };
+        });
+        pop(c, R, 'dust');
+        const e = thing(g, durOf(S), { name: S.name, cage: true,
+          tick() { for (const k of spikes) if (k.m.visible && inside(k.p, .2).length) { k.m.visible = false; pop(k.p, r, 'dust'); area(k.p, r, { ...S, self: e }); } } });
+        return;
+      }
       const ES = S.dmg?.stats?.elemental_sundering_number_of_explosion_allowed;
       if (ES) {
         const st = S.dmg.stats, pr = 5 * S.A / (st.active_skill_base_area_of_effect_radius / 10), by = { freeze: S, ignite: partOf(S, 'ElementalSunderingFirePlayer'), shock: partOf(S, 'ElementalSunderingLightningPlayer') };
