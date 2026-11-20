@@ -1735,6 +1735,14 @@ export function initScene(el, api) {
           boom(q, r, S);
         }); }
         else boom(c, R, S);
+        // Furious Slam: its pair of shockwaves after its delay, each its angle off your aim, its spacing of its area away;
+        // with its Rage to spend, its enraged part instead, larger, leaving Jagged Ground for its duration
+        const FS = S.dmg?.stats?.bear_slam_spend_X_rage_for_stronger_slam;
+        if (FS) {
+          const st = S.dmg.stats, X = !S.src && me.rage >= FS && partOf(S, 'FuriousSlamEnragedPlayer'), W = X ? { ...X, mult: S.mult } : S, r = X ? X.A : R, a0 = Math.atan2(S.dx, S.dz), off = st.cascade_aftershock_angle_offset_override * Math.PI / 180, gap = r * 2 * st['cascade_aftershock_spacing_area_%_override'] / 100;
+          if (X) me.rage -= FS;
+          for (const sgn of [-1, 1]) later(st.aftershock_delay_ms / 1000, () => { const a = a0 + sgn * off, q = { x: c.x + Math.sin(a) * gap, z: c.z + Math.cos(a) * gap }; boom(q, r, W); if (X) ground('jagged', q, r, durOf(X), W); });
+        }
         slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
         // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
