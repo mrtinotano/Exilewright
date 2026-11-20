@@ -212,6 +212,7 @@ export function initScene(el, api) {
   const stageR = S => S.stage == null ? S.A : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
   const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body;   // to the dummy's edge
+  const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
   const coneHalf = S => (S.cone / 2 || (S.kind === 'cone' ? SIM.cone / 2 : 65)) * Math.PI / 180;   // S.cone: the data's angle (Deadly Resolve)
   function aim(S, p) {
     const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange;
@@ -1745,7 +1746,7 @@ export function initScene(el, api) {
       const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
       fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .45 : .7 });
       fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
-      for (const d of inside(c, R)) { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; if (Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half) hit(d, S); }
+      for (const d of inside(c, R)) if (inCone(c, a0, half, d.pos)) hit(d, S);
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
       // Incinerate's Fire Infusion: Ignited Ground in front of you as its channelling starts (its ground part)
       const X = S.fresh && S.infs?.includes('fire') && infPart(S, 'fire');
@@ -2154,9 +2155,8 @@ export function initScene(el, api) {
   // Disengage: its cone of spearpoints in front of you (its radius, its angle) as you leap back its path distance; each
   // Parried enemy it hits has the debuff consumed for its shockwave part and grants you its Frenzy Charges
   K.disengage = S => {
-    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = st.disengage_cone_radius / 10, X = partOf(S, 'DisengageShockwavePlayer'), a0 = Math.atan2(S.dz, S.dx), half = st.disengage_cone_angle / 2 * Math.PI / 180;
-    const inCone = d => { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
-    const parried = inside(c, R).filter(d => time < d.parried?.until && inCone(d));
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = st.disengage_cone_radius / 10, X = partOf(S, 'DisengageShockwavePlayer'), half = coneHalf({ cone: st.disengage_cone_angle });
+    const parried = inside(c, R).filter(d => time < d.parried?.until && inCone(c, Math.atan2(S.dz, S.dx), half, d.pos));
     K.sweep({ ...S, from: c, R, cone: st.disengage_cone_angle });
     for (const d of parried) { d.parried = null; if (X) boom({ x: d.pos.x, z: d.pos.z }, X.A, X); for (let k = st.consume_parry_debuff_on_hit_to_gain_X_frenzy_charges; k > 0; k--) chargeBy('frenzy', S); }
     const l = st.leap_maximum_allowed_path_distance / 10;
