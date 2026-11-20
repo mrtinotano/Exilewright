@@ -370,6 +370,9 @@ export function initScene(el, api) {
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
+      // Lightning Conduit: more damage to a shocked enemy, per 5% more damage it takes from the shock
+      const LC = has(d, 'shock') && S.dmg?.stats?.['lightning_conduit_damage_+%_final_per_5%_increased_damage_taken_from_shock'];
+      if (LC) for (const e in raw) raw[e] *= 1 + LC * (shocked(d) - 1) * 20 / 100;
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
       const IM = S.dmg?.stats?.['active_skill_damage_+%_final_vs_immobilised_enemies'];   // Siege Cascade: more against the immobilised
       if (IM && has(d, 'immobilised')) for (const e in raw) raw[e] *= 1 + IM / 100;
@@ -396,6 +399,11 @@ export function initScene(el, api) {
       if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
+      // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
+      const LX = LC && !S.src && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
+      if (LC && !S.src) clear(d, 'shock');
+      if (LX && !S.conduit) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
+        for (let k = 0; k < LX; k++) { const e = L[k % L.length]; later(.1 * (k + 1), () => { if (!e.dead) { fx.bolt(V(e.pos.x, 12, e.pos.z), V(e.pos.x, 0, e.pos.z), S.el, .2, .06, .5); hit(e, { ...S, src: 'conduit' }); } }); } }
       if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
@@ -2516,7 +2524,7 @@ export function initScene(el, api) {
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
-    S.mantra = null; S.leapt = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
+    S.mantra = null; S.leapt = S.conduit = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
     if (!auto) {
       // Cadence: each use a stack of its more attack speed (useTime); a use at its most stacks makes the skill unusable
       // for its time, and they are lost. note: how long a stack lasts is not in its data, they last until then
