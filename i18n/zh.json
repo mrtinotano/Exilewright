@@ -852,5 +852,6 @@
  "{0} returns": "{0}返回",
  "{0} detonates": "{0}引爆",
  "{0}: the Remnant affects your allies": "{0}：痕跡作用於你的友軍",
- "Not enough fuel for {0}": "燃料不足，無法使用{0}"
+ "Not enough fuel for {0}": "燃料不足，無法使用{0}",
+ "Stage {0}": "第{0}層"
 }

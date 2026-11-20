@@ -852,5 +852,6 @@
  "{0} returns": "{0}が戻る",
  "{0} detonates": "{0}が起爆する",
  "{0}: the Remnant affects your allies": "{0}: レムナントが味方に作用する",
- "Not enough fuel for {0}": "{0}の燃料が足りない"
+ "Not enough fuel for {0}": "{0}の燃料が足りない",
+ "Stage {0}": "ステージ{0}"
 }

@@ -852,5 +852,6 @@
  "{0} returns": "{0} revient",
  "{0} detonates": "{0} détone",
  "{0}: the Remnant affects your allies": "{0} : le reliquat affecte vos alliés",
- "Not enough fuel for {0}": "Pas assez de carburant pour {0}"
+ "Not enough fuel for {0}": "Pas assez de carburant pour {0}",
+ "Stage {0}": "Palier {0}"
 }
