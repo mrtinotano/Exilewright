@@ -1430,6 +1430,11 @@ export function initScene(el, api) {
       const p = { x: from.x + dx * k, z: from.z + dz * k };
       pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
     });
+    // Branching Fissures: its number of secondary fissures off this one, with its less area and damage
+    // note: where they branch, their angle and length are not in its data: evenly along it, alternating sides at 45°, half its length
+    const BF = !o.branch && S.dmg?.sum, n = BF?.number_of_branching_fissures || 0;
+    for (let k = 1; k <= n; k++) { const q = { x: from.x + dx * len * k / (n + 1), z: from.z + dz * len * k / (n + 1) };
+      later(len * k / (n + 1) * .06, () => fissure(S, q, ang + (k % 2 ? 1 : -1) * Math.PI / 4, len / 2, r * Math.sqrt(1 + BF['branching_fissure_area_of_effect_+%_final'] / 100), mult * (1 + BF['branching_fissure_damage_+%_final'] / 100), { branch: true })); }
   }
   const ccw = (p, q, r) => (q.x - p.x) * (r.z - p.z) - (q.z - p.z) * (r.x - p.x);
   const crosses = (f, g) => [segDist(g.a, f.a, f.b), segDist(g.b, f.a, f.b), segDist(f.a, g.a, g.b), segDist(f.b, g.a, g.b)].some(k => k < .3)
