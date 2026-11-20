@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -368,6 +368,9 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
+      // Mantra of Destruction: its Empowered attack's share of damage as extra chaos, and the Purple Flames' per stack
+      const GC2 = (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0);
+      if (GC2) raw.chaos = (raw.chaos || 0) + Object.values(raw).reduce((n, v) => n + v, 0) * GC2 / 100;
       if (S.P.attack && !S.src && raw.physical) briarStore(raw.physical);
       // Mana Tempest, Charged Shots, Volt, Thrill of the Kill: their share of all damage as extra lightning
       const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
@@ -850,6 +853,7 @@ export function initScene(el, api) {
     if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
     event('kill', p, S);
     if (!S?.src) remnantOn('kill', d);
+    if (S?.mantra) { const M = S.mantra, n = Math.min(10, (time < me.purple?.until ? me.purple.n : 0) + 1); me.purple = { n, pct: M.flame, until: time + M.flameFor }; setBuff({ label: t('Purple Flame of Chayula'), name: 'purple', c: css('chaos'), s: M.flameFor }); }   // up to 10 (keywords.json)
     const RP = !S?.src && S?.P?.melee && d.st.bleed > 0 && S.dmg?.sum?.['create_life_remnant_on_melee_kill_bleeding_enemy_%'];
     if (RP && Math.random() * 100 < RP) remnant({ ...S, name: 'Rip' }, around(d.pos, S.dmg.sum.rip_support_life_remnant_creation_radius / 10));
     if (Math.random() * 100 < (S?.dmg?.sum?.['create_verisium_remmant_on_kill_enemy_%'] || 0)) infRemnant('verisium', p, { dur: (S.dmg.sum.base_remnant_duration_ms || 0) / 1000 });   // Runic Extraction
@@ -2433,6 +2437,13 @@ export function initScene(el, api) {
     thing(holder(pp), T, { tick: dt => { me.life = gain(me.life, me.maxL, L * dt); me.mana = gain(me.mana, me.maxM, M * dt); } });
     fx.ring(pp, .2, S.A, 'blood', .5); say(`${S.label}: ${list.length}`, 'blood');
   };
+  // Mantra of Destruction: its Empowered melee attacks (its number) gain its share of damage as extra chaos; each kill
+  // with one grants a Purple Flame of Chayula (keywords.json: its share as extra chaos, stacking up to 10) for its secondary duration
+  K.mantra = S => {
+    const st = S.dmg.stats; empower = empower.filter(e => e.type !== 'mantra');
+    empower.push({ type: 'mantra', label: S.label, name: S.name, uses: st.skill_empowers_next_x_melee_attacks, s: durOf(S), pct: st['mantra_of_destruction_grant_all_damage_%_to_gain_as_chaos_with_attacks'], flame: st['mantra_of_destruction_purple_flame_all_damage_%_gained_as_chaos'], flameFor: st.base_secondary_skill_effect_duration / 1000 });
+    say(t('{0} active', S.label), 'chaos');
+  };
   // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
   const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
   K.cstaff = S => {
@@ -2475,6 +2486,7 @@ export function initScene(el, api) {
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
+    S.mantra = null;   // a Mantra of Destruction Empowerment is for this use only
     if (!auto) {
       // Cadence: each use a stack of its more attack speed (useTime); a use at its most stacks makes the skill unusable
       // for its time, and they are lost. note: how long a stack lasts is not in its data, they last until then
@@ -2524,6 +2536,7 @@ export function initScene(el, api) {
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'fire'); }
+        else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
