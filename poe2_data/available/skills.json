@@ -5,6 +5,60 @@
   "power": "Art/2DArt/BuffIcons/chargeint.dds",
   "endurance": "Art/2DArt/BuffIcons/chargestr.dds"
  },
+ "infusions": {
+  "fire": {
+   "icon": "Art/2DArt/BuffIcons/FireInfusionBuff.dds",
+   "name": "Fire Infusion",
+   "name_es": "Infusión de fuego",
+   "name_pt": "Infusão Quente",
+   "name_fr": "Infusion de feu",
+   "name_de": "Feuerinfusion",
+   "name_ru": "Насыщение огнём",
+   "name_ja": "ファイヤーインフュージョン",
+   "name_ko": "화염 주입",
+   "name_th": "ชุบพลังไฟ",
+   "name_zh": "火焰灌注"
+  },
+  "cold": {
+   "icon": "Art/2DArt/BuffIcons/ColdInfusionBuff.dds",
+   "name": "Cold Infusion",
+   "name_es": "Infusión de hielo",
+   "name_pt": "Infusão Fria",
+   "name_fr": "Infusion de froid",
+   "name_de": "Kälteinfusion",
+   "name_ru": "Насыщение холодом",
+   "name_ja": "コールドインフュージョン",
+   "name_ko": "냉기 주입",
+   "name_th": "ชุบพลังน้ำแข็ง",
+   "name_zh": "冰冷灌注"
+  },
+  "lightning": {
+   "icon": "Art/2DArt/BuffIcons/LightningInfusionBuff.dds",
+   "name": "Lightning Infusion",
+   "name_es": "Infusión de rayo",
+   "name_pt": "Infusão Elétrica",
+   "name_fr": "Infusion de foudre",
+   "name_de": "Blitzinfusion",
+   "name_ru": "Насыщение молнией",
+   "name_ja": "ライトニングインフュージョン",
+   "name_ko": "번개 주입",
+   "name_th": "ชุบพลังสายฟ้า",
+   "name_zh": "閃電灌注"
+  },
+  "verisium": {
+   "icon": "Art/2DArt/BuffIcons/ExpeditionVerisiumInfusionBuff.dds",
+   "name": "Verisium Infusion",
+   "name_es": "Infusión de verisium",
+   "name_pt": "Infusão de Verísio",
+   "name_fr": "Infusion de Vérisium",
+   "name_de": "Verisiuminfusion",
+   "name_ru": "Насыщение веризием",
+   "name_ja": "ヴェリシウム注入",
+   "name_ko": "베리시움 주입",
+   "name_th": "ชุบพลังเวริเซียม",
+   "name_zh": "維里西姆灌注"
+  }
+ },
  "ailment_icons": {
   "ignite": "Art/2DArt/BuffIcons/buffonfire.dds",
   "chill": "Art/2DArt/BuffIcons/buffchilled.dds",

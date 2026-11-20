@@ -496,6 +496,9 @@ archon_time = [int(x) for x in re.findall(r'lasts (\d+) seconds', next(r['Defini
 assert len(archon_time) == 2, archon_time
 save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
                      'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
+                     # the Elemental Infusions you have: their buff's icon and name (BuffDefinitions), in every language
+                     'infusions': {e: {'icon': _buff_icon[e + '_infusion'], 'name': buff_defs[k]['Name'], **tr(load_langs('BuffDefinitions'), k)}
+                                   for e in ('fire', 'cold', 'lightning', 'verisium') for k in [next(i for i, r in enumerate(buff_defs) if r['Id'] == e + '_infusion')]},
                      # the icons of the ailments on you; frozen and electrocuted have none in BuffVisuals: the game's StatusFrozen /
                      # StatusElectrocuted art (no table names them; the PoE2 Wiki's status icons are the same)
                      'ailment_icons': {**{a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('maim', 'maim'))},

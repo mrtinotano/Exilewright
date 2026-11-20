@@ -89,7 +89,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99,
-    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {} };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
+    st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
@@ -247,7 +247,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {} }); }
+    Object.assign(me, { st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99 }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
@@ -343,7 +343,7 @@ export function initScene(el, api) {
       else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
     const M = d.mark;
-    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => boom(d.pos, M.R, M.S)); }
+    if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
     if (real) {
@@ -404,7 +404,7 @@ export function initScene(el, api) {
       : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
-        HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect };
+        HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
@@ -730,7 +730,7 @@ export function initScene(el, api) {
       const T = tog[k], a = T.kind === 'herald' && AILMENT[T.P.el];
       if (a && st[a] > 0) later(.1, () => herald(T, p));
     }
-    if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); boom(p, M.R, M.S); }); }
+    if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
     if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it
       const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
@@ -938,6 +938,33 @@ export function initScene(el, api) {
       else if (R.stun && time - (remnantAt[S.name] ?? -99) >= (R.stunCd(s) || 0) / 1000 && Math.random() * 100 < (R.stun(s) || 0)) { remnantAt[S.name] = time; remnant(S, d.pos); }
     }
   }
+  // ---------- Elemental Infusions (keywords.json ElementalInfusion): Remnants some skills leave (skillfx leaves); walking
+  // over one grants the Infusion for 20 s (its increased duration) or until a skill consumes it, up to the most of each
+  // kind, with its chance of one more (calc.js infusion). A skill that can consume one does on use (skillfx infuses),
+  // its own kind first, else a Verisium one; its chance not to remove it, the power charge it may grant
+  const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
+  const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
+  function infRemnant(el, p) {
+    const c = { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(INF_C[el], 2.2), fog: false })); m.position.set(c.x, .5, c.z);
+    thing(m, SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= SIM.pickup) { e.dead = true; infGain(el, c); } } });
+  }
+  const bombed = (M, p) => { boom(p, M.R, M.S); if (M.S.P.leaves) infRemnant(M.S.P.leaves, p); };   // Living Bomb's seed
+  function infGain(el, c) {
+    const I = sheet().infusion, max = el === 'verisium' ? Math.max(...Object.values(I.max)) : I.max[el], q = infNow(el);
+    for (let k = Math.random() * 100 < I.more ? 2 : 1; k > 0; k--) q.push(time + INF_TIME * I.time);
+    q.sort((a, b) => a - b); while (q.length > max) q.shift();
+    fx.ring(c, .15, .8, INF_C[el], .3); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, INF_C[el], .35); hudT = 0;
+  }
+  function infTake(S, el) {
+    const I = sheet().infusion;
+    for (const k of [el, 'verisium']) {
+      const q = infNow(k); if (!q.length) continue;
+      if (!(Math.random() * 100 < I.keep)) q.shift();
+      me.infUsed = time; if (I.power) chargeBy('power', S); hudT = 0;
+      say(t('{0} consumes {1}', S.label, api.infusion?.(k)?.name || k), INF_C[k]); return true;
+    }
+    return false;
+  }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
   const limit = (S, max) => { const mine = objs.filter(o => o.earth && o.name === S.name && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
@@ -984,6 +1011,11 @@ export function initScene(el, api) {
     const R = U.X.A + Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, U.stored / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10;
     say(t('{0} detonates', U.X.label), 'poison'); boom({ x: d.pos.x, z: d.pos.z }, R, { ...U.X, mult: U.X.mult * (1 + more / 100) });
   }
+  // the part a consumed Infusion of that kind brings (Spark's cold-infused sparks, Comet's blast, Firestorm's ice and
+  // lightning bolts, Fireball's firebolts...): the one named after it, else the skill's one infused or secondary part
+  const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
+    const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
+    return k && partOf(S, k); };
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -1085,7 +1117,11 @@ export function initScene(el, api) {
           seen.add(e); fx.bolt(by, chest(e), cur.el, .18); hit(e, cur, { mult: mult() });
         }
       }
-      else if (P.explodes || S.aoe) boom(p, S.A, cur);
+      else if (P.explodes || S.aoe) {
+        boom(p, S.A, cur);
+        const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
+        if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
+      }
       else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
@@ -1252,13 +1288,15 @@ export function initScene(el, api) {
   const stormGeo = S => { const r2 = S.G?.radius2; return r2 ? { Z: Math.max(S.A, r2), R: Math.min(S.A, r2) } : { Z: Math.max(S.A * 2.4, SIM.stormArea), R: S.A }; };
   const K = {
     projectile(S) {
-      const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2, a0 = Math.atan2(S.dx, S.dz), spread = S.P.wander ? .45 : .13, h = hand();
+      const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
+      if (X?.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
+      const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2, a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand();
-      if (d) chain(h, d, S, sh(S).chains || 0);
+      if (d) chain(h, d, S, (sh(S).chains || 0) + (S.addChains || 0));   // Arc's chains from a Lightning Infusion
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
     rain(S) {
@@ -1327,7 +1365,7 @@ export function initScene(el, api) {
           else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
         },
         end: e => { if (P.detonates) boom(c, R, { ...S, self: e }); },
-        off: () => range.remove() });
+        off: () => { range.remove(); if (P.leaves) infRemnant(P.leaves, c); } });   // Frost Bomb's, Orb of Storms' Infusion
       if (P.chains) e.zap = extra => {
         const d = near(c, R); if (!d) return;
         if (extra) say(t('{0} fires an extra bolt', S.label), S.el);
@@ -1463,6 +1501,8 @@ export function initScene(el, api) {
       for (const d of inside(c, R)) later(dist(d.pos, c) / R * dur, () => hit(d, S));   // the wave reaches the near ones first
       later(dur * .5, () => touch(c, R, S));
       if (P.ground) later(dur, () => ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 8), S));
+      const X = S.infs?.includes('cold') && infPart(S, 'cold');   // Ice Nova: a patch of Chilled Ground
+      if (X) later(dur, () => { boom(c, X.A, X, { soft: true }); ground('chilled', c, X.A, GROUND_TIME.chilled, X); });
     },
     slam(S) {
       const P = S.P, c = S.at, R = stageR(S);
@@ -1525,7 +1565,10 @@ export function initScene(el, api) {
         vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
         again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
       const old = objs.filter(o => o.stormOf === S.name && !o.dead); while (old.length >= max) old.shift().dead = true;
-      const { Z, R } = stormGeo(S), out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
+      // Firestorm's consumed Infusions: Fire, a larger area and more frequent bolts; Cold and Lightning, their own bolts too
+      const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0), R = G0.R;
+      const extra = (S.infs || []).filter(e => e !== 'fire').map(e => infPart(S, e)).filter(Boolean);
+      const out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
       // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
       const ws = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], wet = ws != null && { shock: ws, freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
       let tk = 0;
@@ -1533,7 +1576,8 @@ export function initScene(el, api) {
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
           for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
           if (wet) for (const d of inside(c, Z)) d.wet = { ...wet, until: time + .2 };
-          if ((tk -= dt) > 0) return; tk = every + rnd(-vary, vary);
+          if ((tk -= dt) > 0) return; tk = (every + rnd(-vary, vary)) / (fi ? 1 + (st['firestorm_bolt_frequency_+%_if_consumed_fire_infusion'] || 0) / 100 : 1);
+          for (const X of extra) { const q2 = around(c, Z); fx.bolt(V(q2.x, 12, q2.z), V(q2.x, 0, q2.z), X.el, .18, .05, .4); later(fall, () => { pop(q2, X.A, X.el); area(q2, X.A, { ...X, self: e }); }); }
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
           if (bolt) fx.bolt(V(q.x + rnd(-1, 1), 12, q.z + rnd(-1, 1)), q, S.el, .2, .06, .5); else fx.streak(V(q.x + 2, 13, q.z - 1.5), q, S.el, .16, .07, 1.8);
           later(bolt ? 0 : fall, () => {
@@ -1600,7 +1644,8 @@ export function initScene(el, api) {
       if (P.ground) ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 10), S);
     },
     meteor(S) {
-      const P = S.P, R = S.A, delay = P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
+      const X = S.infs?.includes('fire') && infPart(S, 'fire'); if (X) S = X;   // Comet: a devastating blast of ice and fire
+      const P = S.P, R = S.A, fall = S.dmg?.stats?.comet_fall_time_ms, delay = fall ? fall / 1000 : P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
       const d = P.attack ? near(S.at, SIM.snap) : null, c = d ? { x: d.pos.x, z: d.pos.z } : S.at;
       fx.telegraph(c, R, S.el, delay);
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
@@ -1657,7 +1702,15 @@ export function initScene(el, api) {
     if (!auto) {
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
       const ch = S.dmg?.ail?.charge || {};
-      for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; charges[c] = 0; }
+      // Inhibitor: the skill consumes no charges nor Infusions, and deals its more damage per kind of either you have
+      const inhib = S.dmg?.sum?.['support_inhibitor_damage_+%_final_per_charge_type_or_infusion_type'];
+      if (inhib) S.mult *= 1 + inhib * (Object.values(charges).filter(Boolean).length + Object.keys(me.inf).filter(e => infNow(e).length).length) / 100;
+      // the Infusions it can consume: one of each kind it names (Firestorm all three)
+      S.infs = !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
+      const st = S.dmg?.stats || {};
+      if (S.infs.includes('lightning') && st['arc_damage_+%_final_from_infusion_consumption']) { S.mult *= 1 + st['arc_damage_+%_final_from_infusion_consumption'] / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
+      if (S.infs.includes('fire') && st['firestorm_damage_+%_if_consumed_fire_infusion']) S.mult *= 1 + st['firestorm_damage_+%_if_consumed_fire_infusion'] / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
+      if (!inhib) for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; charges[c] = 0; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       if (S.stage != null && !P.ownStages) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
@@ -1976,6 +2029,7 @@ export function initScene(el, api) {
   function effects() {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
+    for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
     for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : '')); }
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
@@ -2020,7 +2074,7 @@ export function initScene(el, api) {
     // the bars empty after a while without buildup (monster.ot poise decay)
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
-    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); boom(d.pos, M.R, M.S); } }
+    if (d.mark && (d.mark.s -= dt) <= 0) { const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); bombed(M, d.pos); } }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick

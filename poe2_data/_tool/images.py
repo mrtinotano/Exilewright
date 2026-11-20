@@ -12,7 +12,7 @@ paths |= {b['charm']['icon'] for b in items['bases'] if b.get('charm', {}).get('
 gems = json.load(open(os.path.join(ROOT, 'available', 'gems.json'), encoding='utf8'))
 paths |= {g['icon'] for g in gems if g.get('icon')} | {g['socket_icon'] for g in gems if g.get('socket_icon')} | {g['buff_icon'] for g in gems if g.get('buff_icon')}
 _sk = json.load(open(os.path.join(ROOT, 'available', 'skills.json'), encoding='utf8'))
-paths |= set(_sk.get('charge_icons', {}).values()) | set(_sk.get('ailment_icons', {}).values()) | {_sk['move_icon'], _sk['archon_nature_icon']}   # the simulator's buffs and debuffs
+paths |= set(_sk.get('charge_icons', {}).values()) | {x['icon'] for x in _sk.get('infusions', {}).values()} | set(_sk.get('ailment_icons', {}).values()) | {_sk['move_icon'], _sk['archon_nature_icon']}   # the simulator's buffs and debuffs
 paths |= {c['img'] for c in json.load(open(os.path.join(ROOT, 'available', 'currency.json'), encoding='utf8'))['currency'].values()}   # trade prices
 tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), encoding='utf8'))
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))

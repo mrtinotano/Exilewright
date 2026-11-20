@@ -271,6 +271,12 @@ export function character(b, sum) {
       // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
       // duration, its recovery's faster expiry
       archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster') },
+    // Elemental Infusions (keywords.json): the most of each kind (Verisium's: the most of any one), their duration,
+    // the chances of one more on collecting, of not removing it when consumed, and what consuming one grants
+    infusion: { max: Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, (CHAR.base_maximum_infusions || 0) + v(sum, `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
+      time: pct('infusion_duration_+%'), more: v(sum, 'additional_infusion_gain_chance_%') + v(sum, 'chance_%_for_extra_infusion_on_infused_remnant_pickup'),
+      keep: v(sum, 'chance_to_not_consume_infusion_%'), power: v(sum, 'gain_a_power_charge_when_you_consume_an_elemental_infusion') > 0,
+      spell: v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') },
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
@@ -765,14 +771,18 @@ export function skill(g, b, treeGear) {
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
     });
+  out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: 1 / (1 + critInc / 100) });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
   // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
   for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
     const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']);
-    if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)])) });
+    if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: out.incW });
   }
+  // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
+  const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
+  if (infSpell) out.when.push({ cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);

@@ -128,6 +128,11 @@ export function profile(gem, d = {}) {
   // A payoff with no explicit consumption benefits from the ailment of its element.
   const bonus = tag('payoff') && !consumes.length && AILMENT[el] && kind !== 'herald' ? [AILMENT[el]] : [];
 
+  // Elemental Infusions: the one the skill leaves behind (Frost Bomb, Orb of Storms, Living Bomb) and the ones it can
+  // consume (Ice Nova, Arc, Firestorm's three...), as its description says them
+  const desc = gem?.description || '', INF = { Cold: 'cold', Fire: 'fire', Lightning: 'lightning' };
+  const leaves = INF[desc.match(/leav(?:es|ing) behind an? (?:\[(Cold|Fire|Lightning)\] \[ElementalInfusion|\[ElementalInfusion\|(Cold|Fire|Lightning) Infusion\])/)?.slice(1).find(Boolean)] || null;
+  const infuses = /Consume\]? all three types of \[ElementalInfusion/.test(desc) ? ['fire', 'cold', 'lightning'] : [...desc.matchAll(/Consumes?\]? an? \[(Cold|Fire|Lightning)\] \[ElementalInfusion/g)].map(m => INF[m[1]]);
   const spend = ['Frenzy', 'Power', 'Endurance'].filter(c => has(`SkillConsumes${c}ChargesOnUse`)).map(c => c.toLowerCase());
   const a = gem?.attr || {};
   const gain = has('GeneratesCharges') ? ((a.int || 0) >= (a.dex || 0) && (a.int || 0) >= (a.str || 0) ? 'power' : (a.dex || 0) >= (a.str || 0) ? 'frenzy' : 'endurance') : null;
@@ -149,7 +154,7 @@ export function profile(gem, d = {}) {
   return {
     name, kind, el, els, attack, spell, dur, applies, consumes, bonus, ground, spend, gain, corpse, channel,
     toggle: ['herald', 'aura', 'meta', 'minion'].includes(kind),
-    stages: has('GainsStages', 'PerfectTiming'), perfect: has('PerfectTiming'),
+    leaves, infuses, stages: has('GainsStages', 'PerfectTiming'), perfect: has('PerfectTiming'),
     slams: has('Slam'), plant: has('Plant'), wind: has('Wind'), fan: has('Slam') && has('Projectile'), ballista: has('TotemsAreBallistae'),
     // a buff that makes the next skill repeat: Barrage (bow / crossbow attacks) or Unleash (spells)
     repeats: has('ModifiesNextSkill') && !els.length ? (tag('dexterity') ? 'barrageable' : tag('intelligence') ? 'unleashable' : null) : null,
