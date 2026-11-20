@@ -2084,6 +2084,19 @@ export function initScene(el, api) {
       pop(p, A, 'blood'); boom(p, A, { ...S, dmg, mult: S.mult * (1 + st['damage_per_bloodstone_lance_+%_final'] * n / 100) });
     }
   };
+  // Oil Barrage: its projectiles one after another across its spread arc to where you aim, each hitting its area where it
+  // lands and leaving Oil Ground; with a Power Charge to consume (one every its interval while you keep using it) the
+  // electrified oil instead (its empowered part), with no ground
+  // note: its secondary explosions are not simulated (where they happen is not in the data)
+  K.oil = S => {
+    const st = S.dmg?.stats || {}, n = sh(S).projectiles || st.base_number_of_projectiles || 1, arc = (st.barrage_base_spread_arc_override || 0) * Math.PI / 180, a0 = Math.atan2(S.dx, S.dz), l = Math.max(st['minimum_projectile_target_distance_+'] / 10 || 0, dist(S.at, pp));
+    if (time >= (me.oilUntil ?? 0) && charges.power > 0) { charges.power--; me.oilUntil = time + st.electric_spit_empowered_channel_consume_power_charge_per_X_ms / 1000; }
+    const E = time < (me.oilUntil ?? 0) && partOf(S, 'OilBarrageEmpoweredPlayer'), X = E ? { ...E, mult: S.mult } : S;
+    for (let k = 0; k < n; k++) later(k * .08, () => {
+      const a = a0 + (n > 1 ? k / (n - 1) - .5 : 0) * arc, q = { x: pp.x + Math.sin(a) * l, z: pp.z + Math.cos(a) * l };
+      lob(fx.orb(E ? 'lightning' : 'dust', .12), hand(), V(q.x, .1, q.z), .4, 2.4, () => { boom(q, X.A, X); if (!E) ground('oil', q, X.A, X.P.dur, X); }, { trail: E ? 'lightning' : 'dust' });
+    });
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
