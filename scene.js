@@ -2318,6 +2318,24 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
+  // Storm Lance: the spear lands at the target (its area), lodges and zaps an enemy within its secondary radius every
+  // its frequency for its duration; a detonator unleashes its volley of bolts and ends it. With a frenzy charge spent:
+  // its infused part, faster and shorter, that detonates itself at the end and leaves Shocked Ground (its third radius,
+  // its second duration). note: the projectile's own path hits are not simulated, only its landing
+  K.lance = S => {
+    const I = S.spent && partOf(S, 'StormLanceInfusedPlayer'), X = I ? { ...I, mult: S.mult } : S, st = X.dmg.stats, c = { ...S.at }, R = radOf(S);
+    limit(o => o.lanceOf === S.name, S.dmg.stats.base_number_of_overcharged_spears_allowed);
+    lob(fx.arrow('lightning'), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
+      boom(c, S.A, X); const m = fx.orb('lightning', .14); m.position.set(c.x, 1.2, c.z);
+      let tk = 0;
+      const blow = e => { if (e.blown) return; e.blown = e.dead = true; const list = inside(c, R); for (let k = 0; k < st.overcharged_spear_detonate_number_of_beams && list.length; k++) chain(m.position.clone(), list[k % list.length], { ...X, self: e }, 0);
+        if (I) ground('shocked', c, radOf(I, 'tertiary'), I.dmg.stats.base_secondary_skill_effect_duration / 1000, X); };
+      thing(m, durOf(X), { lanceOf: S.name, name: S.name, r: .5,
+        tick(dt, e) { if ((tk -= dt) > 0) return; tk = st.overcharged_spear_base_frequency_ms / 1000; const d = near(c, R); if (d) chain(m.position.clone(), d, { ...X, self: e }, 0); },
+        touch(by) { if (by.P.detonator && !this.dead) { say(t('{0} detonates {1}', by.label, S.label), 'lightning'); blow(this); } },
+        end: e => { if (I) blow(e); } });
+    }, { trail: 'lightning' });
+  };
   // Feast of Flesh: consumes up to its number of corpses around you; each recovers its life and mana over its recovery duration
   K.feast = S => {
     const st = S.dmg?.stats || {}, list = corpses(pp, S.A).slice(0, st.feast_of_flesh_number_of_corpses), T = st.feast_of_flesh_recovery_duration / 1000;
