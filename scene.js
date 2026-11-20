@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'wither']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'wither']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -40,6 +40,7 @@ const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% 
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
 const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const TRINITY_MAX = 100;   // note: keywords.json Affinity: a maximum of 100 of each type
@@ -244,7 +245,7 @@ export function initScene(el, api) {
     if (dummies.length >= MAXE) { toast(t('The scene holds up to {0} enemies', MAXE)); return null; }
     const fig = makeDummy(fx, { kind: m.category, scale: m.boss ? 1.45 : 1 });
     fig.group.position.set(x, 0, z); fig.group.rotation.y = Math.atan2(pp.x - x, pp.z - z); scene.add(fig.group);
-    const d = { fig, pos: fig.group.position, home: { x, z }, aggro: false, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], impales: [], vined: [], dead: false, corpse: 0, back: 0, fall: 0,
+    const d = { fig, pos: fig.group.position, home: { x, z }, aggro: false, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], impales: [], slows: [], dead: false, corpse: 0, back: 0, fall: 0,
       flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expo: null, wind: null, wait: rnd(.6, 1.2) };
     arm(d, tpl.level, tpl.attack); dummies.push(d);
     fx.ring(d.pos, 1.3 * d.sc, .3, 'gold', .4, { a: .6 });
@@ -252,7 +253,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.vined = []; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -661,6 +662,7 @@ export function initScene(el, api) {
       if (o?.eff) v.dps *= o.eff;
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
+    if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S;
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
@@ -892,8 +894,14 @@ export function initScene(el, api) {
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
-      const T = tog[k], a = T.kind === 'herald' && k !== 'Herald of Ash' && AILMENT[T.P.el];   // Herald of Ash: ash()
+      const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && AILMENT[T.P.el];   // Herald of Ash: ash()
       if (a && st[a] > 0) later(.1, () => herald(T, p));
+    }
+    // Herald of Plague: a poisoned enemy killed spreads its poison to the enemies within its radius, its chance to Hinder them
+    const hs = st.poison > 0 && onS('Herald of Plague')?.dmg.stats;
+    if (hs) for (const e of inside(p, hs.herald_of_agony_poison_spread_on_kill_radius_base_magnitude_to_grant / 10)) {
+      e.st.poison = Math.max(e.st.poison || 0, st.poison); e.burn.poison = { ...d.burn.poison }; fx.bolt(V(p.x, 1, p.z), chest(e), 'poison', .2, .03, .4);
+      if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time, pct: -HINDER.slow });
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
@@ -2536,10 +2544,17 @@ export function initScene(el, api) {
       if ((k -= dt) > 0) return; k = st.entangle_apply_vines_every_X_ms / 1000;
       vines = vines.filter(v => v.until > time);
       if (vines.length >= xs.entangle_vines_maximum_number_of_vines_allowed + (e.overgrown ? xs.entangle_vines_additional_number_of_vines_allowed_when_wet : 0)) return;
-      const d = dummies.filter(d => !d.dead && segDist(d.pos, a, b) <= X.A + SIM.body).sort((p, q) => p.vined.length - q.vined.length)[0]; if (!d) return;
-      const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] }; vines.push(v); d.vined.push(v);
+      const d = dummies.filter(d => !d.dead && segDist(d.pos, a, b) <= X.A + SIM.body).sort((p, q) => p.slows.length - q.slows.length)[0]; if (!d) return;
+      const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] }; vines.push(v); d.slows.push(v);
       fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
     } }));
+  };
+  // Mana Drain: Leeches its amount of mana from the enemy at your aim, at its leech rate, and Hinders it
+  K.drain = S => {
+    const st = S.dmg.stats, d = near(S.at, 2); if (!d) return;
+    fx.streak(chest(d), V(pp.x, 1.2, pp.z), 'lightning', .4, .05, 1);
+    const q = me.leech.mana; q.left += st.mana_drain_base_mana_leech_amount * (1 - (d.stat.leechRes || 0)); q.rate = q.left * (1 + st['base_mana_leech_rate_+%'] / 100);
+    d.slows.push({ until: time + HINDER.time, pct: -HINDER.slow });
   };
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
   // each second in it (up to 10, its description), each its more spell damage and its Life lost per minute; its cast speed
@@ -3582,12 +3597,13 @@ export function initScene(el, api) {
     let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
-    const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.vined = d.vined.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // Entangle's vines on it
+    const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // Entangle's vines on it
     const maim = Math.max(SLOW_FLOOR / ks, (d.st.maim > 0 ? 1 - (d.mag.maim ?? MAIM.move) * d.stat.slowEffect / 100 : 1) * (1 + VS * d.stat.slowEffect / 100));
-    d.wait -= dt;
+    const SR = d.st.bleed > 0 && d.red;
+    d.wait -= dt * (SR ? 1 + SR['bleeding_monsters_attack_speed_+%'] / 100 : 1);
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
     if (me.safe > 0) return;
-    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10 * maim;
+    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10 * maim * (SR ? 1 + SR['bleeding_monsters_movement_velocity_+%'] / 100 : 1);
     if (far <= (d.mon.aggro || 0) / 10) d.aggro = true;
     const q = d.aggro && wallIn(d);   // a Shield Wall in the way: it walks to it and attacks it
     if (q) {
