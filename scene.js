@@ -1984,6 +1984,17 @@ export function initScene(el, api) {
       hazardAt(S, p, durOf(S), { arm: st.rune_hazard_arming_time_ms / 1000, delay: st.rune_hazard_detonate_time_ms / 1000, reach: S.G?.radius2, c: 'lightning' });
     }
   };
+  // Rolling Magma: a ball of magma lobbed at the target (within its least and most distance) that hits its area where it
+  // lands and bounces forward its Chains times (its bounce range each), its impacts setting off Molten Fissures and
+  // Volcanos as a Slam does
+  K.magma = S => {
+    const st = S.dmg?.stats || {}, l = Math.hypot(S.at.x - pp.x, S.at.z - pp.z) || 1, k = clamp(l, st.magma_orb_target_distance_absolute_minimum / 10, st.magma_orb_target_distance_absolute_maximum / 10);
+    const bounce = (from, to, left) => lob(fx.orb('fire', .25), V(from.x, from.y ?? 1.2, from.z), V(to.x, .2, to.z), .35, 1.4, () => {
+      pop(to, S.A, 'fire'); boom(to, S.A, S); quake(to, S.A); for (const o of objs) if (o.volcano && !o.dead && dist(o.pos, to) <= S.A + o.r) o.volcano();
+      if (left > 0) bounce({ x: to.x, y: .2, z: to.z }, { x: to.x + S.dx * st.magma_orb_base_bounce_range / 10, z: to.z + S.dz * st.magma_orb_base_bounce_range / 10 }, left - 1);
+    }, { trail: 'fire' });
+    bounce({ x: pp.x, z: pp.z }, { x: pp.x + S.dx * k, z: pp.z + S.dz * k }, sh(S).chains ?? st.number_of_chains ?? 0);
+  };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
   K.banner = S => {
