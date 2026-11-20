@@ -993,7 +993,10 @@ export function initScene(el, api) {
   // created, an item's as it enters your Presence (calc.js character() overgrow). Accelerated Growth then explodes there
   // after its delay, its own damage and area (calc.js trig)
   function overgrow(o) {
-    if (o.overgrown || o.dead) return; o.overgrown = true; const S = o.plant;
+    if (o.overgrown || o.dead) return; o.overgrown = true; const S = o.plant, st = S.dmg?.stats || {};
+    // an Overgrown plant's own bonuses (its stats "when wet"): more damage, a larger area
+    o.more = 1 + (st['plant_skill_damage_+%_final_when_wet'] || 0) / 100;
+    o.R *= Math.sqrt(1 + (st['vine_arrow_area_of_effect_+%_final_when_wet'] ?? st['awakened_forest_area_of_effect_+%_final_when_wet'] ?? 0) / 100);
     fx.ring(o.c, .2, o.R, 'poison', .5); fx.emit(14, { p: { x: o.c.x, y: .1, z: o.c.z }, r: o.R * .8, v: .4, up: 2, life: .8, size: .25, c: 'poison' });
     say(t('{0} is Overgrown', S.label), 'poison');
     const G = sheet().overgrow;   // a chance for Nature's Archon, not while one is on or during its recovery
@@ -1019,8 +1022,10 @@ export function initScene(el, api) {
       const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
       boom(q, S.A, S, { soft: true, noPay: k > 0 });
       const m = new THREE.Mesh(PUSTULE, new THREE.MeshStandardMaterial({ color: 0x5f8a2a, emissive: 0x1d3008, roughness: .6 })); m.position.set(q.x, .25, q.z);
-      planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, tick: (dt, e) => presence(e),
-        end: () => { if (X) { say(t('{0} detonates', S.label), 'poison'); boom(q, X.A, X); } } }));
+      // Overgrown, a Pustule grows as though dealing its poison per minute: stored, it detonates faster and harder (as poisoned)
+      planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, stored: 0,
+        tick: (dt, e) => { presence(e); if (e.overgrown) e.s += stores(st, e, (st.pustules_grow_as_though_dealing_X_poison_damage_per_minute_when_wet || 0) / 60, dt); },
+        end: e => { if (X) { const B = burst(st, e.stored); say(t('{0} detonates', S.label), 'poison'); boom(q, X.A + B.r, { ...X, mult: X.mult * B.more }); } } }));
     }
   }
   // ---------- Remnants (keywords.json Remnant): your persistent skills drop them where their condition is met, for their
@@ -1165,14 +1170,17 @@ export function initScene(el, api) {
   // (Poison Spores' explosion stats, as their names read)
   function pustule(d, dt) {
     const U = d.pustule, st = U.st, pd = d.st.poison > 0 && d.burn.poison ? d.burn.poison.dps : 0;
-    U.stored += pd * dt; U.left -= dt * (1 + pd * 60 / (st['toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty'] || Infinity) / 100);
+    U.left -= dt + stores(st, U, pd, dt);
     if (Math.random() < dt * 6) fx.emit(1, { p: { x: d.pos.x, y: 1.5 * d.sc, z: d.pos.z }, r: .2, v: .2, up: .5, life: .6, size: .22, c: 'poison' });
     if (U.left > 0) return;
     d.pustule = null;
-    const more = Math.min(st['toxic_pustule_max_burst_damage_+%_final_from_stored_poison'] || 0, U.stored / (st['toxic_pustule_burst_1%_more_damage_per_x_stored_poison'] || Infinity));
-    const R = U.X.A + Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, U.stored / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10;
-    say(t('{0} detonates', U.X.label), 'poison'); boom({ x: d.pos.x, z: d.pos.z }, R, { ...U.X, mult: U.X.mult * (1 + more / 100) });
+    const B = burst(st, U.stored);
+    say(t('{0} detonates', U.X.label), 'poison'); boom({ x: d.pos.x, z: d.pos.z }, U.X.A + B.r, { ...U.X, mult: U.X.mult * B.more });
   }
+  // stores the poison per second pd for dt; returns the extra time it runs out
+  function stores(st, U, pd, dt) { U.stored += pd * dt; return dt * pd * 60 / (st['toxic_pustule_duration_expires_1%_faster_per_x_stored_poison_damage_multiplied_by_sixty'] || Infinity) / 100; }
+  const burst = (st, n) => ({ more: 1 + Math.min(st['toxic_pustule_max_burst_damage_+%_final_from_stored_poison'] || 0, n / (st['toxic_pustule_burst_1%_more_damage_per_x_stored_poison'] || Infinity)) / 100,
+    r: Math.min(st['toxic_pustule_max_additional_burst_base_radius_+'] || 0, n / (st['toxic_pustule_burst_base_radius_+1_per_x_stored_poison'] || Infinity)) / 10 });
   // the part a consumed Infusion of that kind brings (Spark's cold-infused sparks, Comet's blast, Firestorm's ice and
   // lightning bolts, Fireball's firebolts...): the one named after it, else the skill's one infused or secondary part
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
@@ -1997,12 +2005,13 @@ export function initScene(el, api) {
       fx.ring(c, .2, R, S.el, .45);
       if (P.ground) { ground(P.ground, c, R, dur, S); area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
+      if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed);
       const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
           if (e.plant) presence(e);
           if (Math.random() < dt * R * 8) fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R * .9, v: .2, up: 1.4, life: .7, size: .22, c: S.el });
           if ((tk -= dt) > 0) return; tk = .5;
-          area(c, R, { ...S, self: e }, { mult: .25, noPay: e.s > .6, noTouch: true });
+          area(c, e.R, { ...S, self: e, mult: S.mult * (e.more || 1) }, { mult: .25, noPay: e.s > .6, noTouch: true });
         },
         off: () => dec.remove() });
       if (z.plant) planted(z);
@@ -2369,17 +2378,17 @@ export function initScene(el, api) {
   };
   // Thrashing Vines: its growth area at the target (its limit, its duration), a vine crashing in it every its share of the
   // cast time, onto an enemy in it if there is one, hitting its secondary area
-  // note: the Overgrown ("wet") vines are not simulated
   K.vines = S => {
     const st = S.dmg?.stats || {}, c = { ...S.at }, R = S.A, r = radOf(S), every = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * st['awakened_forest_spawn_vines_per_X%_cast_time'] / 100;
     const was = objs.find(o => o.forest && o.name === S.name && !o.dead && dist(o.c, c) <= R); if (was) { was.s = 0; return; }   // sustained: the same area goes on
     limit(o => o.forest && o.name === S.name, st.base_number_of_awakened_forests_allowed);
     const ring = fx.decal(c, R, 'outline', 'poison', { a: .35, rot: 0 }); let k = 0;
-    thing(holder(c), durOf(S), { name: S.name, forest: true, c, off: () => ring.remove(), tick(dt) {
+    planted(thing(holder(c), durOf(S), { name: S.name, forest: true, plant: S, c, R, off: () => ring.remove(), tick(dt, e) {
+      presence(e);
       if ((k -= dt) > 0) return; k = every;
-      const d = near(c, R), q = d ? { x: d.pos.x, z: d.pos.z } : around(c, R);
-      fx.pillar(q, r * .4, 2.4, 'poison', .3, 2); later(.2, () => boom(q, r, S, { soft: true }));
-    } });
+      const d = near(c, e.R), q = d ? { x: d.pos.x, z: d.pos.z } : around(c, e.R);
+      fx.pillar(q, r * .4, 2.4, 'poison', .3, 2); later(.2, () => boom(q, r, { ...S, mult: S.mult * (e.more || 1) }, { soft: true }));
+    } }));
   };
   // Cross Slash: two gouges in front of you, each its angle apart across your aim, its length and its secondary width,
   // each hitting on its own, as you leap back its offset; a Marked enemy hit by both has its Mark activated and takes the
