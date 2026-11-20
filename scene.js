@@ -367,7 +367,7 @@ export function initScene(el, api) {
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
-      const CS = S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;   // Charged Staff: its added lightning per stack
+      const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
       // Trinity: more elemental damage per 30 Affinity of any type (its text; the stat's name says 50); a hit dealing
       // elemental damage gains Affinity of its highest elemental type and loses some of the others
@@ -2302,15 +2302,16 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
+  // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
+  const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
+  K.cstaff = S => {
+    const on = time < me.cstaff?.until, n = S.spent;
+    me.cstaff = { S, n: (on ? me.cstaff.n : 0) + n, until: (on ? me.cstaff.until : time) + n * S.dmg.stats.charged_staff_buff_duration_per_stack_ms / 1000 };
+    setBuff({ label: S.label, name: S.name, c: css('lightning'), s: me.cstaff.until - time }); say(`${S.label}: ${me.cstaff.n}`, 'lightning');
+  };
   // Galvanic Field: a buff that raises your shock chance; shocking an enemy consumes it to attach its orb to that enemy,
   // which fires a chaining bolt at an enemy within its secondary radius every beam delay until it expires
   // note: the buff's own duration is not in its data, it lasts until a shock consumes it
-  // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
-  K.cstaff = S => {
-    const n = S.spent, left = Math.max(0, (me.cstaff?.until || 0) - time), k = time < me.cstaff?.until ? me.cstaff.n : 0;
-    me.cstaff = { S, n: k + n, until: time + left + n * S.dmg.stats.charged_staff_buff_duration_per_stack_ms / 1000 };
-    setBuff({ label: S.label, name: S.name, c: css('lightning'), s: me.cstaff.until - time }); say(`${S.label}: ${me.cstaff.n}`, 'lightning');
-  };
   K.galvanic = S => { me.galv = S; say(t('{0} active', S.label), 'lightning'); };
   function galvanic(d) {
     const S = me.galv, st = S.dmg.stats, m = fx.orb('lightning', .2); me.galv = null;
@@ -2502,7 +2503,7 @@ export function initScene(el, api) {
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
-    const CW = S.P.attack && !S.src && time < me.cstaff?.until && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
+    const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
     if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
     // Spell Cascade: the spell also lands on either side of its target along a random axis, its number on each side, in its smaller area
     const SC = S.dmg?.sum?.support_spell_cascade_number_of_cascades_per_side;
