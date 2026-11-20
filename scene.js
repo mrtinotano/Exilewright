@@ -775,13 +775,12 @@ export function initScene(el, api) {
   // Azmerian Swarms: killing an enemy with an Elemental Ailment (its chance), or hitting a Rare or Unique one with one (its
   // chance), summons a Swarm for its duration, up to its most; their hits deal their more damage per type of Elemental
   // Ailment on the target
-  const ELEM_AIL = ['ignite', 'chill', 'freeze', 'shock', 'electrocute'];
   function swarm(d, slain) {
-    const W = onS('Azmerian Swarms'), st = W?.dmg?.stats, n = ELEM_AIL.filter(a => d.st[a] > 0).length; if (!st || !n) return;
+    const W = onS('Azmerian Swarms'), st = W?.dmg?.stats; if (!st || !EL_AIL.some(a => d.st[a] > 0)) return;
     const pc = slain ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_kill_affected_by_elemental_ailment'] : POWER[d.stat.rarity] >= POWER.rare ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_hitting_unique_or_rare_enemy_affected_by_elemental_ailment'] : 0;
     if (!(Math.random() * 100 < pc)) return;
     limit(o => o.kind === W.name, st.max_azmerian_swarms);
-    minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + ELEM_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
+    minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
   }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
