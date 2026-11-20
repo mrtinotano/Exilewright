@@ -987,11 +987,10 @@ function onLive(L) {
   });
 }
 scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, fight: () => sceneCfg.fight, onLive, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum(), B()),
-  sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), sprint: (SK.character_stats?.['sprint_movement_speed_+%'] || 0) + (sum['sprint_movement_speed_+%'] || 0), noFall: !!sum.cannot_be_heavy_stunned_while_sprinting, jade: sum.buildup_jade_every_x_ms && { every: sum.buildup_jade_every_x_ms, max: sum.max_jade_stacks, dr: sum['additional_physical_damage_reduction_%_per_jade'] }, ailments: ailmentDefence(c, sum),
+  sheet: () => { const sum = treeSum(), c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), sprint: { speed: (SK.character_stats?.['sprint_movement_speed_+%'] || 0) + (sum['sprint_movement_speed_+%'] || 0), min: SK.character_stats?.dodge_roll_sprint_minimum_time_ms, turn: SK.character_stats?.dodge_roll_sprint_turn_rate }, noFall: !!sum.cannot_be_heavy_stunned_while_sprinting, jade: sum.buildup_jade_every_x_ms && { every: sum.buildup_jade_every_x_ms, max: sum.max_jade_stacks, dr: sum['additional_physical_damage_reduction_%_per_jade'] }, ailments: ailmentDefence(c, sum),
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
-  charStats: () => SK.character_stats,
   swapSet: () => { swapSet(B(), B().wset === 2 ? 1 : 2); save(); renderSide(); return B().wset; },
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },

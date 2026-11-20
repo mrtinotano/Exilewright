@@ -1,6 +1,6 @@
 // Build sharing: Path of Building 2 build codes, the format pobb.in, poe.ninja, Maxroll and poe2db read and write.
 // A code is base64url( zlib deflate( <PathOfBuilding2> XML ) ), see PoB's src/Classes/ImportTab.lua.
-import { itemText, itemNote, parseItem } from './items.js';
+import { itemText, itemNote, parseItem, swapSet } from './items.js';
 import { usedBy } from './calc.js';
 import { t } from './i18n.js';
 
@@ -12,7 +12,8 @@ const POB_ASC = { Deadeye: 'Ranger1', Pathfinder: 'Ranger3', Amazon: 'Huntress1'
   'Abyssal Lich': 'Witch3b', Stormweaver: 'Sorceress1', Chronomancer: 'Sorceress2', 'Disciple of Varashta': 'Sorceress3',
   'Martial Artist': 'Monk1', Invoker: 'Monk2', 'Acolyte of Chayula': 'Monk3' };
 const POB_SLOT = { weapon: 'Weapon 1', offhand: 'Weapon 2', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots',
-  amulet: 'Amulet', ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Flask 1', flask2: 'Flask 2', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
+  amulet: 'Amulet', ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Flask 1', flask2: 'Flask 2', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3',
+  'swap:weapon': 'Weapon 1 Swap', 'swap:offhand': 'Weapon 2 Swap' };   // weapon set II
 const rev = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [String(v), k]));
 const ASC_OF = rev(POB_ASC), SLOT_OF = rev(POB_SLOT), CLASS_OF = rev(POB_CLASS);
 
@@ -44,7 +45,9 @@ export function toXML(b, ctx) {
   const cls = ctx.clsOf(b.asc), st = ctx.ascStart(b.asc), set1 = b.set1 || [], set2 = b.set2 || [];
   const nodes = [...new Set([...b.nodes, ...st ? [st] : [], ...b.ascNodes, ...set1, ...set2])];
   const attr = k => Object.entries(b.attrs || {}).filter(([, v]) => v === k).map(([id]) => id).join(',');
-  const items = Object.entries(b.items || {}).map(([slot, it]) => [slot, itemText(it)]).filter(([, txt]) => txt);
+  // PoB keeps set I in Weapon 1 / 2 and set II in their Swap slots, whichever is in hand (useSecondWeaponSet)
+  const hand = b.wset === 2, inHand = Object.entries(b.items || {}).map(([s, it]) => [hand && /^(weapon|offhand)$/.test(s) ? 'swap:' + s : s, it]);
+  const items = [...inHand, ...Object.entries(b.swap || {}).map(([s, it]) => [hand ? s : 'swap:' + s, it])].map(([slot, it]) => [slot, itemText(it)]).filter(([, txt]) => txt);
   const iid = Object.fromEntries(items.map(([slot], i) => [slot, i + 1]));
   const byName = Object.fromEntries(ctx.gems.map(g => [g.name, g]));
   const gem = (name, level, quality = 0) => `<Gem nameSpec="${x(name)}"${byName[name] ? ` gemId="${x(byName[name].id)}"` : ''} level="${level}" quality="${quality}" enabled="true"/>`;
@@ -63,7 +66,7 @@ ${b.gems.map((g, i) => usedBy(b, i) ? null : `<Skill enabled="true" slot="" main
 </SkillSet></Skills>
 <Items activeItemSet="1">
 ${items.map(([s, txt]) => `<Item id="${iid[s]}">${x(txt)}</Item>`).join('\n')}
-<ItemSet id="1">${items.filter(([s]) => POB_SLOT[s]).map(([s]) => `<Slot name="${POB_SLOT[s]}" itemId="${iid[s]}"/>`).join('')}</ItemSet>
+<ItemSet id="1" useSecondWeaponSet="${hand}">${items.filter(([s]) => POB_SLOT[s]).map(([s]) => `<Slot name="${POB_SLOT[s]}" itemId="${iid[s]}"/>`).join('')}</ItemSet>
 </Items>
 <Notes>${x(b.notes)}</Notes>
 <Config activeConfigSet="1"><ConfigSet id="1" title="Default">${(ctx.quests || []).map(q => {
@@ -130,14 +133,16 @@ export function fromXML(xml, ctx, blank) {
   const isets = kids(itemsEl, 'ItemSet'), iset = isets.find(s => s.getAttribute('id') === itemsEl?.getAttribute('activeItemSet')) || isets[0];
   const place = [...kids(iset, 'Slot').map(s => [SLOT_OF[s.getAttribute('name')], s.getAttribute('itemId')]),
     ...spec ? kids(kids(spec, 'Sockets')[0], 'Socket').map(s => ['jewel:' + s.getAttribute('nodeId'), s.getAttribute('itemId')]) : []];
-  b.items = {};
+  b.items = {}; delete b.swap;
   for (const [slot, id] of place) {
     if (!slot || !text[id]) continue;
     const r = parseItem(text[id]);
     if (!r) { warn.push(text[id].split('\n').map(l => l.trim()).filter(Boolean).slice(1, 3).join(' ')); continue; }
-    b.items[slot] = r.name ? { ...r.item, name: r.name } : r.item;   // a rare's name, written back on export
+    const it = r.name ? { ...r.item, name: r.name } : r.item;   // a rare's name, written back on export
+    if (slot.startsWith('swap:')) (b.swap ||= {})[slot.slice(5)] = it; else b.items[slot] = it;
     warn.push(...r.missed);
   }
+  b.wset = 1; if (iset?.getAttribute('useSecondWeaponSet') === 'true') swapSet(b, 2);
   b.notes = kids(root, 'Notes')[0]?.textContent.trim() || '';
   // the level is the build's own, and so are its campaign rewards (the active <ConfigSet>, written as in toXML)
   b.lvl = b.level;

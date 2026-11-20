@@ -468,7 +468,6 @@ export function initScene(el, api) {
       d.mark = null; trigger(M.S, 'mark', d); fx.ring(d.pos, .3, 1.5, 'mark', .35);
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
-    if (crit && own && /rare|unique/.test(d.stat.rarity)) zenith(d);
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
@@ -485,6 +484,7 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
+    if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (d.agony && S.src !== 'agony' && (d.agony.n += total * d.agony.pct / 100) >= d.life) agonyEnds(d);   // Inevitable Agony
     // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
     // shatter in its explosion. note: how long the shards last is not in the data, until they shatter here
@@ -2692,15 +2692,18 @@ export function initScene(el, api) {
     spendWard(me.ward);
     for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
   };
-  // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its seeds; at its number they
-  // are consumed for its crystals within its radius of that enemy. note: the seeds for a killing critical hit, and how
-  // long the crystals last, are not in the data: only the first is counted, and they stay until something hits them
+  // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its petals, and a killing one its
+  // Power's (midnight_star_gain_ice_seeds_equal_to_enemy_power_on_kill_with_critical_hit); at its number they are consumed
+  // for its crystals within its radius of that enemy, up to its most. note: its Crystal stat set (duration, most, explosion
+  // radius) is not in the app's data: those are PoB2's (Skills/other.lua MidnightStarPlayer); its crits give no petals
+  const ZENITH = { dur: 10, most: 10, R: 2.2 };
   function zenith(d) {
     const S = onS('Midnight Zenith'); if (!S) return;
     const st = S.dmg.stats, need = st.midnight_star_attempt_to_consume_x_ice_seeds_to_create_an_ice_crystal_each_time_you_gain_ice_seeds;
-    if ((me.seeds = (me.seeds || 0) + st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy) < need) return;
+    const n = (/rare|unique/.test(d.stat.rarity) ? st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy : 0) + (d.dead ? POWER[d.stat.rarity] || 1 : 0);
+    if (!n || (me.seeds = (me.seeds || 0) + n) < need) return;
     me.seeds -= need;
-    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(S) || Infinity);
+    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) { limit(o => o.ice && o.name === S.name, ZENITH.most); crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), ZENITH.dur, { ...S, A: ZENITH.R }); }
   }
   // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
@@ -3401,7 +3404,7 @@ export function initScene(el, api) {
     else if (c === K.swap && api.swapSet) { const n = api.swapSet(); fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap
     else if (c === K.roll) roll();
   });
-  const rollHeld = () => !!keys[settings().keys.roll] || !!padWas[1], SK_CHAR = () => api.charStats?.() || {};
+  const rollHeld = () => keys[settings().keys.roll] || padWas[1];
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
   function roll() {
     if (move || rollCd > 0 || stuck()) return;
@@ -4300,11 +4303,11 @@ export function initScene(el, api) {
     } else if (me.sprint) {
       // Sprint: after a roll, while its key stays held (at least its least time), toward W A S D / the stick or the cursor,
       // turning at its turn rate, faster by its movement speed (character.ot, plus the tree's and gear's); using a skill ends it
-      const S0 = me.sprint, C = SK_CHAR(), go = steer || (() => { const x = cursor.x - pp.x, z = cursor.z - pp.z, l = Math.hypot(x, z); return l > .3 ? { x: x / l, z: z / l } : null; })();
-      if (castAt > S0.at || stuck() || (!rollHeld() && time - S0.at >= C.dodge_roll_sprint_minimum_time_ms / 1000)) me.sprint = null;
+      const C = sheet().sprint, go = steer || (() => { const x = cursor.x - pp.x, z = cursor.z - pp.z, l = Math.hypot(x, z); return l > .3 ? { x: x / l, z: z / l } : null; })();
+      if (castAt > me.sprint.at || stuck() || (!rollHeld() && time - me.sprint.at >= C.min / 1000)) me.sprint = null;
       else {
-        if (go) { let da = Math.atan2(go.x, go.z) - facing; da = Math.atan2(Math.sin(da), Math.cos(da)); const turn = C.dodge_roll_sprint_turn_rate * Math.PI / 180 * dt; facing += clamp(da, -turn, turn); }
-        const v = spd() * (1 + sheet().sprint / 100) * slowed() * maimed() * dt; pp.x += Math.sin(facing) * v; pp.z += Math.cos(facing) * v; moving = true; goal = null;
+        if (go) { let da = Math.atan2(go.x, go.z) - facing; da = Math.atan2(Math.sin(da), Math.cos(da)); const turn = C.turn * Math.PI / 180 * dt; facing += clamp(da, -turn, turn); }
+        const v = spd() * (1 + C.speed / 100) * slowed() * maimed() * dt; pp.x += Math.sin(facing) * v; pp.z += Math.cos(facing) * v; moving = true; goal = null;
       }
     } else if (steer && !charge && !stuck()) {
       goal = null;
