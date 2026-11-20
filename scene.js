@@ -967,7 +967,7 @@ export function initScene(el, api) {
   // (its own damage and area) with more stun buildup per Fragility, and that enemy cannot be cursed by it for its time.
   // note: its knockback is not simulated
   function repulse(d) {
-    const C = d.curse, RS = C.S, st = RS.dmg.stats, c = { x: d.pos.x, z: d.pos.z };
+    const RS = d.curse.S, st = RS.dmg.stats, c = { x: d.pos.x, z: d.pos.z };
     d.curse = null; d.noRepulse = time + st.repulsion_curse_when_detonated_prevent_curse_for_X_ms / 1000;
     fx.ring(c, .3, RS.A, 'gold', .4);
     const D = granted('Repulsion Wave', RS.g?.level), X = D && { ...asTrig(RS, { ...D, id: 'Repulsion Wave' }), label: RS.label, src: 'repulsion' }; if (!X) return;
@@ -990,7 +990,7 @@ export function initScene(el, api) {
     fx.ring(pp, .3, S.A, 'cold', .5); fx.pillar(pp, .5, 4, 'cold', .5, 2); say(t('{0} active', S.label), 'cold');
   }
   function moonbeams(d) {
-    const L = me.lunar, X = L && partOf(L.S, 'WolfLunarBlessingBeamAttackPlayer'); if (!X || time < L.busy) return;
+    const L = me.lunar, X = partOf(L.S, 'WolfLunarBlessingBeamAttackPlayer'); if (!X || time < L.busy) return;
     const xs = X.dmg.stats, wait = xs.wolf_lunar_blessing_beam_attack_delay_ms / 1000, step = xs.wolf_lunar_blessing_beam_attack_delay_between_beams_ms / 1000, R2 = radOf(X, 'secondary');
     L.busy = time + wait + step * xs.wolf_lunar_blessing_beam_attack_extra_beams_to_trigger;
     for (let k = 0; k <= xs.wolf_lunar_blessing_beam_attack_extra_beams_to_trigger; k++) later(wait + k * step, () => {
