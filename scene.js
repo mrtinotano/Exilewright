@@ -2937,11 +2937,11 @@ export function initScene(el, api) {
       if (DS && time - (me.movedAt ?? -99) < DS / 1000) { toast(`${S.label}: ${t('Supported Skills cannot be used unless you have been stationary for {0} seconds', DS / 1000)}`); return false; }
       // Requiem: your weapon passively accumulates Anguish (its amount per minute) up to its requirement; used when full,
       // the skill fires freely for its active time
-      const RQ = S.dmg?.stats?.rapidshot_requiem_base_buff_count_requirement, RS = S.dmg?.stats;
-      if (RQ && !(time < me.requiem)) {
+      const RS = S.dmg?.stats, RQ = RS?.rapidshot_requiem_base_buff_count_requirement;
+      if (RQ && time >= me.requiem) {
         const ang = Math.floor(Math.min(RQ, (time - me.angAt) * RS.rapidshot_requiem_number_of_stacks_per_minute / 60));
         if (ang < RQ) { toast(`${S.label}: ${t('Anguish')} ${ang}/${RQ}`); return false; }
-        me.angAt = me.requiem = time + RS.rapidshot_requiem_active_duration_ms / 1000; setBuff({ label: S.label, name: S.name, c: css('cold'), s: RS.rapidshot_requiem_active_duration_ms / 1000 });
+        const d = RS.rapidshot_requiem_active_duration_ms / 1000; me.angAt = me.requiem = time + d; setBuff({ label: S.label, name: S.name, c: css('cold'), s: d });
       }
       if (S.kind === 'pinnacle' && charges.power < maxC('power')) { toast(t('{0} needs {1} charges and has {2}', S.label, maxC('power'), charges.power)); return false; }   // Pinnacle of Power: only at your most power charges
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
