@@ -473,7 +473,7 @@ export function makePlayer(fx) {
 }
 
 // Figure of a placed enemy: a training dummy dressed by the monster's category (the game models are not available).
-// Own material for the sackcloth (tinted by the states), a plate with name, life and energy shield, and the markers
+// Own material for the sackcloth (tinted by the states), a plate with life and energy shield, and the markers
 // of frozen / cursed / marked. o = { kind (category), scale }
 const LOOK = {
   Beast: { tint: 0x7a5a3a, horns: 0x3a2a1a, helm: false }, Humanoid: { tint: 0x9a8560, helm: true }, Undead: { tint: 0xb9b4a2, helm: false },

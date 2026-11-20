@@ -3523,10 +3523,10 @@ export function initScene(el, api) {
       + `</table><p>${t('Damage taken: {0} · Deaths: {1}', short(stats.taken), stats.deaths)}</p>`
       + clog.slice(-60).reverse().map(l => `<div style="--c:${l.c}"><small>${l.at.toFixed(1)}s</small> ${line(l)}</div>`).join(''));
   }
-  // the enemy under the cursor, else the last one hit, as the game's bar at the top of the screen: name by rarity, life, shield
+  // the top bar's name colour by rarity
   const RARE = { normal: '#c8c8c8', magic: '#8888ff', rare: '#ffff77', unique: '#af6025' };
   // the enemy whose bar shows at the top, as in the game: a boss in the fight first, else the one under the cursor, else
-  // the last one hit; its own small bar above it is hidden
+  // the last one hit (name, life, shield); its own small bar above it is hidden
   function targetHtml() {
     const boss = dummies.find(e => !e.dead && !e.visage && e.mon.boss && e.aggro);
     const d = topD = boss || (hover && !hover.dead ? hover : lastHit && !lastHit.dead ? lastHit : null);
