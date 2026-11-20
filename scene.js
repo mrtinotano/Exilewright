@@ -2435,10 +2435,29 @@ export function initScene(el, api) {
   };
   // Twister: twisters (its projectiles, spread) moving forward erratically at its speed for its duration, hitting
   // those within every its re-hit interval; one passing over elemental ground gains that element's damage
-  // note: no Whirlwinds in the scene, so none are consumed; Blind is not simulated
+  // note: Blind and elemental Whirlwinds are not simulated
+  // Whirling Slash: its slash kicks up a Whirlwind around you (its storm part), one more stage for each use while it is up,
+  // up to its most, its area growing per stage; enemies in it are Slowed. Leaving it collapses it: its hit there, more
+  // damage per stage. Twister consumes it
+  // note: the first slash is its first stage; its larger area and more damage count the stages after it (the data does
+  // not say);
+  // Blind and the knockback are not simulated
+  function whirl(S) {
+    const W = partOf(S, 'WhirlingSlashSandstormPlayer'), st = W?.dmg.stats; if (!W) return;
+    const o = objs.find(o => o.whirl && !o.dead); if (o) { o.stage = Math.min(st.sandstorm_swipe_max_stages, o.stage + 1); return; }
+    const c = { x: pp.x, z: pp.z }, slow = new Map();
+    const e = thing(holder(c), Infinity, { whirl: true, stage: 1, c, R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
+      tick(dt) {
+        const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: 'dust', smoke: true, a: .3 });
+        for (const d of inside(c, R)) { const v = slow.get(d) || { pct: st['active_skill_base_slow_debuff_movement_speed_+%_final'] }; if (!slow.has(d)) { slow.set(d, v); d.slows.push(v); } v.until = time + .1; }
+        if (dist(pp, c) > R) { e.dead = true; boom(c, R, W, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
+      } });
+  }
   K.twister = S => {
-    const st = S.dmg?.stats || {}, n = sh(S).projectiles || 1, a0 = Math.atan2(S.dx, S.dz), spread = (st.minimum_per_projectile_spread_angle_degrees || 15) * Math.PI / 180;
-    for (let k = 0; k < n; k++) vortex(S, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult: 1 });
+    const st = S.dmg?.stats || {}, W = objs.find(o => o.whirl && !o.dead && dist(o.c, pp) <= o.R()), n = (sh(S).projectiles || 1) + (W ? W.stage : 0);
+    if (W) W.dead = true;   // it consumes the Whirlwind: one more twister per stage, more damage per stage
+    const mult = W ? 1 + st['twister_damage_+%_final_per_whirling_slash_stage'] * W.stage / 100 : 1, a0 = Math.atan2(S.dx, S.dz), spread = (st.minimum_per_projectile_spread_angle_degrees || 15) * Math.PI / 180;
+    for (let k = 0; k < n; k++) vortex(S, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
@@ -3020,7 +3039,7 @@ export function initScene(el, api) {
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
     const run = K[S.kind] || K.area;
-    run(S);
+    run(S); whirl(S);
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration
     const RS = !auto && S.P.spell && S.els.includes('fire') && onS('Raging Spirits'), rs = RS && RS.dmg.stats;
