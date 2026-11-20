@@ -29,8 +29,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper']);   // one use per key press
+const NOHIT = new Set(['temper', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -368,6 +368,8 @@ export function initScene(el, api) {
   function hit(d, S, o = {}) {
     if (d.dead) return false;
     if (S.dmg?.stats?.['time_rip_damage_share_%']) visage(d, S);
+    // Temper Weapon: an Empowered attack Combusts on its first hit (its chance): its own hit, fire, in its area around the enemy
+    const CB = S.combust; if (CB && !CB.done && Math.random() * 100 < CB.T.dmg.stats['imbue_weapon_combust_trigger_chance_%']) { CB.done = true; const c = { x: d.pos.x, z: d.pos.z }; later(.05, () => boom(c, CB.T.A, CB.T)); }
     d.aggro = true;   // hit, it comes at you
     const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
@@ -2739,6 +2741,13 @@ export function initScene(el, api) {
     thing(holder(pp), T, { tick: dt => { me.life = gain(me.life, me.maxL, L * dt); me.mana = gain(me.mana, me.maxM, M * dt); } });
     fx.ring(pp, .2, S.A, 'blood', .5); say(`${S.label}: ${list.length}`, 'blood');
   };
+  // Temper Weapon: each strike of the hammer Empowers its number of your next melee attacks, up to its most
+  // note: each use is one strike (the channel's strike rate is not in the data)
+  K.temper = S => {
+    const st = S.dmg.stats; let E = empower.find(e => e.type === 'temper');
+    if (!E) empower.push(E = { type: 'temper', label: S.label, name: S.name, el: 'fire', uses: 0, T: S });
+    E.uses = Math.min(st.imbue_weapon_max_exerts, E.uses + st.temper_weapon_empowers_per_strike); fx.pillar(pp, .4, 2, 'fire', .3); say(`${S.label}: ${E.uses}`, 'fire');
+  };
   // Mantra of Destruction: its Empowered melee attacks (its number) gain its share of damage as extra chaos; each kill
   // with one grants a Purple Flame of Chayula (keywords.json: its share as extra chaos, stacking up to 10) for its secondary duration
   K.mantra = S => {
@@ -2943,6 +2952,7 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
+        else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
