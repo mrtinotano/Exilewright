@@ -670,17 +670,26 @@ export function skill(g, b, treeGear) {
     if (pact) out.lifePerRecent = { pct: sum[pact], max: +pact.match(/up_to_(\d+)%/)[1] };
     out.costPerSecond = perSec;
   } else out.cost = 0;
+  // a shield skill attacks with the shield (PoB2's off-hand pass): its own off-hand damage (off_hand_weapon_*), plus its
+  // added damage per 15 (5) of the shield's armour / evasion (whole steps, PoB2's PerStat); a shield has no attack time,
+  // so the skill's own, and its own critical chance
+  const SH = { armour: 'armour', evasion: 'evasion', evasion_rating: 'evasion', armour_and_evasion_rating: 'both' };
+  const shield = attack && d.weapons?.some(x => x === 'Shields' || x === 'Bucklers') && d.weapons.includes(classOf(b.items.offhand)) && armourItems({ offhand: b.items.offhand });
+  const shieldAdd = (t, i) => Object.entries(st).reduce((n, [k, x]) => {
+    const m = k.match(new RegExp(`^off_hand_${i ? 'maximum' : 'minimum'}_added_${t}_damage_per_(\\d+)_shield_(\\w+)$`)), D = m && SH[m[2]];
+    return D ? n + x * Math.floor((D === 'both' ? shield.armour + shield.evasion : shield[D]) / m[1]) : n; }, 0);
   const nonWeapon = attack && (d.types || gt).includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames, Conductive Runes: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
-  else if (attack && !w && !nonWeapon) out.reason = 'Equip a weapon to calculate the attack damage';
+  else if (attack && !w && !nonWeapon && !shield) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
   // "Attack damage of this skill is 20% of Default Attack Damage" (Volcanic Eruption): PoB2's baseMultiplier too
   const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
   const base = {};
   for (const t of DMG) {
     let lo = 0, hi = 0;
-    if (attack && (w || nonWeapon)) {   // a non-weapon attack needs no weapon in hand
-      const r = nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
+    if (attack && (w || nonWeapon || shield)) {   // a non-weapon attack needs no weapon in hand
+      const r = shield ? [(st[`off_hand_weapon_minimum_${t}_damage`] || 0) + shieldAdd(t, 0), (st[`off_hand_weapon_maximum_${t}_damage`] || 0) + shieldAdd(t, 1)]
+        : nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
       if (r) { lo += r[0]; hi += r[1]; }
       lo += v(sum, `attack_minimum_added_${t}_damage`); hi += v(sum, `attack_maximum_added_${t}_damage`);
     }
@@ -738,7 +747,7 @@ export function skill(g, b, treeGear) {
   // 16/11: 1.75 s with one, 1.61 s with two right after placing them, as 4 + 4 + Carved Earth's 6% on placing gives).
   // note: "on placing a Totem" buffs not counted (they wear off)
   const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
-  if (attack && w) out.speed = w.attacks_per_second * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
+  if (attack && (w || shield)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
   // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
@@ -763,7 +772,7 @@ export function skill(g, b, treeGear) {
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
-  const baseCrit = attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
+  const baseCrit = shield && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
@@ -950,8 +959,8 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     shockEffect: scale(['shock_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%'], 'chill_effect_+%_final'),
-    igniteEffect: scale(['base_ignite_effect_+%'], 'ignite_effect_+%_final'), poisonEffect: scale(['base_poison_effect_+%'], 'poison_effect_+%_final'),
-    bleedEffect: scale(['base_bleeding_effect_+%'], 'bleeding_effect_+%_final'),
+    igniteEffect: scale(['base_ignite_effect_+%'], /(?:ignite|damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%'], /(?:poison|damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
+    bleedEffect: scale(['base_bleeding_effect_+%'], /(?:bleeding|damaging_ailment)_effect_\+%_final$/),
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),

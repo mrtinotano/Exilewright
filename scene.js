@@ -1080,7 +1080,7 @@ export function initScene(el, api) {
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
-      if (a && st[a] > 0) later(.1, () => herald(T, p));
+      if (a && st[a] > 0) { const bl = d.blood; later(.1, () => herald(T, p, bl)); }   // its Blood Loss, before the corpse is cleaned
     }
     // Herald of Plague: a poisoned enemy killed spreads its poison to the enemies within its radius, its chance to Hinder them
     const hs = st.poison > 0 && onS('Herald of Plague')?.dmg.stats;
@@ -1110,10 +1110,14 @@ export function initScene(el, api) {
       fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
     } else { d.corpse = SIM.corpseTime; d.fall = 0; }
   }
-  function herald(T, p) {
+  function herald(T, p, blood = 0) {
     const i = byName(T.name), b = i >= 0 && mk(i); if (!b) return;
     const S = { ...b, src: 'herald', ail: ailOf(T.P.els) };
     say(t('{0} explodes on the kill', T.label), T.el);
+    // Herald of Blood, Herald of the Royal Queen: its % of the Blood Loss the enemy took, as physical that nothing scales,
+    // over its area. note: its chance to Aggravate the bleeding it inflicts is not simulated
+    const BL = b.dmg?.stats?.['skill_herald_bleeding_enemies_explode_for_%_blood_loss_as_unscalable_physical_damage'];
+    if (BL) { pop(p, b.A, 'blood'); return lifeBlast(p, b.A, S, 'physical', blood * BL / 100); }
     if (T.P.el === 'lightning') {   // bolts on the enemies around instead of one blast
       nearest(p, b.dmg?.stats?.herald_of_thunder_storm_max_hits ?? 3, e => dist(e.pos, p) <= 7).forEach((e, k) => later(k * .08, () => {
         fx.bolt(V(e.pos.x + rnd(-1.5, 1.5), 13, e.pos.z + rnd(-1.5, 1.5)), V(e.pos.x, 0, e.pos.z), 'lightning', .22, .07, .5); pop(e.pos, 1.1, 'lightning'); area(e.pos, 1.1, S);
