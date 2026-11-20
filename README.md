@@ -128,7 +128,12 @@ Energy for Cast on X and the Invocations (centienergy per Power of the enemy, up
 time), attack chains (Ice Strike, Tempest Flurry, Primal Strikes) stepping to their final strike, Seals that repeat a spell
 (Unleash), Parry and Raise Shield blocking actively, Leylines draining Runic Ward for more spell damage, Bloodstone Lances
 for Shattering Spite, Unbound Fury, Splinter Totem and Greatwood, Spectral Volley's lingering projectiles, and the Flames of
-Chayula and Ancient Blooms of Into the Breach and Wildwood's Gifts. Where the data leaves something out (a time, a count),
+Chayula and Ancient Blooms of Into the Breach and Wildwood's Gifts, crossbow Heat (Rapid Shot builds it, grenades and
+Incendiary Shot consume it), the Surges and Elemental Expression, Whirling Slash's Whirlwind that Twister consumes, the
+visages of Moment of Vulnerability, Hexblast detonating curses, Lightning Spear's and Shockchain Arrow's bursts, Temper
+Weapon's Combust and the corpse cores of Volatile and Bitter Dead. The ≡ button opens a combat log: the last hits, kills
+and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
+as the game does. Where the data leaves something out (a time, a count),
 the code says so in a `note:` comment. Numbers that use a value of the
 scene and not of the game (a consumed state the skill gives no number for, a minion with no damaging skill) are drawn with "~".
 
