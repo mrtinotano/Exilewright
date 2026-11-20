@@ -3471,7 +3471,7 @@ export function initScene(el, api) {
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
-    if (!a.unblockable && activeBlock(d, a)) return event('block', pp, {});
+    if (!a.unblockable && activeBlock(d, a)) return;
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) return blocked();
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
