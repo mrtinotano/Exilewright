@@ -1355,7 +1355,7 @@ export function initScene(el, api) {
   // note: the nova deals the stored amount as one chaos hit (how the game turns it into a hit is not in its data)
   function plagueStore(n) { const st = onS('Plague Bearer')?.dmg.stats; if (st) me.plague = Math.min(st.plague_bearer_maximum_stored_poison_damage, (me.plague || 0) + n * st['plague_bearer_gains_%_of_damage_from_inflicted_poisons'] / 100); }
   function plague(S) {
-    const st = S.dmg.stats, n = me.plague || 0, R = S.A * Math.sqrt(1 + n / st.plague_bearer_maximum_stored_poison_damage * 100 * st['plague_bearer_nova_area_+%_final_per_incubation_%'] / 100);
+    const st = S.dmg.stats, n = me.plague || 0, R = S.A * Math.sqrt(1 + n / st.plague_bearer_maximum_stored_poison_damage * st['plague_bearer_nova_area_+%_final_per_incubation_%']);
     me.plague = 0; fx.ring(pp, .2, R, 'poison', .55); say(S.label, 'poison');
     if (n > 0) area(pp, R, { ...S, el: 'chaos', els: ['chaos'], dmg: { ...S.dmg, hits: { chaos: [n, n] } } });
   }
@@ -1662,7 +1662,7 @@ export function initScene(el, api) {
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
       const k = S.name;
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
-      if (tog[k] && S.dmg?.stats?.plague_bearer_maximum_stored_poison_damage) return plague(S);   // Plague Bearer: used, it unleashes
+      if (tog[k] && k === 'Plague Bearer') return plague(S);   // Plague Bearer: used, it unleashes
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
