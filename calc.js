@@ -139,11 +139,12 @@ export function gemStats(g, sum = {}) {
 }
 // Spirit a gem reserves: its amount over (100% + reservation efficiency), the gem's own (quality) plus what passives
 // and gear give every skill or those of one of its tags (reservation_efficiency_+%_of_herald_skills).
-// note: rounded to the nearest, as Path of Building 2 does
-export function reservation(g, sum = {}) {
+// Blasphemy's: its amount per curse socketed in it (the build b's gems in it). note: rounded to the nearest, as Path of Building 2 does
+export function reservation(g, sum = {}, b) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
   const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
-  return Math.round((st._spirit || 0) * 100 / (100 + eff));
+  const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length;
+  return Math.round(own * 100 / (100 + eff));
 }
 // self-check: Eternal Rage (100 spirit, 0.75% efficiency per quality as its second effect) with 6% quality and +2 levels
 { const g = { name: 'Eternal Rage', level: 15 }, sum = { 'all_skill_gem_quality_+': 6, ascendancy_gemling_enable_thaumaturgy_quality_stats: 1, 'strength_skill_gem_level_+': 2, 'spell_skill_gem_level_+': 3 };
@@ -243,7 +244,7 @@ export function character(b, sum) {
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
-    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum), 0),
+    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
     es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     block: v(sum, 'additional_block_%', 'block_%'),

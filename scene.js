@@ -3909,6 +3909,13 @@ export function initScene(el, api) {
     // delay after it last took damage. Ghost Dance: a Ghost Shroud every its interval, up to its most; one is consumed when
     // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
     if (!onS('Future-Past')) me.fpAt = null; else me.fpAt ??= time;   // its Hindsight from when it is on
+    // Blasphemy: while it is on, the curses socketed in it curse the enemies within their own area around you, at its less
+    // effect. note: its own radius in the data (1 m) is not used: the curse's
+    const BL = onS('Blasphemy');
+    if (BL) api.build().gems.forEach((g, i) => {
+      const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;
+      for (const d of inside(pp, S.A)) if (!(d.level > C?.maxLevel)) d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect };
+    });
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }

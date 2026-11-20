@@ -37,7 +37,7 @@ function details(g, b, sum, geo) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = shownLines(st, g.name), spirit = reservation(g, sum), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  const lines = shownLines(st, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(tn(G) || g.name)}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${descOf(G) ? `<p class="ddesc">${kwHtml(descOf(G))}</p>` : ''}
     ${sec('Damage', [
