@@ -1661,6 +1661,9 @@ export function initScene(el, api) {
         if (P.ground) ground(P.ground, at, S.A, P.dur, S);
         if (P.slams) slammed(S, at, S.A);
         if (P.jump) landed(S, at);
+        // Stampede: its leaping slam at the end (its part), setting off the Jagged Ground within it, each exploding
+        const SS = partOf(S, 'StampedeSlamPlayer');
+        if (SS) { boom(at, SS.A, { ...SS, mult: S.mult }); slammed(SS, at, SS.A); for (const g of grounds) if (!g.dead && g.type === 'jagged' && dist(g, at) <= SS.A + g.r) { g.dead = true; boom({ x: g.x, z: g.z }, g.r, S, { soft: true }); } }
         // Molten Crash: its Molten Fissures (its part, up to its limit, lasting its duration), one more for the Rage it
         // consumes on landing if you have it, then its second slam setting them off
         // note: one fissure without Rage is the description's plural read at its least; their length is not in the data
@@ -1677,7 +1680,7 @@ export function initScene(el, api) {
         fx.pillar(from, .5, 3, S.el, .3); fx.emit(20, { p: { x: from.x, y: 1, z: from.z }, r: .3, v: 2, life: .4, size: .2, c: S.el, c2: 'white' });
         fx.bolt(V(from.x, 1, from.z), V(to.x, 1, to.z), S.el, .2, .05, .15);
         pp.x = to.x; pp.z = to.z; fx.pillar(to, .6, 3.5, S.el, .35); land();
-      } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set(), crash };
+      } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set(), crash, jag: S.dmg?.stats?.skill_jagged_ground_base_duration_ms / 1000, step: 0 };
     },
     nova(S) {
       const P = S.P; let c = S.src ? S.at : S.from;
@@ -3220,6 +3223,7 @@ export function initScene(el, api) {
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
       if (m.S) {
         fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
+        if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', { x: pp.x, z: pp.z }, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
       if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); }
