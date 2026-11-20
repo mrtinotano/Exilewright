@@ -149,7 +149,7 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.explodes || tags.includes('area'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
@@ -2039,6 +2039,22 @@ export function initScene(el, api) {
     g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
     thing(g, durOf(S), { name: S.name, banner: give, R, c, tick(dt) { flag.rotation.y = Math.sin(time * 2) * .15; }, off: () => ring.remove() });
   };
+  // Leylines: while it is on, a leyline of its ground units (its least distance apart) across its reveal radius around
+  // you; standing over one with Runic Ward, your spells deal its more damage and the Ward drains at its rate; running
+  // out of it dissipates them for its reappearance time
+  // note: how many leylines there are and how they lie is not in the data; one straight line through you here
+  function leylines(dt) {
+    const L = onS('Leylines')?.dmg?.stats, Y = me.ley ||= { units: [], back: 0 }, clear = () => { Y.units.forEach(u => u.decal.remove()); Y.units = []; Y.more = 0; };
+    if (!L) return clear();
+    const rev = L.skill_leylines_reveal_radius / 10, r = L.active_skill_base_area_of_effect_radius / 10, gap = L.skill_leylines_minimum_distance_between_leyline_ground_units / 10;
+    if (Y.units.length && dist(Y.c, pp) > rev) clear();
+    if (!Y.units.length && time >= Y.back) {
+      const a = rnd(TAU); Y.c = { x: pp.x, z: pp.z };
+      for (let k = -rev; k <= rev; k += gap) { const p = { x: pp.x + Math.sin(a) * k, z: pp.z + Math.cos(a) * k }; Y.units.push({ ...p, decal: fx.decal(p, r, 'patch', 'cold', { a: .35, k: 1 }) }); }
+    }
+    Y.more = me.ward > 0 && Y.units.some(u => dist(u, pp) <= r) ? L['skill_leylines_spell_damage_+%_final'] : 0;
+    if (Y.more && (me.ward -= L.skill_leylines_ward_degeneration_per_minute / 60 * dt) <= 0) { me.ward = 0; clear(); Y.back = time + L.skill_leylines_respawn_time_ms / 1000; }
+  }
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -2924,6 +2940,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
+    leylines(dt);
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
