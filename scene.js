@@ -2613,8 +2613,8 @@ export function initScene(el, api) {
   // Pinnacle of Power: for its duration per power charge consumed, its more elemental damage per charge
   // note: its elemental ailments from the other damage types are not simulated
   K.pinnacle = S => {
-    const st = S.dmg.stats, n = S.spent; me.pinn = { until: time + n * st.elemental_power_buff_duration_per_power_charge_ms / 1000, more: n * st['elemental_power_elemental_damage_+%_final_per_power_charge'] };
-    setBuff({ label: S.label, name: S.name, c: css('gold'), s: me.pinn.until - time });
+    const st = S.dmg.stats, n = S.spent, dur = n * st.elemental_power_buff_duration_per_power_charge_ms / 1000;
+    me.pinn = { until: time + dur, more: n * st['elemental_power_elemental_damage_+%_final_per_power_charge'] }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: dur });
   };
   // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
   const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
@@ -2669,8 +2669,7 @@ export function initScene(el, api) {
       // Dauntless: not until you have stood still for its time
       const DS = S.dmg?.sum?.skill_cannot_be_used_unless_stationary_for_X_ms;
       if (DS && time - (me.movedAt ?? -99) < DS / 1000) { toast(`${S.label}: ${t('Supported Skills cannot be used unless you have been stationary for {0} seconds', DS / 1000)}`); return false; }
-      const PP = S.dmg?.stats?.elemental_power_buff_duration_per_power_charge_ms;   // Pinnacle of Power: only at your most power charges
-      if (PP && charges.power < maxC('power')) { toast(t('{0} needs {1} charges and has {2}', S.label, maxC('power'), charges.power)); return false; }
+      if (S.kind === 'pinnacle' && charges.power < maxC('power')) { toast(t('{0} needs {1} charges and has {2}', S.label, maxC('power'), charges.power)); return false; }   // Pinnacle of Power: only at your most power charges
       if (P.needsCharges && P.spend.length && !P.spend.some(c => charges[c] > 0)) { toast(t('{0} needs {1} charges (press G)', S.label, t(CHARGE[P.spend[0]]))); return false; }
       const ch = S.dmg?.ail?.charge || {};
       // Inhibitor: the skill consumes no charges nor Infusions, and deals its more damage per kind of either you have
