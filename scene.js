@@ -1641,9 +1641,17 @@ export function initScene(el, api) {
     // Without that damage it hits for the scene's share, drawn "~".
     totem(S) {
       const j = api.build().gems.findIndex((_, j) => api.usedBy(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
-      const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
-      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
-      const every = real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3;
+      // Splinter Totem: one totem at a time, splintering after its actions into smaller ones, up to its times, each
+      // splinter with its less damage, area and skill speed. Greatwood (Cirel's Cultivation): its more damage and
+      // increased area per other totem within its radius, up to its most
+      // note: how many totems one splinters into is not in the data; 2 here
+      const su = S.dmg?.sum || {}, SPL = su.support_splinter_totem_X_times, gen = S.gen || 0, less = k => (1 + (su[k] || 0) / 100) ** gen;
+      const mine = objs.filter(o => o.totemOf === S.name && !o.dead);
+      if (SPL) { if (!gen) mine.forEach(o => o.die()); } else if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
+      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS0 = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) * less('support_splinter_totem_damage_+%_final_each_splinter') }, R0 = (F.R || S.R || SIM.totemArea) * Math.sqrt(less('support_splinter_totem_area_of_effect_+%_final_each_splinter')), far = S.P.ballista || S.P.ranged;
+      const every = (real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3) / less('support_splinter_totem_skill_speed_+%_final_each_splinter');
+      if (gen) f.group.scale.setScalar(.8 ** gen);
+      let acts = 0;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
@@ -1651,12 +1659,15 @@ export function initScene(el, api) {
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           if ((wait -= dt) > 0) return;
-          const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
+          const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
           wait = every;
           const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
+          const gw = su.support_greatwood_number_of_active_totems_in_base_radius_to_track ? Math.min(su.support_greatwood_maximum_number_of_active_totems_in_radius_for_effects, objs.filter(o => o.totemOf && o !== e && !o.dead && dist(o.pos, e.pos) <= su.support_greatwood_number_of_active_totems_in_base_radius_to_track / 10).length) : 0;
+          const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
           else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, real ? {} : { mult: .6 }); }
+          if (SPL && gen < SPL && ++acts >= su.support_splinter_totem_splinter_after_X_actions) { e.die(); for (let i = 0; i < 2; i++) K.totem({ ...S, at: around(e.pos, 1.2), gen: gen + 1 }); }
         },
         // Tawhoa's Tending: on death it explodes for that share of the totem's life (calc.js totemLife) in its area
         die() {
