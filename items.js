@@ -656,9 +656,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
           return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
-      </div></div>${trade?.can(slot) ? `<div class="likebuy"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
+      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
-        <button data-act="like" data-slot="${slot}">${t('Find the same or better on the trade site')}</button></div>` : ''}${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
+        <button data-act="like" data-slot="${slot}">${t('Find a better one on the trade site')}</button></div></div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';

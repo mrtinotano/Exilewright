@@ -206,9 +206,9 @@ export function initOpt(el, ctx) {
   function found(b, g, sel, hit) {
     const { res, league } = hit, key = gk(), items = b.items || {}, value = valueOf(b, g, key), cur = value(items), base = ctx.snap(b), mine = JSON.stringify(items[sel.slot] || null);
     // only what raises the stat over what the character wears (an empty slot: anything that counts)
-    // the modifiers picked: every item found, cheapest first (as the site lists them)
+    // the modifiers picked: only the better ones too, cheapest first (as the site lists them)
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
-      .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
+      .filter(x => x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
     // the item itself on the site: its base (a unique: and its name), its seller and its price
     const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
