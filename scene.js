@@ -28,8 +28,8 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield']);
+const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic']);   // one use per key press
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -666,8 +666,9 @@ export function initScene(el, api) {
       if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, raw, { dur: DUR.ignite * A.igniteTime, eff: A.igniteEffect }); ex(['fire'], E.onIgnite); }
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100)))) {
+    if (x('lightning') && !N.shock && (AL.shock || eroll(x('lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100)))) {
       inflict(d, 'shock', S, 1, raw, { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }); ex(['lightning'], E.onShock);
+      if (me.galv) galvanic(d);
     }
     if (x('cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * A.chillDamage / thr * A.chillEffect);
@@ -2299,6 +2300,21 @@ export function initScene(el, api) {
     thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
+  // Galvanic Field: a buff that raises your shock chance; shocking an enemy consumes it to attach its orb to that enemy,
+  // which fires a chaining bolt at an enemy within its secondary radius every beam delay until it expires
+  // note: the buff's own duration is not in its data, it lasts until a shock consumes it
+  K.galvanic = S => { me.galv = S; say(t('{0} active', S.label), 'lightning'); };
+  function galvanic(d) {
+    const S = me.galv, st = S.dmg.stats, m = fx.orb('lightning', .2); me.galv = null;
+    limit(o => o.galvOf, st.galvanic_field_maximum_number_of_spheres);
+    let tk = 0;
+    thing(m, durOf(S), { galvOf: 1, name: S.name, tick(dt, e) {
+      if (d.dead) { e.dead = true; return; }
+      m.position.set(d.pos.x, 2.4, d.pos.z); if ((tk -= dt) > 0) return;
+      const q = near(d.pos, radOf(S)); if (!q) return;
+      tk = st.base_galvanic_field_beam_delay_ms / 1000; chain(m.position.clone(), q, { ...S, self: e, src: 'orb' }, st.number_of_chains);
+    } });
+  }
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
