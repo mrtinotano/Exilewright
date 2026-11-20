@@ -54,7 +54,7 @@ export const GROUND_EL = { burning: 'fire', chilled: 'cold', shocked: 'lightning
 export const KIND = {
   projectile: 'Projectile', chain: 'Chaining bolt', rain: 'Falls on the cursor', grenade: 'Grenade', orb: 'Orb', wall: 'Wall',
   curse: 'Curse', mark: 'Mark', warcry: 'Warcry', herald: 'Herald', aura: 'Persistent buff', meta: 'Meta trigger',
-  minion: 'Minions', raise: 'Minions from corpses', totem: 'Totem', travel: 'Travel', nova: 'Nova', hexblast: 'Area (cursor)', pillars: 'Wall', hollow: 'Meta trigger', tbell: 'Slam', espear: 'Projectile', temper: 'Buff', volatile: 'Area (cursor)', slam: 'Slam',
+  minion: 'Minions', raise: 'Minions from corpses', totem: 'Totem', travel: 'Travel', nova: 'Nova', hexblast: 'Area (cursor)', pillars: 'Wall', hollow: 'Meta trigger', tbell: 'Slam', espear: 'Projectile', bonestorm: 'Projectile', temper: 'Buff', volatile: 'Area (cursor)', slam: 'Slam',
   strike: 'Strike', sweep: 'Melee area', wave: 'Fissure wave', cone: 'Cone', zone: 'Lingering area', storm: 'Storm',
   dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)', ember: 'Projectile', banner: 'Aura', solaris: 'Delayed impact', calamity: 'Buff', apocalypse: 'Buff', chayula: 'Buff', runes: 'Hazard', magma: 'Projectile', sigil: 'Buff', spite: 'Area', oil: 'Projectile', parry: 'Melee area', shield: 'Melee area', triskelion: 'Buff', disengage: 'Melee area', devour: 'Strike', vines: 'Lingering area', cross: 'Melee area', unearth: 'Cone', domain: 'Lingering area', galvanic: 'Buff', cstaff: 'Buff', feast: 'Nova', tempering: 'Buff', lance: 'Projectile', tempest: 'Buff', pain: 'Buff', mantra: 'Buff', demon: 'Buff', soul: 'Buff', drain: 'Area (cursor)', trift: 'Buff', pinnacle: 'Buff', tfreeze: 'Nova', iron: 'Nova', sacrifice: 'Buff', agony: 'Area (cursor)', wither: 'Area (cursor)', entangle: 'Lingering area', twister: 'Projectile',
 };
@@ -74,7 +74,7 @@ const NAMED = {
   'Lightning Spear': { explodes: false, aoe: false },   // its radius is where its bolts seek (scene.js spearBurst)
   'Volatile Dead': { kind: 'volatile' }, 'Bitter Dead': { kind: 'volatile' },
   'Temper Weapon': { kind: 'temper' },
-  'Grim Pillars': { kind: 'pillars' }, 'Hollow Form': { kind: 'hollow' }, 'Tempest Bell': { kind: 'tbell' }, 'Explosive Spear': { kind: 'espear' }, 'Frozen Locus': { kind: 'pillars' },
+  'Grim Pillars': { kind: 'pillars' }, 'Hollow Form': { kind: 'hollow' }, 'Tempest Bell': { kind: 'tbell' }, 'Explosive Spear': { kind: 'espear' }, 'Bonestorm': { kind: 'bonestorm', stages: true }, 'Frozen Locus': { kind: 'pillars' },
   'Cluster Grenade': { cluster: 4 },
   'Earthquake': { aftershock: true },
   'Volcano': { kind: 'volcano', stages: true, ownStages: true },

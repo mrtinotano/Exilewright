@@ -2670,6 +2670,19 @@ export function initScene(el, api) {
         if (++hits >= st.bell_hit_limit) e.dead = true;
       } });
   }
+  // Bonestorm: channelled, it conjures bone spikes (note: one per the scene's channel tick, the data has no rate), up to
+  // its most; released, they fly at the enemies within its target length of the target, each exploding in its part.
+  // Power Charges consumed widen the explosions: its + radius, and its more area per charge past the first
+  K.bonestorm = S => {
+    const st = S.dmg.stats, X = partOf(S, 'BonestormExplosionPlayer') || S, xs = X.dmg?.stats || {}, h = hand();
+    const n = Math.min(st.base_number_of_allowed_bone_storm_projectiles || 1, Math.max(1, Math.floor((S.held || 0) / SIM.channelTick)));
+    const r = S.spent ? (X.A + (xs['bone_spear_power_charged_aoe_+'] || 0) / 10) * Math.sqrt(1 + (S.spent - 1) * (xs['bone_spear_power_charged_aoe_+%_final_per_additional_power_charge'] || 0) / 100) : X.A;
+    const foes = nearest(S.at, n, d => dist(d.pos, S.at) <= (st.bone_spear_target_rectangle_length || 0) / 10);
+    for (let k = 0; k < n; k++) later(k * .04, () => {
+      const d = foes[k % (foes.length || 1)], q = d && !d.dead ? { x: d.pos.x, z: d.pos.z } : around(S.at, 1);
+      fx.streak(h, V(q.x, .3, q.z), 'physical', .12, .04, 1); later(.12, () => { pop(q, r, 'physical'); boom(q, r, { ...X, mult: S.mult }, { noPay: k > 0 }); });
+    });
+  };
   // Explosive Spear: its spear lodges where it lands (up to its most) and explodes in its part at the end of its
   // detonation time, or at once when Detonated; a Frenzy Charge consumed explodes it on landing in its infused part: a
   // cross of its arms (its radius long, its secondary width), with Ignited Ground (its tertiary radius, its duration).
