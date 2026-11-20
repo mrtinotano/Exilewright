@@ -2072,7 +2072,7 @@ export function initScene(el, api) {
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
     used.push({ name: S.name, elemental: S.elemental, t: time }); while (used[0]?.t < time - RECENT) used.shift();
-    if (S.echo) for (let k = 1; k <= (S.echoN || 1); k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
+    if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
