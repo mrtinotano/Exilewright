@@ -1811,13 +1811,17 @@ export function initScene(el, api) {
   // Tornado's own: up to its limit; it pulls the enemies inside toward its centre (its strength every interval) and deals
   // its damage over time to them while they are in it, with its damage of each absorbed element on top
   // note: an absorbed element's damage per second scales as the skill's physical one does
+  // a zone's slow on the enemies standing in it, kept while they stay (one per enemy in its map)
+  function standSlow(map, c, R, pct, keep) {
+    for (const d of inside(c, R)) { let v = map.get(d); if (!v || !d.slows.includes(v)) { map.set(d, v = { pct }); d.slows.push(v); } v.until = time + keep; }
+  }
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c), ts = S.dmg?.stats || {}, pull = ts['tornado_pull_strength_%'], DOT = Object.keys(S.dmg?.dot || {}).length > 0; let cur = S, tk = .2, pt = 0;
     limit(x => x.vortex && x.name === S.name, ts.number_of_tornados_allowed ?? ts.base_number_of_tornado_shots_allowed);
     // Tornado Shot's: it stays where it lands and Hinders the enemies standing in it; your arrows, spears and bolts that reach
     // it are sucked in and it spits a ring of copies (its number, range and less damage) that are not copied again, up to
     // its most times
-    const cs = o.copy, hold = cs && new Map();
+    const cs = o.copy, hold = new Map();
     const e = thing(g, dur, { name: S.name, vortex: true, R, copy: cs && { left: cs.tornado_shot_number_of_hits_allowed },
       spit(C, k) {
         const n = cs.base_number_of_projectiles, a0 = rnd(TAU), p = { x: g.position.x, z: g.position.z };
@@ -1830,7 +1834,7 @@ export function initScene(el, api) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
-        if (hold) for (const d of inside(p, R)) { let v = hold.get(d); if (!v || !d.slows.includes(v)) { hold.set(d, v = { pct: -HINDER.slow }); d.slows.push(v); } v.until = time + .3; }
+        if (cs) standSlow(hold, p, R, -HINDER.slow, .3);
         const d = !o.dir && !cs && near(p, o.seek || 9), v = o.speed || 1.3;
         if (o.dir) { const a = o.dir + Math.sin(e.s * 4.3) * .9; p.x += Math.sin(a) * v * dt; p.z += Math.cos(a) * v * dt; }   // erratically forward (its wander is not in the data)
         else if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
@@ -2679,7 +2683,7 @@ export function initScene(el, api) {
     const e = thing(holder(c), Infinity, { whirl: true, stage: 1, c, R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
       tick(dt) {
         const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: 'dust', smoke: true, a: .3 });
-        for (const d of inside(c, R)) { let v = slow.get(d); if (!v) { slow.set(d, v = { pct: st['active_skill_base_slow_debuff_movement_speed_+%_final'] }); d.slows.push(v); } v.until = time + .1; }
+        standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'], .1);
         if (dist(pp, c) > R) { e.dead = true; boom(c, R, W, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
       } });
   }
