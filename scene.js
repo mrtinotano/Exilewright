@@ -278,6 +278,7 @@ export function initScene(el, api) {
   const inside = (c, R) => dummies.filter(d => !d.dead && dist(d.pos, c) <= R + SIM.body * d.sc);
   const has = (d, s) => s === 'curse' ? !!d.curse : s === 'mark' ? !!d.mark
     : s === 'immobilised' ? ['freeze', 'stun', 'electrocute', 'pin'].some(k => d.st[k] > 0) : d.st[s] > 0;
+  const markOff = d => { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); };   // a Mark activated
   const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
   const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
   const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
@@ -2264,7 +2265,7 @@ export function initScene(el, api) {
       fx.strip(c, b, w * 2, S.el, .4, { a: .7 });
       for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w + SIM.body) { hit(d, S); both.set(d, (both.get(d) || 0) + 1); }
     }
-    for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
+    for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
     const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
   };
   // what the Banners you stand in grant: their buff's stat, summed
@@ -2762,7 +2763,7 @@ export function initScene(el, api) {
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
     if (d.mark && !(d.mark.hound && st.bleed > 0) && (d.mark.s -= dt) <= 0) {   // Bloodhound's Mark lasts while they bleed
-      const M = d.mark; d.mark = null; if (M.bomb) { trigger(M.S, 'mark', d); bombed(M, d.pos); } }
+      if (d.mark.bomb) markOff(d); else d.mark = null; }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
