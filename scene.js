@@ -2151,6 +2151,17 @@ export function initScene(el, api) {
         if (++hits > st.bell_hit_limit) e.dead = true;
       } });
   }
+  // Disengage: its cone of spearpoints in front of you (its radius, its angle) as you leap back its path distance; each
+  // Parried enemy it hits has the debuff consumed for its shockwave part and grants you its Frenzy Charges
+  K.disengage = S => {
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = st.disengage_cone_radius / 10, X = partOf(S, 'DisengageShockwavePlayer'), a0 = Math.atan2(S.dz, S.dx), half = st.disengage_cone_angle / 2 * Math.PI / 180;
+    const inCone = d => { const da = Math.atan2(d.pos.z - c.z, d.pos.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
+    const parried = inside(c, R).filter(d => time < d.parried?.until && inCone(d));
+    K.sweep({ ...S, from: c, R, cone: st.disengage_cone_angle });
+    for (const d of parried) { d.parried = null; if (X) boom({ x: d.pos.x, z: d.pos.z }, X.A, X); for (let k = st.consume_parry_debuff_on_hit_to_gain_X_frenzy_charges; k > 0; k--) chargeBy('frenzy', S); }
+    const l = st.leap_maximum_allowed_path_distance / 10;
+    move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .3, h: 1.2, S, seen: new Set() };
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
