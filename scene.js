@@ -41,8 +41,8 @@ const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill 
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
-const DAZE = { time: 8, stun: 50 };
-const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
+const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
+const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
 const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const TRINITY_MAX = 100;   // note: keywords.json Affinity: a maximum of 100 of each type
@@ -466,7 +466,7 @@ export function initScene(el, api) {
     // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
     const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
     const AW = !S.src && S.dmg?.stats?.apply_x_wither_on_hit;   // Chaos Bolt: its Withered stacks on hit, for its duration
-    for (let k = 0; k < (AW || 0); k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
+    for (let k = 0; k < AW; k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
