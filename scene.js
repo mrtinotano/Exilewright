@@ -1579,14 +1579,14 @@ export function initScene(el, api) {
     totem(S) {
       const j = api.build().gems.findIndex((_, j) => api.usedBy(j) === S.g), F = j >= 0 && mk(j) || S, real = Object.keys(F.dmg?.hits || {}).length > 0;
       const mine = objs.filter(o => o.totemOf === S.name && !o.dead); if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
-      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem' }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
+      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) }, R = F.R || S.R || SIM.totemArea, far = S.P.ballista || S.P.ranged;
       const every = real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
       const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
         update(dt) {
-          e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime)) { e.die(); return; }
+          e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R + 1); if (!d) { wait = .2; return; }
           wait = every;
@@ -2220,6 +2220,15 @@ export function initScene(el, api) {
     }
     if (C) ready.push(time + C / 1000);
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
+    // Spell Totem: it consumes its number of Power and Endurance Charges in any combination, for its more damage per Power
+    // Charge and its more totem duration per Endurance Charge
+    // note: which it takes first is the player's choice; Power Charges first here. The totem's life is not simulated
+    const NC = !auto && S.dmg?.stats?.active_skill_requires_X_power_or_endurance_charges;
+    if (NC) {
+      const have = charges.power + charges.endurance; if (have < NC) { toast(t('{0} needs {1} charges and has {2}', S.label, NC, have)); return false; }
+      const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p;
+      S.totemMult = 1 + p * st['spell_totem_damage_+%_final_per_power_charge_consumed'] / 100; S.totemTime = 1 + (NC - p) * st['spell_totem_totem_duration_+%_final_per_endurance_charge_consumed'] / 100;
+    }
     // an attack chain (Ice Strike, Tempest Flurry, Primal Strikes): its uses in quick succession step through it, the last
     // being its final part (its first), Tempest Flurry's third striking three times
     // note: "quick succession" has no time in the data; SEQ_GAP s here
