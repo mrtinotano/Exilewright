@@ -69,7 +69,7 @@ const NAMED = {
   'Spark': { count: 4, wander: true },
   'Ice Nova': { from: 'Frostbolt' },
   'Contagion': { spread: true },
-  'Living Bomb': { kind: 'mark', bomb: true },
+  'Living Bomb': { kind: 'mark', bomb: true }, Untether: { kind: 'mark', bomb: true },
   'Flicker Strike': { dash: true },
   'Cluster Grenade': { cluster: 4 },
   'Earthquake': { aftershock: true },
