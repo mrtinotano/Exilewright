@@ -254,7 +254,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = 0; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = 0; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -392,6 +392,8 @@ export function initScene(el, api) {
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
       if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((d.bar.stun || 0) / 5) / 100;
+      const AT = d.attr >= 1 && attr();   // Attrition
+      if (AT) for (const e in raw) raw[e] *= 1 + AT['skill_attrition_hit_damage_+%_final_vs_rare_or_unique_enemy_per_second_ever_in_presence_up_to_max'] * Math.floor(d.attr) / 100;
       // Vorana's Siege: more against an Isolated enemy, none of its allies within 6 m (keywords.json Isolated)
       const VS = S.dmg?.sum?.['support_voranas_siege_hit_damage_+%_final_vs_isolated_enemies'];
       if (VS && !dummies.some(e => e !== d && !e.dead && dist(e.pos, d.pos) <= 6)) for (const e in raw) raw[e] *= 1 + VS / 100;
@@ -839,7 +841,7 @@ export function initScene(el, api) {
   // maximum life and mana
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal', X = gst(S);
-    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && S.g?.supports?.some(n => /^Culling Strike/.test(n)))
+    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks))
       && d.life + d.es <= (d.max + d.maxEs) * CULL[r] * (1 + (X['culling_strike_threshold_+%'] || 0) / 100) / 100;
   };
   function cull(d, S) {
@@ -2308,6 +2310,12 @@ export function initScene(el, api) {
     const S = onS('Blood Boil'), st = S?.dmg?.stats; if (!st) return;
     for (const d of inside(pp, sheet().overgrow.r)) if ((d.boilAt ??= time) + st.blood_boil_application_interval_ms / 1000 <= time) { d.boilAt = time; d.boils = (d.boils || 0) + 1; d.boilS = S; }
   }
+  // Attrition: while it is on, every second a Rare or Unique enemy has ever spent in your Presence is a stack, up to its
+  // most; your hits deal its more damage per stack to it, and from its stacks on they have Culling Strike against it
+  const attr = () => onS('Attrition')?.dmg.stats;
+  function attrition(dt) {
+    const st = attr(); if (st) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) d.attr = Math.min(st.skill_attrition_presence_max_seconds, (d.attr || 0) + dt);
+  }
   function popBoils(d) {
     const n = d.boils, S = d.boilS; d.boils = 0; d.boilAt = null; if (!n) return;
     const st = S.dmg.stats, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * st['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000;
@@ -3660,7 +3668,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
-    leylines(dt); bells(dt); boils(); regulation();
+    leylines(dt); bells(dt); boils(); attrition(dt); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
