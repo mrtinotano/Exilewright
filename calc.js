@@ -955,6 +955,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun'), armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
     always: { freeze: F('always_freeze'), shock: F('always_shock'), ignite: F('always_ignite'), stun: F('always_stun') },
     alwaysHit: F('global_always_hit'),
+    // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them
+    impale: { chance: all('impale_on_hit_%_chance') + all(tags.includes('attack') ? 'attacks_impale_on_hit_%_chance' : 'spells_impale_on_hit_%_chance'),
+      mag: scale(['impale_magnitude_+%'], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale') },
     // Electrocute and Pin build up only from skills that say so
     electrocute: F('base_lightning_damage_can_electrocute') || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     pin: F('base_all_damage_can_pin') || keys.some(k => /pins_as_though_dealt_damage/.test(k)) ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0,
