@@ -1516,9 +1516,10 @@ export function initScene(el, api) {
       const list = inside(c, R);
       for (const o of [...objs]) if (o.earth && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); }
-      // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2)
+      // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
+      // performs Seismic Cry's additional Aftershocks
       const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, uses = per ? Math.floor(Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0)) / per) : 2;
-      if (S.P.empowers && uses) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
+      if (S.P.empowers && uses) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
       // Ancestral Cry: you embody Kaom for its duration (its more per endurance charge, which it removes): Volcanic Steps
       // every so far you travel (its shockwave), your melee Strikes and Slams Ancestrally Boosted, a Strike triggering
@@ -2000,7 +2001,7 @@ export function initScene(el, api) {
         if (E.type === 'infuse' && P.attack && hits) {
           S.els = [...new Set([...S.els, E.el])]; S.el = E.el; S.ail = [...new Set([...S.ail, ...ailOf([E.el])])]; empower.splice(k, 1);
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
-        } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; if (--E.uses <= 0) empower.splice(k, 1); }
+        } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
@@ -2071,7 +2072,7 @@ export function initScene(el, api) {
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
     used.push({ name: S.name, elemental: S.elemental, t: time }); while (used[0]?.t < time - RECENT) used.shift();
-    if (S.echo) later(.42, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
+    if (S.echo) for (let k = 1; k <= (S.echoN || 1); k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
