@@ -711,6 +711,10 @@ export function initScene(el, api) {
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
+    // Vanguard: heavy stunning with a supported skill grants its Guard per 10 Strength for its duration
+    // note: the scene has no light stun, so its Guard on a light stun is not simulated
+    const VG = a === 'stun' && !S.src && S.dmg?.sum?.gain_X_guard_on_heavy_stun_per_10_strength;
+    if (VG) { const g = Math.min(VG * Math.floor((sheet().attrs?.str || 0) / 10), 2 * (me.maxL || 0)); if (g > me.guard) { me.guard = g; later(S.dmg.sum.guard_on_stun_guard_duration_ms / 1000, () => { if (me.guard === g) me.guard = 0; }); } }
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
