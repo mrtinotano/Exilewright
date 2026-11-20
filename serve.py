@@ -542,7 +542,7 @@ KEYS = {'price': combo('Ctrl+D'), 'worn': combo('Alt+D')}   # the shortcuts (Set
 PRESSED = ('', 0)   # which shortcut sent Ctrl+C to the game, and when
 TONGUE = tongue() if re.fullmatch('[a-z]{2}', tongue()) else 'en'   # then the language of the page that listened last
 CLIP = clipboard()
-OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS else None   # app(): its own thread
+OVER = overlay() if (sys.platform == 'win32' or 'overlay' in ARGS) and 'app' not in ARGS and 'nowatch' not in ARGS else None   # app(): its own thread
 TRAY = None    # app(): set_tray(on), and whether it is on
 RUN = r'Software\Microsoft\Windows\CurrentVersion\Run'
 
@@ -995,7 +995,7 @@ except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise
     server = None
-if CLIP and server:
+if CLIP and server and 'nowatch' not in ARGS:   # nowatch: a copy only for looking at the page, leaving the game's keys to the app
     threading.Thread(target=watch_game, daemon=True).start()
 if 'app' in ARGS:
     if server:
@@ -1006,6 +1006,6 @@ if OVER:   # the window wants the main thread: the server goes to one of its own
     threading.Thread(target=server.serve_forever, daemon=True).start()
     OVER[1]()
 else:
-    if sys.platform == 'win32' or 'overlay' in ARGS:
+    if (sys.platform == 'win32' or 'overlay' in ARGS) and 'nowatch' not in ARGS:
         print('No window over the game: this Python has no tkinter (the Compare tab still works in the browser)')
     server.serve_forever()
