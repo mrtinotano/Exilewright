@@ -29,7 +29,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise']);   // one use per key press
-const NOHIT = new Set(['banner', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
+const NOHIT = new Set(['banner', 'calamity', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -250,10 +250,12 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { kaom: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
+    Object.assign(me, { kaom: null, calamity: null, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
-  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; me.rage = Math.min(M, me.rage + n); me.raged = time; }
+  // Rage gained while already at its most builds Glory (Walking Calamity)
+  // note: the data gives no rate: one Glory per Rage
+  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) gloryPaid('rage', over); }
   // your death, by an enemy or by your own life loss: everything restored
   function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
@@ -1823,6 +1825,25 @@ export function initScene(el, api) {
       for (let k = 0; k < n; k++) later(k * every, () => { fx.pillar(c, X.A * .4, 14, 'gold', .2); boom(c, X.A, X, { soft: true }); });
     }, { trail: 'fire' });
   };
+  // Walking Calamity: for its duration meteors fall on the enemies around you at its interval, more often per enemy in its
+  // area after the first (its +% each, up to its cap), every so many a large one (its part) not on the same enemy within
+  // its time; you gain its % of damage as fire and its Rage regeneration
+  // note: without Bear form in the scene, its effects are never suppressed; a small meteor's area the data does not give: 1 m
+  K.calamity = S => {
+    const st = S.dmg?.stats || {}, dur = sh(S).duration || (st.base_skill_effect_duration || 0) / 1000, L = partOf(S, 'WalkingCalamityMeteorLargePlayer'), last = new Map(); let tk = 0, n = 0;
+    me.calamity = { until: time + dur, rage: st.walking_calamity_base_rage_regeneration_per_minute || 0 };
+    buffs = buffs.filter(b => b.label !== S.label); buffs.push({ label: S.label, name: S.name, c: css('fire'), s: dur, sup: true, gain: { el: 'fire', pct: st['walking_calamity_non_skill_base_all_damage_%_to_gain_as_fire'] || 0 } });
+    fx.ring(pp, .3, S.A, 'fire', .6); shake = .3;
+    thing(holder(pp), dur, { name: S.name, tick(dt) {
+      if ((tk -= dt) > 0) return;
+      const ins = inside(pp, S.A), more = Math.min(st['walking_calamity_meteor_frequency_+%_cap'] || 0, Math.max(0, ins.length - (st.walking_calamity_ignore_first_x_enemies_for_frequency_increase || 0)) * (st['walking_calamity_meteor_frequency_+%_per_enemy_in_walking_calamity_radius'] || 0));
+      tk = (st.walking_calamity_spawn_meteor_every_ms || 150) / 1000 / (1 + more / 100);
+      const big = L && ++n % (st.walking_calamity_large_meteor_every || Infinity) === 0, pick = ins.filter(d => !big || time - (last.get(d) ?? -99) >= st.walking_calamity_large_meteor_same_target_prevention_duration_ms / 1000);
+      const d = pick[Math.floor(rnd(pick.length))], q = d ? { x: d.pos.x, z: d.pos.z } : around(pp, S.A), X = big ? L : S, r = big ? L.A : 1;
+      if (big && d) last.set(d, time);
+      fx.streak(V(q.x + 2, 13, q.z - 1.5), V(q.x, 0, q.z), 'fire', big ? .3 : .14, .07, 1.8); later(.16, () => { pop(q, r, 'fire'); area(q, r, X); });
+    } });
+  };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
   K.banner = S => {
@@ -1973,7 +1994,7 @@ export function initScene(el, api) {
     }
   }
   // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
-  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = gst(S); gloryAdd(S, n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
+  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = gst(S); gloryAdd(S, what === 'rage' ? n * +(S.name === 'Walking Calamity') : n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
   // Incinerate gains its fuel from the mana spent on any other skill (its ms per mana), up to its most, not while it is used
   const fueling = n => time - (me.fuelAt[n] ?? -9) <= SIM.channelTick * 2;
   function fuelUp(S, mana) {
@@ -2725,6 +2746,7 @@ export function initScene(el, api) {
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }
     if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);
+    if (time < me.calamity?.until) gainRage(me.calamity.rage / 60 * dt);
     if (time - me.raged > R.delay) me.rage = Math.max(0, me.rage - R.loss * dt);
     me.rage = Math.min(me.rage, top);
     if (R.berserk && tog[R.berserk.name] && me.known && me.rage > 0 && time - me.raged <= R.delay) {
