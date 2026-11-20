@@ -2080,7 +2080,7 @@ export function initScene(el, api) {
       });
     },
     strike(S) {
-      const P = S.P, reach = strikeR(S), n = S.times || (P.dash ? Math.max(1, S.spent) : 1);
+      const P = S.P, reach = strikeR(S), FL = S.dmg?.stats?.flicker_strike_additional_flickers_from_power_charges, n = S.times || (FL ? 1 + S.spent * FL : P.dash ? Math.max(1, S.spent) : 1);   // Flicker Strike: its more strikes per Power Charge
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
       const go = (d, k) => {
