@@ -1254,8 +1254,8 @@ export function initScene(el, api) {
     const mult = () => (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z };
-      if (P.chains && hitD) {
-        chain(m.position.clone(), hitD, cur, D.chains || 0, seen, mult());
+      if ((P.chains || S.addChains) && hitD) {
+        chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
         const by = chest(hitD);
         for (const e of dummies.filter(e => !e.dead && !seen.has(e) && dist(e.pos, hitD.pos) <= S.A).sort((a, b) => dist(a.pos, hitD.pos) - dist(b.pos, hitD.pos)).slice(0, D.extraTargets || 0)) {
@@ -2436,7 +2436,11 @@ export function initScene(el, api) {
       S.infs = going ? chanInf[S.name] || [] : !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
       if (P.channel && !going) { chanInf[S.name] = S.infs; S.fresh = true; }
       const st = S.dmg?.stats || {}, arc = st['arc_damage_+%_final_from_infusion_consumption'], fs = st['firestorm_damage_+%_if_consumed_fire_infusion'];
+      S.addChains = 0;
       if (arc && S.infs.includes('lightning')) { S.mult *= 1 + arc / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
+      // Spiral Volley: the frenzy charges it consumed, its more damage for consuming any and per charge, and its chains per charge
+      const sv = S.spent && st['spiral_volley_damage_+%_final_when_frenzy_charges_consumed'];
+      if (sv) { S.mult *= (1 + sv / 100) * (1 + S.spent * st['spiral_volley_damage_+%_final_per_frenzy_charge_consumed'] / 100); S.addChains = S.spent * st.spiral_volley_X_chains_per_frenzy_charge_consumed; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
       if (!inhib) for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; charges[c] = 0; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
@@ -2593,6 +2597,10 @@ export function initScene(el, api) {
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
     const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
     if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
+    // Spell Echo: the spell echoes its number of times at the same target after it, the echo with its increased area
+    // note: the delay of an echo is not in its data, the scene's quarter second
+    const SE = S.dmg?.sum?.support_spell_echo_number_of_echo_cascades;
+    if (SE) for (let k = 1; k <= SE; k++) later(.25 * k, () => run({ ...S, A: S.A * Math.sqrt(1 + S.dmg.sum['echoed_spell_area_of_effect_+%'] / 100) }));
     // Spell Cascade: the spell also lands on either side of its target along a random axis, its number on each side, in its smaller area
     const SC = S.dmg?.sum?.support_spell_cascade_number_of_cascades_per_side;
     if (SC) { const q = Math.random() * TAU, A = S.A * Math.sqrt(1 + S.dmg.sum['support_spell_cascade_area_of_effect_+%_for_cascade'] / 100); for (const sd of [1, -1]) for (let k = 1; k <= SC; k++) { const r = sd * (S.A + A * (2 * k - 1)); later(k * .12, () => run({ ...S, A, at: { x: S.at.x + Math.sin(q) * r, z: S.at.z + Math.cos(q) * r } })); } }
