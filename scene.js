@@ -106,7 +106,7 @@ export function initScene(el, api) {
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
-  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], byS = {}, hover = null, lastHit = null, surges = [];
+  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], byS = {}, hover = null, lastHit = null, topD = null, surges = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
   // ---------- HUD
@@ -256,7 +256,7 @@ export function initScene(el, api) {
     d.col = Object.entries(d.atk.hasHit ? d.atk.hits : d.atk.dot).map(([el, x]) => [el, x[1] ?? x]).sort((x, y) => y[1] - x[1])[0]?.[0] || 'physical';
     d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es;
     if (fresh) { d.life = d.max; d.es = d.maxEs; }
-    d.fig.setLabel(`${m.name} · ${t('Lv. {0}', level)}`); d.sig = ''; d.wind = null;
+    d.sig = ''; d.wind = null;
   }
   function place(x, z, m = tpl.mon, level = tpl.level) {
     if (!m) return null;
@@ -3499,8 +3499,8 @@ export function initScene(el, api) {
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (d.dots.length && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
     const pips = Object.keys(PIP).filter(s => has(d, s)).map(s => css(PIP[s])); if (d.dots.length) pips.push(css('chaos'));
-    const sig = Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '') + pips.join('');
-    if (sig !== d.sig) { d.sig = sig; f.draw({ life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null, pips }); }
+    const top = d === topD, sig = (top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '')) + pips.join('');
+    if (sig !== d.sig) { d.sig = sig; f.draw(top ? { pips } : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null, pips }); }
   }
 
   // ---------- the enemies attack: the chosen attack at their level against your defences (enemies.js)
@@ -3525,8 +3525,11 @@ export function initScene(el, api) {
   }
   // the enemy under the cursor, else the last one hit, as the game's bar at the top of the screen: name by rarity, life, shield
   const RARE = { normal: '#c8c8c8', magic: '#8888ff', rare: '#ffff77', unique: '#af6025' };
+  // the enemy whose bar shows at the top, as in the game: a boss in the fight first, else the one under the cursor, else
+  // the last one hit; its own small bar above it is hidden
   function targetHtml() {
-    const d = hover && !hover.dead ? hover : lastHit && !lastHit.dead ? lastHit : null;
+    const boss = dummies.find(e => !e.dead && !e.visage && e.mon.boss && e.aggro);
+    const d = topD = boss || (hover && !hover.dead ? hover : lastHit && !lastHit.dead ? lastHit : null);
     tgtEl.hidden = !d; if (!d) return;
     const p = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1);
     put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div><small>${t('Lv. {0}', d.level)}</small>`);

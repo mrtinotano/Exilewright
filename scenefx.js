@@ -474,7 +474,7 @@ export function makePlayer(fx) {
 
 // Figure of a placed enemy: a training dummy dressed by the monster's category (the game models are not available).
 // Own material for the sackcloth (tinted by the states), a plate with name, life and energy shield, and the markers
-// of frozen / cursed / marked. o = { kind (category), scale, label }
+// of frozen / cursed / marked. o = { kind (category), scale }
 const LOOK = {
   Beast: { tint: 0x7a5a3a, horns: 0x3a2a1a, helm: false }, Humanoid: { tint: 0x9a8560, helm: true }, Undead: { tint: 0xb9b4a2, helm: false },
   Demon: { tint: 0x7c2a22, horns: 0x1c1512, helm: false }, Construct: { tint: 0x6c7884, helm: true },
@@ -505,27 +505,19 @@ export function makeDummy(fx, o = {}) {
   const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace;
   const plate = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, transparent: true, depthWrite: false, fog: false }));
   plate.position.y = 2.05 + .5 / sc; plate.scale.set(2.5 / sc, 2.5 * H / W / sc, 1); plate.renderOrder = 25; g.add(plate);
-  let label = o.label || '';
   return {
     group: g, upper, sack, ice, curse, mark, plate, scale: sc,
-    setLabel(l) { label = l; },
     // life / es = fractions left (null hides the bar), pips = css colours of the active states
     draw({ life = null, es = null, pips = [] }) {
       const c = cv.getContext('2d'); c.clearRect(0, 0, W, H);
       let x = W / 2 - pips.length * 8;
       for (const p of pips) { c.fillStyle = p; c.beginPath(); c.arc(x + 8, 10, 6.5, 0, TAU); c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.5; c.stroke(); x += 16; }
-      if (label) {
-        c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
-        let s = label, px = 20; do c.font = `bold ${--px}px Georgia, serif`; while (px > 13 && c.measureText(s).width > W - 12);   // long names get smaller letters
-        while (s.length > 4 && c.measureText(s).width > W - 12) s = s.slice(0, -2).trimEnd() + '…';
-        c.lineWidth = 4; c.strokeStyle = '#000'; c.strokeText(s, W / 2, 34); c.fillStyle = '#e8d8a8'; c.fillText(s, W / 2, 34);
-      }
       const bar = (y, h, k, col) => {
-        c.fillStyle = 'rgba(0,0,0,.78)'; c.fillRect(38, y, 180, h); c.fillStyle = col; c.fillRect(39, y + 1, 178 * Math.max(0, Math.min(1, k)), h - 2);
-        c.strokeStyle = '#6a5838'; c.lineWidth = 1; c.strokeRect(38.5, y + .5, 180, h);
+        c.fillStyle = 'rgba(0,0,0,.78)'; c.fillRect(68, y, 120, h); c.fillStyle = col; c.fillRect(69, y + 1, 118 * Math.max(0, Math.min(1, k)), h - 2);
+        c.strokeStyle = '#3a3020'; c.lineWidth = 1; c.strokeRect(68.5, y + .5, 120, h);
       };
-      if (es != null) bar(48, 8, es, '#5aa8e8');
-      if (life != null) bar(58, 13, life, life > .35 ? '#b8281e' : '#e06a20');
+      if (es != null) bar(52, 6, es, '#5aa8e8');   // a small bar with no name, as the game's
+      if (life != null) bar(59, 9, life, life > .35 ? '#b8281e' : '#e06a20');
       tx.needsUpdate = true;
     },
     dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); plate.material.dispose(); tx.dispose(); },
