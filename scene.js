@@ -468,7 +468,7 @@ export function initScene(el, api) {
       d.mark = null; trigger(M.S, 'mark', d); fx.ring(d.pos, .3, 1.5, 'mark', .35);
       say(t('{0} consumes {1}', S.label, M.label), 'mark'); gainCharge(M.gain, M.label);
     }
-    if (crit && own && /rare|unique/.test(d.stat.rarity) && onS('Midnight Zenith')) zenith(onS('Midnight Zenith'), d);
+    if (crit && own && /rare|unique/.test(d.stat.rarity)) zenith(d);
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
@@ -2688,10 +2688,11 @@ export function initScene(el, api) {
   // Midnight Zenith: while it is on, your critical hits on Rare and Unique enemies grant its seeds; at its number they
   // are consumed for its crystals within its radius of that enemy. note: the seeds for a killing critical hit, and how
   // long the crystals last, are not in the data: only the first is counted, and they stay until something hits them
-  function zenith(S, d) {
+  function zenith(d) {
+    const S = onS('Midnight Zenith'); if (!S) return;
     const st = S.dmg.stats, need = st.midnight_star_attempt_to_consume_x_ice_seeds_to_create_an_ice_crystal_each_time_you_gain_ice_seeds;
     if ((me.seeds = (me.seeds || 0) + st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy) < need) return;
-    me.seeds -= need; 
+    me.seeds -= need;
     for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(S) || Infinity);
   }
   // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
