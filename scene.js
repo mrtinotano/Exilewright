@@ -29,7 +29,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast']);   // one use per key press
-const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast']);
+const NOHIT = new Set(['banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering']);
 const AREAL = new Set(['area', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -2952,6 +2952,20 @@ export function initScene(el, api) {
     const st = S.dmg.stats; me.arctic--; fx.ring(pp, .2, 1.6, 'cold', .35);
     hit(d, { ...S, dmg: { ...S.dmg, hits: { cold: [st.arctic_armour_minimum_added_cold_damage_per_stack * n, st.arctic_armour_maximum_added_cold_damage_per_stack * n] } } }, { noPay: true });
   }
+  // Runic Tempering: channelled, a Runic Plate each use time up to its most; while you have plates, a hit you take is
+  // its less, each its number of hits breaks a plate, and the backlash deals your thorns in its area around the
+  // attacker, once per its cooldown
+  K.tempering = S => {
+    if ((me.runeT = (me.runeT || 0) + SIM.channelTick) < useTime(S)) return;
+    me.runeT = 0; me.runeS = S; me.runes = Math.min(S.dmg.stats.runic_tempering_max_runes, (me.runes || 0) + 1); say(`${S.label}: ${me.runes}`, 'dust');
+  };
+  function tempered(d) {
+    const S = me.runeS, st = S?.dmg.stats; if (!(me.runes > 0)) return 1;
+    if ((me.runeHits = (me.runeHits || 0) + 1) >= st.runic_tempering_hit_per_rune) { me.runeHits = 0; me.runes--; }
+    const D = thornsOf();
+    if (D && !(time < me.runeCd)) { me.runeCd = time + st.runic_tempering_backlash_cooldown_ms / 1000; fx.ring(d.pos, .2, S.A, 'dust', .4); area(d.pos, S.A, thornX(D, S.label), { noPay: true }); }
+    return 1 + st['runic_tempering_damage_taken_+%_final'] / 100;
+  }
   function retaliate(d) {
     const D = thornsOf(); if (!D || d.dead) return;
     fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
@@ -3046,7 +3060,7 @@ export function initScene(el, api) {
       const [lo, hi] = a.hits[el], got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
-    hurt(total, chaos, top, crit, d);
+    const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
