@@ -616,7 +616,16 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (!gains.has(k)) gains.set(k, diff(now, snapOf({ ...getBuild().items, [slot]: it })));
     return gains.get(k); };
   const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
-    return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => `${o.html}${impactLine(gain(slot, make(o.v), o.v))}</span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
+    return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
+  // each candidate's gains are a whole calculation of the build: filled in a few at a time after the list shows, not before
+  let fillRun = 0;
+  function fillGains() {
+    const run = ++fillRun, todo = [...el.querySelectorAll('.picklist [data-g]')];
+    const next = () => { if (run !== fillRun) return;
+      for (const s of todo.splice(0, 12)) s.outerHTML = impactLine(gain(s.closest('.picklist').dataset.slot, make(s.dataset.g), s.dataset.g));
+      if (todo.length) setTimeout(next); };
+    setTimeout(next);
+  }
 
   function card(slot, title, it) {
     const base = it && BASE[it.base];
@@ -695,11 +704,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
       <p class="note" data-msg>${msg}</p>${stashHtml()}</div>
       <div class="editor">${card(sel, names[sel], items[sel])}</div></div>`;
+    fillGains();
   }
 
   el.addEventListener('input', e => {
     const t = e.target;
-    if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
+    if (t.dataset.act === 'filter') { el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value); fillGains(); }
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
   const put = (slot, it) => wear(getBuild(), slot, it, giant?.());
