@@ -42,6 +42,7 @@ const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boo
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
+const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
 const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
 const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
@@ -255,7 +256,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.weak = []; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -380,7 +381,7 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges'); if (crit) (me.critAt ||= {})[S.name] = time;
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d); if (crit) (me.critAt ||= {})[S.name] = time;
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
@@ -462,9 +463,14 @@ export function initScene(el, api) {
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     // Living Bomb: its seed bursts once the damage dealt to the enemy reaches its share of the enemy's ailment threshold
     if (M?.bomb && d.mark === M && S.src !== 'mark' && (M.hits += total) >= d.stat.ail * M.S.dmg.stats['living_bomb_damage_threshold_%_of_ailment_threshold'] / 100) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
+    // Fulmination: a use's first hit on a shocked enemy in your Presence also hits the other shocked enemies there, for its
+    // less damage. note: its most other enemies is not in the data, all of them here
+    const FU = !S.src && !S.fulm && has(d, 'shock') && dist(d.pos, pp) <= sheet().overgrow.r && onS('Fulmination')?.dmg.stats;
+    if (FU) { S.fulm = true; for (const e of inside(pp, sheet().overgrow.r)) if (e !== d && has(e, 'shock')) hit(e, { ...S, src: 'fulmination' }, { mult: 1 + FU['skill_wrath_aura_shared_damage_+%_to_other_shocked_enemies_in_presence'] / 100 }); }
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) withers(d, 4);   // its "for 4 seconds"
     // Withering Touch: its chance per 100% of the enemy's ailment threshold dealt as chaos, for its duration
     const WT = !S.src && raw.chaos && S.dmg?.sum?.['withered_on_hit_chance_%_for_every_100%_target_ailment_threshold_dealt_as_chaos_damage'];
+    weaken(d, S.dmg?.stats?.apply_X_stacks_of_critical_weakness_on_hit || 0);   // Kelari, the Tainted Sands
     const AW = !S.src && S.dmg?.stats?.apply_x_wither_on_hit;   // Chaos Bolt: its Withered stacks on hit, for its duration
     for (let k = 0; k < AW; k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
@@ -2326,6 +2332,14 @@ export function initScene(el, api) {
   function attrition(dt) {
     const st = attr(); if (st) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) d.attr = Math.min(st.skill_attrition_presence_max_seconds, (d.attr || 0) + dt);
   }
+  // Critical Weakness: each stack adds critical hit chance to hits against the enemy. Malice: while on, a stack every its
+  // interval on the enemies in your Presence, for its duration
+  const weakOf = d => (d.weak = (d.weak || []).filter(u => u > time)).length * WEAK.per;
+  const weaken = (d, n, s = WEAK.time) => { weakOf(d); for (let k = 0; k < n; k++) d.weak.push(time + s); d.weak.sort((a, b) => a - b); d.weak.splice(0, d.weak.length - WEAK.max); };
+  function malice() {
+    const S = onS('Malice'), st = S?.dmg?.stats; if (!st || time - (me.maliceAt ?? -99) < st.critical_chance_against_aura_apply_brittle_every_x_ms / 1000) return;
+    me.maliceAt = time; for (const d of inside(pp, sheet().overgrow.r)) weaken(d, 1, durOf(S));
+  }
   function popBoils(d) {
     const n = d.boils, S = d.boilS; d.boils = 0; d.boilAt = null; if (!n) return;
     const st = S.dmg.stats, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * st['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000;
@@ -2637,7 +2651,7 @@ export function initScene(el, api) {
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
-    S.mantra = null; S.leapt = S.conduit = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
+    S.mantra = null; S.leapt = S.conduit = S.fulm = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
     if (!auto) {
       if (me.demon && !S.P.spell && S.kind !== 'demon') demonOff();
       // Cadence: each use a stack of its more attack speed (useTime); a use at its most stacks makes the skill unusable
@@ -3395,12 +3409,15 @@ export function initScene(el, api) {
     blocked(); return true;
   }
   function struck(d) {
-    const a = d.atk, c = withCharms(sheet());
+    const a = d.atk; let c = withCharms(sheet());
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
     if (!a.unblockable && activeBlock(d, a)) return;
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
     if (Math.random() * 100 < blockChance(c, a)) return blocked();
+    // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
+    const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
+    if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // a curse that lowers their damage (Enfeeble)
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {};
@@ -3678,7 +3695,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
-    leylines(dt); bells(dt); boils(); attrition(dt); regulation();
+    leylines(dt); bells(dt); boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
