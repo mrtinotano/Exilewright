@@ -275,8 +275,7 @@ export function character(b, sum) {
     // the chances of one more on collecting, of not removing it when consumed, and what consuming one grants
     infusion: { max: Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, (CHAR.base_maximum_infusions || 0) + v(sum, `maximum_${e}_infusion_stacks`, 'additional_maximum_infusion_stacks')])),
       time: pct('infusion_duration_+%'), more: v(sum, 'additional_infusion_gain_chance_%') + v(sum, 'chance_%_for_extra_infusion_on_infused_remnant_pickup'),
-      keep: v(sum, 'chance_to_not_consume_infusion_%'), power: v(sum, 'gain_a_power_charge_when_you_consume_an_elemental_infusion') > 0,
-      spell: v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') },
+      keep: v(sum, 'chance_to_not_consume_infusion_%'), power: v(sum, 'gain_a_power_charge_when_you_consume_an_elemental_infusion') > 0 },
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },

@@ -951,7 +951,7 @@ export function initScene(el, api) {
   const bombed = (M, p) => { boom(p, M.R, M.S); if (M.S.P.leaves) infRemnant(M.S.P.leaves, p); };   // Living Bomb's seed
   function infGain(el, c) {
     const I = sheet().infusion, max = el === 'verisium' ? Math.max(...Object.values(I.max)) : I.max[el], q = infNow(el);
-    for (let k = Math.random() * 100 < I.more ? 2 : 1; k > 0; k--) q.push(time + INF_TIME * I.time);
+    const until = time + INF_TIME * I.time; q.push(until); if (Math.random() * 100 < I.more) q.push(until);
     q.sort((a, b) => a - b); while (q.length > max) q.shift();
     fx.ring(c, .15, .8, INF_C[el], .3); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, INF_C[el], .35); hudT = 0;
   }
@@ -959,7 +959,7 @@ export function initScene(el, api) {
     const I = sheet().infusion;
     for (const k of [el, 'verisium']) {
       const q = infNow(k); if (!q.length) continue;
-      if (!(Math.random() * 100 < I.keep)) q.shift();
+      if (Math.random() * 100 >= I.keep) q.shift();
       me.infUsed = time; if (I.power) chargeBy('power', S); hudT = 0;
       say(t('{0} consumes {1}', S.label, api.infusion?.(k)?.name || k), INF_C[k]); return true;
     }
@@ -1707,9 +1707,9 @@ export function initScene(el, api) {
       if (inhib) S.mult *= 1 + inhib * (Object.values(charges).filter(Boolean).length + Object.keys(me.inf).filter(e => infNow(e).length).length) / 100;
       // the Infusions it can consume: one of each kind it names (Firestorm all three)
       S.infs = !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
-      const st = S.dmg?.stats || {};
-      if (S.infs.includes('lightning') && st['arc_damage_+%_final_from_infusion_consumption']) { S.mult *= 1 + st['arc_damage_+%_final_from_infusion_consumption'] / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
-      if (S.infs.includes('fire') && st['firestorm_damage_+%_if_consumed_fire_infusion']) S.mult *= 1 + st['firestorm_damage_+%_if_consumed_fire_infusion'] / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
+      const st = S.dmg?.stats || {}, arc = st['arc_damage_+%_final_from_infusion_consumption'], fs = st['firestorm_damage_+%_if_consumed_fire_infusion'];
+      if (arc && S.infs.includes('lightning')) { S.mult *= 1 + arc / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
+      if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
       if (!inhib) for (const c of P.spend) if (charges[c]) { S.gm *= 1 + ((ch[c]?.per || 0) * charges[c] + (ch[c]?.when || 0)) / 100; S.spent += charges[c]; charges[c] = 0; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       if (S.stage != null && !P.ownStages) { S.mult *= 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
