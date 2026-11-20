@@ -2819,9 +2819,9 @@ export function initScene(el, api) {
       me.mana -= cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       // Concoct / Ambrosia: the use consumes their share of your life / mana flask's most charges, for their more bleeding
       // effect / damage gained as lightning per charge consumed
-      const flaskUse = (n, k) => { const f = flasks()[n], pct = S.dmg?.sum?.[k]; if (!f || !pct) return 0; const c = Math.floor(Math.min(flaskLeft(n), f.max * pct / 100)); me.fl[n] -= c; return c; };
-      S.concoct = flaskUse(0, 'consume_%_of_maximum_life_flask_charges_on_skill_use') * (S.dmg?.sum?.['support_concoct_bleed_effect_+%_final_per_life_flask_charge_consumed'] || 0);
-      S.ambrosia = flaskUse(1, 'consume_%_of_maximum_mana_flask_charges_on_skill_use') * (S.dmg?.sum?.['gain_%_damage_as_lighting_per_mana_flask_charge_consumed'] || 0);
+      const flaskUse = (n, k, per) => { const f = flasks()[n], U = S.dmg?.sum || {}; if (!f || !U[k]) return 0; const c = Math.floor(Math.min(flaskLeft(n), f.max * U[k] / 100)); me.fl[n] -= c; return c * (U[per] || 0); };
+      S.concoct = flaskUse(0, 'consume_%_of_maximum_life_flask_charges_on_skill_use', 'support_concoct_bleed_effect_+%_final_per_life_flask_charge_consumed');
+      S.ambrosia = flaskUse(1, 'consume_%_of_maximum_mana_flask_charges_on_skill_use', 'gain_%_damage_as_lighting_per_mana_flask_charge_consumed');
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
