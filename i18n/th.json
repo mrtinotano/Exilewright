@@ -452,6 +452,7 @@
  "{0} killed you": "{0} สังหารคุณ",
  "{0} more: type to narrow the list": "อีก {0}: พิมพ์เพื่อจำกัดรายการ",
  "{0} needs a corpse: kill an enemy or press C": "{0} ต้องใช้ศพ: สังหารศัตรูหรือกด C",
+  "{0} needs a minion": "{0} ต้องมีมิเนียน",
  "{0} per second": "{0} ต่อวินาที",
  "If you allocate it": "หากจัดสรร",
  "If you remove it": "หากนำออก",

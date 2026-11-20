@@ -452,6 +452,7 @@
  "{0} killed you": "{0}擊殺了你",
  "{0} more: type to narrow the list": "還有 {0} 個：輸入以縮小清單",
  "{0} needs a corpse: kill an enemy or press C": "{0}需要一具屍體：擊殺一名敵人或按 C",
+  "{0} needs a minion": "{0}需要一個召喚物",
  "{0} per second": "每秒 {0}",
  "If you allocate it": "配置後",
  "If you remove it": "移除後",

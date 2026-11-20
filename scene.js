@@ -237,7 +237,8 @@ export function initScene(el, api) {
   const stageR = S => S.stage == null ? S.A : S.dmg?.stats?.flameblast_maximum_stages ? S.A + blast(S) * S.dmg.stats['vaal_flameblast_radius_+_per_stage'] / 10
     : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
-  const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : meleeR(S)) + SIM.body;   // to the dummy's edge
+  // to the dummy's edge; a strike with a dash range of its own (Killing Palm, Ice Strike...) dashes to an enemy farther than melee
+  const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : Math.max(meleeR(S), sh(S).dash || 0)) + SIM.body;
   const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
   const coneHalf = S => (S.cone / 2 || (S.kind === 'cone' ? SIM.cone / 2 : 65)) * Math.PI / 180;   // S.cone: the data's angle (Deadly Resolve)
   function aim(S, p) {
@@ -397,7 +398,7 @@ export function initScene(el, api) {
       if (A) { for (const [s, pct, u, phys] of A.vs) if (has(d, s) && (u == null || u === uniq)) { if (phys) gp *= 1 + pct / 100; else g *= 1 + pct / 100; } }
       else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
-    if (real && !S.src && cull(d, S)) return true;
+    if (real && !S.src && (S.name === 'Detonate Living' && !d.dead && underCull(d, S) ? detonate(d, S) : cull(d, S))) return true;
     const M = d.mark;
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
@@ -920,11 +921,20 @@ export function initScene(el, api) {
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
   // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
   // maximum life and mana
+  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + (gst(S)['culling_strike_threshold_+%'] || 0) / 100) / 100;
   const cullable = (d, S) => {
-    const r = d.stat.rarity || 'normal', X = gst(S);
-    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks))
-      && d.life + d.es <= (d.max + d.maxEs) * CULL[r] * (1 + (X['culling_strike_threshold_+%'] || 0) / 100) / 100;
+    const r = d.stat.rarity || 'normal';
+    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
   };
+  // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
+  // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
+  // others take its own small hit
+  function detonate(d, S) {
+    const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
+    fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); if (n > 0) area(c, X.A, { ...X, el: 'physical', els: ['physical'], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { physical: [n, n] } } }, { noPay: true, noTouch: true }); });
+    return true;
+  }
   function cull(d, S) {
     if (!cullable(d, S)) return false; const X = gst(S);
     // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
@@ -978,6 +988,19 @@ export function initScene(el, api) {
   function discharge(X, d) {
     const n = X.dmg.stats.voltaic_barrier_trigger_maximum_number_of_extra_targets, seen = new Set([d]);
     for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.stats.number_of_chains || 0, seen);
+  }
+  // Dark Pact, Abyssal Pact: the damageable minion nearest the cursor gives its % of its life (Abyssal: of its maximum)
+  // and the area around it takes the spell's hit plus that much chaos (physical); Dark Pact with no minion takes it from
+  // your life, its more damage. note: the life given is added to the hit as it is, not scaled by the build's modifiers
+  function pact(S) {
+    const st = S.dmg.stats, dark = st['skeletal_chains_aoe_%_health_dealt_as_chaos_damage'], el = dark ? 'chaos' : 'physical', pct = dark || st['skeletal_chains_aoe_%_health_dealt_as_physical_damage'];
+    const m = objs.filter(o => o.minion && !o.dead && o.segs).sort((a, b) => dist(a.pos, S.at) - dist(b.pos, S.at))[0], g = m?.segs[0];
+    if (!m && !dark) return toast(t('{0} needs a minion', S.label));
+    const n = (m ? (dark ? g.life : g.max) : me.life) * pct / 100, c = m ? { x: m.pos.x, z: m.pos.z } : { x: pp.x, z: pp.z };
+    if (m) { g.life -= n; if (g.life <= 0) m.dead = m.slain = true; } else me.life = Math.max(1, me.life - n);
+    const H = { ...S.dmg.hits }, h = H[el] || [0, 0]; H[el] = [h[0] + n, h[1] + n];
+    fx.ring(c, .2, S.A, el, .5); fx.emit(18, { p: { x: c.x, y: .8, z: c.z }, r: .3, v: 2, up: 1, life: .5, size: .16, c: el, c2: 'blood' });
+    boom(c, S.A, { ...S, el, els: [...new Set([...S.els, el])], mult: S.mult * (m ? 1 : 1 + (st['skeletal_chains_no_minions_damage_+%_final'] || 0) / 100), dmg: { ...S.dmg, hits: H } });
   }
   // Lunar Blessing: it spends all your Rage, its buff longer by its time per Rage spent, gaining its % of all damage as
   // extra cold. While on, a melee hit of yours calls down Moonbeams (its part) after its delay: the first on the enemy
@@ -1038,7 +1061,8 @@ export function initScene(el, api) {
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
-    if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
+    const KG = S && !S.src && ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]);
+    if (KG) for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
@@ -1069,7 +1093,7 @@ export function initScene(el, api) {
       for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) e.dots.push({ ...o, s: 5, ...dotOf(e, o.S) }); e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
-    if (S.P.gain && !S.P.corpse && !S.src && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);
+    if (S.P.gain && !S.P.corpse && !S.src && !KG?.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
     event('kill', p, S);
     if (!S?.src) remnantOn('kill', d);
     if (S?.mantra) { const M = S.mantra, n = Math.min(10, (time < me.purple?.until ? me.purple.n : 0) + 1); me.purple = { n, pct: M.flame, until: time + M.flameFor }; setBuff({ label: t('Purple Flame of Chayula'), name: 'purple', c: css('chaos'), s: M.flameFor }); }   // up to 10 (keywords.json)
@@ -1931,7 +1955,7 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
       // one at a time (Frost Bomb: its limit); Frost Bomb's exposure grows each pulse (its compounding magnitude) up to its cap
       const st = S.dmg?.stats || {}, cmp = st.active_skill_all_elemental_exposure_compounding_magnitude, eff = S.dmg?.ail?.expo.effect ?? 1;
-      limit(o => o.orbOf === S.name, st.base_maximum_number_of_frost_bombs || 1);
+      limit(o => o.orbOf === S.name, st.base_maximum_number_of_frost_bombs || st.orb_of_storms_base_maximum_number_of_orbs || st.solar_orb_base_maximum_number_of_orbs || 1);   // Frost Bomb, Orb of Storms, Solar Orb: their most
       const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
       fx.ring(c, .2, 1.4, S.el, .4);
       let tk = .4;
@@ -1941,7 +1965,7 @@ export function initScene(el, api) {
           if ((tk -= dt) > 0) return;
           if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, cmp && d.st.expo > 0 && d.expo ? Math.min(st.active_skill_all_elemental_exposure_compounding_magnitude_cap * eff, d.expo.mag + cmp * eff) : expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
           else if (P.chains) { tk = sh(S).bolts || .9; e.zap(); }
-          else { tk = 1; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: .5 }); }
+          else { tk = (st.solar_orb_base_pulse_frequency_ms || 1000) / 1000; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: st.solar_orb_base_pulse_frequency_ms ? 1 : .5 }); }   // Solar Orb: its whole hit every its pulse interval
         },
         end: e => { if (P.detonates) boom(c, R, { ...S, self: e }); },
         off: () => { range.remove(); if (P.leaves) infRemnant(P.leaves, c); } });   // Frost Bomb's, Orb of Storms' Infusion
@@ -2387,6 +2411,13 @@ export function initScene(el, api) {
     area(S) {
       const P = S.P, R = S.A; let c = S.at;
       if (P.corpse) { c = useCorpse(S); if (!c) return; }
+      // Detonate Dead: the corpse explodes after its delay, its spell damage and its permillage of the corpse's
+      // monster's life as physical
+      const cs = S.dmg?.stats || {}, CP = c.life && cs.corpse_explosion_monster_life_permillage_physical;
+      if (CP) {
+        const n = c.life * CP / 1000; fx.telegraph(c, R, S.el, (cs.explosion_delay_ms || 0) / 1000);
+        return later((cs.explosion_delay_ms || 0) / 1000, () => { boom(c, R, S); area(c, R, { ...S, el: 'physical', els: ['physical'], ail: [], src: 'corpse', dmg: { ...S.dmg, hits: { physical: [n, n] } } }, { noPay: true, noTouch: true }); });
+      }
       if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
         const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
         thing(holder(pp), P.dur, { off: () => dec.remove() });
@@ -3426,7 +3457,7 @@ export function initScene(el, api) {
     const su = S.dmg?.sum, VO = !auto && su?.support_static_charge_maximum_charge;
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
-    const run = K[S.kind] || K.area;
+    const run = S.dmg?.stats?.['skeletal_chains_aoe_%_health_dealt_as_chaos_damage'] || S.dmg?.stats?.['skeletal_chains_aoe_%_health_dealt_as_physical_damage'] ? pact : K[S.kind] || K.area;
     run(S); whirl(S);
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration

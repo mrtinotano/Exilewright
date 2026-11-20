@@ -452,6 +452,7 @@
  "{0} killed you": "{0}に倒されました",
  "{0} more: type to narrow the list": "他{0}件: 入力して絞り込み",
  "{0} needs a corpse: kill an enemy or press C": "{0}には死体が必要です: 敵を倒すかCキーを押してください",
+  "{0} needs a minion": "{0}にはミニオンが必要です",
  "{0} per second": "秒間{0}",
  "If you allocate it": "割り振った場合",
  "If you remove it": "解除した場合",

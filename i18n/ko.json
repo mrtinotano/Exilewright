@@ -452,6 +452,7 @@
  "{0} killed you": "{0}에게 사망",
  "{0} more: type to narrow the list": "{0}개 더: 입력해 목록을 좁히세요",
  "{0} needs a corpse: kill an enemy or press C": "{0}에 시신 필요: 적을 처치하거나 C 키",
+  "{0} needs a minion": "{0}에는 소환수가 필요합니다",
  "{0} per second": "초당 {0}",
  "If you allocate it": "할당하면",
  "If you remove it": "제거하면",
