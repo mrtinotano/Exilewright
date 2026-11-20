@@ -162,6 +162,8 @@ export function charmOf(it, sum = {}) {
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
 const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).flatMap(l => l.split('\n'));
 // en: English, as Path of Building reads it; otherwise the page's language, as the game shows it (the .build notes)
+// a trade listing's modifiers in the game's language (what the planner read of them; the rest as the site words them)
+export const modsOf = l => { const p = l.item && itemParts(l.item, false); return p ? [...p.impl, ...p.expl, ...l.missed] : l.mods; };
 export function itemParts(it, en = true) {
   const base = BASE[it.base];
   if (!base) return null;
@@ -669,8 +671,6 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
-  // a listing's modifiers in the game's language (what the planner read of them; the rest as the site words them)
-  const modsOf = l => { const p = l.item && itemParts(l.item, false); return p ? [...p.impl, ...p.expl, ...l.missed] : l.mods; };
   // the items found better than the one worn (trade.find): best first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
   function betterHtml(slot) {
