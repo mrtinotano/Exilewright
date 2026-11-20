@@ -232,8 +232,10 @@ def stat_set(path, skill, label):
                                    for n, r in st['levels'].items()}}
 
 
-stat_sets = {'Midnight Zenith': {'Crystal': stat_set('Skills/other.lua', 'MidnightStarPlayer', 'Crystal')}}
+stat_sets = {'Midnight Zenith': {'Crystal': stat_set('Skills/other.lua', 'MidnightStarPlayer', 'Crystal')},
+             'Tornado Shot': {'Tornado': stat_set('Skills/act_dex.lua', 'TornadoShotPlayer', 'Tornado')}}   # its tornado: copied projectiles, damage over time
 assert stat_sets['Midnight Zenith']['Crystal']['levels'][20]['frost_wall_maximum_life'] == 4768, 'MidnightStarPlayer Crystal'
+assert stat_sets['Tornado Shot']['Tornado']['constant']['base_number_of_projectiles'] == 3, 'TornadoShotPlayer Tornado'
 
 dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists, stat sets) - game data (c) Grinding Gear Games',
       'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions, 'stat_sets': stat_sets}, 'pob2.json')

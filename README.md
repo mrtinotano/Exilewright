@@ -151,7 +151,7 @@ the corpse's life as chaos, Blind (Flash Grenade) lowering an enemy's accuracy a
 five seconds and passing a consumed Mark on, Voltaic Barrier energising the projectiles fired through it to discharge
 chaining lightning, Repulsion's curse detonating on your hit, Wing Blast's shockwave on a Primed enemy, Lunar Blessing's
 Moonbeams, Detonate Dead and Detonate Living exploding with their share of the monster's life, Dark Pact and Abyssal
-Pact sacrificing a minion's life (Dark Pact yours without one), the strikes that dash to an enemy by their own range, Herald of Blood's explosion from the Blood Loss of the enemy, Shield Charge's more stun when fully charged, one Living Bomb seed (five for Untether) and one Rain of Arrows at a time,
+Pact sacrificing a minion's life (Dark Pact yours without one), the strikes that dash to an enemy by their own range, Herald of Blood's explosion from the Blood Loss of the enemy, Shield Charge's more stun when fully charged, one Living Bomb seed (five for Untether) and one Rain of Arrows at a time, Tornado Shot's tornado (its damage over time, it Hinders and copies your arrows, spears and bolts into a ring of three),
 Wardbound Minions and Rigwald's Ferocity by weapon set. The ≡ button opens a combat log: the last hits, kills
 and damage taken, with each skill's total, and a bar at the top shows the life of the enemy under the cursor or last hit,
 as the game does. Where the data leaves something out (a time, a count),

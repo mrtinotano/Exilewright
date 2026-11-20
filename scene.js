@@ -1668,6 +1668,8 @@ export function initScene(el, api) {
             say(t('{0} gains fire through {1}', S.label, w.label), 'fire'); break;
           }
           if (!cur.vb) for (const w of objs) if (w.volt && !w.dead && segDist(m.position, w.a, w.b) < .45) { cur = { ...cur, vb: { ...w.volt, mult: w.S.mult } }; tint(m, 'lightning'); say(t('{0} is energised by {1}', S.label, w.label), 'lightning'); break; }
+          if (cur.P.attack && !cur.copied) for (const w of objs) if (w.copy && !w.dead && dist(w.pos, m.position) <= w.R) { w.spit(cur, mult()); q.dead = true; break; }
+          if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d);
@@ -1811,15 +1813,25 @@ export function initScene(el, api) {
   // note: an absorbed element's damage per second scales as the skill's physical one does
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c), ts = S.dmg?.stats || {}, pull = ts['tornado_pull_strength_%'], DOT = Object.keys(S.dmg?.dot || {}).length > 0; let cur = S, tk = .2, pt = 0;
-    limit(x => x.vortex && x.name === S.name, ts.number_of_tornados_allowed);
-    const e = thing(g, dur, { name: S.name, vortex: true,
+    limit(x => x.vortex && x.name === S.name, ts.number_of_tornados_allowed ?? ts.base_number_of_tornado_shots_allowed);
+    // Tornado Shot's: it stays where it lands and Hinders the enemies standing in it; your arrows, spears and bolts that reach
+    // it are sucked in and it spits a ring of copies (its number, range and less damage) that are not copied again, up to
+    // its most times
+    const cs = o.copy, hold = cs && new Map();
+    const e = thing(g, dur, { name: S.name, vortex: true, R, copy: cs && { left: cs.tornado_shot_number_of_hits_allowed },
+      spit(C, k) {
+        const n = cs.base_number_of_projectiles, a0 = rnd(TAU), p = { x: g.position.x, z: g.position.z };
+        if (--e.copy.left <= 0) e.dur = e.s;
+        for (let i = 0; i < n; i++) { const a = a0 + i * TAU / n; shoot({ ...C, copied: true, mult: C.mult * k * (1 + cs['tornado_shot_projectile_damage_+%_final'] / 100) }, p, Math.sin(a), Math.cos(a), { range: cs.tornado_shot_projectile_range / 10 }); }
+      },
       tick(dt, e) {
         const p = g.position, col = cur.el === 'physical' ? 'dust' : cur.el;
         for (let i = 0; i < 3; i++) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
-        const d = !o.dir && near(p, o.seek || 9), v = o.speed || 1.3;
+        if (hold) for (const d of inside(p, R)) { let v = hold.get(d); if (!v || !d.slows.includes(v)) { hold.set(d, v = { pct: -HINDER.slow }); d.slows.push(v); } v.until = time + .3; }
+        const d = !o.dir && !cs && near(p, o.seek || 9), v = o.speed || 1.3;
         if (o.dir) { const a = o.dir + Math.sin(e.s * 4.3) * .9; p.x += Math.sin(a) * v * dt; p.z += Math.cos(a) * v * dt; }   // erratically forward (its wander is not in the data)
         else if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
         if (S.P.absorbs) cur = absorb(cur, p, R);
@@ -1910,6 +1922,10 @@ export function initScene(el, api) {
     rain(S) {
       const P = S.P, c = S.at, R = S.A, h = hand();
       const shot = land => lob(P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, { trail: S.el });
+      // Tornado Shot: its shot's hit (PoB2's main part) and its tornado (its own part) where it lands
+      // note: its secondary radius taken as the tornado's
+      const TX = partOf(S, 'Tornado');
+      if (TX) return shot(() => { boom(c, R, S); vortex(TX, c, radOf(TX), durOf(TX), { copy: TX.dmg.stats }); });
       if (P.object) return shot(() => rod(S, c));
       if (P.detonates && P.plant) return shot(() => pustules(S, c));
       if (P.detonates) {   // pods that burst after a moment (or at once when a detonator reaches them)
