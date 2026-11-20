@@ -104,7 +104,7 @@
  "Barrage": "Очередь",
  "Remnant": "Сгусток",
  "Detonator": "Детонатор",
- "Hazard": "Помеха",
+ "Hazard": "Помехи",
  "Critical": "Критический",
  "Chaining": "Цепь",
  "Mark": "Метка",
@@ -856,5 +856,6 @@
  "Stage {0}": "Стадия {0}",
  "Glory": "Слава",
  "{0} needs {1} Glory": "{0}: нужно {1} Славы",
- "Culling Strike": "Добивание"
+ "Culling Strike": "Добивание",
+ "Not enough Runic Ward for {0}": "Недостаточно рунического барьера для {0}"
 }

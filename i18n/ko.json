@@ -856,5 +856,6 @@
  "Stage {0}": "{0}단계",
  "Glory": "영광",
  "{0} needs {1} Glory": "{0}에 영광 {1} 필요",
- "Culling Strike": "마무리 타격"
+ "Culling Strike": "마무리 타격",
+ "Not enough Runic Ward for {0}": "{0}에 필요한 룬 수호가 부족합니다"
 }

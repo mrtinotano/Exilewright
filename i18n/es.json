@@ -104,7 +104,7 @@
  "Barrage": "Ráfaga",
  "Remnant": "Remanente",
  "Detonator": "Detonador",
- "Hazard": "Peligro",
+ "Hazard": "Peligros",
  "Critical": "Crítico",
  "Chaining": "Encadenamiento",
  "Mark": "Marca",
@@ -856,5 +856,6 @@
  "Stage {0}": "Fase {0}",
  "Glory": "Gloria",
  "{0} needs {1} Glory": "{0} necesita {1} de Gloria",
- "Culling Strike": "Golpe de gracia"
+ "Culling Strike": "Golpe de gracia",
+ "Not enough Runic Ward for {0}": "No hay Barrera rúnica suficiente para {0}"
 }

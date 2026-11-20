@@ -1116,14 +1116,15 @@ export function initScene(el, api) {
   }
   // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone, for dur s;
   // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
+  // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes)
   function hazardAt(X, p, dur, o = {}) {
-    const arm = o.arm || 0, c = o.c || 'dust';
-    const decal = fx.decal(p, X.A, 'patch', c, { a: .8, k: 1 });
-    const e = thing(holder(p), dur, { name: X.name,
+    const arm = o.arm || 0, c = o.c || 'dust', reach = o.reach || X.A;
+    const decal = fx.decal(p, reach, 'patch', c, { a: .8, k: 1 });
+    const e = thing(holder(p), dur, { name: X.name, hazard: true,
       tick() {
-        if (e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= X.A + SIM.body)) return;
-        e.dead = true; area(p, X.A, e.s < .5 && o.early ? { ...X, mult: X.mult * (1 + o.early / 100) } : X);
-        fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' });
+        if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
+        const S2 = e.s < .5 && o.early ? { ...X, mult: X.mult * (1 + o.early / 100) } : X; e.set = true;
+        later(o.delay || 0, () => { e.dead = true; area(p, X.A, S2); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
   }
@@ -1931,6 +1932,16 @@ export function initScene(el, api) {
       vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: st.archon_chayula_storm_movement_speed / 10, every: st.archon_of_chayula_tornado_attack_interval_ms / 1000, mult: 1, seek: S.G?.radius2 || 9 });
     } });
   };
+  // Conductive Runes: its Runes in a cone in front of you up to its limit, each arming after its time and going off its
+  // activation time after an enemy steps on it (its secondary radius), exploding in its area
+  K.runes = S => {
+    const st = S.dmg?.stats || {}, n = st.rune_hazard_number_of_runes_to_create || 1, half = (st.rune_hazard_cone_angle || 60) / 2 * Math.PI / 180, a0 = Math.atan2(S.dx, S.dz);
+    for (let k = 0; k < n; k++) {
+      limit(o => o.hazard && o.name === S.name, st.rune_hazard_base_number_of_runes_allowed);
+      const a = a0 + rnd(-half, half), r = rnd(1, SIM.castRange * .6), p = { x: pp.x + Math.sin(a) * r, z: pp.z + Math.cos(a) * r };
+      hazardAt(S, p, durOf(S), { arm: st.rune_hazard_arming_time_ms / 1000, delay: st.rune_hazard_detonate_time_ms / 1000, reach: S.G?.radius2, c: 'lightning' });
+    }
+  };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
   K.banner = S => {
@@ -2016,6 +2027,9 @@ export function initScene(el, api) {
       const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per, LP = S.dmg?.lifePerRecent,
         life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
+      const WC = S.dmg?.stats?._cost?.Ward || 0;   // a Runic Ward cost (Conductive Runes)
+      if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
+      if (WC) spendWard(WC);
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;

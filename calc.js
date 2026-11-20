@@ -667,7 +667,7 @@ export function skill(g, b, treeGear) {
   const base = {}, nonWeapon = attack && d.types?.includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   for (const t of DMG) {
     let lo = 0, hi = 0;
-    if (attack && w) {
+    if (attack && (w || nonWeapon)) {   // a non-weapon attack needs no weapon in hand
       const r = nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
       if (r) { lo += r[0]; hi += r[1]; }
       lo += v(sum, `attack_minimum_added_${t}_damage`); hi += v(sum, `attack_maximum_added_${t}_damage`);

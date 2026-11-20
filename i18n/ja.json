@@ -856,5 +856,6 @@
  "Stage {0}": "ステージ{0}",
  "Glory": "グローリー",
  "{0} needs {1} Glory": "{0}には{1}グローリーが必要です",
- "Culling Strike": "カリングストライク"
+ "Culling Strike": "カリングストライク",
+ "Not enough Runic Ward for {0}": "{0}のルーンワードが足りない"
 }

@@ -104,7 +104,7 @@
  "Barrage": "Rajada",
  "Remnant": "Vestígio",
  "Detonator": "Detonador",
- "Hazard": "Ameaça",
+ "Hazard": "Ameaças",
  "Critical": "Crítico",
  "Chaining": "Propagação",
  "Mark": "Marca",
@@ -856,5 +856,6 @@
  "Stage {0}": "Estágio {0}",
  "Glory": "Glória",
  "{0} needs {1} Glory": "{0} precisa de {1} de Glória",
- "Culling Strike": "Golpe Aniquilador"
+ "Culling Strike": "Golpe Aniquilador",
+ "Not enough Runic Ward for {0}": "Salvaguarda Rúnica insuficiente para {0}"
 }

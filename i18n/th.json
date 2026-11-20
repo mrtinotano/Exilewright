@@ -856,5 +856,6 @@
  "Stage {0}": "สเตจ {0}",
  "Glory": "บารมี",
  "{0} needs {1} Glory": "{0} ต้องใช้บารมี {1}",
- "Culling Strike": "จู่โจมปลิดชีพ"
+ "Culling Strike": "จู่โจมปลิดชีพ",
+ "Not enough Runic Ward for {0}": "วอร์ดอักขระไม่พอสำหรับ {0}"
 }

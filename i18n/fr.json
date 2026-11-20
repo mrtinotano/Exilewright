@@ -104,7 +104,7 @@
  "Barrage": "Barrage",
  "Remnant": "Reliquat",
  "Detonator": "Détonation",
- "Hazard": "Péril",
+ "Hazard": "Périls",
  "Critical": "Critique",
  "Chaining": "Ricochet",
  "Mark": "Marque",
@@ -856,5 +856,6 @@
  "Stage {0}": "Palier {0}",
  "Glory": "Gloire",
  "{0} needs {1} Glory": "{0} a besoin de {1} de Gloire",
- "Culling Strike": "Coup de grâce"
+ "Culling Strike": "Coup de grâce",
+ "Not enough Runic Ward for {0}": "Pas assez de Sauvegarde runique pour {0}"
 }

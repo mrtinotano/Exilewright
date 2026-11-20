@@ -56,7 +56,7 @@ export const KIND = {
   curse: 'Curse', mark: 'Mark', warcry: 'Warcry', herald: 'Herald', aura: 'Persistent buff', meta: 'Meta trigger',
   minion: 'Minions', raise: 'Minions from corpses', totem: 'Totem', travel: 'Travel', nova: 'Nova', slam: 'Slam',
   strike: 'Strike', sweep: 'Melee area', wave: 'Fissure wave', cone: 'Cone', zone: 'Lingering area', storm: 'Storm',
-  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)', ember: 'Projectile', banner: 'Aura', solaris: 'Delayed impact', calamity: 'Buff', apocalypse: 'Buff', chayula: 'Buff',
+  dot: 'Damage over time', buff: 'Buff', area: 'Area (cursor)', meteor: 'Delayed impact', beam: 'Line', volcano: 'Lingering area', snap: 'Area (cursor)', ember: 'Projectile', banner: 'Aura', solaris: 'Delayed impact', calamity: 'Buff', apocalypse: 'Buff', chayula: 'Buff', runes: 'Hazard',
 };
 export const CHARGE = { frenzy: 'Frenzy', power: 'Power', endurance: 'Endurance' };
 
@@ -79,6 +79,7 @@ const NAMED = {
   'Skyfall': { kind: 'meteor' },
   'Spear of Solaris': { kind: 'solaris' },
   'Walking Calamity': { kind: 'calamity' },
+  'Conductive Runes': { kind: 'runes' },
   'Apocalypse': { kind: 'apocalypse' },
   'Archon of Chayula': { kind: 'chayula' },
   'War Banner': { kind: 'banner' }, 'Defiance Banner': { kind: 'banner' }, 'Dread Banner': { kind: 'banner' },
