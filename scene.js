@@ -1826,7 +1826,7 @@ export function initScene(el, api) {
       // gained as physical, and its rune on the first enemy it hits
       const FK = P.slams && S.dmg?.trig?.find(T => T.stats?.['triggered_by_fist_of_kalguur_support_%']), wc = FK && (S.dmg.cost || 0) * FK.support['support_slam_spend_%_supported_skill_cost_as_ward_for_runic_boost'] / 100;
       if (FK && me.ward >= wc) {
-        me.ward -= wc; gloryPaid('ward', wc); const g = FK.support['runic_boosted_attack_damage_%_gained_as_physical'] / 100, H = S.dmg.hits, sum = j => Object.values(H).reduce((a, h) => a + h[j], 0), ph = H.physical || [0, 0];
+        spendWard(wc); const g = FK.support['runic_boosted_attack_damage_%_gained_as_physical'] / 100, H = S.dmg.hits, sum = j => Object.values(H).reduce((a, h) => a + h[j], 0), ph = H.physical || [0, 0];
         S.dmg = { ...S.dmg, hits: { ...H, physical: [ph[0] + sum(0) * g, ph[1] + sum(1) * g] } }; S.rune = FK;
       }
     }
@@ -1834,7 +1834,7 @@ export function initScene(el, api) {
     const GN = !auto && gloryNeed(S);
     if (GN) {
       if ((me.glory[S.name] || 0) < GN) { toast(t('{0} needs {1} Glory', S.label, Math.ceil(GN))); return false; }
-      const st = { ...S.dmg.sum, ...S.dmg.stats };
+      const st = gst(S);
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
       hudT = 0;
     }
@@ -1893,7 +1893,8 @@ export function initScene(el, api) {
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
   const GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
-  const gloryNeed = S => { const st = S?.dmg?.stats || {}, X = S?.dmg?.sum || {}, n = st.active_skill_requires_X_glory ?? X.active_skill_requires_X_glory; return n ? n * (1 + (X['support_glory_required_+%_final'] || st['support_glory_required_+%_final'] || 0) / 100) : 0; };
+  const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
+  const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
   const gloryOf = () => slots().map(base).filter(S => S && gloryNeed(S));
   function gloryAdd(S, n) {
     if (!(n > 0) || (!/Banner/.test(S.name) && objs.some(o => o.name === S.name && !o.dead))) return;
@@ -1902,13 +1903,13 @@ export function initScene(el, api) {
   }
   function glory(d, ev) {
     for (const S of gloryOf()) {
-      const st = { ...S.dmg.sum, ...S.dmg.stats }, k = (st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0) + (st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0);
+      const st = gst(S), k = (st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0) + (st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0);
       const seen = d.gloryAt ||= {}; if (!k || time - (seen[S.name] ?? -9) < GLORY_EVERY) continue;
       seen[S.name] = time; gloryAdd(S, k / 100 * (POWER[d.stat.rarity] || 1));
     }
   }
   // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
-  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = { ...S.dmg.sum, ...S.dmg.stats }; gloryAdd(S, n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
+  function gloryPaid(what, n, by) { for (const S of gloryOf()) if (S.name !== by) { const st = gst(S); gloryAdd(S, n * (st[`active_skill_generates_%_of_${what}_spent_as_glory`] || 0) / 100); } }
   // Incinerate gains its fuel from the mana spent on any other skill (its ms per mana), up to its most, not while it is used
   const fueling = n => time - (me.fuelAt[n] ?? -9) <= SIM.channelTick * 2;
   function fuelUp(S, mana) {
@@ -2259,7 +2260,7 @@ export function initScene(el, api) {
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     me.life -= left;
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
-    if (me.life < 1 && me.ward >= 1 - me.life) { me.ward -= 1 - me.life; gloryPaid('ward', 1 - me.life); me.life = 1; }
+    if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -2285,7 +2286,7 @@ export function initScene(el, api) {
       // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
       // enemy, for its Ward cost
       if (T.stats?.['triggered_by_support_rune_forged_blades_%'] && d.st.armour > 0 && me.ward >= T.wardCost) {
-        me.ward -= T.wardCost; gloryPaid('ward', T.wardCost); clear(d, 'armour');
+        spendWard(T.wardCost); clear(d, 'armour');
         const X = asTrig(S, T), n = sh(X).projectiles || T.stats.base_number_of_projectiles; say(X.label, 'physical');
         for (let k = 0; k < n; k++) { const a = k * TAU / n; shoot(X, d.pos, Math.sin(a), Math.cos(a), { seen: [d] }); }
       }
