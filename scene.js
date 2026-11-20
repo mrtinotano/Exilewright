@@ -2205,7 +2205,12 @@ export function initScene(el, api) {
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
       if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
-      if (fuel) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
+      // its stages: one every its interval channelled, up to its most, each its more damage; its cone's angle
+      if (fuel) {
+        if (!fueling(S.name)) me.fuelFrom = time;
+        me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; S.cone = FS.incinerate_cone_angle;
+        S.mult *= 1 + Math.min(FS.incinerate_maximum_stages, Math.floor((time - me.fuelFrom) * 1000 / FS.incinerate_gain_stage_every_x_ms)) * FS['incinerate_damage_+%_final_per_stage'] / 100;
+      }
       me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.sigil && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) fuelUp(S, cost);
     }
