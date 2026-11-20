@@ -258,14 +258,14 @@ export function initScene(el, api) {
     if (fresh) { d.life = d.max; d.es = d.maxEs; }
     d.fig.setLabel(`${m.name} · ${t('Lv. {0}', level)}`); d.sig = ''; d.wind = null;
   }
-  function place(x, z) {
-    const m = tpl.mon; if (!m) return null;
+  function place(x, z, m = tpl.mon, level = tpl.level) {
+    if (!m) return null;
     if (dummies.length >= MAXE) { toast(t('The scene holds up to {0} enemies', MAXE)); return null; }
     const fig = makeDummy(fx, { kind: m.category, scale: m.boss ? 1.45 : 1 });
     fig.group.position.set(x, 0, z); fig.group.rotation.y = Math.atan2(pp.x - x, pp.z - z); scene.add(fig.group);
     const d = { fig, pos: fig.group.position, home: { x, z }, aggro: false, mon: m, sc: fig.scale, st: {}, burn: {}, frz: 0, brk: 0, flam: [], bar: {}, lock: {}, imm: {}, calm: 0, mag: {}, curse: null, mark: null, dots: [], impales: [], slows: [], dead: false, corpse: 0, back: 0, fall: 0,
       flash: 0, wob: 0, lunge: 0, tick: rnd(.5), ph: rnd(TAU), sig: '', by: null, expo: null, wind: null, wait: rnd(.6, 1.2) };
-    arm(d, tpl.level, tpl.attack); dummies.push(d);
+    arm(d, level, tpl.attack); dummies.push(d);
     fx.ring(d.pos, 1.3 * d.sc, .3, 'gold', .4, { a: .6 });
     fx.emit(12, { p: { x, y: .2, z }, r: .5, v: 1, up: 1, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     hudT = 0; return d;
@@ -336,6 +336,7 @@ export function initScene(el, api) {
   // noEs: bleeding and poison, which bypass energy shield (keywords.json)
   function damage(d, n, S, quiet, noEs) {
     if (d.dead || !(n > 0)) return;
+    if (d.visage) { d.flash = .18; return damage(d.visage, n * d.share / 100, S, quiet, noEs); }
     const got = Math.min(n, d.life + (noEs ? 0 : d.es)), src = S?.label || '?', B = byS[src] ||= { n: 0, x: 0 };
     stats.dealt += got; B.n += got; B.x++; lastHit = d; record('hit', src, d.mon.name, got, css(S?.el || 'physical'));
     d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
@@ -366,6 +367,7 @@ export function initScene(el, api) {
   // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
   function hit(d, S, o = {}) {
     if (d.dead) return false;
+    if (S.dmg?.stats?.['time_rip_damage_share_%']) visage(d, S);
     d.aggro = true;   // hit, it comes at you
     const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
@@ -937,6 +939,17 @@ export function initScene(el, api) {
     if (!(Math.random() * 100 < pc)) return;
     limit(o => o.kind === W.name, st.max_azmerian_swarms);
     minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
+  }
+  // Moment of Vulnerability: its hit on an enemy Primed for Stun, Electrocution or Freeze (keywords.json: its share of the
+  // bar by rarity) leaves a visage of it there for as long as that immobilisation would last; its share of the damage
+  // the visage takes is dealt to the enemy too. The enemy cannot be ripped again for its delay
+  // note: the visage stands still and takes no damage of its own, it only passes the share on
+  function visage(d, S) {
+    const st = S.dmg.stats, a = !d.visage && !(d.ripAt > time) && ['stun', 'electrocute', 'freeze'].find(a => (d.bar[a] || 0) >= PRIMED[d.stat.rarity]);
+    if (!a) return;
+    d.ripAt = time + st.rip_from_time_immunity_duration_ms / 1000;
+    const v = place(d.pos.x + rnd(-1, 1), d.pos.z + rnd(-1, 1), d.mon, d.level); if (!v) return;
+    Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
   function kill(d, S) {
     d.dead = true; stats.kills++; record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
@@ -3357,6 +3370,7 @@ export function initScene(el, api) {
   // ---------- frame
   function tickDummy(d, dt) {
     const f = d.fig, st = d.st;
+    if (d.visage) { if (time > d.until || d.visage.dead) { f.dispose(); dummies.splice(dummies.indexOf(d), 1); } return; }
     if (d.dead) {
       if (d.corpse > 0) {
         d.fall = Math.min(1, d.fall + dt * 3.5); f.upper.rotation.x = -1.42 * ease(d.fall); f.upper.rotation.z = 0;
