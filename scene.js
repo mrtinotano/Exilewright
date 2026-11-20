@@ -2152,13 +2152,14 @@ export function initScene(el, api) {
   // pops after its delay, Corrupted Blood (its % of that enemy's life a minute, physical) on the enemies in its area,
   // larger per boil. note: whose life it takes is not in the data, the scene takes the slain enemy's
   function boils() {
-    const i = tog['Blood Boil'] ? api.build().gems.findIndex(g => g.name === 'Blood Boil') : -1, S = i >= 0 && base(i), st = S?.dmg?.stats; if (!st) return;
+    const S = onS('Blood Boil'), st = S?.dmg?.stats; if (!st) return;
     for (const d of inside(pp, sheet().overgrow.r)) if ((d.boilAt ??= time) + st.blood_boil_application_interval_ms / 1000 <= time) { d.boilAt = time; d.boils = (d.boils || 0) + 1; d.boilS = S; }
   }
   function popBoils(d) {
-    const n = d.boils, S = d.boilS, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * S?.dmg.stats['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000; d.boils = 0; d.boilAt = null; if (!n) return;
-    later(S.dmg.stats.blood_boil_explosion_delay_ms / 1000, () => {
-      const R = S.A * Math.sqrt(1 + n * S.dmg.stats['blood_boil_explosion_area_+%_final_per_boil'] / 100); fx.ring(p, .2, R, 'blood', .5);
+    const n = d.boils, S = d.boilS; d.boils = 0; d.boilAt = null; if (!n) return;
+    const st = S.dmg.stats, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * st['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000;
+    later(st.blood_boil_explosion_delay_ms / 1000, () => {
+      const R = S.A * Math.sqrt(1 + n * st['blood_boil_explosion_area_+%_final_per_boil'] / 100); fx.ring(p, .2, R, 'blood', .5);
       for (const e of inside(p, R)) dot(e, { ...S, mult: 1, els: ['physical'], dmg: { ...S.dmg, dot: { physical: dps } }, P: { ...S.P, dur: durOf(S) } });
     });
   }
