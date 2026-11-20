@@ -1312,8 +1312,9 @@ export function initScene(el, api) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
-        const d = near(p, o.seek || 9), v = o.speed || 1.3;
-        if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
+        const d = !o.dir && near(p, o.seek || 9), v = o.speed || 1.3;
+        if (o.dir) { const a = o.dir + Math.sin(e.s * 4.3) * .9; p.x += Math.sin(a) * v * dt; p.z += Math.cos(a) * v * dt; }   // erratically forward (its wander is not in the data)
+        else if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
         if (S.P.absorbs) cur = absorb(cur, p, R);
         if (pull && (pt -= dt) <= 0) { pt = ts.tornado_pull_interval_ms / 1000; for (const d of inside(p, R)) { d.pos.x += (p.x - d.pos.x) * pull / 100; d.pos.z += (p.z - d.pos.z) * pull / 100; } }
         if (DOT) {
@@ -2005,6 +2006,13 @@ export function initScene(el, api) {
       if (left > 0) bounce({ x: to.x, y: .2, z: to.z }, { x: to.x + S.dx * st.magma_orb_base_bounce_range / 10, z: to.z + S.dz * st.magma_orb_base_bounce_range / 10 }, left - 1);
     }, { trail: 'fire' });
     bounce({ x: pp.x, z: pp.z }, { x: pp.x + S.dx * k, z: pp.z + S.dz * k }, sh(S).chains ?? st.number_of_chains ?? 0);
+  };
+  // Twister: twisters (its projectiles, spread) moving forward erratically at its speed for its duration, hitting
+  // those within every its re-hit interval; one passing over elemental ground gains that element's damage
+  // note: no Whirlwinds in the scene, so none are consumed; Blind is not simulated
+  K.twister = S => {
+    const st = S.dmg?.stats || {}, n = sh(S).projectiles || 1, a0 = Math.atan2(S.dx, S.dz), spread = (st.minimum_per_projectile_spread_angle_degrees || 15) * Math.PI / 180;
+    for (let k = 0; k < n; k++) vortex(S, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult: 1 });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
