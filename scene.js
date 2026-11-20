@@ -3597,7 +3597,7 @@ export function initScene(el, api) {
     let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
-    const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // Entangle's vines on it
+    const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // its slows: Entangle's vines, Hinder
     const maim = Math.max(SLOW_FLOOR / ks, (d.st.maim > 0 ? 1 - (d.mag.maim ?? MAIM.move) * d.stat.slowEffect / 100 : 1) * (1 + VS * d.stat.slowEffect / 100));
     const SR = d.st.bleed > 0 && d.red;
     d.wait -= dt * (SR ? 1 + SR['bleeding_monsters_attack_speed_+%'] / 100 : 1);
