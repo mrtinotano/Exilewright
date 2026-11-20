@@ -2715,6 +2715,7 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
+  const blocked = () => { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); };
   function activeBlock(d, a) {
     const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised;
     if (!P && !R) return false;
@@ -2724,7 +2725,7 @@ export function initScene(el, api) {
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + st.base_parry_duration_ms / 1000 };
     } else R.blocked = time;
-    fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); return true;
+    blocked(); return true;
   }
   function struck(d) {
     const a = d.atk, c = withCharms(sheet());
@@ -2732,7 +2733,7 @@ export function initScene(el, api) {
     if (move && !move.S && !a.area) return fx.text(above(), t('Dodged'), GREY, .32);   // the dodge roll avoids strikes and projectiles
     if (!a.unblockable && activeBlock(d, a)) return;
     if (Math.random() * 100 >= hitChance(d.stat.accuracy, (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32);
-    if (Math.random() * 100 < blockChance(c, a)) { fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); return fx.text(above(), t('Blocked'), GREY, .32); }
+    if (Math.random() * 100 < blockChance(c, a)) return blocked();
     // a curse that lowers their damage (Enfeeble)
     const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {};
