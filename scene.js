@@ -2449,7 +2449,7 @@ export function initScene(el, api) {
     const e = thing(holder(c), Infinity, { whirl: true, stage: 1, c, R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
       tick(dt) {
         const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: 'dust', smoke: true, a: .3 });
-        for (const d of inside(c, R)) { const v = slow.get(d) || { pct: st['active_skill_base_slow_debuff_movement_speed_+%_final'] }; if (!slow.has(d)) { slow.set(d, v); d.slows.push(v); } v.until = time + .1; }
+        for (const d of inside(c, R)) { let v = slow.get(d); if (!v) { slow.set(d, v = { pct: st['active_skill_base_slow_debuff_movement_speed_+%_final'] }); d.slows.push(v); } v.until = time + .1; }
         if (dist(pp, c) > R) { e.dead = true; boom(c, R, W, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
       } });
   }
