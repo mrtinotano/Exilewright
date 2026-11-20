@@ -3262,6 +3262,13 @@ export function initScene(el, api) {
     if (D && !(time < me.runeCd)) { me.runeCd = time + st.runic_tempering_backlash_cooldown_ms / 1000; fx.ring(d.pos, .2, S.A, 'dust', .4); area(d.pos, S.A, thornX(D, S.label), { noPay: true }); }
     return 1 + st['runic_tempering_damage_taken_+%_final'] / 100;
   }
+  // Valako's Charge: the lightning damage you take builds charge; at its threshold it all goes into a chaining bolt (its cooldown)
+  function valako(n) {
+    const i = byName("Valako's Charge"), S = i >= 0 && mk(i), st = S && S.dmg?.stats;
+    if (!st || (me.valako = (me.valako || 0) + n) < st.cast_on_damage_taken_threshold || !spend({ id: S.name, cooldown: S.dmg.cooldown, uses: S.dmg.uses })) return;
+    const X = partOf(S, 'ValakosChargeArcPlayer'), e = near(pp, sh(X).chainRange || SIM.chainRange); me.valako = 0; say(S.label, 'lightning');
+    if (e) chain(V(pp.x, 1.2, pp.z), e, { ...X, src: 'trigger' }, (sh(X).chains || X.dmg.stats.number_of_chains || 1) - 1);
+  }
   function retaliate(d) {
     const D = thornsOf(); if (!D || d.dead) return;
     fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
@@ -3377,6 +3384,7 @@ export function initScene(el, api) {
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
+    if (dealt.lightning > 0) valako(dealt.lightning);
     const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
