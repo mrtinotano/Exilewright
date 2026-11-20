@@ -407,7 +407,7 @@ export function initScene(el, api) {
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
-    event('hit', d.pos, S);
+    event('hit', d.pos, S, d); if (crit) event('crit', d.pos, S, d);
     return true;
   }
   // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
@@ -626,7 +626,7 @@ export function initScene(el, api) {
     else if (a === 'electrocute' || a === 'pin' || a === 'maim') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
     else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
     else if (a === 'ignite') fx.emit(8, { p, r: .25, v: .5, up: 2.2, life: .5, size: .32, c: 'fire', c2: 'ember' });
-    event(a, d.pos, S);
+    event(a, d.pos, S, d);
   }
   // Exposure lowers the resistances of its elements by its magnitude (the glossary's when the source gives none); the strongest stays
   const expo = (d, els, mag = EXPO.res, dur = DUR.expo) => {
@@ -721,15 +721,32 @@ export function initScene(el, api) {
     if (P.els.length) return [...new Set(P.els.flatMap(e => e === 'cold' ? ['freeze'] : AILMENT[e] ? [AILMENT[e]] : []))];
     return ['hit'];
   }
-  function event(type, p, S) {
+  // the skill a meta gem triggers: the build's first triggerable spell (Feral Invocation: a Shapeshifting attack)
+  const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.feral ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
+  // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power
+  // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
+  // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
+  // many times as its energy covers
+  // note: that modifiers to total use time count double here is not simulated
+  function gainEnergy(T, n, j) {
+    T.need = 1000 / (base(j).dmg?.speed || 1 / SIM.castTime) / T.perMs;
+    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more);
+  }
+  function invoke(T) {
+    const j = trigOf(T), n = j < 0 ? 0 : Math.floor(T.energy / T.need);
+    if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need)));
+    T.energy -= n * T.need; say(t('{0} triggers {1}', T.label, base(j).label), T.el);
+    for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta' }));
+  }
+  function event(type, p, S, d) {
     if (S.src === 'meta') return;
     for (const k in tog) {
       const T = tog[k];
-      if (T.kind === 'meta' && T.wants.includes(type)) {
-        if (++T.energy < T.need) continue;
-        T.energy = 0;
-        const j = api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && b.P.triggerable && b.P.spell && !NOHIT.has(b.kind); });
+      if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
+        const j = trigOf(T);
         if (j < 0) continue;
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * (POWER[d?.stat.rarity] || 1), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
+        else { if (++T.energy < T.need) continue; T.energy = 0; }
         const at = { x: p.x, z: p.z };
         say(t('{0} triggers {1}', T.label, base(j).label), T.el);
         fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
@@ -1579,9 +1596,14 @@ export function initScene(el, api) {
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
       const k = S.name;
+      if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
-      if (S.kind === 'meta') { T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy; }
+      if (S.kind === 'meta') {
+        T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
+        const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy_per_monster_power_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
+        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent, feral: !!st.feral_invocation_gain_1_energy_per_X_mana_spent });
+      }
       else if (S.kind === 'minion') for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
@@ -2281,6 +2303,7 @@ export function initScene(el, api) {
         me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; S.cone = FS.incinerate_cone_angle;
         S.mult *= 1 + Math.min(FS.incinerate_maximum_stages, Math.floor((time - me.fuelFrom) * 1000 / FS.incinerate_gain_stage_every_x_ms)) * FS['incinerate_damage_+%_final_per_stage'] / 100;
       }
+      for (const k in tog) { const T = tog[k]; if (T.manaPer && cost > 0) { const j = trigOf(T); if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
       me.mana -= cost; me.life -= life; if (cost > 0) for (const o of objs) if (o.sigil && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       if (cost > 0) fuelUp(S, cost);
     }
@@ -2610,7 +2633,7 @@ export function initScene(el, api) {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
-    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${T.energy}/${T.need}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '')); }   // Trinity: its Affinity, fire / cold / lightning
+    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${Math.floor(T.energy)}/${Math.ceil(T.need)}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '')); }   // Trinity: its Affinity, fire / cold / lightning
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     for (const u of me.cu) if (u) b.push(one(u.c.icon, css('gold'), u.c.name, '', u.s));

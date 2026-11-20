@@ -860,5 +860,6 @@
  "Not enough Runic Ward for {0}": "{0}에 필요한 룬 수호가 부족합니다",
  "{0}: move {1} m first": "{0}: 먼저 {1}m 이동하세요",
  "{0}: Final Strike": "{0}: 최후 타격",
- "Seal": "봉인"
+ "Seal": "봉인",
+ "{0} needs {1} Energy": "{0}에 에너지 {1} 필요"
 }

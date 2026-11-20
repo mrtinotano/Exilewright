@@ -860,5 +860,6 @@
  "Not enough Runic Ward for {0}": "No hay Barrera rúnica suficiente para {0}",
  "{0}: move {1} m first": "{0}: desplázate {1} m antes",
  "{0}: Final Strike": "{0}: Golpe final",
- "Seal": "Sello"
+ "Seal": "Sello",
+ "{0} needs {1} Energy": "{0} necesita {1} de Energía"
 }

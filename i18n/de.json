@@ -860,5 +860,6 @@
  "Not enough Runic Ward for {0}": "Nicht genug Runenschutz für {0}",
  "{0}: move {1} m first": "{0}: zuerst {1} m bewegen",
  "{0}: Final Strike": "{0}: Finaler Schlag",
- "Seal": "Siegel"
+ "Seal": "Siegel",
+ "{0} needs {1} Energy": "{0} braucht {1} Energie"
 }
