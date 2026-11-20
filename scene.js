@@ -257,7 +257,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.weak = []; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.dazed = d.attr = d.inc = 0; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -463,6 +463,11 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
+    // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
+    // shatter in its explosion. note: how long the shards last is not in the data, until they shatter here
+    if (d.shards && (d.shards.left -= total) <= 0) { const X = partOf(d.shards.S, 'ShatteringPalmExplosionPlayer'); d.shards = null; boom({ x: d.pos.x, z: d.pos.z }, X.A, { ...X, src: 'trigger' }); }
+    const SP = !S.src && S.dmg?.stats?.shattering_palm_debuff_damage_threshold;
+    if (SP) for (const e of inside(d.pos, S.A)) e.shards = { S, left: SP };
     // Living Bomb: its seed bursts once the damage dealt to the enemy reaches its share of the enemy's ailment threshold
     if (M?.bomb && d.mark === M && S.src !== 'mark' && (M.hits += total) >= d.stat.ail * M.S.dmg.stats['living_bomb_damage_threshold_%_of_ailment_threshold'] / 100) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     // Fulmination: a use's first hit on a shocked enemy in your Presence also hits the other shocked enemies there, for its
@@ -923,7 +928,7 @@ export function initScene(el, api) {
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
-      const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && AILMENT[T.P.el];   // Herald of Ash: ash()
+      const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
       if (a && st[a] > 0) later(.1, () => herald(T, p));
     }
     // Herald of Plague: a poisoned enemy killed spreads its poison to the enemies within its radius, its chance to Hinder them
@@ -959,7 +964,7 @@ export function initScene(el, api) {
     const S = { ...b, src: 'herald', ail: ailOf(T.P.els) };
     say(t('{0} explodes on the kill', T.label), T.el);
     if (T.P.el === 'lightning') {   // bolts on the enemies around instead of one blast
-      dummies.filter(e => !e.dead && dist(e.pos, p) <= 7).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, 3).forEach((e, k) => later(k * .08, () => {
+      dummies.filter(e => !e.dead && dist(e.pos, p) <= 7).sort((a, b) => dist(a.pos, p) - dist(b.pos, p)).slice(0, b.dmg?.stats?.herald_of_thunder_storm_max_hits ?? 3).forEach((e, k) => later(k * .08, () => {
         fx.bolt(V(e.pos.x + rnd(-1.5, 1.5), 13, e.pos.z + rnd(-1.5, 1.5)), V(e.pos.x, 0, e.pos.z), 'lightning', .22, .07, .5); pop(e.pos, 1.1, 'lightning'); area(e.pos, 1.1, S);
       }));
     } else boom(p, SIM.heraldR, S);
