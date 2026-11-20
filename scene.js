@@ -421,11 +421,11 @@ export function initScene(el, api) {
       }
       // shares of all damage gained as extra damage of a type, each of the damage before any of them: the buffs'; Mantra
       // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
-      // Thrill of the Kill and Archmage as lightning
+      // Thrill of the Kill, Archmage and Ambrosia as lightning
       const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -777,7 +777,7 @@ export function initScene(el, api) {
     if (x('physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (d.inc || 0))) {
       me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
       const ri = me.incs.reduce((t, u) => t + u.n, 0);
-      inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) });
+      inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) });   // Concoct
     }
     if (A.incision) d.inc = Math.min(INCISION.max, (d.inc || 0) + A.incision);
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
@@ -2817,6 +2817,11 @@ export function initScene(el, api) {
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
       me.mana -= cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      // Concoct / Ambrosia: the use consumes their share of your life / mana flask's most charges, for their more bleeding
+      // effect / damage gained as lightning per charge consumed
+      const flaskUse = (n, k) => { const f = flasks()[n], pct = S.dmg?.sum?.[k]; if (!f || !pct) return 0; const c = Math.floor(Math.min(flaskLeft(n), f.max * pct / 100)); me.fl[n] -= c; return c; };
+      S.concoct = flaskUse(0, 'consume_%_of_maximum_life_flask_charges_on_skill_use') * (S.dmg?.sum?.['support_concoct_bleed_effect_+%_final_per_life_flask_charge_consumed'] || 0);
+      S.ambrosia = flaskUse(1, 'consume_%_of_maximum_mana_flask_charges_on_skill_use') * (S.dmg?.sum?.['gain_%_damage_as_lighting_per_mana_flask_charge_consumed'] || 0);
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
