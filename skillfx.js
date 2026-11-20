@@ -162,7 +162,7 @@ export function profile(gem, d = {}) {
   return {
     name, kind, el, els, attack, spell, dur, applies, consumes, bonus, ground, spend, gain, corpse, channel,
     toggle: ['herald', 'aura', 'meta', 'minion'].includes(kind),
-    leaves, infuses, stages: has('GainsStages', 'PerfectTiming'), perfect: has('PerfectTiming'),
+    culls: /\[CullingStrike\|Cull(?:ing)?\] (?:enemies|range)/i.test(desc), leaves, infuses, stages: has('GainsStages', 'PerfectTiming'), perfect: has('PerfectTiming'),
     slams: has('Slam'), plant: has('Plant'), wind: has('Wind'), fan: has('Slam') && has('Projectile'), ballista: has('TotemsAreBallistae'),
     // a buff that makes the next skill repeat: Barrage (bow / crossbow attacks) or Unleash (spells)
     repeats: has('ModifiesNextSkill') && !els.length ? (tag('dexterity') ? 'barrageable' : tag('intelligence') ? 'unleashable' : null) : null,

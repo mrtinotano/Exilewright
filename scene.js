@@ -40,7 +40,8 @@ const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% 
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
-const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
+const WITHER = { per: 5, max: 10 };
+const CULL = { normal: 35, magic: 20, rare: 10, unique: 5 };   // note: keywords.json CullingStrike: the life % at or below which a hit kills   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const SLOW_FLOOR = .25;                   // note: keywords.json Slow: monsters cannot be slowed below 25% of their speed
 const CHARGE_TIME = 15;                   // note: keywords.json Charges: they last 15 s
 const IMMUNE = 1;                         // note: keywords.json Consume: a consumed ailment cannot be inflicted again for 1 s
@@ -348,6 +349,7 @@ export function initScene(el, api) {
       if (A) { for (const [s, pct, u, phys] of A.vs) if (has(d, s) && (u == null || u === uniq)) { if (phys) gp *= 1 + pct / 100; else g *= 1 + pct / 100; } }
       else for (const s of P.bonus) if (has(d, s)) { m += SIM.consume / 2; pay(d, S, s, false); }
     }
+    if (real && !S.src && cull(d, S)) { killed(d, S); return true; }
     const M = d.mark;
     if (M && M.bomb && S.src !== 'mark' && ++M.hits >= 4) { d.mark = null; trigger(M.S, 'mark', d); later(.05, () => bombed(M, d.pos)); }
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
@@ -387,7 +389,7 @@ export function initScene(el, api) {
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
-    d.by = S; damage(d, total, S);
+    d.by = S; damage(d, total, S); if (d.dead && !S.src) killed(d, S);
     if (!S.src && time < me.chayula?.until && Math.random() * 100 < me.chayula.wither) { const w = d.wither = (d.wither || []).filter(u => u > time); w.push(time + 4); if (w.length > WITHER.max) w.shift(); }   // its "for 4 seconds"
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
@@ -722,6 +724,25 @@ export function initScene(el, api) {
         later(.12, () => use(j, { at, src: 'meta' }));
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
+  }
+  // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
+  // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
+  // maximum life and mana
+  const cullable = (d, S) => {
+    const r = d.stat.rarity || 'normal', X = { ...S.dmg?.sum, ...S.dmg?.stats };
+    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && S.g?.supports?.some(n => /^Culling Strike/.test(n)))
+      && d.life + d.es <= (d.max + d.maxEs) * CULL[r] * (1 + (X['culling_strike_threshold_+%'] || 0) / 100) / 100;
+  };
+  function cull(d, S) {
+    if (!cullable(d, S)) return false; const X = { ...S.dmg?.sum, ...S.dmg?.stats };
+    fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
+    return true;
+  }
+  // Killing Palm, Cull the Weak: an enemy killed by it grants its charges by rarity
+  function killed(d, S) {
+    const st = S.dmg?.stats || {}, r = d.stat.rarity === 'unique' ? 'unique' : d.stat.rarity === 'rare' ? 'rare' : 'normal_and_magic';
+    for (const c of ['power', 'frenzy']) for (let k = st[`skill_grant_X_${c}_charges_against_${r}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
   }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
@@ -1608,6 +1629,8 @@ export function initScene(el, api) {
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
       go(first, 0);
+      // Killing Palm: its target culled, it dashes on to strike the other cullable enemies within its dash range
+      if (S.P.culls && first.dead) dummies.filter(e => cullable(e, S) && dist(e.pos, pp) <= (S.dmg?.stats?.base_melee_dash_range || 0) / 10).forEach((e, k) => later((k + 1) * .13, () => go(e, k + 1)));
       // Ancestrally Boosted: it targets its additional enemies in reach too; Kaom's Strikes trigger Volcanic Eruption, its
       // projectiles landing between their least and most distance around the target
       for (const e of dummies.filter(e => !e.dead && e !== first && dist(e.pos, pp) <= reach + SIM.body).slice(0, S.addTargets || 0)) { const l = dist(e.pos, pp) || 1; slash(S, (e.pos.x - pp.x) / l, (e.pos.z - pp.z) / l); hit(e, S); }

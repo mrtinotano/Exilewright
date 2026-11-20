@@ -855,5 +855,6 @@
  "Not enough fuel for {0}": "Combustível insuficiente para {0}",
  "Stage {0}": "Estágio {0}",
  "Glory": "Glória",
- "{0} needs {1} Glory": "{0} precisa de {1} de Glória"
+ "{0} needs {1} Glory": "{0} precisa de {1} de Glória",
+ "Culling Strike": "Golpe Aniquilador"
 }
