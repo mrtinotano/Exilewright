@@ -1260,9 +1260,13 @@ export function initScene(el, api) {
       },
       end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
   }
+  // Tornado's own: up to its limit; it pulls the enemies inside toward its centre (its strength every interval) and deals
+  // its damage over time to them while they are in it, with its damage of each absorbed element on top
+  // note: an absorbed element's damage per second scales as the skill's physical one does
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
-    const g = holder(c); let cur = S, tk = .2;
-    const e = thing(g, dur, { name: S.name,
+    const g = holder(c), ts = S.dmg?.stats || {}, pull = ts['tornado_pull_strength_%'], DOT = Object.keys(S.dmg?.dot || {}).length > 0; let cur = S, tk = .2, pt = 0;
+    if (ts.number_of_tornados_allowed) { const old = objs.filter(x => x.vortex && x.name === S.name && !x.dead); while (old.length >= ts.number_of_tornados_allowed) old.shift().dead = true; }
+    const e = thing(g, dur, { name: S.name, vortex: true,
       tick(dt, e) {
         const p = g.position, col = cur.el === 'physical' ? 'dust' : cur.el;
         for (let i = 0; i < 3; i++) {
@@ -1272,7 +1276,15 @@ export function initScene(el, api) {
         const d = near(p, o.seek || 9), v = o.speed || 1.3;
         if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
         if (S.P.absorbs) cur = absorb(cur, p, R);
-        if ((tk -= dt) <= 0) { tk = o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
+        if (pull && (pt -= dt) <= 0) { pt = ts.tornado_pull_interval_ms / 1000; for (const d of inside(p, R)) { d.pos.x += (p.x - d.pos.x) * pull / 100; d.pos.z += (p.z - d.pos.z) * pull / 100; } }
+        if (DOT) {
+          const ph = ts.base_physical_damage_to_deal_per_minute, scale = ph ? (S.dmg.dot.physical || 0) / (ph / 60) : 1, P = { ...cur.P, dur: .25 };
+          for (const d of inside(p, R)) {
+            dot(d, { ...cur, P });
+            for (const el of cur.els) if (!S.els.includes(el)) dot(d, { ...cur, P, name: cur.name + el, els: [el], dmg: { ...cur.dmg, dot: { [el]: ts.active_skill_base_elemental_damage_to_deal_per_minute / 60 * scale } } });
+          }
+          if ((tk -= dt) <= 0) { tk = .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); }
+        } else if ((tk -= dt) <= 0) { tk = o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
       } });
   }
   // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
