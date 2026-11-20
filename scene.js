@@ -2268,6 +2268,17 @@ export function initScene(el, api) {
     for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
     const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
   };
+  // Unearth: its cone of bone spikes in front of you (its radius, its angle); each corpse in it becomes a Bone Construct
+  // for its duration, up to its limit
+  // note: larger corpses making more than one construct is not simulated
+  K.unearth = S => {
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, half = coneHalf({ cone: st.bone_cone_angle }), a0 = Math.atan2(S.dz, S.dx);
+    K.sweep({ ...S, from: c, R: S.A, cone: st.bone_cone_angle });
+    for (const d of dummies.filter(d => d.corpse > 0 && dist(d.pos, c) <= S.A && inCone(c, a0, half, d.pos))) {
+      const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el);
+      limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed); minion(S, p, durOf(S), { kind: S.name });
+    }
+  };
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
