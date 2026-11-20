@@ -374,7 +374,7 @@ export function initScene(el, api) {
       }
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of B) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
-      if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); }
+      if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
       if (!S.src && has(d, 'ignite')) trigger(S, 'ignitedHit', d);
       const dealt = {};
       for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el]); total += got; if (got > best) { best = got; top = el; } }
@@ -772,9 +772,20 @@ export function initScene(el, api) {
     const from = { x: d.pos.x, z: d.pos.z }, e = near(from, 12, e => e !== d), to = e ? { x: e.pos.x, z: e.pos.z } : around(from, 3);
     lob(fx.orb('chaos', .2), V(from.x, 1, from.z), V(to.x, .4, to.z), .5, .5, () => boom(to, X.A, X), { trail: 'chaos' });
   }
+  // Azmerian Swarms: killing an enemy with an Elemental Ailment (its chance), or hitting a Rare or Unique one with one (its
+  // chance), summons a Swarm for its duration, up to its most; their hits deal their more damage per type of Elemental
+  // Ailment on the target
+  const ELEM_AIL = ['ignite', 'chill', 'freeze', 'shock', 'electrocute'];
+  function swarm(d, slain) {
+    const W = onS('Azmerian Swarms'), st = W?.dmg?.stats, n = ELEM_AIL.filter(a => d.st[a] > 0).length; if (!st || !n) return;
+    const pc = slain ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_kill_affected_by_elemental_ailment'] : POWER[d.stat.rarity] >= POWER.rare ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_hitting_unique_or_rare_enemy_affected_by_elemental_ailment'] : 0;
+    if (!(Math.random() * 100 < pc)) return;
+    limit(o => o.kind === W.name, st.max_azmerian_swarms);
+    minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + ELEM_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
+  }
   function kill(d, S) {
     d.dead = true; stats.kills++; if (!S?.src) gainRage(sheet().rage?.gain.kill);
-    houndBlow(d, false); harbinger(d, S, true);
+    houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
     if (S && !S.src) for (const c of ['power', 'frenzy']) for (let k = S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`] || 0; k > 0; k--) chargeBy(c, S);
@@ -1271,7 +1282,7 @@ export function initScene(el, api) {
           wait = real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1; sw = 1;
           if (ranged) shoot(MS, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MS, o.chains);
-          else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, MS); }
+          else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MS, mult: MS.mult * o.more(d) } : MS); }
           if (o.attacks && --o.attacks <= 0) e.dead = true;
         }
       },
