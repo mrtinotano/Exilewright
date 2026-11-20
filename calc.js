@@ -682,7 +682,10 @@ export function skill(g, b, treeGear) {
   const shieldAdd = (t, i) => Object.entries(st).reduce((n, [k, x]) => {
     const m = k.match(new RegExp(`^off_hand_${i ? 'maximum' : 'minimum'}_added_${t}_damage_per_(\\d+)_shield_(\\w+)$`)), D = m && SH[m[2]];
     return D ? n + x * Math.floor((D === 'both' ? shield.armour + shield.evasion : shield[D]) / m[1]) : n; }, 0);
-  const nonWeapon = attack && (d.types || gt).includes('NonWeaponAttack');   // Deadly Resolve, Fan the Flames, Conductive Runes: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
+  // a thrown flask (the Concoctions): with empty hands (PoB2's weaponTypes "None"), its own damage (main_hand_weapon_*),
+  // attack time and critical chance
+  const flaskThrow = attack && !!d.weapons?.includes('') && !!st.main_hand_base_weapon_attack_duration_ms;
+  const nonWeapon = attack && (d.types || gt).includes('NonWeaponAttack') || flaskThrow;   // Deadly Resolve, Fan the Flames, Conductive Runes: their own damage, not the weapon's (PoB2: main_hand_weapon_* as base)
   if (!d.levels) out.reason = 'The skill damage data is missing (regenerate the data on Windows)';
   else if (attack && !w && !nonWeapon && !shield) out.reason = 'Equip a weapon to calculate the attack damage';
   // base damage per type
@@ -751,7 +754,7 @@ export function skill(g, b, treeGear) {
   // 16/11: 1.75 s with one, 1.61 s with two right after placing them, as 4 + 4 + Carved Earth's 6% on placing gives).
   // note: "on placing a Totem" buffs not counted (they wear off)
   const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
-  if (attack && (w || shield)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
+  if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
   // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
@@ -776,7 +779,7 @@ export function skill(g, b, treeGear) {
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
-  const baseCrit = shield && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
+  const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);

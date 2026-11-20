@@ -862,6 +862,7 @@
  "{0} needs {1} Glory": "{0} ต้องใช้บารมี {1}",
  "Culling Strike": "จู่โจมปลิดชีพ",
  "Not enough Runic Ward for {0}": "วอร์ดอักขระไม่พอสำหรับ {0}",
+ "Not enough Flask charges for {0}": "ชาร์จขวดยาไม่พอสำหรับ {0}",
  "{0}: move {1} m first": "{0}: เคลื่อนที่ {1} ม. ก่อน",
  "{0}: Final Strike": "{0}: ฟาดสุดท้าย",
  "Seal": "ผนึก",

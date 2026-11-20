@@ -491,7 +491,7 @@ export function initScene(el, api) {
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
-    if (own && !S.src) { if (S.name === 'Wing Blast') wingBlast(S, d); if (S.vb) discharge(S.vb, d); if (P.melee && me.lunar?.until > time) moonbeams(d); }
+    if (own && !S.src) { if (SHOCKWAVE[S.name]) wingBlast(S, d); if (S.vb) discharge(S.vb, d); if (P.melee && me.lunar?.until > time) moonbeams(d); }
     if (own && d.curse?.name === 'Repulsion' && S.name !== 'Repulsion' && S.src !== 'repulsion') repulse(d);
     if (d.agony && S.src !== 'agony' && (d.agony.n += total * d.agony.pct / 100) >= d.life) agonyEnds(d);   // Inevitable Agony
     // Shattering Palm: its hit coats the enemies in its area with shards; once they take its threshold of damage, they
@@ -969,14 +969,15 @@ export function initScene(el, api) {
     fx.explode(V(c.x, .8, c.z), R, 'blood'); boom(c, R, { ...X, mult: S.mult });
     for (const e of inside(c, R)) damage(e, n * xs['blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss'] / 100, X, false, true);
   }
-  // Wing Blast: its hit Heavy Stuns an enemy Primed for it (keywords.json PrimedStun), which releases its shockwave (its
-  // part; more from a Unique enemy) and has its chance to grant you a Power Charge. note: its knockback and leap back are
-  // not simulated
+  // Wing Blast, Boneshatter: its hit Heavy Stuns an enemy Primed for it (keywords.json PrimedStun), which releases its
+  // shockwave (its part; more from a Unique enemy); Wing Blast's has its chance to grant you a Power Charge.
+  // note: Wing Blast's knockback and leap back are not simulated
+  const SHOCKWAVE = { 'Wing Blast': ['WingBlastStunExplosionPlayer', 'wing_blast_shockwave_damage_+%_final_if_created_from_unique'], Boneshatter: ['BoneshatterShockwavePlayer', 'boneshatter_damage_+%_final_if_created_from_unique'] };
   function wingBlast(S, d) {
     if ((d.bar.stun || 0) < PRIMED[d.stat.rarity]) return;
-    const st = S.dmg.stats, X = partOf(S, 'WingBlastStunExplosionPlayer'), c = { x: d.pos.x, z: d.pos.z };
+    const [id, uq] = SHOCKWAVE[S.name], st = S.dmg.stats, X = partOf(S, id), c = { x: d.pos.x, z: d.pos.z };
     d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun });
-    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats['wing_blast_shockwave_damage_+%_final_if_created_from_unique'] / 100 : 1), src: 'shockwave' }); }
+    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats[uq] / 100 : 1), src: 'shockwave' }); }
     if (Math.random() * 100 < st['wing_blast_chance_to_gain_power_charge_on_stun_%']) gainCharge('power', S.label);
   }
   // Repulsion: its curse inflicts its Fragility; a hit of yours on the cursed enemy removes it for an explosion there
@@ -1076,6 +1077,13 @@ export function initScene(el, api) {
     charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain * bk('charm')); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
+    // Crushing Fear: an enemy it kills is crushed into its shockwave (its part, its secondary radius), more damage and area
+    // per the enemy's power (note: the stats say per power of a culled enemy; here of any it kills)
+    const CF = S && !S.src && partOf(S, 'CrushingFearNovaPlayer');
+    if (CF) {
+      const cs = CF.dmg.stats, pw = POWER[r] || 1, A = radOf(CF) * Math.sqrt(1 + cs['crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy'] * pw / 100);
+      later(.1, () => { pop(p, A, 'chaos'); boom(p, A, { ...CF, gm: (CF.gm ?? 1) * (1 + cs['crushing_fear_damage_+%_final_per_power_of_culled_enemy'] * pw / 100) }); });
+    }
     if (st.shock > 0) gainBuff(S, 'shockKill');
     if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
     deathBlast(d, frozen, S);
@@ -1622,6 +1630,22 @@ export function initScene(el, api) {
     const X = S.infs?.includes('cold') && partOf(S, 'FrostDartsExplodePlayer');
     if (X) later(.5, () => { if (d.dead) return; boom(d.pos, X.A, X); for (let k = X.dmg.stats.frost_darts_explode_creates_X_mortars || 0; k > 0; k--) mortar(); });
   }
+  // Snipe released with Perfect Timing: its arrow explodes where it lands (its part); a direct hit on a Frozen enemy
+  // Consumes the Freeze for its enhanced explosion instead (its other part, more from a Unique)
+  function snipeBlast(S, d, p, mult) {
+    if (d) hit(d, S, { mult });
+    const fr = d && !d.dead && has(d, 'freeze'), X = partOf(S, fr ? 'SnipeFrozenExplosionPlayer' : 'SnipeExplosionPlayer');
+    if (fr) { clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true); }
+    pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (fr && d.stat.rarity === 'unique' ? 1 + X.dmg.stats['snipe_damage_+%_final_if_created_from_unique'] / 100 : 1) }, { noPay: true });
+  }
+  // Fragmentation Rounds: a bolt reaching a Frozen enemy Consumes the Freeze for an explosion of shrapnel around it (its
+  // part, more from a Unique). note: its bolts setting off Ice Crystals are not simulated
+  function shrapnel(S, d) {
+    const X = has(d, 'freeze') && partOf(S, 'FragmentationRoundsFreezeShatterPlayer'); if (!X) return;
+    clear(d, 'freeze'); d.imm.freeze = IMMUNE; pay(d, S, 'freeze', true);
+    const p = { x: d.pos.x, z: d.pos.z };
+    pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (d.stat.rarity === 'unique' ? 1 + X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique'] / 100 : 1) }, { noPay: true });
+  }
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
@@ -1647,6 +1671,7 @@ export function initScene(el, api) {
           seen.add(e); fx.bolt(by, chest(e), cur.el, .18); hit(e, cur, { mult: mult() });
         }
       }
+      else if (cur.perfect && cur.dmg?.parts?.SnipeExplosionPlayer) snipeBlast(cur, hitD, p, mult());
       else if (P.explodes || S.aoe) {
         boom(p, S.A, cur);
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
@@ -1673,7 +1698,7 @@ export function initScene(el, api) {
           if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
-            seen.add(d);
+            seen.add(d); shrapnel(cur, d);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
             if (N) {
@@ -1963,6 +1988,12 @@ export function initScene(el, api) {
       shot(() => {
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
         boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur, S);
+        // Explosive Concoction: its smaller flasks (its part, its number) thrown at the Ignited enemies nearest the explosion
+        // note: how near is not in the data: the scene's projectile range
+        const EC = partOf(S, 'ExplosiveConcoctionSecondPlayer');
+        if (EC) later(.05, () => { for (const d of nearest(c, EC.dmg.stats.explosive_concoction_number_of_secondary_projectiles, e => e.st.ignite > 0 && dist(e.pos, c) <= SIM.projRange)) {
+          const q = { x: d.pos.x, z: d.pos.z }; lob(fx.orb(EC.el, .09), V(c.x, .6, c.z), V(q.x, .1, q.z), .35, 1.6, () => boom(q, EC.A, EC), { trail: EC.el });
+        } });
       });
     },
     grenade(S) {
@@ -3395,7 +3426,7 @@ export function initScene(el, api) {
       S.chaosX = eaten.length && 1 + ((PF['support_chaos_damage_+%_final_if_corpse_consumed_on_use'] || 0) + eaten.length * (PF['support_chaos_damage_+%_final_per_corpse_consumed_on_use'] || 0)) / 100;
       // Detonating Arrow: its share of damage as extra fire per stage. note: its explosion at maximum stages is not simulated
       const DA = st.detonating_arrow_max_number_of_stages; S.fireGain = DA && S.stage != null ? Math.round(S.stage * DA) * st['detonating_arrow_all_damage_%_to_gain_as_fire_per_stage'] : 0;
-      if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { S.mult *= 1.5; S.aoe = true; fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
+      if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { if (!S.dmg?.parts?.SnipeExplosionPlayer) { S.mult *= 1.5; S.aoe = true; } fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
@@ -3461,6 +3492,10 @@ export function initScene(el, api) {
       const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) spendWard(WC);
+      // a thrown flask (the Concoctions): its charges from your Mana Flask
+      const FT = !S.src && S.dmg?.stats?.flask_throw_base_charges_used;
+      if (FT && flaskLeft(1) < FT) { toast(t('Not enough Flask charges for {0}', S.label)); return false; }
+      if (FT) me.fl[1] -= FT;
       if (OH?.['added_physical_damage_%_ward_cost']) { const H = { ...S.dmg.hits }; for (const [el, k] of [['physical', 'added_physical_damage_%_ward_cost'], ['cold', 'added_cold_damage_%_ward_cost']]) H[el] = (H[el] || [0, 0]).map(v => v + WC * OH[k] / 100); S.dmg = { ...S.dmg, hits: H }; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
