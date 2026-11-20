@@ -959,8 +959,8 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     shockEffect: scale(['shock_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%'], 'chill_effect_+%_final'),
-    igniteEffect: scale(['base_ignite_effect_+%'], /(?:ignite|damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%'], /(?:poison|damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%'], /(?:bleeding|damaging_ailment)_effect_\+%_final$/),
+    igniteEffect: scale(['base_ignite_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
+    bleedEffect: scale(['base_bleeding_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
