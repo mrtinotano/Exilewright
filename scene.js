@@ -2107,6 +2107,26 @@ export function initScene(el, api) {
     empower.push({ type: 'trisk', n: st.number_of_triskelion_cascades_for_next_skill, mult: 1 + st['triskelion_cascade_next_skill_damage_+%_final'] / 100, area: Math.sqrt(1 + st['triskelion_cascade_next_skill_area_of_effect_+%_final'] / 100), label: S.label, name: S.name, s: durOf(S) });
     fx.ring(pp, .3, 1.8, 'fire', .45); say(t('{0} active', S.label), 'fire');
   };
+  // Hollow Focus: while it is on, a bell appears near you every its interval, up to its most, lasting its secondary
+  // duration, brought back near you past its recall distance. Your hits on one set off its shockwave around it (at most
+  // once every its cooldown), Heavy Stunning the enemies there Primed for Stun; its hits beyond its limit destroy it
+  // note: the Primed for Stun thresholds are keywords.json PrimedStun's text
+  const PRIMED = { normal: 40, magic: 50, rare: 60, unique: 70 }, BELL = new THREE.ConeGeometry(.28, .55, 10, 1, true);
+  function bells(dt) {
+    const S = onS('Hollow Focus'), st = S?.dmg?.stats; if (!st) return;
+    for (const o of objs) if (o.bell && !o.dead && dist(o.pos, pp) > st.bell_distance_limit_for_recall / 10) { const q = around(pp, 2); o.pos.set(q.x, 0, q.z); }
+    if ((me.bellIn = (me.bellIn ?? 0) - dt) > 0) return;
+    me.bellIn = st.base_cooldown_modifiable_repeat_interval_ms / 1000; limit(o => o.bell, st.spectral_bells_maximum_active_bells);
+    const g = holder(around(pp, 2)), m = new THREE.Mesh(BELL, new THREE.MeshStandardMaterial({ color: 0xd8c690, emissive: 0x3a3020, side: THREE.DoubleSide })); m.position.y = 1.4; g.add(m);
+    let hits = 0, next = 0;
+    const e = thing(g, st.base_secondary_skill_effect_duration / 1000, { name: S.name, bell: true, r: .4, tick(dt) { m.rotation.z = Math.sin(time * 3) * .2; },
+      touch(by) {
+        if (by.src || by.name === S.name || time < next) return; next = time + st.bell_shockwave_cooldown_ms / 1000;
+        const p = { x: e.pos.x, z: e.pos.z }; fx.ring(p, .3, S.A, 'gold', .35); boom(p, S.A, { ...S, self: e }, { soft: true });
+        for (const d of inside(p, S.A)) if ((d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
+        if (++hits > st.bell_hit_limit) e.dead = true;
+      } });
+  }
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
@@ -3036,7 +3056,7 @@ export function initScene(el, api) {
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
-    leylines(dt);
+    leylines(dt); bells(dt);
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
