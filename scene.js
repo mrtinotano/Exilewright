@@ -1651,9 +1651,9 @@ export function initScene(el, api) {
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
-      const FS = S.dmg?.stats, F = FS?.incinerate_maximum_fuel && (me.fuel[S.name] || 0), going = fueling(S.name);
-      if (F === 0 || F && (F <= 0 || !going && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
-      if (F) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
+      const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
+      if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
+      if (fuel) { me.fuel[S.name] = F - (o.held ?? SIM.channelTick); me.fuelAt[S.name] = time; }
       me.mana -= cost; me.life -= life; gainRage(sheet().rage?.gain.use);
       if (cost > 0) fuelUp(S, cost);
     }
