@@ -368,6 +368,7 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
+      if (S.P.attack && !S.src && raw.physical) briarStore(raw.physical);
       // Mana Tempest, Charged Shots, Volt, Thrill of the Kill: their share of all damage as extra lightning
       const MT = S.P.spell && !S.src && S.dmg.cost > 0 && tempest(), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const GL = (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0);
@@ -1358,6 +1359,20 @@ export function initScene(el, api) {
     const st = S.dmg.stats, n = me.plague || 0, R = S.A * Math.sqrt(1 + n / st.plague_bearer_maximum_stored_poison_damage * st['plague_bearer_nova_area_+%_final_per_incubation_%']);
     me.plague = 0; fx.ring(pp, .2, R, 'poison', .55); say(S.label, 'poison');
     if (n > 0) area(pp, R, { ...S, el: 'chaos', els: ['chaos'], dmg: { ...S.dmg, hits: { chaos: [n, n] } } });
+  }
+  // Briarpatch: while on, stores its permyriad of the physical attack damage you deal, up to its most; a spell you cast
+  // spends it on its Thorny Ground at the spell's target (its area, duration and limit), once per its creation delay,
+  // hitting the enemies that move in it for the stored damage. note: how often it hits is not in its data (the scene's half second)
+  function briarStore(n) { const st = onS('Briarpatch')?.dmg.stats; if (st) me.briar = Math.min(st.briarpatch_maximum_stored_physical_damage, (me.briar || 0) + n * st.briarpatch_stores_permyriad_of_physical_damage_dealt / 1e4); }
+  function briar(by) {
+    const S = onS('Briarpatch'), st = S?.dmg.stats, n = me.briar || 0; if (!st || !n || time < me.briarAt) return;
+    me.briar = 0; me.briarAt = time + st.briarpatch_ground_creation_delay_ms / 1000; limit(o => o.briar, st.base_briarpatch_ground_limit);
+    const c = { ...by.at }, X = { ...S, el: 'physical', els: ['physical'], dmg: { ...S.dmg, hits: { physical: [n, n] } } }, dec = fx.decal(c, S.A, 'patch', 'dust', { a: .45, k: 1 });
+    let tk = 0; say(S.label, 'dust');
+    thing(holder(c), durOf(S), { briar: 1, off: () => dec.remove(), tick(dt) {
+      if ((tk -= dt) > 0) return; tk = .5;
+      for (const d of inside(c, S.A)) { const moved = d.bp && dist(d.bp, d.pos) > .05; d.bp = { x: d.pos.x, z: d.pos.z }; if (moved) hit(d, X); }
+    } });
   }
   // Pain Offering: skewers your nearest minion on a bone spike; the minions within its area attack and cast faster and
   // deal more damage for its duration. note: its increased speed and damage are applied as more here
@@ -2636,6 +2651,7 @@ export function initScene(el, api) {
     // Jagged Ground: a slam consumes its Endurance Charges for Jagged Ground in its area for its duration
     const JG = !auto && P.slams && su?.support_consume_X_endurance_charges_on_use;
     if (JG && charges.endurance >= JG) { charges.endurance -= JG; later(.12, () => ground('jagged', S.at, S.A, su.support_jagged_ground_base_duration_ms / 1000, S)); }
+    if (!auto && P.spell) briar(S);
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
     const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
     if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
