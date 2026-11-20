@@ -896,6 +896,7 @@ export function skill(g, b, treeGear) {
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
   const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   const mn = out.minion = mid ? minionOf(st, sum, fin, mid) : null;
+  out.minionLife = mid ? minionLife(st, sum, mid) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
@@ -992,6 +993,15 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 // ("minion_damage_+%" -> "damage_+%"), and every player minion has PlayerMinionIntrinsicStats (+70% critical damage
 // bonus). note: "Minions have X% increased Attack and Cast Speed" (no MinionStats row) counts for both; the rows for one
 // kind of minion (zombies, skeletons) do not (available.py)
+// A minion's maximum life: the allies' life at its level (DefaultMonsterStats AllyLife: the gem's level x 2, MinionLevel)
+// times its monster's (MonsterVarieties LifeMultiplier), then the build's increases ("Minions have #% increased maximum
+// Life", minion_maximum_life_+%) and every "more" the gem and its supports give minions; as PoB2's CalcDefence for minions
+// (floor(monsterAllyLifeTable[level] * minionData.life)). note: no game window checked against it yet
+function minionLife(st, sum, id) {
+  const m = enemy(id), level = SK.minion_level?.[st._level - 1]; if (!m || !level) return null;
+  const ms = {}; for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && /^max(imum)?_life_\+%_final/.test(to) && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100) * Object.values(ms).reduce((t, x) => t * (1 + x / 100), 1));
+}
 function minionOf(st, sum, fin, id) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1];
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
@@ -1023,6 +1033,9 @@ if (SK.minions['Raise Zombie']) {
   const z = skill({ name: 'Raise Zombie', level: 20, supports: [] }, { gems: [], items: {} }, {}), r = skill({ name: 'Raging Spirits', level: 20, supports: [] }, { gems: [], items: {} }, { 'minion_damage_+%': 20 });
   console.assert(z.minion?.level === 40 && z.hits.physical?.join() === '107,198' && Math.abs(z.speed - .8) < 1e-9 && z.critBonus === 100
     && r.hits.fire?.join() === '96,144' && r.hits.physical?.join() === '41,62' && Math.abs(r.speed - 1.4) < 1e-9, 'minion damage', z, r);
+  // life: a level 2 zombie (gem level 1) has floor(83 x 0.7) = 58, as PoB2's (RaisedZombie life 0.7); 50% increased: 87
+  const l = n => skill({ name: 'Raise Zombie', level: 1, supports: [] }, { gems: [], items: {} }, n ? { 'minion_maximum_life_+%': n } : {}).minionLife;
+  console.assert(l() === 58 && l(50) === 87, 'minion life', l(), l(50));
 }
 
 function markOf(st) {

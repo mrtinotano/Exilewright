@@ -1580,7 +1580,9 @@ export function initScene(el, api) {
   }
   function minion(S, p, life, o = {}) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
-    // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies
+    // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies. With its life (calc.js
+    // minionLife) enemies nearer to it than to you attack it (a decoy, as Lingering Illusion), and it dies at none left.
+    // note: what its defences take off their hits is not counted (the scene's minions have no armour or resistances)
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 * S.mult }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
@@ -1603,8 +1605,10 @@ export function initScene(el, api) {
       },
       remove() {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
-        if (!e.keep) event('miniondeath', e.pos, MS);
+        if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
       } };
+    const L = S.dmg?.minionLife;
+    if (L > 0) Object.assign(e, { decoy: true, max: L, segs: [{ p: e.pos, r: .3, life: L, hurt(n) { fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
   // Plague Bearer: while on, stores its % of the poison damage you deal, up to its most; used again, it unleashes the
