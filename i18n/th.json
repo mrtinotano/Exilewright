@@ -874,5 +874,18 @@
  "{0} kills {1}": "{0} สังหาร {1}",
  "You": "คุณ",
  "Heat": "ความร้อน",
- "Anguish": "ความระทม"
+ "Anguish": "ความระทม",
+ "Weapon set {0}": "ชุดอาวุธ {0}",
+ "Swap weapon set": "สลับชุดอาวุธ",
+ "{0} of the modifiers are not on the trade site: left out of the search.": "ม็อด {0} รายการไม่มีในเว็บซื้อขาย จึงไม่รวมในการค้นหา",
+ "Open this search on the trade site": "เปิดการค้นหานี้ในเว็บซื้อขาย",
+ "at least": "อย่างน้อย",
+ "Pick the modifiers the item must have, each with the least of it.": "เลือกม็อดที่ไอเท็มต้องมี พร้อมค่าต่ำสุดของแต่ละอัน",
+ "+ Modifier": "+ ม็อด",
+ "The modifiers of the item worn": "ม็อดของไอเท็มที่สวมอยู่",
+ "Clear": "ล้าง",
+ "Look for": "ค้นหา",
+ "The best for a stat": "ดีที่สุดสำหรับค่าหนึ่ง",
+ "Chosen modifiers": "ม็อดที่เลือก",
+ "Find the same or better on the trade site": "หาแบบเดียวกันหรือดีกว่าในเว็บซื้อขาย"
 }

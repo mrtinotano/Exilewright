@@ -874,5 +874,18 @@
  "{0} kills {1}": "{0} убивает: {1}",
  "You": "Вы",
  "Heat": "Нагрев",
- "Anguish": "Муки"
+ "Anguish": "Муки",
+ "Weapon set {0}": "Набор оружия {0}",
+ "Swap weapon set": "Сменить набор оружия",
+ "{0} of the modifiers are not on the trade site: left out of the search.": "{0} модификаторов нет на сайте торговли: они не учтены в поиске.",
+ "Open this search on the trade site": "Открыть этот поиск на сайте торговли",
+ "at least": "не меньше",
+ "Pick the modifiers the item must have, each with the least of it.": "Выберите модификаторы, которые должны быть у предмета, и минимум каждого.",
+ "+ Modifier": "+ Модификатор",
+ "The modifiers of the item worn": "Модификаторы надетого предмета",
+ "Clear": "Очистить",
+ "Look for": "Искать",
+ "The best for a stat": "Лучшее для показателя",
+ "Chosen modifiers": "Выбранные модификаторы",
+ "Find the same or better on the trade site": "Найти такой же или лучше на сайте торговли"
 }

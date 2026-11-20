@@ -3336,6 +3336,7 @@ export function initScene(el, api) {
       else toast(t('Point at an enemy to turn it into a corpse'));
     }
     else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
+    else if (c === K.swap && api.swapSet) { const n = api.swapSet(); fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap
     else if (c === K.roll) roll();
   });
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's

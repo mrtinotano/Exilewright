@@ -389,7 +389,19 @@ export function offhandFits(weapon, off, giant) {
   const w = BASE[weapon?.base], quiver = !!BASE[off?.base]?.tags.includes('quiver');
   if (!w) return true;
   if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
-  return !w.tags.includes('twohand') || !!giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class);
+  return !bothHands(weapon, giant);
+}
+// a weapon that takes both hands (the game shows it in the off hand too): two-handed, not a bow (it holds a quiver), and
+// not one Giant's Blood holds in one hand
+export const bothHands = (weapon, giant) => { const w = BASE[weapon?.base];
+  return !!w?.tags.includes('twohand') && !w.tags.includes('bow') && !(giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class)); };
+// Weapon sets (the game's I and II): the set not in use waits in b.swap (its weapon and off hand) and b.wset is the one
+// in use; switching trades them, so everything else only ever sees the set in hand
+export function swapSet(b) {
+  const items = b.items ||= {}, other = b.swap || {};
+  b.swap = { ...items.weapon && { weapon: items.weapon }, ...items.offhand && { offhand: items.offhand } };
+  for (const k of ['weapon', 'offhand']) if (other[k]) items[k] = other[k]; else delete items[k];
+  b.wset = b.wset === 2 ? 1 : 2;
 }
 // The build's saved items (b.stash), like Path of Building's item list: what leaves a slot goes there, so nothing
 // equipped over is lost, and any of them can be worn again
@@ -438,12 +450,13 @@ export function priceLines(it) {
     const local = A.stats.some(([id]) => id.startsWith('local_'));
     if (A.desecrated) {
       const en = statLinesEn(Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]])));
-      if (en.length === 1) out.set('d:' + en[0], { en: en[0], value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
+      if (en.length === 1) out.set('d:' + en[0], { en: en[0], text: statLines(Object.fromEntries(A.stats.map(([id], k) => [id, m.values[k]]))).join(' / '), value: m.values.length === 1 ? m.values[0] : 0, varies: true, local });
       continue;
     }
     for (const p of parts(m.id, A.stats)) {
       const a = p.at.find(Boolean), v = a ? m.values[a.k] * Math.abs(a.scale) : 0, s = a && A.stats[a.k];
-      out.set(p.hash, { hash: p.hash, value: v, varies: !it.unique || !!s && s[1] !== s[2], local });
+      const text = statLines(Object.fromEntries(p.at.filter(Boolean).map(x => [A.stats[x.k][0], m.values[x.k]]))).join(' / ');
+      out.set(p.hash, { hash: p.hash, text, value: v, varies: !it.unique || !!s && s[1] !== s[2], local });
     }
   }
   return [...out.values()];
@@ -578,13 +591,14 @@ export function modDiff(old, item) {
   return [gain, lose].map(s => shownLines(s));
 }
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
-const DOLL = ['w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
+const DOLL = ['v v . . . . u u', 'w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
 const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
 const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 // snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
-export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
+// trade: { can(slot), money() -> [[currency, name]], go(slot, max, currency) }: the search for one like the item worn or better
+export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, trade) {
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -632,10 +646,13 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
           return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
-      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
+      </div></div>${trade?.can(slot) ? `<div class="likebuy"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
+        <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
+        <button data-act="like" data-slot="${slot}">${t('Find the same or better on the trade site')}</button></div>` : ''}${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}</section>`;
   }
 
   let sel = 'weapon', msg = '';
+  const buy = { max: '', cur: '' };   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
@@ -660,13 +677,17 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     const sockets = jewelSockets(), names = Object.fromEntries(Object.entries(SLOTS).map(([k, x]) => [k, t(x)]));
     sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
     if (!names[sel]) sel = 'weapon';
+    // a weapon that takes both hands shows in the off hand too, dimmed, as in the game (picking it there picks the weapon)
+    const both = !items.offhand && bothHands(items.weapon, giant?.());
     const cell = (slot, area) => {
-      const it = items[slot], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
-      return `<div class="cell ${base ? rarityOf(it) : ''}${slot === sel ? ' sel' : ''}" data-pick="${slot}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
+      const ghost = both && slot === 'offhand', at = ghost ? 'weapon' : slot, it = items[at], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
+      return `<div class="cell ${base ? rarityOf(it) : ''}${ghost ? ' ghost' : ''}${slot === sel ? ' sel' : ''}" data-pick="${at}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
         base ? `<img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">` : `<span>${names[slot]}</span>`}</div>`;
     };
+    const set = getBuild().wset === 2 ? 2 : 1, tabs = area => `<div class="wsets" style="grid-area:${area}">${[1, 2].map(n =>
+      `<button data-act="wset" data-n="${n}"${n === set ? ' class="on"' : ''} title="${esc(t('Weapon set {0}', n))}">${n === 1 ? 'I' : 'II'}</button>`).join('')}</div>`;
     el.innerHTML = `<div class="inv"><div><div class="doll" style="grid-template-areas:${DOLL.map(r => `'${r}'`).join(' ')}">${
-      Object.keys(SLOTS).map(s => cell(s, AREA[s])).join('')}</div>
+      Object.keys(SLOTS).map(s => cell(s, AREA[s])).join('')}${tabs('v')}${tabs('u')}</div>
       <h3>${t('Jewels ({0} sockets allocated on the tree)', sockets.length)}</h3>
       <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || `<p class="note">${t('Allocate jewel sockets on the tree to add jewels.')}</p>`}</div>
       <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p>
@@ -701,6 +722,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
   }
   el.addEventListener('change', e => {
     const t = e.target, items = getBuild().items ||= {}, slot = t.dataset.slot;
+    if (t.dataset.act === 'likemax') { buy.max = t.value; return; }
+    if (t.dataset.act === 'likecur') { buy.cur = t.value; return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
       if (o) equip(slot, o.v);
@@ -724,10 +747,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant) {
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
+    if (t.dataset.act === 'like') { const m = el.querySelector('[data-act="likemax"]'); buy.max = m?.value ?? buy.max; trade.go(t.dataset.slot, buy.max, buy.cur); return; }
     if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
     if (t.dataset.act === 'clear') { keep(getBuild(), items[t.dataset.slot]); delete items[t.dataset.slot]; }
     else if (t.dataset.act === 'wear') { const it = getBuild().stash?.[+t.dataset.i], to = it && whereTo(it); if (!to) return; put(to, it); sel = to; }
     else if (t.dataset.act === 'drop') getBuild().stash.splice(+t.dataset.i, 1);
+    else if (t.dataset.act === 'wset') { if (+t.dataset.n === (getBuild().wset === 2 ? 2 : 1)) return; swapSet(getBuild()); }
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
     else return;
     changed(); render();

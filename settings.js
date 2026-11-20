@@ -8,12 +8,12 @@ import { STATUS, leagues } from './trade.js';
 const KEY = 'exwSettings';
 // the 3D scene's own keys; the roll and the flasks are the game's (Space, 1, 2), the rest the simulator's, on keys
 // neither of the game's layouts uses for the skill bar or movement
-const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyV', reset: 'KeyX' };
+const SCENE_KEYS = { roll: 'Space', lifeFlask: 'Digit1', manaFlask: 'Digit2', corpse: 'KeyC', charges: 'KeyG', refill: 'KeyV', reset: 'KeyX', swap: 'KeyZ' };
 // the skill bar's keys, as the game's two layouts (its config's [ACTION_KEYS] and [WASD_ACTION_KEYS], use_bound_skill1-8):
 // left, middle and right click, then Q W E R T to click to move, Q E R T F with W A S D moving
 const SLOTS = { click: ['m0', 'm1', 'm2', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'], wasd: ['m0', 'm1', 'm2', 'KeyQ', 'KeyE', 'KeyR', 'KeyT', 'KeyF'] };
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];   // up, left, down, right (move_up, move_left, move_down, move_right)
-const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator' };
+const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator', swap: 'Swap weapon set' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const DEFAULTS = { input: 'click', priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 const S = (() => {

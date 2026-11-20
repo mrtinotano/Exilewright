@@ -874,5 +874,18 @@
  "{0} kills {1}": "{0}が{1}を倒した",
  "You": "あなた",
  "Heat": "ヒート",
- "Anguish": "アングイッシュ"
+ "Anguish": "アングイッシュ",
+ "Weapon set {0}": "武器セット {0}",
+ "Swap weapon set": "武器セットを切り替え",
+ "{0} of the modifiers are not on the trade site: left out of the search.": "{0} 個のモディファイアはトレードサイトにないため、検索から外しました。",
+ "Open this search on the trade site": "この検索をトレードサイトで開く",
+ "at least": "最低",
+ "Pick the modifiers the item must have, each with the least of it.": "アイテムに必要なモディファイアと、それぞれの最低値を選んでください。",
+ "+ Modifier": "+ モディファイア",
+ "The modifiers of the item worn": "装備中のアイテムのモディファイア",
+ "Clear": "クリア",
+ "Look for": "検索対象",
+ "The best for a stat": "ある数値に最適なもの",
+ "Chosen modifiers": "選んだモディファイア",
+ "Find the same or better on the trade site": "同等以上のものをトレードサイトで探す"
 }

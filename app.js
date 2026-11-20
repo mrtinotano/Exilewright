@@ -5,12 +5,13 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, radiusOf, flaskOf, charmOf } from './items.js';
+import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
 import { initSettings, watchUpdates } from './settings.js';
 import { initFilter } from './filter.js';
+import { SEARCH_SLOTS } from './trade.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
@@ -482,7 +483,7 @@ $('treePts').onclick = async e => {
   }
   const el = e.target.closest('[data-mode]'); if (!el) return;
   mode = +el.dataset.mode;
-  if (mode) B().wset = mode;
+  if (mode && mode !== (B().wset === 2 ? 2 : 1)) swapSet(B());   // the set of the passives is the set in hand (its weapons too)
   save(); renderSide(); drawTree();
 };
 const walkable = (id, root) => N[id] && !N[id].ascendancy && (!ROOTS.has(id) || id === root);
@@ -990,10 +991,12 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
+  swapSet: () => { swapSet(B()); save(); renderSide(); return B().wset; },
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
-  items => snap({ ...B(), items }), () => treeSum().keystone_giants_blood);
+  items => snap({ ...B(), items }), () => treeSum().keystone_giants_blood,
+  { can: slot => SEARCH_SLOTS.includes(slot), money: () => renderOpt.money(), go: (slot, max, cur) => { document.querySelector('nav button[data-v="opt"]').click(); renderOpt.like(slot, max, cur); } });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });

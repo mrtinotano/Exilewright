@@ -251,30 +251,49 @@ export async function priceOf({ league, item, text = '', state = 'available', ne
 // tick(text key, args): progress. -> { found: [{ ...listing, value, plan }] best first, searches: [{ plan, id, total }],
 // unread (listed items the app has no base for), errors: [TradeError] }
 export async function findGear({ league, cls, slot, items, value, wants, price, level, state, per = 10, tick }) {
-  const todo = plans({ cls, wants, price, level, state });
-  const seen = new Set(), found = [], searches = [], errors = [];
-  let unread = 0;
+  const todo = plans({ cls, wants, price, level, state }), out = { found: [], searches: [], unread: 0, errors: [] }, seen = new Set();
   for (const plan of todo) {
-    try {
-      tick?.('Searching the trade site ({0} of {1})…', searches.length + errors.length + 1, todo.length);
-      const s = await call('search?league=' + encodeURIComponent(league), plan.body);
-      searches.push({ plan, id: s.id, total: s.total });
-      const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, per);
-      if (!ids.length) continue;
-      ids.forEach(id => seen.add(id));
-      tick?.('Reading {0} items…', ids.length);
-      for (const r of (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []) {
-        const l = r && readListing(r);
-        if (!l) continue;
-        if (!l.item || !l.slots.includes(slot)) { unread++; continue; }
-        found.push({ ...l, value: value({ ...items, [slot]: l.item }), plan });
-      }
-    } catch (e) {
-      if (!(e instanceof TradeError)) throw e;
-      errors.push(e);
-      if (e.kind !== 'site') break;   // the site turned this search down: the others may still run
-    }
+    tick?.('Searching the trade site ({0} of {1})…', out.searches.length + out.errors.length + 1, todo.length);
+    if (!await search(out, seen, { league, slot, items, value, per, tick }, plan) && out.errors.at(-1)?.kind !== 'site') break;   // the site turned this search down: the others may still run
   }
-  found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
-  return { found, searches, unread, errors };
+  out.found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
+  return out;
+}
+// one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
+async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
+  try {
+    const s = await call('search?league=' + encodeURIComponent(league), plan.body);
+    out.searches.push({ plan, id: s.id, total: s.total });
+    const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, per);
+    if (!ids.length) return true;
+    ids.forEach(id => seen.add(id));
+    tick?.('Reading {0} items…', ids.length);
+    for (const r of (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []) {
+      const l = r && readListing(r);
+      if (!l) continue;
+      if (!l.item || !l.slots.includes(slot)) { out.unread++; continue; }
+      out.found.push({ ...l, value: value({ ...items, [slot]: l.item }), plan });
+    }
+    return true;
+  } catch (e) {
+    if (!(e instanceof TradeError)) throw e;
+    out.errors.push(e); return false;
+  }
+}
+// Items like one, or with the lines picked by hand: lines [{ hash | en (desecrated), value }] (priceLines), all of
+// them, each at least its number (0: just having it), as a normal, crafted, fractured or desecrated modifier alike (an
+// attribute or a resistance: the item's total of it, as the price check asks); a unique: that unique. Cheapest first,
+// the first `per` read and rated. -> findGear's answer, with body (the search, to open on the site) and left (lines the
+// site has no stat for)
+export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, per = 20, tick }) {
+  const { known, desecrated, total } = await statIndex();
+  const asked = lines.map(l => ({ l, ids: l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
+    : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit')) })).filter(x => x.ids.length);
+  const body = { query: { status: { option: state }, ...unique && { name: unique, type: base },
+    stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(({ l, ids }) => ids.map(id => ({ id, ...l.value > 0 && { value: { min: l.value } } }))) }] : [],
+    filters: filters(cls, price, level) }, sort: { price: 'asc' } };
+  const out = { found: [], searches: [], unread: 0, errors: [], body, left: lines.length - asked.length };
+  tick?.('Searching the trade site ({0} of {1})…', 1, 1);
+  await search(out, new Set(), { league, slot, items, value, per: Math.min(per, 10), tick }, { body });
+  return out;
 }

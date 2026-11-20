@@ -874,5 +874,18 @@
  "{0} kills {1}": "{0}击杀了{1}",
  "You": "你",
  "Heat": "熱能",
- "Anguish": "悲痛"
+ "Anguish": "悲痛",
+ "Weapon set {0}": "武器套裝 {0}",
+ "Swap weapon set": "切換武器套裝",
+ "{0} of the modifiers are not on the trade site: left out of the search.": "有 {0} 個詞綴不在交易網站上，未納入搜尋。",
+ "Open this search on the trade site": "在交易網站開啟此搜尋",
+ "at least": "至少",
+ "Pick the modifiers the item must have, each with the least of it.": "選擇物品必須擁有的詞綴，以及各自的最低值。",
+ "+ Modifier": "+ 詞綴",
+ "The modifiers of the item worn": "已裝備物品的詞綴",
+ "Clear": "清除",
+ "Look for": "搜尋",
+ "The best for a stat": "某項數值最佳",
+ "Chosen modifiers": "選擇的詞綴",
+ "Find the same or better on the trade site": "在交易網站尋找相同或更好的"
 }

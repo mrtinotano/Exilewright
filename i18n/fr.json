@@ -874,5 +874,18 @@
  "{0} kills {1}": "{0} tue {1}",
  "You": "Vous",
  "Heat": "Chaleur",
- "Anguish": "Angoisse"
+ "Anguish": "Angoisse",
+ "Weapon set {0}": "Ensemble d'armes {0}",
+ "Swap weapon set": "Changer d'ensemble d'armes",
+ "{0} of the modifiers are not on the trade site: left out of the search.": "{0} des modificateurs ne sont pas sur le site d'échange : laissés hors de la recherche.",
+ "Open this search on the trade site": "Ouvrir cette recherche sur le site d'échange",
+ "at least": "au moins",
+ "Pick the modifiers the item must have, each with the least of it.": "Choisissez les modificateurs que l'objet doit avoir, chacun avec son minimum.",
+ "+ Modifier": "+ Modificateur",
+ "The modifiers of the item worn": "Les modificateurs de l'objet porté",
+ "Clear": "Vider",
+ "Look for": "Chercher",
+ "The best for a stat": "Le meilleur pour une valeur",
+ "Chosen modifiers": "Modificateurs choisis",
+ "Find the same or better on the trade site": "Chercher le même ou mieux sur le site d'échange"
 }

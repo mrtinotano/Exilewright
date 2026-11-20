@@ -353,13 +353,18 @@
   .supopt small { color:#8a8a8a; font-size:11px; line-height:1.35; }
   .pick { margin-top:4px; } .cap { text-align:center; padding:8px; border-top:1px solid #3a342c; font-family:Georgia, serif; }
   .inv { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
-  .doll { display:grid; grid-template-columns:repeat(8, 52px); grid-template-rows:repeat(8, 52px); gap:4px; padding:12px; width:max-content;
+  .doll { display:grid; grid-template-columns:repeat(8, 52px); grid-template-rows:22px repeat(8, 52px); gap:4px; padding:12px; width:max-content;
     background:#1c1a17; border:1px solid #4a4134; }
   .cell { background:#0b0b0b; border:1px solid #3a342c; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; }
   .cell img { max-width:100%; max-height:100%; }
   .cell span { color:#555; font-size:10px; text-align:center; padding:2px; }
   .cell.magic { border-color:#5555aa; } .cell.rare { border-color:#99993f; } .cell.unique { border-color:#af6025; }
   .cell.sel { outline:2px solid var(--acc); }
+  .cell.ghost img { opacity:.35; }
+  .likebuy { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0; } .likebuy input { width:70px; }
+  .likes { display:flex; flex-direction:column; gap:4px; margin:6px 0; } .likerow { display:flex; gap:8px; align-items:center; } .likerow span { flex:1; } .likerow input { width:70px; }
+  .wsets { display:flex; gap:4px; align-items:end; } .wsets button { flex:1; height:20px; padding:0; font-size:11px; background:#0b0b0b; border:1px solid #3a342c; color:#888; cursor:pointer; }
+  .wsets button.on { color:var(--acc); border-color:var(--acc); }
   .picklist { list-style:none; margin:6px 0 0; padding:0; max-height:460px; overflow-y:auto; border:1px solid #3a342c; background:#0b0b0b; }
   .picklist li { display:flex; align-items:center; gap:8px; padding:3px 6px; cursor:pointer; border-bottom:1px solid #1c1a17; }
   .picklist li:hover { background:#221d16; }
