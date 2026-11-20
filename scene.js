@@ -985,7 +985,7 @@ export function initScene(el, api) {
     say(t('{0} detonates', U.X.label), 'poison'); boom({ x: d.pos.x, z: d.pos.z }, R, { ...U.X, mult: U.X.mult * (1 + more / 100) });
   }
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
-  const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}); const r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
+  const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
   // you attack the one in front of them. Your Slams and warcries shatter them all; each explodes around itself, more
   // when slammed, less within its first 0.5 s when enemies break it
@@ -1615,18 +1615,18 @@ export function initScene(el, api) {
     volcano(S) {
       const st = S.dmg?.stats || {}, c = S.at, step = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * (st['volcano_gain_stage_every_%_of_cast_time'] || 100) / 100;
       const n = Math.min(st.volcano_maximum_number_of_stages || 1, 1 + Math.floor((S.held || 0) / step)), X = partOf(S, 'VolcanoProjectilePlayer'), XS = partOf(S, 'VolcanoSlamPlayer');
-      const one = sh(X || S).projectiles || 1, spread = (S.G?.radius2 || 3);
+      const one = sh(X || S).projectiles || 1, spread = S.G?.radius2 || 3;
       const old = objs.filter(o => o.volcano && o.name === S.name && !o.dead); while (old.length >= (st.volcano_base_number_of_geysers_allowed || 1)) old.shift().dead = true;
       const spray = (k, Y) => { for (let j = 0; j < k; j++) { const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
         lob(fx.orb('fire', .14), V(c.x, 1.2, c.z), V(q.x, .1, q.z), .5, 2.4, () => boom(q, Y.A, { ...Y, mult: S.mult }, { soft: true }), { trail: 'fire' }); } };
       fx.text({ x: c.x, y: 2.4, z: c.z }, t('Stage {0}', n), css('fire'));
       boom(c, S.A, { ...S, mult: S.mult * (1 + (st['volcano_initial_explosion_damage_+%_final_per_additional_stage'] || 0) * (n - 1) / 100) }); shake = .3;
       if (X) spray(one + (st.volcano_initial_explosion_number_of_additional_projectiles_per_additional_stage || 0) * (n - 1), X);
-      const dec = fx.decal(c, S.A, 'cracks', 'fire', { a: .7 }); let tk = (st.volcano_fires_projectiles_every_x_ms || 500) / 1000;
+      const dec = fx.decal(c, S.A, 'cracks', 'fire', { a: .7 }), every = (st.volcano_fires_projectiles_every_x_ms || 500) / 1000; let tk = every;
       thing(holder(c), sh(S).duration || 8, { name: S.name, r: S.A,
         volcano: () => XS && later((st.volcano_delay_between_slams_ms || 0) / 1000, () => spray(one, XS)),
         tick(dt) { if (Math.random() < dt * 6) fx.emit(1, { p: { x: c.x, y: .4, z: c.z }, r: S.A * .5, v: .4, up: 2, life: .8, size: .3, c: 'fire', c2: 'ember' });
-          if (X && (tk -= dt) <= 0) { tk = (st.volcano_fires_projectiles_every_x_ms || 500) / 1000; spray(one, X); } },
+          if (X && (tk -= dt) <= 0) { tk = every; spray(one, X); } },
         off: () => dec.remove() });
     },
     beam(S) {

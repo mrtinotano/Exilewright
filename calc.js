@@ -859,7 +859,7 @@ export function skill(g, b, treeGear) {
   out.totemLife = totem(g, treeGear)?.life;   // Tawhoa's Tending's explosion
   // the parts an earthen object deals when it shatters (Earthshatter's spike, Forge Hammer's fissures) or a plant when it
   // bursts (Toxic Growth's Pustules), as the skill
-  if (d.parts && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts || {}).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));
+  if (d.parts && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));
   out.trig = (g.supports || []).flatMap(n => Object.keys(SK.skills[n]?.triggers || {}).filter(id => SK.skills[id]?.triggered_by)
     .map(id => maimsBy(n, { ...skill({ name: id, level: g.level, supports: [], base: baseOf(SK.skills[id].constant || {}) }, b, treeGear), id, support: SK.skills[n].constant || {}, wardCost: SK.skills[id].levels?.[g.level]?._cost?.Ward || 0,
       parts: Object.fromEntries(Object.keys(SK.skills[id].parts || {}).map(p => [p, skill({ name: id, level: g.level, supports: [], part: p }, b, treeGear)])) })));   // Runeforged Blades: its cost in Runic Ward; its other parts (Catalysing Discharge per element)
