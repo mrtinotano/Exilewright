@@ -1649,16 +1649,16 @@ export function initScene(el, api) {
     pop(c, 1, S.el); area(c, 1, { ...S, self: e }, { noTouch: true });
   }
   const ICE = new THREE.ConeGeometry(.32, 1.5, 5);
-  function crystal(S, p, dur) {
+  function crystal(S, p, dur, B = S) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
     m.position.set(p.x, .75, p.z); m.rotation.set(rnd(-.15, .15), rnd(TAU), rnd(-.15, .15)); m.scale.setScalar(.01); m.castShadow = true;
     fx.emit(8, { p: { x: p.x, y: .2, z: p.z }, r: .3, v: 1, up: 2, life: .5, size: .16, c: 'ice' });
     const h = rnd(.8, 1.2);
-    const e = thing(m, dur, { r: .4, name: S.name,
+    const e = thing(m, dur, { r: .4, name: S.name, ice: true,
       tick(dt, e) { const s = ease(Math.min(1, e.s * 5)); m.scale.set(s, s * h, s); },
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
         e.dead = true;
-        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, S.A, { ...S, self: e, src: 'crystal' });
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, B.A, { ...B, self: e, src: 'crystal' });
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
           if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
       },
@@ -2501,6 +2501,19 @@ export function initScene(el, api) {
           if ((tk -= dt) <= 0 && U) { tk = .5; fx.ring(p, .2, U.A, S.el, .3, { a: .4 }); area(p, U.A, U); }
         },
         end: () => X && boom({ x: m.position.x, z: m.position.z }, X.A, X) });
+    }
+  };
+  // Grim Pillars: its pillars of ice erupt in a ring around you (its area), each hitting the enemies at it (its secondary
+  // area), up to its most; your hits break them for its explosion part. Frozen Locus: one Ice Crystal where you aim (its
+  // reach), its strike hitting around it; breaking it explodes with the strike. note: Frozen Locus's leap back is not
+  // simulated; enemies do not attack the crystals
+  K.pillars = S => {
+    const st = S.dmg.stats, n = st.grim_pillars_number_of_pillars_to_create || 1, X = partOf(S, 'GrimPillarsExplodePlayer');
+    const r = n > 1 ? S.A : 0, c = n > 1 ? pp : around(S.at, 0), hr = n > 1 ? st.active_skill_base_secondary_area_of_effect_radius / 10 : S.A;
+    for (let k = 0; k < n; k++) {
+      limit(o => o.ice && o.name === S.name, st.base_number_of_grim_pillars_allowed ?? st.base_number_of_frozen_locus_allowed);
+      const a = k * TAU / n, p = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
+      crystal(S, p, durOf(S), X || S); for (const d of inside(p, hr)) hit(d, S);
     }
   };
   K.twister = S => {
