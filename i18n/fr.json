@@ -859,5 +859,6 @@
  "Culling Strike": "Coup de grâce",
  "Not enough Runic Ward for {0}": "Pas assez de Sauvegarde runique pour {0}",
  "{0}: move {1} m first": "{0} : déplacez-vous de {1} m d'abord",
- "{0}: Final Strike": "{0} : Frappe finale"
+ "{0}: Final Strike": "{0} : Frappe finale",
+ "Seal": "Sceau"
 }

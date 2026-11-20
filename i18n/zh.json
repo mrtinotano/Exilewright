@@ -859,5 +859,6 @@
  "Culling Strike": "撲殺",
  "Not enough Runic Ward for {0}": "符文保護不足，無法使用{0}",
  "{0}: move {1} m first": "{0}：先移動{1}公尺",
- "{0}: Final Strike": "{0}：最終打擊"
+ "{0}: Final Strike": "{0}：最終打擊",
+ "Seal": "封印"
 }
