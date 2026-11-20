@@ -2098,7 +2098,7 @@ export function initScene(el, api) {
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
   const GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
-  const trinity = () => { const i = tog.Trinity ? byName('Trinity') : -1; return i >= 0 ? base(i)?.dmg?.stats : null; };
+  const trinity = () => onS('Trinity')?.dmg?.stats;
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
   const gloryOf = () => slots().map(base).filter(S => S && gloryNeed(S));
