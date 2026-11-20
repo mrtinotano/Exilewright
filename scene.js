@@ -2662,9 +2662,12 @@ export function initScene(el, api) {
       const per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, cost = (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100), LP = S.dmg?.lifePerRecent,
         life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
-      const WC = S.dmg?.stats?._cost?.Ward || 0;   // a Runic Ward cost (Conductive Runes)
+      // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
+      // cold damage of their shares of it. note: added as they are, not scaled by the skill's modifiers; its physical's freeze buildup is not simulated
+      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) spendWard(WC);
+      if (OH?.['added_physical_damage_%_ward_cost']) { const H = { ...S.dmg.hits }; for (const [el, k] of [['physical', 'added_physical_damage_%_ward_cost'], ['cold', 'added_cold_damage_%_ward_cost']]) H[el] = (H[el] || [0, 0]).map(v => v + WC * OH[k] / 100); S.dmg = { ...S.dmg, hits: H }; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
