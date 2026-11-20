@@ -1017,6 +1017,7 @@ export function initScene(el, api) {
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
     const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
     return k && partOf(S, k); };
+  const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -1161,9 +1162,9 @@ export function initScene(el, api) {
           if (P.absorbs) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
           if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
-          if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, (BG.dmg.stats.active_skill_base_tertiary_area_of_effect_radius || 10) / 10, BG.dmg.shape?.duration || 4, BG); }
+          if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, radOf(BG, 'tertiary'), BG.dmg.shape?.duration || 4, BG); }
         }
-        if (left <= 0) { end(null); caltrops(S, m.position); if (BX) boom({ x: m.position.x, z: m.position.z }, (BX.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, BX); }
+        if (left <= 0) { end(null); caltrops(S, m.position); if (BX) boom({ x: m.position.x, z: m.position.z }, radOf(BX), BX); }
       },
       remove() { fx.drop(m); } };
     objs.push(q); return q;
@@ -1226,7 +1227,7 @@ export function initScene(el, api) {
         e.dead = true;
         later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, S.A, { ...S, self: e, src: 'crystal' });
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
-          if (X) boom(p, (X.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, { ...X, self: e, src: 'crystal' }); });
+          if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
       },
       end: () => fx.emit(14, { p: { x: p.x, y: .7, z: p.z }, r: .2, h: .6, v: 2, life: .6, size: .14, c: 'ice', g: 9 }) });
   }
@@ -1554,7 +1555,7 @@ export function initScene(el, api) {
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
       // Incinerate's Fire Infusion: Ignited Ground in front of you as its channelling starts (its ground part)
       const X = S.fresh && S.infs?.includes('fire') && infPart(S, 'fire');
-      if (X) ground('burning', { x: c.x + S.dx * R * .6, z: c.z + S.dz * R * .6 }, (X.dmg.stats.active_skill_base_secondary_area_of_effect_radius || 10) / 10, X.dmg.shape?.duration || GROUND_TIME.burning, X);
+      if (X) ground('burning', { x: c.x + S.dx * R * .6, z: c.z + S.dz * R * .6 }, radOf(X), X.dmg.shape?.duration || GROUND_TIME.burning, X);
     },
     wave(S) {
       const R = S.A, c = S.from;
