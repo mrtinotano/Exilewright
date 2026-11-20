@@ -2264,7 +2264,7 @@ export function initScene(el, api) {
     const st = S.dmg?.stats || {}, C = { ...S, P: { ...S.P, culls: true } }, e = corpseAt(S.at, SIM.snap) || near(S.at, SIM.snap, d => cullable(d, C));
     if (!e) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
     const p = { x: e.pos.x, z: e.pos.z }, l = dist(p, pp), reach = meleeR(S) + SIM.body;
-    const eatAll = () => [e, ...dummies.filter(d => d !== e && d.corpse > 0 && dist(d.pos, p) <= S.A).slice(0, st.wyvern_devour_max_extra_corpses_to_consume)].forEach(d => {
+    const eatAll = () => [e, ...corpses(p, S.A).filter(d => d !== e).slice(0, st.wyvern_devour_max_extra_corpses_to_consume)].forEach(d => {
       if (d.corpse > 0) eat(d, S.el); else if (!cull(d, C)) return;
       me.life = gain(me.life, me.maxL, st.wyvern_devour_life_restoration); chargeBy('power', S);
     });
@@ -2305,7 +2305,7 @@ export function initScene(el, api) {
   K.unearth = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, half = coneHalf({ cone: st.bone_cone_angle }), a0 = Math.atan2(S.dz, S.dx);
     K.sweep({ ...S, from: c, R: S.A, cone: st.bone_cone_angle });
-    for (const d of dummies.filter(d => d.corpse > 0 && dist(d.pos, c) <= S.A && inCone(c, a0, half, d.pos))) {
+    for (const d of corpses(c, S.A).filter(d => inCone(c, a0, half, d.pos))) {
       const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el);
       limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed); minion(S, p, durOf(S), { kind: S.name });
     }
