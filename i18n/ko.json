@@ -887,5 +887,7 @@
  "Look for": "찾기",
  "The best for a stat": "한 수치에 가장 좋은 것",
  "Chosen modifiers": "선택한 옵션",
- "Find the same or better on the trade site": "거래 사이트에서 같거나 더 좋은 것 찾기"
+ "Find the same or better on the trade site": "거래 사이트에서 같거나 더 좋은 것 찾기",
+ "Jade": "비취",
+ "{0}: {1} Jade consumed": "{0}: 비취 {1} 소모"
 }

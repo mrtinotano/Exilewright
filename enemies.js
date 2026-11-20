@@ -144,7 +144,8 @@ export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy
 export const armourCut = (armour, raw, cap) => armour > 0 && raw > 0 ? Math.min(cap / 100, armour / (armour + raw * 10)) : 0;
 // one damage type of a hit against the character c (calc.js character()); returns what gets through
 export function playerTakes(c, type, raw, isHit = true) {
-  if (type === 'physical') return isHit ? raw * (1 - armourCut(c.armour, raw, K.player_max_physical_reduction ?? 90)) : raw;
+  // c.physDR: additional physical damage reduction (Jade), within the same cap
+  if (type === 'physical') { const cap = K.player_max_physical_reduction ?? 90; return isHit ? raw * (1 - Math.min(cap / 100, armourCut(c.armour, raw, cap) + (c.physDR || 0) / 100)) : raw; }
   return raw * (1 - (c.res?.[type]?.capped || 0) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
