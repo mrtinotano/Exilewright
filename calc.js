@@ -361,6 +361,8 @@ export function character(b, sum) {
   const per = (k, n) => n ? Math.floor(k / n) : 0;
   if (c.life != null) c.life += Math.round(pieceDef(b.items, 'body', 'energy_shield') * v(sum, 'gain_%_life_from_body_es') / 100);
   if (c.life != null) { if (c.mana != null) c.mana += per(c.life, sum['ascendancy_beidats_gaze_mana_+_per_X_maximum_life']); c.es += per(c.life, sum['ascendancy_beidats_hand_energy_shield_+_per_X_maximum_life']); c.spirit += per(c.life, sum['ascendancy_beidats_will_spirit_+_per_X_maximum_life']); }
+  // Fleshcrafting, Enhanced Barrier: that share of maximum life converted to maximum energy shield
+  const LC = c.life != null && Math.min(100, v(sum, 'maximum_life_%_to_convert_to_maximum_energy_shield')); if (LC) { const k = Math.round(c.life * LC / 100); c.life -= k; c.es += k; }
   c.spirit += per(pieceDef(b.items, 'body', 'evasion'), sum['+1_spirit_per_X_evasion_rating_on_body_armour']) + per(pieceDef(b.items, 'body', 'energy_shield'), sum['+1_spirit_per_X_energy_shield_on_body_armour']);
   return c;
 }
@@ -1193,6 +1195,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
   // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
+  const FB = 1 + all('faster_burn_%') / 100;   // Burnout, Searing Heat: ignites deal their damage faster (more a second, over a shorter time)
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
@@ -1209,12 +1212,12 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
-    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
+    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
     bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
-    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final'),
+    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
     bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final'), poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/),   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
