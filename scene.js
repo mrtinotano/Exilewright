@@ -1826,6 +1826,10 @@ export function initScene(el, api) {
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
+        // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
+        // damage (every half second here)
+        const IB = S.dmg?.stats?.['infernal_familiar_minion_burns_for_%_max_life'];
+        if (IB && L > 0 && (e.burnT = (e.burnT ?? 0) - dt) <= 0) { e.burnT = .5; for (const d of inside(e.pos, S.dmg.stats.infernal_familiar_minion_burn_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IB / 100 }); }
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
