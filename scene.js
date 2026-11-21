@@ -172,7 +172,7 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? 1 + (me.ley?.more || 0) / 100 : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? (1 + (me.ley?.more || 0) / 100) * (1 + banner('circle_of_power_spell_damage_+%_final') / 100) : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
@@ -3044,14 +3044,16 @@ export function initScene(el, api) {
     Y.more = me.ward > 0 && Y.units.some(u => dist(u, pp) <= r) ? L['skill_leylines_spell_damage_+%_final'] : 0;
     if (Y.more && (me.ward -= L.skill_leylines_ward_degeneration_per_minute / 60 * dt) <= 0) { me.ward = 0; clear(); Y.back = time + L.skill_leylines_respawn_time_ms / 1000; }
   }
-  // Rite of Restoration: its Sigil (its limit, its duration); standing in it you regenerate its life and have its more
-  // armour, evasion and energy shield per stage; the mana you spend in it gains a stage for each its % of your maximum,
+  // Rite of Restoration, Sigil of Power: its Sigil (its limit, its duration); standing in it you regenerate its life and
+  // have its more armour, evasion and energy shield per stage (Sigil of Power: its more spell damage per stage); the mana you spend in it gains a stage for each its % of your maximum,
   // at most one a second, up to its most
   // note: that it starts at its first stage is not in the data
   K.sigil = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = S.A, g = holder(c), ring = fx.decal(c, R, 'outline', 'gold', { a: .4, rot: 0 }), glow = fx.decal(c, R, 'patch', 'gold', { a: .12, k: 1 });
     limit(o => o.sigil && o.name === S.name, st.base_number_of_sigil_of_power_allowed);
-    const give = n => ({ 'armour_evasion_+%_final': n * st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'], 'energy_shield_+%_final': n * st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'], life_regeneration_per_minute: n * st.sacred_ground_life_regeneration_for_allies_per_minute_per_stage });
+    const AE = st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'] || 0;
+    const give = n => ({ 'armour_evasion_+%_final': n * AE, 'energy_shield_+%_final': n * AE, life_regeneration_per_minute: n * (st.sacred_ground_life_regeneration_for_allies_per_minute_per_stage || 0),
+      'circle_of_power_spell_damage_+%_final': n * (st['circle_of_power_spell_damage_+%_final_per_stage'] || 0) });   // Sigil of Power: its more spell damage per stage (base)
     fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
     const e = thing(g, durOf(S), { name: S.name, sigil: true, banner: give(1), R, c, stage: 1, paid: 0, at: time, off: () => { ring.remove(); glow.remove(); },
       spend(n) {

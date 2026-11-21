@@ -137,7 +137,7 @@ stands, Grim Feast gathers the life of the persistent ones slain in your Presenc
 Healing Runes spends Runic Ward to heal them.
 Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Skills with mechanics of their own follow
 their gem's numbers too: Glory built from the enemy's Power (Banners, Hammer of the Gods, Walking Calamity), Banners and
-Rite of Restoration's Sigil buffing you while you stand in them (the Sigil gaining stages from the mana you spend there),
+Rite of Restoration's and Sigil of Power's Sigils buffing you while you stand in them (a Sigil gaining stages from the mana you spend there; Sigil of Power's more spell damage per stage),
 Energy for Cast on X and the Invocations (centienergy per Power of the enemy, up to 1 per 10 ms of the triggered spell's use
 time, its modifiers counted double), attack chains (Ice Strike, Tempest Flurry, Primal Strikes) stepping to their final strike, Seals that repeat a spell
 (Unleash), Parry and Raise Shield blocking actively, Leylines draining Runic Ward for more spell damage, Bloodstone Lances
