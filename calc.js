@@ -636,8 +636,7 @@ export function skill(g, b, treeGear) {
   // an empty main hand, for a skill used unarmed (WeaponRequirements ''): the class's own unarmed attack (Characters:
   // MinDamage-MaxDamage physical, WeaponSpeed ms, MaxAttackDistance; unarmed_base_critical_strike_chance)
   const cb = ascOf(b.asc).class_base, bare = attack && !b.items?.weapon && d.weapons?.includes('') && cb?.WeaponSpeed;
-  const w = attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100,
-    range: cb.MaxAttackDistance, leech: { life: 0, mana: 0 }, onHit: { maim: 0, bleed: 0 }, tags: ['unarmed'] } : null) : null;
+  const w = attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w && !bare && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
