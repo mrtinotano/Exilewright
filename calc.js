@@ -259,9 +259,10 @@ export function character(b, sum) {
     let val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%'])) + fromFire * v(sum, 'modifiers_to_fire_resistance_also_apply_to_cold_lightning_resistance_at_%_value') / 100
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     if (k === 'chaos' && sum.chaos_damage_resistance_is_doubled) val *= 2;   // Acolyte of Chayula
+    const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
-      + (sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`] ? Math.floor(supportsOf(b)[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`]) : 0);   // Gemling: red / green / blue supports
+      + (perSup ? Math.floor(supportsOf((b.gems || []).flatMap(g => g.supports || []))[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0);   // Gemling: red / green / blue supports
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -742,7 +743,7 @@ function more(fin, suffix, tags, type) {
 // 3186-6932 with it, x0.740 for every damage type. Multishot I (35% less) the same way: 2756-5995, x0.640
 const MEASURED_MORE = { 'Multishot I': 0.64 / 0.65, 'Multishot II': 0.74 / 0.75 };
 // support gems by colour (their main attribute), of one skill or every skill of the build
-const supportsOf = (b, list = (b?.gems || []).flatMap(g => g.supports || [])) => {
+const supportsOf = list => {
   const n = { str: 0, dex: 0, int: 0 };
   for (const s of list) { const a = GEM[s] && Object.entries(GEM[s].attr || {}).sort((x, y) => y[1] - x[1])[0]; if (a?.[1]) n[a[0]]++; }
   return n;
@@ -751,7 +752,7 @@ function gemlingOf(g, sum, b) {
   const red = v(sum, 'skills_gain_damage_+%_per_sockted_or_adjacent_red_support_gem'), green = v(sum, 'skills_gain_skill_speed_+%_per_sockted_or_adjacent_green_support_gem');
   const blue = v(sum, 'skills_gain_critical_strike_chance_+%_per_sockted_or_adjacent_blue_support_gem'), cost = v(sum, 'skill_cost_+%_final_if_blue_support_count_highest'), lich = v(sum, 'lich_mana_cost_+%_final_if_you_have_no_energy_shield');
   if (!red && !green && !blue && !cost && !lich) return null;
-  const n = supportsOf(b, g.supports || []);
+  const n = supportsOf(g.supports || []);
   const costMore = (n.int && n.int >= n.str && n.int >= n.dex ? 1 + cost / 100 : 1) * (lich && !character(b, sum).es ? 1 + lich / 100 : 1);
   return { 'damage_+%': red * n.str, 'skill_speed_+%': green * n.dex, 'critical_strike_chance_+%': blue * n.int, 'gemling_skill_cost_+%_final': (costMore - 1) * 100 };
 }
@@ -894,7 +895,7 @@ export function skill(g, b, treeGear) {
   const PA = [['damage_+%_per_15_strength', c => c.attrs.str / 15], ['damage_+%_per_5_of_your_lowest_attribute', c => Math.min(c.attrs.str || 0, c.attrs.dex || 0, c.attrs.int || 0) / 5],
     ['damage_+%_per_1%_block_chance', c => c.block], ...spell ? [['spell_damage_+%_per_10_strength', c => c.attrs.str / 10], ['spell_damage_+%_per_100_maximum_mana', c => c.mana / 100]] : []].filter(([k]) => sum[k]);
   const ch = PA.length && character(b, sum), perAttr = PA.reduce((t, [k, f]) => t + Math.floor(f(ch) || 0) * sum[k], 0);
-  const trigSpell = spell && (gt.includes('Triggered') || !!meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
+  const trigSpell = spell && (gt.includes('Triggered') || meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
