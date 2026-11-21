@@ -575,7 +575,7 @@ export function initScene(el, api) {
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
-    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src && P.melee) expression(d, S); if (!S.src && P.spell) storm(d, S, raw); }
+    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
     return true;
   }
   // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
@@ -797,6 +797,10 @@ export function initScene(el, api) {
     // Acolyte of Chayula's Inner Turmoil: Volatility on inflicting an elemental ailment (once every its interval, up to its most)
     const VG = !S.src && EL_AIL.includes(a) && sheet().volatility;
     if (VG && time - (me.volAt ?? -99) >= VOLATILITY.every) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + VG); me.volAt = time; }
+    // Invoker's I am the Blizzard / I am the Thunder: Chilled Ground on freezing an enemy, its chance of Shocked Ground on
+    // shocking one, where it is (keywords.json: 6 s). note: the ground's area is not in the data: the scene's
+    const GS = !/minion/.test(S.src || '') && S.dmg?.sum, GK = GS && (a === 'freeze' ? GS.create_chilling_ground_on_freeze && 'chilled' : a === 'shock' && Math.random() * 100 < (GS['chance_%_to_create_shocking_ground_on_shock'] || 0) && 'shocked');
+    if (GK && S.src !== 'ground') ground(GK, { x: d.pos.x, z: d.pos.z }, SIM.area, GROUND_TIME[GK], { ...S, src: 'ground' });   // not again from its own ground
     siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
     // Combat Frenzy: a frenzy charge on freezing, electrocuting or pinning an enemy, once every its cooldown
     // Martial Artist's Mountain's Teachings: its Surpassing chance per enemy Power on Immobilising (freeze, heavy stun,
