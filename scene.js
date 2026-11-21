@@ -1165,7 +1165,7 @@ export function initScene(el, api) {
     if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
     // Bursting Fen Toad: its chance on a kill for a toad that leaps about and explodes in its area, always Poisoning. note:
     // how long it leaps is not in the data (half a second, as Doedre's toads here)
-    const FT = !S?.src && byName('Bursting Fen Toad'), T = FT >= 0 && base(FT);
+    const FT = S?.src ? -1 : byName('Bursting Fen Toad'), T = FT >= 0 && base(FT);
     if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) { const q = around(p, 1.5); later(.5, () => { pop(q, T.A, 'chaos'); boom(q, T.A, { ...T, src: 'toad' }); }); }
     deathBlast(d, frozen, S);
     // Cannibalism, on a persistent buff that is up: life recovered on kill
