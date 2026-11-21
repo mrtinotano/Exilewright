@@ -379,6 +379,7 @@ export function recovery(c, sum) {
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
     blindEffect: v(sum, 'blind_effect_+%'),
+    parryMag: v(sum, 'parried_magnitude_+%'),   // increased magnitude of the Parried debuff you inflict
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
@@ -1007,6 +1008,7 @@ export function skill(g, b, treeGear) {
   // note: not counted "while Shapeshifted" (the scene has none) nor the weapon's local penetration
   out.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, v(sum, `base_reduce_enemy_${e}_resistance_%`, 'reduce_enemy_elemental_resistance_%', 'base_penetrate_elemental_resistances_%')
     + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') : 0)]));
+  if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
   out.projSpeed = 1 + (v(sum, 'base_projectile_speed_+%') + (spell ? v(sum, 'spell_skill_projectile_speed_+%') : 0) + (tags.includes('crossbow') ? v(sum, 'projectile_speed_+%_with_crossbow_skills') : 0)) / 100;   // increased projectile speed (the scene's projectiles)
   if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
@@ -1166,7 +1168,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     maimMore: all('spearfield_maim_slows_an_additional_%'),   // Spearfield's maims slow more
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
-    freeze: scale(['hit_damage_freeze_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'),
+    freeze: scale(['hit_damage_freeze_multiplier_+%', 'hit_damage_immobilisation_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'), immob: 1 + all('hit_damage_immobilisation_multiplier_+%') / 100,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each
@@ -1196,7 +1198,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
     electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     electrocuteIf: scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/),   // on an enemy any lightning can electrocute (Enervating Nova)
-    pin: pinAll || all('base_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0, pinPhys: !pinAll,   // physical alone: a unique's
+    pin: pinAll || all('base_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) * (1 + (all('hit_damage_pin_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%')) / 100) : 0, pinPhys: !pinAll,   // physical alone: a unique's
     chillDamage: more(/chill_as_though_damage_\+%_final$/),
     consume, vs,
     charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: sumOf(new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`)), when: sumOf(new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`)) }])),

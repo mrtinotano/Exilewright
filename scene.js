@@ -878,7 +878,7 @@ export function initScene(el, api) {
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
-    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
@@ -4007,6 +4007,7 @@ export function initScene(el, api) {
   // a crossbow fires its clip at its firing rate and reloads when the last bolt is gone (Ammo Conservation may keep one)
   const clips = {}, cdReady = {};
   const useTime = b => {
+    if (b.kind === 'totem' && b.dmg?.placeTime) return b.dmg.placeTime;
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
@@ -4568,13 +4569,13 @@ export function initScene(el, api) {
   }
   function activeBlock(d, a) {
     const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised, RF = time < me.refute?.until && me.refute.st;
-    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + RF.base_parry_duration_ms / 1000 }; blocked(d); return true; }
+    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 }; blocked(d); return true; }
     if (!P && !R) return false;
     if (P) {
       const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
       if (l > far + SIM.body * d.sc) return false;
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
-      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + st.base_parry_duration_ms / 1000 };
+      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 };
     } else { R.blocked = time; spray(d); }
     blocked(d); return true;
   }
