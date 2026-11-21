@@ -596,8 +596,7 @@ const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in
   if_have_crit_in_past_8_seconds: 'CritPast8', while_es_full: 'FullEnergyShield', while_totem_active: 'TotemActive', while_affected_by_a_herald: 'HeraldOn',
   if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently',
   while_ignited: 'Ignited', if_enemy_chilled_recently: 'ChilledEnemyRecently', if_enemy_ignited_recently: 'IgnitedEnemyRecently', if_enemy_shocked_recently: 'ShockedEnemyRecently',
-  while_affected_by_herald_of_ice: 'HeraldOfIce', while_affected_by_herald_of_ash: 'HeraldOfAsh', while_affected_by_herald_of_thunder: 'HeraldOfThunder',
-  while_affected_by_herald_of_plague: 'HeraldOfPlague', while_affected_by_herald_of_blood: 'HeraldOfBlood' };
+  ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`while_affected_by_herald_of_${h.toLowerCase()}`, `HeraldOf${h}`])) };
 // the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
 const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
@@ -923,7 +922,7 @@ export function skill(g, b, treeGear) {
     // of a type ("fire_damage_+%_while_ignited", "elemental_damage_+%_if_enemy_chilled_recently"): that type's damage only
     for (const ty of [...DMG, 'elemental']) {
       const x = v(sum, `${ty}_damage_+%_${s}`);
-      if (x) out.when.push({ cond, val: x, what: 'damage', w: Object.fromEntries((ty === 'elemental' ? ['fire', 'cold', 'lightning'] : [ty]).map(t => [t, out.incW[t]])) });
+      if (x) out.when.push({ cond, val: x, what: 'damage', w: Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) });
     }
   }
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
