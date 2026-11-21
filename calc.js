@@ -1182,8 +1182,11 @@ export function skill(g, b, treeGear) {
   }
   if (flags.has('global_cannot_crit')) out.crit = 0;
   if (out.avg != null && out.speed) {
-    const c = (out.crit || 0) / 100;
-    out.dps = out.avg * (1 + c * (out.critBonus || 0) / 100) * out.speed;
+    const c = (out.crit || 0) / 100, cb = (out.critBonus || 0) / 100, IC = c > 0 && c < 1 && sum['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
+    // Oracle's Inevitable Critical Hits: the hits that fail re-roll until they crit, its less bonus per re-roll (as the scene: up to 99 re-rolls)
+    let k = 1 + c * cb;
+    if (IC) { k = c * (1 + cb); let q = 1 - c; for (let n = 1; n < 99; n++, q *= 1 - c) k += q * c * (1 + cb * Math.max(0, 1 + IC * n / 100)); k += q * (1 + cb * Math.max(0, 1 + IC * .99)); }
+    out.dps = out.avg * k * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   return out;
 }

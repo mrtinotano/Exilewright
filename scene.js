@@ -446,7 +446,12 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
+      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc;
+      // Oracle's Forced Outcome, Inevitable Critical Hits (KeywordPopups): a hit that could crit re-rolls until it does, its less
+      // critical damage bonus for each re-roll
+      const IC = !crit && pc > 0 && D.sum?.['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
+      if (IC) { let n = 1; while (n < 99 && !(Math.random() * 100 < pc)) n++; crit = true; W.critBonus *= Math.max(0, 1 + IC * n / 100); }
+      if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
       if (crit && D.sum?.critical_strikes_ignore_positive_elemental_resistances) for (const e of ELEM) W.pen[e] = Infinity;   // Invoker: a critical hit ignores non-negative elemental resistances
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
