@@ -948,7 +948,7 @@ export function initScene(el, api) {
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
-      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0);
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
@@ -1238,6 +1238,10 @@ export function initScene(el, api) {
     const FT = S?.src ? -1 : byName('Bursting Fen Toad'), T = FT >= 0 && base(FT);
     if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) { const q = around(p, 1.5); later(.5, () => { pop(q, T.A, 'chaos'); boom(q, T.A, { ...T, src: 'toad' }); }); }
     deathBlast(d, frozen, S);
+    // the tree's explosions on kill: a cursed enemy for a quarter of its maximum life as chaos, any for all of it as physical.
+    // note: their radius is not in the data (a herald's here); Zealous Inquisition's doubled chance against Undead and Demons is left out
+    const XB = S && sheet().blast, XK = XB && (d.curse && Math.random() * 100 < XB.cursed ? [.25, 'chaos'] : Math.random() * 100 < XB.any ? [1, 'physical'] : null);
+    if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'chaos' ? 'chaos' : 'blood'); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
@@ -4710,14 +4714,18 @@ export function initScene(el, api) {
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
     const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
+    const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (OR.unluckyDmg ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
+      if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
+    const AE = AD && ELEM.filter(e => dealt[e] > 0).sort((x, y) => dealt[y] - dealt[x])[0];   // adapt to the hit's highest elemental type, the oldest Adaptations giving way
+    if (AE) { for (let k = 0; k < AD.gain; k++) me.adapt.push({ el: AE, until: time + AD.dur }); me.adapt = me.adapt.slice(-AD.max); }
     if (dealt.lightning > 0) valako(dealt.lightning);
     // Chronomancer: less damage taken now, and its share of the hit taken 4 seconds later (its stat's own delay)
     // Mountain's Teachings: its less damage taken from the hit, which loses one. note: its life threshold stat is not simulated
@@ -4817,8 +4825,9 @@ export function initScene(el, api) {
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
-  const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana
-    if (f.k === 'mana') return void (me.mana = gain(me.mana, me.maxM, n));
+  const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
+    if (f.k === 'mana' || f.brew) me.mana = gain(me.mana, me.maxM, n);
+    if (f.k === 'mana' && !f.brew) return;
     me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);
   };
   function drink(n) {
@@ -4990,6 +4999,7 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
+    if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
     let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
@@ -5152,9 +5162,9 @@ export function initScene(el, api) {
     me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
-      flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
+      flaskHeal({ ...D, brew: sheet().brew }, got); if (D.s <= 0) me.drink[n] = null;
     });
-    for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
+    for (const f of flasks()) if (f?.always) flaskHeal({ ...f, brew: sheet().brew }, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }
