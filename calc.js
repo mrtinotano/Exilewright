@@ -579,7 +579,7 @@ const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_
   ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently']];
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
-// only, not flasks; not counted "per 5% missing life", "while Shapeshifted", "if you've Shocked an enemy Recently"
+// only, not flasks; not counted "per 5% missing life", "while Shapeshifted"
 const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited'], ['life_regeneration_rate_+%_while_moving', 'l', 'Moving'],
   ['life_regeneration_rate_+%_while_on_low_life', 'l', 'LowLife'], ['life_regeneration_rate_+%_while_stationary', 'l', 'Still'],
   ['life_regeneration_rate_+%_while_using_life_flask', 'l', 'LifeFlaskEffect'], ['life_recovery_rate_while_in_presence_of_companion_+%', 'l', 'CompanionInPresence'],
@@ -588,12 +588,16 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
   ['life_regeneration_rate_per_minute_%_while_stationary', 'L', 'Still'], ['life_regeneration_rate_per_minute_%_while_surrounded', 'L', 'Surrounded'],
   ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
   ['mana_regeneration_rate_+%_while_moving', 'm', 'Moving'], ['mana_regeneration_rate_+%_while_not_on_low_mana', 'm', 'NotLowMana'],
-  ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still']];
+  ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still'],
+  ['mana_regeneration_rate_+%_if_enemy_shocked_recently', 'm', 'ShockedEnemyRecently']];
 // "damage_+%_<state>" while you are in it: [the stat's end, the scene's condition]
 const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in_presence_of_companion: 'CompanionInPresence', while_ally_in_presence: 'AllyInPresence',
   while_you_have_arcane_surge: 'ArcaneSurge', when_on_full_life: 'FullLife', when_on_low_life: 'LowLife', while_leeching: 'Leeching', while_life_leeching: 'LifeLeeching',
   if_have_crit_in_past_8_seconds: 'CritPast8', while_es_full: 'FullEnergyShield', while_totem_active: 'TotemActive', while_affected_by_a_herald: 'HeraldOn',
-  if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently' };
+  if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently',
+  while_ignited: 'Ignited', if_enemy_chilled_recently: 'ChilledEnemyRecently', if_enemy_ignited_recently: 'IgnitedEnemyRecently', if_enemy_shocked_recently: 'ShockedEnemyRecently',
+  while_affected_by_herald_of_ice: 'HeraldOfIce', while_affected_by_herald_of_ash: 'HeraldOfAsh', while_affected_by_herald_of_thunder: 'HeraldOfThunder',
+  while_affected_by_herald_of_plague: 'HeraldOfPlague', while_affected_by_herald_of_blood: 'HeraldOfBlood' };
 // the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
 const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
@@ -914,8 +918,13 @@ export function skill(g, b, treeGear) {
   }
   // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
   for (const [s, cv] of Object.entries(WHILE)) {
-    const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']);
-    if (val) out.when.push({ cond: [{ type: 'Condition', var: cv }], val, what: 'damage', w: out.incW });
+    const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'Condition', var: cv }];
+    if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
+    // of a type ("fire_damage_+%_while_ignited", "elemental_damage_+%_if_enemy_chilled_recently"): that type's damage only
+    for (const ty of [...DMG, 'elemental']) {
+      const x = v(sum, `${ty}_damage_+%_${s}`);
+      if (x) out.when.push({ cond, val: x, what: 'damage', w: Object.fromEntries((ty === 'elemental' ? ['fire', 'cold', 'lightning'] : [ty]).map(t => [t, out.incW[t]])) });
+    }
   }
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
