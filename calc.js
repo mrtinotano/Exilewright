@@ -218,7 +218,7 @@ export function attributes(sum, ascName) {
   const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
   for (const [k, id] of Object.entries(ids)) {
     const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', ...pair[k].flatMap(p => ['additional_' + p, 'base_' + p]));
-    out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%') / 100));
+    out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%') / 100) * (1 + v(sum, 'gemling_all_attributes_+%_final') / 100));   // Gemling Legionnaire: more (less)
   }
   return out;
 }
@@ -242,7 +242,7 @@ function takenAs(sum) {
 }
 export function character(b, sum) {
   const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
-  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0);
+  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
   // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
@@ -263,8 +263,9 @@ export function character(b, sum) {
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
-  const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
-  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
+  const WH = pct('witchhunter_armour_evasion_+%_final');   // Witchhunter: less armour and evasion
+  const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
+  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
   // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
   const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
   const armourEl = { fire: v(sum, 'base_armour_%_applies_to_fire_damage') + ele, cold: v(sum, 'base_armour_%_applies_to_cold_damage') + ele,
@@ -290,6 +291,10 @@ export function character(b, sum) {
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%'),
     takenAs: takenAs(sum),
+    // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
+    // share of evasion that also grants elemental damage reduction (as armour does)
+    armourX: sum.double_armour_effect ? 2 : 1, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+    evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
     blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
@@ -396,7 +401,7 @@ export function ailmentDefence(c, sum) {
   }
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
-  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: pct('base_slow_potency_+%') };
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
   return { stun, ail, freeze, electrocute, avoid, dur, eff };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
@@ -977,7 +982,7 @@ export function skill(g, b, treeGear) {
   if (/\[Maim/.test(G.description || '') && !/final[^.]*\[Maim/.test(G.description) && !own.includes('minion')) out.ail.maim = 100;
   const curse = gt.includes('AppliesCurse'), mark = gt.includes('Mark');
   out.curse = curse ? curseOf(st, sum, finals) : null;
-  out.mark = mark ? markOf(st) : null;
+  out.mark = mark ? markOf(st, 1 + (v(sum, 'mark_effect_+%') + (st['mark_effect_+%'] || 0)) / 100) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. Skill effect duration: the increased
   // ones added (curses' and marks' own too), times each support's more (Persistence, Swift Affliction, Limit...), as PoB2
@@ -1227,11 +1232,12 @@ if (SK.minions['Raise Zombie']) {
   console.assert(Math.abs(w('Azmerian Wolf').dps - 2 * w0.dps) < 1e-6 && w('Azmerian Wolf').minionLife === Math.round(w0.minionLife * 1.5) && w('Raise Zombie').minionLife === 620, 'companion stats');
 }
 
-function markOf(st) {
+// its effects times "increased Effect of your Mark Skills" (eff)
+function markOf(st, eff = 1) {
   const k = re => Object.keys(st).find(x => re.test(x)), as = k(/_mark_damage_buff_damage_%_to_gain_as_\w+$/);
-  return { crit: st.enemy_additional_critical_strike_multiplier_against_self || 0,
-    freeze: st[k(/mark_hit_damage_freeze_multiplier_\+%/)] || 0, electrocute: st[k(/mark_hit_damage_electrocute_multiplier_\+%/)] || 0,
-    gain: as && st[as] ? { el: as.match(/_as_(\w+)$/)[1], pct: st[as], time: (st.base_secondary_skill_effect_duration || 0) / 1000 } : null };
+  return { crit: (st.enemy_additional_critical_strike_multiplier_against_self || 0) * eff,
+    freeze: (st[k(/mark_hit_damage_freeze_multiplier_\+%/)] || 0) * eff, electrocute: (st[k(/mark_hit_damage_electrocute_multiplier_\+%/)] || 0) * eff,
+    gain: as && st[as] ? { el: as.match(/_as_(\w+)$/)[1], pct: st[as] * eff, time: (st.base_secondary_skill_effect_duration || 0) / 1000 } : null };
 }
 // A curse on an enemy: what its gem's level gives (lower resistances and armour, less damage dealt, slower actions), times
 // "increased Curse effect" of the tree, gear and supports; the scene lowers it on rarer monsters (enemies.js curseEffect)

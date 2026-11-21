@@ -29,7 +29,7 @@ export function toughness(c) {
   const m = typical(c.level), life = c.life || 0;
   if (!m.damage) return life + c.es;
   const lost = TYPES.reduce((s, type) => s + MIX[type] * playerTakes(c, type, m.damage) / ((life + c.es / (type === 'chaos' ? 2 : 1)) || 1), 0);   // share of the pool an average hit removes
-  const lands = hitChanceExact(m.accuracy, c.evasion) / 100 * (1 - clamp(c.block || 0, 0, K.player_max_block ?? 50) / 100);
+  const lands = hitChanceExact(m.accuracy, c.evasion, c.evadeMax) / 100 * (1 - clamp(c.block || 0, 0, c.blockMax ?? K.player_max_block ?? 50) / 100 * (1 - (c.blockTaken || 0) / 100));
   return lost > 0 && lands > 0 ? 1 / (lost * lands) : 0;
 }
 // hits and damage over time of a skill, per second (null: the skill deals no damage the app can work out)

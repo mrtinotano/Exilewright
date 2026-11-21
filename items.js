@@ -87,8 +87,8 @@ function local(item) {
   return r;
 }
 
-// an equipped body armour's own armour (Titan's Stone Skin: more of it)
-export const bodyArmour = (items = {}) => items.body && BASE[items.body.base]?.armour ? local(items.body).armour : 0;
+// an equipped piece's own armour or evasion (Titan's Stone Skin, Amazon's Stalking Panther)
+export const pieceDef = (items = {}, slot, k) => items[slot] && BASE[items[slot].base]?.armour ? local(items[slot])[k] || 0 : 0;
 // main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
 export const weaponStats = (items = {}) => items.weapon && BASE[items.weapon.base]?.weapon ? local(items.weapon) : null;
 

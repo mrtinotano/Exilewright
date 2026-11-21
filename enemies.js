@@ -136,8 +136,9 @@ const radiusOf = C => {
 // ---------- the game's defence formulas
 const avg = r => (r[0] + r[1]) / 2;
 // chance (%) that a monster with this accuracy hits a character with this evasion
-export const hitChanceExact = (accuracy, evasion) => !evasion ? 100 : clamp((1 - .95 * evasion / (evasion + 4 * accuracy)) * 100, 100 - (K.player_max_evade ?? 95), 100);
-export const hitChance = (accuracy, evasion) => Math.round(hitChanceExact(accuracy, evasion));   // as the game shows it
+// max: the most chance to evade (Tactician's 50%), the game's otherwise
+export const hitChanceExact = (accuracy, evasion, max) => !evasion ? 100 : clamp((1 - .95 * evasion / (evasion + 4 * accuracy)) * 100, 100 - (max ?? K.player_max_evade ?? 95), 100);
+export const hitChance = (accuracy, evasion, max) => Math.round(hitChanceExact(accuracy, evasion, max));   // as the game shows it
 // chance (%) that the character's attack hits a monster (spells always hit)
 export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy ? 5 : clamp(Math.round(accuracy * 1.25 / (accuracy + evasion * .3) * 100), 5, 100);
 // fraction of a physical hit that armour removes
@@ -152,10 +153,12 @@ export function playerTakes(c, type, raw, isHit = true, conv = true) {
   if (to) { let left = raw, t = 0; for (const [e, p] of Object.entries(to)) { const x = raw * Math.min(p, 100) / 100; left -= x; t += playerTakes(c, e, x, isHit, false); } return t + (left > 0 ? playerTakes(c, type, left, isHit, false) : 0); }
   // c.physDR: additional physical damage reduction (Jade), within the same cap
   const cap = K.player_max_physical_reduction ?? 90;
-  if (type === 'physical') return isHit ? raw * (1 - Math.min(cap / 100, armourCut(c.armour, raw, cap) + (c.physDR || 0) / 100)) : raw;
+  const A = (c.armour || 0) * (c.armourX || 1), pcap = Math.min(cap, c.physMax ?? cap);   // Tactician: armour at 200%, its cap
+  if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(A, raw, pcap) + (c.physDR || 0) / 100)) : raw;
   // the share of armour that applies to the type (c.armourEl) cuts its hits like physical ones, then resistances
   // note: armour taken against the hit's damage before resistances
-  const AR = isHit && c.armourEl?.[type] ? armourCut(c.armour * c.armourEl[type] / 100, raw, cap) : 0;
+  const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder)
+  const AR = isHit && ER ? armourCut(ER, raw, pcap) : 0;
   return raw * (1 - AR) * (1 - (c.res?.[type]?.capped || 0) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
@@ -176,7 +179,7 @@ export function versusPlayer(atk, st, c) {
     return { type: el, raw: [lo, hi], taken: [playerTakes(c, el, lo), playerTakes(c, el, hi)].map(Math.round) };
   });
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
-  const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;
+  const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion, c.evadeMax) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;
   const crit = clamp(atk.crit, 0, 100) / 100, critMult = 1 + atk.critBonus / 100;
   const perUse = taken * (1 + crit * (critMult - 1)) * hit / 100 * (1 - block / 100 * (1 - (c.blockTaken || 0) / 100));   // a blocked hit deals its share you still take
   const dots = TYPES.filter(el => atk.dot[el]).map(el => ({ type: el, raw: atk.dot[el], taken: playerTakes(c, el, atk.dot[el], false) }));

@@ -1027,7 +1027,7 @@ export function initScene(el, api) {
   const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + (gst(S)['culling_strike_threshold_+%'] || 0) / 100) / 100;
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
-    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
+    return !d.dead && (S.P.culls || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
   };
   // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
@@ -4589,7 +4589,7 @@ export function initScene(el, api) {
     // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
     if (RR) blocked(d);
-    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
@@ -4628,7 +4628,7 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1,
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => me.st.chill > 0 && sheet().ailments.eff.slow !== 0 ? 1 - me.mag.chill / 100 : 1,   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;

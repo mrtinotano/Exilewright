@@ -5,7 +5,7 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, bodyArmour } from './items.js';
+import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, pieceDef } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -129,7 +129,10 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Smith of Kitava: what the passives say the body armour grants, while one is worn; their hidden armour
   if (b.items?.body) for (const [k, to] of BODY_GRANTS) if (sum[k]) sum[to] = (sum[to] || 0) + sum[k];
   sum.base_physical_damage_reduction_rating = (sum.base_physical_damage_reduction_rating || 0) + (sum.base_physical_damage_reduction_rating_no_display || 0)
-    + bodyArmour(b.items) * (sum['ascendancy_titan_damage_reduction_rating_from_body_armour_+%_final'] || 0) / 100;   // Titan's Stone Skin: more armour from the body armour
+    + pieceDef(b.items, 'body', 'armour') * (sum['ascendancy_titan_damage_reduction_rating_from_body_armour_+%_final'] || 0) / 100;   // Titan's Stone Skin: more armour from the body armour
+  // Amazon's Stalking Panther: evasion of the helmet, gloves and boots doubled, the body armour's halved
+  if (sum.double_evasion_rating_from_gloves_helmets_boots) sum.base_evasion_rating = (sum.base_evasion_rating || 0) + ['helmet', 'gloves', 'boots'].reduce((t, s) => t + pieceDef(b.items, s, 'evasion'), 0);
+  if (sum.halve_evasion_rating_from_body) sum.base_evasion_rating = (sum.base_evasion_rating || 0) - pieceDef(b.items, 'body', 'evasion') / 2;
   for (const [k, v] of Object.entries(auraStats(b, sum))) sum[k] = (sum[k] || 0) + v;   // after the rest: their level and magnitude come from it
   return sum;
 }
