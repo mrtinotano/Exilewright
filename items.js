@@ -707,15 +707,22 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       (base.armour || base.weapon) && prop('Quality', `<input type="number" min="0" step="1" class="qual" data-slot="${slot}" data-act="quality" value="${it.quality || 0}">%`),
       l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),
     ].filter(Boolean).join('');
+    // the attributes the base needs (AttributeRequirements), its own "reduced Attribute Requirements" counted, against the
+    // character's without it (its own attributes do not count). note: the tree's global ones (and gloves' "ignore") are not
+    const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
+    const free = mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
+    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * (1 + rp / 100))]).filter(([k, x]) => (without?.[k] || 0) < x);
+    const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
+    const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), without?.[k] || 0)).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
-        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
+        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
-      </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
+      </div></div>${impactHtml(t('What this item adds'), diff(without, now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
           return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>

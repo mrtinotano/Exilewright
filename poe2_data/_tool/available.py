@@ -600,6 +600,8 @@ def charm_of(fl):
     u = fl and fl['UtilityBuff'] and utility[fl['UtilityBuff'][0]]; d = u and buff_defs[u['BuffDefinition']]
     return d and {'buff': d['Id'], 'stats': dict(zip(map(sid, d['Stats']), u['StatValues'])), 'icon': _buff_icon.get(d['Id'])}
 spirit = {s['BaseItemType']: s['SpiritGranted'] for s in load('ItemSpirit')}   # sceptres: 100
+# the attributes a base needs worn (AttributeRequirements), only the ones it asks: {'str': 41, 'int': 41}
+req = {r['BaseItemType']: {k: r['Req' + K] for k, K in (('str', 'Str'), ('dex', 'Dex'), ('int', 'Int')) if r['Req' + K]} for r in load('AttributeRequirements')}
 visual = load('ItemVisualIdentity')
 mods_tr = load_langs('Mods')
 mod_stats = lambda m: [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]
@@ -626,6 +628,7 @@ for i, b in enumerate(base_types):
         **({'charm': charm_of(fl)} if cls == 'Charms' else {}),
         'weapon': w and {'crit': w['CritChance'] / 100, 'attack_time_ms': w['Speed'], 'min': w['DamageMin'], 'max': w['DamageMax'], 'range': w['RangeMax'], **({'reload_ms': w['ReloadTime']} if w.get('ReloadTime') else {})},
         'spirit': spirit.get(i),
+        **({'req': req[i]} if req.get(i) else {}),
         **({'grants': inherent[i]} if i in inherent else {}),
     })
 # what a rune (soul core, talisman...) gives in a socket, every set of stats once ([[id, value, value], ...]): parseItem

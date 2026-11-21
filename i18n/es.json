@@ -915,5 +915,6 @@
  "See every change ({0})": "Ver todos los cambios ({0})",
  "Socketed in yours, lost: {0}": "Engarzado en la tuya, lo pierdes: {0}",
  "Socketed in it, gained: {0}": "Engarzado en esta, lo ganas: {0}",
- "None listed has all {1} of the modifiers: these have at least {0} of them.": "Ninguno a la venta tiene los {1} modificadores: estos tienen al menos {0} de ellos."
+ "None listed has all {1} of the modifiers: these have at least {0} of them.": "Ninguno a la venta tiene los {1} modificadores: estos tienen al menos {0} de ellos.",
+ "Requires {0} {1} (you have {2})": "Requiere {0} de {1} (tienes {2})"
 }
