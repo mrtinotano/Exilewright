@@ -526,6 +526,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
+const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -826,6 +827,11 @@ export function skill(g, b, treeGear) {
   for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
     const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']);
     if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: out.incW });
+  }
+  // and while you are in a state ("attack_damage_+%_while_surrounded", "damage_+%_while_in_presence_of_companion")
+  for (const [s, cv] of Object.entries(WHILE)) {
+    const val = inc(sum, `damage_+%_while_${s}`, [...dmgTags, 'hit']);
+    if (val) out.when.push({ cond: [{ type: 'Condition', var: cv }], val, what: 'damage', w: out.incW });
   }
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
