@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, attackOf, attacksOf, ENEMIES } from './enemies.js';
+import { enemy, attackOf, attacksOf, ENEMIES, deflection } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -244,8 +244,16 @@ export function character(b, sum) {
   const defInc = 'global_armour_evasion_energy_shield_+%';
   const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
   const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc));
+  // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
+  const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
+  const armourEl = { fire: v(sum, 'base_armour_%_applies_to_fire_damage') + ele, cold: v(sum, 'base_armour_%_applies_to_cold_damage') + ele,
+    lightning: v(sum, 'base_armour_%_applies_to_lightning_damage', 'base_armour_applies_to_lightning_damage') + ele,
+    chaos: v(sum, 'base_armour_%_applies_to_chaos_damage', 'body_armour_grants_base_armour_applies_to_chaos_damage') };
+  // deflection: its % of armour and of evasion as deflection rating, its increases, and how much less a deflected hit deals
+  const deflect = { arm: v(sum, 'base_deflection_rating_%_of_armour'), eva: v(sum, 'base_deflection_rating_%_of_evasion_rating'), inc: pct('deflection_rating_+%'),
+    less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
   return {
-    level: lvl, attrs: at,
+    level: lvl, attrs: at, armourEl, deflect,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%')),
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
@@ -380,7 +388,7 @@ export function sheet(b, sum) {
   const { lifeRegen, esRate, esDelay, esRecharge, manaRegen } = recovery(c, sum);
   const esRegen = v(sum, 'base_energy_shield_regeneration_rate_per_minute') / 60 * pct('energy_shield_regeneration_rate_+%', 'energy_shield_recovery_rate_+%');
   // deflection (part of armour / evasion as deflection rating)
-  const deflect = (c.armour * v(sum, 'base_deflection_rating_%_of_armour') + c.evasion * v(sum, 'base_deflection_rating_%_of_evasion_rating')) / 100 * pct('deflection_rating_+%');
+  const deflect = deflection(c);
   // thorns
   const thorns = [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * pct('thorns_damage_+%')));
   // stun / ailment thresholds
@@ -436,11 +444,7 @@ export function sheet(b, sum) {
   // loss per minute, plus maximum Rage and Berserk's Gemling quality (the game's panel, 17/11: 30 + 14 + 2 = 46)
   const R = rageOf(b, sum), rage = R.base && R.base + (R.berserk?.max || 0);
   const most = (base, ...ids) => (CHAR[base] || 0) + v(sum, ...ids);
-  // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
-  const applies = { fire: v(sum, 'base_armour_%_applies_to_fire_damage'), cold: v(sum, 'base_armour_%_applies_to_cold_damage'), lightning: v(sum, 'base_armour_%_applies_to_lightning_damage', 'base_armour_applies_to_lightning_damage') };
-  const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
-  const vs = Object.fromEntries([...Object.entries(applies).map(([e, x]) => [e, Math.round(c.armour * (x + ele) / 100)]),
-    ['chaos', Math.round(c.armour * v(sum, 'base_armour_%_applies_to_chaos_damage', 'body_armour_grants_base_armour_applies_to_chaos_damage') / 100)]]);
+  const vs = Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, Math.round(c.armour * x / 100)]));
   const asOne = vs.fire === vs.cold && vs.cold === vs.lightning;   // the game shows one "Elemental" row then
   const lvl = Math.min(b.level || 1, 82);
   const cut = x => x ? armourReduction(x, lvl) : 0;
@@ -470,7 +474,7 @@ export function sheet(b, sum) {
     // note: the chance to deflect is worked out like the chance to evade, the deflection rating against the attacker's
     // accuracy (the game's own description of Deflection); a deflected hit takes GameConstants' 40% less, plus modifiers
     'deflection_rating': Math.round(deflect), 'chance_to_deflect_%_estimate': deflect && evadeChance(deflect, lvl),
-    'damage_%_deflected': deflect && (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected'),
+    'damage_%_deflected': deflect && c.deflect.less,
     'block_%': c.block && [c.block, blockMax], 'maximum_ward': c.ward,
     'combined_bleeding_duration_on_self_+%': v(sum, 'self_bleed_duration_+%') + allAil, 'combined_poison_duration_on_self_+%': v(sum, 'self_poison_duration_+%') + allAil,
     'display_self_ignite_duration': selfDur('ignite'), 'display_self_freeze_duration': selfDur('freeze'), 'display_self_shock_duration': selfDur('shock'),
@@ -560,7 +564,7 @@ const plainText = k => /(?:damage|attack_speed|cast_speed)_\+%_final$/.test(k) &
 const plainMore = (k, name) => { const own = name.toLowerCase().replace(/[^a-z ]/g, '').split(' '); return k.split('_').every(w => PLAIN.has(w) || own.some(o => o === w || o === w + 's' || o + 's' === w)); };
 // wset: the weapon set in hand, for the mods only there (Rigwald's Ferocity)
 export function withSupports(g, sum, wset) {
-  const all = { ...sum }, fin = {}, mods = [], finals = {}, twice = new Set();
+  const all = { ...sum }, fin = {}, mods = [], finals = {}, twice = new Set(), own = {};
   for (const n of g.supports || []) {
     const p = n && SK.supports?.[n], d = n && SK.skills[n]; if (!p && !d) continue;
     const inSet = m => m[4].every(c => c.type === 'Condition' && c.var === 'WeaponSet' + (wset === 2 ? 2 : 1));
@@ -575,10 +579,12 @@ export function withSupports(g, sum, wset) {
       if (!k.endsWith('_final')) { all[k] = (all[k] || 0) + val; if (k.includes('_final')) twice.add(k); }
       else if (plainMore(k, n) || plainText(k)) fin[k] = (fin[k] || 0) + val;
     }
-    // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments())
-    for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (k.includes('_final') && typeof val === 'number') finals[k] = (finals[k] || 0) + val;
+    // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments()), and
+    // all its stats (own: those under a condition PoB2 reads too, for the simulator, Refraction's Refractive Plating)
+    for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (typeof val === 'number') {
+      own[k] = (own[k] || 0) + val; if (k.includes('_final')) finals[k] = (finals[k] || 0) + val; }
   }
-  return { sum: all, fin, mods, finals, twice };
+  return { sum: all, fin, mods, finals, twice, own };
 }
 // true when the data says what this support does to the numbers the app calculates
 export const supportKnown = name => !!SK.supports?.[name] || !!SK.skills[name]?.levels;
@@ -614,7 +620,7 @@ export function skill(g, b, treeGear) {
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
-  const { sum, fin, mods, finals, twice = new Set() } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear, b?.wset);
+  const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear, b?.wset);
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
@@ -625,7 +631,7 @@ export function skill(g, b, treeGear) {
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
-  const out = { attack, spell, stats: st, sum, finals, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
+  const out = { attack, spell, stats: st, sum, finals, sup: supOwn, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
   const w = attack ? weaponStats(b.items) : null;
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };

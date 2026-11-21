@@ -142,11 +142,17 @@ export const hitChance = (accuracy, evasion) => Math.round(hitChanceExact(accura
 export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy ? 5 : clamp(Math.round(accuracy * 1.25 / (accuracy + evasion * .3) * 100), 5, 100);
 // fraction of a physical hit that armour removes
 export const armourCut = (armour, raw, cap) => armour > 0 && raw > 0 ? Math.min(cap / 100, armour / (armour + raw * 10)) : 0;
+// deflection rating of the character c (calc.js character(), its armour and evasion as they are now)
+export const deflection = c => (c.armour * c.deflect.arm + (c.evasion || 0) * c.deflect.eva) / 100 * c.deflect.inc;
 // one damage type of a hit against the character c (calc.js character()); returns what gets through
 export function playerTakes(c, type, raw, isHit = true) {
   // c.physDR: additional physical damage reduction (Jade), within the same cap
-  if (type === 'physical') { const cap = K.player_max_physical_reduction ?? 90; return isHit ? raw * (1 - Math.min(cap / 100, armourCut(c.armour, raw, cap) + (c.physDR || 0) / 100)) : raw; }
-  return raw * (1 - (c.res?.[type]?.capped || 0) / 100);
+  const cap = K.player_max_physical_reduction ?? 90;
+  if (type === 'physical') return isHit ? raw * (1 - Math.min(cap / 100, armourCut(c.armour, raw, cap) + (c.physDR || 0) / 100)) : raw;
+  // the share of armour that applies to the type (c.armourEl) cuts its hits like physical ones, then resistances
+  // note: armour taken against the hit's damage before resistances
+  const AR = isHit && c.armourEl?.[type] ? armourCut(c.armour * c.armourEl[type] / 100, raw, cap) : 0;
+  return raw * (1 - AR) * (1 - (c.res?.[type]?.capped || 0) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
 export function enemyTakes(st, type, raw, isHit = true) {

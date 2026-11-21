@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, fmt, cap } from './i18n.js';
-import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance } from './enemies.js';
+import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
@@ -2908,15 +2908,20 @@ export function initScene(el, api) {
     for (let k = 0; k < n; k++) vortex(T, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
-  // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
+  // (its base_skill_buff_<stat>_to_apply, and Refraction's Refractive Plating), one of each Banner at a time. Refraction
+  // III: the enemies in its area have its Exposure per 1000 of your armour, up to 80% (its text)
   K.banner = S => {
-    const st = S.dmg?.stats || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v]] : []; }));
+    const st = S.dmg?.stats || {}, su = S.dmg?.sup || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v]] : []; }));
+    for (const k of ['%_armour_to_apply_to_elemental_damage', 'deflection_rating_%_of_evasion_rating']) if (su['support_tempered_valour_' + k]) give[k] = su['support_tempered_valour_' + k];
+    const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
     for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;
     const c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', 'gold', { a: .35, rot: 0 });
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
     const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
     g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
-    thing(g, durOf(S), { name: S.name, banner: give, R, c, tick(dt) { flag.rotation.y = Math.sin(time * 2) * .15; }, off: () => ring.remove() });
+    thing(g, durOf(S), { name: S.name, banner: give, R, c, off: () => ring.remove(), tick(dt) {
+      flag.rotation.y = Math.sin(time * 2) * .15;
+      if (RX) { const x = Math.min(80, RX * Math.floor(withCharms(sheet()).armour / 1000)); if (x) for (const d of inside(c, R)) expo(d, ELEM, x, .5); } } });
   };
   // Leylines: while it is on, a leyline of its ground units (its least distance apart) across its reveal radius around
   // you; standing over one with Runic Ward, your spells deal its more damage and the Ward drains at its rate; running
@@ -4358,8 +4363,12 @@ export function initScene(el, api) {
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
+    // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
+    // deals its less damage
+    const DF = c.deflect && deflection(c), dfl = DF > 0 && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), DF);
+    if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
-    const crit = Math.random() * 100 < a.crit, cm = (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1);   // and Intimidated ones
+    const crit = Math.random() * 100 < a.crit, cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1);   // and Intimidated ones
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
@@ -4518,6 +4527,8 @@ export function initScene(el, api) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
+    const RA = banner('%_armour_to_apply_to_elemental_damage'), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating
+    if ((RA || RE) && c.deflect) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: { ...c.deflect, eva: c.deflect.eva + RE } };
     if (AE || MR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
