@@ -41,9 +41,15 @@ const brief = r => `${r.dps && r.pct != null ? share(r) : signed(r.d, r.dec, r.u
 export const impactHtml = (title, rows) => `<div class="imp"><div class="imph">${esc(title)}</div>${rows.length
   ? rows.map(r => `<div class="${cls(r)}"><span>${esc(r.label)}</span><b>${signed(r.d, r.dec, r.unit)}${r.pct != null ? ` <small>${share(r)}</small>` : ''}</b></div>`).join('')
   : `<p>${t('No change in the calculated numbers')}</p>`}</div>`;
-// every change, one per line, gains first (empty when nothing changes)
-export const impactList = rows => rows.length ? `<div class="impv">${[...rows].sort((p, q) => (q.d > 0) - (p.d > 0)).map(r => `<div class="${cls(r)}">${esc(brief(r))}</div>`).join('')}</div>` : '';
+// with its share of the old value too, when there is one ("+394 Energy Shield (+1010%)")
+const both = r => r.pct != null && !r.dps ? `${signed(r.d, r.dec, r.unit)} ${r.label} (${share(r)})` : brief(r);
+// biggest gain first, down to the biggest loss: by the share of the old value, a percentage row by its points, a
+// number that had no old value first among its sign
+const worth = r => r.pct ?? (r.unit ? r.d : Math.sign(r.d) * 1e9);
+export const byGain = rows => [...rows].sort((p, q) => worth(q) - worth(p));
+// every change, one per line, gains first (empty when nothing changes); pct: with the share of each
+export const impactList = (rows, pct = false) => rows.length ? `<div class="impv">${[...rows].sort((p, q) => (q.d > 0) - (p.d > 0)).map(r => `<div class="${cls(r)}">${esc((pct ? both : brief)(r))}</div>`).join('')}</div>` : '';
 // the biggest changes on one line, for list entries (empty when nothing changes)
-export const impactLine = (rows, max = 3) => rows.length ? `<small class="impl">${rows.slice(0, max).map(r => `<i class="${cls(r)}">${esc(brief(r))}</i>`).join('')}${rows.length > max ? '<i>…</i>' : ''}</small>` : '';
+export const impactLine = (rows, max = 3, pct = false) => rows.length ? `<small class="impl">${rows.slice(0, max).map(r => `<i class="${cls(r)}">${esc((pct ? both : brief)(r))}</i>`).join('')}${rows.length > max ? '<i>…</i>' : ''}</small>` : '';
 // the same as plain text (select options)
 export const impactText = (rows, max = 2) => rows.slice(0, max).map(brief).join(', ');

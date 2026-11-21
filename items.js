@@ -2,7 +2,7 @@
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn, lang, fmt, KW } from './i18n.js';
 import { statLines, statLinesEn, shownLines } from './stats.js';
-import { diff, impactHtml, impactLine, impactList, impactText } from './impact.js';
+import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
@@ -718,13 +718,13 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
     const worn = getBuild().items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {};
     return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {}, rows = gain(slot, l.item, 'buy' + i);
-      // the piece's own armour, evasion and energy shield against the worn one's; for armour its defences lead the changes
+      // the piece's own armour, evasion and energy shield against the worn one's
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: <b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}</i>` : ''}</span>`; }).join('');
-      const order = base?.armour ? [...rows.filter(r => !r.dps), ...rows.filter(r => r.dps)] : rows;
+      const order = byGain(rows);   // most improved first
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
-        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b>${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4)}
-        ${rows.length > 4 ? `<details class="ball"><summary>${t('See every change ({0})', rows.length)}</summary>${impactList(order)}</details>` : ''}</span></div>`; }).join('')
+        <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b>${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4, true)}
+        ${rows.length > 4 ? `<details class="ball"><summary>${t('See every change ({0})', rows.length)}</summary>${impactList(order, true)}</details>` : ''}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;
