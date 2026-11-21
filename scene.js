@@ -3045,6 +3045,11 @@ export function initScene(el, api) {
   // once every its cooldown), Heavy Stunning the enemies there Primed for Stun; its hits beyond its limit destroy it
   // note: the Primed for Stun thresholds are keywords.json PrimedStun's text
   const PRIMED = { normal: 40, magic: 50, rare: 60, unique: 70 }, BELL = new THREE.ConeGeometry(.28, .55, 10, 1, true);
+  // Withering Presence: while on, every its interval it Withers the enemies in your Presence, for its duration
+  function withering(dt) {
+    const S = onS('Withering Presence'); if (!S || (me.witherIn = (me.witherIn ?? 0) - dt) > 0) return;
+    me.witherIn = S.dmg.stats.skill_withering_presence_frequency_ms / 1000; for (const d of inside(pp, sheet().overgrow.r)) withers(d, durOf(S));
+  }
   function bells(dt) {
     const S = onS('Hollow Focus'), st = S?.dmg?.stats; if (!st) return;
     for (const o of objs) if (o.bell && !o.dead && dist(o.pos, pp) > st.bell_distance_limit_for_recall / 10) { const q = around(pp, 2); o.pos.set(q.x, 0, q.z); }
@@ -4685,7 +4690,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); withering(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
