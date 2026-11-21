@@ -370,11 +370,11 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
 }
 // The lines of an item (priceLines, or picked by hand: { hash | en (desecrated), kind, value }) as the site's
 // conditions: every one of them, each as the kind of modifier it is (normal, fractured, crafted, desecrated: the site's
-// groups; none given: normal) and at least its number (a negative one, or 0: just having it). -> { stats, asked, left }
+// groups; none given: normal) and at least its number (a negative one, or 0: just having it). -> { stats, left }
 async function asLines(lines) {
   const { known, desecrated } = await statIndex(), kind = l => `${l.kind || 'explicit'}.stat_${l.hash}`;
   const asked = lines.map(l => ({ ...l, id: l.en ? desecrated(l.en) : known && !known.has(kind(l)) ? null : kind(l) })).filter(l => l.id);
-  return { asked, left: lines.length - asked.length,
+  return { left: lines.length - asked.length,
     stats: asked.length ? [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }] : [] };
 }
 // the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
