@@ -786,19 +786,24 @@ export function initScene(el, api) {
   // The skill's own on / off rules (never / always freeze, shock, ignite, stun...) come first. Electrocute and Pin build up
   // like freeze, only from skills that say so. o: { crit, stunX } of the hit.
   // note: freeze buildup is measured against poise, as Path of Building 2 does (the glossary says Ailment Threshold)
+  // the build's "<type> damage can <ailment>" (uniques): [its ailments, the types it adds]; Olroth's Hubris' physical
+  // contributing to freeze buildup (its text; its stat is its added physical damage)
+  const EXTRA = { physical_damage_can_ignite_freeze_shock: [['ignite', 'freeze', 'shock'], ['physical']], physical_damage_from_hits_also_contributes_to_chill_and_freeze: [['chill', 'freeze'], ['physical']],
+    'added_physical_damage_%_ward_cost': [['freeze'], ['physical']], chaos_damage_can_freeze: [['freeze'], ['chaos']], chaos_damage_can_shock: [['shock'], ['chaos']],
+    base_chaos_damage_can_electrocute: [['electrocute'], ['chaos']], elemental_damage_also_contributes_to_flammability_ignite_chill_freeze_and_shock: [['ignite', 'chill', 'freeze', 'shock'], ['fire', 'cold', 'lightning']] };
   function afflict(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
     if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
-    // "all damage can <ailment>" (the build's, and Pinnacle of Power's buff: every Elemental Ailment, with other damage
-    // types, BuffDefinitions elemental_power): every damage type of the hit counts for it; "physical damage can ignite,
-    // freeze and shock", "physical damage from hits also contributes to chill and freeze" (uniques), Olroth's Hubris'
-    // physical contributing to freeze buildup (its text; its stat is its added physical damage): its physical too
-    const SU = S.dmg.sum || {}, PN = !S.src && time < me.pinn?.until, can = a => PN || SU[`all_damage_can_${a}`], allD = Object.values(raw).reduce((t, v) => t + v, 0);
-    const phys = a => SU.physical_damage_can_ignite_freeze_shock && a !== 'chill' || SU.physical_damage_from_hits_also_contributes_to_chill_and_freeze && (a === 'chill' || a === 'freeze')
-      || a === 'freeze' && SU['added_physical_damage_%_ward_cost'];
-    const xa = (a, e) => can(a) ? allD : x(e) + (phys(a) ? x('physical') : 0);
-    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || phys('ignite')) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
+    // the damage of the hit that counts for an ailment: its own type's, every type's with "all damage can <ailment>" (the
+    // build's; Pinnacle of Power's buff: every Elemental Ailment, BuffDefinitions elemental_power; all damage to bleeding /
+    // poisoned enemies contributing to chill), and the types the build's "<type> damage can <ailment>" add (EXTRA)
+    const SU = S.dmg.sum || {}, PN = !S.src && time < me.pinn?.until, allD = Object.values(raw).reduce((t, v) => t + v, 0);
+    const can = a => PN && a !== 'electrocute' || SU[`all_damage_can_${a}`] || a === 'ignite' && SU.you_and_allies_in_presence_all_damage_can_ignite
+      || a === 'electrocute' && S.P.attack && SU.all_attack_damage_can_electrocute
+      || a === 'chill' && (SU.all_damage_to_bleeding_enemies_contributes_to_chill && has(d, 'bleed') || SU.all_damage_to_poisoned_enemies_contributes_to_chill && has(d, 'poison'));
+    const adds = a => Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), xa = (a, e) => can(a) ? allD : [...new Set([e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
+    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
@@ -818,12 +823,12 @@ export function initScene(el, api) {
       if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
-    if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    if (A.electrocute) build(d, 'electrocute', xa('electrocute', 'lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
-    if (A.pin) build(d, 'pin', allD * GC.PinDamageScale * A.pin * LK, S, A);
+    if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
     // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding

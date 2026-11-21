@@ -948,6 +948,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const keys = [...new Set([...Object.keys(st), ...Object.keys(sum), ...Object.keys(finals)])];
   // more damage when consuming a state (Glacial Cascade, Biting Frost), against one (Siege Cascade vs immobilised), per
   // charge spent (Spiral Volley): [state, %, unique-only / non-unique-only / any]
+  const pinAll = F('base_all_damage_can_pin') || all('base_all_damage_can_pin') > 0 || tags.includes('projectile') && all('all_projectile_damage_can_pin') > 0 || keys.some(k => /pins_as_though_dealt_damage/.test(k));
   const consume = {}, vs = [], STATE_OF = { fully_broken_armour: 'armour', heavy_stunned: 'stun', frozen: 'freeze', bleeding: 'bleed', poisoned: 'poison',
     ignited: 'ignite', shocked: 'shock', chilled: 'chill', electrocuted: 'electrocute', pinned: 'pin', immobilised: 'immobilised', cursed: 'curse', marked: 'mark' };
   for (const k of keys) {
@@ -999,8 +1000,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     impale: { chance: all('impale_on_hit_%_chance') + all(tags.includes('attack') ? 'attacks_impale_on_hit_%_chance' : 'spells_impale_on_hit_%_chance'),
       mag: scale(['impale_magnitude_+%'], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale') },
     // Electrocute and Pin build up only from skills that say so
-    electrocute: F('base_lightning_damage_can_electrocute') || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
-    pin: F('base_all_damage_can_pin') || keys.some(k => /pins_as_though_dealt_damage/.test(k)) ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0,
+    // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
+    electrocute: F('base_lightning_damage_can_electrocute') || ['base_lightning_damage_can_electrocute', 'base_chaos_damage_can_electrocute', ...(tags.includes('attack') ? ['all_attack_damage_can_electrocute'] : [])].some(k => all(k) > 0) || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
+    pin: pinAll || all('base_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) : 0, pinPhys: !pinAll,   // physical alone: a unique's
     chillDamage: more(/chill_as_though_damage_\+%_final$/),
     consume, vs,
     charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: sumOf(new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`)), when: sumOf(new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`)) }])),
