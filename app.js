@@ -5,7 +5,7 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, pieceDef } from './items.js';
+import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, pieceDef, isQuiver } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -118,6 +118,9 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
   if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
+  // increased bonuses gained from the equipped Quiver: the whole of what it grants
+  const QE = sum['quiver_mod_effect_+%'], Q = b.items?.offhand;
+  if (QE && isQuiver(Q)) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
   // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
   // radius of the socket (tree units). note: attribute passives counted as small ones (they are no notables)
   for (const [slot, it] of Object.entries(b.items || {})) {

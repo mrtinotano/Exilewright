@@ -429,6 +429,7 @@ export const bothHands = (weapon, giant) => { const w = BASE[weapon?.base];
   return !!w?.tags.includes('twohand') && !w.tags.includes('bow') && !(giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class)); };
 // Weapon sets (the game's I and II): the set not in use waits in b.swap (its weapon and off hand) and b.wset is the one
 // in use; switching trades them, so everything else only ever sees the set in hand
+export const isQuiver = it => BASE[it?.base]?.class === 'Quivers';
 export function swapSet(b, n) {
   if (n === (b.wset === 2 ? 2 : 1)) return;   // that set is in hand already
   const items = b.items ||= {}, other = b.swap || {};
