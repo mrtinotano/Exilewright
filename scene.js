@@ -1712,7 +1712,8 @@ export function initScene(el, api) {
       remove() { fx.drop(mesh); } };
     objs.push(e); return e;
   }
-  // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone, for dur s;
+  // A Hazard a support leaves: it arms after arm s, then hits the first enemy to step in its area and is gone (unless it
+  // rearms: the tree's chance), for dur s;
   // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
   // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes);
   // o.more(t): its damage multiplier t s after arming (Ice Shards); o.mesh: what stands there; o.then(p): after it goes off
@@ -1723,7 +1724,7 @@ export function initScene(el, api) {
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
         const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true;
-        later(o.delay || 0, () => { e.dead = true; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
+        later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
   }
