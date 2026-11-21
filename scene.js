@@ -4847,8 +4847,8 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); withering(dt); mirrors(dt); fate();
-    if (time < me.wildUntil) me.life = Math.max(1, me.life - me.maxL * me.wildLoss / 100 / 60 * dt);   // Savage Fury's frenzy jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); withering(dt); mirrors(dt); fate(); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
+    if (time < me.wildUntil) me.life = Math.max(1, me.life - me.maxL * me.wildLoss / 100 / 60 * dt);   // Savage Fury's frenzy
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
