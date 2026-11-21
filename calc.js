@@ -417,7 +417,7 @@ export function recovery(c, sum) {
     blindEffect: v(sum, 'blind_effect_+%'),
     // Martial Artist's Mountain's Teachings (Way of the Mountain)
     mountain: sum.stone_skin_maximum_stacks ? { chance: v(sum, 'chance_%_to_gain_one_stone_skin_stack_on_immobilising'), max: sum.stone_skin_maximum_stacks, dur: v(sum, 'stone_skin_duration_ms') / 1000,
-      attack: v(sum, 'stone_skin_grants_attack_damage_+%_final_you_use_yourself'), taken: v(sum, 'stone_skin_grants_damage_taken_+%_final'), stun: v(sum, 'stone_skin_grants_stun_threshold_+%_final') } : null,
+      attack: v(sum, 'stone_skin_grants_attack_damage_+%_final_you_use_yourself'), taken: v(sum, 'stone_skin_grants_damage_taken_+%_final'), stun: v(sum, 'stone_skin_grants_stun_threshold_+%_final'), upTo: v(sum, 'stone_skin_grants_damage_reduction_life_threshold_%') || 100 } : null,
     // Witchhunter's Witchbane: enemies' Focus (a share of their maximum life) your hits drain, coming back after its delay; No Mercy
     focus: sum['%_maximum_life_as_focus'] ? { life: sum['%_maximum_life_as_focus'], drain: v(sum, 'drain_focus_%_of_damage_dealt_on_hit'), decay: v(sum, 'focus_decay_%_per_minute'), delay: v(sum, 'focus_decay_delay_ms') / 1000,
       mercy: v(sum, 'witchhunter_up_to_damage_+%_final_against_targets_with_missing_focus') } : null,

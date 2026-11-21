@@ -4749,9 +4749,10 @@ export function initScene(el, api) {
     if (AE) { for (let k = 0; k < AD.gain; k++) me.adapt.push({ el: AE, until: time + AD.dur }); me.adapt = me.adapt.slice(-AD.max); }
     if (dealt.lightning > 0) valako(dealt.lightning);
     // Chronomancer: less damage taken now, and its share of the hit taken 4 seconds later (its stat's own delay)
-    // Mountain's Teachings: its less damage taken from the hit, which loses one. note: its life threshold stat is not simulated
+    // Mountain's Teachings: its less damage taken from a hit dealing at most its share of your maximum life after mitigation
+    // (KeywordPopups MountainsTeachings); the hit loses one
     const MO = time < me.mountUntil && me.mount > 0 && sheet().mountain; if (MO && --me.mount <= 0) me.mountUntil = 0;
-    const RT = tempered(d), DH = sheet().delayHit, k = (1 + (DH?.less || 0) / 100) * (MO ? 1 + MO.taken / 100 : 1); hurt(total * RT * k, chaos * RT * k, top, crit, d, true);
+    const RT = tempered(d), DH = sheet().delayHit, k = (1 + (DH?.less || 0) / 100) * (MO && total <= me.maxL * MO.upTo / 100 ? 1 + MO.taken / 100 : 1); hurt(total * RT * k, chaos * RT * k, top, crit, d, true);
     if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d, true));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
