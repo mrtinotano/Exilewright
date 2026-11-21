@@ -887,6 +887,8 @@ export function skill(g, b, treeGear) {
   // increased) for "increased"; cap: the support's own most (Dauntless 45%, Burgeon 40%) or most stacks (Arakaali's 40).
   // The "more damage against a state" calc.js already reads (ailments: vs, consume) are not repeated here
   const critInc = inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit);
+  out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
+  const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
   out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
     .filter(([[name, kind, , fl, cond, stat]]) => Array.isArray(cond) && /^(?:(?:Physical|Elemental)?Damage|CritChance|CritMultiplier)$/.test(name) && /^(?:MORE|INC)$/.test(kind)
       && fl.every(hit) && !/consume_enemy_|damage_\+%_final_(?:vs|against)_\w+_enemies$/.test(stat))
@@ -896,10 +898,8 @@ export function skill(g, b, treeGear) {
       // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40; Inexorable Critical II's own per stat) or on the stacks (Culmination's 10)
       const lim = c[stat.replace(/_per_\w+$/, '_cap')] ?? Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal || x.limitNegTotal);
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
-        w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
+        w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : out.incW[t]])) : kind === 'MORE' ? 1 : name === 'CritChance' ? critW : cbW };
     });
-  out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
-  const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
