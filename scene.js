@@ -575,7 +575,7 @@ export function initScene(el, api) {
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
-    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src && P.melee) expression(d, S); }
+    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src && P.melee) expression(d, S); if (!S.src && P.spell) storm(d, S, raw); }
     return true;
   }
   // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
@@ -1732,6 +1732,17 @@ export function initScene(el, api) {
     if (el === 'Fire') boom(d.pos, X.A, X);
     else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.stats.number_of_chains);
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
+  }
+  // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
+  // storm at the enemy for its duration, of the hit's highest elemental damage type (none from a hit with no elemental
+  // damage), hitting the enemies in its area every its interval
+  function storm(d, S, raw) {
+    const el = ['fire', 'cold', 'lightning'].reduce((a, e) => (raw[e] || 0) > (raw[a] || 0) ? e : a, 'fire');
+    const D = raw[el] > 0 && sheet().storm && granted('Elemental Storm', S.g?.level);
+    if (!D || !spend({ id: 'Elemental Storm', cooldown: D.cooldown, uses: D.uses })) return;
+    const T = asTrig(S, { ...D, id: 'Elemental Storm' }), X = partOf(T, `ElementalStorm${cap(el)}Player`); if (!X) return;
+    const c = { x: d.pos.x, z: d.pos.z }, st = D.stats; let tk = 0;
+    thing(holder(c), st.base_skill_effect_duration / 1000, { tick(dt) { if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; fx.ring(c, T.A * .3, T.A, el, .3, { a: .45 }); area(c, T.A, X); } } });
   }
   // Doedre's Undoing: the curse's area stays for the curse's duration (up to its most areas), cursing the enemies that
   // enter it, and spawns Witchtoads in it at its interval (up to its most at once); a toad leaps at an enemy and explodes

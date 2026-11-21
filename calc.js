@@ -342,6 +342,7 @@ export function character(b, sum) {
     surge: { charge: Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, v(sum, `gain_X_instilling_${e}_when_charge_is_consumed`, `gain_X_instilling_${e}_when_any_charge_is_consumed`)])),
       reload: { fire: v(sum, 'gain_X_instilling_fire_on_reload'), cold: v(sum, 'gain_X_instilling_cold_on_reload') } },
     expression: v(sum, 'trigger_wild_strike_on_attack_crit') > 0,   // the Invoker's Elemental Expression on melee critical hits
+    storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
