@@ -360,14 +360,7 @@ export function parseItem(text) {
   // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item, else
   // as what the runes themselves give (SoulCoreStats: "32% increased Life and Mana Recovery from Flasks"): the stats are
   // that one's and the number is the line's own (two runes add up in one line). The rest is left out
-  let left = [...tagged.keys()];
-  const pool = f => D.affixes.filter(f).map(a => [a.id, a.stats]);
-  for (const sets of [pool(a => canRoll(a, base)), pool(a => a.domain === base.domain), D.runes.map((st, i) => [i, st])]) {
-    if (!left.length) break;
-    const by = new Map(sets), m = matchLines(left, sets.flatMap(([k, st]) => shapes(k, st)));
-    for (const f of m.found) addExtra(by.get(f.key), f.raw);
-    left = m.missed;
-  }
+  const left = runesOf([...tagged.keys()], base, addExtra);
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
   // a flask: no modifier ends in one) are not modifiers
@@ -537,10 +530,22 @@ export function affixLines(cls, first) {
 // An item as the trade site lists it -> { item, slots, missed: [lines not counted] } like parseItem, null when the app
 // does not have its base. Each line comes with the site's stat and the modifiers it adds up (English name, level and
 // range of each): lines: [{ text, hash, kind: 'implicit' | 'explicit' | ..., mods: [{ name, level, mags: [[min, max]] }] }]
-export function tradeItem({ name, base: baseName, lines }) {
+// the stats of rune and enchantment lines on an item of `base` (add(stats, raw) for each line read) -> the lines not read
+function runesOf(left, base, add) {
+  const pool = f => D.affixes.filter(f).map(a => [a.id, a.stats]);
+  for (const sets of [pool(a => canRoll(a, base)), pool(a => a.domain === base.domain), D.runes.map((st, i) => [i, st])]) {
+    if (!left.length) break;
+    const by = new Map(sets), m = matchLines(left, sets.flatMap(([k, st]) => shapes(k, st)));
+    for (const f of m.found) add(by.get(f.key), f.raw);
+    left = m.missed;
+  }
+  return left;
+}
+export function tradeItem({ name, base: baseName, lines, runes = [] }) {
   const u = UNIQ[name], base = BASE[u ? u.base : baseName];
   if (!base) return null;
   const item = make(u ? u.name : base.name), missed = new Set();
+  runesOf(runes, base, (stats, raw) => stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + raw[k]; }));   // what is socketed in it (runes, soul cores, idols) and its enchantments
   // the stored value of a shown number: rounded, and with the sign the modifier has ("20% reduced" is -20)
   const stored = (n, scale, [, lo, hi]) => { const v = Math.round(n / scale), in_ = x => x >= Math.min(lo, hi) && x <= Math.max(lo, hi); return !in_(v) && in_(-v) ? -v : v; };
   const read = (id, stats, values, hash, shown) => { for (const p of parts(id, stats)) if (p.hash === hash) p.at.forEach((a, j) => { if (a && shown[j] !== undefined) values[a.k] = stored(shown[j], a.scale, stats[a.k]); }); };
@@ -725,8 +730,11 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
       const order = byGain(rows);   // most improved first
+      // what is socketed (runes, soul cores, idols) and enchanted: what yours has that this one lacks, and what this one brings
+      const mine = statLines(worn?.extra || {}), its = l.item.extra ? statLines(l.item.extra) : l.extra || [], lost = mine.filter(x => !its.includes(x)), got = its.filter(x => !mine.includes(x));
+      const sock = (lost.length ? `<div class="ddn">${esc(t('Socketed in yours, lost: {0}', lost.join(', ')))}</div>` : '') + (got.length ? `<div class="dup">${esc(t('Socketed in it, gained: {0}', got.join(', ')))}</div>` : '');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
-        <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4, true)}
+        <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}${sock ? `<div class="bsock">${sock}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4, true)}
         ${rows.length > 4 ? `<details class="ball"><summary>${t('See every change ({0})', rows.length)}</summary>${impactList(order, true)}</details>` : ''}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}

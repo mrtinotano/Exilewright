@@ -453,7 +453,7 @@
  "{0} killed you": "{0}擊殺了你",
  "{0} more: type to narrow the list": "還有 {0} 個：輸入以縮小清單",
  "{0} needs a corpse: kill an enemy or press C": "{0}需要一具屍體：擊殺一名敵人或按 C",
-  "{0} needs a minion": "{0}需要一個召喚物",
+ "{0} needs a minion": "{0}需要一個召喚物",
  "{0} per second": "每秒 {0}",
  "If you allocate it": "配置後",
  "If you remove it": "移除後",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "{1} 的通貨交換中有 {0} 筆報價",
  "Level {0} or more, {1}% quality or more": "等級 {0} 以上，品質 {1}% 以上",
  "Level {0} or more": "等級 {0} 以上",
- "See every change ({0})": "查看所有變化 ({0})"
+ "See every change ({0})": "查看所有變化 ({0})",
+ "Socketed in yours, lost: {0}": "你的装备已镶嵌，将失去：{0}",
+ "Socketed in it, gained: {0}": "此装备已镶嵌，将获得：{0}"
 }

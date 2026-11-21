@@ -453,7 +453,7 @@
  "{0} killed you": "{0}에게 사망",
  "{0} more: type to narrow the list": "{0}개 더: 입력해 목록을 좁히세요",
  "{0} needs a corpse: kill an enemy or press C": "{0}에 시신 필요: 적을 처치하거나 C 키",
-  "{0} needs a minion": "{0}에는 소환수가 필요합니다",
+ "{0} needs a minion": "{0}에는 소환수가 필요합니다",
  "{0} per second": "초당 {0}",
  "If you allocate it": "할당하면",
  "If you remove it": "제거하면",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "{1} 화폐 교환의 제안 {0}건",
  "Level {0} or more, {1}% quality or more": "레벨 {0} 이상, 퀄리티 {1}% 이상",
  "Level {0} or more": "레벨 {0} 이상",
- "See every change ({0})": "모든 변화 보기 ({0})"
+ "See every change ({0})": "모든 변화 보기 ({0})",
+ "Socketed in yours, lost: {0}": "내 장비에 장착됨, 잃음: {0}",
+ "Socketed in it, gained: {0}": "이 장비에 장착됨, 얻음: {0}"
 }

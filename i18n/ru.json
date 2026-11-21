@@ -453,7 +453,7 @@
  "{0} killed you": "{0} убил вас",
  "{0} more: type to narrow the list": "ещё {0}: введите текст, чтобы сузить список",
  "{0} needs a corpse: kill an enemy or press C": "{0} нужен труп: убейте врага или нажмите C",
-  "{0} needs a minion": "{0}: нужен приспешник",
+ "{0} needs a minion": "{0}: нужен приспешник",
  "{0} per second": "{0} в секунду",
  "If you allocate it": "Если распределить",
  "If you remove it": "Если убрать",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "Предложений в «Обмене валют» в {1}: {0}",
  "Level {0} or more, {1}% quality or more": "Уровень {0} или выше, качество {1}% или выше",
  "Level {0} or more": "Уровень {0} или выше",
- "See every change ({0})": "Показать все изменения ({0})"
+ "See every change ({0})": "Показать все изменения ({0})",
+ "Socketed in yours, lost: {0}": "Вставлено в ваш, теряется: {0}",
+ "Socketed in it, gained: {0}": "Вставлено в этот, получаете: {0}"
 }

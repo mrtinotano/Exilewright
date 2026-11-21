@@ -453,7 +453,7 @@
  "{0} killed you": "{0} สังหารคุณ",
  "{0} more: type to narrow the list": "อีก {0}: พิมพ์เพื่อจำกัดรายการ",
  "{0} needs a corpse: kill an enemy or press C": "{0} ต้องใช้ศพ: สังหารศัตรูหรือกด C",
-  "{0} needs a minion": "{0} ต้องมีมิเนียน",
+ "{0} needs a minion": "{0} ต้องมีมิเนียน",
  "{0} per second": "{0} ต่อวินาที",
  "If you allocate it": "หากจัดสรร",
  "If you remove it": "หากนำออก",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "ข้อเสนอ {0} รายการในค้าเงินตรา ใน {1}",
  "Level {0} or more, {1}% quality or more": "เลเวล {0} ขึ้นไป คุณภาพ {1}% ขึ้นไป",
  "Level {0} or more": "เลเวล {0} ขึ้นไป",
- "See every change ({0})": "ดูการเปลี่ยนแปลงทั้งหมด ({0})"
+ "See every change ({0})": "ดูการเปลี่ยนแปลงทั้งหมด ({0})",
+ "Socketed in yours, lost: {0}": "ใส่ในของคุณ จะเสีย: {0}",
+ "Socketed in it, gained: {0}": "ใส่ในชิ้นนี้ จะได้: {0}"
 }

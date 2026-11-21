@@ -164,9 +164,8 @@ const linesOf = (it, key) => (it[key] || []).map(m => typeof m === 'string' ? { 
 //      item (for the build, null when the app does not have its base), slots, missed: [lines not counted] }
 export function readListing(r) {
   const it = r.item || {}, lines = Object.keys(KINDS).flatMap(k => linesOf(it, k)), name = plain(it.name || ''), base = plain(it.baseType || it.typeLine || '');
-  const p = tradeItem({ name, base, lines });
-  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text),
-    extra: ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
+  const extra = ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), p = tradeItem({ name, base, lines, runes: extra });
+  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
     item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [] };
 }

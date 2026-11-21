@@ -453,7 +453,7 @@
  "{0} killed you": "{0}に倒されました",
  "{0} more: type to narrow the list": "他{0}件: 入力して絞り込み",
  "{0} needs a corpse: kill an enemy or press C": "{0}には死体が必要です: 敵を倒すかCキーを押してください",
-  "{0} needs a minion": "{0}にはミニオンが必要です",
+ "{0} needs a minion": "{0}にはミニオンが必要です",
  "{0} per second": "秒間{0}",
  "If you allocate it": "割り振った場合",
  "If you remove it": "解除した場合",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "{1}のカレンシー交換に{0}件の出品",
  "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",
  "Level {0} or more": "レベル{0}以上",
- "See every change ({0})": "すべての変化を表示 ({0})"
+ "See every change ({0})": "すべての変化を表示 ({0})",
+ "Socketed in yours, lost: {0}": "あなたの装備に装着、失う: {0}",
+ "Socketed in it, gained: {0}": "こちらに装着、得る: {0}"
 }

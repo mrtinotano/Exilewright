@@ -453,7 +453,7 @@
  "{0} killed you": "{0} te ha matado",
  "{0} more: type to narrow the list": "{0} más: escribe para acotar la lista",
  "{0} needs a corpse: kill an enemy or press C": "{0} necesita un cadáver: mata a un enemigo o pulsa C",
-  "{0} needs a minion": "{0} necesita un esbirro",
+ "{0} needs a minion": "{0} necesita un esbirro",
  "{0} per second": "{0} por segundo",
  "If you allocate it": "Si lo asignas",
  "If you remove it": "Si lo quitas",
@@ -912,5 +912,7 @@
  "{0} offers on the Currency Exchange in {1}": "{0} ofertas en el Intercambio de objetos en {1}",
  "Level {0} or more, {1}% quality or more": "Nivel {0} o más, calidad del {1}% o más",
  "Level {0} or more": "Nivel {0} o más",
- "See every change ({0})": "Ver todos los cambios ({0})"
+ "See every change ({0})": "Ver todos los cambios ({0})",
+ "Socketed in yours, lost: {0}": "Engarzado en la tuya, lo pierdes: {0}",
+ "Socketed in it, gained: {0}": "Engarzado en esta, lo ganas: {0}"
 }
