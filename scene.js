@@ -3441,7 +3441,13 @@ export function initScene(el, api) {
     if (lodged) { recall(S, lodged); cdReady[S.name] = []; return true; }
     // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
     const C = !auto && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
-    if (C && ready.length >= (S.dmg.uses || 1)) return false;
+    // one whose game text says a charge can bypass its cooldown (Ice-Tipped Arrows a Frenzy Charge, Fortifying Cry an
+    // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
+    // (its only use of charges: none spent otherwise)
+    const gi = C && api.info(S.g).gem, byCharge = /cooldown can be bypassed/.test(gi?.description || ''), wait = C && ready.length >= (S.dmg.uses || 1);
+    const BY = wait && byCharge && Object.keys(charges).find(c => gi.types?.includes(`SkillConsumes${c[0].toUpperCase() + c.slice(1)}ChargesOnUse`) && charges[c] > 0);
+    if (wait && !BY) return false;
+    if (BY) { charges[BY]--; chargesSpent(1); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
@@ -3493,7 +3499,7 @@ export function initScene(el, api) {
       const sv = S.spent && st['spiral_volley_damage_+%_final_when_frenzy_charges_consumed'];
       if (sv) { S.mult *= (1 + sv / 100) * (1 + S.spent * st['spiral_volley_damage_+%_final_per_frenzy_charge_consumed'] / 100); S.addChains = S.spent * st.spiral_volley_X_chains_per_frenzy_charge_consumed; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
-      if (!inhib) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n); charges[c] -= n; }
+      if (!inhib && !byCharge) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n); charges[c] -= n; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
@@ -3522,8 +3528,7 @@ export function initScene(el, api) {
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
         // Ice-Tipped Arrows: its share of the attack's physical damage as cold (note: all of the hit's physical, its
-        // modifiers kept: the weapon's base alone is not told apart here), its fragments on each hit (iceFrags). note:
-        // a Frenzy Charge bypassing its cooldown is not simulated
+        // modifiers kept: the weapon's base alone is not told apart here), its fragments on each hit (iceFrags)
         else if (E.type === 'icetip' && P.attack && P.ranged && hits && S.dmg) {
           const H = { ...S.dmg.hits }, ph = H.physical, cv = (E.cv ?? 100) / 100;
           if (ph) { const c = H.cold || [0, 0]; H.cold = [c[0] + ph[0] * cv, c[1] + ph[1] * cv]; H.physical = [ph[0] * (1 - cv), ph[1] * (1 - cv)]; if (cv >= 1) delete H.physical; }
@@ -3622,7 +3627,7 @@ export function initScene(el, api) {
       if (U.lifePerCooldown && C) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerCooldown * C / 1000 / 100);   // Second Wind III
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
-    if (C) ready.push(time + C / 1000);
+    if (C && !BY) ready.push(time + C / 1000);
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
     // Unbound Avatar: usable at its Unbound Fury, which it consumes to make you Unbound for its duration: its more elemental
     // damage, elemental ailment chance and freeze / electrocute buildup
