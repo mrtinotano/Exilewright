@@ -857,6 +857,7 @@ export function initScene(el, api) {
     if (a === 'freeze') gainBuff(S, 'freeze');
     if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
+    if (a === 'pin' && !S?.src) me.pinAt = time;   // "if you've Pinned an enemy Recently"
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; if (!S.src) remnantOn('stun', d); }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
@@ -2830,8 +2831,8 @@ export function initScene(el, api) {
       // note: Crackling Palm and Gelid Palm (Thunderfist) call down their bolts on Unarmed melee attack hits; no gem is an
       // Unarmed melee attack and the game's Punch has no damage data, so they are not simulated
       // Refutation: spends all your Runic Ward; for its duration you Block every blockable hit and Parry its attacker
-      // (activeBlock). note: its less Stun Threshold is not simulated
-      if (st['runic_fortress_stun_threshold_+%_final'] != null) { spendWard(me.ward); me.refute = { until: time + durOf(S), st }; return say(t('{0} active', S.label), 'gold'); }
+      // (activeBlock), with its less Stun Threshold, less by its more per 10 Ward spent (hurt)
+      if (st['runic_fortress_stun_threshold_+%_final'] != null) { const w = me.ward; spendWard(w); me.refute = { until: time + durOf(S), st, stun: (1 + st['runic_fortress_stun_threshold_+%_final'] / 100) * (1 + Math.floor(w / 10) * (st['runic_fortress_stun_threshold_+%_final_per_10_ward_spent'] || 0) / 100) }; return say(t('{0} active', S.label), 'gold'); }
       // Rain of Blades: for its duration its blades fall on the enemies your projectile attacks hit (hit)
       if (st['triggered_rain_of_blades_%'] != null) { me.blades = { until: time + durOf(S), S }; return say(t('{0} active', S.label), 'gold'); }
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
@@ -4722,13 +4723,13 @@ export function initScene(el, api) {
   }
   function activeBlock(d, a) {
     const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised, RF = time < me.refute?.until && me.refute.st;
-    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) }; blocked(d); return true; }
+    if (RF) { me.parryAt = time; d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) }; blocked(d); return true; }
     if (!P && !R) return false;
     if (P) {
       const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
       if (l > far + SIM.body * d.sc) return false;
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
-      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
+      me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
     } else { R.blocked = time; spray(d); }
     blocked(d); return true;
   }
@@ -4855,7 +4856,7 @@ export function initScene(el, api) {
       * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
     me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
-    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
+    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
     if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
@@ -4949,7 +4950,7 @@ export function initScene(el, api) {
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
-    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4,
+    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
     ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedPowerRecently: () => time - (me.spentAt?.power ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT,
     ...Object.fromEntries([['chill', 'Chilled'], ['ignite', 'Ignited'], ['shock', 'Shocked']].map(([a, n]) => [n + 'EnemyRecently', () => time - (me.inflAt?.[a] ?? -99) <= RECENT])),
     ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`HeraldOf${h}`, () => !!tog[`Herald of ${h}`]])), MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
@@ -5090,7 +5091,7 @@ export function initScene(el, api) {
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
   function vitals(dt) {
     const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges')
-      * (1 + (c.defWhile || []).filter(w => w.to === 's' && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
+      * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }

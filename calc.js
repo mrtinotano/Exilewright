@@ -295,7 +295,7 @@ export function character(b, sum) {
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
-    moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
+    moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0),   // Renly's Training: the shield's base chance (note: a shield's own is not in the data)
     takenAs: takenAs(sum),
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
@@ -691,10 +691,10 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
   enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed' };
-// [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "while
-// Shapeshifted" (the scene has none)
+// [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]. note: not counted "while Shapeshifted" (the
+// scene has none)
 const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
-  ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'ae', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
+  ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
   ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'],
@@ -714,9 +714,10 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
   ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently']];
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
-// note: not counted against Bloodlusting enemies, "if you've Pinned an enemy Recently", while using a Charm, Parry's own,
-// "if 10 green supports are socketed", the penalties while performing an action
-const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_+%_if_enemy_killed_recently', 'KilledRecently'], ['movement_speed_+%_while_surrounded', 'Surrounded'],
+// 'Green10': 10 green supports socketed, known here. note: not counted against Bloodlusting enemies (the scene's have
+// none), the penalties while performing an action
+const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_+%_if_pinned_enemy_recently', 'PinnedRecently'], ['movement_speed_+%_while_using_charm', 'UsingCharm'],
+  ['parry_movement_speed_+%_if_youve_parried_recently', 'ParriedRecently'], ['movement_speed_+%_if_10_green_supports_socketed', 'Green10'], ['movement_speed_+%_if_enemy_killed_recently', 'KilledRecently'], ['movement_speed_+%_while_surrounded', 'Surrounded'],
   ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently']];
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
@@ -891,8 +892,8 @@ export function skill(g, b, treeGear) {
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
   // Path of Building group comes in) is a totem's ballista attack: "increased Ballista / Totem Damage" count, "per active
   // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
-  // Mortar Cannon placed, no Rage (16/11): 2.7% under this. note: Rage is not counted; the gem before it, a link of
-  // its own if a build breaks it
+  // Mortar Cannon placed, no Rage (16/11): 2.7% under this. Your Rage is not the totem's (below). note: the gem before it,
+  // a link of its own if a build breaks it
   // g may be a copy with other supports (the Optimizer's): the build's gem of that name then
   const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || ownTotem;
   const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
@@ -911,7 +912,8 @@ export function skill(g, b, treeGear) {
   // Rage effect" (gem level and quality) scales that bonus, and its Gemling alt quality grants maximum Rage: the game's
   // window with Berserk 17, 6% quality (59%, +2 Rage: 46), 16/11, gives x1.730 (46 x 1.59% = x1.731)
   const R = rageOf(b, treeGear);
-  const rage = out.rage = attack && R.regen && !R.noEffect ? (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (R.berserk?.max || 0) : 0;
+  const rage = out.rage = attack && !byTotem && R.regen && !R.noEffect ?   // your Rage: not a totem's attacks
+    (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (R.berserk?.max || 0) : 0;
   const rageEffect = out.rageEffect = R.berserk?.effect || 0;
   // mana per use (per second for a channelled skill), as Path of Building 2 works it out (CalcOffence): the gem's cost at
   // its level times its supports' cost multipliers (floored to 4 digits), plus flat cost, then increased / reduced (up
@@ -1118,9 +1120,10 @@ export function skill(g, b, treeGear) {
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
-  // note: not counted "while Shapeshifted" (the scene has none) nor the weapon's local penetration
+  // and the weapon's own ("Attacks with this Weapon Penetrate X% Fire Resistance"). note: not counted "while Shapeshifted"
+  // (the scene has none)
   out.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, v(sum, `base_reduce_enemy_${e}_resistance_%`, 'reduce_enemy_elemental_resistance_%', 'base_penetrate_elemental_resistances_%')
-    + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') : 0)]));
+    + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') + (w?.pen?.[e] || 0) : 0)]));
   if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
   out.projSpeed = 1 + (v(sum, 'base_projectile_speed_+%') + (spell ? v(sum, 'spell_skill_projectile_speed_+%') : 0) + (tags.includes('crossbow') ? v(sum, 'projectile_speed_+%_with_crossbow_skills') : 0)) / 100;   // increased projectile speed (the scene's projectiles)
   if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
@@ -1232,7 +1235,7 @@ export function skill(g, b, treeGear) {
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
   const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
-  // speed, area, resistances). note: the ones with no such twin (damage as chaos / cold, movement speed) are not counted
+  // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
   // Spirit Walker's The Catha's Balance: Companions gain added Attack damage equal to a share of your main hand Weapon's damage
   const cw = msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions'), W = cw && weaponStats(b.items);
@@ -1356,10 +1359,12 @@ function minionLife(st, sum, id, finals = {}) {
   return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
     * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1));
 }
-const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
+// "Companions gain X% of Damage as extra Chaos / Cold" have no "Minions" twin: the companion's own stat ("minion:")
+const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%_to_gain_as_chaos', 'companion_%_damage_as_cold': 'minion:non_skill_base_all_damage_%_to_gain_as_cold' };
+const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = OWN[k] || 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || src === sum && k.startsWith('talisman:') && k.slice(9); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // Necromantic Talisman: the amulet's own
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }
 function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
@@ -1379,6 +1384,9 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   const phys = base.physical, kept = 1 - Math.min(1, DMG.slice(1).reduce((x, t) => x + conv(t), 0) / 100);
   for (const t of DMG.slice(1)) base[t] = base[t].map((x, i) => x + phys[i] * (conv(t) + v(ms, `non_skill_base_physical_damage_%_to_gain_as_${t}`)) / 100);
   base.physical = phys.map(x => x * kept);
+  // "gain X% of Damage as extra <type>" (Companions'), of the damage after conversion
+  const pre = DMG.map(t => base[t]), all = [0, 1].map(i => pre.reduce((x, r) => x + r[i], 0));
+  for (const t of DMG) { const g = v(ms, `non_skill_base_all_damage_%_to_gain_as_${t}`); if (g) base[t] = base[t].map((x, i) => x + all[i] * g / 100); }
   const scale = t => (1 + (inc(ms, 'damage_+%', tags) + v(ms, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(ms, 'elemental_damage_+%') : 0)) / 100)
     * (1 + v(ms, 'damage_+%_final_for_minion') / 100) * (1 + v(st, 'active_skill_minion_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t);
   const hits = {};

@@ -82,6 +82,7 @@ function local(item) {
     // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)
     r.onHit = { maim: s['local_maim_on_hit_%'] || 0, maimCrit: !!s.local_always_maim_on_crit, bleed: s.local_bleed_on_hit ? 100 : s['local_chance_to_bleed_on_hit_%'] || 0 };
     r.tags = base.tags;   // mace, bow, onehand...: what kind of weapon it is
+    r.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, (s[`local_${e}_penetration_%`] || 0) + (s['local_elemental_penetration_%'] || 0)]));   // its hits penetrate
   }
   if (base.flask) r.flask = base.flask;
   if (base.spirit) r.spirit = Math.round(base.spirit * (1 + (s['local_spirit_+%'] || 0) / 100));   // a sceptre's own Spirit
