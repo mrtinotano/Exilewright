@@ -99,7 +99,7 @@ export function gearStats(items = {}) {
   const add = (k, v) => { if (v) sum[k] = (sum[k] || 0) + v; };
   for (const item of Object.values(items)) {
     if (!BASE[item.base]) continue;
-    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_')) add(k, v);
+    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots')) add(k, v);   // the belt's charm slots count for the character
     const l = local(item);
     add('base_physical_damage_reduction_rating', l.armour);
     add('base_evasion_rating', l.evasion);
