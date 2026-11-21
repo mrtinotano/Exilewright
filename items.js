@@ -136,14 +136,16 @@ export function flaskRecovery(items = {}, sum = {}) {
 export function flaskOf(it, sum = {}) {
   const base = BASE[it?.base]; if (!base?.flask || base.charm) return null;
   const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
+  const gInc = g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%');   // the character's increased
   const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
-    * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1) * (k === 'life' && g('keystone_eternal_youth') ? .5 : 1);   // Oasis: 30% more; Eternal Youth: 50% less life
-  const time = F.recovery_s / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
+    * (1 + gInc / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1) * (k === 'life' && g('keystone_eternal_youth') ? .5 : 1);   // Oasis: 30% more; Eternal Youth: 50% less life
+  // increased Flask Effect Duration: the same recovery over a longer time
+  const time = F.recovery_s * (1 + g('flask_duration_+%') / 100) / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
   const max = mostCharges(F, s);
   const per = Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('flask_charges_used_+%') + (k === 'mana' ? g('flask_mana_charges_used_+%') : 0)) / 100));
   const gain = 1 + (g('flask_charges_gained_+%') + g(`${k}_flask_charges_gained_+%`)) / 100;
   const always = !!s.local_flask_always_drinking || k === 'life' && !it.unique && !!g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you');
-  return { k, amount, time, max, per, gain, always, es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
+  return { k, amount, inc: gInc, time, max, per, gain, always, keep: g('flasks_%_chance_to_not_consume_charges'), es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
 }
 const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
 // A charm: what sets it off (on: its implicit "used when...", local_flask_use_on_<on>), what it grants while it lasts (its

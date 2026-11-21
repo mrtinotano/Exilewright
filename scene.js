@@ -183,10 +183,11 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? (1 + (me.ley?.more || 0) / 100) * (1 + banner('circle_of_power_spell_damage_+%_final') / 100) : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? (1 + (me.ley?.more || 0) / 100) * (1 + banner('circle_of_power_spell_damage_+%_final') / 100) : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), shape: !!inf.gem?.types?.includes('Shapeshift'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
+  const offerX = () => 1 + (sheet().offerEff || 0) / 100;   // the tree's increased Offering buff effect
   const sh = S => S.dmg?.shape || {}, durOf = S => sh(S).duration || (S.dmg?.stats?.base_skill_effect_duration || 0) / 1000;   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
@@ -489,7 +490,7 @@ export function initScene(el, api) {
       const EC = S.src !== 'minionHit' && onS('Elemental Conflux');
       if (EC) { if (!(time < me.conflux?.until)) me.conflux = { el: ELEM[Math.floor(Math.random() * ELEM.length)], until: time + durOf(EC) }; if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
-      if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] / 100;
+      if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] * offerX() / 100;
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
       const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
@@ -631,7 +632,8 @@ export function initScene(el, api) {
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
-      DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length };
+      DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length,
+      EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0) };
     let n;
     if (c.type === 'ActorCondition' || c.type === 'Condition') n = (v in is ? is[v] : !en && meIs[v]?.()) ? 1 : 0;
     else if (c.type === 'MultiplierThreshold') n = v === 'Rage' && S.enraged || v in count && count[v] >= (c.threshold || 0) ? 1 : 0;
@@ -750,6 +752,7 @@ export function initScene(el, api) {
       const near4 = kind === 'rift' && dummies.filter(e => !e.dead && !e.inRift && has(e, 'shock') && dist(e.pos, d.pos) <= U.try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy / 10);
       if (near4 && near4.length < U.consume_shock_of_X_enemies_to_trigger_shocking_rift) continue;
       if (!spend(T)) continue;
+      me.trigAt = time;   // "if you've Triggered a Skill Recently"
       let f = 1, hits = T.hits;
       if (kind === 'fulminate') f = d.max * (ts.skill_specific_stat_description_mode || 0) / 1e4;
       if (kind === 'flare') { const used = me.mana * ts['support_mana_flare_%_of_current_mana_consumed'] / 100; me.mana -= used; f = used / 100; }
@@ -816,8 +819,9 @@ export function initScene(el, api) {
     if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
       const v = ailDps(d, a, raw, S), w = d.st[a] > 0 && d.burn[a];
       if (o?.eff) v.dps *= o.eff;
-      // Pathfinder's Overwhelming Toxicity: two of your poisons at once, the weaker kept with its own time (burn2)
-      if (a === 'poison' && w && !w.sim && !v.sim && S.dmg?.sum?.double_number_of_poison_you_can_inflict) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
+      // Pathfinder's Overwhelming Toxicity, the tree's "+1 of your Poisons at the same time": two of your poisons at once,
+      // the weaker kept with its own time (burn2). ponytail: a third or more counts as the second
+      if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
     if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
@@ -1341,7 +1345,8 @@ export function initScene(el, api) {
   function useCorpse(S) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
-    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; eat(d, S.el); if (S.P.gain) chargeBy(S.P.gain, S);   // life: the corpse's monster's
+    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;
+    if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.el);   // the tree's chance to not destroy it if (S.P.gain) chargeBy(S.P.gain, S);   // life: the corpse's monster's
     return p;
   }
 
@@ -1386,6 +1391,7 @@ export function initScene(el, api) {
   // reaches as far as calc.js shape says
   function chain(from, d, S, n, seen = new Set(), mult = 1) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
+    if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
     seen.add(d); hit(d, S, { mult });
     if (n <= 0) return;
@@ -1761,7 +1767,7 @@ export function initScene(el, api) {
   // tree recovers for each (calc.js recoverOn: mana for a power charge, life for an endurance charge)
   const chargesSpent = (n, c) => {
     if (!(n > 0)) return; const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n);
-    (me.spentAt ||= {})[c] = time;
+    (me.spentAt ||= {})[c] = time; (me.spentLog = (me.spentLog || []).filter(x => time - x.t <= RECENT)).push({ t: time, n, c });   // how many Recently
     if (c === 'power') gainPct('mana', recOn('power') * n); if (c === 'endurance') gainPct('life', recOn('endurance') * n);
   };
   // the tree's recovery on an event (calc.js recoverOn), a % of your maximum life / mana
@@ -2005,8 +2011,8 @@ export function initScene(el, api) {
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
-          const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] / 100) } : MS;
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) / 100); sw = 1;
+          const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100); sw = 1;
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -4075,6 +4081,8 @@ export function initScene(el, api) {
       M.push({ S: { ...S, mult: S.mult * less }, run, until: time + (TS.shape?.duration || TS.stats.base_skill_effect_duration / 1000) }); fx.ring(S.from, .2, .8, S.el, .5);
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
+    // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
+    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; }
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
@@ -4739,7 +4747,7 @@ export function initScene(el, api) {
     if (RF) { me.parryAt = time; d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) }; blocked(d); return true; }
     if (!P && !R) return false;
     if (P) {
-      const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
+      const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10 * (1 + (sheet().parryRange || 0) / 100), l = dist(d.pos, pp) || 1;
       if (l > far + SIM.body * d.sc) return false;
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
@@ -4871,7 +4879,7 @@ export function initScene(el, api) {
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
     me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
     // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
-    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0);
+    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0);
       return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
     const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
     if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
@@ -4905,7 +4913,9 @@ export function initScene(el, api) {
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
-    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
+    if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
+    const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + ((f.inc || 0) + (sheet().lowFlask || 0)) / 100) / (1 + (f.inc || 0) / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
+    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
@@ -4968,6 +4978,9 @@ export function initScene(el, api) {
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
     PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
+    ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.stunAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
+    NoLifeFlaskUses: () => !!flasks()[0] && flaskLeft(0) < flasks()[0].per,
+    Shapeshifted: () => !!me.form || !!me.demon, ShapeshiftedRecently: () => time - (me.shiftAt ?? -99) <= RECENT, RevertedRecently: () => time - (me.revertAt ?? -99) <= RECENT,
     ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedPowerRecently: () => time - (me.spentAt?.power ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT,
     ...Object.fromEntries([['chill', 'Chilled'], ['ignite', 'Ignited'], ['shock', 'Shocked']].map(([a, n]) => [n + 'EnemyRecently', () => time - (me.inflAt?.[a] ?? -99) <= RECENT])),
     ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`HeraldOf${h}`, () => !!tog[`Herald of ${h}`]])), MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,

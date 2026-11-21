@@ -269,9 +269,11 @@ export function character(b, sum) {
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
+  // the equipped shield's / focus's own defences, increased ("from Equipped Shield / Focus")
+  const oc = classOf(b.items?.offhand), offX = k => pieceDef(b.items, 'offhand', k) * (/^(Shields|Bucklers)$/.test(oc) ? v(sum, 'shield_armour_evasion_energy_shield_+%') : oc === 'Foci' && k === 'energy_shield' ? v(sum, 'energy_shield_from_focus_+%') : 0) / 100;
   const WH = pct('witchhunter_armour_evasion_+%_final'), EV = pct('master_of_elements_evasion_rating_+%_final');   // Witchhunter: less armour and evasion; Invoker: less evasion
-  const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
-  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH * EV);
+  const armour = Math.round((v(sum, 'base_physical_damage_reduction_rating') + offX('armour')) * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
+  const evasion = Math.round((v(sum, 'base_evasion_rating') + offX('evasion') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH * EV);
   // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
   const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
   const armourEl = { fire: v(sum, 'base_armour_%_applies_to_fire_damage') + ele, cold: v(sum, 'base_armour_%_applies_to_cold_damage') + ele,
@@ -289,7 +291,7 @@ export function character(b, sum) {
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
-    es: Math.round(v(sum, 'base_maximum_energy_shield') * esInc + v(sum, 'total_maximum_energy_shield_+')),
+    es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield')) * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
@@ -363,6 +365,9 @@ export function character(b, sum) {
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
     // for its share of damage gained as physical per charge, for its duration; flasks recover no life
+    parryRange: v(sum, 'active_block_maximum_distance_+%'),   // increased Parry Range
+    offerEff: v(sum, 'offering_spells_effect_+%'),
+    lowFlask: v(sum, 'life_recovery_+%_from_flasks_while_on_low_life'),   // increased life recovery from flasks used on Low Life
     tides: sum.blood_mage_life_flask_buff_duration_ms ? { gain: v(sum, 'gain_X_life_flask_charges_per_4%_life_spent'), use: v(sum, 'blood_mage_life_flask_buff_%_charges_to_consume'),
       per: v(sum, 'blood_mage_life_flask_buff_%_damage_to_gain_as_physical_per_charge_consumed'), dur: sum.blood_mage_life_flask_buff_duration_ms / 1000, dry: !!sum.base_life_flasks_do_not_recover_life } : null,
     shot: [v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_decreases'), v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_increases')],   // Deadeye's Point Blank / Far Shot: projectile hits' more damage by how far they have travelled
@@ -512,7 +517,7 @@ export function ailmentDefence(c, sum) {
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
   const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
   // the increased stun threshold that counts only in a state, with the always-on one it adds to (the scene's)
-  const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling') };
+  const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling'), full: v(sum, 'stun_threshold_+%_when_on_full_life'), parry: v(sum, 'parry_stun_threshold_+%_during_parry') };
   return { stun, ail, freeze, electrocute, avoid, dur, eff, stunIf };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
@@ -694,8 +699,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
   enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed' };
-// [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]. note: not counted "while Shapeshifted" (the
-// scene has none)
+// [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
 const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
@@ -703,9 +707,9 @@ const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'Con
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'],
   ['evasion_rating_+%_if_sprinting', 'e', 'Sprinting'], ['armour_evasion_energy_shield_+%_while_channelling', 'ae', 'Channelling'], ['evasion_rating_+%_if_you_have_hit_an_enemy_recently', 'e', 'HitRecently'],
   ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
-  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife']];
+  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted']];
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
-// counted "per Enemy in Close Range" (the game data has no distance for it), "while Shapeshifted", against Bloodlusting
+// counted "per Enemy in Close Range" (the game data has no distance for it), against Bloodlusting
 // enemies, Parry's own speed after a Parry
 const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
   ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
@@ -715,7 +719,7 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
   ['attack_speed_+%_while_not_on_low_mana', 'a', 'NotLowMana'], ['attack_speed_+%_while_surrounded', 'a', 'Surrounded'],
   ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
-  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently']];
+  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently'], ['skill_speed_+%_while_shapeshifted', 'ac', 'Shapeshifted']];
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
 // 'Green10': 10 green supports socketed, known here. note: not counted against Bloodlusting enemies (the scene's have
 // none), the penalties while performing an action
@@ -724,7 +728,7 @@ const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_
   ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently']];
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
-// only, not flasks; not counted "per 5% missing life", "while Shapeshifted"
+// only, not flasks; not counted "per 5% missing life"
 const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited'], ['life_regeneration_rate_+%_while_moving', 'l', 'Moving'],
   ['life_regeneration_rate_+%_while_on_low_life', 'l', 'LowLife'], ['life_regeneration_rate_+%_while_stationary', 'l', 'Still'],
   ['life_regeneration_rate_+%_while_using_life_flask', 'l', 'LifeFlaskEffect'], ['life_recovery_rate_while_in_presence_of_companion_+%', 'l', 'CompanionInPresence'],
@@ -734,19 +738,22 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
   ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
   ['mana_regeneration_rate_+%_while_moving', 'm', 'Moving'], ['mana_regeneration_rate_+%_while_not_on_low_mana', 'm', 'NotLowMana'],
   ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still'],
-  ['mana_regeneration_rate_+%_if_enemy_shocked_recently', 'm', 'ShockedEnemyRecently']];
+  ['mana_regeneration_rate_+%_if_enemy_shocked_recently', 'm', 'ShockedEnemyRecently'], ['life_regeneration_rate_+%_while_shapeshifted', 'l', 'Shapeshifted'], ['mana_regeneration_rate_+%_while_shapeshifted', 'm', 'Shapeshifted']];
 // "damage_+%_<state>" while you are in it: [the stat's end, the scene's condition]
 const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in_presence_of_companion: 'CompanionInPresence', while_ally_in_presence: 'AllyInPresence',
   while_you_have_arcane_surge: 'ArcaneSurge', when_on_full_life: 'FullLife', when_on_low_life: 'LowLife', while_leeching: 'Leeching', while_life_leeching: 'LifeLeeching',
   if_have_crit_in_past_8_seconds: 'CritPast8', while_es_full: 'FullEnergyShield', while_totem_active: 'TotemActive', while_affected_by_a_herald: 'HeraldOn',
   if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently',
   while_ignited: 'Ignited', if_enemy_chilled_recently: 'ChilledEnemyRecently', if_enemy_ignited_recently: 'IgnitedEnemyRecently', if_enemy_shocked_recently: 'ShockedEnemyRecently',
+  if_you_have_consumed_a_corpse_recently: 'ConsumedCorpseRecently', when_no_remaining_life_flask_uses: 'NoLifeFlaskUses', if_been_heavy_stunned_recently: 'HeavyStunnedRecently',
+  if_triggered_skill_recently: 'TriggeredRecently', while_shapeshifted: 'Shapeshifted', if_youve_shapeshifted_to_animal_recently: 'ShapeshiftedRecently', if_youve_reverted_recently: 'RevertedRecently',
   ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`while_affected_by_herald_of_${h.toLowerCase()}`, `HeraldOf${h}`])) };
 // the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
 const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
   ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
-  ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently']];
+  ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently'],
+  ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -759,7 +766,7 @@ function inc(sum, suffix, tags) {
     // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
     const vs = k.match(/^(.*damage)_(vs|against)_(\w+)_\+%$/); if (vs) k = `${vs[1]}_+%_${vs[2]}_${vs[3]}`;
     if (!k.endsWith(suffix)) continue;
-    const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand');
+    const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand').replace(/^channelled$/, 'channelling');
     if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += val;
   }
   return t;
@@ -899,7 +906,7 @@ export function skill(g, b, treeGear) {
   // a link of its own if a build breaks it
   // g may be a copy with other supports (the Optimizer's): the build's gem of that name then
   const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || ownTotem;
-  const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : [])];   // passives for a weapon type count for attacks made with it
+  const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : []), ...(g.name === 'Parry' ? ['parry'] : [])];   // passives for a weapon type count for attacks made with it
   // "per active Totem" counts each one: all the build may place (the game's windows, 16/11: one Mortar Cannon x1.0183
   // damage, two x1.0366)
   const totems = out.totems = byTotem && attack ? (totem(meta || g, treeGear)?.limit || 1) : 0;
@@ -933,10 +940,10 @@ export function skill(g, b, treeGear) {
     const moreCost = (1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100) * (wild ? .5 : 1);   // Wildsurge Incantation: 50% less   // Efficiency: "more Cost", every resource
     // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
     // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
-    const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%')) / 100;   // Blood Magic: all of it
+    const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%') + (own.includes('spell') ? v(sum, 'spells_cost_life_instead_of_mana_%') : 0)) / 100;   // Blood Magic: all of it
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
-      const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + v(sum, 'base_cost_+%') / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
+      const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + (v(sum, 'base_cost_+%') + v(sum, 'base_life_cost_+%')) / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
       const eff2 = 1 + (effAll + v(sum, 'base_life_cost_efficiency_+%')) / 100;
       out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost / eff2) : Math.max(0, Math.round(step(step(step(life, inc2), more2), moreCost) / eff2));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
@@ -1014,7 +1021,7 @@ export function skill(g, b, treeGear) {
     ['damage_+%_per_1%_block_chance', c => c.block], ...spell ? [['spell_damage_+%_per_10_strength', c => c.attrs.str / 10], ['spell_damage_+%_per_100_maximum_mana', c => c.mana / 100]] : []].filter(([k]) => sum[k]);
   const ch = PA.length && character(b, sum), perAttr = PA.reduce((t, [k, f]) => t + Math.floor(f(ch) || 0) * sum[k], 0);
   const trigSpell = spell && (gt.includes('Triggered') || meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
-  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
@@ -1043,7 +1050,7 @@ export function skill(g, b, treeGear) {
   // the tree's speed with skills of a kind (Lightning, Elemental, Cold, channelling skills) and, for attacks, while
   // holding a shield, dual wielding, per 25 Dexterity or per 200 Accuracy
   const tagSp = (tags.includes('lightning') ? v(sum, 'attack_and_cast_speed_+%_with_lightning_skills') : 0) + (tags.some(x => x === 'fire' || x === 'cold' || x === 'lightning') ? v(sum, 'attack_and_cast_speed_+%_with_elemental_skills') : 0)
-    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0)   // Warcry Speed: its use time
+    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0) + (tags.includes('mark') ? v(sum, 'mark_use_speed_+%') : 0)   // Warcry Speed: its use time
     + (byTotem ? v(sum, attack ? 'totem_skill_attack_speed_+%' : 'totem_skill_cast_speed_+%') : 0);   // attacks / spells used by totems
   const per = attack && (v(sum, 'attack_speed_+%_per_25_dex') || v(sum, 'attack_speed_+%_per_200_accuracy_rating')) && character(b, sum);
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
@@ -1120,6 +1127,7 @@ export function skill(g, b, treeGear) {
     }
   }
   if (sum['titan_damage_+%_final_against_heavy_stunned_enemies']) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: sum['titan_damage_+%_final_against_heavy_stunned_enemies'], what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });   // Titan's Crushing Impacts: more
+  if (sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently']) out.when.push({ cond: [{ type: 'Multiplier', var: 'EnduranceConsumedRecently' }], val: sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently'], what: 'damage', w: Object.fromEntries(SRC.fire.map(t => [t, out.incW[t]])) });   // increased fire damage per Endurance Charge consumed Recently
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
@@ -1149,12 +1157,12 @@ export function skill(g, b, treeGear) {
   out.mark = mark ? markOf(st, 1 + (v(sum, 'mark_effect_+%') + (st['mark_effect_+%'] || 0)) / 100) : null;
   // what the 3D scene draws from the gem itself, with what supports and the tree add: chains, projectiles, the time a
   // grenade or bomb takes to go off, a curse's delay and length, a totem's life. Skill effect duration: the increased
-  // ones added (curses' and marks' own too, Banners', Hazards', Grenades', chaos skills' and Offerings'), times each support's more (Persistence, Swift Affliction, Limit...), as PoB2
+  // ones added (curses' and marks' own too, Banners', Hazards', Grenades', chaos skills', minions' and Offerings'), times each support's more (Persistence, Swift Affliction, Limit...), as PoB2
   // (SkillStatMap: Duration INC / MORE) and the game texts say; detonation and totem time their own increased
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null, both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0) + ['banner', 'hazard', 'grenade'].reduce((t, x) => t + (own.includes(x) ? v(sum, `${x}_duration_+%`, `${x}_skill_duration_+%`) : 0), 0)
-    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
+    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: both('number_of_chains') * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
