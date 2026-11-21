@@ -2603,7 +2603,7 @@ export function initScene(el, api) {
       const IT = partOf(S, 'IceTippedArrowsIceFragmentPlayer');
       if (IT) { const uses = S.dmg.stats.shearing_bolts_number_of_empowered_attacks; empower = empower.filter(e => e.type !== 'icetip'); empower.push({ type: 'icetip', label: S.label, name: S.name, el: 'cold', uses, s: durOf(S), X: IT, cv: S.dmg.stats['shearing_bolts_non_skill_base_physical_damage_%_to_convert_to_cold'] }); say(t('{0} active', S.label) + ` ×${uses}`, 'cold'); }
       else if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
-        empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
+        empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, cd: st['empower_barrage_cooldown_%_of_attack_time'], max: st.empowered_barrage_maximum_cooldown_ms / 1000, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
       else { setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
     },
@@ -3026,7 +3026,7 @@ export function initScene(el, api) {
   K.parry = S => { me.parry = { S, until: time + PARRY_WAIT }; fx.ring(pp, .3, .9, 'white', .3, { a: .5 }); };
   K.shield = S => { me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
   // Triskelion Cascade: your next Cascadable spell is empowered (its less damage and area), centred on you, for its duration
-  // and its share of the empowered spell's cast time is added to its cooldown (its last use's, use())
+  // and its share of the empowered spell's cast time is added to its cooldown (use(): lengthen)
   K.triskelion = S => {
     const st = S.dmg?.stats || {}; empower = empower.filter(e => e.type !== 'trisk');
     empower.push({ type: 'trisk', n: st.number_of_triskelion_cascades_for_next_skill, mult: 1 + st['triskelion_cascade_next_skill_damage_+%_final'] / 100, area: Math.sqrt(1 + st['triskelion_cascade_next_skill_area_of_effect_+%_final'] / 100), cd: st['triskelion_cascade_cooldown_%_of_cast_time'] || 0, label: S.label, name: S.name, s: durOf(S) });
@@ -3554,6 +3554,8 @@ export function initScene(el, api) {
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
+      // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
+      const lengthen = (E, S) => { const R = cdReady[E.name]; if (E.cd && R?.length && S.dmg?.speed > 0) R[R.length - 1] += Math.min(E.max || Infinity, E.cd / 100 / S.dmg.speed); };
       const hits = !NOHIT.has(S.kind), tally = () => empower.reduce((t, e) => t + 1 + (e.uses || 0), 0), had = tally();
       for (let k = empower.length - 1; k >= 0; k--) {
         const E = empower[k];
@@ -3564,9 +3566,9 @@ export function initScene(el, api) {
           const h = S.dmg.hits.cold || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, cold: [h[0] + E.add[0], h[1] + E.add[1]] } }; S.els = [...new Set([...S.els, 'cold'])]; if (P.slams) S.chillFor = E.chill;
           if (--E.uses <= 0) empower.splice(k, 1);
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
+        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
-          const R = cdReady[E.name]; if (R?.length && S.dmg?.speed > 0) R[R.length - 1] += E.cd / 100 / S.dmg.speed; say(`${E.label}: ${S.label}`, 'fire'); }
+          lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
