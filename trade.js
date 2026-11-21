@@ -381,22 +381,19 @@ async function asLines(lines) {
 // by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
 const DEAREST = { price: 'desc' };
 // Items better than `item`, from the Equipment tab: every line it has (asLines), of its kind of item (`base`: of its
-// base; a unique: that unique), up to the price, the first 10 down from the dearest, each with how far over the item's
-// own numbers its lines go (the mean of theirs / its). note: its implicits and runes are not asked: the data has no
-// trade stat for them.
-// -> { found: [{ ...listing, up (that mean - 1) }], body (the search, to open on the site), left (lines the site has no stat for) }
+// base; a unique: that unique), up to the price, the first 10 down from the dearest. note: its implicits and runes are
+// not asked: the data has no trade stat for them.
+// -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for) }
 const lineKey = l => l.hash ?? 'd:' + l.en;
 export async function findBetter({ league, item, base, skip = [], price, level, state, tick }) {   // skip: lines left out (lineKey)
-  const { stats, asked, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l))))), mine = asked.filter(x => x.value > 0);
+  const { stats, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
   const s = await call('search?league=' + encodeURIComponent(league), body), found = [];
   tick?.('Reading {0} items…', Math.min(10, s.result?.length || 0));
   if (s.result?.length) for (const r of (await call(`fetch?ids=${s.result.slice(0, 10).join()}&query=${s.id}`)).result || []) {
-    const l = r && readListing(r); if (!l?.item) continue;
-    const theirs = new Map(priceLines(l.item).map(x => [lineKey(x), x.value]));
-    found.push({ ...l, up: mine.length ? mine.reduce((a, x) => a + (theirs.get(lineKey(x)) ?? x.value) / x.value, 0) / mine.length - 1 : 0 });
+    const l = r && readListing(r); if (l?.item) found.push(l);
   }
   return { found: found.reverse(), body, left };
 }
