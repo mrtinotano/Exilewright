@@ -706,7 +706,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
-  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed' };
+  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon' };
 // [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
 const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
@@ -1091,14 +1091,14 @@ export function skill(g, b, treeGear) {
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
-    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
+    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
   // increased) for "increased"; cap: the support's own most (Dauntless 45%, Burgeon 40%) or most stacks (Arakaali's 40).
   // The "more damage against a state" calc.js already reads (ailments: vs, consume) are not repeated here
-  const critInc = inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit);
+  const critInc = inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit);
   out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
   const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
   out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
@@ -1156,7 +1156,7 @@ export function skill(g, b, treeGear) {
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
   const part = out.part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };   // the skill's other part's stats (Supercharged Slam's Aftershocks)
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
-  out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), own, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
+  out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), tags, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
   if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
   // "Attacks ... Maim on Hit": none for other skills; a skill whose own description says its hits Maim (Spearfield,
   // Artillery Ballista: "[Maim|Maiming]"; not one that Maims with its final hit only, Rapid Assault, nor a minion's)
@@ -1311,8 +1311,16 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const FA = 1 + all('damaging_ailments_deal_damage_+%_faster') / 100, FB = FA + all('faster_burn_%') / 100;   // Fast Acting Toxins (all three), Burnout, Searing Heat (ignites): damaging ailments deal their damage faster (more a second, over a shorter time)
   // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
-  const melee = tags.includes('melee'), proj = tags.includes('projectile');
+  // buildup of the skill's tags or weapon (melee_, projectile_, quarterstaff_, mace_, ballista_, hazard_, parry_...)
+  const tagInc = k => inc(sum, k, tags) - (sum[k] || 0) - (sum['base_' + k] || 0);
+  // with critical hits: more of the ailments' magnitude, with their other increased ([increased, the critical ones])
+  const critX = (incs, ...c) => { const i = incs.reduce((t, k) => t + all(k), 0), x = c.reduce((t, k) => t + all(k), 0); return x ? (1 + (i + x) / 100) / (1 + i / 100) : 1; };
+  const dmgI = ['ailment_effect_+%', 'base_damaging_ailment_effect_+%'], nonI = ['ailment_effect_+%', 'non_damaging_ailment_effect_+%'];
+  const critAil = { ignite: critX(['base_ignite_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'), poison: critX(['base_poison_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'),
+    bleed: critX(['base_bleeding_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_bleeding_effect_+%'),
+    shock: critX(['shock_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes'), chill: critX(['chill_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes') };
   return {
+    critAil: Object.values(critAil).some(x => x !== 1) ? critAil : null,
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
     incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%'),
@@ -1322,9 +1330,10 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     maimMore: all('spearfield_maim_slows_an_additional_%'),   // Spearfield's maims slow more
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
-    freeze: scale(['hit_damage_freeze_multiplier_+%', 'hit_damage_immobilisation_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final') * SF, immob: (1 + all('hit_damage_immobilisation_multiplier_+%') / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
+    freeze: (1 + (all('hit_damage_freeze_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_freeze_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * more('hit_damage_freeze_multiplier_+%_final') * SF,
+    immob: (1 + (all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
-    stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
+    stun: (1 + (all('hit_damage_stun_multiplier_+%') + tagInc('hit_damage_stun_multiplier_+%')) / 100) * more('hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each, of Damaging Ailments for ignite, poison and bleeding, of Non-Damaging ones for shock and chill
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
@@ -1344,7 +1353,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // what every hit of a player has (character.ot): more heavy stun buildup from physical damage and melee hits, and
     // more Armour Break against normal and magic monsters
     stunPhys: 1 + (CHAR['physical_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100,
-    stunMelee: melee ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
+    stunMelee: tags.includes('melee') ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
     breakNormal: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_normal_monsters'] || 0) / 100,
     breakMagic: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_magic_monsters'] || 0) / 100,
     never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun'), armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },

@@ -628,7 +628,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0 }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -823,12 +823,14 @@ export function initScene(el, api) {
     if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
       const v = ailDps(d, a, raw, S), w = d.st[a] > 0 && d.burn[a];
       if (o?.eff) v.dps *= o.eff;
+      if (critHit === S) v.dps *= S.dmg.ail?.critAil?.[a] || 1;   // inflicted by a critical hit (afflict)
       // Pathfinder's Overwhelming Toxicity, the tree's "+1 of your Poisons at the same time": two of your poisons at once,
       // the weaker kept with its own time (burn2). ponytail: a third or more counts as the second
       if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
-    if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
+    if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };
+    if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     const fresh = !(d.st[a] > 0), left = d.st[a] || 0; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
     // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
@@ -919,7 +921,9 @@ export function initScene(el, api) {
     'added_physical_damage_%_ward_cost': [['freeze'], ['physical']], chaos_damage_can_freeze: [['freeze'], ['chaos']], chaos_damage_can_shock: [['shock'], ['chaos']],
     base_chaos_damage_can_electrocute: [['electrocute'], ['chaos']], elemental_damage_also_contributes_to_flammability_ignite_chill_freeze_and_shock: [['ignite', 'chill', 'freeze', 'shock'], ['fire', 'cold', 'lightning']],
     elemental_damage_can_inflict_bleeding: [['bleed'], ['fire', 'cold', 'lightning']], fire_damage_can_inflict_bleeding: [['bleed'], ['fire']] };
-  function afflict(d, S, raw, o = {}) {
+  let critHit = null;   // the skill whose critical hit is inflicting ailments now
+  function afflict(d, S, raw, o = {}) { critHit = o.crit ? S : null; try { afflict0(d, S, raw, o); } finally { critHit = null; } }
+  function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
     if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
@@ -1971,10 +1975,11 @@ export function initScene(el, api) {
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
-            else if (pierced < pierceN) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }
+            else if (pierced < pierceN || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
             else if (forked < (D.forks || 0)) {
               hit(d, cur, { mult: mult() }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
-              for (const s of [-1, 1]) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
+              const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
+              for (const s of fk) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
               break;
             }
             else { end(d); break; }
