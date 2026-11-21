@@ -434,6 +434,7 @@ export function initScene(el, api) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
       crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d); if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
+      if (crit && D.sum?.critical_strikes_ignore_positive_elemental_resistances) for (const e of ELEM) W.pen[e] = Infinity;   // Invoker: a critical hit ignores non-negative elemental resistances
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
@@ -891,7 +892,7 @@ export function initScene(el, api) {
     }
     // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding
     // is more effective per Incision removed recently
-    if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (d.inc || 0))) {
+    if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (d.inc || 0) + (o.crit ? A.bleedCrit || 0 : 0))) {
       me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
       const ri = me.incs.reduce((t, u) => t + u.n, 0);
       inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) });   // Concoct

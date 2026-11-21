@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, classOf, rowReader, flaskRecovery, armourItems } from './items.js';
+import { weaponStats, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
 import { enemy, attackOf, attacksOf, ENEMIES, deflection } from './enemies.js';
@@ -217,7 +217,7 @@ export function attributes(sum, ascName) {
   const ids = { str: 'strength', dex: 'dexterity', int: 'intelligence' };
   const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
   for (const [k, id] of Object.entries(ids)) {
-    const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', ...pair[k].flatMap(p => ['additional_' + p, 'base_' + p]));
+    const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', 'base_all_attributes', ...pair[k].flatMap(p => ['additional_' + p, 'base_' + p]));
     out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%') / 100) * (1 + v(sum, 'gemling_all_attributes_+%_final') / 100));   // Gemling Legionnaire: more (less)
   }
   return out;
@@ -260,12 +260,13 @@ export function character(b, sum) {
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0);
-    res[k] = { value: val, max, capped: Math.min(val, max) };
+    const val2 = k === 'chaos' && sum.chaos_damage_resistance_is_doubled ? val * 2 : val;   // Acolyte of Chayula
+    res[k] = { value: val2, max, capped: Math.min(val2, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
-  const WH = pct('witchhunter_armour_evasion_+%_final');   // Witchhunter: less armour and evasion
+  const WH = pct('witchhunter_armour_evasion_+%_final'), EV = pct('master_of_elements_evasion_rating_+%_final');   // Witchhunter: less armour and evasion; Invoker: less evasion
   const armour = Math.round(v(sum, 'base_physical_damage_reduction_rating') * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
-  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH);
+  const evasion = Math.round((v(sum, 'base_evasion_rating') + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH * EV);
   // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
   const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
   const armourEl = { fire: v(sum, 'base_armour_%_applies_to_fire_damage') + ele, cold: v(sum, 'base_armour_%_applies_to_cold_damage') + ele,
@@ -274,7 +275,7 @@ export function character(b, sum) {
   // deflection: its % of armour and of evasion as deflection rating, its increases, and how much less a deflected hit deals
   const deflect = { arm: v(sum, 'base_deflection_rating_%_of_armour'), eva: v(sum, 'base_deflection_rating_%_of_evasion_rating'), inc: pct('deflection_rating_+%'),
     less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
-  return {
+  const c = {
     level: lvl, attrs: at, armourEl, deflect,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final')),   // Titan: more
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%')),
@@ -293,7 +294,7 @@ export function character(b, sum) {
     takenAs: takenAs(sum),
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
-    armourX: sum.double_armour_effect ? 2 : 1, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+    armourX: sum.double_armour_effect ? 2 : 1, evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
     blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
@@ -337,6 +338,14 @@ export function character(b, sum) {
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
   };
+  // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
+  // your maximum life; Invoker: Spirit per evasion and energy shield on the body armour. note: added to the totals, after
+  // their increases (the game's order is not in the data)
+  const per = (k, n) => n ? Math.floor(k / n) : 0;
+  if (c.life != null) c.life += Math.round(pieceDef(b.items, 'body', 'energy_shield') * v(sum, 'gain_%_life_from_body_es') / 100);
+  if (c.life != null) { if (c.mana != null) c.mana += per(c.life, sum['ascendancy_beidats_gaze_mana_+_per_X_maximum_life']); c.es += per(c.life, sum['ascendancy_beidats_hand_energy_shield_+_per_X_maximum_life']); c.spirit += per(c.life, sum['ascendancy_beidats_will_spirit_+_per_X_maximum_life']); }
+  c.spirit += per(pieceDef(b.items, 'body', 'evasion'), sum['+1_spirit_per_X_evasion_rating_on_body_armour']) + per(pieceDef(b.items, 'body', 'energy_shield'), sum['+1_spirit_per_X_energy_shield_on_body_armour']);
+  return c;
 }
 
 // Life regeneration and energy shield recharge per second of a character() result: shared by the sheet below and by
@@ -913,10 +922,10 @@ export function skill(g, b, treeGear) {
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
-  const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
+  const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
-    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit);
+    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
@@ -1115,7 +1124,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
-    bleed: all('base_chance_to_inflict_bleeding_%'), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
+    bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%'), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%'),
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
     maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
@@ -1127,7 +1136,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each
-    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final'),
+    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
     bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
