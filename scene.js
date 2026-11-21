@@ -836,7 +836,8 @@ export function initScene(el, api) {
       if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
-    if (A.electrocute) build(d, 'electrocute', xa('electrocute', 'lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
+    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
@@ -2382,7 +2383,14 @@ export function initScene(el, api) {
       }
       fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
       fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
-      for (const d of inside(c, R)) later(dist(d.pos, c) / R * dur, () => hit(d, S));   // the wave reaches the near ones first
+      // Enervating Nova: none within its secondary radius; beyond it, more damage with distance up to its most at the edge
+      // (linear: note: the curve is not in the data), and the enemies hit can be Electrocuted by any lightning damage for
+      // its duration (afflict)
+      const EN = S.dmg?.stats?.['new_shock_nova_distance_based_damage_+%_final'], r2 = EN != null && Math.min(R * .9, S.G?.radius2 || radOf(S));
+      for (const d of inside(c, R)) {   // the wave reaches the near ones first
+        const dd = dist(d.pos, c); if (EN != null && dd < r2) continue;
+        later(dd / R * dur, () => { if (EN == null) return hit(d, S); if (hit(d, S, { mult: 1 + EN / 100 * clamp((dd - r2) / (R - r2), 0, 1) })) d.enerv = time + durOf(S); });
+      }
       later(dur * .5, () => touch(c, R, S));
       if (P.ground) later(dur, () => ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 8), S));
       const X = S.infs?.includes('cold') && infPart(S, 'cold');   // Ice Nova: a patch of Chilled Ground
