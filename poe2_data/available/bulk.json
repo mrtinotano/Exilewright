@@ -1,7 +1,6 @@
 [
  {
   "id": "wisdom",
-  "group": "Currency",
   "name": "Scroll of Wisdom",
   "name_es": "Pergamino de sabiduría",
   "name_pt": "Pergaminho de Sabedoria",
@@ -15,7 +14,6 @@
  },
  {
   "id": "transmute",
-  "group": "Currency",
   "name": "Orb of Transmutation",
   "name_es": "Orbe de transmutación",
   "name_pt": "Orbe da Transmutação",
@@ -29,7 +27,6 @@
  },
  {
   "id": "greater-orb-of-transmutation",
-  "group": "Currency",
   "name": "Greater Orb of Transmutation",
   "name_es": "Orbe de transmutación superior",
   "name_pt": "Orbe da Transmutação Maior",
@@ -43,7 +40,6 @@
  },
  {
   "id": "perfect-orb-of-transmutation",
-  "group": "Currency",
   "name": "Perfect Orb of Transmutation",
   "name_es": "Orbe de transmutación perfecto",
   "name_pt": "Orbe da Transmutação Perfeito",
@@ -57,7 +53,6 @@
  },
  {
   "id": "aug",
-  "group": "Currency",
   "name": "Orb of Augmentation",
   "name_es": "Orbe de aumento",
   "name_pt": "Orbe da Ampliação",
@@ -71,7 +66,6 @@
  },
  {
   "id": "greater-orb-of-augmentation",
-  "group": "Currency",
   "name": "Greater Orb of Augmentation",
   "name_es": "Orbe de aumento superior",
   "name_pt": "Orbe da Ampliação Maior",
@@ -85,7 +79,6 @@
  },
  {
   "id": "perfect-orb-of-augmentation",
-  "group": "Currency",
   "name": "Perfect Orb of Augmentation",
   "name_es": "Orbe de aumento perfecto",
   "name_pt": "Orbe da Ampliação Perfeito",
@@ -99,7 +92,6 @@
  },
  {
   "id": "chance",
-  "group": "Currency",
   "name": "Orb of Chance",
   "name_es": "Orbe de azar",
   "name_pt": "Orbe da Chance",
@@ -113,7 +105,6 @@
  },
  {
   "id": "alch",
-  "group": "Currency",
   "name": "Orb of Alchemy",
   "name_es": "Orbe de alquimia",
   "name_pt": "Orbe da Alquimia",
@@ -127,7 +118,6 @@
  },
  {
   "id": "chaos",
-  "group": "Currency",
   "name": "Chaos Orb",
   "name_es": "Orbe de caos",
   "name_pt": "Orbe do Caos",
@@ -141,7 +131,6 @@
  },
  {
   "id": "greater-chaos-orb",
-  "group": "Currency",
   "name": "Greater Chaos Orb",
   "name_es": "Orbe de caos superior",
   "name_pt": "Orbe do Caos Maior",
@@ -155,7 +144,6 @@
  },
  {
   "id": "perfect-chaos-orb",
-  "group": "Currency",
   "name": "Perfect Chaos Orb",
   "name_es": "Orbe de caos perfecto",
   "name_pt": "Orbe do Caos Perfeito",
@@ -169,7 +157,6 @@
  },
  {
   "id": "vaal",
-  "group": "Currency",
   "name": "Vaal Orb",
   "name_es": "Orbe vaal",
   "name_pt": "Orbe Vaal",
@@ -183,7 +170,6 @@
  },
  {
   "id": "regal",
-  "group": "Currency",
   "name": "Regal Orb",
   "name_es": "Orbe regio",
   "name_pt": "Orbe Real",
@@ -197,7 +183,6 @@
  },
  {
   "id": "greater-regal-orb",
-  "group": "Currency",
   "name": "Greater Regal Orb",
   "name_es": "Orbe regio superior",
   "name_pt": "Orbe Real Maior",
@@ -211,7 +196,6 @@
  },
  {
   "id": "perfect-regal-orb",
-  "group": "Currency",
   "name": "Perfect Regal Orb",
   "name_es": "Orbe regio perfecto",
   "name_pt": "Orbe Real Perfeito",
@@ -225,7 +209,6 @@
  },
  {
   "id": "exalted",
-  "group": "Currency",
   "name": "Exalted Orb",
   "name_es": "Orbe exaltado",
   "name_pt": "Orbe Exaltado",
@@ -239,7 +222,6 @@
  },
  {
   "id": "greater-exalted-orb",
-  "group": "Currency",
   "name": "Greater Exalted Orb",
   "name_es": "Orbe exaltado superior",
   "name_pt": "Orbe Exaltado Maior",
@@ -253,7 +235,6 @@
  },
  {
   "id": "perfect-exalted-orb",
-  "group": "Currency",
   "name": "Perfect Exalted Orb",
   "name_es": "Orbe exaltado perfecto",
   "name_pt": "Orbe Exaltado Perfeito",
@@ -267,7 +248,6 @@
  },
  {
   "id": "divine",
-  "group": "Currency",
   "name": "Divine Orb",
   "name_es": "Orbe divino",
   "name_pt": "Orbe Divino",
@@ -281,7 +261,6 @@
  },
  {
   "id": "annul",
-  "group": "Currency",
   "name": "Orb of Annulment",
   "name_es": "Orbe de anulación",
   "name_pt": "Orbe da Anulação",
@@ -295,7 +274,6 @@
  },
  {
   "id": "artificers",
-  "group": "Currency",
   "name": "Artificer's Orb",
   "name_es": "Orbe del artesano",
   "name_pt": "Orbe do Artífice",
@@ -309,7 +287,6 @@
  },
  {
   "id": "fracturing-orb",
-  "group": "Currency",
   "name": "Fracturing Orb",
   "name_es": "Orbe fracturante",
   "name_pt": "Orbe Talhador",
@@ -323,7 +300,6 @@
  },
  {
   "id": "mirror",
-  "group": "Currency",
   "name": "Mirror of Kalandra",
   "name_es": "Espejo de Kalandra",
   "name_pt": "Espelho de Kalandra",
@@ -337,7 +313,6 @@
  },
  {
   "id": "hinekoras-lock",
-  "group": "Currency",
   "name": "Hinekora's Lock",
   "name_es": "Mechón de Hinekora",
   "name_pt": "Trança de Hinekora",
@@ -351,7 +326,6 @@
  },
  {
   "id": "cryptic-key",
-  "group": "Currency",
   "name": "Cryptic Key",
   "name_es": "Llave críptica",
   "name_pt": "Chave Críptica",
@@ -365,7 +339,6 @@
  },
  {
   "id": "lesser-jewellers-orb",
-  "group": "Currency",
   "name": "Lesser Jeweller's Orb",
   "name_es": "Orbe de joyero menor",
   "name_pt": "Orbe do Joalheiro Menor",
@@ -379,7 +352,6 @@
  },
  {
   "id": "greater-jewellers-orb",
-  "group": "Currency",
   "name": "Greater Jeweller's Orb",
   "name_es": "Orbe de joyero superior",
   "name_pt": "Orbe do Joalheiro Maior",
@@ -393,7 +365,6 @@
  },
  {
   "id": "perfect-jewellers-orb",
-  "group": "Currency",
   "name": "Perfect Jeweller's Orb",
   "name_es": "Orbe de joyero perfecto",
   "name_pt": "Orbe do Joalheiro Perfeito",
@@ -407,7 +378,6 @@
  },
  {
   "id": "scrap",
-  "group": "Currency",
   "name": "Armourer's Scrap",
   "name_es": "Restos de armaduras",
   "name_pt": "Sucata do Armeiro",
@@ -421,7 +391,6 @@
  },
  {
   "id": "whetstone",
-  "group": "Currency",
   "name": "Blacksmith's Whetstone",
   "name_es": "Piedra de afilar",
   "name_pt": "Lima do Ferreiro",
@@ -435,7 +404,6 @@
  },
  {
   "id": "etcher",
-  "group": "Currency",
   "name": "Arcanist's Etcher",
   "name_es": "Buril del arcanista",
   "name_pt": "Gravador do Arcanista",
@@ -449,7 +417,6 @@
  },
  {
   "id": "bauble",
-  "group": "Currency",
   "name": "Glassblower's Bauble",
   "name_es": "Baratija de vidrio",
   "name_pt": "Bugiganga do Vidreiro",
@@ -463,7 +430,6 @@
  },
  {
   "id": "gcp",
-  "group": "Currency",
   "name": "Gemcutter's Prism",
   "name_es": "Prisma del tallador de gemas",
   "name_pt": "Prisma do Lapidário",
@@ -477,7 +443,6 @@
  },
  {
   "id": "transmutation-shard",
-  "group": "Currency",
   "name": "Transmutation Shard",
   "name_es": "Esquirla de transmutación",
   "name_pt": "Lasca de Transmutação",
@@ -491,7 +456,6 @@
  },
  {
   "id": "chance-shard",
-  "group": "Currency",
   "name": "Chance Shard",
   "name_es": "Esquirla aleatoria",
   "name_pt": "Lasca de Chance",
@@ -505,7 +469,6 @@
  },
  {
   "id": "regal-shard",
-  "group": "Currency",
   "name": "Regal Shard",
   "name_es": "Esquirla regia",
   "name_pt": "Lasca Real",
@@ -519,7 +482,6 @@
  },
  {
   "id": "artificers-shard",
-  "group": "Currency",
   "name": "Artificer's Shard",
   "name_es": "Esquirla del artesano",
   "name_pt": "Lasca do Artífice",
@@ -533,7 +495,6 @@
  },
  {
   "id": "idol-of-estazunti",
-  "group": "Fragments",
   "name": "Idol of Estazunti",
   "name_es": "Ídolo de Estazunti",
   "name_pt": "Ídolo de Estazunti",
@@ -547,7 +508,6 @@
  },
  {
   "id": "runic-splinter",
-  "group": "Fragments",
   "name": "Runic Splinter",
   "name_es": "Astilla rúnica",
   "name_pt": "Fragmento Rúnico",
@@ -561,7 +521,6 @@
  },
  {
   "id": "kulemaks-invitation",
-  "group": "Fragments",
   "name": "Kulemak's Invitation",
   "name_es": "Invitación de Kulemak",
   "name_pt": "Convite de Kulemak",
@@ -575,7 +534,6 @@
  },
  {
   "id": "breachlord-sac",
-  "group": "Fragments",
   "name": "Breachlord Sac",
   "name_es": "Saco de señor de la fisura",
   "name_pt": "Bolsa do Lorde da Fenda",
@@ -589,7 +547,6 @@
  },
  {
   "id": "cowardly-fate",
-  "group": "Fragments",
   "name": "Cowardly Fate",
   "name_es": "Destino cobarde",
   "name_pt": "Destino Covarde",
@@ -603,7 +560,6 @@
  },
  {
   "id": "deadly-fate",
-  "group": "Fragments",
   "name": "Deadly Fate",
   "name_es": "Destino mortal",
   "name_pt": "Destino Mortal",
@@ -617,7 +573,6 @@
  },
  {
   "id": "victorious-fate",
-  "group": "Fragments",
   "name": "Victorious Fate",
   "name_es": "Destino victorioso",
   "name_pt": "Destino Vitorioso",
@@ -631,7 +586,6 @@
  },
  {
   "id": "ancient-crisis-fragment",
-  "group": "Fragments",
   "name": "Ancient Crisis Fragment",
   "name_es": "Fragmento de crisis antiguo",
   "name_pt": "Fragmento de Crise Antigo",
@@ -645,7 +599,6 @@
  },
  {
   "id": "faded-crisis-fragment",
-  "group": "Fragments",
   "name": "Faded Crisis Fragment",
   "name_es": "Fragmento de crisis descolorido",
   "name_pt": "Fragmento de Crise Opaco",
@@ -659,7 +612,6 @@
  },
  {
   "id": "weathered-crisis-fragment",
-  "group": "Fragments",
   "name": "Weathered Crisis Fragment",
   "name_es": "Fragmento de crisis desgastado",
   "name_pt": "Fragmento de Crise Desgastado",
@@ -673,7 +625,6 @@
  },
  {
   "id": "primary-calamity-fragment",
-  "group": "Fragments",
   "name": "Primary Calamity Fragment",
   "name_es": "Fragmento de calamidad primario",
   "name_pt": "Fragmento de Calamidade Primária",
@@ -687,7 +638,6 @@
  },
  {
   "id": "secondary-calamity-fragment",
-  "group": "Fragments",
   "name": "Secondary Calamity Fragment",
   "name_es": "Fragmento de calamidad secundario",
   "name_pt": "Fragmento de Calamidade Secundária",
@@ -701,7 +651,6 @@
  },
  {
   "id": "tertiary-calamity-fragment",
-  "group": "Fragments",
   "name": "Tertiary Calamity Fragment",
   "name_es": "Fragmento de calamidad terciario",
   "name_pt": "Fragmento de Calamidade Terciária",
@@ -715,7 +664,6 @@
  },
  {
   "id": "origin-spark",
-  "group": "Fragments",
   "name": "Origin Spark",
   "name_es": "Chispa del origen",
   "name_pt": "Centelha de Origem",
@@ -729,7 +677,6 @@
  },
  {
   "id": "origin-cradle",
-  "group": "Fragments",
   "name": "Origin Cradle",
   "name_es": "Cuna del origen",
   "name_pt": "Berço de Origem",
@@ -743,7 +690,6 @@
  },
  {
   "id": "origin-core",
-  "group": "Fragments",
   "name": "Origin Core",
   "name_es": "Núcleo del origen",
   "name_pt": "Núcleo de Origem",
@@ -757,7 +703,6 @@
  },
  {
   "id": "twilight-reliquary-key",
-  "group": "Fragments",
   "name": "Twilight Reliquary Key",
   "name_es": "Llave del Relicario del crepúsculo",
   "name_pt": "Chave do Relicário do Crepúsculo",
@@ -771,7 +716,6 @@
  },
  {
   "id": "xeshts-reliquary-key",
-  "group": "Fragments",
   "name": "Xesht's Reliquary Key",
   "name_es": "Llave del Relicario de Xesht",
   "name_pt": "Chave do Relicário de Xesht",
@@ -785,7 +729,6 @@
  },
  {
   "id": "the-trialmasters-reliquary-key",
-  "group": "Fragments",
   "name": "The Trialmaster's Reliquary Key",
   "name_es": "Llave del Relicario del Maestro de pruebas",
   "name_pt": "Chave do Relicário do Mestre das Provações",
@@ -799,7 +742,6 @@
  },
  {
   "id": "ritualistic-reliquary-key",
-  "group": "Fragments",
   "name": "Ritualistic Reliquary Key",
   "name_es": "Llave del Relicario ritualista",
   "name_pt": "Chave do Relicário Ritualístico",
@@ -813,7 +755,6 @@
  },
  {
   "id": "tangmazus-reliquary-key",
-  "group": "Fragments",
   "name": "Tangmazu's Reliquary Key",
   "name_es": "Llave del Relicario de Tangmazu",
   "name_pt": "Chave do Relicário de Tangmazu",
@@ -827,7 +768,6 @@
  },
  {
   "id": "olroths-reliquary-key",
-  "group": "Fragments",
   "name": "Olroth's Reliquary Key",
   "name_es": "Llave del Relicario de Olroth",
   "name_pt": "Chave do Relicário de Olroth",
@@ -841,7 +781,6 @@
  },
  {
   "id": "the-arbiters-reliquary-key",
-  "group": "Fragments",
   "name": "The Arbiter's Reliquary Key",
   "name_es": "Llave del Relicario del Árbitro",
   "name_pt": "Chave do Relicário do Árbitro",
@@ -855,7 +794,6 @@
  },
  {
   "id": "against-the-darkness",
-  "group": "Fragments",
   "name": "Zarokh's Reliquary Key: Against the Darkness",
   "name_es": "Llave del Relicario de Zarokh: Contra la oscuridad",
   "name_pt": "Chave do Relicário de Zarokh: Contra a Escuridão",
@@ -869,7 +807,6 @@
  },
  {
   "id": "sandstorm-visage",
-  "group": "Fragments",
   "name": "Zarokh's Reliquary Key: Sandstorm Visage",
   "name_es": "Llave del Relicario de Zarokh: Máscara de tormenta de arena",
   "name_pt": "Chave do Relicário de Zarokh: Semblante da Tempestade de Areia",
@@ -883,7 +820,6 @@
  },
  {
   "id": "blessed-bonds",
-  "group": "Fragments",
   "name": "Zarokh's Reliquary Key: Blessed Bonds",
   "name_es": "Llave del Relicario de Zarokh: Vínculos bendecidos",
   "name_pt": "Chave do Relicário de Zarokh: Vínculos Abençoados",
@@ -897,7 +833,6 @@
  },
  {
   "id": "sekhemas-resolve",
-  "group": "Fragments",
   "name": "Zarokh's Reliquary Key: Sekhema's Resolve",
   "name_es": "Llave del Relicario de Zarokh: Determinación de la sekhema",
   "name_pt": "Chave do Relicário de Zarokh: Determinação da Sekhema",
@@ -911,7 +846,6 @@
  },
  {
   "id": "temporalis",
-  "group": "Fragments",
   "name": "Zarokh's Reliquary Key: Temporalis",
   "name_es": "Llave del Relicario de Zarokh: Temporalis",
   "name_pt": "Chave do Relicário de Zarokh: Temporalis",
@@ -925,7 +859,6 @@
  },
  {
   "id": "azmeri-reliquary-key",
-  "group": "Fragments",
   "name": "Azmeri Reliquary Key",
   "name_es": "Llave del Relicario azmeri",
   "name_pt": "Chave do Relicário Azmeri",
@@ -939,7 +872,6 @@
  },
  {
   "id": "verisium",
-  "group": "Verisium",
   "name": "Verisium",
   "name_es": "Verisium",
   "name_pt": "Verísio",
@@ -953,7 +885,6 @@
  },
  {
   "id": "exceptional-verisium",
-  "group": "Verisium",
   "name": "Exceptional Verisium",
   "name_es": "Verisium excepcional",
   "name_pt": "Verísio Excepcional",
@@ -967,7 +898,6 @@
  },
  {
   "id": "mutated-verisium",
-  "group": "Verisium",
   "name": "Mutated Verisium",
   "name_es": "Verisium mutado",
   "name_pt": "Verísio Deformado",
@@ -981,7 +911,6 @@
  },
  {
   "id": "corrupted-verisium",
-  "group": "Verisium",
   "name": "Corrupted Verisium",
   "name_es": "Verisium corrupto",
   "name_pt": "Verísio Corrompido",
@@ -995,7 +924,6 @@
  },
  {
   "id": "founders-verisium",
-  "group": "Verisium",
   "name": "Founders Verisium",
   "name_es": "Verisium del fundador",
   "name_pt": "Verísio dos Fundadores",
@@ -1009,7 +937,6 @@
  },
  {
   "id": "medveds-crest-of-the-circle",
-  "group": "Verisium",
   "name": "Medved's Crest of the Circle",
   "name_es": "Emblema del círculo de Medved",
   "name_pt": "Brasão do Círculo de Medved",
@@ -1023,7 +950,6 @@
  },
  {
   "id": "voranas-crest-of-the-scythe",
-  "group": "Verisium",
   "name": "Vorana's Crest of the Scythe",
   "name_es": "Emblema de la guadaña de Vorana",
   "name_pt": "Brasão da Foice de Vorana",
@@ -1037,7 +963,6 @@
  },
  {
   "id": "uhtreds-crest-of-the-chalice",
-  "group": "Verisium",
   "name": "Uhtred's Crest of the Chalice",
   "name_es": "Emblema del cáliz de Uhtred",
   "name_pt": "Brasão do Cálice de Uhtred",
@@ -1051,7 +976,6 @@
  },
  {
   "id": "olroths-crest-of-the-sun",
-  "group": "Verisium",
   "name": "Olroth's Crest of the Sun",
   "name_es": "Emblema del sol de Olroth",
   "name_pt": "Brasão do Sol de Olroth",
@@ -1065,7 +989,6 @@
  },
  {
   "id": "runic-alloy",
-  "group": "Verisium",
   "name": "Runic Alloy",
   "name_es": "Aleación rúnica",
   "name_pt": "Liga Rúnica",
@@ -1079,7 +1002,6 @@
  },
  {
   "id": "adaptive-alloy",
-  "group": "Verisium",
   "name": "Adaptive Alloy",
   "name_es": "Aleación adaptativa",
   "name_pt": "Liga Adaptativa",
@@ -1093,7 +1015,6 @@
  },
  {
   "id": "protective-alloy",
-  "group": "Verisium",
   "name": "Protective Alloy",
   "name_es": "Aleación protectora",
   "name_pt": "Liga Protetora",
@@ -1107,7 +1028,6 @@
  },
  {
   "id": "expansive-alloy",
-  "group": "Verisium",
   "name": "Expansive Alloy",
   "name_es": "Aleación extensa",
   "name_pt": "Liga Expansiva",
@@ -1121,7 +1041,6 @@
  },
  {
   "id": "swift-alloy",
-  "group": "Verisium",
   "name": "Swift Alloy",
   "name_es": "Aleación veloz",
   "name_pt": "Liga Veloz",
@@ -1135,7 +1054,6 @@
  },
  {
   "id": "cyclonic-alloy",
-  "group": "Verisium",
   "name": "Cyclonic Alloy",
   "name_es": "Aleación ciclónica",
   "name_pt": "Liga Ciclônica",
@@ -1149,7 +1067,6 @@
  },
  {
   "id": "prismatic-alloy",
-  "group": "Verisium",
   "name": "Prismatic Alloy",
   "name_es": "Aleación prismática",
   "name_pt": "Liga Prismática",
@@ -1163,7 +1080,6 @@
  },
  {
   "id": "mystic-alloy",
-  "group": "Verisium",
   "name": "Mystic Alloy",
   "name_es": "Aleación mística",
   "name_pt": "Liga Mística",
@@ -1177,7 +1093,6 @@
  },
  {
   "id": "sovereign-alloy",
-  "group": "Verisium",
   "name": "Sovereign Alloy",
   "name_es": "Aleación soberana",
   "name_pt": "Liga Soberana",
@@ -1191,7 +1106,6 @@
  },
  {
   "id": "celestial-alloy",
-  "group": "Verisium",
   "name": "Celestial Alloy",
   "name_es": "Aleación celestial",
   "name_pt": "Liga Celestial",
@@ -1205,7 +1119,6 @@
  },
  {
   "id": "transcendent-alloy",
-  "group": "Verisium",
   "name": "Transcendent Alloy",
   "name_es": "Aleación sobresaliente",
   "name_pt": "Liga Transcendental",
@@ -1219,7 +1132,6 @@
  },
  {
   "id": "the-runebinders-alloy",
-  "group": "Verisium",
   "name": "The Runebinder's Alloy",
   "name_es": "Aleación del vinculador de runas",
   "name_pt": "A Liga do Fundidor de Runas",
@@ -1233,7 +1145,6 @@
  },
  {
   "id": "the-runefathers-alloy",
-  "group": "Verisium",
   "name": "The Runefather's Alloy",
   "name_es": "Aleación del Padre de las runas",
   "name_pt": "A Liga do Pai das Runas",
@@ -1247,7 +1158,6 @@
  },
  {
   "id": "venerable-starlit-ore",
-  "group": "Verisium",
   "name": "Venerable Starlit Ore",
   "name_es": "Mineral estelar venerable",
   "name_pt": "Minério Estrelado Respeitável",
@@ -1261,7 +1171,6 @@
  },
  {
   "id": "revered-starlit-ore",
-  "group": "Verisium",
   "name": "Revered Starlit Ore",
   "name_es": "Mineral estelar reverenciado",
   "name_pt": "Minério Estrelado Reverenciado",
@@ -1275,7 +1184,6 @@
  },
  {
   "id": "veridical-starlit-ore",
-  "group": "Verisium",
   "name": "Veridical Starlit Ore",
   "name_es": "Mineral estelar verídico",
   "name_pt": "Minério Estrelado Verídico",
@@ -1289,7 +1197,6 @@
  },
  {
   "id": "warding-starlit-ore",
-  "group": "Verisium",
   "name": "Warding Starlit Ore",
   "name_es": "Mineral estelar protector",
   "name_pt": "Minério Estrelado de Salvaguarda",
@@ -1303,7 +1210,6 @@
  },
  {
   "id": "starlit-ore",
-  "group": "Verisium",
   "name": "Starlit Ore",
   "name_es": "Mineral estelar",
   "name_pt": "Minério Estrelado",
@@ -1317,7 +1223,6 @@
  },
  {
   "id": "liquid-verisium",
-  "group": "Verisium",
   "name": "Liquid Verisium",
   "name_es": "Verisium líquido",
   "name_pt": "Verísio Líquido",
@@ -1331,7 +1236,6 @@
  },
  {
   "id": "lesser-desert-rune",
-  "group": "Runes",
   "name": "Lesser Desert Rune",
   "name_es": "Runa desértica menor",
   "name_pt": "Runa do Deserto Menor",
@@ -1345,7 +1249,6 @@
  },
  {
   "id": "lesser-glacial-rune",
-  "group": "Runes",
   "name": "Lesser Glacial Rune",
   "name_es": "Runa glacial menor",
   "name_pt": "Runa Glacial Menor",
@@ -1359,7 +1262,6 @@
  },
  {
   "id": "lesser-storm-rune",
-  "group": "Runes",
   "name": "Lesser Storm Rune",
   "name_es": "Runa de tormenta menor",
   "name_pt": "Runa da Tempestade Menor",
@@ -1373,7 +1275,6 @@
  },
  {
   "id": "lesser-iron-rune",
-  "group": "Runes",
   "name": "Lesser Iron Rune",
   "name_es": "Runa de hierro menor",
   "name_pt": "Runa de Ferro Menor",
@@ -1387,7 +1288,6 @@
  },
  {
   "id": "lesser-body-rune",
-  "group": "Runes",
   "name": "Lesser Body Rune",
   "name_es": "Runa del cuerpo menor",
   "name_pt": "Runa Corporal Menor",
@@ -1401,7 +1301,6 @@
  },
  {
   "id": "lesser-mind-rune",
-  "group": "Runes",
   "name": "Lesser Mind Rune",
   "name_es": "Runa de la mente menor",
   "name_pt": "Runa Mental Menor",
@@ -1415,7 +1314,6 @@
  },
  {
   "id": "lesser-rebirth-rune",
-  "group": "Runes",
   "name": "Lesser Rebirth Rune",
   "name_es": "Runa de renacimiento menor",
   "name_pt": "Runa do Renascimento Menor",
@@ -1429,7 +1327,6 @@
  },
  {
   "id": "lesser-inspiration-rune",
-  "group": "Runes",
   "name": "Lesser Inspiration Rune",
   "name_es": "Runa de inspiración menor",
   "name_pt": "Runa da Inspiração Menor",
@@ -1443,7 +1340,6 @@
  },
  {
   "id": "lesser-stone-rune",
-  "group": "Runes",
   "name": "Lesser Stone Rune",
   "name_es": "Runa de piedra menor",
   "name_pt": "Runa de Pedra Menor",
@@ -1457,7 +1353,6 @@
  },
  {
   "id": "lesser-vision-rune",
-  "group": "Runes",
   "name": "Lesser Vision Rune",
   "name_es": "Runa de visión menor",
   "name_pt": "Runa da Visão Menor",
@@ -1471,7 +1366,6 @@
  },
  {
   "id": "lesser-robust-rune",
-  "group": "Runes",
   "name": "Lesser Robust Rune",
   "name_es": "Runa robusta menor",
   "name_pt": "Runa Robusta Menor",
@@ -1485,7 +1379,6 @@
  },
  {
   "id": "lesser-adept-rune",
-  "group": "Runes",
   "name": "Lesser Adept Rune",
   "name_es": "Runa de habilidad menor",
   "name_pt": "Runa do Perito Menor",
@@ -1499,7 +1392,6 @@
  },
  {
   "id": "lesser-resolve-rune",
-  "group": "Runes",
   "name": "Lesser Resolve Rune",
   "name_es": "Runa de resolución menor",
   "name_pt": "Runa da Vontade Menor",
@@ -1513,7 +1405,6 @@
  },
  {
   "id": "lesser-ward-rune",
-  "group": "Runes",
   "name": "Lesser Ward Rune",
   "name_es": "Runa de barrera menor",
   "name_pt": "Runa de Salvaguarda Menor",
@@ -1527,7 +1418,6 @@
  },
  {
   "id": "lesser-charging-rune",
-  "group": "Runes",
   "name": "Lesser Charging Rune",
   "name_es": "Runa de carga menor",
   "name_pt": "Runa de Carregamento Menor",
@@ -1541,7 +1431,6 @@
  },
  {
   "id": "desert-rune",
-  "group": "Runes",
   "name": "Desert Rune",
   "name_es": "Runa desértica",
   "name_pt": "Runa do Deserto",
@@ -1555,7 +1444,6 @@
  },
  {
   "id": "glacial-rune",
-  "group": "Runes",
   "name": "Glacial Rune",
   "name_es": "Runa glacial",
   "name_pt": "Runa Glacial",
@@ -1569,7 +1457,6 @@
  },
  {
   "id": "storm-rune",
-  "group": "Runes",
   "name": "Storm Rune",
   "name_es": "Runa de tormenta",
   "name_pt": "Runa da Tempestade",
@@ -1583,7 +1470,6 @@
  },
  {
   "id": "iron-rune",
-  "group": "Runes",
   "name": "Iron Rune",
   "name_es": "Runa de hierro",
   "name_pt": "Runa de Ferro",
@@ -1597,7 +1483,6 @@
  },
  {
   "id": "body-rune",
-  "group": "Runes",
   "name": "Body Rune",
   "name_es": "Runa del cuerpo",
   "name_pt": "Runa Corporal",
@@ -1611,7 +1496,6 @@
  },
  {
   "id": "mind-rune",
-  "group": "Runes",
   "name": "Mind Rune",
   "name_es": "Runa de la mente",
   "name_pt": "Runa Mental",
@@ -1625,7 +1509,6 @@
  },
  {
   "id": "rebirth-rune",
-  "group": "Runes",
   "name": "Rebirth Rune",
   "name_es": "Runa de renacimiento",
   "name_pt": "Runa do Renascimento",
@@ -1639,7 +1522,6 @@
  },
  {
   "id": "inspiration-rune",
-  "group": "Runes",
   "name": "Inspiration Rune",
   "name_es": "Runa de inspiración",
   "name_pt": "Runa da Inspiração",
@@ -1653,7 +1535,6 @@
  },
  {
   "id": "stone-rune",
-  "group": "Runes",
   "name": "Stone Rune",
   "name_es": "Runa de piedra",
   "name_pt": "Runa de Pedra",
@@ -1667,7 +1548,6 @@
  },
  {
   "id": "vision-rune",
-  "group": "Runes",
   "name": "Vision Rune",
   "name_es": "Runa de visión",
   "name_pt": "Runa da Visão",
@@ -1681,7 +1561,6 @@
  },
  {
   "id": "robust-rune",
-  "group": "Runes",
   "name": "Robust Rune",
   "name_es": "Runa robusta",
   "name_pt": "Runa Robusta",
@@ -1695,7 +1574,6 @@
  },
  {
   "id": "adept-rune",
-  "group": "Runes",
   "name": "Adept Rune",
   "name_es": "Runa de habilidad",
   "name_pt": "Runa do Perito",
@@ -1709,7 +1587,6 @@
  },
  {
   "id": "resolve-rune",
-  "group": "Runes",
   "name": "Resolve Rune",
   "name_es": "Runa de resolución",
   "name_pt": "Runa da Vontade",
@@ -1723,7 +1600,6 @@
  },
  {
   "id": "ward-rune",
-  "group": "Runes",
   "name": "Ward Rune",
   "name_es": "Runa de barrera",
   "name_pt": "Runa de Salvaguarda",
@@ -1737,7 +1613,6 @@
  },
  {
   "id": "charging-rune",
-  "group": "Runes",
   "name": "Charging Rune",
   "name_es": "Runa de carga",
   "name_pt": "Runa de Carregamento",
@@ -1751,7 +1626,6 @@
  },
  {
   "id": "greater-desert-rune",
-  "group": "Runes",
   "name": "Greater Desert Rune",
   "name_es": "Runa desértica mayor",
   "name_pt": "Runa do Deserto Maior",
@@ -1765,7 +1639,6 @@
  },
  {
   "id": "greater-glacial-rune",
-  "group": "Runes",
   "name": "Greater Glacial Rune",
   "name_es": "Runa glacial mayor",
   "name_pt": "Runa Glacial Maior",
@@ -1779,7 +1652,6 @@
  },
  {
   "id": "greater-storm-rune",
-  "group": "Runes",
   "name": "Greater Storm Rune",
   "name_es": "Runa de tormenta mayor",
   "name_pt": "Runa da Tempestade Maior",
@@ -1793,7 +1665,6 @@
  },
  {
   "id": "greater-iron-rune",
-  "group": "Runes",
   "name": "Greater Iron Rune",
   "name_es": "Runa de hierro mayor",
   "name_pt": "Runa de Ferro Maior",
@@ -1807,7 +1678,6 @@
  },
  {
   "id": "greater-body-rune",
-  "group": "Runes",
   "name": "Greater Body Rune",
   "name_es": "Runa del cuerpo mayor",
   "name_pt": "Runa Corporal Maior",
@@ -1821,7 +1691,6 @@
  },
  {
   "id": "greater-mind-rune",
-  "group": "Runes",
   "name": "Greater Mind Rune",
   "name_es": "Runa de la mente mayor",
   "name_pt": "Runa Mental Maior",
@@ -1835,7 +1704,6 @@
  },
  {
   "id": "greater-rebirth-rune",
-  "group": "Runes",
   "name": "Greater Rebirth Rune",
   "name_es": "Runa de renacimiento mayor",
   "name_pt": "Runa do Renascimento Maior",
@@ -1849,7 +1717,6 @@
  },
  {
   "id": "greater-inspiration-rune",
-  "group": "Runes",
   "name": "Greater Inspiration Rune",
   "name_es": "Runa de inspiración mayor",
   "name_pt": "Runa da Inspiração Maior",
@@ -1863,7 +1730,6 @@
  },
  {
   "id": "greater-stone-rune",
-  "group": "Runes",
   "name": "Greater Stone Rune",
   "name_es": "Runa de piedra mayor",
   "name_pt": "Runa de Pedra Maior",
@@ -1877,7 +1743,6 @@
  },
  {
   "id": "greater-vision-rune",
-  "group": "Runes",
   "name": "Greater Vision Rune",
   "name_es": "Runa de visión mayor",
   "name_pt": "Runa da Visão Maior",
@@ -1891,7 +1756,6 @@
  },
  {
   "id": "greater-robust-rune",
-  "group": "Runes",
   "name": "Greater Robust Rune",
   "name_es": "Runa robusta mayor",
   "name_pt": "Runa Robusta Maior",
@@ -1905,7 +1769,6 @@
  },
  {
   "id": "greater-adept-rune",
-  "group": "Runes",
   "name": "Greater Adept Rune",
   "name_es": "Runa de habilidad mayor",
   "name_pt": "Runa do Perito Maior",
@@ -1919,7 +1782,6 @@
  },
  {
   "id": "greater-resolve-rune",
-  "group": "Runes",
   "name": "Greater Resolve Rune",
   "name_es": "Runa de resolución mayor",
   "name_pt": "Runa da Vontade Maior",
@@ -1933,7 +1795,6 @@
  },
  {
   "id": "greater-ward-rune",
-  "group": "Runes",
   "name": "Greater Ward Rune",
   "name_es": "Runa de barrera mayor",
   "name_pt": "Runa de Salvaguarda Maior",
@@ -1947,7 +1808,6 @@
  },
  {
   "id": "greater-charging-rune",
-  "group": "Runes",
   "name": "Greater Charging Rune",
   "name_es": "Runa de carga mayor",
   "name_pt": "Runa de Carregamento Maior",
@@ -1961,7 +1821,6 @@
  },
  {
   "id": "perfect-desert-rune",
-  "group": "Runes",
   "name": "Perfect Desert Rune",
   "name_es": "Runa desértica perfecta",
   "name_pt": "Runa do Deserto Perfeita",
@@ -1975,7 +1834,6 @@
  },
  {
   "id": "perfect-glacial-rune",
-  "group": "Runes",
   "name": "Perfect Glacial Rune",
   "name_es": "Runa glacial perfecta",
   "name_pt": "Runa Glacial Perfeita",
@@ -1989,7 +1847,6 @@
  },
  {
   "id": "perfect-storm-rune",
-  "group": "Runes",
   "name": "Perfect Storm Rune",
   "name_es": "Runa de tormenta perfecta",
   "name_pt": "Runa da Tempestade Perfeita",
@@ -2003,7 +1860,6 @@
  },
  {
   "id": "perfect-iron-rune",
-  "group": "Runes",
   "name": "Perfect Iron Rune",
   "name_es": "Runa de hierro perfecto",
   "name_pt": "Runa de Ferro Perfeita",
@@ -2017,7 +1873,6 @@
  },
  {
   "id": "perfect-body-rune",
-  "group": "Runes",
   "name": "Perfect Body Rune",
   "name_es": "Runa del cuerpo perfecta",
   "name_pt": "Runa Corporal Perfeita",
@@ -2031,7 +1886,6 @@
  },
  {
   "id": "perfect-mind-rune",
-  "group": "Runes",
   "name": "Perfect Mind Rune",
   "name_es": "Runa de la mente perfecta",
   "name_pt": "Runa Mental Perfeita",
@@ -2045,7 +1899,6 @@
  },
  {
   "id": "perfect-rebirth-rune",
-  "group": "Runes",
   "name": "Perfect Rebirth Rune",
   "name_es": "Runa de renacimiento perfecta",
   "name_pt": "Runa do Renascimento Perfeita",
@@ -2059,7 +1912,6 @@
  },
  {
   "id": "perfect-inspiration-rune",
-  "group": "Runes",
   "name": "Perfect Inspiration Rune",
   "name_es": "Runa de inspiración perfecta",
   "name_pt": "Runa da Inspiração Perfeita",
@@ -2073,7 +1925,6 @@
  },
  {
   "id": "perfect-stone-rune",
-  "group": "Runes",
   "name": "Perfect Stone Rune",
   "name_es": "Runa de piedra perfecta",
   "name_pt": "Runa de Pedra Perfeita",
@@ -2087,7 +1938,6 @@
  },
  {
   "id": "perfect-vision-rune",
-  "group": "Runes",
   "name": "Perfect Vision Rune",
   "name_es": "Runa de visión perfecta",
   "name_pt": "Runa da Visão Perfeita",
@@ -2101,7 +1951,6 @@
  },
  {
   "id": "perfect-robust-rune",
-  "group": "Runes",
   "name": "Perfect Robust Rune",
   "name_es": "Runa robusta perfecta",
   "name_pt": "Runa Robusta Perfeita",
@@ -2115,7 +1964,6 @@
  },
  {
   "id": "perfect-adept-rune",
-  "group": "Runes",
   "name": "Perfect Adept Rune",
   "name_es": "Runa de habilidad perfecta",
   "name_pt": "Runa do Perito Perfeita",
@@ -2129,7 +1977,6 @@
  },
  {
   "id": "perfect-resolve-rune",
-  "group": "Runes",
   "name": "Perfect Resolve Rune",
   "name_es": "Runa de resolución perfecta",
   "name_pt": "Runa da Vontade Perfeita",
@@ -2143,7 +1990,6 @@
  },
  {
   "id": "perfect-ward-rune",
-  "group": "Runes",
   "name": "Perfect Ward Rune",
   "name_es": "Runa de barrera perfecta",
   "name_pt": "Runa de Salvaguarda Perfeita",
@@ -2157,7 +2003,6 @@
  },
  {
   "id": "perfect-charging-rune",
-  "group": "Runes",
   "name": "Perfect Charging Rune",
   "name_es": "Runa de carga perfecta",
   "name_pt": "Runa de Carregamento Perfeita",
@@ -2171,7 +2016,6 @@
  },
  {
   "id": "greater-rune-of-leadership",
-  "group": "Runes",
   "name": "Greater Rune of Leadership",
   "name_es": "Runa de liderazgo mayor",
   "name_pt": "Runa da Liderança Maior",
@@ -2185,7 +2029,6 @@
  },
  {
   "id": "greater-rune-of-tithing",
-  "group": "Runes",
   "name": "Greater Rune of Tithing",
   "name_es": "Runa de diezmo mayor",
   "name_pt": "Runa do Dízimo Maior",
@@ -2199,7 +2042,6 @@
  },
  {
   "id": "greater-rune-of-alacrity",
-  "group": "Runes",
   "name": "Greater Rune of Alacrity",
   "name_es": "Runa de celeridad mayor",
   "name_pt": "Runa da Diligência Maior",
@@ -2213,7 +2055,6 @@
  },
  {
   "id": "greater-rune-of-nobility",
-  "group": "Runes",
   "name": "Greater Rune of Nobility",
   "name_es": "Runa de nobleza mayor",
   "name_pt": "Runa da Nobreza Maior",
@@ -2227,7 +2068,6 @@
  },
  {
   "id": "hedgewitch-assandras-rune-of-wisdom",
-  "group": "Runes",
   "name": "Hedgewitch Assandra's Rune of Wisdom",
   "name_es": "Runa de sabiduría de Assandra, la bruja herbolaria",
   "name_pt": "Runa da Sabedoria da Bruxa da Natureza Assandra",
@@ -2241,7 +2081,6 @@
  },
  {
   "id": "saqawals-rune-of-the-sky",
-  "group": "Runes",
   "name": "Saqawal's Rune of the Sky",
   "name_es": "Runa del cielo de Saqawal",
   "name_pt": "Runa do Céu de Saqawal",
@@ -2255,7 +2094,6 @@
  },
  {
   "id": "fenumus-rune-of-agony",
-  "group": "Runes",
   "name": "Fenumus' Rune of Agony",
   "name_es": "Runa de agonía de Fenumus",
   "name_pt": "Runa da Agonia de Fenumus",
@@ -2269,7 +2107,6 @@
  },
  {
   "id": "farruls-rune-of-grace",
-  "group": "Runes",
   "name": "Farrul's Rune of Grace",
   "name_es": "Runa de gracia de Farrul",
   "name_pt": "Runa da Graça de Farrul",
@@ -2283,7 +2120,6 @@
  },
  {
   "id": "farruls-rune-of-the-chase",
-  "group": "Runes",
   "name": "Farrul's Rune of the Chase",
   "name_es": "Runa de la persecución de Farrul",
   "name_pt": "Runa da Perseguição de Farrul",
@@ -2297,7 +2133,6 @@
  },
  {
   "id": "craiceanns-rune-of-warding",
-  "group": "Runes",
   "name": "Craiceann's Rune of Warding",
   "name_es": "Runa de protección de Craiceann",
   "name_pt": "Runa da Salvaguarda de Craiceann",
@@ -2311,7 +2146,6 @@
  },
  {
   "id": "saqawals-rune-of-memory",
-  "group": "Runes",
   "name": "Saqawal's Rune of Memory",
   "name_es": "Runa de recuerdos de Saqawal",
   "name_pt": "Runa da Memória de Saqawal",
@@ -2325,7 +2159,6 @@
  },
  {
   "id": "saqawals-rune-of-erosion",
-  "group": "Runes",
   "name": "Saqawal's Rune of Erosion",
   "name_es": "Runa de erosión de Saqawal",
   "name_pt": "Runa da Erosão de Saqawal",
@@ -2339,7 +2172,6 @@
  },
  {
   "id": "farruls-rune-of-the-hunt",
-  "group": "Runes",
   "name": "Farrul's Rune of the Hunt",
   "name_es": "Runa de la cacería de Farrul",
   "name_pt": "Runa da Caçada de Farrul",
@@ -2353,7 +2185,6 @@
  },
  {
   "id": "craiceanns-rune-of-recovery",
-  "group": "Runes",
   "name": "Craiceann's Rune of Recovery",
   "name_es": "Runa de recuperación de Craiceann",
   "name_pt": "Runa da Recuperação de Craiceann",
@@ -2367,7 +2198,6 @@
  },
  {
   "id": "courtesan-mannans-rune-of-cruelty",
-  "group": "Runes",
   "name": "Courtesan Mannan's Rune of Cruelty",
   "name_es": "Runa de crueldad de Mannan, la cortesana",
   "name_pt": "Runa da Crueldade da Cortesã Mannan",
@@ -2381,7 +2211,6 @@
  },
  {
   "id": "thane-grannells-rune-of-mastery",
-  "group": "Runes",
   "name": "Thane Grannell's Rune of Mastery",
   "name_es": "Runa de maestría del thane Grannell",
   "name_pt": "Runa da Maestria do Nobre Grannell",
@@ -2395,7 +2224,6 @@
  },
  {
   "id": "fenumus-rune-of-spinning",
-  "group": "Runes",
   "name": "Fenumus' Rune of Spinning",
   "name_es": "Runa de rotación de Fenumus",
   "name_pt": "Runa da Fiação de Fenumus",
@@ -2409,7 +2237,6 @@
  },
  {
   "id": "countess-seskes-rune-of-archery",
-  "group": "Runes",
   "name": "Countess Seske's Rune of Archery",
   "name_es": "Runa de arquería de la condesa Seske",
   "name_pt": "Runa da Arqueria da Condessa Seske",
@@ -2423,7 +2250,6 @@
  },
  {
   "id": "thane-girts-rune-of-wildness",
-  "group": "Runes",
   "name": "Thane Girt's Rune of Wildness",
   "name_es": "Runa de salvajismo del thane Girt",
   "name_pt": "Runa do Ermo do Nobre Girt",
@@ -2437,7 +2263,6 @@
  },
  {
   "id": "fenumus-rune-of-draining",
-  "group": "Runes",
   "name": "Fenumus' Rune of Draining",
   "name_es": "Runa de agotamiento de Fenumus",
   "name_pt": "Runa da Drenagem de Fenumus",
@@ -2451,7 +2276,6 @@
  },
  {
   "id": "thane-myrks-rune-of-summer",
-  "group": "Runes",
   "name": "Thane Myrk's Rune of Summer",
   "name_es": "Runa de verano del thane Myrk",
   "name_pt": "Runa do Verão do Nobre Myrk",
@@ -2465,7 +2289,6 @@
  },
  {
   "id": "lady-hestras-rune-of-winter",
-  "group": "Runes",
   "name": "Lady Hestra's Rune of Winter",
   "name_es": "Runa de invierno de lady Hestra",
   "name_pt": "Runa do Inverno da Dama Hestra",
@@ -2479,7 +2302,6 @@
  },
  {
   "id": "thane-lelds-rune-of-spring",
-  "group": "Runes",
   "name": "Thane Leld's Rune of Spring",
   "name_es": "Runa de primavera del thane Leld",
   "name_pt": "Runa da Primavera do Nobre Leld",
@@ -2493,7 +2315,6 @@
  },
  {
   "id": "the-greatwolfs-rune-of-claws",
-  "group": "Runes",
   "name": "The Greatwolf's Rune of Claws",
   "name_es": "Runa de garras del Gran lobo",
   "name_pt": "Runa das Garras do Grande Lobo",
@@ -2507,7 +2328,6 @@
  },
  {
   "id": "the-greatwolfs-rune-of-willpower",
-  "group": "Runes",
   "name": "The Greatwolf's Rune of Willpower",
   "name_es": "Runa de voluntad del Gran lobo",
   "name_pt": "Runa da Determinação do Grande Lobo",
@@ -2521,7 +2341,6 @@
  },
  {
   "id": "rune-of-vitality",
-  "group": "Runes",
   "name": "Rune of Vitality",
   "name_es": "Runa de vitalidad",
   "name_pt": "Runa da Vitalidade",
@@ -2535,7 +2354,6 @@
  },
  {
   "id": "rune-of-the-hunt",
-  "group": "Runes",
   "name": "Rune of the Hunt",
   "name_es": "Runa de la cacería",
   "name_pt": "Runa da Caçada",
@@ -2549,7 +2367,6 @@
  },
  {
   "id": "rune-of-acrobatics",
-  "group": "Runes",
   "name": "Rune of Acrobatics",
   "name_es": "Runa de acrobacia",
   "name_pt": "Runa das Acrobacias",
@@ -2563,7 +2380,6 @@
  },
  {
   "id": "rune-of-culmination",
-  "group": "Runes",
   "name": "Rune of Culmination",
   "name_es": "Runa de culminación",
   "name_pt": "Runa da Culminação",
@@ -2577,7 +2393,6 @@
  },
  {
   "id": "rune-of-renown",
-  "group": "Runes",
   "name": "Rune of Renown",
   "name_es": "Runa de renombre",
   "name_pt": "Runa do Renome",
@@ -2591,7 +2406,6 @@
  },
  {
   "id": "rune-of-accumulation",
-  "group": "Runes",
   "name": "Rune of Accumulation",
   "name_es": "Runa de acumulación",
   "name_pt": "Runa da Acumulação",
@@ -2605,7 +2419,6 @@
  },
  {
   "id": "rune-of-foundations",
-  "group": "Runes",
   "name": "Rune of Foundations",
   "name_es": "Runa de cimientos",
   "name_pt": "Runa das Fundações",
@@ -2619,7 +2432,6 @@
  },
  {
   "id": "rune-of-the-prism",
-  "group": "Runes",
   "name": "Rune of the Prism",
   "name_es": "Runa del prisma",
   "name_pt": "Runa do Prisma",
@@ -2633,7 +2445,6 @@
  },
  {
   "id": "rune-of-the-blossom",
-  "group": "Runes",
   "name": "Rune of the Blossom",
   "name_es": "Runa de la floración",
   "name_pt": "Runa do Desabrochar",
@@ -2647,7 +2458,6 @@
  },
  {
   "id": "rune-of-consistency",
-  "group": "Runes",
   "name": "Rune of Consistency",
   "name_es": "Runa de consistencia",
   "name_pt": "Runa da Consistência",
@@ -2661,7 +2471,6 @@
  },
  {
   "id": "rune-of-reach",
-  "group": "Runes",
   "name": "Rune of Reach",
   "name_es": "Runa de alcance",
   "name_pt": "Runa do Alcance",
@@ -2675,7 +2484,6 @@
  },
  {
   "id": "rune-of-vital-flame",
-  "group": "Runes",
   "name": "Rune of Vital Flame",
   "name_es": "Runa de llama vital",
   "name_pt": "Runa da Chama Vital",
@@ -2689,7 +2497,6 @@
  },
  {
   "id": "rune-of-confrontation",
-  "group": "Runes",
   "name": "Rune of Confrontation",
   "name_es": "Runa de confrontación",
   "name_pt": "Runa do Confrontamento",
@@ -2703,7 +2510,6 @@
  },
  {
   "id": "masterwork-rune",
-  "group": "Runes",
   "name": "Masterwork Rune",
   "name_es": "Runa maestra",
   "name_pt": "Runa Obra-prima",
@@ -2717,7 +2523,6 @@
  },
  {
   "id": "passion-of-aldur",
-  "group": "Runes",
   "name": "Passion of Aldur",
   "name_es": "Pasión de Aldur",
   "name_pt": "Paixão de Aldur",
@@ -2731,7 +2536,6 @@
  },
  {
   "id": "breath-of-aldur",
-  "group": "Runes",
   "name": "Breath of Aldur",
   "name_es": "Aliento de Aldur",
   "name_pt": "Sopro de Aldur",
@@ -2745,7 +2549,6 @@
  },
  {
   "id": "ire-of-aldur",
-  "group": "Runes",
   "name": "Ire of Aldur",
   "name_es": "Ira de Aldur",
   "name_pt": "Ira de Aldur",
@@ -2759,7 +2562,6 @@
  },
  {
   "id": "betrayal-of-aldur",
-  "group": "Runes",
   "name": "Betrayal of Aldur",
   "name_es": "Traición de Aldur",
   "name_pt": "Traição de Aldur",
@@ -2773,7 +2575,6 @@
  },
  {
   "id": "serles-triumph",
-  "group": "Runes",
   "name": "Serle's Triumph",
   "name_es": "Triunfo de Serle",
   "name_pt": "Triunfo de Serle",
@@ -2787,7 +2588,6 @@
  },
  {
   "id": "cadigans-epiphany",
-  "group": "Runes",
   "name": "Cadigan's Epiphany",
   "name_es": "Epifanía de Cadigan",
   "name_pt": "Epifania de Cadigan",
@@ -2801,7 +2601,6 @@
  },
  {
   "id": "astrids-creativity",
-  "group": "Runes",
   "name": "Astrid's Creativity",
   "name_es": "Creatividad de Astrid",
   "name_pt": "Criatividade de Astrid",
@@ -2815,7 +2614,6 @@
  },
  {
   "id": "uhtreds-sidereus",
-  "group": "Runes",
   "name": "Uhtred's Sidereus",
   "name_es": "Estrella de Uhtred",
   "name_pt": "Sidereu de Uhtred",
@@ -2829,7 +2627,6 @@
  },
  {
   "id": "kolrs-hunt",
-  "group": "Runes",
   "name": "Kolr's Hunt",
   "name_es": "Cacería de Kolr",
   "name_pt": "Caçada de Kolr",
@@ -2843,7 +2640,6 @@
  },
  {
   "id": "voranas-carnage",
-  "group": "Runes",
   "name": "Vorana's Carnage",
   "name_es": "Matanza de Vorana",
   "name_pt": "Carnificina de Vorana",
@@ -2857,7 +2653,6 @@
  },
  {
   "id": "thruds-might",
-  "group": "Runes",
   "name": "Thrud's Might",
   "name_es": "Poder de Thrud",
   "name_pt": "Poder de Thrud",
@@ -2871,7 +2666,6 @@
  },
  {
   "id": "medveds-tending",
-  "group": "Runes",
   "name": "Medved's Tending",
   "name_es": "Cuidado de Medved",
   "name_pt": "Cuidados de Medved",
@@ -2885,7 +2679,6 @@
  },
  {
   "id": "katlas-gloom",
-  "group": "Runes",
   "name": "Katla's Gloom",
   "name_es": "Melancolía de Katla",
   "name_pt": "Trevas de Katla",
@@ -2899,7 +2692,6 @@
  },
  {
   "id": "aldurs-legacy",
-  "group": "Runes",
   "name": "Aldur's Legacy",
   "name_es": "Legado de Aldur",
   "name_pt": "Legado de Aldur",
@@ -2913,7 +2705,6 @@
  },
  {
   "id": "warding-rune-of-reinforcement",
-  "group": "Runes",
   "name": "Warding Rune of Reinforcement",
   "name_es": "Runa protectora de refuerzo",
   "name_pt": "Runa de Salvaguarda do Reforço",
@@ -2927,7 +2718,6 @@
  },
  {
   "id": "warding-rune-of-protection",
-  "group": "Runes",
   "name": "Warding Rune of Protection",
   "name_es": "Runa protectora de defensa",
   "name_pt": "Runa de Salvaguarda da Proteção",
@@ -2941,7 +2731,6 @@
  },
  {
   "id": "warding-rune-of-disintegration",
-  "group": "Runes",
   "name": "Warding Rune of Disintegration",
   "name_es": "Runa protectora de desintegración",
   "name_pt": "Runa de Salvaguarda da Desintegração",
@@ -2955,7 +2744,6 @@
  },
  {
   "id": "warding-rune-of-desperation",
-  "group": "Runes",
   "name": "Warding Rune of Desperation",
   "name_es": "Runa protectora de desesperación",
   "name_pt": "Runa de Salvaguarda do Desespero",
@@ -2969,7 +2757,6 @@
  },
  {
   "id": "warding-rune-of-symbiosis",
-  "group": "Runes",
   "name": "Warding Rune of Symbiosis",
   "name_es": "Runa protectora de simbiosis",
   "name_pt": "Runa de Salvaguarda da Simbiose",
@@ -2983,7 +2770,6 @@
  },
  {
   "id": "warding-rune-of-courage",
-  "group": "Runes",
   "name": "Warding Rune of Courage",
   "name_es": "Runa protectora de coraje",
   "name_pt": "Runa de Salvaguarda da Coragem",
@@ -2997,7 +2783,6 @@
  },
  {
   "id": "warding-rune-of-stability",
-  "group": "Runes",
   "name": "Warding Rune of Stability",
   "name_es": "Runa protectora de estabilidad",
   "name_pt": "Runa de Salvaguarda da Estabilidade",
@@ -3011,7 +2796,6 @@
  },
  {
   "id": "warding-rune-of-glancing",
-  "group": "Runes",
   "name": "Warding Rune of Glancing",
   "name_es": "Runa protectora de observación",
   "name_pt": "Runa de Salvaguarda do Resvalamento",
@@ -3025,7 +2809,6 @@
  },
  {
   "id": "warding-rune-of-heart",
-  "group": "Runes",
   "name": "Warding Rune of Heart",
   "name_es": "Runa protectora de corazón",
   "name_pt": "Runa de Salvaguarda do Coração",
@@ -3039,7 +2822,6 @@
  },
  {
   "id": "warding-rune-of-nourishment",
-  "group": "Runes",
   "name": "Warding Rune of Nourishment",
   "name_es": "Runa protectora de nutrición",
   "name_pt": "Runa de Salvaguarda do Sustento",
@@ -3053,7 +2835,6 @@
  },
  {
   "id": "warding-rune-of-annihilation",
-  "group": "Runes",
   "name": "Warding Rune of Annihilation",
   "name_es": "Runa protectora de Aniquilación",
   "name_pt": "Runa de Salvaguarda da Aniquilação",
@@ -3067,7 +2848,6 @@
  },
  {
   "id": "warding-rune-of-armature",
-  "group": "Runes",
   "name": "Warding Rune of Armature",
   "name_es": "Runa protectora de armazón",
   "name_pt": "Runa de Salvaguarda da Armação",
@@ -3081,7 +2861,6 @@
  },
  {
   "id": "warding-rune-of-obsession",
-  "group": "Runes",
   "name": "Warding Rune of Obsession",
   "name_es": "Runa protectora de obsesión",
   "name_pt": "Runa de Salvaguarda da Obsessão",
@@ -3095,7 +2874,6 @@
  },
  {
   "id": "warding-rune-of-equinox",
-  "group": "Runes",
   "name": "Warding Rune of Equinox",
   "name_es": "Runa protectora del equinoccio",
   "name_pt": "Runa de Salvaguarda do Equinócio",
@@ -3109,7 +2887,6 @@
  },
  {
   "id": "warding-rune-of-salvaging",
-  "group": "Runes",
   "name": "Warding Rune of Salvaging",
   "name_es": "Runa protectora de rescate",
   "name_pt": "Runa de Salvaguarda do Aproveitamento",
@@ -3123,7 +2900,6 @@
  },
  {
   "id": "warding-rune-of-bodyguards",
-  "group": "Runes",
   "name": "Warding Rune of Bodyguards",
   "name_es": "Runa protectora de guardaespaldas",
   "name_pt": "Runa de Salvaguarda do Guarda-costas",
@@ -3137,7 +2913,6 @@
  },
  {
   "id": "warding-rune-of-hollowing",
-  "group": "Runes",
   "name": "Warding Rune of Hollowing",
   "name_es": "Runa protectora de ahuecamiento",
   "name_pt": "Runa de Salvaguarda do Esvaziamento",
@@ -3151,7 +2926,6 @@
  },
  {
   "id": "ancient-rune-of-splinters",
-  "group": "Runes",
   "name": "Ancient Rune of Splinters",
   "name_es": "Runa antigua de astillas",
   "name_pt": "Runa de Farpas Antiga",
@@ -3165,7 +2939,6 @@
  },
  {
   "id": "ancient-rune-of-dueling",
-  "group": "Runes",
   "name": "Ancient Rune of Dueling",
   "name_es": "Runa antigua de duelo",
   "name_pt": "Runa do Duelo Antiga",
@@ -3179,7 +2952,6 @@
  },
  {
   "id": "ancient-rune-of-the-titan",
-  "group": "Runes",
   "name": "Ancient Rune of the Titan",
   "name_es": "Runa antigua del titán",
   "name_pt": "Runa do Titã Antiga",
@@ -3193,7 +2965,6 @@
  },
  {
   "id": "ancient-rune-of-shattering",
-  "group": "Runes",
   "name": "Ancient Rune of Shattering",
   "name_es": "Runa antigua de fragmentación",
   "name_pt": "Runa do Estilhaçamento Antiga",
@@ -3207,7 +2978,6 @@
  },
  {
   "id": "ancient-rune-of-prowess",
-  "group": "Runes",
   "name": "Ancient Rune of Prowess",
   "name_es": "Runa antigua de bravura",
   "name_pt": "Runa da Proeza Antiga",
@@ -3221,7 +2991,6 @@
  },
  {
   "id": "ancient-rune-of-control",
-  "group": "Runes",
   "name": "Ancient Rune of Control",
   "name_es": "Runa antigua de control",
   "name_pt": "Runa do Controle Antiga",
@@ -3235,7 +3004,6 @@
  },
  {
   "id": "ancient-rune-of-discovery",
-  "group": "Runes",
   "name": "Ancient Rune of Discovery",
   "name_es": "Runa antigua de descubrimiento",
   "name_pt": "Runa da Descoberta Antiga",
@@ -3249,7 +3017,6 @@
  },
  {
   "id": "ancient-rune-of-decay",
-  "group": "Runes",
   "name": "Ancient Rune of Decay",
   "name_es": "Runa antigua de decaimiento",
   "name_pt": "Runa da Decadência Antiga",
@@ -3263,7 +3030,6 @@
  },
  {
   "id": "ancient-rune-of-witchcraft",
-  "group": "Runes",
   "name": "Ancient Rune of Witchcraft",
   "name_es": "Runa antigua de brujería",
   "name_pt": "Runa da Bruxaria Antiga",
@@ -3277,7 +3043,6 @@
  },
  {
   "id": "ancient-rune-of-the-horde",
-  "group": "Runes",
   "name": "Ancient Rune of the Horde",
   "name_es": "Runa antigua de la horda",
   "name_pt": "Runa da Horda Antiga",
@@ -3291,7 +3056,6 @@
  },
  {
   "id": "ancient-rune-of-animosity",
-  "group": "Runes",
   "name": "Ancient Rune of Animosity",
   "name_es": "Runa antigua de animosidad",
   "name_pt": "Runa da Animosidade Antiga",
@@ -3305,7 +3069,6 @@
  },
  {
   "id": "ancient-rune-of-detonation",
-  "group": "Runes",
   "name": "Ancient Rune of Detonation",
   "name_es": "Runa antigua de detonación",
   "name_pt": "Runa da Detonação Antiga",
@@ -3319,7 +3082,6 @@
  },
  {
   "id": "ancient-rune-of-retaliation",
-  "group": "Runes",
   "name": "Ancient Rune of Retaliation",
   "name_es": "Runa antigua de represalia",
   "name_pt": "Runa da Retaliação Antiga",
@@ -3333,7 +3095,6 @@
  },
  {
   "id": "legacy-of-bramblejack",
-  "group": "Runes",
   "name": "Legacy of Bramblejack",
   "name_es": "Legado de Zarzacoraza",
   "name_pt": "Legado de Espinhoral",
@@ -3347,7 +3108,6 @@
  },
  {
   "id": "legacy-of-blackbraid",
-  "group": "Runes",
   "name": "Legacy of Blackbraid",
   "name_es": "Legado de Trenza negra",
   "name_pt": "Legado de Trança Negra",
@@ -3361,7 +3121,6 @@
  },
  {
   "id": "legacy-of-edyrns-tusks",
-  "group": "Runes",
   "name": "Legacy of Edyrn's Tusks",
   "name_es": "Legado de Colmillos de Edyrn",
   "name_pt": "Legado de Presas de Edyrn",
@@ -3375,7 +3134,6 @@
  },
  {
   "id": "legacy-of-kingsguard",
-  "group": "Runes",
   "name": "Legacy of Kingsguard",
   "name_es": "Legado de Guardia de reyes",
   "name_pt": "Legado de Regiguarda",
@@ -3389,7 +3147,6 @@
  },
  {
   "id": "legacy-of-bristleboar",
-  "group": "Runes",
   "name": "Legacy of Bristleboar",
   "name_es": "Legado de Cuero de jabalí",
   "name_pt": "Legado de Javali de Cerdas",
@@ -3403,7 +3160,6 @@
  },
  {
   "id": "legacy-of-foxshade",
-  "group": "Runes",
   "name": "Legacy of Foxshade",
   "name_es": "Legado de Sombra de zorro",
   "name_pt": "Legado de Sombra da Raposa",
@@ -3417,7 +3173,6 @@
  },
  {
   "id": "legacy-of-ashrend",
-  "group": "Runes",
   "name": "Legacy of Ashrend",
   "name_es": "Legado de Desgarro de cenizas",
   "name_pt": "Legado de Cinzarrada",
@@ -3431,7 +3186,6 @@
  },
  {
   "id": "legacy-of-briskwrap",
-  "group": "Runes",
   "name": "Legacy of Briskwrap",
   "name_es": "Legado de Peto brioso",
   "name_pt": "Legado de Envoltágil",
@@ -3445,7 +3199,6 @@
  },
  {
   "id": "legacy-of-the-unleashed",
-  "group": "Runes",
   "name": "Legacy of The Unleashed",
   "name_es": "Legado de El desatado",
   "name_pt": "Legado de O Liberto",
@@ -3459,7 +3212,6 @@
  },
  {
   "id": "legacy-of-horns-of-bynden",
-  "group": "Runes",
   "name": "Legacy of Horns of Bynden",
   "name_es": "Legado de Cuernos de Bynden",
   "name_pt": "Legado de Chifres de Bynden",
@@ -3473,7 +3225,6 @@
  },
  {
   "id": "legacy-of-wings-of-caelyn",
-  "group": "Runes",
   "name": "Legacy of Wings of Caelyn",
   "name_es": "Legado de Alas de Caelyn",
   "name_pt": "Legado de Asas de Caelyn",
@@ -3487,7 +3238,6 @@
  },
  {
   "id": "legacy-of-ezomyte-peak",
-  "group": "Runes",
   "name": "Legacy of Ezomyte Peak",
   "name_es": "Legado de Cresta ezomita",
   "name_pt": "Legado de Apogeu Ezomyta",
@@ -3501,7 +3251,6 @@
  },
  {
   "id": "legacy-of-deidbell",
-  "group": "Runes",
   "name": "Legacy of Deidbell",
   "name_es": "Legado de Campana de Deid",
   "name_pt": "Legado de Morte Badalante",
@@ -3515,7 +3264,6 @@
  },
  {
   "id": "legacy-of-elevore",
-  "group": "Runes",
   "name": "Legacy of Elevore",
   "name_es": "Legado de Elevore",
   "name_pt": "Legado de Elevore",
@@ -3529,7 +3277,6 @@
  },
  {
   "id": "legacy-of-starkonjas-head",
-  "group": "Runes",
   "name": "Legacy of Starkonja's Head",
   "name_es": "Legado de Cabeza de Starkonja",
   "name_pt": "Legado de Cabeça de Starkonja",
@@ -3543,7 +3290,6 @@
  },
  {
   "id": "legacy-of-crown-of-thorns",
-  "group": "Runes",
   "name": "Legacy of Crown of Thorns",
   "name_es": "Legado de Corona de espinas",
   "name_pt": "Legado de Coroa de Espinhos",
@@ -3557,7 +3303,6 @@
  },
  {
   "id": "legacy-of-greymake",
-  "group": "Runes",
   "name": "Legacy of Greymake",
   "name_es": "Legado de Marca gris",
   "name_pt": "Legado de Criação Gris",
@@ -3571,7 +3316,6 @@
  },
  {
   "id": "legacy-of-erians-cobble",
-  "group": "Runes",
   "name": "Legacy of Erian's Cobble",
   "name_es": "Legado de Yelmo de Erian",
   "name_pt": "Legado de Calçamento de Erian",
@@ -3585,7 +3329,6 @@
  },
  {
   "id": "legacy-of-the-smiling-knight",
-  "group": "Runes",
   "name": "Legacy of The Smiling Knight",
   "name_es": "Legado de El caballero sonriente",
   "name_pt": "Legado de O Cavaleiro Sorridente",
@@ -3599,7 +3342,6 @@
  },
  {
   "id": "legacy-of-the-vile-knight",
-  "group": "Runes",
   "name": "Legacy of The Vile Knight",
   "name_es": "Legado de El caballero vil",
   "name_pt": "Legado de O Cavaleiro Vil",
@@ -3613,7 +3355,6 @@
  },
  {
   "id": "legacy-of-northpaw",
-  "group": "Runes",
   "name": "Legacy of Northpaw",
   "name_es": "Legado de Garra del norte",
   "name_pt": "Legado de Pata do Norte",
@@ -3627,7 +3368,6 @@
  },
  {
   "id": "legacy-of-candlemaker",
-  "group": "Runes",
   "name": "Legacy of Candlemaker",
   "name_es": "Legado de Fabricante de velas",
   "name_pt": "Legado de Fabricante de Velas",
@@ -3641,7 +3381,6 @@
  },
  {
   "id": "legacy-of-deathblow",
-  "group": "Runes",
   "name": "Legacy of Deathblow",
   "name_es": "Legado de Golpe mortal",
   "name_pt": "Legado de Golpe Mortal",
@@ -3655,7 +3394,6 @@
  },
  {
   "id": "legacy-of-legionstride",
-  "group": "Runes",
   "name": "Legacy of Legionstride",
   "name_es": "Legado de Avance de la legión",
   "name_pt": "Legado de Passada de Legião",
@@ -3669,7 +3407,6 @@
  },
  {
   "id": "legacy-of-trampletoe",
-  "group": "Runes",
   "name": "Legacy of Trampletoe",
   "name_es": "Legado de Aplastadedos",
   "name_pt": "Legado de Marcha Pesada",
@@ -3683,7 +3420,6 @@
  },
  {
   "id": "legacy-of-briarpatch",
-  "group": "Runes",
   "name": "Legacy of Briarpatch",
   "name_es": "Legado de Remiendos de espino",
   "name_pt": "Legado de Espinheiro",
@@ -3697,7 +3433,6 @@
  },
  {
   "id": "legacy-of-bushwhack",
-  "group": "Runes",
   "name": "Legacy of Bushwhack",
   "name_es": "Legado de Zancada forestal",
   "name_pt": "Legado de Arboscuro",
@@ -3711,7 +3446,6 @@
  },
  {
   "id": "legacy-of-wanderlust",
-  "group": "Runes",
   "name": "Legacy of Wanderlust",
   "name_es": "Legado de Deseos del viajero",
   "name_pt": "Legado de Sede de Viajar",
@@ -3725,7 +3459,6 @@
  },
  {
   "id": "legacy-of-the-knight-errant",
-  "group": "Runes",
   "name": "Legacy of The Knight-errant",
   "name_es": "Legado de Pisadas del caballero",
   "name_pt": "Legado de O Cavaleiro Errante",
@@ -3739,7 +3472,6 @@
  },
  {
   "id": "legacy-of-oberns-bastion",
-  "group": "Runes",
   "name": "Legacy of Obern's Bastion",
   "name_es": "Legado de Bastión de Obern",
   "name_pt": "Legado de Bastião de Obern",
@@ -3753,7 +3485,6 @@
  },
  {
   "id": "legacy-of-dionadair",
-  "group": "Runes",
   "name": "Legacy of Dionadair",
   "name_es": "Legado de Defensor",
   "name_pt": "Legado de Dionadair",
@@ -3767,7 +3498,6 @@
  },
  {
   "id": "legacy-of-wulfsbane",
-  "group": "Runes",
   "name": "Legacy of Wulfsbane",
   "name_es": "Legado de Azote de lobos",
   "name_pt": "Legado de Veneno de Lobo",
@@ -3781,7 +3511,6 @@
  },
  {
   "id": "legacy-of-chernobogs-pillar",
-  "group": "Runes",
   "name": "Legacy of Chernobog's Pillar",
   "name_es": "Legado de Pilar de Chernobog",
   "name_pt": "Legado de Pilar de Chernobog",
@@ -3795,7 +3524,6 @@
  },
  {
   "id": "legacy-of-alkem-eira",
-  "group": "Runes",
   "name": "Legacy of Alkem Eira",
   "name_es": "Legado de Alkem Eira",
   "name_pt": "Legado de Alkem Eira",
@@ -3809,7 +3537,6 @@
  },
  {
   "id": "legacy-of-oaksworn",
-  "group": "Runes",
   "name": "Legacy of Oaksworn",
   "name_es": "Legado de Juramento del roble",
   "name_pt": "Legado de Juramento do Carvalho",
@@ -3823,7 +3550,6 @@
  },
  {
   "id": "legacy-of-dunkelhalt",
-  "group": "Runes",
   "name": "Legacy of Dunkelhalt",
   "name_es": "Legado de Fin de la oscuridad",
   "name_pt": "Legado de Tenebrário",
@@ -3837,7 +3563,6 @@
  },
  {
   "id": "legacy-of-rondel-de-ezo",
-  "group": "Runes",
   "name": "Legacy of Rondel de Ezo",
   "name_es": "Legado de Rondel de Ezo",
   "name_pt": "Legado de Rondel de Ezo",
@@ -3851,7 +3576,6 @@
  },
  {
   "id": "legacy-of-brynhands-mark",
-  "group": "Runes",
   "name": "Legacy of Brynhand's Mark",
   "name_es": "Legado de Marca de Brynhand",
   "name_pt": "Legado de Marca de Brynhand",
@@ -3865,7 +3589,6 @@
  },
  {
   "id": "legacy-of-trenchtimbre",
-  "group": "Runes",
   "name": "Legacy of Trenchtimbre",
   "name_es": "Legado de Timbre de trinchera",
   "name_pt": "Legado de Abissotimbral",
@@ -3879,7 +3602,6 @@
  },
  {
   "id": "legacy-of-mjölner",
-  "group": "Runes",
   "name": "Legacy of Mjölner",
   "name_es": "Legado de Mjölner",
   "name_pt": "Legado de Mjölner",
@@ -3893,7 +3615,6 @@
  },
  {
   "id": "legacy-of-twisted-empyrean",
-  "group": "Runes",
   "name": "Legacy of Twisted Empyrean",
   "name_es": "Legado de Empíreo retorcido",
   "name_pt": "Legado de Empyreano Distorcido",
@@ -3907,7 +3628,6 @@
  },
  {
   "id": "legacy-of-hoghunt",
-  "group": "Runes",
   "name": "Legacy of Hoghunt",
   "name_es": "Legado de La caza del puerco",
   "name_pt": "Legado de Caçada ao Javali",
@@ -3921,7 +3641,6 @@
  },
  {
   "id": "legacy-of-hrimnors-hymn",
-  "group": "Runes",
   "name": "Legacy of Hrimnor's Hymn",
   "name_es": "Legado de Himno de Hrimnor",
   "name_pt": "Legado de Hino de Hrimnor",
@@ -3935,7 +3654,6 @@
  },
  {
   "id": "legacy-of-brain-rattler",
-  "group": "Runes",
   "name": "Legacy of Brain Rattler",
   "name_es": "Legado de Devanador de cerebros",
   "name_pt": "Legado de Sacode-cérebros",
@@ -3949,7 +3667,6 @@
  },
  {
   "id": "legacy-of-lifesprig",
-  "group": "Runes",
   "name": "Legacy of Lifesprig",
   "name_es": "Legado de Ramito de vida",
   "name_pt": "Legado de Vergôntea",
@@ -3963,7 +3680,6 @@
  },
  {
   "id": "legacy-of-duality",
-  "group": "Runes",
   "name": "Legacy of Duality",
   "name_es": "Legado de Dualidad",
   "name_pt": "Legado de Dualidade",
@@ -3977,7 +3693,6 @@
  },
  {
   "id": "legacy-of-tyrannys-grip",
-  "group": "Runes",
   "name": "Legacy of Tyranny's Grip",
   "name_es": "Legado de Garras de la tiranía",
   "name_pt": "Legado de Punho da Tirania",
@@ -3991,7 +3706,6 @@
  },
  {
   "id": "legacy-of-the-sentry",
-  "group": "Runes",
   "name": "Legacy of The Sentry",
   "name_es": "Legado de El centinela",
   "name_pt": "Legado de Sentinela",
@@ -4005,7 +3719,6 @@
  },
  {
   "id": "legacy-of-adonias-ego",
-  "group": "Runes",
   "name": "Legacy of Adonia's Ego",
   "name_es": "Legado de Ego de Adonia",
   "name_pt": "Legado de Ego de Adonia",
@@ -4019,7 +3732,6 @@
  },
  {
   "id": "legacy-of-cursecarver",
-  "group": "Runes",
   "name": "Legacy of Cursecarver",
   "name_es": "Legado de Talladora de maldiciones",
   "name_pt": "Legado de Talha-maldição",
@@ -4033,7 +3745,6 @@
  },
  {
   "id": "legacy-of-dusk-vigil",
-  "group": "Runes",
   "name": "Legacy of Dusk Vigil",
   "name_es": "Legado de Vigilia crepuscular",
   "name_pt": "Legado de Vigília do Crepúsculo",
@@ -4047,7 +3758,6 @@
  },
  {
   "id": "legacy-of-the-blood-thorn",
-  "group": "Runes",
   "name": "Legacy of The Blood Thorn",
   "name_es": "Legado de La espina de sangre",
   "name_pt": "Legado de O Espinho Sangrento",
@@ -4061,7 +3771,6 @@
  },
  {
   "id": "legacy-of-quill-rain",
-  "group": "Runes",
   "name": "Legacy of Quill Rain",
   "name_es": "Legado de Lluvia de plumas",
   "name_pt": "Legado de Chuva de Espinhos",
@@ -4075,7 +3784,6 @@
  },
  {
   "id": "legacy-of-ironbound",
-  "group": "Runes",
   "name": "Legacy of Ironbound",
   "name_es": "Legado de Unión de hierro",
   "name_pt": "Legado de Ferrofirme",
@@ -4089,7 +3797,6 @@
  },
  {
   "id": "legacy-of-amor-mandragora",
-  "group": "Runes",
   "name": "Legacy of Amor Mandragora",
   "name_es": "Legado de Amor de mandrágora",
   "name_pt": "Legado de Mandrágora Amor",
@@ -4103,7 +3810,6 @@
  },
  {
   "id": "legacy-of-spiteful-floret",
-  "group": "Runes",
   "name": "Legacy of Spiteful Floret",
   "name_es": "Legado de Brote malicioso",
   "name_pt": "Legado de Florete Maligno",
@@ -4117,7 +3823,6 @@
  },
  {
   "id": "legacy-of-svalinn",
-  "group": "Runes",
   "name": "Legacy of Svalinn",
   "name_es": "Legado de Svalinn",
   "name_pt": "Legado de Svalinn",
@@ -4131,7 +3836,6 @@
  },
  {
   "id": "legacy-of-keeper-of-the-arc",
-  "group": "Runes",
   "name": "Legacy of Keeper of the Arc",
   "name_es": "Legado de Guardián del arco",
   "name_pt": "Legado de Protetor da Arca",
@@ -4145,7 +3849,6 @@
  },
  {
   "id": "legacy-of-olrovasara",
-  "group": "Runes",
   "name": "Legacy of Olrovasara",
   "name_es": "Legado de Olrovasara",
   "name_pt": "Legado de Olrovasara",
@@ -4159,7 +3862,6 @@
  },
  {
   "id": "legacy-of-a-worthy-foe",
-  "group": "Runes",
   "name": "Legacy of A Worthy Foe",
   "name_es": "Legado de Un oponente digno",
   "name_pt": "Legado de Um Inimigo à Altura",
@@ -4173,7 +3875,6 @@
  },
  {
   "id": "legacy-of-serles-grit",
-  "group": "Runes",
   "name": "Legacy of Serle's Grit",
   "name_es": "Legado de Determinación de Serle",
   "name_pt": "Legado de Firmeza de Serle",
@@ -4187,7 +3888,6 @@
  },
  {
   "id": "legacy-of-runeseekers-call",
-  "group": "Runes",
   "name": "Legacy of Runeseeker's Call",
   "name_es": "Legado de Llamada del buscador de runas",
   "name_pt": "Legado de Vocação do Caça-runas",
@@ -4201,7 +3901,6 @@
  },
  {
   "id": "legacy-of-facebreaker",
-  "group": "Runes",
   "name": "Legacy of Facebreaker",
   "name_es": "Legado de Rompecaras",
   "name_pt": "Legado de Quebra-Cara",
@@ -4215,7 +3914,6 @@
  },
  {
   "id": "expedition-logbook",
-  "group": "Expedition",
   "name": "Expedition Logbook",
   "name_es": "Registro de expedición",
   "name_pt": "Diário da Expedição",
@@ -4229,7 +3927,6 @@
  },
  {
   "id": "aldurs-saga",
-  "group": "Expedition",
   "name": "Aldur's Saga",
   "name_es": "Saga de Aldur",
   "name_pt": "Saga de Aldur",
@@ -4243,7 +3940,6 @@
  },
  {
   "id": "medveds-saga",
-  "group": "Expedition",
   "name": "Medved's Saga",
   "name_es": "Saga de Medved",
   "name_pt": "Saga de Medved",
@@ -4257,7 +3953,6 @@
  },
  {
   "id": "voranas-saga",
-  "group": "Expedition",
   "name": "Vorana's Saga",
   "name_es": "Saga de Vorana",
   "name_pt": "Saga de Vorana",
@@ -4271,7 +3966,6 @@
  },
  {
   "id": "uhtreds-saga",
-  "group": "Expedition",
   "name": "Uhtred's Saga",
   "name_es": "Saga de Uhtred",
   "name_pt": "Saga de Uhtred",
@@ -4285,7 +3979,6 @@
  },
  {
   "id": "olroths-saga",
-  "group": "Expedition",
   "name": "Olroth's Saga",
   "name_es": "Saga de Olroth",
   "name_pt": "Saga de Olroth",
@@ -4299,7 +3992,6 @@
  },
  {
   "id": "blazing-flux",
-  "group": "Expedition",
   "name": "Blazing Flux",
   "name_es": "Flujo ardiente",
   "name_pt": "Fluxo Fulgente",
@@ -4313,7 +4005,6 @@
  },
  {
   "id": "chilling-flux",
-  "group": "Expedition",
   "name": "Chilling Flux",
   "name_es": "Flujo escarchante",
   "name_pt": "Fluxo Arrefecedor",
@@ -4327,7 +4018,6 @@
  },
  {
   "id": "crackling-flux",
-  "group": "Expedition",
   "name": "Crackling Flux",
   "name_es": "Flujo electrizante",
   "name_pt": "Fluxo Crepitante",
@@ -4341,7 +4031,6 @@
  },
  {
   "id": "void-flux",
-  "group": "Expedition",
   "name": "Void Flux",
   "name_es": "Flujo del vacío",
   "name_pt": "Fluxo do Vazio",
@@ -4355,7 +4044,6 @@
  },
  {
   "id": "thaumaturgic-flux-2",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 2)",
   "name_es": "Flujo taumatúrgico (nivel 2)",
   "name_pt": "Fluxo Taumatúrgico (Nível 2)",
@@ -4369,7 +4057,6 @@
  },
  {
   "id": "thaumaturgic-flux-3",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 3)",
   "name_es": "Flujo taumatúrgico (nivel 3)",
   "name_pt": "Fluxo Taumatúrgico (Nível 3)",
@@ -4383,7 +4070,6 @@
  },
  {
   "id": "thaumaturgic-flux-4",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 4)",
   "name_es": "Flujo taumatúrgico (nivel 4)",
   "name_pt": "Fluxo Taumatúrgico (Nível 4)",
@@ -4397,7 +4083,6 @@
  },
  {
   "id": "thaumaturgic-flux-5",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 5)",
   "name_es": "Flujo taumatúrgico (nivel 5)",
   "name_pt": "Fluxo Taumatúrgico (Nível 5)",
@@ -4411,7 +4096,6 @@
  },
  {
   "id": "thaumaturgic-flux-6",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 6)",
   "name_es": "Flujo taumatúrgico (nivel 6)",
   "name_pt": "Fluxo Taumatúrgico (Nível 6)",
@@ -4425,7 +4109,6 @@
  },
  {
   "id": "thaumaturgic-flux-7",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 7)",
   "name_es": "Flujo taumatúrgico (nivel 7)",
   "name_pt": "Fluxo Taumatúrgico (Nível 7)",
@@ -4439,7 +4122,6 @@
  },
  {
   "id": "thaumaturgic-flux-8",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 8)",
   "name_es": "Flujo taumatúrgico (nivel 8)",
   "name_pt": "Fluxo Taumatúrgico (Nível 8)",
@@ -4453,7 +4135,6 @@
  },
  {
   "id": "thaumaturgic-flux-9",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 9)",
   "name_es": "Flujo taumatúrgico (nivel 9)",
   "name_pt": "Fluxo Taumatúrgico (Nível 9)",
@@ -4467,7 +4148,6 @@
  },
  {
   "id": "thaumaturgic-flux-10",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 10)",
   "name_es": "Flujo taumatúrgico (nivel 10)",
   "name_pt": "Fluxo Taumatúrgico (Nível 10)",
@@ -4481,7 +4161,6 @@
  },
  {
   "id": "thaumaturgic-flux-11",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 11)",
   "name_es": "Flujo taumatúrgico (nivel 11)",
   "name_pt": "Fluxo Taumatúrgico (Nível 11)",
@@ -4495,7 +4174,6 @@
  },
  {
   "id": "thaumaturgic-flux-12",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 12)",
   "name_es": "Flujo taumatúrgico (nivel 12)",
   "name_pt": "Fluxo Taumatúrgico (Nível 12)",
@@ -4509,7 +4187,6 @@
  },
  {
   "id": "thaumaturgic-flux-13",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 13)",
   "name_es": "Flujo taumatúrgico (nivel 13)",
   "name_pt": "Fluxo Taumatúrgico (Nível 13)",
@@ -4523,7 +4200,6 @@
  },
  {
   "id": "thaumaturgic-flux-14",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 14)",
   "name_es": "Flujo taumatúrgico (nivel 14)",
   "name_pt": "Fluxo Taumatúrgico (Nível 14)",
@@ -4537,7 +4213,6 @@
  },
  {
   "id": "thaumaturgic-flux-15",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 15)",
   "name_es": "Flujo taumatúrgico (nivel 15)",
   "name_pt": "Fluxo Taumatúrgico (Nível 15)",
@@ -4551,7 +4226,6 @@
  },
  {
   "id": "thaumaturgic-flux-16",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 16)",
   "name_es": "Flujo taumatúrgico (nivel 16)",
   "name_pt": "Fluxo Taumatúrgico (Nível 16)",
@@ -4565,7 +4239,6 @@
  },
  {
   "id": "thaumaturgic-flux-17",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 17)",
   "name_es": "Flujo taumatúrgico (nivel 17)",
   "name_pt": "Fluxo Taumatúrgico (Nível 17)",
@@ -4579,7 +4252,6 @@
  },
  {
   "id": "thaumaturgic-flux-18",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 18)",
   "name_es": "Flujo taumatúrgico (nivel 18)",
   "name_pt": "Fluxo Taumatúrgico (Nível 18)",
@@ -4593,7 +4265,6 @@
  },
  {
   "id": "thaumaturgic-flux-19",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 19)",
   "name_es": "Flujo taumatúrgico (nivel 19)",
   "name_pt": "Fluxo Taumatúrgico (Nível 19)",
@@ -4607,7 +4278,6 @@
  },
  {
   "id": "thaumaturgic-flux-20",
-  "group": "Expedition",
   "name": "Thaumaturgic Flux (Level 20)",
   "name_es": "Flujo taumatúrgico (nivel 20)",
   "name_pt": "Fluxo Taumatúrgico (Nível 20)",
@@ -4621,7 +4291,6 @@
  },
  {
   "id": "perfect-flux",
-  "group": "Expedition",
   "name": "Perfect Flux",
   "name_es": "Flujo perfecto",
   "name_pt": "Fluxo Perfeito",
@@ -4635,7 +4304,6 @@
  },
  {
   "id": "emergent-vigour",
-  "group": "Expedition",
   "name": "Emergent Vigour",
   "name_es": "Vigor emergente",
   "name_pt": "Vigor Emergente",
@@ -4649,7 +4317,6 @@
  },
  {
   "id": "emergent-possibility",
-  "group": "Expedition",
   "name": "Emergent Possibility",
   "name_es": "Posibilidad emergente",
   "name_pt": "Possibilidade Emergente",
@@ -4663,7 +4330,6 @@
  },
  {
   "id": "emergent-protection",
-  "group": "Expedition",
   "name": "Emergent Protection",
   "name_es": "Protección emergente",
   "name_pt": "Proteção Emergente",
@@ -4677,7 +4343,6 @@
  },
  {
   "id": "emergent-instinct",
-  "group": "Expedition",
   "name": "Emergent Instinct",
   "name_es": "Instinto emergente",
   "name_pt": "Instinto Emergente",
@@ -4691,7 +4356,6 @@
  },
  {
   "id": "carved-cunning",
-  "group": "Expedition",
   "name": "Carved Cunning",
   "name_es": "Astucia grabada",
   "name_pt": "Astúcia Entalhada",
@@ -4705,7 +4369,6 @@
  },
  {
   "id": "carved-majesty",
-  "group": "Expedition",
   "name": "Carved Majesty",
   "name_es": "Majestad grabada",
   "name_pt": "Majestade Entalhada",
@@ -4719,7 +4382,6 @@
  },
  {
   "id": "carved-mischief",
-  "group": "Expedition",
   "name": "Carved Mischief",
   "name_es": "Travesura grabada",
   "name_pt": "Travessura Entalhada",
@@ -4733,7 +4395,6 @@
  },
  {
   "id": "carved-tenacity",
-  "group": "Expedition",
   "name": "Carved Tenacity",
   "name_es": "Tenacidad grabada",
   "name_pt": "Tenacidade Entalhada",
@@ -4747,7 +4408,6 @@
  },
  {
   "id": "architects-orb",
-  "group": "Vaal",
   "name": "Architect's Orb",
   "name_es": "Orbe del arquitecto",
   "name_pt": "Orbe do Arquiteto",
@@ -4761,7 +4421,6 @@
  },
  {
   "id": "crystallised-corruption",
-  "group": "Vaal",
   "name": "Crystallised Corruption",
   "name_es": "Corrupción cristalizada",
   "name_pt": "Corrupção Cristalizada",
@@ -4775,7 +4434,6 @@
  },
  {
   "id": "core-destabiliser",
-  "group": "Vaal",
   "name": "Core Destabiliser",
   "name_es": "Desestabilizador de núcleos",
   "name_pt": "Desestabilizador de Núcleo",
@@ -4789,7 +4447,6 @@
  },
  {
   "id": "ancient-infuser",
-  "group": "Vaal",
   "name": "Ancient Infuser",
   "name_es": "Infusor antiguo",
   "name_pt": "Infusor Antigo",
@@ -4803,7 +4460,6 @@
  },
  {
   "id": "vaal-cultivation-orb",
-  "group": "Vaal",
   "name": "Vaal Cultivation Orb",
   "name_es": "Orbe de cultivación vaal",
   "name_pt": "Orbe de Cultivo Vaal",
@@ -4817,7 +4473,6 @@
  },
  {
   "id": "yaomacs-orb-of-sacrifice",
-  "group": "Vaal",
   "name": "Yaomac's Orb of Sacrifice",
   "name_es": "Orbe de sacrificio de Yaomac",
   "name_pt": "Orbe do Sacrifício de Yaomac",
@@ -4831,7 +4486,6 @@
  },
  {
   "id": "kopecs-orb-of-sacrifice",
-  "group": "Vaal",
   "name": "Kopec's Orb of Sacrifice",
   "name_es": "Orbe de sacrificio de Kopec",
   "name_pt": "Orbe do Sacrifício de Kopec",
@@ -4845,7 +4499,6 @@
  },
  {
   "id": "kamasas-orb-of-sacrifice",
-  "group": "Vaal",
   "name": "Kamasa's Orb of Sacrifice",
   "name_es": "Orbe de sacrificio de Kamasa",
   "name_pt": "Orbe do Sacrifício de Kamasa",
@@ -4859,7 +4512,6 @@
  },
  {
   "id": "yuguls-orb-of-sacrifice",
-  "group": "Vaal",
   "name": "Yugul's Orb of Sacrifice",
   "name_es": "Orbe de sacrificio de Yugul",
   "name_pt": "Orbe do Sacrifício de Yugul",
@@ -4873,7 +4525,6 @@
  },
  {
   "id": "vaal-armourers-infuser",
-  "group": "Vaal",
   "name": "Vaal Armourer's Infuser",
   "name_es": "Infusor vaal del armero",
   "name_pt": "Infusor do Armeiro Vaal",
@@ -4887,7 +4538,6 @@
  },
  {
   "id": "vaal-blacksmiths-infuser",
-  "group": "Vaal",
   "name": "Vaal Blacksmith's Infuser",
   "name_es": "Infusor vaal del herrero",
   "name_pt": "Infusor do Ferreiro Vaal",
@@ -4901,7 +4551,6 @@
  },
  {
   "id": "vaal-arcanists-infuser",
-  "group": "Vaal",
   "name": "Vaal Arcanist's Infuser",
   "name_es": "Infusor vaal del arcanista",
   "name_pt": "Infusor do Arcanista Vaal",
@@ -4915,7 +4564,6 @@
  },
  {
   "id": "vaal-catalysing-infuser",
-  "group": "Vaal",
   "name": "Vaal Catalysing Infuser",
   "name_es": "Infusor vaal de catalización",
   "name_pt": "Infusor Catalítico Vaal",
@@ -4929,7 +4577,6 @@
  },
  {
   "id": "orb-of-extraction",
-  "group": "Vaal",
   "name": "Orb of Extraction",
   "name_es": "Orbe de extracción",
   "name_pt": "Orbe da Extração",
@@ -4943,7 +4590,6 @@
  },
  {
   "id": "vaal-siphoner",
-  "group": "Vaal",
   "name": "Vaal Siphoner",
   "name_es": "Extractor vaal",
   "name_pt": "Sugador Vaal",
@@ -4957,7 +4603,6 @@
  },
  {
   "id": "guatelitzis-thesis",
-  "group": "Vaal",
   "name": "Guatelitzi's Thesis",
   "name_es": "Tesis de Guatelitzi",
   "name_pt": "Tese de Guatelitzi",
@@ -4971,7 +4616,6 @@
  },
  {
   "id": "citaqualotls-thesis",
-  "group": "Vaal",
   "name": "Citaqualotl's Thesis",
   "name_es": "Tesis de Citaqualotl",
   "name_pt": "Tese de Citaqualotl",
@@ -4985,7 +4629,6 @@
  },
  {
   "id": "jiquanis-thesis",
-  "group": "Vaal",
   "name": "Jiquani's Thesis",
   "name_es": "Tesis de Jiquani",
   "name_pt": "Tese de Jiquani",
@@ -4999,7 +4642,6 @@
  },
  {
   "id": "quipolatls-thesis",
-  "group": "Vaal",
   "name": "Quipolatl's Thesis",
   "name_es": "Tesis de Quipolatl",
   "name_pt": "Tese de Quipolatl",
@@ -5013,7 +4655,6 @@
  },
  {
   "id": "soul-core-of-tacati",
-  "group": "Vaal",
   "name": "Soul Core of Tacati",
   "name_es": "Núcleo de alma de Tacati",
   "name_pt": "Núcleo d'Alma de Tacati",
@@ -5027,7 +4668,6 @@
  },
  {
   "id": "soul-core-of-opiloti",
-  "group": "Vaal",
   "name": "Soul Core of Opiloti",
   "name_es": "Núcleo de alma de Opiloti",
   "name_pt": "Núcleo d'Alma de Opiloti",
@@ -5041,7 +4681,6 @@
  },
  {
   "id": "soul-core-of-jiquani",
-  "group": "Vaal",
   "name": "Soul Core of Jiquani",
   "name_es": "Núcleo de alma de Jiquani",
   "name_pt": "Núcleo d'Alma de Jiquani",
@@ -5055,7 +4694,6 @@
  },
  {
   "id": "soul-core-of-zalatl",
-  "group": "Vaal",
   "name": "Soul Core of Zalatl",
   "name_es": "Núcleo de alma de Zalatl",
   "name_pt": "Núcleo d'Alma de Zalatl",
@@ -5069,7 +4707,6 @@
  },
  {
   "id": "soul-core-of-citaqualotl",
-  "group": "Vaal",
   "name": "Soul Core of Citaqualotl",
   "name_es": "Núcleo de alma de Citaqualotl",
   "name_pt": "Núcleo d'Alma de Citaqualotl",
@@ -5083,7 +4720,6 @@
  },
  {
   "id": "soul-core-of-puhuarte",
-  "group": "Vaal",
   "name": "Soul Core of Puhuarte",
   "name_es": "Núcleo de alma de Puhuarte",
   "name_pt": "Núcleo d'Alma de Puhuarte",
@@ -5097,7 +4733,6 @@
  },
  {
   "id": "soul-core-of-tzamoto",
-  "group": "Vaal",
   "name": "Soul Core of Tzamoto",
   "name_es": "Núcleo de alma de Tzamoto",
   "name_pt": "Núcleo d'Alma de Tzamoto",
@@ -5111,7 +4746,6 @@
  },
  {
   "id": "soul-core-of-xopec",
-  "group": "Vaal",
   "name": "Soul Core of Xopec",
   "name_es": "Núcleo de alma de Xopec",
   "name_pt": "Núcleo d'Alma de Xopec",
@@ -5125,7 +4759,6 @@
  },
  {
   "id": "soul-core-of-azcapa",
-  "group": "Vaal",
   "name": "Soul Core of Azcapa",
   "name_es": "Núcleo de alma de Azcapa",
   "name_pt": "Núcleo d'Alma de Azcapa",
@@ -5139,7 +4772,6 @@
  },
  {
   "id": "soul-core-of-topotante",
-  "group": "Vaal",
   "name": "Soul Core of Topotante",
   "name_es": "Núcleo de alma de Topotante",
   "name_pt": "Núcleo d'Alma de Topotante",
@@ -5153,7 +4785,6 @@
  },
  {
   "id": "soul-core-of-quipolatl",
-  "group": "Vaal",
   "name": "Soul Core of Quipolatl",
   "name_es": "Núcleo de alma de Quipolatl",
   "name_pt": "Núcleo d'Alma de Quipolatl",
@@ -5167,7 +4798,6 @@
  },
  {
   "id": "soul-core-of-ticaba",
-  "group": "Vaal",
   "name": "Soul Core of Ticaba",
   "name_es": "Núcleo de alma de Ticaba",
   "name_pt": "Núcleo d'Alma de Ticaba",
@@ -5181,7 +4811,6 @@
  },
  {
   "id": "soul-core-of-atmohua",
-  "group": "Vaal",
   "name": "Soul Core of Atmohua",
   "name_es": "Núcleo de alma de Atmohua",
   "name_pt": "Núcleo d'Alma de Atmohua",
@@ -5195,7 +4824,6 @@
  },
  {
   "id": "soul-core-of-cholotl",
-  "group": "Vaal",
   "name": "Soul Core of Cholotl",
   "name_es": "Núcleo de alma de Cholotl",
   "name_pt": "Núcleo d'Alma de Cholotl",
@@ -5209,7 +4837,6 @@
  },
  {
   "id": "soul-core-of-zantipi",
-  "group": "Vaal",
   "name": "Soul Core of Zantipi",
   "name_es": "Núcleo de alma de Zantipi",
   "name_pt": "Núcleo d'Alma de Zantipi",
@@ -5223,7 +4850,6 @@
  },
  {
   "id": "hayoxis-soul-core-of-heatproofing",
-  "group": "Vaal",
   "name": "Hayoxi's Soul Core of Heatproofing",
   "name_es": "Núcleo de alma de resistencia al calor de Hayoxi",
   "name_pt": "Núcleo d'Alma de Proteção contra Calor de Hayoxi",
@@ -5237,7 +4863,6 @@
  },
  {
   "id": "zalatls-soul-core-of-insulation",
-  "group": "Vaal",
   "name": "Zalatl's Soul Core of Insulation",
   "name_es": "Núcleo de alma de aislamiento de Zalatl",
   "name_pt": "Núcleo d'Alma do Isolamento de Zalatl",
@@ -5251,7 +4876,6 @@
  },
  {
   "id": "topotantes-soul-core-of-dampening",
-  "group": "Vaal",
   "name": "Topotante's Soul Core of Dampening",
   "name_es": "Núcleo de alma de enfriamiento de Topotante",
   "name_pt": "Núcleo d'Alma do Amortecimento de Topotante",
@@ -5265,7 +4889,6 @@
  },
  {
   "id": "atmohuas-soul-core-of-retreat",
-  "group": "Vaal",
   "name": "Atmohua's Soul Core of Retreat",
   "name_es": "Núcleo de alma de retirada de Atmohua",
   "name_pt": "Núcleo d'Alma da Retirada de Atmohua",
@@ -5279,7 +4902,6 @@
  },
  {
   "id": "quipolatls-soul-core-of-flow",
-  "group": "Vaal",
   "name": "Quipolatl's Soul Core of Flow",
   "name_es": "Núcleo de alma de flujo de Quipolatl",
   "name_pt": "Núcleo d'Alma do Fluxo de Quipolatl",
@@ -5293,7 +4915,6 @@
  },
  {
   "id": "tzamotos-soul-core-of-ferocity",
-  "group": "Vaal",
   "name": "Tzamoto's Soul Core of Ferocity",
   "name_es": "Núcleo de alma de ferocidad de Tzamoto",
   "name_pt": "Núcleo d'Alma da Ferocidade de Tzamoto",
@@ -5307,7 +4928,6 @@
  },
  {
   "id": "uromotis-soul-core-of-attenuation",
-  "group": "Vaal",
   "name": "Uromoti's Soul Core of Attenuation",
   "name_es": "Núcleo de alma de atenuación de Uromoti",
   "name_pt": "Núcleo d'Alma da Atenuação de Uromoti",
@@ -5321,7 +4941,6 @@
  },
  {
   "id": "opilotis-soul-core-of-assault",
-  "group": "Vaal",
   "name": "Opiloti's Soul Core of Assault",
   "name_es": "Núcleo de alma de asalto de Opiloti",
   "name_pt": "Núcleo d'Alma do Ataque de Opiloti",
@@ -5335,7 +4954,6 @@
  },
  {
   "id": "guatelitzis-soul-core-of-endurance",
-  "group": "Vaal",
   "name": "Guatelitzi's Soul Core of Endurance",
   "name_es": "Núcleo de alma de aguante de Guatelitzi",
   "name_pt": "Núcleo d'Alma da Tolerância de Guatelitzi",
@@ -5349,7 +4967,6 @@
  },
  {
   "id": "xopecs-soul-core-of-power",
-  "group": "Vaal",
   "name": "Xopec's Soul Core of Power",
   "name_es": "Núcleo de alma de poder de Xopec",
   "name_pt": "Núcleo d'Alma do Poder de Xopec",
@@ -5363,7 +4980,6 @@
  },
  {
   "id": "estazuntis-soul-core-of-convalescence",
-  "group": "Vaal",
   "name": "Estazunti's Soul Core of Convalescence",
   "name_es": "Núcleo de alma de convalecencia de Estazunti",
   "name_pt": "Núcleo d'Alma da Convalescença de Estazunti",
@@ -5377,7 +4993,6 @@
  },
  {
   "id": "tacatis-soul-core-of-affliction",
-  "group": "Vaal",
   "name": "Tacati's Soul Core of Affliction",
   "name_es": "Núcleo de alma de aflicción de Tacati",
   "name_pt": "Núcleo d'Alma da Aflição de Tacati",
@@ -5391,7 +5006,6 @@
  },
  {
   "id": "cholotls-soul-core-of-war",
-  "group": "Vaal",
   "name": "Cholotl's Soul Core of War",
   "name_es": "Núcleo de alma de guerra de Cholotl",
   "name_pt": "Núcleo d'Alma da Guerra de Cholotl",
@@ -5405,7 +5019,6 @@
  },
  {
   "id": "citaqualotls-soul-core-of-foulness",
-  "group": "Vaal",
   "name": "Citaqualotl's Soul Core of Foulness",
   "name_es": "Núcleo de alma de vileza de Citaqualotl",
   "name_pt": "Núcleo d'Alma da Sordidez de Citaqualotl",
@@ -5419,7 +5032,6 @@
  },
  {
   "id": "xipocados-soul-core-of-dominion",
-  "group": "Vaal",
   "name": "Xipocado's Soul Core of Dominion",
   "name_es": "Núcleo de alma de dominio de Xipocado",
   "name_pt": "Núcleo d'Alma do Domínio de Xipocado",
@@ -5433,7 +5045,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-automation",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Automation",
   "name_es": "Núcleo de alma de automatización de Jiquani",
   "name_pt": "Núcleo d'Alma da Automação de Jiquani",
@@ -5447,7 +5058,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-malediction",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Malediction",
   "name_es": "Núcleo de alma de maldición de Jiquani",
   "name_pt": "Núcleo d'Alma da Esconjuração de Jiquani",
@@ -5461,7 +5071,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-targeting",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Targeting",
   "name_es": "Núcleo de alma de objetivos de Jiquani",
   "name_pt": "Núcleo d'Alma do Direcionamento de Jiquani",
@@ -5475,7 +5084,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-rallying",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Rallying",
   "name_es": "Núcleo de alma de inspiración de Jiquani",
   "name_pt": "Núcleo d'Alma do Reagrupamento de Jiquani",
@@ -5489,7 +5097,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-radiance",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Radiance",
   "name_es": "Núcleo de alma de resplandor de Jiquani",
   "name_pt": "Núcleo d'Alma do Esplendor de Jiquani",
@@ -5503,7 +5110,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-severing",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Severing",
   "name_es": "Núcleo de alma de amputación de Jiquani",
   "name_pt": "Núcleo d'Alma do Rompimento de Jiquani",
@@ -5517,7 +5123,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-rippling",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Rippling",
   "name_es": "Núcleo de alma de oleadas de Jiquani",
   "name_pt": "Núcleo d'Alma da Ondulação de Jiquani",
@@ -5531,7 +5136,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-quaking",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Quaking",
   "name_es": "Núcleo de alma de terremotos de Jiquani",
   "name_pt": "Núcleo d'Alma do Tremor de Jiquani",
@@ -5545,7 +5149,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-munitions",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Munitions",
   "name_es": "Núcleo de alma de munición de Jiquani",
   "name_pt": "Núcleo d'Alma das Munições de Jiquani",
@@ -5559,7 +5162,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-snares",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Snares",
   "name_es": "Núcleo de alma de trampas de Jiquani",
   "name_pt": "Núcleo d'Alma das Amarras de Jiquani",
@@ -5573,7 +5175,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-abundance",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Abundance",
   "name_es": "Núcleo de alma de abundancia de Jiquani",
   "name_pt": "Núcleo d'Alma da Abundância de Jiquani",
@@ -5587,7 +5188,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-squalls",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Squalls",
   "name_es": "Núcleo de alma de aguaceros de Jiquani",
   "name_pt": "Núcleo d'Alma das Borrascas de Jiquani",
@@ -5601,7 +5201,6 @@
  },
  {
   "id": "jiquanis-soul-core-of-thundering",
-  "group": "Vaal",
   "name": "Jiquani's Soul Core of Thundering",
   "name_es": "Núcleo de alma de truenos de Jiquani",
   "name_pt": "Núcleo d'Alma Trovejante de Jiquani",
@@ -5615,7 +5214,6 @@
  },
  {
   "id": "atziris-soul-core-of-devotion",
-  "group": "Vaal",
   "name": "Atziri's Soul Core of Devotion",
   "name_es": "Núcleo de alma de devoción de Atziri",
   "name_pt": "Núcleo d'Alma da Devoção de Jiquani",
@@ -5629,7 +5227,6 @@
  },
  {
   "id": "atziris-soul-core-of-vitality",
-  "group": "Vaal",
   "name": "Atziri's Soul Core of Vitality",
   "name_es": "Núcleo de alma de vitalidad de Atziri",
   "name_pt": "Núcleo d'Alma da Vitalidade de Atziri",
@@ -5643,7 +5240,6 @@
  },
  {
   "id": "atziris-soul-core-of-alacrity",
-  "group": "Vaal",
   "name": "Atziri's Soul Core of Alacrity",
   "name_es": "Núcleo de alma de celeridad de Atziri",
   "name_pt": "Núcleo d'Alma da Diligência de Atziri",
@@ -5657,7 +5253,6 @@
  },
  {
   "id": "atziris-soul-core-of-inoculation",
-  "group": "Vaal",
   "name": "Atziri's Soul Core of Inoculation",
   "name_es": "Núcleo de alma de inoculación de Atziri",
   "name_pt": "Núcleo d'Alma da Inoculação de Atziri",
@@ -5671,7 +5266,6 @@
  },
  {
   "id": "simulacrum-splinter",
-  "group": "Delirium",
   "name": "Simulacrum Splinter",
   "name_es": "Fragmento de Simulacro",
   "name_pt": "Fragmento de Simulacrum",
@@ -5685,7 +5279,6 @@
  },
  {
   "id": "simulacrum",
-  "group": "Delirium",
   "name": "Simulacrum",
   "name_es": "Simulacro",
   "name_pt": "Simulacrum",
@@ -5699,7 +5292,6 @@
  },
  {
   "id": "diluted-liquid-ire",
-  "group": "Delirium",
   "name": "Diluted Liquid Ire",
   "name_es": "Ira líquida diluida",
   "name_pt": "Ira Líquida Diluída",
@@ -5713,7 +5305,6 @@
  },
  {
   "id": "diluted-liquid-guilt",
-  "group": "Delirium",
   "name": "Diluted Liquid Guilt",
   "name_es": "Culpa líquida diluida",
   "name_pt": "Culpa Líquida Diluída",
@@ -5727,7 +5318,6 @@
  },
  {
   "id": "diluted-liquid-greed",
-  "group": "Delirium",
   "name": "Diluted Liquid Greed",
   "name_es": "Codicia líquida diluida",
   "name_pt": "Ganância Líquida Diluída",
@@ -5741,7 +5331,6 @@
  },
  {
   "id": "liquid-paranoia",
-  "group": "Delirium",
   "name": "Liquid Paranoia",
   "name_es": "Paranoia líquida",
   "name_pt": "Paranoia Líquida",
@@ -5755,7 +5344,6 @@
  },
  {
   "id": "liquid-envy",
-  "group": "Delirium",
   "name": "Liquid Envy",
   "name_es": "Envidia líquida",
   "name_pt": "Inveja Líquida",
@@ -5769,7 +5357,6 @@
  },
  {
   "id": "liquid-disgust",
-  "group": "Delirium",
   "name": "Liquid Disgust",
   "name_es": "Disgusto líquido",
   "name_pt": "Desgosto Líquido",
@@ -5783,7 +5370,6 @@
  },
  {
   "id": "liquid-despair",
-  "group": "Delirium",
   "name": "Liquid Despair",
   "name_es": "Desesperación líquida",
   "name_pt": "Desespero Líquido",
@@ -5797,7 +5383,6 @@
  },
  {
   "id": "concentrated-liquid-fear",
-  "group": "Delirium",
   "name": "Concentrated Liquid Fear",
   "name_es": "Miedo líquido concentrado",
   "name_pt": "Medo Líquido Concentrado",
@@ -5811,7 +5396,6 @@
  },
  {
   "id": "concentrated-liquid-suffering",
-  "group": "Delirium",
   "name": "Concentrated Liquid Suffering",
   "name_es": "Sufrimiento líquido concentrado",
   "name_pt": "Sofrimento Líquido Concentrado",
@@ -5825,7 +5409,6 @@
  },
  {
   "id": "concentrated-liquid-isolation",
-  "group": "Delirium",
   "name": "Concentrated Liquid Isolation",
   "name_es": "Aislamiento líquido concentrado",
   "name_pt": "Isolamento Líquido Concentrado",
@@ -5839,7 +5422,6 @@
  },
  {
   "id": "potent-liquid-melancholy",
-  "group": "Delirium",
   "name": "Potent Liquid Melancholy",
   "name_es": "Melancolía líquida potente",
   "name_pt": "Melancolia Líquida Potente",
@@ -5853,7 +5435,6 @@
  },
  {
   "id": "potent-liquid-ferocity",
-  "group": "Delirium",
   "name": "Potent Liquid Ferocity",
   "name_es": "Ferocidad líquida potente",
   "name_pt": "Ferocidade Líquida Potente",
@@ -5867,7 +5448,6 @@
  },
  {
   "id": "potent-liquid-contempt",
-  "group": "Delirium",
   "name": "Potent Liquid Contempt",
   "name_es": "Desprecio líquido potente",
   "name_pt": "Desprezo Líquido Potente",
@@ -5881,7 +5461,6 @@
  },
  {
   "id": "ancient-potent-liquid-melancholy",
-  "group": "Delirium",
   "name": "Ancient Potent Liquid Melancholy",
   "name_es": "Melancolía líquida potente antigua",
   "name_pt": "Melancolia Líquida Potente Antiga",
@@ -5895,7 +5474,6 @@
  },
  {
   "id": "ancient-potent-liquid-ferocity",
-  "group": "Delirium",
   "name": "Ancient Potent Liquid Ferocity",
   "name_es": "Ferocidad líquida potente antigua",
   "name_pt": "Ferocidade Líquida Potente Antiga",
@@ -5909,7 +5487,6 @@
  },
  {
   "id": "ancient-potent-liquid-contempt",
-  "group": "Delirium",
   "name": "Ancient Potent Liquid Contempt",
   "name_es": "Desprecio líquido potente antiguo",
   "name_pt": "Desprezo Líquido Potente Antigo",
@@ -5923,7 +5500,6 @@
  },
  {
   "id": "ancient-diluted-liquid-ire",
-  "group": "Delirium",
   "name": "Ancient Diluted Liquid Ire",
   "name_es": "Ira líquida diluida antigua",
   "name_pt": "Ira Líquida Diluída Antiga",
@@ -5937,7 +5513,6 @@
  },
  {
   "id": "ancient-diluted-liquid-guilt",
-  "group": "Delirium",
   "name": "Ancient Diluted Liquid Guilt",
   "name_es": "Culpa líquida diluida antigua",
   "name_pt": "Culpa Líquida Diluída Antiga",
@@ -5951,7 +5526,6 @@
  },
  {
   "id": "ancient-diluted-liquid-greed",
-  "group": "Delirium",
   "name": "Ancient Diluted Liquid Greed",
   "name_es": "Codicia líquida diluida antigua",
   "name_pt": "Ganância Líquida Diluída Antiga",
@@ -5965,7 +5539,6 @@
  },
  {
   "id": "ancient-liquid-paranoia",
-  "group": "Delirium",
   "name": "Ancient Liquid Paranoia",
   "name_es": "Paranoia líquida antigua",
   "name_pt": "Paranoia Líquida Antiga",
@@ -5979,7 +5552,6 @@
  },
  {
   "id": "ancient-liquid-envy",
-  "group": "Delirium",
   "name": "Ancient Liquid Envy",
   "name_es": "Envidia líquida antigua",
   "name_pt": "Inveja Líquida Antiga",
@@ -5993,7 +5565,6 @@
  },
  {
   "id": "ancient-liquid-disgust",
-  "group": "Delirium",
   "name": "Ancient Liquid Disgust",
   "name_es": "Disgusto líquido antiguo",
   "name_pt": "Desgosto Líquido Antigo",
@@ -6007,7 +5578,6 @@
  },
  {
   "id": "ancient-liquid-despair",
-  "group": "Delirium",
   "name": "Ancient Liquid Despair",
   "name_es": "Desesperación líquida antigua",
   "name_pt": "Desespero Líquido Antigo",
@@ -6021,7 +5591,6 @@
  },
  {
   "id": "ancient-concentrated-liquid-fear",
-  "group": "Delirium",
   "name": "Ancient Concentrated Liquid Fear",
   "name_es": "Miedo líquido concentrado antiguo",
   "name_pt": "Medo Líquido Concentrado Antigo",
@@ -6035,7 +5604,6 @@
  },
  {
   "id": "ancient-concentrated-liquid-suffering",
-  "group": "Delirium",
   "name": "Ancient Concentrated Liquid Suffering",
   "name_es": "Sufrimiento líquido concentrado antiguo",
   "name_pt": "Sofrimento Líquido Concentrado Antigo",
@@ -6049,7 +5617,6 @@
  },
  {
   "id": "ancient-concentrated-liquid-isolation",
-  "group": "Delirium",
   "name": "Ancient Concentrated Liquid Isolation",
   "name_es": "Aislamiento líquido concentrado antiguo",
   "name_pt": "Isolamento Líquido Concentrado Antigo",
@@ -6063,7 +5630,6 @@
  },
  {
   "id": "breach-splinter",
-  "group": "Breach",
   "name": "Breach Splinter",
   "name_es": "Astilla de fisura",
   "name_pt": "Fragmento da Fenda",
@@ -6077,7 +5643,6 @@
  },
  {
   "id": "breachstone",
-  "group": "Breach",
   "name": "Breachstone",
   "name_es": "Piedra de fisura",
   "name_pt": "Pedra de Fenda",
@@ -6091,7 +5656,6 @@
  },
  {
   "id": "lavish-wombgift",
-  "group": "Breach",
   "name": "Lavish Wombgift",
   "name_es": "Regalo del vientre lujoso",
   "name_pt": "Dádiva do Ventre Generosa",
@@ -6105,7 +5669,6 @@
  },
  {
   "id": "ornate-wombgift",
-  "group": "Breach",
   "name": "Ornate Wombgift",
   "name_es": "Regalo del vientre ornamentado",
   "name_pt": "Dádiva do Ventre Ornada",
@@ -6119,7 +5682,6 @@
  },
  {
   "id": "banded-wombgift",
-  "group": "Breach",
   "name": "Banded Wombgift",
   "name_es": "Regalo del vientre enlazado",
   "name_pt": "Dádiva do Ventre Listrada",
@@ -6133,7 +5695,6 @@
  },
  {
   "id": "signet-wombgift",
-  "group": "Breach",
   "name": "Signet Wombgift",
   "name_es": "Regalo del vientre sellado",
   "name_pt": "Dádiva do Ventre Sinete",
@@ -6147,7 +5708,6 @@
  },
  {
   "id": "revelatory-wombgift",
-  "group": "Breach",
   "name": "Revelatory Wombgift",
   "name_es": "Regalo del vientre revelador",
   "name_pt": "Dádiva do Ventre Reveladora",
@@ -6161,7 +5721,6 @@
  },
  {
   "id": "flesh-catalyst",
-  "group": "Breach",
   "name": "Flesh Catalyst",
   "name_es": "Catalizador de carne",
   "name_pt": "Catalisador de Carne",
@@ -6175,7 +5734,6 @@
  },
  {
   "id": "neural-catalyst",
-  "group": "Breach",
   "name": "Neural Catalyst",
   "name_es": "Catalizador neural",
   "name_pt": "Catalisador Neural",
@@ -6189,7 +5747,6 @@
  },
  {
   "id": "carapace-catalyst",
-  "group": "Breach",
   "name": "Carapace Catalyst",
   "name_es": "Catalizador de coraza",
   "name_pt": "Catalisador da Carapaça",
@@ -6203,7 +5760,6 @@
  },
  {
   "id": "uul-netols-catalyst",
-  "group": "Breach",
   "name": "Uul-Netol's Catalyst",
   "name_es": "Catalizador de Uul-Netol",
   "name_pt": "Catalisador de Uul-Netol",
@@ -6217,7 +5773,6 @@
  },
  {
   "id": "xophs-catalyst",
-  "group": "Breach",
   "name": "Xoph's Catalyst",
   "name_es": "Catalizador de Xoph",
   "name_pt": "Catalisador de Xoph",
@@ -6231,7 +5786,6 @@
  },
  {
   "id": "tuls-catalyst",
-  "group": "Breach",
   "name": "Tul's Catalyst",
   "name_es": "Catalizador de Tul",
   "name_pt": "Catalisador de Tul",
@@ -6245,7 +5799,6 @@
  },
  {
   "id": "eshs-catalyst",
-  "group": "Breach",
   "name": "Esh's Catalyst",
   "name_es": "Catalizador de Esh",
   "name_pt": "Catalisador de Esh",
@@ -6259,7 +5812,6 @@
  },
  {
   "id": "chayulas-catalyst",
-  "group": "Breach",
   "name": "Chayula's Catalyst",
   "name_es": "Catalizador de Chayula",
   "name_pt": "Catalisador de Chayula",
@@ -6273,7 +5825,6 @@
  },
  {
   "id": "reaver-catalyst",
-  "group": "Breach",
   "name": "Reaver Catalyst",
   "name_es": "Catalizador desgarrador",
   "name_pt": "Catalisador Devastador",
@@ -6287,7 +5838,6 @@
  },
  {
   "id": "sibilant-catalyst",
-  "group": "Breach",
   "name": "Sibilant Catalyst",
   "name_es": "Catalizador sibilante",
   "name_pt": "Catalisador Sibilante",
@@ -6301,7 +5851,6 @@
  },
  {
   "id": "skittering-catalyst",
-  "group": "Breach",
   "name": "Skittering Catalyst",
   "name_es": "Catalizador escurridizo",
   "name_pt": "Catalisador Rastejante",
@@ -6315,7 +5864,6 @@
  },
  {
   "id": "adaptive-catalyst",
-  "group": "Breach",
   "name": "Adaptive Catalyst",
   "name_es": "Catalizador adaptativo",
   "name_pt": "Catalisador Adaptável",
@@ -6329,7 +5877,6 @@
  },
  {
   "id": "necrotic-catalyst",
-  "group": "Breach",
   "name": "Necrotic Catalyst",
   "name_es": "Catalizador necrótico",
   "name_pt": "Catalisador Necrótico",
@@ -6343,7 +5890,6 @@
  },
  {
   "id": "refined-flesh-catalyst",
-  "group": "Breach",
   "name": "Refined Flesh Catalyst",
   "name_es": "Catalizador refinado de carne",
   "name_pt": "Catalisador de Carne Refinado",
@@ -6357,7 +5903,6 @@
  },
  {
   "id": "refined-neural-catalyst",
-  "group": "Breach",
   "name": "Refined Neural Catalyst",
   "name_es": "Catalizador refinado neural",
   "name_pt": "Catalisador Neural Refinado",
@@ -6371,7 +5916,6 @@
  },
  {
   "id": "refined-carapace-catalyst",
-  "group": "Breach",
   "name": "Refined Carapace Catalyst",
   "name_es": "Catalizador refinado de coraza",
   "name_pt": "Catalisador da Carapaça Refinado",
@@ -6385,7 +5929,6 @@
  },
  {
   "id": "refined-uul-netols-catalyst",
-  "group": "Breach",
   "name": "Refined Uul-Netol's Catalyst",
   "name_es": "Catalizador refinado de Uul-Netol",
   "name_pt": "Catalisador de Uul-Netol Refinado",
@@ -6399,7 +5942,6 @@
  },
  {
   "id": "refined-xophs-catalyst",
-  "group": "Breach",
   "name": "Refined Xoph's Catalyst",
   "name_es": "Catalizador refinado de Xoph",
   "name_pt": "Catalisador de Xoph Refinado",
@@ -6413,7 +5955,6 @@
  },
  {
   "id": "refined-tuls-catalyst",
-  "group": "Breach",
   "name": "Refined Tul's Catalyst",
   "name_es": "Catalizador refinado de Tul",
   "name_pt": "Catalisador de Tul Refinado",
@@ -6427,7 +5968,6 @@
  },
  {
   "id": "refined-eshs-catalyst",
-  "group": "Breach",
   "name": "Refined Esh's Catalyst",
   "name_es": "Catalizador refinado de Esh",
   "name_pt": "Catalisador de Esh Refinado",
@@ -6441,7 +5981,6 @@
  },
  {
   "id": "refined-chayulas-catalyst",
-  "group": "Breach",
   "name": "Refined Chayula's Catalyst",
   "name_es": "Catalizador refinado de Chayula",
   "name_pt": "Catalisador de Chayula Refinado",
@@ -6455,7 +5994,6 @@
  },
  {
   "id": "refined-reaver-catalyst",
-  "group": "Breach",
   "name": "Refined Reaver Catalyst",
   "name_es": "Catalizador refinado desgarrador",
   "name_pt": "Catalisador Devastador Refinado",
@@ -6469,7 +6007,6 @@
  },
  {
   "id": "refined-sibilant-catalyst",
-  "group": "Breach",
   "name": "Refined Sibilant Catalyst",
   "name_es": "Catalizador refinado sibilante",
   "name_pt": "Catalisador Sibilante Refinado",
@@ -6483,7 +6020,6 @@
  },
  {
   "id": "refined-skittering-catalyst",
-  "group": "Breach",
   "name": "Refined Skittering Catalyst",
   "name_es": "Catalizador refinado escurridizo",
   "name_pt": "Catalisador Rastejante Refinado",
@@ -6497,7 +6033,6 @@
  },
  {
   "id": "refined-adaptive-catalyst",
-  "group": "Breach",
   "name": "Refined Adaptive Catalyst",
   "name_es": "Catalizador refinado adaptativo",
   "name_pt": "Catalisador Adaptável Refinado",
@@ -6511,7 +6046,6 @@
  },
  {
   "id": "refined-necrotic-catalyst",
-  "group": "Breach",
   "name": "Refined Necrotic Catalyst",
   "name_es": "Catalizador refinado necrótico",
   "name_pt": "Catalisador Necrótico Refinado",
@@ -6525,7 +6059,6 @@
  },
  {
   "id": "petition-splinter",
-  "group": "Ritual",
   "name": "Petition Splinter",
   "name_es": "Astilla de petición",
   "name_pt": "Fragmento de Súplica",
@@ -6539,7 +6072,6 @@
  },
  {
   "id": "an-audience-with-the-king",
-  "group": "Ritual",
   "name": "An Audience with the King",
   "name_es": "Una audiencia con el rey",
   "name_pt": "Uma Audiência com o Rei",
@@ -6553,7 +6085,6 @@
  },
  {
   "id": "call-of-the-shadows",
-  "group": "Ritual",
   "name": "Call of the Shadows",
   "name_es": "El llamado de las sombras",
   "name_pt": "Chamado das Sombras",
@@ -6567,7 +6098,6 @@
  },
  {
   "id": "head-of-the-king",
-  "group": "Ritual",
   "name": "Head of the King",
   "name_es": "La cabeza del rey",
   "name_pt": "Cabeça do Rei",
@@ -6581,7 +6111,6 @@
  },
  {
   "id": "sacred-bloom",
-  "group": "Ritual",
   "name": "Sacred Bloom",
   "name_es": "Brote sagrado",
   "name_pt": "Floração Sagrada",
@@ -6595,7 +6124,6 @@
  },
  {
   "id": "omen-of-refreshment",
-  "group": "Ritual",
   "name": "Omen of Refreshment",
   "name_es": "Augurio de reanimación",
   "name_pt": "Presságio do Revigoramento",
@@ -6609,7 +6137,6 @@
  },
  {
   "id": "omen-of-resurgence",
-  "group": "Ritual",
   "name": "Omen of Resurgence",
   "name_es": "Augurio de resurgimiento",
   "name_pt": "Presságio do Ressurgimento",
@@ -6623,7 +6150,6 @@
  },
  {
   "id": "omen-of-amelioration",
-  "group": "Ritual",
   "name": "Omen of Amelioration",
   "name_es": "Augurio de mejora",
   "name_pt": "Presságio da Melhora",
@@ -6637,7 +6163,6 @@
  },
  {
   "id": "omen-of-whittling",
-  "group": "Ritual",
   "name": "Omen of Whittling",
   "name_es": "Augurio de tallado",
   "name_pt": "Presságio do Desgaste",
@@ -6651,7 +6176,6 @@
  },
  {
   "id": "omen-of-sinistral-erasure",
-  "group": "Ritual",
   "name": "Omen of Sinistral Erasure",
   "name_es": "Augurio de borrado izquierdo",
   "name_pt": "Presságio da Eliminação Canhota",
@@ -6665,7 +6189,6 @@
  },
  {
   "id": "omen-of-dextral-erasure",
-  "group": "Ritual",
   "name": "Omen of Dextral Erasure",
   "name_es": "Augurio de borrado derecho",
   "name_pt": "Presságio da Eliminação Destra",
@@ -6679,7 +6202,6 @@
  },
  {
   "id": "omen-of-corruption",
-  "group": "Ritual",
   "name": "Omen of Corruption",
   "name_es": "Augurio de corrupción",
   "name_pt": "Presságio da Corrupção",
@@ -6693,7 +6215,6 @@
  },
  {
   "id": "omen-of-greater-exaltation",
-  "group": "Ritual",
   "name": "Omen of Greater Exaltation",
   "name_es": "Augurio de exaltación superior",
   "name_pt": "Presságio da Exaltação Maior",
@@ -6707,7 +6228,6 @@
  },
  {
   "id": "omen-of-sinistral-exaltation",
-  "group": "Ritual",
   "name": "Omen of Sinistral Exaltation",
   "name_es": "Augurio de exaltación izquierda",
   "name_pt": "Presságio da Exaltação Canhota",
@@ -6721,7 +6241,6 @@
  },
  {
   "id": "omen-of-dextral-exaltation",
-  "group": "Ritual",
   "name": "Omen of Dextral Exaltation",
   "name_es": "Augurio de exaltación derecha",
   "name_pt": "Presságio da Exaltação Destra",
@@ -6735,7 +6254,6 @@
  },
  {
   "id": "omen-of-sinistral-annulment",
-  "group": "Ritual",
   "name": "Omen of Sinistral Annulment",
   "name_es": "Augurio de anulación izquierda",
   "name_pt": "Presságio da Anulação Canhota",
@@ -6749,7 +6267,6 @@
  },
  {
   "id": "omen-of-dextral-annulment",
-  "group": "Ritual",
   "name": "Omen of Dextral Annulment",
   "name_es": "Augurio de anulación derecha",
   "name_pt": "Presságio da Anulação Destra",
@@ -6763,7 +6280,6 @@
  },
  {
   "id": "omen-of-answered-prayers",
-  "group": "Ritual",
   "name": "Omen of Answered Prayers",
   "name_es": "Augurio de plegarias respondidas",
   "name_pt": "Presságio das Orações Atendidas",
@@ -6777,7 +6293,6 @@
  },
  {
   "id": "omen-of-the-hunt",
-  "group": "Ritual",
   "name": "Omen of the Hunt",
   "name_es": "Augurio de la cacería",
   "name_pt": "Presságio da Caçada",
@@ -6791,7 +6306,6 @@
  },
  {
   "id": "omen-of-reinforcements",
-  "group": "Ritual",
   "name": "Omen of Reinforcements",
   "name_es": "Augurio de refuerzos",
   "name_pt": "Presságio dos Reforços",
@@ -6805,7 +6319,6 @@
  },
  {
   "id": "omen-of-secret-compartments",
-  "group": "Ritual",
   "name": "Omen of Secret Compartments",
   "name_es": "Augurio de compartimentos secretos",
   "name_pt": "Presságio dos Compartimentos Secretos",
@@ -6819,7 +6332,6 @@
  },
  {
   "id": "omen-of-homogenising-exaltation",
-  "group": "Ritual",
   "name": "Omen of Homogenising Exaltation",
   "name_es": "Augurio de exaltación homogeneizada",
   "name_pt": "Presságio da Exaltação Uniforme",
@@ -6833,7 +6345,6 @@
  },
  {
   "id": "omen-of-homogenising-coronation",
-  "group": "Ritual",
   "name": "Omen of Homogenising Coronation",
   "name_es": "Augurio de coronación homogeneizada",
   "name_pt": "Presságio da Coroação Uniforme",
@@ -6847,7 +6358,6 @@
  },
  {
   "id": "omen-of-gambling",
-  "group": "Ritual",
   "name": "Omen of Gambling",
   "name_es": "Augurio de apuestas",
   "name_pt": "Presságio da Aposta",
@@ -6861,7 +6371,6 @@
  },
  {
   "id": "omen-of-bartering",
-  "group": "Ritual",
   "name": "Omen of Bartering",
   "name_es": "Augurio de negociación",
   "name_pt": "Presságio da Negociação",
@@ -6875,7 +6384,6 @@
  },
  {
   "id": "omen-of-the-blessed",
-  "group": "Ritual",
   "name": "Omen of the Blessed",
   "name_es": "Augurio de los benditos",
   "name_pt": "Presságio dos Abençoados",
@@ -6889,7 +6397,6 @@
  },
  {
   "id": "omen-of-chaotic-rarity",
-  "group": "Ritual",
   "name": "Omen of Chaotic Rarity",
   "name_es": "Augurio de rareza caótica",
   "name_pt": "Presságio da Raridade Caótica",
@@ -6903,7 +6410,6 @@
  },
  {
   "id": "omen-of-chaotic-quantity",
-  "group": "Ritual",
   "name": "Omen of Chaotic Quantity",
   "name_es": "Augurio de cantidad caótica",
   "name_pt": "Presságio da Quantidade Caótica",
@@ -6917,7 +6423,6 @@
  },
  {
   "id": "omen-of-chaotic-monsters",
-  "group": "Ritual",
   "name": "Omen of Chaotic Monsters",
   "name_es": "Augurio de monstruos caóticos",
   "name_pt": "Presságio dos Monstros Caóticos",
@@ -6931,7 +6436,6 @@
  },
  {
   "id": "omen-of-chaotic-effectiveness",
-  "group": "Ritual",
   "name": "Omen of Chaotic Effectiveness",
   "name_es": "Augurio de efectividad caótica",
   "name_pt": "Presságio da Efetividade Caótica",
@@ -6945,7 +6449,6 @@
  },
  {
   "id": "omen-of-chance",
-  "group": "Ritual",
   "name": "Omen of Chance",
   "name_es": "Augurio de azar",
   "name_pt": "Presságio da Chance",
@@ -6959,7 +6462,6 @@
  },
  {
   "id": "omen-of-the-ancients",
-  "group": "Ritual",
   "name": "Omen of the Ancients",
   "name_es": "Augurio de los ancestros",
   "name_pt": "Presságio dos Antigos",
@@ -6973,7 +6475,6 @@
  },
  {
   "id": "omen-of-sanctification",
-  "group": "Ritual",
   "name": "Omen of Sanctification",
   "name_es": "Augurio de santificación",
   "name_pt": "Presságio da Santificação",
@@ -6987,7 +6488,6 @@
  },
  {
   "id": "omen-of-dextral-crystallisation",
-  "group": "Ritual",
   "name": "Omen of Dextral Crystallisation",
   "name_es": "Augurio de cristalización derecha",
   "name_pt": "Presságio da Cristalização Destra",
@@ -7001,7 +6501,6 @@
  },
  {
   "id": "omen-of-sinistral-crystallisation",
-  "group": "Ritual",
   "name": "Omen of Sinistral Crystallisation",
   "name_es": "Augurio de cristalización izquierda",
   "name_pt": "Presságio da Cristalização Canhota",
@@ -7015,7 +6514,6 @@
  },
  {
   "id": "omen-of-catalysing-exaltation",
-  "group": "Ritual",
   "name": "Omen of Catalysing Exaltation",
   "name_es": "Augurio de exaltación catalizada",
   "name_pt": "Presságio da Exaltação Catalisadora",
@@ -7029,7 +6527,6 @@
  },
  {
   "id": "omen-of-abyssal-echoes",
-  "group": "Ritual",
   "name": "Omen of Abyssal Echoes",
   "name_es": "Augurio de ecos abisales",
   "name_pt": "Presságio dos Ecos Abissais",
@@ -7043,7 +6540,6 @@
  },
  {
   "id": "omen-of-the-sovereign",
-  "group": "Ritual",
   "name": "Omen of the Sovereign",
   "name_es": "Augurio del soberano",
   "name_pt": "Presságio do Suserano",
@@ -7057,7 +6553,6 @@
  },
  {
   "id": "omen-of-the-liege",
-  "group": "Ritual",
   "name": "Omen of the Liege",
   "name_es": "Augurio del señor feudal",
   "name_pt": "Presságio do Soberano",
@@ -7071,7 +6566,6 @@
  },
  {
   "id": "omen-of-the-blackblooded",
-  "group": "Ritual",
   "name": "Omen of the Blackblooded",
   "name_es": "Augurio de los sangrenegra",
   "name_pt": "Presságio do Sangue-negro",
@@ -7085,7 +6579,6 @@
  },
  {
   "id": "omen-of-putrefaction",
-  "group": "Ritual",
   "name": "Omen of Putrefaction",
   "name_es": "Augurio de putrefacción",
   "name_pt": "Presságio da Putrefação",
@@ -7099,7 +6592,6 @@
  },
  {
   "id": "omen-of-light",
-  "group": "Ritual",
   "name": "Omen of Light",
   "name_es": "Augurio de la luz",
   "name_pt": "Presságio da Luz",
@@ -7113,7 +6605,6 @@
  },
  {
   "id": "omen-of-sinistral-necromancy",
-  "group": "Ritual",
   "name": "Omen of Sinistral Necromancy",
   "name_es": "Augurio de nigromancia izquierdo",
   "name_pt": "Presságio da Necromancia Canhota",
@@ -7127,7 +6618,6 @@
  },
  {
   "id": "omen-of-dextral-necromancy",
-  "group": "Ritual",
   "name": "Omen of Dextral Necromancy",
   "name_es": "Augurio de nigromancia derecho",
   "name_pt": "Presságio da Necromancia Destra",
@@ -7141,7 +6631,6 @@
  },
  {
   "id": "raven-touched-shard",
-  "group": "Ritual",
   "name": "Raven-Touched Shard",
   "name_es": "Esquirla tocada por el cuervo",
   "name_pt": "Fragmento Tocado pelo Corvo",
@@ -7155,7 +6644,6 @@
  },
  {
   "id": "bear-idol",
-  "group": "Ritual",
   "name": "Bear Idol",
   "name_es": "Ídolo del oso",
   "name_pt": "Ídolo do Urso",
@@ -7169,7 +6657,6 @@
  },
  {
   "id": "primate-idol",
-  "group": "Ritual",
   "name": "Primate Idol",
   "name_es": "Ídolo del primate",
   "name_pt": "Ídolo do Primata",
@@ -7183,7 +6670,6 @@
  },
  {
   "id": "stag-idol",
-  "group": "Ritual",
   "name": "Stag Idol",
   "name_es": "Ídolo del ciervo",
   "name_pt": "Ídolo do Cervo",
@@ -7197,7 +6683,6 @@
  },
  {
   "id": "boar-idol",
-  "group": "Ritual",
   "name": "Boar Idol",
   "name_es": "Ídolo del jabalí",
   "name_pt": "Ídolo do Javali",
@@ -7211,7 +6696,6 @@
  },
  {
   "id": "snake-idol",
-  "group": "Ritual",
   "name": "Snake Idol",
   "name_es": "Ídolo de la serpiente",
   "name_pt": "Ídolo da Serpente",
@@ -7225,7 +6709,6 @@
  },
  {
   "id": "wolf-idol",
-  "group": "Ritual",
   "name": "Wolf Idol",
   "name_es": "Ídolo del lobo",
   "name_pt": "Ídolo do Lobo",
@@ -7239,7 +6722,6 @@
  },
  {
   "id": "cat-idol",
-  "group": "Ritual",
   "name": "Cat Idol",
   "name_es": "Ídolo del gato",
   "name_pt": "Ídolo do Gato",
@@ -7253,7 +6735,6 @@
  },
  {
   "id": "owl-idol",
-  "group": "Ritual",
   "name": "Owl Idol",
   "name_es": "Ídolo del búho",
   "name_pt": "Ídolo da Coruja",
@@ -7267,7 +6748,6 @@
  },
  {
   "id": "ox-idol",
-  "group": "Ritual",
   "name": "Ox Idol",
   "name_es": "Ídolo del buey",
   "name_pt": "Ídolo do Boi",
@@ -7281,7 +6761,6 @@
  },
  {
   "id": "fox-idol",
-  "group": "Ritual",
   "name": "Fox Idol",
   "name_es": "Ídolo del zorro",
   "name_pt": "Ídolo da Raposa",
@@ -7295,7 +6774,6 @@
  },
  {
   "id": "rabbit-idol",
-  "group": "Ritual",
   "name": "Rabbit Idol",
   "name_es": "Ídolo del conejo",
   "name_pt": "Ídolo do Coelho",
@@ -7309,7 +6787,6 @@
  },
  {
   "id": "idol-of-sirrius",
-  "group": "Ritual",
   "name": "Idol of Sirrius",
   "name_es": "Ídolo de Sirrius",
   "name_pt": "Ídolo de Sirrius",
@@ -7323,7 +6800,6 @@
  },
  {
   "id": "idol-of-thruldana",
-  "group": "Ritual",
   "name": "Idol of Thruldana",
   "name_es": "Ídolo de Thruldana",
   "name_pt": "Ídolo de Thruldana",
@@ -7337,7 +6813,6 @@
  },
  {
   "id": "idol-of-grold",
-  "group": "Ritual",
   "name": "Idol of Grold",
   "name_es": "Ídolo de Grold",
   "name_pt": "Ídolo de Grold",
@@ -7351,7 +6826,6 @@
  },
  {
   "id": "idol-of-eeshta",
-  "group": "Ritual",
   "name": "Idol of Eeshta",
   "name_es": "Ídolo de Eeshta",
   "name_pt": "Ídolo de Eeshta",
@@ -7365,7 +6839,6 @@
  },
  {
   "id": "idol-of-egrin",
-  "group": "Ritual",
   "name": "Idol of Egrin",
   "name_es": "Ídolo de Egrin",
   "name_pt": "Ídolo de Egrin",
@@ -7379,7 +6852,6 @@
  },
  {
   "id": "idol-of-maxarius",
-  "group": "Ritual",
   "name": "Idol of Maxarius",
   "name_es": "Ídolo de Maxarius",
   "name_pt": "Ídolo de Maxarius",
@@ -7393,7 +6865,6 @@
  },
  {
   "id": "idol-of-ralakesh",
-  "group": "Ritual",
   "name": "Idol of Ralakesh",
   "name_es": "Ídolo de Ralakesh",
   "name_pt": "Ídolo de Ralakesh",
@@ -7407,7 +6878,6 @@
  },
  {
   "id": "idol-of-the-sycophant",
-  "group": "Ritual",
   "name": "Idol of the Sycophant",
   "name_es": "ídolo del adulador",
   "name_pt": "Ídolo do Adulador",
@@ -7421,7 +6891,6 @@
  },
  {
   "id": "idol-of-the-martyr",
-  "group": "Ritual",
   "name": "Idol of the Martyr",
   "name_es": "Ídolo del mártir",
   "name_pt": "Ídolo do Mártir",
@@ -7435,7 +6904,6 @@
  },
  {
   "id": "idol-of-the-pharisee",
-  "group": "Ritual",
   "name": "Idol of the Pharisee",
   "name_es": "Ídolo del fariseo",
   "name_pt": "Ídolo do Fariseu",
@@ -7449,7 +6917,6 @@
  },
  {
   "id": "idol-of-greust",
-  "group": "Ritual",
   "name": "Idol of Greust",
   "name_es": "Ídolo de Greust",
   "name_pt": "Ídolo de Greust",
@@ -7463,7 +6930,6 @@
  },
  {
   "id": "idol-of-yeena",
-  "group": "Ritual",
   "name": "Idol of Yeena",
   "name_es": "Ídolo de Yeena",
   "name_pt": "Ídolo de Yeena",
@@ -7477,7 +6943,6 @@
  },
  {
   "id": "idol-of-eramir",
-  "group": "Ritual",
   "name": "Idol of Eramir",
   "name_es": "Ídolo de Eramir",
   "name_pt": "Ídolo de Eramir",
@@ -7491,7 +6956,6 @@
  },
  {
   "id": "idol-of-oak",
-  "group": "Ritual",
   "name": "Idol of Oak",
   "name_es": "Ídolo de Oak",
   "name_pt": "Ídolo de Oak",
@@ -7505,7 +6969,6 @@
  },
  {
   "id": "idol-of-alira",
-  "group": "Ritual",
   "name": "Idol of Alira",
   "name_es": "Ídolo de Alira",
   "name_pt": "Ídolo de Alira",
@@ -7519,7 +6982,6 @@
  },
  {
   "id": "idol-of-kraityn",
-  "group": "Ritual",
   "name": "Idol of Kraityn",
   "name_es": "Ídolo de Kraityn",
   "name_pt": "Ídolo de Kraityn",
@@ -7533,7 +6995,6 @@
  },
  {
   "id": "idol-of-silk",
-  "group": "Ritual",
   "name": "Idol of Silk",
   "name_es": "Ídolo de Silk",
   "name_pt": "Ídolo de Silk",
@@ -7547,7 +7008,6 @@
  },
  {
   "id": "gnawed-jawbone",
-  "group": "Abyss",
   "name": "Gnawed Jawbone",
   "name_es": "Mandíbula roída",
   "name_pt": "Mandíbula Roída",
@@ -7561,7 +7021,6 @@
  },
  {
   "id": "preserved-jawbone",
-  "group": "Abyss",
   "name": "Preserved Jawbone",
   "name_es": "Mandíbula preservada",
   "name_pt": "Mandíbula Conservada",
@@ -7575,7 +7034,6 @@
  },
  {
   "id": "ancient-jawbone",
-  "group": "Abyss",
   "name": "Ancient Jawbone",
   "name_es": "Mandíbula antigua",
   "name_pt": "Mandíbula Antiga",
@@ -7589,7 +7047,6 @@
  },
  {
   "id": "gnawed-rib",
-  "group": "Abyss",
   "name": "Gnawed Rib",
   "name_es": "Costilla roída",
   "name_pt": "Costelas Roídas",
@@ -7603,7 +7060,6 @@
  },
  {
   "id": "preserved-rib",
-  "group": "Abyss",
   "name": "Preserved Rib",
   "name_es": "Costilla preservada",
   "name_pt": "Costelas Conservadas",
@@ -7617,7 +7073,6 @@
  },
  {
   "id": "ancient-rib",
-  "group": "Abyss",
   "name": "Ancient Rib",
   "name_es": "Costilla antigua",
   "name_pt": "Costelas Antigas",
@@ -7631,7 +7086,6 @@
  },
  {
   "id": "gnawed-collarbone",
-  "group": "Abyss",
   "name": "Gnawed Collarbone",
   "name_es": "Clavícula roída",
   "name_pt": "Clavícula Roída",
@@ -7645,7 +7099,6 @@
  },
  {
   "id": "preserved-collarbone",
-  "group": "Abyss",
   "name": "Preserved Collarbone",
   "name_es": "Clavícula preservada",
   "name_pt": "Clavícula Conservada",
@@ -7659,7 +7112,6 @@
  },
  {
   "id": "ancient-collarbone",
-  "group": "Abyss",
   "name": "Ancient Collarbone",
   "name_es": "Clavícula antigua",
   "name_pt": "Clavícula Antiga",
@@ -7673,7 +7125,6 @@
  },
  {
   "id": "altered-collarbone",
-  "group": "Abyss",
   "name": "Altered Collarbone",
   "name_es": "Clavícula alterada",
   "name_pt": "Clavícula Alterada",
@@ -7687,7 +7138,6 @@
  },
  {
   "id": "preserved-cranium",
-  "group": "Abyss",
   "name": "Preserved Cranium",
   "name_es": "Cráneo preservado",
   "name_pt": "Crânio Conservado",
@@ -7701,7 +7151,6 @@
  },
  {
   "id": "preserved-vertebrae",
-  "group": "Abyss",
   "name": "Preserved Vertebrae",
   "name_es": "Vértebra preservada",
   "name_pt": "Vértebra Conservada",
@@ -7715,7 +7164,6 @@
  },
  {
   "id": "amanamus-gaze",
-  "group": "Abyss",
   "name": "Amanamu's Gaze",
   "name_es": "Mirada de Amanamu",
   "name_pt": "Olhar de Amanamu",
@@ -7729,7 +7177,6 @@
  },
  {
   "id": "tecrods-gaze",
-  "group": "Abyss",
   "name": "Tecrod's Gaze",
   "name_es": "Mirada de Tecrod",
   "name_pt": "Olhar de Tecrod",
@@ -7743,7 +7190,6 @@
  },
  {
   "id": "kurgals-gaze",
-  "group": "Abyss",
   "name": "Kurgal's Gaze",
   "name_es": "Mirada de Kurgal",
   "name_pt": "Olhar de Kurgal",
@@ -7757,7 +7203,6 @@
  },
  {
   "id": "ulamans-gaze",
-  "group": "Abyss",
   "name": "Ulaman's Gaze",
   "name_es": "Mirada de Ulaman",
   "name_pt": "Olhar de Ulaman",
@@ -7771,7 +7216,6 @@
  },
  {
   "id": "lesser-essence-of-the-body",
-  "group": "Essences",
   "name": "Lesser Essence of the Body",
   "name_es": "Esencia del cuerpo menor",
   "name_pt": "Essência de Corpo Inferior",
@@ -7785,7 +7229,6 @@
  },
  {
   "id": "lesser-essence-of-the-mind",
-  "group": "Essences",
   "name": "Lesser Essence of the Mind",
   "name_es": "Esencia de la mente menor",
   "name_pt": "Essência de Mente Inferior",
@@ -7799,7 +7242,6 @@
  },
  {
   "id": "lesser-essence-of-enhancement",
-  "group": "Essences",
   "name": "Lesser Essence of Enhancement",
   "name_es": "Esencia de mejora menor",
   "name_pt": "Essência de Melhoramento Inferior",
@@ -7813,7 +7255,6 @@
  },
  {
   "id": "lesser-essence-of-abrasion",
-  "group": "Essences",
   "name": "Lesser Essence of Abrasion",
   "name_es": "Esencia de abrasión menor",
   "name_pt": "Essência de Escoriação Inferior",
@@ -7827,7 +7268,6 @@
  },
  {
   "id": "lesser-essence-of-flames",
-  "group": "Essences",
   "name": "Lesser Essence of Flames",
   "name_es": "Esencia de llamas menor",
   "name_pt": "Essência de Chamas Inferior",
@@ -7841,7 +7281,6 @@
  },
  {
   "id": "lesser-essence-of-insulation",
-  "group": "Essences",
   "name": "Lesser Essence of Insulation",
   "name_es": "Esencia de incombustibilidad menor",
   "name_pt": "Essência de Isolamento Inferior",
@@ -7855,7 +7294,6 @@
  },
  {
   "id": "lesser-essence-of-ice",
-  "group": "Essences",
   "name": "Lesser Essence of Ice",
   "name_es": "Esencia de hielo menor",
   "name_pt": "Essência de Gelo Inferior",
@@ -7869,7 +7307,6 @@
  },
  {
   "id": "lesser-essence-of-thawing",
-  "group": "Essences",
   "name": "Lesser Essence of Thawing",
   "name_es": "Esencia de deshielo menor",
   "name_pt": "Essência de Descongelamento Inferior",
@@ -7883,7 +7320,6 @@
  },
  {
   "id": "lesser-essence-of-electricity",
-  "group": "Essences",
   "name": "Lesser Essence of Electricity",
   "name_es": "Esencia de electricidad menor",
   "name_pt": "Essência de Eletricidade Inferior",
@@ -7897,7 +7333,6 @@
  },
  {
   "id": "lesser-essence-of-grounding",
-  "group": "Essences",
   "name": "Lesser Essence of Grounding",
   "name_es": "Esencia de aislamiento menor",
   "name_pt": "Essência de Aterramento Inferior",
@@ -7911,7 +7346,6 @@
  },
  {
   "id": "lesser-essence-of-ruin",
-  "group": "Essences",
   "name": "Lesser Essence of Ruin",
   "name_es": "Esencia de ruina menor",
   "name_pt": "Essência de Ruína Inferior",
@@ -7925,7 +7359,6 @@
  },
  {
   "id": "lesser-essence-of-command",
-  "group": "Essences",
   "name": "Lesser Essence of Command",
   "name_es": "Esencia de orden menor",
   "name_pt": "Essência de Ordem Inferior",
@@ -7939,7 +7372,6 @@
  },
  {
   "id": "lesser-essence-of-battle",
-  "group": "Essences",
   "name": "Lesser Essence of Battle",
   "name_es": "Esencia de batalla menor",
   "name_pt": "Essência de Batalha Inferior",
@@ -7953,7 +7385,6 @@
  },
  {
   "id": "lesser-essence-of-sorcery",
-  "group": "Essences",
   "name": "Lesser Essence of Sorcery",
   "name_es": "Esencia de hechicería menor",
   "name_pt": "Essência de Feitiçaria Inferior",
@@ -7967,7 +7398,6 @@
  },
  {
   "id": "lesser-essence-of-haste",
-  "group": "Essences",
   "name": "Lesser Essence of Haste",
   "name_es": "Esencia de celeridad menor",
   "name_pt": "Essência de Aceleração Inferior",
@@ -7981,7 +7411,6 @@
  },
  {
   "id": "lesser-essence-of-alacrity",
-  "group": "Essences",
   "name": "Lesser Essence of Alacrity",
   "name_es": "Esencia de vivacidad menor",
   "name_pt": "Essência de Diligência Inferior",
@@ -7995,7 +7424,6 @@
  },
  {
   "id": "lesser-essence-of-the-infinite",
-  "group": "Essences",
   "name": "Lesser Essence of the Infinite",
   "name_es": "Esencia del infinito menor",
   "name_pt": "Essência de Infinitude Inferior",
@@ -8009,7 +7437,6 @@
  },
  {
   "id": "lesser-essence-of-seeking",
-  "group": "Essences",
   "name": "Lesser Essence of Seeking",
   "name_es": "Esencia de búsqueda menor",
   "name_pt": "Essência de Busca Inferior",
@@ -8023,7 +7450,6 @@
  },
  {
   "id": "lesser-essence-of-opulence",
-  "group": "Essences",
   "name": "Lesser Essence of Opulence",
   "name_es": "Esencia de opulencia menor",
   "name_pt": "Essência de Opulência Inferior",
@@ -8037,7 +7463,6 @@
  },
  {
   "id": "essence-of-the-body",
-  "group": "Essences",
   "name": "Essence of the Body",
   "name_es": "Esencia del cuerpo",
   "name_pt": "Essência de Corpo",
@@ -8051,7 +7476,6 @@
  },
  {
   "id": "essence-of-the-mind",
-  "group": "Essences",
   "name": "Essence of the Mind",
   "name_es": "Esencia de la mente",
   "name_pt": "Essência de Mente",
@@ -8065,7 +7489,6 @@
  },
  {
   "id": "essence-of-enhancement",
-  "group": "Essences",
   "name": "Essence of Enhancement",
   "name_es": "Esencia de mejora",
   "name_pt": "Essência de Melhoramento",
@@ -8079,7 +7502,6 @@
  },
  {
   "id": "essence-of-abrasion",
-  "group": "Essences",
   "name": "Essence of Abrasion",
   "name_es": "Esencia de abrasión",
   "name_pt": "Essência de Escoriação",
@@ -8093,7 +7515,6 @@
  },
  {
   "id": "essence-of-flames",
-  "group": "Essences",
   "name": "Essence of Flames",
   "name_es": "Esencia de llamas",
   "name_pt": "Essência de Chamas",
@@ -8107,7 +7528,6 @@
  },
  {
   "id": "essence-of-insulation",
-  "group": "Essences",
   "name": "Essence of Insulation",
   "name_es": "Esencia de incombustibilidad",
   "name_pt": "Essência de Isolamento",
@@ -8121,7 +7541,6 @@
  },
  {
   "id": "essence-of-ice",
-  "group": "Essences",
   "name": "Essence of Ice",
   "name_es": "Esencia de hielo",
   "name_pt": "Essência de Gelo",
@@ -8135,7 +7554,6 @@
  },
  {
   "id": "essence-of-thawing",
-  "group": "Essences",
   "name": "Essence of Thawing",
   "name_es": "Esencia de deshielo",
   "name_pt": "Essência de Descongelamento",
@@ -8149,7 +7567,6 @@
  },
  {
   "id": "essence-of-electricity",
-  "group": "Essences",
   "name": "Essence of Electricity",
   "name_es": "Esencia de electricidad",
   "name_pt": "Essência de Eletricidade",
@@ -8163,7 +7580,6 @@
  },
  {
   "id": "essence-of-grounding",
-  "group": "Essences",
   "name": "Essence of Grounding",
   "name_es": "Esencia de aislamiento",
   "name_pt": "Essência de Aterramento",
@@ -8177,7 +7593,6 @@
  },
  {
   "id": "essence-of-ruin",
-  "group": "Essences",
   "name": "Essence of Ruin",
   "name_es": "Esencia de ruina",
   "name_pt": "Essência de Ruína",
@@ -8191,7 +7606,6 @@
  },
  {
   "id": "essence-of-command",
-  "group": "Essences",
   "name": "Essence of Command",
   "name_es": "Esencia de orden",
   "name_pt": "Essência de Ordem",
@@ -8205,7 +7619,6 @@
  },
  {
   "id": "essence-of-battle",
-  "group": "Essences",
   "name": "Essence of Battle",
   "name_es": "Esencia de batalla",
   "name_pt": "Essência de Batalha",
@@ -8219,7 +7632,6 @@
  },
  {
   "id": "essence-of-sorcery",
-  "group": "Essences",
   "name": "Essence of Sorcery",
   "name_es": "Esencia de hechicería",
   "name_pt": "Essência de Feitiçaria",
@@ -8233,7 +7645,6 @@
  },
  {
   "id": "essence-of-haste",
-  "group": "Essences",
   "name": "Essence of Haste",
   "name_es": "Esencia de celeridad",
   "name_pt": "Essência de Aceleração",
@@ -8247,7 +7658,6 @@
  },
  {
   "id": "essence-of-alacrity",
-  "group": "Essences",
   "name": "Essence of Alacrity",
   "name_es": "Esencia de vivacidad",
   "name_pt": "Essência de Diligência",
@@ -8261,7 +7671,6 @@
  },
  {
   "id": "essence-of-the-infinite",
-  "group": "Essences",
   "name": "Essence of the Infinite",
   "name_es": "Esencia del infinito",
   "name_pt": "Essência de Infinitude",
@@ -8275,7 +7684,6 @@
  },
  {
   "id": "essence-of-seeking",
-  "group": "Essences",
   "name": "Essence of Seeking",
   "name_es": "Esencia de búsqueda",
   "name_pt": "Essência de Busca",
@@ -8289,7 +7697,6 @@
  },
  {
   "id": "essence-of-opulence",
-  "group": "Essences",
   "name": "Essence of Opulence",
   "name_es": "Esencia de opulencia",
   "name_pt": "Essência de Opulência",
@@ -8303,7 +7710,6 @@
  },
  {
   "id": "greater-essence-of-the-body",
-  "group": "Essences",
   "name": "Greater Essence of the Body",
   "name_es": "Esencia del cuerpo superior",
   "name_pt": "Essência de Corpo Superior",
@@ -8317,7 +7723,6 @@
  },
  {
   "id": "greater-essence-of-the-mind",
-  "group": "Essences",
   "name": "Greater Essence of the Mind",
   "name_es": "Esencia de la mente superior",
   "name_pt": "Essência de Mente Superior",
@@ -8331,7 +7736,6 @@
  },
  {
   "id": "greater-essence-of-enhancement",
-  "group": "Essences",
   "name": "Greater Essence of Enhancement",
   "name_es": "Esencia de mejora superior",
   "name_pt": "Essência de Melhoramento Superior",
@@ -8345,7 +7749,6 @@
  },
  {
   "id": "greater-essence-of-abrasion",
-  "group": "Essences",
   "name": "Greater Essence of Abrasion",
   "name_es": "Esencia de abrasión superior",
   "name_pt": "Essência de Escoriação Superior",
@@ -8359,7 +7762,6 @@
  },
  {
   "id": "greater-essence-of-flames",
-  "group": "Essences",
   "name": "Greater Essence of Flames",
   "name_es": "Esencia de llamas superior",
   "name_pt": "Essência de Chamas Superior",
@@ -8373,7 +7775,6 @@
  },
  {
   "id": "greater-essence-of-insulation",
-  "group": "Essences",
   "name": "Greater Essence of Insulation",
   "name_es": "Esencia de incombustibilidad superior",
   "name_pt": "Essência de Isolamento Superior",
@@ -8387,7 +7788,6 @@
  },
  {
   "id": "greater-essence-of-ice",
-  "group": "Essences",
   "name": "Greater Essence of Ice",
   "name_es": "Esencia de hielo superior",
   "name_pt": "Essência de Gelo Superior",
@@ -8401,7 +7801,6 @@
  },
  {
   "id": "greater-essence-of-thawing",
-  "group": "Essences",
   "name": "Greater Essence of Thawing",
   "name_es": "Esencia de deshielo superior",
   "name_pt": "Essência de Descongelamento Superior",
@@ -8415,7 +7814,6 @@
  },
  {
   "id": "greater-essence-of-electricity",
-  "group": "Essences",
   "name": "Greater Essence of Electricity",
   "name_es": "Esencia de electricidad superior",
   "name_pt": "Essência de Eletricidade Superior",
@@ -8429,7 +7827,6 @@
  },
  {
   "id": "greater-essence-of-grounding",
-  "group": "Essences",
   "name": "Greater Essence of Grounding",
   "name_es": "Esencia de aislamiento superior",
   "name_pt": "Essência de Aterramento Superior",
@@ -8443,7 +7840,6 @@
  },
  {
   "id": "greater-essence-of-ruin",
-  "group": "Essences",
   "name": "Greater Essence of Ruin",
   "name_es": "Esencia de ruina superior",
   "name_pt": "Essência de Ruína Superior",
@@ -8457,7 +7853,6 @@
  },
  {
   "id": "greater-essence-of-command",
-  "group": "Essences",
   "name": "Greater Essence of Command",
   "name_es": "Esencia de orden superior",
   "name_pt": "Essência de Ordem Superior",
@@ -8471,7 +7866,6 @@
  },
  {
   "id": "greater-essence-of-battle",
-  "group": "Essences",
   "name": "Greater Essence of Battle",
   "name_es": "Esencia de batalla superior",
   "name_pt": "Essência de Batalha Superior",
@@ -8485,7 +7879,6 @@
  },
  {
   "id": "greater-essence-of-sorcery",
-  "group": "Essences",
   "name": "Greater Essence of Sorcery",
   "name_es": "Esencia de hechicería superior",
   "name_pt": "Essência de Feitiçaria Superior",
@@ -8499,7 +7892,6 @@
  },
  {
   "id": "greater-essence-of-haste",
-  "group": "Essences",
   "name": "Greater Essence of Haste",
   "name_es": "Esencia de celeridad superior",
   "name_pt": "Essência de Aceleração Superior",
@@ -8513,7 +7905,6 @@
  },
  {
   "id": "greater-essence-of-alacrity",
-  "group": "Essences",
   "name": "Greater Essence of Alacrity",
   "name_es": "Esencia de vivacidad superior",
   "name_pt": "Essência de Diligência Superior",
@@ -8527,7 +7918,6 @@
  },
  {
   "id": "greater-essence-of-the-infinite",
-  "group": "Essences",
   "name": "Greater Essence of the Infinite",
   "name_es": "Esencia del infinito superior",
   "name_pt": "Essência de Infinitude Superior",
@@ -8541,7 +7931,6 @@
  },
  {
   "id": "greater-essence-of-seeking",
-  "group": "Essences",
   "name": "Greater Essence of Seeking",
   "name_es": "Esencia de búsqueda superior",
   "name_pt": "Essência de Busca Superior",
@@ -8555,7 +7944,6 @@
  },
  {
   "id": "greater-essence-of-opulence",
-  "group": "Essences",
   "name": "Greater Essence of Opulence",
   "name_es": "Esencia de opulencia superior",
   "name_pt": "Essência de Opulência Superior",
@@ -8569,7 +7957,6 @@
  },
  {
   "id": "perfect-essence-of-the-body",
-  "group": "Essences",
   "name": "Perfect Essence of the Body",
   "name_es": "Esencia del cuerpo perfecta",
   "name_pt": "Essência de Corpo Perfeita",
@@ -8583,7 +7970,6 @@
  },
  {
   "id": "perfect-essence-of-the-mind",
-  "group": "Essences",
   "name": "Perfect Essence of the Mind",
   "name_es": "Esencia de la mente perfecta",
   "name_pt": "Essência de Mente Perfeita",
@@ -8597,7 +7983,6 @@
  },
  {
   "id": "perfect-essence-of-enhancement",
-  "group": "Essences",
   "name": "Perfect Essence of Enhancement",
   "name_es": "Esencia de mejora perfecta",
   "name_pt": "Essência de Melhoramento Perfeita",
@@ -8611,7 +7996,6 @@
  },
  {
   "id": "perfect-essence-of-abrasion",
-  "group": "Essences",
   "name": "Perfect Essence of Abrasion",
   "name_es": "Esencia de abrasión perfecta",
   "name_pt": "Essência de Escoriação Perfeita",
@@ -8625,7 +8009,6 @@
  },
  {
   "id": "perfect-essence-of-flames",
-  "group": "Essences",
   "name": "Perfect Essence of Flames",
   "name_es": "Esencia de llamas perfecta",
   "name_pt": "Essência de Chamas Perfeita",
@@ -8639,7 +8022,6 @@
  },
  {
   "id": "perfect-essence-of-insulation",
-  "group": "Essences",
   "name": "Perfect Essence of Insulation",
   "name_es": "Esencia de incombustibilidad perfecta",
   "name_pt": "Essência de Isolamento Perfeita",
@@ -8653,7 +8035,6 @@
  },
  {
   "id": "perfect-essence-of-ice",
-  "group": "Essences",
   "name": "Perfect Essence of Ice",
   "name_es": "Esencia de hielo perfecta",
   "name_pt": "Essência de Gelo Perfeita",
@@ -8667,7 +8048,6 @@
  },
  {
   "id": "perfect-essence-of-thawing",
-  "group": "Essences",
   "name": "Perfect Essence of Thawing",
   "name_es": "Esencia de deshielo perfecta",
   "name_pt": "Essência de Descongelamento Perfeita",
@@ -8681,7 +8061,6 @@
  },
  {
   "id": "perfect-essence-of-electricity",
-  "group": "Essences",
   "name": "Perfect Essence of Electricity",
   "name_es": "Esencia de electricidad perfecta",
   "name_pt": "Essência de Eletricidade Perfeita",
@@ -8695,7 +8074,6 @@
  },
  {
   "id": "perfect-essence-of-grounding",
-  "group": "Essences",
   "name": "Perfect Essence of Grounding",
   "name_es": "Esencia de aislamiento perfecta",
   "name_pt": "Essência de Aterramento Perfeita",
@@ -8709,7 +8087,6 @@
  },
  {
   "id": "perfect-essence-of-ruin",
-  "group": "Essences",
   "name": "Perfect Essence of Ruin",
   "name_es": "Esencia de ruina perfecta",
   "name_pt": "Essência de Ruína Perfeita",
@@ -8723,7 +8100,6 @@
  },
  {
   "id": "perfect-essence-of-command",
-  "group": "Essences",
   "name": "Perfect Essence of Command",
   "name_es": "Esencia de orden perfecta",
   "name_pt": "Essência de Ordem Perfeita",
@@ -8737,7 +8113,6 @@
  },
  {
   "id": "perfect-essence-of-battle",
-  "group": "Essences",
   "name": "Perfect Essence of Battle",
   "name_es": "Esencia de batalla perfecta",
   "name_pt": "Essência de Batalha Perfeita",
@@ -8751,7 +8126,6 @@
  },
  {
   "id": "perfect-essence-of-sorcery",
-  "group": "Essences",
   "name": "Perfect Essence of Sorcery",
   "name_es": "Esencia de hechicería perfecta",
   "name_pt": "Essência de Feitiçaria Perfeita",
@@ -8765,7 +8139,6 @@
  },
  {
   "id": "perfect-essence-of-haste",
-  "group": "Essences",
   "name": "Perfect Essence of Haste",
   "name_es": "Esencia de celeridad perfecta",
   "name_pt": "Essência de Aceleração Perfeita",
@@ -8779,7 +8152,6 @@
  },
  {
   "id": "perfect-essence-of-alacrity",
-  "group": "Essences",
   "name": "Perfect Essence of Alacrity",
   "name_es": "Esencia de vivacidad perfecta",
   "name_pt": "Essência de Diligência Perfeita",
@@ -8793,7 +8165,6 @@
  },
  {
   "id": "perfect-essence-of-the-infinite",
-  "group": "Essences",
   "name": "Perfect Essence of the Infinite",
   "name_es": "Esencia del infinito perfecta",
   "name_pt": "Essência de Infinitude Perfeita",
@@ -8807,7 +8178,6 @@
  },
  {
   "id": "perfect-essence-of-seeking",
-  "group": "Essences",
   "name": "Perfect Essence of Seeking",
   "name_es": "Esencia de búsqueda perfecta",
   "name_pt": "Essência de Busca Perfeita",
@@ -8821,7 +8191,6 @@
  },
  {
   "id": "perfect-essence-of-opulence",
-  "group": "Essences",
   "name": "Perfect Essence of Opulence",
   "name_es": "Esencia de opulencia perfecta",
   "name_pt": "Essência de Opulência Perfeita",
@@ -8835,7 +8204,6 @@
  },
  {
   "id": "essence-of-hysteria",
-  "group": "Essences",
   "name": "Essence of Hysteria",
   "name_es": "Esencia de histeria",
   "name_pt": "Essência de Histeria",
@@ -8849,7 +8217,6 @@
  },
  {
   "id": "essence-of-delirium",
-  "group": "Essences",
   "name": "Essence of Delirium",
   "name_es": "Esencia de delirio",
   "name_pt": "Essência de Delírio",
@@ -8863,7 +8230,6 @@
  },
  {
   "id": "essence-of-horror",
-  "group": "Essences",
   "name": "Essence of Horror",
   "name_es": "Esencia de horror",
   "name_pt": "Essência de Horror",
@@ -8877,7 +8243,6 @@
  },
  {
   "id": "essence-of-insanity",
-  "group": "Essences",
   "name": "Essence of Insanity",
   "name_es": "Esencia de demencia",
   "name_pt": "Essência de Insanidade",
@@ -8891,7 +8256,6 @@
  },
  {
   "id": "essence-of-the-abyss",
-  "group": "Essences",
   "name": "Essence of the Abyss",
   "name_es": "Esencia del abismo",
   "name_pt": "Essência de Abismo",
@@ -8905,7 +8269,6 @@
  },
  {
   "id": "essence-of-the-breach",
-  "group": "Essences",
   "name": "Essence of the Breach",
   "name_es": "Esencia de la fisura",
   "name_pt": "Essência da Fenda",
@@ -8919,7 +8282,6 @@
  },
  {
   "id": "uncut-support-gem-1",
-  "group": "UncutGems",
   "name": "Uncut Support Gem (Level 1)",
   "name_es": "Gema de asistencia sin tallar (nivel 1)",
   "name_pt": "Gema de Reforço Bruta (Nível 1)",
@@ -8933,7 +8295,6 @@
  },
  {
   "id": "uncut-support-gem-2",
-  "group": "UncutGems",
   "name": "Uncut Support Gem (Level 2)",
   "name_es": "Gema de asistencia sin tallar (nivel 2)",
   "name_pt": "Gema de Reforço Bruta (Nível 2)",
@@ -8947,7 +8308,6 @@
  },
  {
   "id": "uncut-support-gem-3",
-  "group": "UncutGems",
   "name": "Uncut Support Gem (Level 3)",
   "name_es": "Gema de asistencia sin tallar (nivel 3)",
   "name_pt": "Gema de Reforço Bruta (Nível 3)",
@@ -8961,7 +8321,6 @@
  },
  {
   "id": "uncut-support-gem-4",
-  "group": "UncutGems",
   "name": "Uncut Support Gem (Level 4)",
   "name_es": "Gema de asistencia sin tallar (nivel 4)",
   "name_pt": "Gema de Reforço Bruta (Nível 4)",
@@ -8975,7 +8334,6 @@
  },
  {
   "id": "uncut-support-gem-5",
-  "group": "UncutGems",
   "name": "Uncut Support Gem (Level 5)",
   "name_es": "Gema de asistencia sin tallar (nivel 5)",
   "name_pt": "Gema de Reforço Bruta (Nível 5)",
@@ -8989,7 +8347,6 @@
  },
  {
   "id": "uncut-spirit-gem-4",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 4)",
   "name_es": "Gema de espíritu sin tallar (nivel 4)",
   "name_pt": "Gema Espiritual Bruta (Nível 4)",
@@ -9003,7 +8360,6 @@
  },
  {
   "id": "uncut-spirit-gem-5",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 5)",
   "name_es": "Gema de espíritu sin tallar (nivel 5)",
   "name_pt": "Gema Espiritual Bruta (Nível 5)",
@@ -9017,7 +8373,6 @@
  },
  {
   "id": "uncut-spirit-gem-6",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 6)",
   "name_es": "Gema de espíritu sin tallar (nivel 6)",
   "name_pt": "Gema Espiritual Bruta (Nível 6)",
@@ -9031,7 +8386,6 @@
  },
  {
   "id": "uncut-spirit-gem-7",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 7)",
   "name_es": "Gema de espíritu sin tallar (nivel 7)",
   "name_pt": "Gema Espiritual Bruta (Nível 7)",
@@ -9045,7 +8399,6 @@
  },
  {
   "id": "uncut-spirit-gem-8",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 8)",
   "name_es": "Gema de espíritu sin tallar (nivel 8)",
   "name_pt": "Gema Espiritual Bruta (Nível 8)",
@@ -9059,7 +8412,6 @@
  },
  {
   "id": "uncut-spirit-gem-9",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 9)",
   "name_es": "Gema de espíritu sin tallar (nivel 9)",
   "name_pt": "Gema Espiritual Bruta (Nível 9)",
@@ -9073,7 +8425,6 @@
  },
  {
   "id": "uncut-spirit-gem-10",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 10)",
   "name_es": "Gema de espíritu sin tallar (nivel 10)",
   "name_pt": "Gema Espiritual Bruta (Nível 10)",
@@ -9087,7 +8438,6 @@
  },
  {
   "id": "uncut-spirit-gem-11",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 11)",
   "name_es": "Gema de espíritu sin tallar (nivel 11)",
   "name_pt": "Gema Espiritual Bruta (Nível 11)",
@@ -9101,7 +8451,6 @@
  },
  {
   "id": "uncut-spirit-gem-12",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 12)",
   "name_es": "Gema de espíritu sin tallar (nivel 12)",
   "name_pt": "Gema Espiritual Bruta (Nível 12)",
@@ -9115,7 +8464,6 @@
  },
  {
   "id": "uncut-spirit-gem-13",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 13)",
   "name_es": "Gema de espíritu sin tallar (nivel 13)",
   "name_pt": "Gema Espiritual Bruta (Nível 13)",
@@ -9129,7 +8477,6 @@
  },
  {
   "id": "uncut-spirit-gem-14",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 14)",
   "name_es": "Gema de espíritu sin tallar (nivel 14)",
   "name_pt": "Gema Espiritual Bruta (Nível 14)",
@@ -9143,7 +8490,6 @@
  },
  {
   "id": "uncut-spirit-gem-15",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 15)",
   "name_es": "Gema de espíritu sin tallar (nivel 15)",
   "name_pt": "Gema Espiritual Bruta (Nível 15)",
@@ -9157,7 +8503,6 @@
  },
  {
   "id": "uncut-spirit-gem-16",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 16)",
   "name_es": "Gema de espíritu sin tallar (nivel 16)",
   "name_pt": "Gema Espiritual Bruta (Nível 16)",
@@ -9171,7 +8516,6 @@
  },
  {
   "id": "uncut-spirit-gem-17",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 17)",
   "name_es": "Gema de espíritu sin tallar (nivel 17)",
   "name_pt": "Gema Espiritual Bruta (Nível 17)",
@@ -9185,7 +8529,6 @@
  },
  {
   "id": "uncut-spirit-gem-18",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 18)",
   "name_es": "Gema de espíritu sin tallar (nivel 18)",
   "name_pt": "Gema Espiritual Bruta (Nível 18)",
@@ -9199,7 +8542,6 @@
  },
  {
   "id": "uncut-spirit-gem-19",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 19)",
   "name_es": "Gema de espíritu sin tallar (nivel 19)",
   "name_pt": "Gema Espiritual Bruta (Nível 19)",
@@ -9213,7 +8555,6 @@
  },
  {
   "id": "uncut-spirit-gem-20",
-  "group": "UncutGems",
   "name": "Uncut Spirit Gem (Level 20)",
   "name_es": "Gema de espíritu sin tallar (nivel 20)",
   "name_pt": "Gema Espiritual Bruta (Nível 20)",
@@ -9227,7 +8568,6 @@
  },
  {
   "id": "uncut-skill-gem-1",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 1)",
   "name_es": "Gema de habilidad sin tallar (nivel 1)",
   "name_pt": "Gema de Habilidade Bruta (Nível 1)",
@@ -9241,7 +8581,6 @@
  },
  {
   "id": "uncut-skill-gem-2",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 2)",
   "name_es": "Gema de habilidad sin tallar (nivel 2)",
   "name_pt": "Gema de Habilidade Bruta (Nível 2)",
@@ -9255,7 +8594,6 @@
  },
  {
   "id": "uncut-skill-gem-3",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 3)",
   "name_es": "Gema de habilidad sin tallar (nivel 3)",
   "name_pt": "Gema de Habilidade Bruta (Nível 3)",
@@ -9269,7 +8607,6 @@
  },
  {
   "id": "uncut-skill-gem-4",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 4)",
   "name_es": "Gema de habilidad sin tallar (nivel 4)",
   "name_pt": "Gema de Habilidade Bruta (Nível 4)",
@@ -9283,7 +8620,6 @@
  },
  {
   "id": "uncut-skill-gem-5",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 5)",
   "name_es": "Gema de habilidad sin tallar (nivel 5)",
   "name_pt": "Gema de Habilidade Bruta (Nível 5)",
@@ -9297,7 +8633,6 @@
  },
  {
   "id": "uncut-skill-gem-6",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 6)",
   "name_es": "Gema de habilidad sin tallar (nivel 6)",
   "name_pt": "Gema de Habilidade Bruta (Nível 6)",
@@ -9311,7 +8646,6 @@
  },
  {
   "id": "uncut-skill-gem-7",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 7)",
   "name_es": "Gema de habilidad sin tallar (nivel 7)",
   "name_pt": "Gema de Habilidade Bruta (Nível 7)",
@@ -9325,7 +8659,6 @@
  },
  {
   "id": "uncut-skill-gem-8",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 8)",
   "name_es": "Gema de habilidad sin tallar (nivel 8)",
   "name_pt": "Gema de Habilidade Bruta (Nível 8)",
@@ -9339,7 +8672,6 @@
  },
  {
   "id": "uncut-skill-gem-9",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 9)",
   "name_es": "Gema de habilidad sin tallar (nivel 9)",
   "name_pt": "Gema de Habilidade Bruta (Nível 9)",
@@ -9353,7 +8685,6 @@
  },
  {
   "id": "uncut-skill-gem-10",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 10)",
   "name_es": "Gema de habilidad sin tallar (nivel 10)",
   "name_pt": "Gema de Habilidade Bruta (Nível 10)",
@@ -9367,7 +8698,6 @@
  },
  {
   "id": "uncut-skill-gem-11",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 11)",
   "name_es": "Gema de habilidad sin tallar (nivel 11)",
   "name_pt": "Gema de Habilidade Bruta (Nível 11)",
@@ -9381,7 +8711,6 @@
  },
  {
   "id": "uncut-skill-gem-12",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 12)",
   "name_es": "Gema de habilidad sin tallar (nivel 12)",
   "name_pt": "Gema de Habilidade Bruta (Nível 12)",
@@ -9395,7 +8724,6 @@
  },
  {
   "id": "uncut-skill-gem-13",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 13)",
   "name_es": "Gema de habilidad sin tallar (nivel 13)",
   "name_pt": "Gema de Habilidade Bruta (Nível 13)",
@@ -9409,7 +8737,6 @@
  },
  {
   "id": "uncut-skill-gem-14",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 14)",
   "name_es": "Gema de habilidad sin tallar (nivel 14)",
   "name_pt": "Gema de Habilidade Bruta (Nível 14)",
@@ -9423,7 +8750,6 @@
  },
  {
   "id": "uncut-skill-gem-15",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 15)",
   "name_es": "Gema de habilidad sin tallar (nivel 15)",
   "name_pt": "Gema de Habilidade Bruta (Nível 15)",
@@ -9437,7 +8763,6 @@
  },
  {
   "id": "uncut-skill-gem-16",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 16)",
   "name_es": "Gema de habilidad sin tallar (nivel 16)",
   "name_pt": "Gema de Habilidade Bruta (Nível 16)",
@@ -9451,7 +8776,6 @@
  },
  {
   "id": "uncut-skill-gem-17",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 17)",
   "name_es": "Gema de habilidad sin tallar (nivel 17)",
   "name_pt": "Gema de Habilidade Bruta (Nível 17)",
@@ -9465,7 +8789,6 @@
  },
  {
   "id": "uncut-skill-gem-18",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 18)",
   "name_es": "Gema de habilidad sin tallar (nivel 18)",
   "name_pt": "Gema de Habilidade Bruta (Nível 18)",
@@ -9479,7 +8802,6 @@
  },
  {
   "id": "uncut-skill-gem-19",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 19)",
   "name_es": "Gema de habilidad sin tallar (nivel 19)",
   "name_pt": "Gema de Habilidade Bruta (Nível 19)",
@@ -9493,7 +8815,6 @@
  },
  {
   "id": "uncut-skill-gem-20",
-  "group": "UncutGems",
   "name": "Uncut Skill Gem (Level 20)",
   "name_es": "Gema de habilidad sin tallar (nivel 20)",
   "name_pt": "Gema de Habilidade Bruta (Nível 20)",
@@ -9507,7 +8828,6 @@
  },
  {
   "id": "ataluis-bloodletting",
-  "group": "LineageSupportGems",
   "name": "Atalui's Bloodletting",
   "name_es": "Sangría de Atalui",
   "name_pt": "Dessangramento de Atalui",
@@ -9521,7 +8841,6 @@
  },
  {
   "id": "einhars-beastrite",
-  "group": "LineageSupportGems",
   "name": "Einhar's Beastrite",
   "name_es": "Rito bestial de Einhar",
   "name_pt": "Rito da Fera de Einhar",
@@ -9535,7 +8854,6 @@
  },
  {
   "id": "brutus-brain",
-  "group": "LineageSupportGems",
   "name": "Brutus' Brain",
   "name_es": "El Cerebro de Brutus",
   "name_pt": "Cérebro do Brutus",
@@ -9549,7 +8867,6 @@
  },
  {
   "id": "uruks-smelting",
-  "group": "LineageSupportGems",
   "name": "Uruk's Smelting",
   "name_es": "Fundición de Uruk",
   "name_pt": "Fundição de Uruk",
@@ -9563,7 +8880,6 @@
  },
  {
   "id": "paquates-pact",
-  "group": "LineageSupportGems",
   "name": "Paquate's Pact",
   "name_es": "Pacto de Paquate",
   "name_pt": "Pacto de Paquate",
@@ -9577,7 +8893,6 @@
  },
  {
   "id": "vilentas-propulsion",
-  "group": "LineageSupportGems",
   "name": "Vilenta's Propulsion",
   "name_es": "Propulsión de Vilenta",
   "name_pt": "Propulsão de Vilenta",
@@ -9591,7 +8906,6 @@
  },
  {
   "id": "ailiths-chimes",
-  "group": "LineageSupportGems",
   "name": "Ailith's Chimes",
   "name_es": "Campanas de Ailith",
   "name_pt": "Carrilhão de Ailith",
@@ -9605,7 +8919,6 @@
  },
  {
   "id": "tecrods-revenge",
-  "group": "LineageSupportGems",
   "name": "Tecrod's Revenge",
   "name_es": "Venganza de Tecrod",
   "name_pt": "Vingança de Tecrod",
@@ -9619,7 +8932,6 @@
  },
  {
   "id": "doedres-undoing",
-  "group": "LineageSupportGems",
   "name": "Doedre's Undoing",
   "name_es": "Destrucción de Doedre",
   "name_pt": "Destruição de Doedre",
@@ -9633,7 +8945,6 @@
  },
  {
   "id": "rathas-assault",
-  "group": "LineageSupportGems",
   "name": "Ratha's Assault",
   "name_es": "Ataque de Ratha",
   "name_pt": "Ataque de Ratha",
@@ -9647,7 +8958,6 @@
  },
  {
   "id": "arjuns-medal",
-  "group": "LineageSupportGems",
   "name": "Arjun's Medal",
   "name_es": "Medalla de Arjun",
   "name_pt": "Medalha de Arjun",
@@ -9661,7 +8971,6 @@
  },
  {
   "id": "kaoms-madness",
-  "group": "LineageSupportGems",
   "name": "Kaom's Madness",
   "name_es": "Locura de Kaom",
   "name_pt": "Loucura de Kaom",
@@ -9675,7 +8984,6 @@
  },
  {
   "id": "siones-temper",
-  "group": "LineageSupportGems",
   "name": "Sione's Temper",
   "name_es": "Temperamento de Sione",
   "name_pt": "Temperamento de Sione",
@@ -9689,7 +8997,6 @@
  },
  {
   "id": "ixchels-torment",
-  "group": "LineageSupportGems",
   "name": "Ixchel's Torment",
   "name_es": "Tormento de Ixchel",
   "name_pt": "Tormento de Ixchel",
@@ -9703,7 +9010,6 @@
  },
  {
   "id": "romiras-requital",
-  "group": "LineageSupportGems",
   "name": "Romira's Requital",
   "name_es": "Compensación de Romira",
   "name_pt": "Retribuição de Romira",
@@ -9717,7 +9023,6 @@
  },
  {
   "id": "tawhoas-tending",
-  "group": "LineageSupportGems",
   "name": "Tawhoa's Tending",
   "name_es": "Predisposición de Tawhoa",
   "name_pt": "Trato de Tawhoa",
@@ -9731,7 +9036,6 @@
  },
  {
   "id": "dominus-grasp",
-  "group": "LineageSupportGems",
   "name": "Dominus' Grasp",
   "name_es": "Control de Dóminus",
   "name_pt": "Domínio de Dominus",
@@ -9745,7 +9049,6 @@
  },
  {
   "id": "diallas-desire",
-  "group": "LineageSupportGems",
   "name": "Dialla's Desire",
   "name_es": "Deseo de Dialla",
   "name_pt": "Desejo de Dialla",
@@ -9759,7 +9062,6 @@
  },
  {
   "id": "kalisas-crescendo",
-  "group": "LineageSupportGems",
   "name": "Kalisa's Crescendo",
   "name_es": "Crescendo de Kalisa",
   "name_pt": "Crescente de Kalisa",
@@ -9773,7 +9075,6 @@
  },
  {
   "id": "kulemaks-dominion",
-  "group": "LineageSupportGems",
   "name": "Kulemak's Dominion",
   "name_es": "Dominio de Kulemak",
   "name_pt": "Domínio de Kulemak",
@@ -9787,7 +9088,6 @@
  },
  {
   "id": "amanamus-tithe",
-  "group": "LineageSupportGems",
   "name": "Amanamu's Tithe",
   "name_es": "Diezmo de Amanamu",
   "name_pt": "Dízimo de Amanamu",
@@ -9801,7 +9101,6 @@
  },
  {
   "id": "xophs-pyre",
-  "group": "LineageSupportGems",
   "name": "Xoph's Pyre",
   "name_es": "Pira de Xoph",
   "name_pt": "Pira de Xoph",
@@ -9815,7 +9114,6 @@
  },
  {
   "id": "eshs-radiance",
-  "group": "LineageSupportGems",
   "name": "Esh's Radiance",
   "name_es": "Resplandor de Esh",
   "name_pt": "Esplendor de Esh",
@@ -9829,7 +9127,6 @@
  },
  {
   "id": "tuls-stillness",
-  "group": "LineageSupportGems",
   "name": "Tul's Stillness",
   "name_es": "Quietud de Tul",
   "name_pt": "Quietude de Tul",
@@ -9843,7 +9140,6 @@
  },
  {
   "id": "uul-netols-embrace",
-  "group": "LineageSupportGems",
   "name": "Uul-Netol's Embrace",
   "name_es": "Abrazo de Uul-Netol",
   "name_pt": "Abraço de Uul-Netol",
@@ -9857,7 +9153,6 @@
  },
  {
   "id": "rakiatas-flow",
-  "group": "LineageSupportGems",
   "name": "Rakiata's Flow",
   "name_es": "Flujo de Rakiata",
   "name_pt": "Fluxo de Rakiata",
@@ -9871,7 +9166,6 @@
  },
  {
   "id": "garukhans-resolve",
-  "group": "LineageSupportGems",
   "name": "Garukhan's Resolve",
   "name_es": "Resolución de Garukhan",
   "name_pt": "Determinação de Garukhan",
@@ -9885,7 +9179,6 @@
  },
  {
   "id": "tasalios-rhythm",
-  "group": "LineageSupportGems",
   "name": "Tasalio's Rhythm",
   "name_es": "Ritmo de Tasalio",
   "name_pt": "Cadência de Tasalio",
@@ -9899,7 +9192,6 @@
  },
  {
   "id": "tacatis-ire",
-  "group": "LineageSupportGems",
   "name": "Tacati's Ire",
   "name_es": "Ira de Tacati",
   "name_pt": "Ira de Tacati",
@@ -9913,7 +9205,6 @@
  },
  {
   "id": "rigwalds-ferocity",
-  "group": "LineageSupportGems",
   "name": "Rigwald's Ferocity",
   "name_es": "Ferocidad de Rigwald",
   "name_pt": "Ferocidade de Rigwald",
@@ -9927,7 +9218,6 @@
  },
  {
   "id": "khatals-rejuvenation",
-  "group": "LineageSupportGems",
   "name": "Khatal's Rejuvenation",
   "name_es": "Rejuvenecimiento de Khatal",
   "name_pt": "Rejuvenescimento de Khatal",
@@ -9941,7 +9231,6 @@
  },
  {
   "id": "bhatairs-vengeance",
-  "group": "LineageSupportGems",
   "name": "Bhatair's Vengeance",
   "name_es": "La venganza de Bhatair",
   "name_pt": "Vingança de Bhatair",
@@ -9955,7 +9244,6 @@
  },
  {
   "id": "uhtreds-exodus",
-  "group": "LineageSupportGems",
   "name": "Uhtred's Exodus",
   "name_es": "Éxodo de Uhtred",
   "name_pt": "Êxodo de Uhtred",
@@ -9969,7 +9257,6 @@
  },
  {
   "id": "uhtreds-omen",
-  "group": "LineageSupportGems",
   "name": "Uhtred's Omen",
   "name_es": "Augurio de Uhtred",
   "name_pt": "Presságio de Uhtred",
@@ -9983,7 +9270,6 @@
  },
  {
   "id": "uhtreds-augury",
-  "group": "LineageSupportGems",
   "name": "Uhtred's Augury",
   "name_es": "Presagio de Uhtred",
   "name_pt": "Augúrio de Uhtred",
@@ -9997,7 +9283,6 @@
  },
  {
   "id": "daressos-passion",
-  "group": "LineageSupportGems",
   "name": "Daresso's Passion",
   "name_es": "Pasión de Daresso",
   "name_pt": "Paixão de Daresso",
@@ -10011,7 +9296,6 @@
  },
  {
   "id": "ahns-citadel",
-  "group": "LineageSupportGems",
   "name": "Ahn's Citadel",
   "name_es": "Ciudadela de Ahn",
   "name_pt": "Cidadela de Ahn",
@@ -10025,7 +9309,6 @@
  },
  {
   "id": "atziris-allure",
-  "group": "LineageSupportGems",
   "name": "Atziri's Allure",
   "name_es": "Atracción de Atziri",
   "name_pt": "Charme de Atziri",
@@ -10039,7 +9322,6 @@
  },
  {
   "id": "hayoxis-fulmination",
-  "group": "LineageSupportGems",
   "name": "Hayoxi's Fulmination",
   "name_es": "Fulminación de Hayoxi",
   "name_pt": "Fulminação de Hayoxi",
@@ -10053,7 +9335,6 @@
  },
  {
   "id": "zarokhs-refrain",
-  "group": "LineageSupportGems",
   "name": "Zarokh's Refrain",
   "name_es": "Inhibición de Zarokh",
   "name_pt": "Lamento de Zarokh",
@@ -10067,7 +9348,6 @@
  },
  {
   "id": "kurgals-leash",
-  "group": "LineageSupportGems",
   "name": "Kurgal's Leash",
   "name_es": "Control de Kurgal",
   "name_pt": "Coleira de Kurgal",
@@ -10081,7 +9361,6 @@
  },
  {
   "id": "varashtas-blessing",
-  "group": "LineageSupportGems",
   "name": "Varashta's Blessing",
   "name_es": "Bendición de Varashta",
   "name_pt": "Bênção de Varashta",
@@ -10095,7 +9374,6 @@
  },
  {
   "id": "arbiters-ignition",
-  "group": "LineageSupportGems",
   "name": "Arbiter's Ignition",
   "name_es": "Ignición del árbitro",
   "name_pt": "Deflagração do Árbitro",
@@ -10109,7 +9387,6 @@
  },
  {
   "id": "arakaalis-lust",
-  "group": "LineageSupportGems",
   "name": "Arakaali's Lust",
   "name_es": "Lujuria de Arakaali",
   "name_pt": "Lúxuria de Arakaali",
@@ -10123,7 +9400,6 @@
  },
  {
   "id": "xibaquas-rending",
-  "group": "LineageSupportGems",
   "name": "Xibaqua's Rending",
   "name_es": "Desgarro de Xibaqua",
   "name_pt": "Ruptura de Xibaqua",
@@ -10137,7 +9413,6 @@
  },
  {
   "id": "guatelitzis-ablation",
-  "group": "LineageSupportGems",
   "name": "Guatelitzi's Ablation",
   "name_es": "Ablación de Guatelitzi",
   "name_pt": "Ablação de Guatelitzi",
@@ -10151,7 +9426,6 @@
  },
  {
   "id": "atziris-communion",
-  "group": "LineageSupportGems",
   "name": "Atziri's Communion",
   "name_es": "Comunión de Atziri",
   "name_pt": "Comunhão de Atziri",
@@ -10165,7 +9439,6 @@
  },
  {
   "id": "atziris-impatience",
-  "group": "LineageSupportGems",
   "name": "Atziri's Impatience",
   "name_es": "Impaciencia de Atziri",
   "name_pt": "Impaciência de Atziri",
@@ -10179,7 +9452,6 @@
  },
  {
   "id": "zerphis-infamy",
-  "group": "LineageSupportGems",
   "name": "Zerphi's Infamy",
   "name_es": "Infamia de Zerphi",
   "name_pt": "Infâmia de Zerphi",
@@ -10193,7 +9465,6 @@
  },
  {
   "id": "zarokhs-revolt",
-  "group": "LineageSupportGems",
   "name": "Zarokh's Revolt",
   "name_es": "Rebelión de Zarokh",
   "name_pt": "Revolta de Zarokh",
@@ -10207,7 +9478,6 @@
  },
  {
   "id": "oisins-oath",
-  "group": "LineageSupportGems",
   "name": "Oisín's Oath",
   "name_es": "Juramento de Oisín",
   "name_pt": "Juramento de Oisín",
@@ -10221,7 +9491,6 @@
  },
  {
   "id": "cirels-cultivation",
-  "group": "LineageSupportGems",
   "name": "Cirel's Cultivation",
   "name_es": "Cultivo de Cirel",
   "name_pt": "Cultivo de Cirel",
@@ -10235,7 +9504,6 @@
  },
  {
   "id": "morganas-tempest",
-  "group": "LineageSupportGems",
   "name": "Morgana's Tempest",
   "name_es": "Tempestad de Morgana",
   "name_pt": "Tormenta de Morgana",
@@ -10249,7 +9517,6 @@
  },
  {
   "id": "her-declaration",
-  "group": "LineageSupportGems",
   "name": "Her Declaration",
   "name_es": "Su declaración",
   "name_pt": "Sua Declaração",
@@ -10263,7 +9530,6 @@
  },
  {
   "id": "prototype-seventeen",
-  "group": "LineageSupportGems",
   "name": "Prototype Seventeen",
   "name_es": "Prototipo diecisiete",
   "name_pt": "Protótipo Dezessete",
@@ -10277,7 +9543,6 @@
  },
  {
   "id": "seraphs-heart",
-  "group": "LineageSupportGems",
   "name": "Seraph's Heart",
   "name_es": "Corazón del serafín",
   "name_pt": "Coração do Serafim",
@@ -10291,7 +9556,6 @@
  },
  {
   "id": "uhtreds-rite",
-  "group": "LineageSupportGems",
   "name": "Uhtred's Rite",
   "name_es": "Rito de Uhtred",
   "name_pt": "Rito de Uhtred",
@@ -10305,7 +9569,6 @@
  },
  {
   "id": "tricksters-shard",
-  "group": "LineageSupportGems",
   "name": "Trickster's Shard",
   "name_es": "Esquirla del Embaucador",
   "name_pt": "Fragmento do Trapaceiro",
@@ -10319,7 +9582,6 @@
  },
  {
   "id": "arbiters-reach",
-  "group": "LineageSupportGems",
   "name": "Arbiter's Reach",
   "name_es": "Alcance del árbitro",
   "name_pt": "Alcance do Árbitro",
@@ -10333,7 +9595,6 @@
  },
  {
   "id": "tangmazus-thurible",
-  "group": "LineageSupportGems",
   "name": "Tangmazu's Thurible",
   "name_es": "Incensario de Tangmazu",
   "name_pt": "Turíbulo de Tangmazu",
@@ -10347,7 +9608,6 @@
  },
  {
   "id": "eshs-prowess",
-  "group": "LineageSupportGems",
   "name": "Esh's Prowess",
   "name_es": "Destreza de Esh",
   "name_pt": "Proeza de Esh",
@@ -10361,7 +9621,6 @@
  },
  {
   "id": "breachlords-rift",
-  "group": "LineageSupportGems",
   "name": "Breachlord's Rift",
   "name_es": "Grieta del Señor de la fisura",
   "name_pt": "Fissura do Lorde da Fenda",
@@ -10375,7 +9634,6 @@
  },
  {
   "id": "breachlords-amalgam",
-  "group": "LineageSupportGems",
   "name": "Breachlord's Amalgam",
   "name_es": "Amalgama del Señor de la fisura",
   "name_pt": "Amálgama do Lorde da Fenda",
@@ -10389,7 +9647,6 @@
  },
  {
   "id": "vruuns-aftermath",
-  "group": "LineageSupportGems",
   "name": "Vruun's Aftermath",
   "name_es": "Repercusión de Vrunn",
   "name_pt": "Sequelas de Vruun",
@@ -10403,7 +9660,6 @@
  },
  {
   "id": "vruuns-inevitability",
-  "group": "LineageSupportGems",
   "name": "Vruun's Inevitability",
   "name_es": "Inevitabilidad de Vruun",
   "name_pt": "Inevitabilidade de Vruun",
@@ -10417,7 +9673,6 @@
  },
  {
   "id": "uhtreds-constellation",
-  "group": "LineageSupportGems",
   "name": "Uhtred's Constellation",
   "name_es": "Constelación de Uhtred",
   "name_pt": "Constelação de Uhtred",
@@ -10431,7 +9686,6 @@
  },
  {
   "id": "medveds-felling",
-  "group": "LineageSupportGems",
   "name": "Medved's Felling",
   "name_es": "Sentimiento de Medved",
   "name_pt": "Sentimento de Medved",
@@ -10445,7 +9699,6 @@
  },
  {
   "id": "voranas-siege",
-  "group": "LineageSupportGems",
   "name": "Vorana's Siege",
   "name_es": "Asedio de Vorana",
   "name_pt": "Cerco de Vorana",
@@ -10459,7 +9712,6 @@
  },
  {
   "id": "styrns-mountain",
-  "group": "LineageSupportGems",
   "name": "Styrn's Mountain",
   "name_es": "Montaña de Styrn",
   "name_pt": "Montanha de Styrn",
@@ -10473,7 +9725,6 @@
  },
  {
   "id": "styrns-ferocity",
-  "group": "LineageSupportGems",
   "name": "Styrn's Ferocity",
   "name_es": "Ferocidad de Styrn",
   "name_pt": "Ferocidade de Styrn",
@@ -10487,7 +9738,6 @@
  },
  {
   "id": "styrns-anthem",
-  "group": "LineageSupportGems",
   "name": "Styrn's Anthem",
   "name_es": "Himno de Styrn",
   "name_pt": "Hino de Styrn",
@@ -10501,7 +9751,6 @@
  },
  {
   "id": "cathas-brilliance",
-  "group": "LineageSupportGems",
   "name": "Catha's Brilliance",
   "name_es": "Genio de Catha",
   "name_pt": "Genialidade de Catha",
@@ -10515,7 +9764,6 @@
  },
  {
   "id": "mórrigans-insight",
-  "group": "LineageSupportGems",
   "name": "Mórrigan's Insight",
   "name_es": "Percepción de Mórrigan",
   "name_pt": "Perspicácia de Mórrigan",
@@ -10529,7 +9777,6 @@
  },
  {
   "id": "tuls-avalanche",
-  "group": "LineageSupportGems",
   "name": "Tul's Avalanche",
   "name_es": "Avalancha de Tul",
   "name_pt": "Avalanche de Tul",
@@ -10543,7 +9790,6 @@
  },
  {
   "id": "olroths-hubris",
-  "group": "LineageSupportGems",
   "name": "Olroth's Hubris",
   "name_es": "Arrogancia de Olroth",
   "name_pt": "Arrogância de Olroth",
@@ -10557,7 +9803,6 @@
  },
  {
   "id": "olroths-conviction",
-  "group": "LineageSupportGems",
   "name": "Olroth's Conviction",
   "name_es": "Convicción de Olroth",
   "name_pt": "Convicção de Olroth",
@@ -10571,7 +9816,6 @@
  },
  {
   "id": "waystone-1",
-  "group": "Waystones",
   "name": "Waystone (Tier 1)",
   "name_es": "Piedra guía (grado 1)",
   "name_pt": "Pedra-guia (Nível 1)",
@@ -10585,7 +9829,6 @@
  },
  {
   "id": "waystone-2",
-  "group": "Waystones",
   "name": "Waystone (Tier 2)",
   "name_es": "Piedra guía (grado 2)",
   "name_pt": "Pedra-guia (Nível 2)",
@@ -10599,7 +9842,6 @@
  },
  {
   "id": "waystone-3",
-  "group": "Waystones",
   "name": "Waystone (Tier 3)",
   "name_es": "Piedra guía (grado 3)",
   "name_pt": "Pedra-guia (Nível 3)",
@@ -10613,7 +9855,6 @@
  },
  {
   "id": "waystone-4",
-  "group": "Waystones",
   "name": "Waystone (Tier 4)",
   "name_es": "Piedra guía (grado 4)",
   "name_pt": "Pedra-guia (Nível 4)",
@@ -10627,7 +9868,6 @@
  },
  {
   "id": "waystone-5",
-  "group": "Waystones",
   "name": "Waystone (Tier 5)",
   "name_es": "Piedra guía (grado 5)",
   "name_pt": "Pedra-guia (Nível 5)",
@@ -10641,7 +9881,6 @@
  },
  {
   "id": "waystone-6",
-  "group": "Waystones",
   "name": "Waystone (Tier 6)",
   "name_es": "Piedra guía (grado 6)",
   "name_pt": "Pedra-guia (Nível 6)",
@@ -10655,7 +9894,6 @@
  },
  {
   "id": "waystone-7",
-  "group": "Waystones",
   "name": "Waystone (Tier 7)",
   "name_es": "Piedra guía (grado 7)",
   "name_pt": "Pedra-guia (Nível 7)",
@@ -10669,7 +9907,6 @@
  },
  {
   "id": "waystone-8",
-  "group": "Waystones",
   "name": "Waystone (Tier 8)",
   "name_es": "Piedra guía (grado 8)",
   "name_pt": "Pedra-guia (Nível 8)",
@@ -10683,7 +9920,6 @@
  },
  {
   "id": "waystone-9",
-  "group": "Waystones",
   "name": "Waystone (Tier 9)",
   "name_es": "Piedra guía (grado 9)",
   "name_pt": "Pedra-guia (Nível 9)",
@@ -10697,7 +9933,6 @@
  },
  {
   "id": "waystone-10",
-  "group": "Waystones",
   "name": "Waystone (Tier 10)",
   "name_es": "Piedra guía (grado 10)",
   "name_pt": "Pedra-guia (Nível 10)",
@@ -10711,7 +9946,6 @@
  },
  {
   "id": "waystone-11",
-  "group": "Waystones",
   "name": "Waystone (Tier 11)",
   "name_es": "Piedra guía (grado 11)",
   "name_pt": "Pedra-guia (Nível 11)",
@@ -10725,7 +9959,6 @@
  },
  {
   "id": "waystone-12",
-  "group": "Waystones",
   "name": "Waystone (Tier 12)",
   "name_es": "Piedra guía (grado 12)",
   "name_pt": "Pedra-guia (Nível 12)",
@@ -10739,7 +9972,6 @@
  },
  {
   "id": "waystone-13",
-  "group": "Waystones",
   "name": "Waystone (Tier 13)",
   "name_es": "Piedra guía (grado 13)",
   "name_pt": "Pedra-guia (Nível 13)",
@@ -10753,7 +9985,6 @@
  },
  {
   "id": "waystone-14",
-  "group": "Waystones",
   "name": "Waystone (Tier 14)",
   "name_es": "Piedra guía (grado 14)",
   "name_pt": "Pedra-guia (Nível 14)",
@@ -10767,7 +9998,6 @@
  },
  {
   "id": "waystone-15",
-  "group": "Waystones",
   "name": "Waystone (Tier 15)",
   "name_es": "Piedra guía (grado 15)",
   "name_pt": "Pedra-guia (Nível 15)",
@@ -10781,7 +10011,6 @@
  },
  {
   "id": "waystone-16",
-  "group": "Waystones",
   "name": "Waystone (Tier 16)",
   "name_es": "Piedra guía (grado 16)",
   "name_pt": "Pedra-guia (Nível 16)",

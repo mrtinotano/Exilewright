@@ -724,7 +724,7 @@ for g in trade_data('static'):
     for e in g['entries']:
         i = any_name.get(e.get('text'))
         if i is not None:
-            bulk.append({'id': e['id'], 'group': g['id'], 'name': bit[i]['Name'], **tr(bases_tr, i)})
+            bulk.append({'id': e['id'], 'name': bit[i]['Name'], **tr(bases_tr, i)})
 assert len(bulk) > 500 and any(x['id'] == 'divine' for x in bulk), 'bulk.json: the bulk exchange'
 save('bulk.json', bulk)
 

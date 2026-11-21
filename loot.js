@@ -152,6 +152,10 @@ export function initLoot(el, ctx) {
   }
   // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
   // judged
+  const tradeFail = (e, show, name) => {
+    if (!(e instanceof TradeError)) throw e;
+    show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
+  };
   async function priceCheck(text) {
     const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
     const B = bulkOf(text.replace(/\r/g, '').trim());
@@ -176,29 +180,23 @@ export function initLoot(el, ctx) {
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
         ...asked.length ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
-    } catch (e) {
-      if (!(e instanceof TradeError)) throw e;
-      show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
-    }
+    } catch (e) { tradeFail(e, show, name); }
   }
   // a stackable item (currency, runes, essences, omens...): the best rates its sellers ask on the Currency Exchange, and
   // what your stack comes to at the best one
   async function bulkCheck(B, show) {
-    const s = settings(), name = B.entry['name_' + lang] || B.name;
+    const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0], p = await priceBulk({ league, id: B.id, state: s.state }), link = p.id ? siteLink(league, p.id, true) : '';
       if (!p.offers.length) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
-      const num = x => +x.toPrecision(3), best = p.offers[0], unit = best.pay / best.get, cur = t(best.currency);
+      const best = p.offers[0], unit = best.pay / best.get, cur = t(best.currency);
       show({ name, link, lines: [
         ...p.offers.slice(0, 5).map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${cur}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']]),
-        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, `${num(unit * B.stack)} ${cur}`), '']]] : [],
+        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, `${+(unit * B.stack).toPrecision(3)} ${cur}`), '']]] : [],
         [[t('{0} offers on the Currency Exchange in {1}', p.total, league), 'dim']],
         [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] });
-    } catch (e) {
-      if (!(e instanceof TradeError)) throw e;
-      show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
-    }
+    } catch (e) { tradeFail(e, show, name); }
   }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
   function watch() {

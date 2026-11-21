@@ -245,14 +245,14 @@ function sameAs(r) {
 // r: parseItem's (its item, rarity, corrupted...)
 // ---------- the Currency Exchange (the site's bulk exchange): a stackable item, as Exiled Exchange 2 prices it
 const BULK = await fetch('poe2_data/available/bulk.json').then(r => r.ok ? r.json() : []).catch(() => []);
-const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k === 'name' || k.startsWith('name_')).map(([, n]) => [n.toLowerCase(), b])));
-// the copied text -> { id (the exchange's), name (English), entry (its names), stack } when the exchange lists it, else null: its name
+const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k.startsWith('name')).map(([, n]) => [n.toLowerCase(), b])));
+// the copied text -> { id (the exchange's), name (English), name_<lang>..., stack } when the exchange lists it, else null: its name
 // among the lines before the first separator, in any language; its stack the first "label: n/m" line ("Stack Size: 12/40")
 export function bulkOf(text) {
   const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l));
   const b = lines.slice(0, sep < 0 ? lines.length : sep).map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b) return null;
   const n = lines.map(l => l.match(/^[^:：]+[:：]\s*([\d.,\s]+?)\s*\/\s*[\d.,\s]+$/)?.[1]).find(Boolean);   // \s: a thousands space too
-  return { id: b.id, name: b.name, entry: b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
+  return { ...b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
 }
 // what its sellers ask for it: in the currency most of them take (Exalted, Divine or Chaos Orbs; the site's market is thin,
 // nobody may sell divines for exalts there), the offers of one item each, the best rate first, as Exiled Exchange 2 lists them
