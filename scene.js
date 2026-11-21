@@ -3207,6 +3207,18 @@ export function initScene(el, api) {
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
   // the copies can shatter other mirrors in turn
   const MIRROR = new THREE.BoxGeometry(.5, .9, .05);
+  // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
+  // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
+  // Spell yourself before the next visage Empowers it for its more damage (use)
+  function fate() {
+    const F = onS('Align Fate'), st = F?.dmg?.stats; if (!st) return;
+    const ok = api.build().gems.map((g, j) => j).filter(j => { const b = api.byHand(j) && base(j); return b && b.P.spell && !b.P.channel && !b.dmg?.cooldown && !NOHIT.has(b.kind); });
+    if (!ok.length || time < (me.fateAt ??= time)) return;
+    me.fateAt = time + st.base_cooldown_modifiable_repeat_interval_ms / 1000 / (1 + st['spellflux_frequency_+%_final_per_socketed_valid_spell'] * ok.length / 100) / (1 + (F.dmg.sum?.['cooldown_speed_+%'] || 0) / 100);
+    const j = ok[Math.floor(rnd(ok.length))], d = near(pp, 30), b = base(j);
+    empower = empower.filter(e => e.type !== 'fate'); empower.push({ type: 'fate', spell: b.name, label: F.label, mult: 1 + st['spellflux_spell_damage_+%_final_if_matching_flux_cast'] / 100 });
+    fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1, 'gold', .4); use(j, { at: d ? { x: d.pos.x, z: d.pos.z } : { x: pp.x, z: pp.z }, src: 'meta' });
+  }
   function mirrors(dt) {
     const S = onS('Mirror of Refraction'), st = S?.dmg?.stats; if (!st) return;
     if ((me.mirrorIn = (me.mirrorIn ?? 0) - dt) > 0) return;
@@ -3707,6 +3719,7 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
           lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
+        else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
@@ -4819,7 +4832,7 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); withering(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); withering(dt); mirrors(dt); fate(); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
