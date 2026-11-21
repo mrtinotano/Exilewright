@@ -42,7 +42,8 @@ const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% 
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
-const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
+const BLIND = { less: 20, time: 4 };
+const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
@@ -448,6 +449,9 @@ export function initScene(el, api) {
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
+      // Lich: Unholy Might while not on Low Mana, its share of all damage as extra chaos (keywords.json UnholyMight) by
+      // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
+      const UM = !S.src && sheet().unholy; if (UM && !meIs.LowMana()) { const n = Object.values(raw).reduce((t, x) => t + x, 0); raw.chaos = (raw.chaos || 0) + n * UNHOLY / 100 * UM; }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
@@ -3799,6 +3803,11 @@ export function initScene(el, api) {
       }
       // Empowered (it took something waiting for it): Premeditation's more damage, Unerring Power's less cost and more Accuracy
       // Mountain's Teachings: an attack you use benefits from it and loses one
+      // Lich: a spell Sacrifices its share of your maximum energy shield (if you have it all) for its more damage, and
+      // consumes a Power Charge if it can for its more damage
+      const LI = P.spell && !S.src && !auto && sheet().lich;
+      if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; } }
+      if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       if (tally() < had) { const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
@@ -4436,7 +4445,7 @@ export function initScene(el, api) {
     // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
     const BK = d && es0 > me.es && onS('Barkskin');
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
-    me.life -= left;
+    if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
     if (me.life < 1 && time < me.sight) me.life = 1;   // Future-Past's Sight Beyond Sight
@@ -4824,7 +4833,7 @@ export function initScene(el, api) {
   const blindLess = () => BLIND.less * (1 + (sheet().blindEffect || 0) / 100);   // your Blind on enemies, with its increased effect
   const regenNow = c => {
     const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
-    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) };
+    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
   const speedWhile = b => 1 + (sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100;
   function withCharms(c) {
@@ -5064,6 +5073,7 @@ export function initScene(el, api) {
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
+    else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
@@ -5179,7 +5189,7 @@ export function initScene(el, api) {
     for (let i = empower.length - 1; i >= 0; i--) if (empower[i].s != null && (empower[i].s -= dt) <= 0) empower.splice(i, 1);
     resolveGain(dt);
     fissures = fissures.filter(f => f.end > time);
-    for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt) <= 0) buffs.splice(i, 1);
+    for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt * (1 + (sheet().buffTime || 0) / 100)) <= 0) buffs.splice(i, 1);   // the tree's Buff Expiry Rate
 
     player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
     reticle(); arena.update(dt, pp); fx.update(dt);
@@ -5196,7 +5206,8 @@ export function initScene(el, api) {
       cam.aspect = w / h; cam.updateProjectionMatrix(); fx.setViewport(dom.height, cam.fov);
     }
     time += dt;
-    try { step(dt); } catch (e) { if (e.message !== lastErr) { lastErr = e.message; console.error('scene:', e); } }
+    const LL = sheet().eternal && me.es > 0 ? me.life : null;
+    try { step(dt); if (LL != null) me.life = LL; } catch (e) { if (e.message !== lastErr) { lastErr = e.message; console.error('scene:', e); } }
     composer ? composer.render(dt) : renderer.render(scene, cam);
   });
 
