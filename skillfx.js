@@ -170,7 +170,7 @@ export function profile(gem, d = {}) {
     spendOne: /\bconsumes? an? \[Charges\|/i.test(desc),   // its text: "Consumes a Frenzy Charge", not all of them
     toggle: ['herald', 'aura', 'meta', 'minion'].includes(kind),
     culls: /\[CullingStrike\|Cull(?:ing)?\] (?:enemies|range)/i.test(desc), leaves, infuses, stages: has('GainsStages', 'PerfectTiming'), perfect: has('PerfectTiming'),
-    slams: has('Slam'), plant: has('Plant'), wind: has('Wind'), fan: has('Slam') && has('Projectile'), ballista: has('TotemsAreBallistae'),
+    slams: has('Slam'), plant: has('Plant'), wind: has('Wind'), projectile: has('Projectile'), fan: has('Slam') && has('Projectile'), ballista: has('TotemsAreBallistae'),
     // a buff that makes the next skill repeat: Barrage (bow / crossbow attacks) or Unleash (spells)
     repeats: has('ModifiesNextSkill') && !els.length ? (tag('dexterity') ? 'barrageable' : tag('intelligence') ? 'unleashable' : null) : null,
     detonator: has('Detonator') || tag('detonator'),

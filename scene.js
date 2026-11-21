@@ -3223,11 +3223,11 @@ export function initScene(el, api) {
     }
   };
   // Toxic Domain: its Toxic Bloom around you for its duration; in it you regenerate its life and your skills cost more
-  // note: the Toxic Pustules it attaches are not simulated (their explosion is not in its data)
+  // and your projectile attacks attach its Toxic Pustules (thornHit)
   K.domain = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, ring = fx.decal(c, S.A, 'patch', 'poison', { a: .3, k: 1 });
     limit(o => o.banner && o.name === S.name, 1);
-    thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, R: S.A, c, off: () => ring.remove() });
+    thing(holder(c), durOf(S), { name: S.name, banner: { life_regeneration_per_minute: st['toxic_domain_healing_per_minute_+'], 'toxic_domain_mana_cost_+%': st['toxic_domain_mana_cost_+%'] }, domain: S, R: S.A, c, off: () => ring.remove() });
     fx.ring(c, .2, S.A, 'poison', .45); say(t('{0} active', S.label), 'poison');
   };
   // Ice Shards: each bolt of its clip strikes the ground at the target (its hit there) and leaves a shard, up to the
@@ -4297,6 +4297,10 @@ export function initScene(el, api) {
         say(t('{0} consumes {1}', label, t(STATE.freeze)), 'cold');
       }
     }
+    // Toxic Domain: while you are in its Bloom your projectile attacks attach a Toxic Pustule (its chance), bursting after
+    // its detonation time for Toxic Domain's own attack damage, storing the poison like Poison Spores' (pustule)
+    const TD = S.P.attack && S.P.projectile && !d.pustule && objs.find(o => o.domain && !o.dead && dist(o.c, pp) <= o.R)?.domain;
+    if (TD && Math.random() * 100 < TD.dmg.stats['toxic_domain_pustule_chance_%']) { d.pustule = { X: TD, st: TD.dmg.stats, left: TD.dmg.stats.base_skill_detonation_time / 1000, stored: 0 }; say(TD.label, 'poison'); }
   }
   // Deadly Resolve: a stage per its time channelling the supported skill (up to its most, for its duration: one timer for all,
   // ponytail: each stage's own timer if it matters); an enemy's hit expends one for a slash at it, its cone and cooldown, 1%
