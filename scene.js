@@ -2814,8 +2814,7 @@ export function initScene(el, api) {
     if (!lance) { const o = objs.find(o => o.whirl && !o.lance && !o.dead); if (o) { o.stage = Math.min(top, o.stage + 1); return; } }
     const c = lance ? { ...S.at } : { x: pp.x, z: pp.z }, slow = new Map();
     // its share of all its damage as the element it picked up (the slash's own, from the ground under you)
-    const gain = A => gainAs(A, A.got, st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered']);
-    const X0 = S.got ? gain(withEl(W, S.got)) : W;
+    const WG = st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered'], X0 = S.got ? gainAs(W, S.got, WG) : W;
     const make = () => {
       if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms);
       const e = thing(holder(c), lance ? durOf(W) : Infinity, { whirl: true, lance, stage: lance ? top + (S.spent ? 1 : 0) : 1, c, out: !lance || dist(pp, c) > W.A, X: X0,
@@ -2823,7 +2822,7 @@ export function initScene(el, api) {
         tick(dt) {
           const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: e.X.el === 'physical' ? 'dust' : e.X.el, smoke: true, a: .3 });
           standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'], .1);
-          const A = absorb(e.X, c, R); if (A !== e.X) e.X = gain(A);
+          const A = absorb(e.X, c, R); if (A !== e.X) e.X = gainAs(e.X, A.got, WG);
           const there = dist(pp, c) <= R; if (!there) e.out = true;
           if (lance ? there && e.out : !there) { e.dead = true; boom(c, R, e.X, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
         } });
