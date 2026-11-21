@@ -3616,10 +3616,10 @@ export function initScene(el, api) {
     d.slows.push({ until: time + HINDER.time, pct: -HINDER.slow * slowK(S) });
   };
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
-  // each second in it (up to 10, its description), each its more spell damage and its Life lost per minute; its cast speed
-  const demon = () => me.demon ? Math.min(10, Math.floor(time - me.demon.at)) : 0;
+  // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
+  const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
   const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); me.demon = null; };
-  K.demon = S => { if (me.demon) return demonOff(); me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name }; say(t('{0} on', S.label), 'fire'); };
+  K.demon = S => { if (me.demon) return demonOff(); const sm = S.dmg.sum || {}; me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name, max: sm.demon_form_has_no_max_stacks ? Infinity : sm.max_demon_form_stacks || 10 }; say(t('{0} on', S.label), 'fire'); };
   // Inevitable Agony: the enemies in its area record its share of the damage hits deal them, for its duration; once it
   // ends, or once what it recorded could kill them, they lose that much life at once
   K.agony = S => {
