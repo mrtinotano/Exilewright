@@ -3445,9 +3445,12 @@ export function initScene(el, api) {
     // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
     // (its only use of charges: none spent otherwise)
     const gi = C && api.info(S.g).gem, byCharge = /cooldown can be bypassed/.test(gi?.description || ''), wait = C && ready.length >= (S.dmg.uses || 1);
-    const BY = wait && byCharge && Object.keys(charges).find(c => gi.types?.includes(`SkillConsumes${c[0].toUpperCase() + c.slice(1)}ChargesOnUse`) && charges[c] > 0);
-    if (wait && !BY) return false;
+    // Enraged Warcry: a Warcry spends its Rage instead of the Endurance Charge
+    const ER = wait && byCharge && S.dmg?.sum?.warcry_bypass_cooldown_spending_X_rage_instead_of_endurance_charge, RG = ER && me.rage >= ER;
+    const BY = !ER && wait && byCharge && Object.keys(charges).find(c => gi.types?.includes(`SkillConsumes${c[0].toUpperCase() + c.slice(1)}ChargesOnUse`) && charges[c]);
+    if (wait && !BY && !RG) return false;
     if (BY) { charges[BY]--; chargesSpent(1); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
+    if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     aim(S, o.at || cursor);
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
@@ -3627,7 +3630,7 @@ export function initScene(el, api) {
       if (U.lifePerCooldown && C) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerCooldown * C / 1000 / 100);   // Second Wind III
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
-    if (C && !BY) ready.push(time + C / 1000);
+    if (C && !BY && !RG) ready.push(time + C / 1000);
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
     // Unbound Avatar: usable at its Unbound Fury, which it consumes to make you Unbound for its duration: its more elemental
     // damage, elemental ailment chance and freeze / electrocute buildup
