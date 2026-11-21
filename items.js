@@ -87,9 +87,9 @@ function local(item) {
   return r;
 }
 
-// main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
 // an equipped body armour's own armour (Titan's Stone Skin: more of it)
 export const bodyArmour = (items = {}) => items.body && BASE[items.body.base]?.armour ? local(items.body).armour : 0;
+// main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
 export const weaponStats = (items = {}) => items.weapon && BASE[items.weapon.base]?.weapon ? local(items.weapon) : null;
 
 // global stats the gear gives the character (stat id -> value)
