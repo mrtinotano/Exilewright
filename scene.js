@@ -109,7 +109,7 @@ export function initScene(el, api) {
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
   const rains = {};   // Rain of Arrows: the latest rain of each skill
-  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], byS = {}, hover = null, lastHit = null, topD = null, surges = [];
+  let archonAt = -Infinity, dummies = [], objs = [], grounds = [], hazards = [], timers = [], empower = [], buffs = [], logs = [], fissures = [], clog = [], frags = [], byS = {}, hover = null, lastHit = null, topD = null, surges = [];
   let held = null, charge = null, move = null, toastT = 0, hudT = 0;
 
   // ---------- HUD
@@ -294,6 +294,7 @@ export function initScene(el, api) {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
+    frags.forEach(f => f.dec?.remove()); frags = [];
     timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; clog = []; byS = {}; lastHit = null; dummies.forEach(restore); heal(); hudT = 0;
@@ -615,7 +616,7 @@ export function initScene(el, api) {
       const cold = T['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'];
       if (cold && frozen) for (let k = 0; k < (T.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(T.ice_fragment_min_chunk_distance || 0, T.ice_fragment_max_chunk_distance || 0) / 10, q = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
-        fx.ring(q, .1, .4, 'ice', .3); later((T.base_skill_detonation_time || 0) / 1000, () => blast(q, 'support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage', S));
+        frag(q, (T.active_skill_base_area_of_effect_radius || 10) / 10, (T.base_skill_detonation_time || 0) / 1000, at => blast(at, 'support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage', S));
       }
     }
   }
@@ -1655,16 +1656,27 @@ export function initScene(el, api) {
     consume(d, S, 'freeze'); const p = { x: d.pos.x, z: d.pos.z };
     pop(p, X.A, 'ice'); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * uniqueMore(d, X.dmg.stats['frag_rounds_damage_+%_final_if_created_from_unique']) }, { noPay: true });
   }
-  // Ice-Tipped Arrows: where an empowered projectile hits, its number of ice fragments scatter forward in its cone,
-  // each landing between its least and most distance, and explode after its detonation time (its fragment part)
+  // Ice Fragments lying on the ground till they explode after their detonation time: { p, R, go (its explosion), dec }.
+  // Kept so a skill can set them off sooner (Cross Slash pulls them in)
+  function frag(p, R, delay, go) {
+    const F = { p, R, go, dec: fx.decal(p, R, 'patch', 'cold', { a: .6, k: 1 }) };
+    F.off = () => { if (!frags.includes(F)) return; frags = frags.filter(f => f !== F); F.dec?.remove(); F.dec = null; pop(F.p, F.R, 'ice'); F.go(F.p); };
+    frags.push(F); later(delay, F.off);
+  }
+  // Ice-Tipped Arrows, Escape Shot: where an empowered (its) projectile hits, its number of ice fragments scatter forward
+  // in its cone, each landing between its least and most distance, and explode after its detonation time (its fragment part)
+  // the fragments' hit: the attack's, its physical as cold, at their part's multiplier over the attack's own (note: the
+  // data has them as a spell part, with no weapon damage of their own)
+  function fragsOf(S, X) {
+    const H = { ...S.dmg.hits }; if (H.physical) { const c = H.cold || [0, 0]; H.cold = [c[0] + H.physical[0], c[1] + H.physical[1]]; delete H.physical; }
+    return { ...X, dmg: { ...X.dmg, hits: scale(H, X.dmg.stats._base_multiplier / (S.dmg.stats?._base_multiplier || 10000)) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
+  }
   function iceFrags(X, p, a0) {
     const st = X.dmg.stats, n = st.base_number_of_projectiles, cone = st.ballistic_ice_chunk_cone_angle / 10 * Math.PI / 180;
     for (let k = 0; k < n; k++) {
       const a = a0 + (n > 1 ? k / (n - 1) - .5 : 0) * cone, r = rnd(st.ice_fragment_min_chunk_distance, st.ice_fragment_max_chunk_distance) / 10, to = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
-      lob(fx.orb('cold', .1), new THREE.Vector3(p.x, .8, p.z), new THREE.Vector3(to.x, .1, to.z), .3, .6, () => {
-        const dec = fx.decal(to, X.A, 'patch', 'cold', { a: .6, k: 1 });
-        later(Math.max(0, st.base_skill_detonation_time / 1000 - .3), () => { dec.remove(); pop(to, X.A, 'ice'); boom(to, X.A, X, { noPay: true }); });
-      });
+      lob(fx.orb('cold', .1), new THREE.Vector3(p.x, .8, p.z), new THREE.Vector3(to.x, .1, to.z), .3, .6, () =>
+        frag(to, X.A, Math.max(0, st.base_skill_detonation_time / 1000 - .3), q => boom(q, X.A, X, { noPay: true })));
     }
   }
   function shoot(S, from, dx, dz, o = {}) {
@@ -1978,6 +1990,13 @@ export function initScene(el, api) {
       const TX = partOf(S, 'Tornado');
       if (TX) return shot(() => { boom(c, R, S); vortex(TX, c, radOf(TX), durOf(TX), { copy: TX.dmg.stats }); });
       if (P.object) return shot(() => rod(S, c));
+      // Escape Shot: you leap back from your aim its arrow's distance, and the arrow hits where you stood (its area, its
+      // Chill and Freeze), its Ice Fragments scattering on from there (iceFrags)
+      if (P.jump) {
+        const o = { x: pp.x, z: pp.z }, l = (S.dmg?.stats?.projectile_distance_override || 20) / 10;
+        move = { from: o, to: { x: o.x - S.dx * l, z: o.z - S.dz * l }, k: 0, dur: .3, h: 1, S, seen: new Set() };
+        return later(.15, () => lob(fx.arrow(S.el), hand(), V(o.x, .1, o.z), .2, 1, () => { boom(o, R, S); if (S.icetip) iceFrags(S.icetip, o, Math.atan2(S.dx, S.dz)); }, { trail: S.el }));
+      }
       if (P.detonates && P.plant) return shot(() => pustules(S, c));
       if (P.detonates) {   // pods that burst after a moment (or at once when a detonator reaches them)
         return shot(() => {
@@ -3144,8 +3163,8 @@ export function initScene(el, api) {
   };
   // Cross Slash: two gouges in front of you, each its angle apart across your aim, its length and its secondary width,
   // each hitting on its own, as you leap back its offset; a Marked enemy hit by both has its Mark activated and takes the
-  // shockwave (its part) after its delay
-  // note: its Ice Fragments are not simulated
+  // shockwave (its part) after its delay. The Ice Fragments within its search radius are pulled into where the gouges
+  // cross (where you stood) and explode at once. note: the overshoot of their pull is a look the data does not explain
   K.cross = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, w = radOf(S), a0 = Math.atan2(S.dx, S.dz), half = st.wolf_cross_slash_angle / 2 * Math.PI / 180, X = partOf(S, 'WolfCrossSlashMarkConsumedPlayer'), both = new Map();
     for (const sgn of [-1, 1]) {
@@ -3154,6 +3173,10 @@ export function initScene(el, api) {
       for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w + SIM.body) { hit(d, S); both.set(d, (both.get(d) || 0) + 1); }
     }
     for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
+    for (const F of frags.filter(F => dist(F.p, c) <= st.ice_chunk_refire_search_radius / 10)) {
+      frags = frags.filter(f => f !== F); F.dec.remove(); F.dec = null;
+      lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(c.x, .1, c.z), .2, .5, () => { F.p = c; frags.push(F); F.off(); });
+    }
     const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
   };
   // Unearth: its cone of bone spikes in front of you (its radius, its angle); each corpse in it becomes a Bone Construct
@@ -3498,16 +3521,15 @@ export function initScene(el, api) {
         else if (E.type === 'icetip' && P.attack && P.ranged && hits && S.dmg) {
           const H = { ...S.dmg.hits }, ph = H.physical, cv = (E.cv ?? 100) / 100;
           if (ph) { const c = H.cold || [0, 0]; H.cold = [c[0] + ph[0] * cv, c[1] + ph[1] * cv]; H.physical = [ph[0] * (1 - cv), ph[1] * (1 - cv)]; if (cv >= 1) delete H.physical; }
-          // the fragments' hit: the attack's, at their part's multiplier over the attack's own (note: the data has them
-          // as a spell part, with no weapon damage of their own)
-          const fm = E.X.dmg.stats._base_multiplier / (S.dmg.stats?._base_multiplier || 10000);
           const { els, el, ail } = withEl(S, 'cold'); Object.assign(S, { els, el, ail, dmg: { ...S.dmg, hits: H } });
-          S.icetip = { ...E.X, dmg: { ...E.X.dmg, hits: scale(H, fm) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
+          S.icetip = fragsOf(S, E.X);
           say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (--E.uses <= 0) empower.splice(k, 1);
         }
         else if (E.type === 'bounty' && S.kind === 'projectile') { S.addProj = E.add; S.G = { ...S.G, speed: (S.G?.speed || SIM.projSpeed) * (1 + E.speed / 100) }; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
+      // Escape Shot: its arrow makes its Ice Fragments where it hits (its fragment part, iceFrags)
+      const ES = !S.icetip && partOf(S, 'EscapeShotIceFragmentPlayer'); if (ES) S.icetip = fragsOf(S, ES);
       // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time, up to its most; casting it breaks them,
       // each repeating it its times with its less damage
       const SU = S.dmg?.sum, SL = !auto && P.spell && SU?.base_maximum_seals_for_skill;
