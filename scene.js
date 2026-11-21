@@ -1163,6 +1163,10 @@ export function initScene(el, api) {
     }
     if (st.shock > 0) gainBuff(S, 'shockKill');
     if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
+    // Bursting Fen Toad: its chance on a kill for a toad that leaps about and explodes in its area, always Poisoning. note:
+    // how long it leaps is not in the data (half a second, as Doedre's toads here)
+    const FT = !S?.src && byName('Bursting Fen Toad'), T = FT >= 0 && base(FT);
+    if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) { const q = around(p, 1.5); later(.5, () => { pop(q, T.A, 'chaos'); boom(q, T.A, { ...T, src: 'toad' }); }); }
     deathBlast(d, frozen, S);
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
@@ -2848,6 +2852,7 @@ export function initScene(el, api) {
   // area after the first (its +% each, up to its cap), every so many a large one (its part) not on the same enemy within
   // its time; you gain its % of damage as fire and its Rage regeneration
   // note: without Bear form in the scene, its effects are never suppressed; a small meteor's area the data does not give: 1 m
+  // note: The Stars Answer (Runeseeker's Call) is not simulated: how long its Starfall lasts is in none of the data
   K.calamity = S => {
     const st = S.dmg?.stats || {}, dur = durOf(S), L = partOf(S, 'WalkingCalamityMeteorLargePlayer'), last = new Map(); let tk = 0, n = 0;
     me.calamity = { until: time + dur, rage: st.walking_calamity_base_rage_regeneration_per_minute || 0 };
