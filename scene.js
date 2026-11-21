@@ -3858,8 +3858,8 @@ export function initScene(el, api) {
     const KA = !auto && P.melee && time < me.kaom?.until && me.kaom;
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
-    S.slamN = !auto && P.slams ? me.slams = (me.slams || 0) + 1 : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
-    if ((KA || AE) && P.slams) { S.mult *= 1 + ANCESTRAL.slam / 100; S.A *= Math.sqrt(1 + ANCESTRAL.area / 100); }
+    S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
+    if (KA && P.slams || AE) { S.mult *= 1 + ANCESTRAL.slam / 100; S.A *= Math.sqrt(1 + ANCESTRAL.area / 100); }
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
     // Echoing Cry: usable once you have travelled its distance since its last use
     const MV = !auto && S.dmg?.sum?.skill_unusable_until_moved_X_distance;
