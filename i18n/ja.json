@@ -914,5 +914,6 @@
  "Level {0} or more": "レベル{0}以上",
  "See every change ({0})": "すべての変化を表示 ({0})",
  "Socketed in yours, lost: {0}": "あなたの装備に装着、失う: {0}",
- "Socketed in it, gained: {0}": "こちらに装着、得る: {0}"
+ "Socketed in it, gained: {0}": "こちらに装着、得る: {0}",
+ "None listed has all {1} of the modifiers: these have at least {0} of them.": "{1}個すべてのモディファイアを持つ出品はありません。以下は少なくとも{0}個を持つものです。"
 }

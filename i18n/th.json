@@ -914,5 +914,6 @@
  "Level {0} or more": "เลเวล {0} ขึ้นไป",
  "See every change ({0})": "ดูการเปลี่ยนแปลงทั้งหมด ({0})",
  "Socketed in yours, lost: {0}": "ใส่ในของคุณ จะเสีย: {0}",
- "Socketed in it, gained: {0}": "ใส่ในชิ้นนี้ จะได้: {0}"
+ "Socketed in it, gained: {0}": "ใส่ในชิ้นนี้ จะได้: {0}",
+ "None listed has all {1} of the modifiers: these have at least {0} of them.": "ไม่มีไอเทมที่วางขายมีม็อดทั้ง {1} อย่าง: รายการเหล่านี้มีอย่างน้อย {0} อย่าง"
 }

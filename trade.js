@@ -383,18 +383,25 @@ const DEAREST = { price: 'desc' };
 // base; a unique: that unique), up to the price, the first 10 down from the dearest. note: its implicits and runes are
 // not asked: the data has no trade stat for them.
 // -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for) }
+// A rare has at most 6 modifiers, so asking for all of them is asking for a twin of it (2 gloves of a whole league had
+// one's 6 lines, none as high). Nothing found: at least one fewer of them, then two, never under 2 (fewer -> those counts)
+const fewer = stats => { const n = stats[0]?.filters.length || 0; return [n - 1, n - 2].filter(k => k >= 2); };
+const atLeast = (stats, k) => [{ type: 'count', value: { min: k }, filters: stats[0].filters }];
+console.assert(JSON.stringify(fewer([{ filters: [1, 2, 3, 4, 5, 6] }])) === '[5,4]' && fewer([{ filters: [1, 2] }]).length === 0, 'fewer');
 const lineKey = l => l.hash ?? 'd:' + l.en;
 export async function findBetter({ league, item, base, skip = [], price, level, state, tick }) {   // skip: lines left out (lineKey)
   const { stats, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
-  const s = await call('search?league=' + encodeURIComponent(league), body), found = [];
+  let s = await call('search?league=' + encodeURIComponent(league), body), need = 0;
+  for (const k of fewer(stats)) { if (s.result?.length) break; body.query.stats = atLeast(stats, k); need = k; s = await call('search?league=' + encodeURIComponent(league), body); }
+  const found = [];
   tick?.('Reading {0} items…', Math.min(10, s.result?.length || 0));
   if (s.result?.length) for (const r of (await call(`fetch?ids=${s.result.slice(0, 10).join()}&query=${s.id}`)).result || []) {
     const l = r && readListing(r); if (l?.item) found.push(l);
   }
-  return { found: found.reverse(), body, left };
+  return { found: found.reverse(), body, left, ...need && { need, of: stats[0].filters.length } };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {
@@ -425,6 +432,8 @@ export async function findLike({ league, cls, unique, base, slot, items, value, 
   const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price, level) }, sort: DEAREST };
   const out = { found: [], searches: [], unread: 0, errors: [], body, left };
   await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body });
+  for (const k of fewer(stats)) { if (out.found.length || out.errors.length || out.searches.at(-1)?.total) break; body.query.stats = atLeast(stats, k); out.need = k; out.of = stats[0].filters.length;
+    await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body }); }
   out.found.reverse();
   return out;
 }

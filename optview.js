@@ -228,6 +228,7 @@ export function initOpt(el, ctx) {
       ${res.unread ? `<p class="note">${t('{0} listed items were left out: the planner does not have their base or they go in another slot.', res.unread)}</p>` : ''}
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
       ${res.found.length && !list.length ? `<p class="note">${t('None of the items found improves the current gear.')}</p>` : ''}
+      ${res.need ? `<p class="note">${t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       ${hit.like ? `<a class="golink" href="${esc(siteQuery(league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
