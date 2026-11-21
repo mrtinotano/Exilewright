@@ -288,7 +288,7 @@ export function character(b, sum) {
     es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%') + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
-    armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc),
+    armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc: pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%'),
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
@@ -626,7 +626,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed' };
 // [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "while
 // Shapeshifted" (the scene has none)
-const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
+const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'ae', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
   ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],

@@ -4870,7 +4870,7 @@ export function initScene(el, api) {
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
     PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4,
-    ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT,
+    ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedPowerRecently: () => time - (me.spentAt?.power ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT,
     ...Object.fromEntries([['chill', 'Chilled'], ['ignite', 'Ignited'], ['shock', 'Shocked']].map(([a, n]) => [n + 'EnemyRecently', () => time - (me.inflAt?.[a] ?? -99) <= RECENT])),
     ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`HeraldOf${h}`, () => !!tog[`Herald of ${h}`]])), MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
     RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
@@ -5007,7 +5007,8 @@ export function initScene(el, api) {
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
   function vitals(dt) {
-    const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges'); me.known = c.life != null;
+    const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges')
+      * (1 + (c.defWhile || []).filter(w => w.to === 's' && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
