@@ -4769,7 +4769,7 @@ export function initScene(el, api) {
     if (x('lightning') && roll(x('lightning') * though('shock') / thr * GC.ShockChanceMultiplier * more('shock_chance_+%', 'active_skill_shock_chance_+%_final')) && can('shock'))
       suffer('shock', PL.BaseShockDuration * D.dur.shock, { mag: GC.BaseShockMagnitude * D.eff.shock });
     if (x('cold') && !frozen()) {
-      const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * though('chill') / thr * D.eff.chill);
+      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * though('chill') / thr * D.eff.chill);
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
         D.freeze, PL.FreezeDuration * D.dur.freeze * more('freeze_duration_+%'));
