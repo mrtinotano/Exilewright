@@ -2603,8 +2603,17 @@ export function initScene(el, api) {
       touch(c, R, S);
     },
     buff(S) {
-      const P = S.P;
+      const P = S.P, st = S.dmg?.stats || {};
       if (P.corpse && !useCorpse(S)) return;
+      // Animus Exchange: it sacrifices up to its life (leaving you 1) for its share as Runic Ward, which can Overflow
+      const AX = st['animus_exchange_gain_%_maximum_life_spent_as_ward'];
+      if (AX) { const n = Math.max(0, Math.min(st.animus_exchange_spend_up_to_X_life, me.life - 1)); me.life -= n; me.ward = overflow(me.ward, me.maxW, n * AX / 100); fx.ring(pp, .3, 1.2, 'holy', .4); return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, 'holy'); }
+      // Hollow Shell: its share of the Runic Ward it cost as Guard, for its duration (the higher Guard stays, up to 200% of your life)
+      const HS = st['skill_hollow_shell_spent_ward_%_to_grant_as_guard'];
+      if (HS) { const g = Math.min((S.wardPaid || 0) * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
+      // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
+      const ER = st['emergency_reload_damage_+%_final'];
+      if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       // Barrage: repeats from its stats (else the scene's 2, one more per charge spent: Unleash), each with its less damage
       // Ice-Tipped Arrows: its number of your next projectile attacks are empowered, for its duration (icetip)
@@ -3503,6 +3512,7 @@ export function initScene(el, api) {
     if (BY) { charges[BY]--; chargesSpent(1); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
     if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
+    if (S.dmg?.clip && time < me.ereload?.until) S.mult *= me.ereload.more;   // Emergency Reload's empowered bolts
     aim(S, o.at || cursor);
     if (!auto && astral(S)) S.from = { ...S.at };   // Astral Projection: the Nova where you aim, not around you
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
@@ -3647,7 +3657,7 @@ export function initScene(el, api) {
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
       const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
-      if (WC) spendWard(WC);
+      if (WC) { spendWard(WC); S.wardPaid = WC; }
       // Derange: an Energy Shield cost equal to your Intelligence
       const DR = S.dmg?.finals?.[DERANGE] != null && (sheet().attrs?.int || 0);
       if (DR > me.es) { toast(t('Not enough Energy Shield for {0}', S.label) + ` (${Math.ceil(DR)})`); return false; }
