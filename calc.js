@@ -380,7 +380,7 @@ export function recovery(c, sum) {
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
     blindEffect: v(sum, 'blind_effect_+%'),
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
-    parryMag: v(sum, 'parried_magnitude_+%'),   // increased magnitude of the Parried debuff you inflict
+    parryMag: v(sum, 'parried_magnitude_+%'), debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),

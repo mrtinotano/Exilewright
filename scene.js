@@ -5001,7 +5001,8 @@ export function initScene(el, api) {
     for (const S of gloryOf()) if (/Banner/.test(S.name) && S.dmg?.sum?.banners_gain_X_glory_per_second) gloryAdd(S, S.dmg.sum.banners_gain_X_glory_per_second * dt);   /* Tactician: Banners gain Glory every second */
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
-    for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
+    const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)
+    for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
     for (let i = me.flam.length - 1; i >= 0; i--) if ((me.flam[i].s -= dt) <= 0) me.flam.splice(i, 1);
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
