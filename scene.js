@@ -383,7 +383,7 @@ export function initScene(el, api) {
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
-      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
+      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
@@ -827,7 +827,9 @@ export function initScene(el, api) {
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
       + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0);
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
-    if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
+    // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
+    const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
+    if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime / PF, eff: A.poisonEffect * PF });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -3432,7 +3434,7 @@ export function initScene(el, api) {
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
   function costOf(S, held) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
-    return { cost: (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
+    return { cost: (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
       life: (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
   }
   function use(i, o = {}) {
@@ -3520,7 +3522,7 @@ export function initScene(el, api) {
       facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
-      const hits = !NOHIT.has(S.kind);
+      const hits = !NOHIT.has(S.kind), tally = () => empower.reduce((t, e) => t + 1 + (e.uses || 0), 0), had = tally();
       for (let k = empower.length - 1; k >= 0; k--) {
         const E = empower[k];
         if (E.type === 'infuse' && P.attack && hits) {
@@ -3547,6 +3549,9 @@ export function initScene(el, api) {
         else if (E.type === 'bounty' && S.kind === 'projectile') { S.addProj = E.add; S.G = { ...S.G, speed: (S.G?.speed || SIM.projSpeed) * (1 + E.speed / 100) }; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
+      // Empowered (it took something waiting for it): Premeditation's more damage, Unerring Power's less cost and more Accuracy
+      if (tally() < had) { const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
+        S.costX = 1 + (F['support_discount_skill_cost_+%_final_if_empowered'] || 0) / 100; S.accX = 1 + (F['support_discount_accuracy_rating_+%_final_if_empowered'] || 0) / 100; }
       // Escape Shot: its arrow makes its Ice Fragments where it hits (its fragment part, iceFrags)
       const ES = !S.icetip && partOf(S, 'EscapeShotIceFragmentPlayer'); if (ES) S.icetip = fragsOf(S, ES);
       // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time, up to its most; casting it breaks them,

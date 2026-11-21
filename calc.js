@@ -595,6 +595,7 @@ function more(fin, suffix, tags, type) {
   for (const [k, val] of Object.entries(fin)) {
     if (!k.endsWith(suffix + '_final')) continue;
     const words = k.slice(0, -(suffix + '_final').length).split('_');
+    if (words.includes('empowered')) continue;   // only on an Empowered use (Premeditation): the scene's
     if (DMG.some(d => words.includes(d) && d !== type) || words.includes('minion') && !tags.includes('minion')) continue;
     if (['spell', 'attack', 'projectile', 'melee', 'area'].some(x => words.includes(x) && !tags.includes(x))) continue;
     m *= 1 + val / 100;
