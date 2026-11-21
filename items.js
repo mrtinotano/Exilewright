@@ -708,10 +708,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),
     ].filter(Boolean).join('');
     // the attributes the base needs (AttributeRequirements), its own "reduced Attribute Requirements" counted, against the
-    // character's without it (its own attributes do not count). note: the tree's global ones (and gloves' "ignore") are not
+    // character's without it (its own attributes do not count), with the tree's increased / reduced ones and its gloves' "ignore"
     const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
-    const free = mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
-    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * (1 + rp / 100))]).filter(([k, x]) => (without?.[k] || 0) < x);
+    const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
+    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * Math.max(0, 1 + (rp + (without?.reqPct || 0)) / 100))]).filter(([k, x]) => (without?.[k] || 0) < x);
     const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), without?.[k] || 0)).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');

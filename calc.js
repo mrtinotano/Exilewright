@@ -1452,5 +1452,6 @@ export function snapshot(b, sum) {
   return { life: c.life, es: c.es, mana: c.mana, spirit: c.spirit, armour: c.armour, evasion: c.evasion, block: c.block,
     fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs,
     lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
+    reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves,   // the Equipment card's requirements
     dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };
 }
