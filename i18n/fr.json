@@ -914,6 +914,7 @@
  "Level {0} or more": "Niveau {0} ou plus",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Aucun objet en vente n'a les {1} modificateurs : ceux-ci en ont au moins {0}.",
  "Requires {0} {1} (you have {2})": "Nécessite {0} en {1} (vous avez {2})",
- "{0} (Socket {1})": "{0} (châsse {1})",
- "Empty (Socket {0})": "Vide (châsse {0})"
+ "Empty (Socket {0})": "Vide (châsse {0})",
+ "Socket {0}": "châsse {0}",
+ "Socket {0} of your {1}": "châsse {0} de votre équipement : {1}"
 }

@@ -25,7 +25,7 @@ function row(label, x, y, dec = 0, unit = '', dps = false) {
 export function diff(a, z) {
   const skills = a.dps.map(([name, x], i) => { const y = z.dps[i]?.[1]; return row(t('{0} DPS', name), x, y, Math.max(x || 0, y || 0) < 100 ? 1 : 0, '', true); })
     .filter(Boolean).sort((p, q) => Math.abs(q.d) - Math.abs(p.d)).slice(0, MAX_SKILLS);
-  return [...skills, ...ROWS.map(([k, label, dec, unit]) => row(t(label), a[k], z[k], dec, unit)).filter(Boolean)];
+  return [...skills, ...ROWS.map(([k, label, dec, unit]) => { const r = row(t(label), a[k], z[k], dec, unit); return r && { ...r, key: k }; }).filter(Boolean)];   // key: the snapshot's
 }
 // DPS of one skill before and after (support picker)
 export const dpsDiff = (x, y) => [row('DPS', x, y, Math.max(x || 0, y || 0) < 100 ? 1 : 0, '', true)].filter(Boolean);

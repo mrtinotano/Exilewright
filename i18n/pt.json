@@ -914,6 +914,7 @@
  "Level {0} or more": "Nível {0} ou mais",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Nenhum à venda tem todos os {1} modificadores: estes têm pelo menos {0} deles.",
  "Requires {0} {1} (you have {2})": "Requer {0} de {1} (você tem {2})",
- "{0} (Socket {1})": "{0} (encaixe {1})",
- "Empty (Socket {0})": "Vazio (encaixe {0})"
+ "Empty (Socket {0})": "Vazio (encaixe {0})",
+ "Socket {0}": "engaste {0}",
+ "Socket {0} of your {1}": "engaste {0} do seu equipamento: {1}"
 }

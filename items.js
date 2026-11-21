@@ -111,6 +111,11 @@ export function gearStats(items = {}) {
   return sum;
 }
 
+// the character panel numbers (impact.js rows) a socketed stat changes, by its id
+const SOCK_KEY = k => [['fire', /fire_damage_resistance|^base_resist_all_elements/], ['cold', /cold_damage_resistance|^base_resist_all_elements/], ['lightning', /lightning_damage_resistance|^base_resist_all_elements/],
+  ['chaos', /chaos_damage_resistance/], ['life', /maximum_life/], ['es', /energy_shield/], ['mana', /maximum_mana/], ['spirit', /spirit/], ['str', /strength|all_attributes/],
+  ['dex', /dexterity|all_attributes/], ['int', /intelligence|all_attributes/], ['armour', /physical_damage_reduction_rating/], ['evasion', /evasion_rating/],
+  ['move', /movement_velocity/], ['accuracy', /accuracy_rating/]].filter(([, re]) => re.test(k)).map(([key]) => key);
 // The armour, evasion and energy shield of the equipped armour pieces (the character panel's "Item Armour"...)
 export function armourItems(items = {}) {
   const out = { armour: 0, evasion: 0, energy_shield: 0, movement: 0 };   // movement: their base's movement speed penalty, %
@@ -748,13 +753,20 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
-      const order = byGain(rows);   // most improved first
+      const order = byGain(rows).map(r => ({ ...r }));   // most improved first (copies: the socket notes go on their labels)
       // what is socketed (runes, soul cores, idols) and enchanted, one stat a line with its socket: what yours has that this
       // one lacks (lost, as a negative), what this one brings, and its empty sockets. note: the socket is the stat's place
       // among the item's socketed stats (the site and the item keep no socket per stat)
       const A = worn?.extra || {}, Z = l.item.extra || {}, KA = Object.keys(A), KZ = Object.keys(Z), line = (k, x) => statLines({ [k]: x }).join(', ');
-      const sock = KA.filter(k => Z[k] !== A[k]).map(k => `<div class="ddn">${esc(t('{0} (Socket {1})', line(k, -A[k]), KA.indexOf(k) + 1))}</div>`).join('')
-        + KZ.filter(k => A[k] !== Z[k]).map(k => `<div class="dup">${esc(t('{0} (Socket {1})', line(k, Z[k]), KZ.indexOf(k) + 1))}</div>`).join('')
+      // a socketed stat that changes a number of the list says so on that line (yours: "of your <slot>"); one that changes
+      // none keeps a line of its own
+      const yours = n => t('Socket {0} of your {1}', n, t(SLOTS[slot] || slot)), mine = n => t('Socket {0}', n), notes = {}, alone = [];
+      for (const [K, X, Y, sign, cls, where] of [[KA, A, Z, -1, 'ddn', yours], [KZ, Z, A, 1, 'dup', mine]]) for (const k of K) if (X[k] !== Y[k]) {
+        const n = K.indexOf(k) + 1, hit = order.filter(r => SOCK_KEY(k).includes(r.key));
+        if (hit.length) for (const r of hit) (notes[r.key] ||= []).push(where(n)); else alone.push(`<div class="${cls}">${esc(`${line(k, sign * X[k])} (${where(n)})`)}</div>`);
+      }
+      for (const r of order) if (notes[r.key]) r.label = `${r.label} (${notes[r.key].join(', ')})`;
+      const sock = alone.join('')
         + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
         <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}${sock ? `<div class="bsock">${sock}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactList(order, true)}</span></div>`; }).join('')
