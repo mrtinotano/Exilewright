@@ -387,6 +387,7 @@ export function initScene(el, api) {
   // armour and resistances, times what the skill's stats give: a consumed state, more damage against a state, charges spent.
   // A multiplier of the scene (stages, channelling, a consumed state the data gives no number for) marks it "~", like the hits
   // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
+  const falloff = d => clamp((dist(pp, d.pos) - 2) / 7, 0, 1);   // accuracy's loss with distance, none within 2 m, all of it at 9 m (KeywordPopups Accuracy)
   function hit(d, S, o = {}) {
     if (d.dead) return false;
     const FF = S.dmg?.stats?.[FROSTFLAME];   // Frostflame Nova: its wave touches only the Ignited, and deals them no damage (afflict)
@@ -401,7 +402,7 @@ export function initScene(el, api) {
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
-      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
+      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : falloff(d), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
@@ -4711,7 +4712,7 @@ export function initScene(el, api) {
     // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
     if (RR) blocked(d);
-    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - clamp((dist(pp, d.pos) - 2) / 7, 0, 1) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
