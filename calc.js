@@ -918,7 +918,7 @@ export function skill(g, b, treeGear) {
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
   const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   const mn = out.minion = mid ? minionOf(st, sum, fin, mid) : null;
-  out.minionLife = mid ? minionLife(st, sum, mid) : null;
+  out.minionLife = mid ? minionLife(st, sum, mid, finals) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
@@ -1019,9 +1019,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 // times its monster's (MonsterVarieties LifeMultiplier), then the build's increases ("Minions have #% increased maximum
 // Life", minion_maximum_life_+%) and every "more" the gem and its supports give minions; as PoB2's CalcDefence for minions
 // (floor(monsterAllyLifeTable[level] * minionData.life)). note: no game window checked against it yet
-function minionLife(st, sum, id) {
+function minionLife(st, sum, id, finals = {}) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1]; if (!m || !level) return null;
-  const ms = minionStats(st, sum, {});
+  const ms = minionStats(st, { ...sum, ...finals }, {});   // a support's "more" life too (Loyalty, Minion Mastery)
   return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
     * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1));
 }
