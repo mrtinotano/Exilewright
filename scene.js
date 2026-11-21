@@ -747,6 +747,9 @@ export function initScene(el, api) {
   const DRAINED = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'];   // the ailments Drain Ailments can Consume
   const DERANGE = 'support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence';
   const FROSTFLAME = 'active_skill_hit_damage_freeze_multiplier_+permyriad_final_per_1%_of_target_ailment_threshold_being_dealt_by_ignite_per_second';
+  // the increased Slow Magnitude of the debuffs a skill inflicts (Hinder, Maim, its slowing zones): the tree's and its supports' (Slow Potency)
+  // note: not chill, an ailment
+  const slowK = S => 1 + (S?.dmg?.sum?.['base_debuff_slow_magnitude_+%'] || 0) / 100;
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -764,6 +767,7 @@ export function initScene(el, api) {
       if (o?.eff) v.dps *= o.eff;
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
+    if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
@@ -917,7 +921,7 @@ export function initScene(el, api) {
   // again for a while (GameConstants <name>ThresholdModifier / <name>ModifierDuration)
   const BAR = { freeze: 'Freeze', stun: 'HeavyStun', electrocute: 'Electrocute', pin: 'Pin' };
   // Overwhelming Presence: the enemies in your Presence have its less stun and ailment thresholds
-  const awe = (d, k) => { const st = onS('Overwhelming Presence')?.dmg.stats; return st && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + st[`skill_overwhelming_pressure_aura_enemy_${k}_threshold_+%`] / 100 : 1; };
+  const awe = (d, k) => { const D = onS('Overwhelming Presence')?.dmg, st = D?.stats; return st && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + st[`skill_overwhelming_pressure_aura_enemy_${k}_threshold_+%`] * (1 + (D.sum['aura_effect_+%'] || 0) / 100) / 100 : 1; };   // its magnitude with the build's aura effect
   // Daze: for its time the enemy takes more stun buildup
   const daze = (d, s) => { if (!(s > 0)) return; if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
   function build(d, a, n, S, A) {
@@ -1200,7 +1204,7 @@ export function initScene(el, api) {
     const hs = st.poison > 0 && onS('Herald of Plague')?.dmg.stats;
     if (hs) for (const e of inside(p, hs.herald_of_agony_poison_spread_on_kill_radius_base_magnitude_to_grant / 10)) {
       e.st.poison = Math.max(e.st.poison || 0, st.poison); e.burn.poison = { ...d.burn.poison }; fx.bolt(V(p.x, 1, p.z), chest(e), 'poison', .2, .03, .4);
-      if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time, pct: -HINDER.slow });
+      if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time, pct: -HINDER.slow * slowK(onS('Herald of Plague')) });
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
@@ -2017,7 +2021,7 @@ export function initScene(el, api) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
-        if (cs) standSlow(hold, p, R, -HINDER.slow, .3);
+        if (cs) standSlow(hold, p, R, -HINDER.slow * slowK(S), .3);
         const d = !o.dir && !cs && near(p, o.seek || 9), v = o.speed || 1.3;
         if (o.dir) { const a = o.dir + Math.sin(e.s * 4.3) * .9; p.x += Math.sin(a) * v * dt; p.z += Math.cos(a) * v * dt; }   // erratically forward (its wander is not in the data)
         else if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
@@ -2978,7 +2982,7 @@ export function initScene(el, api) {
         R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
         tick(dt) {
           const R = e.R(); fx.emit(2, { p: { x: c.x + rnd(-R, R), y: rnd(1.5), z: c.z + rnd(-R, R) }, r: .3, v: 2, life: .5, size: .4, c: e.X.el === 'physical' ? 'dust' : e.X.el, smoke: true, a: .3 });
-          standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'], .1);
+          standSlow(slow, c, R, st['active_skill_base_slow_debuff_movement_speed_+%_final'] * slowK(S), .1);
           const A = absorb(e.X, c, R); if (A !== e.X) e.X = gainAs(e.X, A.got, WG);
           const there = dist(pp, c) <= R; if (!there) e.out = true;
           if (lance ? there && e.out : !there) { e.dead = true; boom(c, R, e.X, { mult: 1 + st['sandstorm_swipe_storm_damage_+%_final_per_stage'] * (e.stage - 1) / 100 }); }
@@ -3557,7 +3561,7 @@ export function initScene(el, api) {
       vines = vines.filter(v => v.until > time);
       if (vines.length >= xs.entangle_vines_maximum_number_of_vines_allowed + (e.overgrown ? xs.entangle_vines_additional_number_of_vines_allowed_when_wet : 0)) return;
       const d = dummies.filter(d => !d.dead && segDist(d.pos, a, b) <= X.A + SIM.body).sort((p, q) => p.slows.length - q.slows.length)[0]; if (!d) return;
-      const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] }; vines.push(v); d.slows.push(v);
+      const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] * slowK(S) }; vines.push(v); d.slows.push(v);
       fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
     } }));
   };
@@ -3566,7 +3570,7 @@ export function initScene(el, api) {
   K.tame = S => {
     const [d] = nearest(S.at, 1, e => e.mon.category === 'Beast' && e.stat.rarity === 'rare');
     if (!d) return;
-    d.slows.push({ until: time + durOf(S), pct: -S.dmg.stats['tame_beast_hinder_%'] }); fx.ring(d.pos, .2, 1, 'poison', .5, { a: .5 });
+    d.slows.push({ until: time + durOf(S), pct: -S.dmg.stats['tame_beast_hinder_%'] * slowK(S) }); fx.ring(d.pos, .2, 1, 'poison', .5, { a: .5 });
   };
   // Temporal Rift: an afterimage of you every its interval, up to its most (vitals); used, you go back to the oldest, with
   // the life, mana and energy shield you had then
@@ -3580,7 +3584,7 @@ export function initScene(el, api) {
     const st = S.dmg.stats, d = near(S.at, 2); if (!d) return;
     fx.streak(chest(d), V(pp.x, 1.2, pp.z), 'lightning', .4, .05, 1);
     const q = me.leech.mana; q.left += st.mana_drain_base_mana_leech_amount * (1 - (d.stat.leechRes || 0)); q.rate = q.left * (1 + st['base_mana_leech_rate_+%'] / 100);
-    d.slows.push({ until: time + HINDER.time, pct: -HINDER.slow });
+    d.slows.push({ until: time + HINDER.time, pct: -HINDER.slow * slowK(S) });
   };
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
   // each second in it (up to 10, its description), each its more spell damage and its Life lost per minute; its cast speed
@@ -4624,7 +4628,7 @@ export function initScene(el, api) {
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
   const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => me.st.chill > 0 ? 1 - me.mag.chill / 100 : 1,
-    maimed = () => me.st.maim > 0 ? 1 - MAIM.move / 100 : 1;   // maim slows only your movement
+    maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);

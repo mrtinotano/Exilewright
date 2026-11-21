@@ -49,7 +49,8 @@ the passive points quests give, so type its level (a build imported from Path of
 Elemental resistances carry the game's penalty for the level of the area (`ResistancePenaltyPerAreaLevel`: none at
 first, -60% from level 65), taken to be the character's level. **Campaign rewards** lists what quests leave on a
 character for good (+100 Spirit, resistances, the choices at each shrine...): counted from the level of each one's
-area, a choice only once made; an imported build brings its own.
+area, a choice only once made; an imported build brings its own. The build's Aura skills (the Purities, Discipline) grant their
+resistances and energy shield at their gem's level, times the tree's and gear's increased Aura magnitudes.
 
 **Optimizer** (its own tab) works for the build on screen and one objective: damage per second or uses per second
 of a skill, toughness, life, energy shield, armour, evasion, resistances…
@@ -126,7 +127,8 @@ movement and lowers their evasion. The tree's and gear's increased damage agains
 heavy stunned, on full life, rare or unique...) counts on the hits that find it so. Each skill keeps its own rules: what it
 never or always inflicts, the more damage it deals when it consumes a state or hits one (frozen, shocked, immobilised...),
 against unique enemies or per charge spent. Curses apply their gem's resistances, armour, damage and speed (less on rarer
-monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, a hit's penetration (supports, tree; lightning on low mana) lowers a positive resistance, never below 0, and marks add their
+monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, a hit's penetration (supports, tree; lightning on low mana) lowers a positive resistance, never below 0, Hinder,
+Maim and slowing zones slow by the skill's increased Slow Magnitude (Maim on you by your Slow Potency), and marks add their
 critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
 speed the planner calculates for a totem, up to the build's totem limit, with their life (enemies nearer to one than to you attack it). Minions are the game's monster their gem raises,

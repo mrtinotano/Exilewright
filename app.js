@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
+import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet } from './items.js';
 import { initSkills } from './skills.js';
@@ -120,6 +120,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
       if (k && !x.ascendancy && Math.hypot(x.x - J.x, x.y - J.y) <= R.r) n[k]++; }
     for (const k of ['small', 'notable']) for (const [s, v] of Object.entries(R[k])) sum[s] = (sum[s] || 0) + v * n[k];
   }
+  for (const [k, v] of Object.entries(auraStats(b, sum))) sum[k] = (sum[k] || 0) + v;   // after the rest: their level and magnitude come from it
   return sum;
 }
 const treeSum = () => sumOf(B());

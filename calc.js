@@ -97,6 +97,17 @@ export function skillStats(b) {
       if (GRANTS[k]) out[GRANTS[k]] = (out[GRANTS[k]] || 0) + x;
   return out;
 }
+// what the build's Aura skills grant you (their gem's level), times "Aura Skills have increased Magnitudes" of the tree and
+// gear: resistances, and Discipline's energy shield added to the total. note: the gem's supports and a skill an item
+// grants are not counted
+const AURA_GRANTS = { ...Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [`base_skill_buff_${e}_damage_resistance_%_to_apply`, `base_${e}_damage_resistance_%`])),
+  'base_skill_buff_total_maximum_energy_shield_+_to_apply': 'total_maximum_energy_shield_+' };
+export function auraStats(b, sum) {
+  const out = {}, k = 1 + v(sum, 'aura_effect_+%') / 100;
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Aura') && GEM[g.name].types.includes('Persistent'))
+    for (const [id, x] of Object.entries(gemStats(g, sum))) if (AURA_GRANTS[id]) out[AURA_GRANTS[id]] = (out[AURA_GRANTS[id]] || 0) + x * k;
+  return out;
+}
 function motes(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};
@@ -260,7 +271,7 @@ export function character(b, sum) {
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
-    es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%')),
+    es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%') + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc),
@@ -372,7 +383,7 @@ export function ailmentDefence(c, sum) {
   }
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
-  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self') };
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: pct('base_slow_potency_+%') };
   return { stun, ail, freeze, electrocute, avoid, dur, eff };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
@@ -1208,6 +1219,8 @@ function curseOf(st, sum, finals = {}) {
     speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
     effect: (1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100) * (1 + (finals['support_atziri_curse_effect_+%_final'] || 0) / 100) };   // Atziri's Allure: less
 }
+// self-check: Purity of Fire at level 10 grants +31% fire resistance, 50% more with 50% increased aura magnitudes
+{ const a = auraStats({ gems: [{ name: 'Purity of Fire', level: 10 }] }, { 'aura_effect_+%': 50 }); console.assert(a['base_fire_damage_resistance_%'] === 46.5, 'aura grants', a); }
 // self-check: a support's "more" chance multiplies the gem's own, "increased" ones add up
 { const a = ailments({ 'active_skill_ignite_chance_+%_final': 50 }, { 'ignite_chance_+%': 20 }, { 'support_ignition_chance_to_ignite_+%_final': 100 }, []);
   console.assert(Math.abs(a.igniteChance - 1.2 * 1.5 * 2) < 1e-9 && a.bleed === 0 && a.stun === 1, 'ailment modifiers', a); }
