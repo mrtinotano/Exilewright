@@ -3899,11 +3899,11 @@ export function initScene(el, api) {
         S.costX = 1 + (F['support_discount_skill_cost_+%_final_if_empowered'] || 0) / 100; S.accX = 1 + (F['support_discount_accuracy_rating_+%_final_if_empowered'] || 0) / 100; }
       // Escape Shot: its arrow makes its Ice Fragments where it hits (its fragment part, iceFrags)
       const ES = !S.icetip && partOf(S, 'EscapeShotIceFragmentPlayer'); if (ES) S.icetip = fragsOf(S, ES);
-      // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time, up to its most; casting it breaks them,
+      // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time (sooner with increased Seal gain frequency), up to its most; casting it breaks them,
       // each repeating it its times with its less damage
       const SU = S.dmg?.sum, SL = !auto && P.spell && SU?.base_maximum_seals_for_skill;
       if (SL) {
-        const every = SU['support_%_of_total_cast_time_as_base_skill_seal_gain_interval'] / 100 / (S.dmg.speed || 1 / SIM.castTime), n = Math.min(SL, Math.floor((time - (me.sealAt[S.name] ?? -Infinity)) / every));
+        const every = SU['support_%_of_total_cast_time_as_base_skill_seal_gain_interval'] / 100 / (S.dmg.speed || 1 / SIM.castTime) / (1 + (SU['seal_gain_frequency_+%'] || 0) / 100), n = Math.min(SL, Math.floor((time - (me.sealAt[S.name] ?? -Infinity)) / every));
         me.sealAt[S.name] = time;
         if (n > 0) { S.rep = (S.rep || 0) + n * SU.skill_rapid_fire_repeats_per_broken_seal; S.repBy = t('Seal') + ` ×${n}`; S.repX = 1 + SU['support_spell_rapid_fire_repeat_use_damage_+%_final'] / 100; }
       }
