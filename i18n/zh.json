@@ -910,5 +910,6 @@
  "Your stack of {0}: about {1}": "你的 {0} 個堆疊：約 {1}",
  "{0} offers on the Currency Exchange in {1}": "{1} 的通貨交換中有 {0} 筆報價",
  "Level {0} or more, {1}% quality or more": "等級 {0} 以上，品質 {1}% 以上",
- "Level {0} or more": "等級 {0} 以上"
+ "Level {0} or more": "等級 {0} 以上",
+ "See every change ({0})": "查看所有變化 ({0})"
 }

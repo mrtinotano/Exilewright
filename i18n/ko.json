@@ -910,5 +910,6 @@
  "Your stack of {0}: about {1}": "보유 중인 {0}개 묶음: 약 {1}",
  "{0} offers on the Currency Exchange in {1}": "{1} 화폐 교환의 제안 {0}건",
  "Level {0} or more, {1}% quality or more": "레벨 {0} 이상, 퀄리티 {1}% 이상",
- "Level {0} or more": "레벨 {0} 이상"
+ "Level {0} or more": "레벨 {0} 이상",
+ "See every change ({0})": "모든 변화 보기 ({0})"
 }

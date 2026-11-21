@@ -910,5 +910,6 @@
  "Your stack of {0}: about {1}": "Dein Stapel von {0}: etwa {1}",
  "{0} offers on the Currency Exchange in {1}": "{0} Angebote auf dem Währungsmarkt in {1}",
  "Level {0} or more, {1}% quality or more": "Stufe {0} oder höher, Qualität {1} % oder mehr",
- "Level {0} or more": "Stufe {0} oder höher"
+ "Level {0} or more": "Stufe {0} oder höher",
+ "See every change ({0})": "Alle Änderungen anzeigen ({0})"
 }
