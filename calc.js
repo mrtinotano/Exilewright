@@ -391,6 +391,7 @@ export function recovery(c, sum) {
     unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100 : 0,
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final') },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
+    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volImmune: !!sum.immune_to_volatility_damage,   // Acolyte of Chayula
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),

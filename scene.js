@@ -43,6 +43,7 @@ const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill 
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
+const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 };   // note: keywords.json Volatility
 const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
@@ -287,7 +288,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -451,6 +452,7 @@ export function initScene(el, api) {
       if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
       // Lich: Unholy Might while not on Low Mana, its share of all damage as extra chaos (keywords.json UnholyMight) by
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
+      if (!S.src && time < me.volPower?.until) { const n = Object.values(raw).reduce((t, x) => t + x, 0); raw.chaos = (raw.chaos || 0) + n * me.volPower.n * VOLATILITY.power / 100; }   // Volatile Power
       const UM = !S.src && sheet().unholy; if (UM && !meIs.LowMana()) { const n = Object.values(raw).reduce((t, x) => t + x, 0); raw.chaos = (raw.chaos || 0) + n * UNHOLY / 100 * UM; }
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
@@ -789,6 +791,9 @@ export function initScene(el, api) {
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
     if (!fresh) return;
     if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const i = byName('Unbound Avatar'), UA = i >= 0 && base(i)?.dmg?.stats; if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
+    // Acolyte of Chayula's Inner Turmoil: Volatility on inflicting an elemental ailment (once every its interval, up to its most)
+    const VG = !S.src && EL_AIL.includes(a) && sheet().volatility;
+    if (VG && time - (me.volAt ?? -99) >= VOLATILITY.every) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + VG); me.volAt = time; }
     siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
     // Combat Frenzy: a frenzy charge on freezing, electrocuting or pinning an enemy, once every its cooldown
     // Martial Artist's Mountain's Teachings: its Surpassing chance per enemy Power on Immobilising (freeze, heavy stun,
@@ -5036,6 +5041,8 @@ export function initScene(el, api) {
     const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
+    // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
+    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = 0; }
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
     for (let i = me.flam.length - 1; i >= 0; i--) if ((me.flam[i].s -= dt) <= 0) me.flam.splice(i, 1);
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
