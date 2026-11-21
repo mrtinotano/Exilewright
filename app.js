@@ -133,6 +133,8 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   if (b.items?.body) for (const [k, to] of BODY_GRANTS) if (sum[k]) sum[to] = (sum[to] || 0) + sum[k];
   sum.base_physical_damage_reduction_rating = (sum.base_physical_damage_reduction_rating || 0) + (sum.base_physical_damage_reduction_rating_no_display || 0)
     + pieceDef(b.items, 'body', 'armour') * (sum['ascendancy_titan_damage_reduction_rating_from_body_armour_+%_final'] || 0) / 100;   // Titan's Stone Skin: more armour from the body armour
+  // Greatest Defence / Spiked Shield: increased attack damage per 75 armour and evasion on the shield
+  if (sum['attack_damage_+%_per_75_armour_or_evasion_on_shield']) sum['attack_damage_+%'] = (sum['attack_damage_+%'] || 0) + sum['attack_damage_+%_per_75_armour_or_evasion_on_shield'] * Math.floor((pieceDef(b.items, 'offhand', 'armour') + pieceDef(b.items, 'offhand', 'evasion')) / 75);
   // Amazon's Stalking Panther: evasion of the helmet, gloves and boots doubled, the body armour's halved
   if (sum.double_evasion_rating_from_gloves_helmets_boots) sum.base_evasion_rating = (sum.base_evasion_rating || 0) + ['helmet', 'gloves', 'boots'].reduce((t, s) => t + pieceDef(b.items, s, 'evasion'), 0);
   if (sum.halve_evasion_rating_from_body) sum.base_evasion_rating = (sum.base_evasion_rating || 0) - pieceDef(b.items, 'body', 'evasion') / 2;

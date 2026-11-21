@@ -316,7 +316,7 @@ export function character(b, sum) {
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (weaponStats(b.items)?.accuracy || 0) + fromAttr('accuracy')) * pct('accuracy_rating_+%')), accuracyInc: pct('accuracy_rating_+%'), lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (weaponStats(b.items)?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * pct('accuracy_rating_+%')), accuracyInc: pct('accuracy_rating_+%'), lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%'),
@@ -374,6 +374,11 @@ export function character(b, sum) {
     // the Amazon's Predatory Instinct: Revealed Weaknesses, its more damage against an enemy with an Open Weakness; In for the Kill: movement and skill speed against them
     weakness: sum.bloodlust_reveal_weakness ? { more: v(sum, 'damage_+%_final_against_bloodlusting_enemies'), move: v(sum, 'movement_speed_+%_against_bloodlusting_enemies'), speed: v(sum, 'skill_speed_+%_against_bloodlusting_enemies') } : null,
     charmMana: v(sum, 'drain_%_max_mana_to_activate_expended_charms'),   // Ritualist's Mind Phylacteries: that share of maximum mana for a charm without the charges
+    // the tree: Thirst for Power / Endurance's chance of one more charge; Harness the Elements' increased damage per elemental ailment
+    // on the enemy; Deep Freeze's cold resistance of the Frozen; Urgent Call's life and mana on a warcry; Ancestral Alacrity's attack
+    // and cast speed after summoning a totem; First Sting's poison magnitude on the not yet Poisoned
+    more1: { power: v(sum, 'chance_to_gain_1_more_power_charge_%'), endurance: v(sum, 'chance_to_gain_1_more_endurance_charge_%') }, perAil: v(sum, 'damage_+%_per_enemy_elemental_ailment'),
+    frozenRes: v(sum, 'freeze_applies_cold_resistance_+'), cryHeal: v(sum, 'restore_life_and_mana_on_warcry_%'), totemSpeed: v(sum, 'attack_and_cast_speed_+%_on_placing_totem'), firstPoison: v(sum, 'poison_effect_+%_vs_non_poisoned_enemies'),
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },

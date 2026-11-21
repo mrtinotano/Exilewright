@@ -335,6 +335,7 @@ export function initScene(el, api) {
   // a charge a skill grants, with its supports' chance of one more (Charge Profusion: "when you gain a Charge")
   function chargeBy(type, S) {
     gainCharge(type, S.label); const M = S.dmg?.more || {};
+    if (Math.random() * 100 < (sheet().more1?.[type] || 0)) gainCharge(type, S.label);   // Thirst for Power / Endurance
     if (Math.random() * 100 < M.one) gainCharge(type, S.label);
     if (Math.random() * 100 < M.random) gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], S.label);
     // Empowered Sparks: a power charge generated empowers your next attacks to trigger its Sparks (no expiry in the data)
@@ -471,6 +472,8 @@ export function initScene(el, api) {
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (!S.src && openWeak(d)) for (const e in raw) raw[e] *= 1 + sheet().weakness.more / 100;   // Predatory Instinct
+      const PA = sheet().perAil, na = PA && ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(a => d.st[a] > 0).length;   // Harness the Elements: per elemental ailment on it (KeywordPopups ElementalAilments)
+      if (na) for (const e in raw) raw[e] *= 1 + PA * na / 100 * (D?.incW?.[e] ?? 1);
       if (S.P.spell && !S.src && time < me.earch) { for (const e of ELEM) if (raw[e]) raw[e] *= 1 + EARCHON.more / 100; delete raw.physical; delete raw.chaos; }   // Elemental Archon: no non-elemental spell damage
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
       // Elemental Conflux: while on, its more damage of one element, a random one again every its duration
@@ -876,7 +879,7 @@ export function initScene(el, api) {
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
-    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]);
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0);   // Deep Freeze: the Frozen's cold resistance
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
@@ -968,7 +971,7 @@ export function initScene(el, api) {
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
-    if (xa('poison', 'physical') + x('chaos') && roll(A.poison)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: A.poisonEffect * PF });
+    if (xa('poison', 'physical') + x('chaos') && roll(A.poison)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -2354,6 +2357,7 @@ export function initScene(el, api) {
       markOn(d, S); say(t('{0} marks the target', S.label), 'mark');
     },
     warcry(S) {
+      const CH = !S.echoK && sheet().cryHeal; if (CH) { me.life = Math.min(me.maxL, me.life + me.maxL * CH / 100); me.mana = Math.min(me.maxM, me.mana + me.maxM * CH / 100); }   // Urgent Call
       if (S.name === 'Lunar Blessing') return lunar(S);
       // Echoing Cry: it Echoes its times after its delay, its area larger each time (its description: "grows larger")
       const ES = !S.echoK && S.dmg?.sum || {}, EN = ES.base_warcry_echo_X_times;
@@ -2452,6 +2456,7 @@ export function initScene(el, api) {
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
+      me.totemAt = time;
       const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
@@ -4125,7 +4130,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
+      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
