@@ -1228,6 +1228,9 @@ export function initScene(el, api) {
   }
   // S with element e added, as the one it now deals most (got: the one it picked up)
   const withEl = (S, e) => ({ ...S, els: [...new Set([...S.els, e])], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])], got: e });
+  // its pct % of all its hit damage gained as element e (a Whirlwind's, a twister's from the ground or Whirlwind it took)
+  const gainAs = (A, e, pct) => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), h = H[e] || [0, 0];
+    return { ...withEl(A, e), dmg: { ...A.dmg, hits: { ...H, [e]: [h[0] + all[0] * pct / 100, h[1] + all[1] * pct / 100] } } }; };
   // A wind skill picks up the elemental ground it passes over.
   function absorb(S, at, r) {
     const g = grounds.find(g => !g.dead && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
@@ -1897,7 +1900,7 @@ export function initScene(el, api) {
         const d = !o.dir && !cs && near(p, o.seek || 9), v = o.speed || 1.3;
         if (o.dir) { const a = o.dir + Math.sin(e.s * 4.3) * .9; p.x += Math.sin(a) * v * dt; p.z += Math.cos(a) * v * dt; }   // erratically forward (its wander is not in the data)
         else if (d) { const k = dist(d.pos, p); if (k > .3) { p.x += (d.pos.x - p.x) / k * v * dt; p.z += (d.pos.z - p.z) / k * v * dt; } }
-        if (S.P.absorbs) cur = absorb(cur, p, R);
+        if (S.P.absorbs) { const A = absorb(cur, p, R), TG = ts['twister_gain_%_elemental_damage_of_corresponding_type']; if (A !== cur) cur = TG ? gainAs(cur, A.got, TG) : A; }
         if (pull && (pt -= dt) <= 0) { pt = ts.tornado_pull_interval_ms / 1000; for (const d of inside(p, R)) { d.pos.x += (p.x - d.pos.x) * pull / 100; d.pos.z += (p.z - d.pos.z) * pull / 100; } }
         if (DOT) {
           const ph = ts.base_physical_damage_to_deal_per_minute, scale = ph ? (S.dmg.dot.physical || 0) / (ph / 60) : 1, P = { ...cur.P, dur: .25 };
@@ -2795,8 +2798,8 @@ export function initScene(el, api) {
     bounce({ x: pp.x, z: pp.z }, { x: pp.x + S.dx * k, z: pp.z + S.dz * k }, sh(S).chains ?? st.number_of_chains ?? 0);
   };
   // Twister: twisters (its projectiles, spread) moving forward erratically at its speed for its duration, hitting
-  // those within every its re-hit interval; one passing over elemental ground gains that element's damage
-  // note: Blind and elemental Whirlwinds are not simulated
+  // those within every its re-hit interval, Blinding them; one passing over elemental ground, or made from an elemental
+  // Whirlwind it consumed, gains its share of its damage as that element
   // Whirling Slash: its slash kicks up a Whirlwind around you (its storm part), one more stage for each use while it is up,
   // up to its most, its area growing per stage; enemies in it are Slowed. Leaving it collapses it: its hit there, more
   // damage per stage. Whirlwind Lance: one where its spear lands, at its most stages (one more with a Frenzy Charge
@@ -2811,8 +2814,7 @@ export function initScene(el, api) {
     if (!lance) { const o = objs.find(o => o.whirl && !o.lance && !o.dead); if (o) { o.stage = Math.min(top, o.stage + 1); return; } }
     const c = lance ? { ...S.at } : { x: pp.x, z: pp.z }, slow = new Map();
     // its share of all its damage as the element it picked up (the slash's own, from the ground under you)
-    const gain = A => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), k = st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered'] / 100, h = H[A.got] || [0, 0];
-      return { ...A, dmg: { ...A.dmg, hits: { ...H, [A.got]: [h[0] + all[0] * k, h[1] + all[1] * k] } } }; };
+    const gain = A => gainAs(A, A.got, st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered']);
     const X0 = S.got ? gain(withEl(W, S.got)) : W;
     const make = () => {
       if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms);
@@ -2883,7 +2885,8 @@ export function initScene(el, api) {
     const st = S.dmg?.stats || {}, W = objs.find(o => o.whirl && !o.dead && dist(o.c, pp) <= o.R()), n = (sh(S).projectiles || 1) + (W ? W.stage : 0);
     if (W) W.dead = true;   // it consumes the Whirlwind: one more twister per stage, more damage per stage
     const mult = W ? 1 + st['twister_damage_+%_final_per_whirling_slash_stage'] * W.stage / 100 : 1, a0 = Math.atan2(S.dx, S.dz), spread = (st.minimum_per_projectile_spread_angle_degrees || 15) * Math.PI / 180;
-    for (let k = 0; k < n; k++) vortex(S, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult });
+    const T = W?.X.got ? gainAs(S, W.X.got, st['twister_gain_%_elemental_damage_of_corresponding_type']) : S;
+    for (let k = 0; k < n; k++) vortex(T, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult });
   };
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply), one of each Banner at a time
