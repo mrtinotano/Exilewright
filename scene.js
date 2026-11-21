@@ -849,7 +849,9 @@ export function initScene(el, api) {
   // the curses on an enemy: the latest (d.curse) and those still on from before (d.hexes), up to your curse limit;
   // their effects add up
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) : 0), 0);
-  function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1); }
+  // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
+  const watched = d => { const k = sheet().watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= sheet().overgrow.r).length / 100 : 1; };
+  function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
@@ -2443,7 +2445,7 @@ export function initScene(el, api) {
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
       const TL = S.dmg?.totemLife;
-      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, hurt(n) { if (!e.dead && this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });
+      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, hurt(n) { const RC = sheet().recoup; if (RC?.totem && !e.dead) me.recoup.push({ k: 'life', left: n * RC.totem / 100, rate: n * RC.totem / 100 / RC.time }); if (!e.dead && this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
     },
     travel(S) {

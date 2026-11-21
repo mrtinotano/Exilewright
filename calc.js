@@ -351,6 +351,7 @@ export function character(b, sum) {
     implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage,   // Warbringer's Imploding Impacts: Fully Broken Armour increases all hit damage taken
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     chargeGen: [v(sum, 'generate_x_charges_for_life_flasks_per_minute'), v(sum, 'generate_x_charges_for_mana_flasks_per_minute'), v(sum, 'generate_x_charges_for_charms_per_minute')],   // life / mana flask and charm charges a minute
+    watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
@@ -423,7 +424,7 @@ export function recovery(c, sum) {
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
     recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
       all: v(sum, 'damage_taken_goes_to_life_over_4_seconds_%'), prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
-      es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), mana: v(sum, 'damage_taken_goes_to_mana_%'), time: 8 / pct('recoup_speed_+%') },
+      es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), mana: v(sum, 'damage_taken_goes_to_mana_%'), totem: v(sum, 'recoup_%_of_damage_taken_by_your_totems_as_life'), time: 8 / pct('recoup_speed_+%') },
   };
 }
 // What ailments do to you: your ailment threshold (half your life, PlayerAilmentThresholdLifeFactor, plus what adds to it)
