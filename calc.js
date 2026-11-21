@@ -899,8 +899,9 @@ export function skill(g, b, treeGear) {
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : 1 / (1 + incOf(t) / 100)])) : kind === 'MORE' ? 1 : name === 'CritChance' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) };
     });
   out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
+  const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
-  if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: 1 / (1 + critInc / 100) });
+  if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
   // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
   for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
@@ -908,8 +909,8 @@ export function skill(g, b, treeGear) {
     if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
     // and its critical hit chance / damage bonus ("critical_strike_chance_+%_vs_shocked_enemies")
     const cc = inc(sum, `critical_strike_chance_+%_${sep}_${s}`, tags), cb = inc(sum, `critical_strike_multiplier_+_${sep}_${s}`, tags);
-    if (cc) out.when.push({ cond, val: cc, what: 'crit', w: 1 / (1 + critInc / 100) });
-    if (cb) out.when.push({ cond, val: cb, what: 'critBonus', w: 100 / (out.critBonus || 100) });
+    if (cc) out.when.push({ cond, val: cc, what: 'crit', w: critW });
+    if (cb) out.when.push({ cond, val: cb, what: 'critBonus', w: cbW });
   }
   // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
   for (const [s, cv] of Object.entries(WHILE)) {
@@ -917,7 +918,7 @@ export function skill(g, b, treeGear) {
     if (val) out.when.push({ cond: [{ type: 'Condition', var: cv }], val, what: 'damage', w: out.incW });
   }
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
-    w: what === 'crit' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) });
+    w: what === 'crit' ? critW : cbW });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
   if (infSpell) out.when.push({ cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });
