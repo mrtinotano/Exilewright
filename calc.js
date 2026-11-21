@@ -366,6 +366,9 @@ export function character(b, sum) {
     frenzyX: v(sum, 'chance_%_to_double_effect_of_removing_frenzy_charges'),   // Deadeye's Thrilling Chase: chance to double what consuming a frenzy charge gives
     cover: !!sum.enemy_hits_against_you_have_distance_based_accuracy_falloff,   // Tactician's Stay Light, Use Cover: enemies' accuracy falls off with distance, as yours
     whisper: v(sum, 'ascendancy_whispers_of_the_flesh_cursed_enemies_have_at_least_life_reserved_%'),   // Blood Mage's Whispers of the Flesh: that share of a Cursed enemy's life reserved
+    // Infernalist's Seething Body: Elemental Archon on casting a spell on High Infernal Flame, kept while on it, lost on reaching the most (SK.archon_time: the Archon keyword's time and recovery)
+    earch: sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame ? { time: SK.archon_time[0] * pct('archon_duration_+%'), delay: sum.archon_no_recovery_period ? 0 : SK.archon_time[1] / pct('archon_delay_expires_x%_faster'),
+      keep: !!sum.elemental_archon_does_not_expire_while_on_high_infernal_flame, full: !!sum.lose_elemental_archone_on_reaching_full_infernal_flame } : null,
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },

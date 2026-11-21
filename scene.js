@@ -48,6 +48,7 @@ const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as e
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
+const EARCHON = { more: 25, ail: 100 }, HIGH_FLAME = .65;   // KeywordPopups ElementalArchon: 25% more elemental spell damage, 100% more freeze buildup, flammability and shock chance; HighInfernalFlame: 65% or more
 const ONSLAUGHT = { speed: 20, move: 10 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
@@ -468,6 +469,7 @@ export function initScene(el, api) {
       const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
+      if (S.P.spell && !S.src && time < me.earch) { for (const e of ELEM) if (raw[e]) raw[e] *= 1 + EARCHON.more / 100; delete raw.physical; delete raw.chaos; }   // Elemental Archon: no non-elemental spell damage
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
       // Elemental Conflux: while on, its more damage of one element, a random one again every its duration
       const EC = S.src !== 'minionHit' && onS('Elemental Conflux');
@@ -910,14 +912,15 @@ export function initScene(el, api) {
     // enemy's ailment threshold the Ignite deals a second, and no other Ignite takes until that one ends
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
     if (FF != null) { d.st.ignite = Math.max(d.st.ignite, d.full?.ignite || DUR.ignite); d.noIgn = time + d.st.ignite; }
+    const EAx = S.P.spell && !S.src && time < me.earch ? 1 + EARCHON.ail / 100 : 1;   // Elemental Archon: more Flammability, Shock chance and Freeze buildup
     if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite && !(d.noIgn > time)) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
-      d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
+      d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance * EAx, s: GC.BaseFlammabilityDuration });
       if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
+    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
       const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
@@ -927,7 +930,7 @@ export function initScene(el, api) {
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
       const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });   // the most: Heavy Snows' override, else the game's
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
@@ -3873,6 +3876,8 @@ export function initScene(el, api) {
       // Lich: a spell Sacrifices its share of your maximum energy shield (if you have it all) for its more damage, and
       // consumes a Power Charge if it can for its more damage
       const LI = P.spell && !S.src && !auto && sheet().lich;
+      const EA = !S.src && sheet().earch; if (EA && P.attack && !api.info(S.g)?.gem?.types?.includes('Instant')) me.earch = Math.min(me.earch || 0, time);   // a non-instant attack removes Elemental Archon
+      if (EA && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
@@ -4502,7 +4507,7 @@ export function initScene(el, api) {
   function payMana(n) {
     const F = sheet().flame; if (!F) { me.mana -= n; return; }
     me.flame = (me.flame || 0) + n * F.ratio / 100;
-    if (me.maxM > 0 && me.flame >= me.maxM) { me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
+    if (me.maxM > 0 && me.flame >= me.maxM) { if (sheet().earch?.full) me.earch = Math.min(me.earch || 0, time); me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
   }
   function hurt(n, chaos, el, crit, d, hit = false) {
     if (!(n > 0)) return;
@@ -5136,6 +5141,9 @@ export function initScene(el, api) {
     // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
     if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = 0; }
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
+    // Seething Body: Elemental Archon does not expire on High Infernal Flame
+    if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }
+    if (!(time < me.earch) && buffs.some(b => b.earch)) buffs = buffs.filter(b => !b.earch);   // Elemental Archon lost early (an attack, the most Flame)
     for (let i = me.flam.length - 1; i >= 0; i--) if ((me.flam[i].s -= dt) <= 0) me.flam.splice(i, 1);
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
     if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt);
