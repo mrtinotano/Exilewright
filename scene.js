@@ -2666,9 +2666,9 @@ export function initScene(el, api) {
       if (HS) { const w = (S.wardPaid || 0) + me.ward; spendWard(me.ward);
         if (time < me.hollowAt) return; me.hollowAt = time + st.hollow_shell_per_target_cooldown_ms / 1000;
         const g = Math.min(w * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
-      // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
       // Rain of Blades: for its duration its blades fall on the enemies your projectile attacks hit (hit)
       if (st['triggered_rain_of_blades_%'] != null) { me.blades = { until: time + durOf(S), S }; return say(t('{0} active', S.label), 'gold'); }
+      // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
       const ER = st['emergency_reload_damage_+%_final'];
       if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
