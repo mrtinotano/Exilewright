@@ -829,8 +829,8 @@ export function initScene(el, api) {
       if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
-    if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };
-    if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit   // the skill's increased Slow Magnitude of the debuffs it inflicts
+    if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
+    if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     const fresh = !(d.st[a] > 0), left = d.st[a] || 0; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
     // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
