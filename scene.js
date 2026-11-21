@@ -452,8 +452,9 @@ export function initScene(el, api) {
       if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
       // Lich: Unholy Might while not on Low Mana, its share of all damage as extra chaos (keywords.json UnholyMight) by
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
-      if (!S.src && time < me.volPower?.until) { const n = Object.values(raw).reduce((t, x) => t + x, 0); raw.chaos = (raw.chaos || 0) + n * me.volPower.n * VOLATILITY.power / 100; }   // Volatile Power
-      const UM = !S.src && sheet().unholy; if (UM && !meIs.LowMana()) { const n = Object.values(raw).reduce((t, x) => t + x, 0); raw.chaos = (raw.chaos || 0) + n * UNHOLY / 100 * UM; }
+      const tot = Object.values(raw).reduce((t, x) => t + x, 0);   // both gain from the hit before either
+      if (!S.src && time < me.volPower?.until) raw.chaos = (raw.chaos || 0) + tot * me.volPower.n * VOLATILITY.power / 100;   // Volatile Power
+      const UM = !S.src && sheet().unholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
