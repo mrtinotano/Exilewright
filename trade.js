@@ -89,6 +89,7 @@ const shape = (s, loose) => { s = s.replace(/[+-]?\d+(\.\d+)?/g, '#').replace(/\
 // -> { known: the site's stat ids (null when it cannot be asked), desecrated(en): the id of that desecrated line,
 //      total(hash): the site's total of that stat over every line of an item ("+# total to Dexterity" for
 //      "+# to Dexterity": an attribute or a resistance), when it has one }
+const MOD_KINDS = ['explicit', 'crafted', 'fractured', 'desecrated'];   // the site's groups of a rolled modifier
 async function statIndex() {
   let known = null;
   const des = [new Map(), new Map()], text = new Map(), totals = new Map(), worded = new Map();
@@ -97,14 +98,14 @@ async function statIndex() {
     known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
     for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.forEach((m, loose) => m.has(shape(e.text, loose)) || m.set(shape(e.text, loose), e.id));
     for (const e of groups.find(g => g.id === 'explicit')?.entries || []) text.set(e.id, shape(e.text));
-    for (const g of groups.filter(g => ['explicit', 'crafted', 'fractured', 'desecrated'].includes(g.id))) for (const e of g.entries) worded.has(shape(e.text)) ? worded.get(shape(e.text)).push(e.id) : worded.set(shape(e.text), [e.id]);
+    for (const g of groups.filter(g => MOD_KINDS.includes(g.id))) for (const e of g.entries) { const k = shape(e.text); (worded.get(k) ?? worded.set(k, []).get(k)).push(e.id); }
     for (const e of groups.find(g => g.id === 'pseudo')?.entries || []) if (/ total to /.test(e.text)) totals.set(shape(e.text.replace(' total to ', ' to ')), e.id);
   } catch (e) { if (!(e instanceof TradeError)) throw e; }
   const desecrated = en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null, total = hash => totals.get(text.get('explicit.stat_' + hash)) || null;
   // the site's stats for one of priceLines' lines: a desecrated one by its wording, an attribute or a resistance as the
   // item's total of it, any other as a normal, crafted, fractured or desecrated modifier alike
   const idsOf = l => l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
-    : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
+    : MOD_KINDS.map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
   // a line the app does not know (no modifier of its data words it so: "+3 to Level of all Attack Skills"), by the
   // site's own wording of it, as any kind of modifier (English text only)
   const byWords = line => worded.get(shape(line)) || [];

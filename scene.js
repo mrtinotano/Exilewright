@@ -703,7 +703,7 @@ export function initScene(el, api) {
       }
     }
   }
-  const AGGRAVATED = 2, OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty (above)   // "100% extra damage" (keywords.json Aggravate)
+  const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -3785,6 +3785,7 @@ export function initScene(el, api) {
   });
   const rollHeld = () => keys[settings().keys.roll] || padWas[1];
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
+  const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
   function roll() {
     if (move || rollCd > 0 || stuck()) return;
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
@@ -3799,10 +3800,11 @@ export function initScene(el, api) {
     // the data either: 20
     const OW = sheet().owl, PB = OW && me.owls > 0 && granted('Primal Bounty', 20)?.stats;
     if (PB) {
+      const label = api.info({ name: 'Primal Bounty' }).label;
       const n = Math.min(me.owls, OW.stack >= 2 ? OW.stack + 1 : 1); me.owls -= n;
       empower = empower.filter(e => e.type !== 'bounty');
-      empower.push({ type: 'bounty', label: api.info({ name: 'Primal Bounty' }).label, name: 'Primal Bounty', el: 'gold', uses: 1, s: PB.owl_feather_buff_timer_ms / 1000, eff: n, add: OWL.proj * n, speed: PB['multishot_empowered_projectile_speed_+%'] * n });
-      say(t('{0} active', api.info({ name: 'Primal Bounty' }).label) + (n > 1 ? ` ×${n}` : ''), 'gold');
+      empower.push({ type: 'bounty', label, name: 'Primal Bounty', el: 'gold', s: PB.owl_feather_buff_timer_ms / 1000, add: OWL.proj * n, speed: PB['multishot_empowered_projectile_speed_+%'] * n });
+      say(t('{0} active', label) + (n > 1 ? ` ×${n}` : ''), 'gold');
     }
     // Trail of Caltrops: its number of drops, the first at its share of the dodge and the others at its interval after it
     const TC = onS('Trail of Caltrops'), st = TC?.dmg.stats;
@@ -4612,7 +4614,7 @@ export function initScene(el, api) {
       if (time - (me.ghostAt ?? -99) <= RECENT) me.es = Math.min(me.maxE, me.es + (c.evasion || 0) * GD['skill_base_ghost_dance_grants_%_evasion_as_es_regeneration_per_minute_if_have_lost_ghost_dance_shroud_recently'] / 100 / 60 * dt);
     }
     if (me.demon) { me.life -= demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60 * dt; if (me.life <= 1) { me.life = 1; demonOff(); } }
-    // Primal Bounty (Spirit Walker): an Owl Feather every 4 s (its % faster), up to 3 ("Gain a Primal Owl Feather every
+    // Primal Bounty (Spirit Walker, OWL): an Owl Feather every 4 s (its % faster), up to 3 ("Gain a Primal Owl Feather every
     // 4 seconds, up to a maximum of 3", stat_texts owl_feather_max_bonus_to_stack)
     const OW = sheet().owl; if (OW) { me.owlT = (me.owlT || 0) + dt * (1 + OW.faster / 100); if (me.owlT >= OWL.every) { me.owlT = 0; if ((me.owls || 0) < OWL.max) { me.owls = (me.owls || 0) + 1; hudT = 0; } } }
     const MB = magma()?.dmg.stats; me.lava = MB ? Math.min(1, (me.lava || 0) + dt * 1000 / (MB.igneous_shield_charge_up_time_ms * (1 + MB['igneous_shield_charge_up_time_+%'] / 100))) : 0;
