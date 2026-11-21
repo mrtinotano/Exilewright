@@ -3118,9 +3118,11 @@ export function initScene(el, api) {
   // Explosive Spear: its spear lodges where it lands (up to its most) and explodes in its part at the end of its
   // detonation time, or at once when Detonated; a Frenzy Charge consumed explodes it on landing in its infused part: a
   // cross of its arms (its radius long, its secondary width), with Ignited Ground (its tertiary radius, its duration).
-  // note: its piercing on the way is not simulated
+  // On the way it pierces the enemies it passes through, its hit on each (with the projectile's reach, as shoot's)
   K.espear = S => {
     const st = S.dmg.stats, c = { x: S.at.x, z: S.at.z }, X = partOf(S, 'ExplosiveSpearExplodePlayer') || S, I = S.spent && partOf(S, 'ExplosiveSpearInfusedExplodePlayer');
+    const a = { x: pp.x, z: pp.z }, len = dist(a, c) || 1, cr = Math.max(.15, S.G.collision || 0);
+    for (const d of dummies) if (!d.dead && segDist(d.pos, a, c) <= cr + SIM.body * d.sc) later(dist(d.pos, a) / len * .35, () => hit(d, S));
     lob(fx.arrow(S.el), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
       if (I) {
         const is = I.dmg.stats, L = I.A, w = is.active_skill_base_secondary_area_of_effect_radius / 10, a0 = Math.atan2(S.dx, S.dz);
