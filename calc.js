@@ -513,7 +513,7 @@ export function rageOf(b, sum) {
   const regenPct = v(sum, 'base_rage_regeneration_rate_per_minute_%') / 6000 * (sum.mana_regeneration_rate_modifiers_apply_to_rage_regeneration ? 1 + v(sum, 'mana_regeneration_rate_+%') / 100 : 1);
   const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage', 'natures_sustenance_additional_maximum_rage'), any = !!rg || !!sum.maximum_rage || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
   return {
-    base: any ? base : 0, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000, loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60,
+    base: any ? base : 0, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000 / (1 + v(sum, 'rage_loss_delay_recovery_rate_+%') / 100), loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60 * Math.max(0, 1 + v(sum, 'rage_decay_speed_+%') / 100),   // its loss faster or slower, and its start
     regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
     berserk: bz && { name: bz.name, effect: bs['skill_base_rage_effect_+%_to_apply'] || 0, max: bs['berserk_maximum_rage_granted_+'] || 0, lifePerRage: (bs['skill_base_life_loss_%_per_minute_per_rage_while_not_losing_rage_to_apply'] || 0) / 60 },
   };
