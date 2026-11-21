@@ -1877,7 +1877,10 @@ export function initScene(el, api) {
     const D = sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
     const pierceN = Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
     let pierced = o.pierced || 0;
-    const mult = () => (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
+    // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
+    // the second's none within 3.5 scaling up to all of it at 7
+    const left0 = left, went = () => (o.went || 0) + left0 - left, PB = sheet().shot, far = () => { const k = Math.min(1, Math.max(0, (went() - 3.5) / 3.5)); return PB ? 1 + (PB[0] * (1 - k) + PB[1] * k) / 100 : 1; };
+    const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if ((P.chains || S.addChains) && hitD) {
@@ -1927,7 +1930,7 @@ export function initScene(el, api) {
             else if (pierced < pierceN) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }
             else if (forked < (D.forks || 0)) {
               hit(d, cur, { mult: mult() }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
-              for (const s of [-1, 1]) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1 }); }
+              for (const s of [-1, 1]) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
               break;
             }
             else { end(d); break; }
