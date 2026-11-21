@@ -792,7 +792,7 @@ export function initScene(el, api) {
     if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
     // "all damage can <ailment>" (the build's, and Pinnacle of Power's buff: every Elemental Ailment, with other damage
     // types, BuffDefinitions elemental_power): every damage type of the hit counts for it
-    const PN = !S.src && time < me.pinn?.until, can = a => PN || S.dmg.sum?.[`all_damage_can_${a}`], allD = Object.values(raw).reduce((t, v) => t + (v || 0), 0), xa = (a, e) => can(a) ? allD : x(e);
+    const PN = !S.src && time < me.pinn?.until, can = a => PN || S.dmg.sum?.[`all_damage_can_${a}`], allD = Object.values(raw).reduce((t, v) => t + v, 0), xa = (a, e) => can(a) ? allD : x(e);
     if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite')) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
@@ -818,7 +818,7 @@ export function initScene(el, api) {
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
-    if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin * LK, S, A);
+    if (A.pin) build(d, 'pin', allD * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
     // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding
