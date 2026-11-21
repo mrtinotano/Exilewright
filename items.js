@@ -412,6 +412,8 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
+export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's property labels in each language, by the trade site's filter
+export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
 // the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
 export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
   [...BASE[it.base]?.grants || [], ...(it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));

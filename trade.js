@@ -6,7 +6,7 @@
 // the items with the most of each of the best modifiers (or the best damage / defence of the item) and reads those;
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
-import { affixLines, tradeItem, priceLines, classOf } from './items.js';
+import { affixLines, tradeItem, priceLines, classOf, TRADE_LABELS, isCorrupted } from './items.js';
 import { englishOf } from './stats.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
@@ -185,6 +185,9 @@ export function readListing(r) {
 // -> { total, near (the tolerance; null: only the name and base), within (how many of its `of` lines), raised (lines whose % went up to upTo),
 //      prices: [{ amount, currency }] (the cheapest alike ones, at most MANY), id (the search) }
 const MANY = 10, WIDE = 30;
+// one listing per seller (the site's "Collapse listings by account"), as Exiled Exchange 2 prices: one seller's ten copies
+// are one price, not ten
+const ONE = { trade_filters: { filters: { collapse: { option: 'true' } } } };
 const around = (v, near) => { if (!v) return null; const d = Math.abs(v) * near / 100, r = x => +x.toFixed(2);
   return v > 0 ? { min: r(Math.max(v - d, Math.min(v, 1))), max: r(v + d) } : { min: r(v - d), max: r(Math.min(v + d, Math.max(v, -1))) }; };
 // at least the % under it, with no top (more of it is no less like it, and can ask less), as Exiled Exchange 2
@@ -223,8 +226,7 @@ async function cheapest(s, skip = () => false) {
 export async function priceUnid({ league, item, rarity, ilvl, corrupted, state = 'available' }) {
   const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: item.base, filters: {
     type_filters: { filters: { rarity: { option: rarity === 'normal' || !rarity ? 'nonunique' : rarity }, ...ilvl && rarity !== 'unique' && { ilvl: { min: ilvl } } } },
-    misc_filters: { filters: { identified: { option: 'false' }, ...corrupted != null && { corrupted: { option: String(corrupted) } } } } } },
-    sort: { price: 'asc' } });
+    misc_filters: { filters: { identified: { option: 'false' }, ...corrupted != null && { corrupted: { option: String(corrupted) } } } }, ...ONE } }, sort: { price: 'asc' } });
   return { total: s.total, prices: await cheapest(s), id: s.id, ilvl: rarity !== 'unique' && ilvl };
 }
 // what else an item like it must be, as Exiled Exchange 2 asks: a non-unique one no unique (of its base); not
@@ -265,6 +267,45 @@ export async function priceBulk({ league, id, state = 'available' }) {
   return { total: s.total || 0, id: s.id, offers: offers.filter(o => o.exchange.currency === currency)
     .map(o => ({ pay: o.exchange.amount, get: o.item.amount, stock: o.item.stock, currency })).sort((a, b) => a.pay / a.get - b.pay / b.get).slice(0, MANY) };
 }
+// ---------- a skill gem and a waystone: the trade site's own filters of them (its level and quality; a waystone's tier
+// and what it gives: item rarity, pack size, waystone drop chance...), from the "label: number" lines of the copied
+// text, in the game's words of each language (TRADE_LABELS)
+const GEMS = await fetch('poe2_data/available/gems.json').then(r => r.ok ? r.json() : []).catch(() => []);
+const GEM_BY = new Map(GEMS.flatMap(g => Object.entries(g).filter(([k]) => k === 'name' || k.startsWith('name_')).map(([, n]) => [n.replace(/<[^>]*>\{?|\}$/g, '').toLowerCase(), g])));
+const LABEL = Object.values(TRADE_LABELS).flatMap(ls => Object.entries(ls).map(([f, l]) => [l.toLowerCase(), f]));
+// every "label: number" line the trade site has a filter for -> { filter: number } ("Item Rarity: +29% (augmented)" -> map_iir: 29)
+const propNums = lines => Object.fromEntries(lines.map(l => l.match(/^(.+?)\s*[:：]\s*\+?(-?\d+)/)).filter(Boolean)
+  .map(m => [LABEL.find(([l]) => l === m[1].toLowerCase())?.[1], +m[2]]).filter(([f]) => f));
+const quality = lines => +(lines.map(l => l.match(/^Quality: \+?(\d+)|^[^:：]+[:：]\s*\+(\d+)% \(augmented\)$/)?.slice(1).find(Boolean)).find(Boolean) || 0);
+const heads = text => { const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l)); return [lines, lines.slice(0, sep < 0 ? lines.length : sep)]; };
+// the copied text -> { name (English), names (of each language), level, quality, corrupted } when it is a gem, else null
+export function gemOf(text) {
+  const [lines, head] = heads(text), g = head.map(l => GEM_BY.get(l.toLowerCase())).find(Boolean); if (!g) return null;
+  return { name: g.name, names: g, level: propNums(lines).gem_level || 0, quality: quality(lines), corrupted: isCorrupted(text) };
+}
+// the copied text -> { name (its base, "Waystone (Tier 15)"), names, props: { map_tier, map_iir... }, corrupted } when it is
+// a waystone with something of its own (its rarity, pack size... raised: a rare or magic one), else null (a plain one is
+// priced on the Currency Exchange, as the many like it are)
+export function wayOf(text) {
+  const [lines, head] = heads(text), b = head.map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b?.name.startsWith('Waystone')) return null;
+  const props = propNums(lines); delete props.gem_level;
+  return Object.keys(props).some(f => f !== 'map_tier' && f !== 'map_revives' && props[f] > 0) ? { name: b.name, names: b, props, corrupted: isCorrupted(text) } : null;
+}
+// the cheapest ones like a gem: its level and quality or more, corrupted or not as it is. -> as priceOf
+export async function priceGem({ league, name, level, quality: q, corrupted, state = 'available' }) {
+  const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: name, filters: {
+    ...q && { type_filters: { filters: { quality: { min: q } } } },
+    misc_filters: { filters: { ...level && { gem_level: { min: level } }, corrupted: { option: String(!!corrupted) } } }, ...ONE } }, sort: { price: 'asc' } });
+  return { total: s.total, prices: await cheapest(s), id: s.id };
+}
+// the cheapest waystones of its tier that give at least `near` % under each of its numbers (revives: as many or more),
+// corrupted or not as it is (a corrupted one can no longer be crafted). -> as priceOf
+export async function priceWay({ league, name, props, corrupted, state = 'available', near = 10 }) {
+  const map = Object.fromEntries(Object.entries(props).filter(([f, v]) => f !== 'map_tier' && v > 0).map(([f, v]) => [f, f === 'map_revives' ? { min: v } : range(v, near)]));
+  const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: name, filters: {
+    map_filters: { filters: map }, misc_filters: { filters: { corrupted: { option: String(!!corrupted) } } }, ...ONE } }, sort: { price: 'asc' } });
+  return { total: s.total, prices: await cheapest(s), id: s.id, near };
+}
 export async function priceOf({ league, r, text = '', state = 'available', near = 10, deep = false }) {
   const item = r.item;
   const props = propsOf(text);
@@ -280,7 +321,7 @@ export async function priceOf({ league, r, text = '', state = 'available', near 
   const also = sameAs(r), group = (k, f) => Object.keys(f).length ? { [k]: { filters: f } } : {};
   const filters = { ...group('type_filters', { ...also.type_filters, ...cat && { category: { option: cat } } }),
     ...group('equipment_filters', { ...also.equipment_filters, ...Object.fromEntries(Object.entries(props).map(([k, v]) => [k, range(v, near)])) }),
-    ...group('misc_filters', also.misc_filters) };
+    ...group('misc_filters', also.misc_filters), ...ONE };
   // at least k of its lines, each as normal, crafted, fractured or desecrated (an item has one of them), line i
   // at most pct(i) % under its number. Cheapest first
   const search = (k, pct) => call('search?league=' + encodeURIComponent(league), { query: { ...query, filters,

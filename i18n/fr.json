@@ -906,5 +906,7 @@
  "{0} for {1}": "{0} pour {1}",
  "{0} in stock": "{0} en stock",
  "Your stack of {0}: about {1}": "Votre pile de {0} : environ {1}",
- "{0} offers on the Currency Exchange in {1}": "{0} offres au Marché d'échange en {1}"
+ "{0} offers on the Currency Exchange in {1}": "{0} offres au Marché d'échange en {1}",
+ "Level {0} or more, {1}% quality or more": "Niveau {0} ou plus, qualité de {1} % ou plus",
+ "Level {0} or more": "Niveau {0} ou plus"
 }

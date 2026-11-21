@@ -906,5 +906,7 @@
  "{0} for {1}": "{0} за {1}",
  "{0} in stock": "в наличии: {0}",
  "Your stack of {0}: about {1}": "Ваша стопка из {0}: около {1}",
- "{0} offers on the Currency Exchange in {1}": "Предложений в «Обмене валют» в {1}: {0}"
+ "{0} offers on the Currency Exchange in {1}": "Предложений в «Обмене валют» в {1}: {0}",
+ "Level {0} or more, {1}% quality or more": "Уровень {0} или выше, качество {1}% или выше",
+ "Level {0} or more": "Уровень {0} или выше"
 }

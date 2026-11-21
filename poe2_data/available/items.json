@@ -69603,6 +69603,118 @@
   "th": "ให้สกิล: {0} เลเวล {1}",
   "zh": "賦予技能: {1} 級 {0}"
  },
+ "trade_labels": {
+  "en": {
+   "gem_level": "Level",
+   "map_tier": "Waystone Tier",
+   "map_revives": "Revives Available",
+   "map_iir": "Item Rarity",
+   "map_packsize": "Pack Size",
+   "map_bonus": "Waystone Drop Chance",
+   "map_magic_monsters": "Magic Monsters",
+   "map_rare_monsters": "Rare Monsters",
+   "map_experience": "Experience Gained"
+  },
+  "es": {
+   "gem_level": "Nivel",
+   "map_tier": "Grado de la piedra guía",
+   "map_revives": "Resurrecciones disponibles",
+   "map_iir": "Rareza de objetos",
+   "map_packsize": "Tamaño de los grupos de monstruos",
+   "map_bonus": "Probabilidad de que caigan piedras guía",
+   "map_magic_monsters": "Monstruos mágicos",
+   "map_rare_monsters": "Monstruos raros",
+   "map_experience": "Experiencia ganada"
+  },
+  "pt": {
+   "gem_level": "Nível",
+   "map_tier": "Nível da Pedra-guia",
+   "map_revives": "Renascimentos Disponíveis",
+   "map_iir": "Raridade de Itens",
+   "map_packsize": "Tamanho de Grupos de Monstros",
+   "map_bonus": "Chance de obtenção de Pedra-guia",
+   "map_magic_monsters": "Monstros Mágicos",
+   "map_rare_monsters": "Monstros Raros",
+   "map_experience": "Experiência Obtida"
+  },
+  "fr": {
+   "gem_level": "Niveau",
+   "map_tier": "Palier de Pierre de téléportation",
+   "map_revives": "Résurrections disponibles",
+   "map_iir": "Rareté des objets",
+   "map_packsize": "Taille des Groupes",
+   "map_bonus": "Chances de trouver des Pierres de téléportation",
+   "map_magic_monsters": "Monstres magiques",
+   "map_rare_monsters": "Monstres rares",
+   "map_experience": "Expérience gagnée"
+  },
+  "de": {
+   "gem_level": "Stufe",
+   "map_tier": "Wegsteinlevel",
+   "map_revives": "Wiederbelebungen verfügbar",
+   "map_iir": "Gegenstandsseltenheit",
+   "map_packsize": "Monstergruppengröße",
+   "map_bonus": "Chance auf fallen gelassene Wegsteine",
+   "map_magic_monsters": "Magische Monster",
+   "map_rare_monsters": "Seltene Monster",
+   "map_experience": "Gewonnene Erfahrung"
+  },
+  "ru": {
+   "gem_level": "Уровень",
+   "map_tier": "Уровень путевого камня",
+   "map_revives": "Доступно возрождений",
+   "map_iir": "Редкость предметов",
+   "map_packsize": "Размер групп монстров",
+   "map_bonus": "Шанс выпадения путевого камня",
+   "map_magic_monsters": "Волшебные монстры",
+   "map_rare_monsters": "Редкие монстры",
+   "map_experience": "Получение опыта"
+  },
+  "ja": {
+   "gem_level": "レベル",
+   "map_tier": "ウェイストーンティア",
+   "map_revives": "復活が利用可能",
+   "map_iir": "アイテムレアリティ",
+   "map_packsize": "パックサイズ",
+   "map_bonus": "ウェイストーンドロップ確率",
+   "map_magic_monsters": "マジックモンスター",
+   "map_rare_monsters": "レアモンスター",
+   "map_experience": "獲得経験値"
+  },
+  "ko": {
+   "gem_level": "레벨",
+   "map_tier": "경로석 등급",
+   "map_revives": "부활 횟수",
+   "map_iir": "아이템 희귀도",
+   "map_packsize": "무리 규모",
+   "map_bonus": "경로석 출현 확률",
+   "map_magic_monsters": "마법 몬스터",
+   "map_rare_monsters": "희귀 몬스터",
+   "map_experience": "경험치 획득량"
+  },
+  "th": {
+   "gem_level": "เลเวล",
+   "map_tier": "ระดับศิลานำทาง",
+   "map_revives": "จำนวนสิทธิ์คืนชีพ",
+   "map_iir": "ระดับความหายากของไอเทม",
+   "map_packsize": "ขนาดกองมอนสเตอร์",
+   "map_bonus": "โอกาสดรอปศิลานำทาง",
+   "map_magic_monsters": "มอนสเตอร์เมจิก",
+   "map_rare_monsters": "มอนสเตอร์แรร์",
+   "map_experience": "ค่าประสบการณ์ที่ได้รับ"
+  },
+  "zh": {
+   "gem_level": "等級",
+   "map_tier": "換界石階級",
+   "map_revives": "可用的復活數",
+   "map_iir": "物品稀有度",
+   "map_packsize": "怪群大小",
+   "map_bonus": "換界石掉落機率",
+   "map_magic_monsters": "魔法怪物",
+   "map_rare_monsters": "稀有怪物",
+   "map_experience": "獲得經驗值"
+  }
+ },
  "mod_grants": {
   "UniqueTriggerDecomposeOnStep1": "Decompose",
   "UniqueGrantsBlinkSand1": "Blink",

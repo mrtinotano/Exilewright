@@ -906,5 +906,7 @@
  "{0} for {1}": "{1}で{0}個",
  "{0} in stock": "在庫 {0}",
  "Your stack of {0}: about {1}": "スタック {0}個: 約{1}",
- "{0} offers on the Currency Exchange in {1}": "{1}のカレンシー交換に{0}件の出品"
+ "{0} offers on the Currency Exchange in {1}": "{1}のカレンシー交換に{0}件の出品",
+ "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",
+ "Level {0} or more": "レベル{0}以上"
 }

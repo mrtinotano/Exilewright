@@ -652,6 +652,14 @@ save('items.json', {
     # "Grants Skill: <underline>{{Level {1} {0}}}" shown as "Grants Skill: Level 11 Purity of Fire"): {0} the skill, {1} its level
     'grant_line': {c: re.sub(r'\{(?!\d\})|(?<!\{\d)\}', '', re.sub(r'<\w+>', '', t['ItemDisplayGrantedSkill']))
                    for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
+    # the labels of a gem's and a waystone's properties in each language (ClientStrings: "Level", "Waystone Tier",
+    # "[ItemRarity|Item Rarity]" shown as its second part), by the trade site's filter of each (trade.js gemOf, wayOf)
+    'trade_labels': {c: {f: re.sub(r'\[(?:[^|\]]*\|)?([^\]]*)\]', r'\1', t[k]).strip() for f, k in {
+                         'gem_level': 'Level', 'map_tier': 'ItemDisplayMapTier', 'map_revives': 'NumberOfPortalsPerWaystone',
+                         'map_iir': 'ItemDisplayMapItemRarity', 'map_packsize': 'ItemDisplayMapPack', 'map_bonus': 'ItemDisplayMapWaystoneDropChance',
+                         'map_magic_monsters': 'ItemDisplayMapMagicMonsterQuantityBonus', 'map_rare_monsters': 'ItemDisplayMapRareMonsterQuantityBonus',
+                         'map_experience': 'ItemDisplayMapExperienceGained'}.items()}
+                     for c, t in {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}.items()},
     'mod_grants': {mods[x['Mod']]['Id']: gem_name(x['Skill']) for x in load('ModGrantedSkills')},
     # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
     # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->

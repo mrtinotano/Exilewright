@@ -12,7 +12,7 @@ import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
-import { priceOf, priceUnid, priceBulk, bulkOf, leagues, siteLink, TradeError } from './trade.js';
+import { priceOf, priceUnid, priceBulk, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings, wornRow } from './settings.js';
 
 const KEY = 'poe2loot';
@@ -158,18 +158,21 @@ export function initLoot(el, ctx) {
   };
   async function priceCheck(text) {
     const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
-    const B = bulkOf(text.replace(/\r/g, '').trim());
+    text = text.replace(/\r/g, '').trim();
+    // a gem or a waystone of its own (rare, magic): by the site's filters of them; else what stacks: on the Currency Exchange
+    const G = gemOf(text), W = !G && wayOf(text), B = !G && !W && bulkOf(text);
     if (B) return bulkCheck(B, show);
-    const r = parseItem(text.replace(/\r/g, '').trim());
+    const r = G || W || parseItem(text);
     if (!r) return show({ lines: [t('That is not item text, or the planner does not have its base.')] });
-    const name = r.name || nameOf(r.item), s = settings();
+    const s = settings(), name = G || W ? r.names['name_' + lang] || r.name : r.name || nameOf(r.item);
     const unid = r.unidentified && r;   // priced as the unidentified ones like it are
     show({ name, lines: [t(s.deep ? 'Searching the trade site (thorough search: it can take longer)…' : 'Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0];
-      const p = unid ? await priceUnid({ ...r, league, state: s.state }) : await priceOf({ league, r, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
+      const p = G ? await priceGem({ ...G, league, state: s.state }) : W ? await priceWay({ ...W, league, state: s.state, near: +s.near })
+        : unid ? await priceUnid({ ...r, league, state: s.state }) : await priceOf({ league, r, text, state: s.state, near: +s.near, deep: !!s.deep }), link = p.id ? siteLink(league, p.id) : '';
       if (!p.total) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league),
-        ...s.deep || unid ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
+        ...s.deep || unid || G || W ? [] : [[[t('Tip: turn on "Thorough search" in the Settings of Exilewright to look further.'), 'dim']]]] });
       const cost = x => `${x.amount} ${t(x.currency)}`;
       // note: the 5 cheapest shown, one per line, so the window stays small; the trade site's link lists them all
       const asked = p.prices.slice(0, 5).map(cost);
@@ -177,6 +180,7 @@ export function initLoot(el, ctx) {
         ...asked.length ? [[[t('Similar ones for sale') + ':', '']], ...asked.map(a => [['· ' + a, 'up']])] : [],
         [[unid ? (p.ilvl ? t('{0} unidentified ones like it listed in {1}, item level {2} or more', p.total, league, p.ilvl) : t('{0} unidentified ones like it listed in {1}', p.total, league))
           : p.near ? t('{0} like it listed in {1}, its numbers at most {2}% under', p.total, league, p.near) : t('{0} listed in {1}', p.total, league), 'dim']],
+        ...G && G.level ? [[[G.quality ? t('Level {0} or more, {1}% quality or more', G.level, G.quality) : t('Level {0} or more', G.level), 'dim']]] : [],
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
         ...asked.length ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
