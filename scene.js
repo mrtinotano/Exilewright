@@ -448,7 +448,9 @@ export function initScene(el, api) {
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
-      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
+      const LK = !/minion/.test(S.src || '') && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0);
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
       // Lich: Unholy Might while not on Low Mana, its share of all damage as extra chaos (keywords.json UnholyMight) by
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
@@ -4717,7 +4719,7 @@ export function initScene(el, api) {
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
-      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', el * RT * RC.es / 100); }
+      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', el * RT * RC.es / 100); add('mana', total * RT * RC.mana / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
@@ -5083,7 +5085,9 @@ export function initScene(el, api) {
     const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r);
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
-    const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
+    const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
+    if (FC || GN[0] || GN[1]) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + (FC + (GN[n] || 0)) / 60 * dt); });   // with the tree's per flask
+    if (GN[2]) charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + GN[2] / 60 * dt); });   // and per charm
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
     const TR = trinity(); if (TR) for (const e of ELEM) if (time - (me.affAt[e] ?? -99) > TR.trinity_resonance_decay_delay_ms / 1000) me.aff[e] = Math.max(0, me.aff[e] - TR.trinity_resonance_loss_per_second * dt);
@@ -5136,7 +5140,7 @@ export function initScene(el, api) {
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
-    me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
+    me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
