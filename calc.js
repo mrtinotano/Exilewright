@@ -349,7 +349,7 @@ export function ailmentDefence(c, sum) {
   }
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
-  const eff = { chill: pct('chilled_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self') };
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self') };
   return { stun, ail, freeze, electrocute, avoid, dur, eff };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
