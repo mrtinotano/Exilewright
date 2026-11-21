@@ -7,6 +7,7 @@
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
 import { affixLines, tradeItem, priceLines, classOf } from './items.js';
+import { englishOf } from './stats.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
 // item class (items.json) -> the trade site's category
@@ -107,8 +108,8 @@ async function statIndex() {
   const idsOf = l => l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
     : MOD_KINDS.map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
   // a line the app does not know (no modifier of its data words it so: "+3 to Level of all Attack Skills"), by the
-  // site's own wording of it, as any kind of modifier (English text only)
-  const byWords = line => worded.get(shape(line)) || [];
+  // site's own wording of it (another language's: its English, englishOf), as any kind of modifier
+  const byWords = line => worded.get(shape(line)) || worded.get(shape(englishOf(line) || '')) || [];
   return { known, desecrated, idsOf, byWords };
 }
 export async function withIds(wants) {

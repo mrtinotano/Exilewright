@@ -93,7 +93,7 @@ yours, as Exiled Exchange 2 searches them: the same unique, the same kind of wea
 or defences are asked), or the same base (rings, amulets, belts), with its modifiers (crafted, fractured and
 desecrated ones too; attributes and resistances as the item's total) and its weapon damage or defences, each at
 most 10% under yours and with no top (Settings: "Numbers down to"; a number never goes past 1 towards 0, so a "+1"
-line is always asked for), every one of them (a unique: the lines that can roll otherwise). A line the app does not know ("+3 to Level of all Attack Skills") is asked by the site's own wording of it. An unidentified item (often sold so,
+line is always asked for), every one of them (a unique: the lines that can roll otherwise). A line the app does not know ("+3 to Level of all Attack Skills") is asked by the site's own wording of it, in any language through the game's own description of that line in English (as Exiled Exchange 2 reads such lines). An unidentified item (often sold so,
 dearer as a gamble) is priced as the unidentified ones listed of its base and rarity, of its item level or more (not
 for a unique), corrupted or not as it is. As Exiled Exchange 2 asks: a non-unique item finds no uniques; one not
 corrupted, mirrored or sanctified finds none that are (a corrupted one finds either); a corrupted one's rune sockets
