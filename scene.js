@@ -4742,7 +4742,7 @@ export function initScene(el, api) {
     if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
+    const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {

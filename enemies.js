@@ -181,7 +181,7 @@ export function versusPlayer(atk, st, c) {
   });
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
   const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion, c.evadeMax) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;
-  const crit = clamp(atk.crit, 0, 100) / 100, critMult = 1 + atk.critBonus / 100;
+  const crit = clamp(atk.crit, 0, 100) / 100, critMult = 1 + atk.critBonus * (c.selfCrit ?? 1) / 100;   // less with the character's (calc.js selfCrit)
   const perUse = taken * (1 + crit * (critMult - 1)) * hit / 100 * (1 - block / 100 * (1 - (c.blockTaken || 0) / 100));   // a blocked hit deals its share you still take
   const dots = TYPES.filter(el => atk.dot[el]).map(el => ({ type: el, raw: atk.dot[el], taken: playerTakes(c, el, atk.dot[el], false) }));
   const dotTaken = dots.reduce((s, x) => s + x.taken, 0);
