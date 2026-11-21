@@ -86,7 +86,10 @@ export function linkMetas(b) {
 // buffs a persistent skill's supports grant you while it is on (Precision, Clarity, Vitality, Herbalism: PoB2's
 // GlobalEffect Buff mods), as the stats of yours they are
 const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', 'support_clarity_mana_regeneration_rate_+%': 'mana_regeneration_rate_+%',
-  'support_vitality_life_regeneration_rate_per_minute_%': 'life_regeneration_rate_per_minute_%', 'support_herbalism_life_recovery_+%_from_life_flasks': 'flask_life_to_recover_+%' };
+  'support_vitality_life_regeneration_rate_per_minute_%': 'life_regeneration_rate_per_minute_%', 'support_herbalism_life_recovery_+%_from_life_flasks': 'flask_life_to_recover_+%',
+  // Thornskin, Warm Blooded, Cool Headed, Strong Hearted
+  'support_thorns_spirit_cost_thorns_damage_+%': 'thorns_damage_+%', 'support_freeze_protection_spirit_cost_freeze_duration_on_self_+%_final': 'self_freeze_duration_+%_final',
+  'support_ignite_protection_spirit_cost_ignite_duration_on_self_+%_final': 'self_ignite_duration_+%_final', 'support_shock_protection_spirit_cost_shock_duration_on_self_+%_final': 'self_shock_duration_+%_final' };
 export function skillStats(b) {
   const out = motes(b);
   for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent'))
@@ -333,8 +336,8 @@ export function ailmentDefence(c, sum) {
   for (const [a, ids] of Object.entries(IMMUNE)) {
     const el = ELEM_AIL.includes(a);
     avoid[a] = ids.some(k => sum[k]) ? 100 : Math.min(100, v(sum, `base_avoid_${a}_%`, `avoid_${a}_%`) + (el ? v(sum, 'avoid_all_elemental_status_%') : 0));
-    dur[a] = el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
-      : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
+    dur[a] = (el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
+      : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100)) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
   }
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
@@ -445,7 +448,7 @@ export function sheet(b, sum) {
   const blockMax = (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%');
   // ailment durations on you: the ailment's own, the elemental ones' and all ailments' ("reduced" stats count down)
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
-  const selfDur = e => v(sum, `base_self_${e}_duration_-%`) + eleAil - allAil;
+  const selfDur = e => 100 - (100 - (v(sum, `base_self_${e}_duration_-%`) + eleAil - allAil)) * (1 + v(sum, `self_${e}_duration_+%_final`) / 100);   // % shorter, a "more" too (Warm Blooded)
   const bypass = v(sum, 'base_all_damage_bypass_energy_shield_%'), fromMana = v(sum, 'elemental_damage_removed_from_mana_before_life_%');
   const manaFirst = v(sum, 'base_damage_removed_from_mana_before_life_%');
   return panel(own, sum, used, {

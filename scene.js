@@ -1229,6 +1229,7 @@ export function initScene(el, api) {
     else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: 1, size: .14, c: 'holy' });
   }
   // S with element e added, as the one it now deals most (got: the one it picked up)
+  const astral = S => S.P.nova && S.g?.supports?.includes('Astral Projection');
   const withEl = (S, e) => ({ ...S, els: [...new Set([...S.els, e])], el: e, ail: [...new Set([...S.ail, ...ailOf([e])])], got: e });
   // its pct % of all its hit damage gained as element e (a Whirlwind's, a twister's from the ground or Whirlwind it took)
   const gainAs = (A, e, pct) => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), h = H[e] || [0, 0];
@@ -3453,6 +3454,7 @@ export function initScene(el, api) {
     if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     aim(S, o.at || cursor);
+    if (!auto && astral(S)) S.from = { ...S.at };   // Astral Projection: the Nova where you aim, not around you
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
     if (S.rand) { const pick = k => 1 + rnd(S.rand[`support_randomise_lower_${k}_+%_final`], S.rand[`support_randomise_higher_${k}_+%_final`]) / 100; S.mult *= pick('damage'); S.A *= Math.sqrt(pick('aoe')); }
     // Heat (keywords.json): Rapid Shot's bolts build it on your crossbow up to its most; a skill that consumes its amount on
@@ -3920,7 +3922,7 @@ export function initScene(el, api) {
     switch (S.kind) {
       case 'projectile': strip(pp, S.dx, S.dz, S.G.speed ? S.G.range : SIM.projRange, Math.max(.3, (S.G.collision || 0) * 2)); break;
       case 'chain': case 'mark': { const d = near(cursor, SIM.snap); if (d) circle(d.pos, .7); break; }
-      case 'nova': case 'warcry': circle(pp, S.kind === 'nova' ? stageR(S) : S.A); break;
+      case 'nova': case 'warcry': circle(astral(S) ? c : pp, S.kind === 'nova' ? stageR(S) : S.A); break;
       case 'aura': case 'herald': if (S.R) circle(pp, S.R); break;
       case 'field': circle(pp, S.A); break;
       case 'meta': case 'minion': case 'buff': break;
