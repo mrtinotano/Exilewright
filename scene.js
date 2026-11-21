@@ -3971,7 +3971,7 @@ export function initScene(el, api) {
   function gloryAdd(S, n) {
     if (!(n > 0) || (/Banner/.test(S.name) ? !tog[S.name] : objs.some(o => o.name === S.name && !o.dead))) return;   // a Banner builds it while its Spirit is reserved
     const max = gloryNeed(S), v = me.glory[S.name] || 0; if (v >= max) return;
-    me.glory[S.name] = Math.min(max, v + n); me.gloryAt[S.name] = time; hudT = 0;
+    me.glory[S.name] = Math.min(max, v + n * (1 + (S.dmg?.sum?.['glory_generation_+%'] || 0) / 100));   // the tree's increased Glory generation me.gloryAt[S.name] = time; hudT = 0;
   }
   function glory(d, ev) {
     for (const S of gloryOf()) {

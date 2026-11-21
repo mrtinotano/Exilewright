@@ -866,7 +866,7 @@ export function skill(g, b, treeGear) {
   // the tree's speed with skills of a kind (Lightning, Elemental, Cold, channelling skills) and, for attacks, while
   // holding a shield, dual wielding, per 25 Dexterity or per 200 Accuracy
   const tagSp = (tags.includes('lightning') ? v(sum, 'attack_and_cast_speed_+%_with_lightning_skills') : 0) + (tags.some(x => x === 'fire' || x === 'cold' || x === 'lightning') ? v(sum, 'attack_and_cast_speed_+%_with_elemental_skills') : 0)
-    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0);
+    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0);   // Warcry Speed: its use time
   const per = attack && (v(sum, 'attack_speed_+%_per_25_dex') || v(sum, 'attack_speed_+%_per_200_accuracy_rating')) && character(b, sum);
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
@@ -1107,9 +1107,10 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     freeze: scale(['hit_damage_freeze_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'),
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
-    shockEffect: scale(['shock_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%'], 'chill_effect_+%_final'),
-    igniteEffect: scale(['base_ignite_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
+    // "increased Magnitude of Ailments you inflict" counts for each
+    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final'), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final'),
+    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/), poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
+    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
