@@ -535,6 +535,8 @@ function inc(sum, suffix, tags) {
   for (let [k, val] of Object.entries(sum)) {
     // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word
     const w = k.match(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/); if (w) k = `${w[2]}_${w[1]}`;
+    // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
+    const vs = k.match(/^(.*damage)_(vs|against)_(\w+)_\+%$/); if (vs) k = `${vs[1]}_+%_${vs[2]}_${vs[3]}`;
     if (!k.endsWith(suffix)) continue;
     const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand');
     if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += val;
@@ -542,6 +544,7 @@ function inc(sum, suffix, tags) {
   return t;
 }
 console.assert(inc({ 'damage_+%_with_two_handed_weapons': 40, 'damage_+%_with_bow_skills': 5 }, 'damage_+%', ['attack', 'twohand']) === 40, 'inc: _with_ stats');
+console.assert(inc({ 'attack_damage_vs_bleeding_enemies_+%': 7, 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%_vs_bleeding_enemies', ['attack']) === 7 && !inc({ 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%', []), 'inc: _vs_ stats');
 // what the stat ids call the weapon an attack is made with (item base tags; warstaff is the quarterstaff)
 const WEAPON = ['mace', 'bow', 'crossbow', 'spear', 'sword', 'axe', 'dagger', 'flail', 'claw', 'talisman', 'onehand', 'twohand'];
 const weaponTags = w => (w.tags || []).map(x => x === 'warstaff' ? 'quarterstaff' : x).filter(x => x === 'quarterstaff' || WEAPON.includes(x));
@@ -744,7 +747,7 @@ export function skill(g, b, treeGear) {
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   // "increased Spell Damage with Spells that cost Life": a spell with a life cost (Lifetap, Blood Magic)
-  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
