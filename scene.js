@@ -360,6 +360,7 @@ export function initScene(el, api) {
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
     charges[type]++; if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
+    if (Math.random() * 100 < (sheet().chargeFill?.[type] || 0)) charges[type] = maxC(type);   // the chance of all of them
     fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
   }
@@ -2664,7 +2665,7 @@ export function initScene(el, api) {
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; slash(S, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); slash(S, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); }
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
@@ -3862,7 +3863,7 @@ export function initScene(el, api) {
       const DA = st.detonating_arrow_max_number_of_stages; S.fireGain = DA && S.stage != null ? Math.round(S.stage * DA) * st['detonating_arrow_all_damage_%_to_gain_as_fire_per_stage'] : 0;
       if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { if (!S.dmg?.parts?.SnipeExplosionPlayer) { S.mult *= 1.5; S.aoe = true; } fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
-      facing = Math.atan2(S.dx, S.dz); castAt = time; player.cast(1); player.setColor(S.el); goal = null; walk = false;
+      facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
@@ -4334,6 +4335,18 @@ export function initScene(el, api) {
   }
 
   // ---------- HUD text
+  // Moving while using a skill: a skill with its "movement speed while performing" (most channelled ones: 70% less) lets
+  // you move at that speed while you use it, the penalty raised by the tree's (all, fire, cold skills; Deadeye's more)
+  // and its supports' more penalty (Mobility, Deliberation); any other stops you (null)
+  const PERFORM = 'movement_speed_+%_final_while_performing_action';
+  function actMove(S) {
+    const st = S?.dmg?.stats || {}, f = S?.dmg?.finals || {}, P = st[PERFORM]; if (P == null) return null;
+    const A = sheet().actMove || {}, more = ['support_mobility_movement_speed_penalty_+%_final_while_performing_action', 'support_deliberation_movement_speed_penalty_+%_final_while_performing_action']
+      .reduce((m, k) => m * (1 + ((st[k] || 0) + (f[k] || 0)) / 100), 1 + (A.more || 0) / 100);
+    const pen = -P * (1 + ((A.inc || 0) + (S.els?.includes('fire') ? A.fire || 0 : 0) + (S.els?.includes('cold') ? A.cold || 0 : 0)) / 100) * more;
+    return Math.max(0, 1 - pen / 100);
+  }
+  const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
   let spdC = { at: -9, v: 0 };
   const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (time < me.wildUntil ? ONSLAUGHT.move : 0)
     + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0)) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE)
@@ -4806,6 +4819,7 @@ export function initScene(el, api) {
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
+    if (a === 'stun') me.stunAt = time;   // "if you haven't been Stunned Recently"
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
@@ -4856,7 +4870,10 @@ export function initScene(el, api) {
       * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
     me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
-    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
+    // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
+    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0);
+      return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
+    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
     if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
@@ -5288,12 +5305,12 @@ export function initScene(el, api) {
         const v = spd() * (1 + C.speed / 100) * slowed() * maimed() * dt; pp.x += Math.sin(facing) * v; pp.z += Math.cos(facing) * v; moving = true; goal = null;
         if (QP) locusts(QP, dt);
       }
-    } else if (steer && !charge && !stuck()) {
+    } else if (steer && (!charge || me.act != null) && !stuck()) {   // channelling: moving only if the skill lets you
       goal = null;
-      if (time - castAt > .3) { const v = spd() * slowed() * maimed() * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
+      if (!acting() || me.act != null) { const v = spd() * slowed() * maimed() * (acting() ? me.act : 1) * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
     } else if (goal && !charge && !stuck()) {   // to the point clicked, following the cursor while the button is held
       if (walk) goal = { x: cursor.x, z: cursor.z };
-      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * dt);
+      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * (acting() ? me.act ?? 1 : 1) * dt);
       if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
     const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
@@ -5316,7 +5333,7 @@ export function initScene(el, api) {
     // casting
     cd -= dt * slowed(); rollCd -= dt;
     if (charge) {
-      charge.s += dt; castAt = time; facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
+      charge.s += dt; castAt = time; me.act = actMove(base(charge.i)); facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
       const b = base(charge.i), h = hand();
       if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
     } else if (held && !move && cd <= 0) fire(held.i);

@@ -311,6 +311,7 @@ export function character(b, sum) {
     chargeTime: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, 1 + v(sum, 'charge_duration_+%', `${c}_charge_duration_+%`, `base_${c}_charge_duration_+%`) / 100])),
     delayHit: { less: v(sum, 'chronomancer_damage_taken_+%_final'), later: v(sum, 'chronomancer_take_%_of_hit_damage_4_seconds_after_being_hit') },   // Chronomancer
     chargeMore: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, v(sum, `chance_to_gain_1_more_${c}_charge_%`)])),
+    chargeFill: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, v(sum, `gain_maximum_${c}_charges_on_${c}_charge_gained_%_chance`)])),   // the chance to gain the most of that kind
     res, penalty,
     // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
     move: (1 + (v(sum, 'base_movement_velocity_+%') - armourItems(b.items).movement) / 100) * (1 + armourItems(b.items).movement / 100) * 100 - 100,
@@ -465,7 +466,7 @@ export function recovery(c, sum) {
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff you inflict; how fast debuffs on you expire
-    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
+    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, actMove: { inc: v(sum, 'movement_speed_penalty_+%_while_performing_action'), fire: v(sum, 'movement_speed_penalty_+%_while_performing_fire_skills'), cold: v(sum, 'movement_speed_penalty_+%_while_performing_cold_skills'), more: v(sum, 'deadeye_movement_speed_penalty_+%_final_while_performing_action') }, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
@@ -494,7 +495,7 @@ export function ailmentDefence(c, sum) {
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
   const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
-  const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield') / 100) * pct('freeze_threshold_+%');
+  const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield', 'gain_%_maximum_energy_shield_as_freeze_threshold_+') / 100) * pct('freeze_threshold_+%');
   // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
   const electrocute = ail == null ? null : (ail + v(sum, 'electrocute_threshold_+')) * pct('electrocute_threshold_+%') * pct('electrocute_threshold_+%_final');
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
@@ -510,7 +511,9 @@ export function ailmentDefence(c, sum) {
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
   const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
-  return { stun, ail, freeze, electrocute, avoid, dur, eff };
+  // the increased stun threshold that counts only in a state, with the always-on one it adds to (the scene's)
+  const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling') };
+  return { stun, ail, freeze, electrocute, avoid, dur, eff, stunIf };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
 { const a = ailmentDefence({ life: 2000, es: 0, evasion: 0, attrs: {} }, { immune_to_freeze: 1, 'base_avoid_shock_%': 30, 'avoid_all_elemental_status_%': 10, 'self_elemental_status_duration_-%': 50 });
@@ -743,7 +746,7 @@ const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in
 const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
   ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
-  ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently']];
+  ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
