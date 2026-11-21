@@ -365,6 +365,7 @@ export function character(b, sum) {
     sands: !!sum['chronomancer_grant_cast_speed_+%'],   // Chronomancer's Quicksand Hourglass: Sands of Time
     frenzyX: v(sum, 'chance_%_to_double_effect_of_removing_frenzy_charges'),   // Deadeye's Thrilling Chase: chance to double what consuming a frenzy charge gives
     cover: !!sum.enemy_hits_against_you_have_distance_based_accuracy_falloff,   // Tactician's Stay Light, Use Cover: enemies' accuracy falls off with distance, as yours
+    whisper: v(sum, 'ascendancy_whispers_of_the_flesh_cursed_enemies_have_at_least_life_reserved_%'),   // Blood Mage's Whispers of the Flesh: that share of a Cursed enemy's life reserved
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
@@ -421,7 +422,7 @@ export function recovery(c, sum) {
     // Lich: Unholy Might's magnitude (per 100 maximum mana), its spells' Sacrifice and Power Charge, Eternal Life, mana lost a second
     unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? umag : 0,
     allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
-    lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final') },
+    lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volImmune: !!sum.immune_to_volatility_damage,   // Acolyte of Chayula
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle

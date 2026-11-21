@@ -3868,7 +3868,7 @@ export function initScene(el, api) {
       // Lich: a spell Sacrifices its share of your maximum energy shield (if you have it all) for its more damage, and
       // consumes a Power Charge if it can for its more damage
       const LI = P.spell && !S.src && !auto && sheet().lich;
-      if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; } }
+      if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       if (tally() < had) { const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
@@ -5010,6 +5010,7 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
+    if (d.curse && sheet().whisper) d.life = Math.min(d.life, d.max * (1 - sheet().whisper / 100));   // Whispers of the Flesh: a Cursed enemy's life reserved. note: enemies do not regenerate here, so its less life regeneration does nothing
     if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
@@ -5163,7 +5164,7 @@ export function initScene(el, api) {
     // a hit ends it (hurt), as does a full Overflow
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
-    else if (me.es < E && time - me.hurt + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
+    else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
