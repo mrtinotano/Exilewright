@@ -140,7 +140,8 @@ const avg = r => (r[0] + r[1]) / 2;
 export const hitChanceExact = (accuracy, evasion, max) => !evasion ? 100 : clamp((1 - .95 * evasion / (evasion + 4 * accuracy)) * 100, 100 - (max ?? K.player_max_evade ?? 95), 100);
 export const hitChance = (accuracy, evasion, max) => Math.round(hitChanceExact(accuracy, evasion, max));   // as the game shows it
 // chance (%) that the character's attack hits a monster (spells always hit)
-export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy ? 5 : clamp(Math.round(accuracy * 1.25 / (accuracy + evasion * .3) * 100), 5, 100);
+export const hitRaw = (accuracy, evasion) => accuracy * 1.25 / (accuracy + evasion * .3) * 100;   // uncapped
+export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy ? 5 : clamp(Math.round(hitRaw(accuracy, evasion)), 5, 100);
 // fraction of a physical hit that armour removes
 export const armourCut = (armour, raw, cap) => armour > 0 && raw > 0 ? Math.min(cap / 100, armour / (armour + raw * 10)) : 0;
 // deflection rating of the character c (calc.js character(), its armour and evasion as they are now)

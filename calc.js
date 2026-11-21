@@ -751,11 +751,9 @@ function gemlingOf(g, sum, b) {
 }
 export function skill(g, b, treeGear) {
   // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
-  if (g.add) { treeGear = { ...treeGear }; for (const [k, x] of Object.entries(g.add)) treeGear[k] = (treeGear[k] || 0) + x; }
-  // Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
+  // and Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
   // and less cost when blue supports are the most; Lich: more mana cost with no maximum energy shield
-  const gemExtra = gemlingOf(g, treeGear, b);
-  if (gemExtra) { treeGear = { ...treeGear }; for (const [k, x] of Object.entries(gemExtra)) treeGear[k] = (treeGear[k] || 0) + x; }
+  for (const x of [g.add, gemlingOf(g, treeGear, b)]) if (x) { treeGear = { ...treeGear }; for (const [k, n] of Object.entries(x)) treeGear[k] = (treeGear[k] || 0) + n; }
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)

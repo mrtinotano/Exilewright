@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, fmt, cap } from './i18n.js';
-import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
@@ -398,7 +398,7 @@ export function initScene(el, api) {
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1);
-      if (acc > 0 && c.critFromHit) overHit = Math.max(0, acc * 1.25 / (acc + evNow * .3) * 100 - 100) * c.critFromHit / 100;
+      if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
