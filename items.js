@@ -670,12 +670,19 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     return gains.get(k); };
   const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
     return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
-  // each candidate's gains are a whole calculation of the build: filled in a few at a time after the list shows, not before
+  // each candidate's gains are a whole calculation of the build: filled in a few at a time after the panel shows, not
+  // before (the bases and uniques to pick, the saved items, what each affix to add would change)
   let fillRun = 0;
+  const fillOne = s => {
+    if (s.dataset.g != null) s.outerHTML = impactLine(gain(s.closest('.picklist').dataset.slot, make(s.dataset.g), s.dataset.g));
+    else if (s.dataset.stash != null) { const i = +s.dataset.stash, it = (getBuild().stash || [])[i], to = it && whereTo(it); s.outerHTML = to ? impactLine(gain(to, it, 'stash' + i), 3) : ''; }
+    else { const slot = s.parentElement.dataset.slot, it = getBuild().items?.[slot], a = AFFIX[s.value]; delete s.dataset.add; if (!it || !a) return;
+      const does = impactText(gain(slot, { ...it, mods: [...it.mods || [], { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id)); if (does) s.textContent += ' → ' + does; }
+  };
   function fillGains() {
-    const run = ++fillRun, todo = [...el.querySelectorAll('.picklist [data-g]')];
+    const run = ++fillRun, todo = [...el.querySelectorAll('.picklist [data-g], [data-stash], option[data-add]')];
     const next = () => { if (run !== fillRun) return;
-      for (const s of todo.splice(0, 12)) s.outerHTML = impactLine(gain(s.closest('.picklist').dataset.slot, make(s.dataset.g), s.dataset.g));
+      for (const s of todo.splice(0, 4)) fillOne(s);
       if (todo.length) setTimeout(next); };
     setTimeout(next);
   }
@@ -707,8 +714,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
-          const does = impactText(gain(slot, { ...it, mods: [...mods, { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id));
-          return `<option value="${a.id}">${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}${does ? ' → ' + esc(does) : ''}</option>`; }).join('')}</select>` : ''}
+          return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(snapOf(rest), now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
           return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
@@ -748,7 +754,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     return `<h3>${t('Saved items')}</h3>${list.length ? `<div class="stash">${list.map((it, i) => {
       const base = BASE[it.base], u = it.unique && UNIQ[it.unique], to = base && whereTo(it);
       return base ? `<div class="stashit ${rarityOf(it)}"><img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">
-        <span><b>${esc(it.name || tn(u || base))}</b><small>${esc(it.name || u ? tn(base) : base.class)}</small>${to ? impactLine(gain(to, it, 'stash' + i), 3) : ''}</span>
+        <span><b>${esc(it.name || tn(u || base))}</b><small>${esc(it.name || u ? tn(base) : base.class)}</small>${to ? `<span data-stash="${i}"></span>` : ''}</span>
         <button data-act="wear" data-i="${i}"${to ? '' : ' disabled'} title="${esc(to ? t(SLOTS[slotType(to)] || 'Jewel') : t('Select an allocated jewel socket first.'))}">${t('Equip')}</button>
         <button data-act="drop" data-i="${i}" title="${t('Remove')}">✕</button></div>` : '';
     }).join('')}</div>` : `<p class="note">${t('Items you replace or take off are kept here, to wear them again.')}</p>`}`;
