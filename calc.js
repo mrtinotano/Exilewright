@@ -1194,8 +1194,8 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
-  // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
   const FB = 1 + all('faster_burn_%') / 100;   // Burnout, Searing Heat: ignites deal their damage faster (more a second, over a shorter time)
+  // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
