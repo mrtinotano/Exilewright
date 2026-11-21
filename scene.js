@@ -278,7 +278,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -314,7 +314,7 @@ export function initScene(el, api) {
   const markOff = d => { const M = d.mark; d.mark = null; trigger(M.S, 'mark', d); if (M.bomb) bombed(M, d.pos); };   // a Mark activated
   const uniqueMore = (d, pct) => d.stat.rarity === 'unique' ? 1 + (pct || 0) / 100 : 1;   // a "more if created from a Unique" stat
   const consume = (d, S, s) => { clear(d, s); d.imm[s] = IMMUNE; pay(d, S, s, true); };   // a state consumed
-  const clear = (d, s) => { if (s === 'curse') d.curse = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
+  const clear = (d, s) => { if (s === 'curse') d.curse = d.hexes = null; else if (s === 'mark') d.mark = null; else d.st[s] = 0; };
   const chest = d => V(d.pos.x, 1.2 * d.sc, d.pos.z);
   const over = d => ({ x: d.pos.x, y: 2.05 * d.sc + 1.05, z: d.pos.z });   // above the name plate
   // floating number of what a hit or a tick removed
@@ -815,11 +815,14 @@ export function initScene(el, api) {
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
   // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), then by the hit's penetration, and shock
   // Intimidated, they take more. note: as a factor of its own, not added to the other increases
+  // the curses on an enemy: the latest (d.curse) and those still on from before (d.hexes), up to your curse limit;
+  // their effects add up
+  const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) : 0), 0);
   function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
-    let st = d.stat; const C = d.curse?.C, k = d.curse?.k || 0;
-    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || C?.armour)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - (C?.armour || 0) * k) };
-    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - (C?.res[el] || 0) * k;
+    let st = d.stat; const CA = curseFx(d, C => C?.armour);
+    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]);
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
@@ -1089,7 +1092,7 @@ export function initScene(el, api) {
   // note: its knockback is not simulated
   function repulse(d) {
     const RS = d.curse.S, st = RS.dmg.stats, c = { x: d.pos.x, z: d.pos.z };
-    d.curse = null; d.noRepulse = time + st.repulsion_curse_when_detonated_prevent_curse_for_X_ms / 1000;
+    d.curse = d.hexes?.pop() || null; d.noRepulse = time + st.repulsion_curse_when_detonated_prevent_curse_for_X_ms / 1000;
     fx.ring(c, .3, RS.A, 'gold', .4);
     const D = granted('Repulsion Wave', RS.g?.level), X = D && { ...asTrig(RS, { ...D, id: 'Repulsion Wave' }), label: RS.label, src: 'repulsion' }; if (!X) return;
     later(.05, () => boom(c, RS.A, X, { stunX: 1 + st['curse_repulsion_shockwave_hit_damage_stun_multiplier_+%_final_per_fragility_on_special_object'] * st.curse_repulsion_applies_X_fragility / 100 }));
@@ -2254,7 +2257,9 @@ export function initScene(el, api) {
           if (d.noRepulse > time && S.name === 'Repulsion') return;
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
-          const s = (sh(S).duration || SIM.curseTime) * (S.curseX || 1);
+          const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
+          if (d.curse && d.curse.name !== S.name) d.hexes = [d.curse, ...(d.hexes || []).filter(u => u.name !== S.name)].slice(0, (sheet().curseLimit || 1) - 1);
+          else d.hexes = (d.hexes || []).filter(u => u.name !== S.name);
           d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
@@ -3000,7 +3005,7 @@ export function initScene(el, api) {
   K.hexblast = S => {
     const st = S.dmg.stats, r = S.A * st.active_skill_base_secondary_area_of_effect_radius / st.active_skill_base_area_of_effect_radius;
     fx.ring(S.at, .3, S.A, 'curse', .35);
-    for (const d of inside(S.at, S.A).filter(d => d.curse && d.curse.s <= d.curse.full / 2).slice(0, st.hexblast_maximum_number_of_explosions)) { d.curse = null; boom({ x: d.pos.x, z: d.pos.z }, r, S); }
+    for (const d of inside(S.at, S.A).filter(d => d.curse && d.curse.s <= d.curse.full / 2).slice(0, st.hexblast_maximum_number_of_explosions)) { d.curse = d.hexes?.pop() || null; boom({ x: d.pos.x, z: d.pos.z }, r, S); }
   };
   // Volatile / Bitter Dead: consumes its corpses (up to its number) where you aim, each a core for its duration that seeks
   // the nearest enemy, its aura part hitting those around it (its Ignite / Chill), and explodes at its end (its explosion
@@ -4320,7 +4325,8 @@ export function initScene(el, api) {
     for (let i = d.flam.length - 1; i >= 0; i--) if ((d.flam[i].s -= dt) <= 0) d.flam.splice(i, 1);
     // the bars empty after a while without buildup (monster.ot poise decay)
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
-    if (d.curse && (d.curse.s -= dt) <= 0) d.curse = null;
+    if (d.curse && (d.curse.s -= dt) <= 0) d.curse = d.hexes?.pop() || null;
+    if (d.hexes?.length) d.hexes = d.hexes.filter(u => (u.s -= dt) > 0);
     if (d.mark && !(d.mark.hound && st.bleed > 0) && (d.mark.s -= dt) <= 0) {   // Bloodhound's Mark lasts while they bleed
       if (d.mark.bomb) markOff(d); else d.mark = null; }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
@@ -4608,7 +4614,7 @@ export function initScene(el, api) {
     const DF = c.deflect && deflection(c), dfl = DF > 0 && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF);
     if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
-    const crit = Math.random() * 100 < a.crit, cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
+    const crit = Math.random() * 100 < a.crit, cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
@@ -4889,7 +4895,7 @@ export function initScene(el, api) {
     if (d.dead) return;
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
-    let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
+    let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
     const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // its slows: Entangle's vines, Hinder
