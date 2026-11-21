@@ -384,7 +384,7 @@ export function sheet(b, sum) {
   // thorns
   const thorns = [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * pct('thorns_damage_+%')));
   // stun / ailment thresholds
-  const { stun, ail } = ailmentDefence(c, sum);
+  const { stun, ail, dur } = ailmentDefence(c, sum);
   const used = new Set(), opt = (label, id, unit = '%') => used.add(id) && sum[id] ? [[label, num(sum[id], Number.isInteger(sum[id]) ? 0 : 1) + unit]] : [];
   const RES = { fire: 'Fire Resistance', cold: 'Cold Resistance', lightning: 'Lightning Resistance', chaos: 'Chaos Resistance' };
   const own = [
@@ -448,7 +448,7 @@ export function sheet(b, sum) {
   const blockMax = (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%');
   // ailment durations on you: the ailment's own, the elemental ones' and all ailments' ("reduced" stats count down)
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
-  const selfDur = e => 100 - (100 - (v(sum, `base_self_${e}_duration_-%`) + eleAil - allAil)) * (1 + v(sum, `self_${e}_duration_+%_final`) / 100);   // % shorter, a "more" too (Warm Blooded)
+  const selfDur = e => 100 - 100 * dur[e];   // % shorter (ailmentDefence)
   const bypass = v(sum, 'base_all_damage_bypass_energy_shield_%'), fromMana = v(sum, 'elemental_damage_removed_from_mana_before_life_%');
   const manaFirst = v(sum, 'base_damage_removed_from_mana_before_life_%');
   return panel(own, sum, used, {
