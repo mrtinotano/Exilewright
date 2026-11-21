@@ -751,8 +751,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const mine = statLines(worn?.extra || {}), its = l.item.extra ? statLines(l.item.extra) : l.extra || [], lost = mine.filter(x => !its.includes(x)), got = its.filter(x => !mine.includes(x));
       const sock = (lost.length ? `<div class="ddn">${esc(t('Socketed in yours, lost: {0}', lost.join(', ')))}</div>` : '') + (got.length ? `<div class="dup">${esc(t('Socketed in it, gained: {0}', got.join(', ')))}</div>` : '');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
-        <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}${sock ? `<div class="bsock">${sock}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4, true)}
-        ${rows.length > 4 ? `<details class="ball"><summary>${t('See every change ({0})', rows.length)}</summary>${impactList(order, true)}</details>` : ''}</span></div>`; }).join('')
+        <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}${sock ? `<div class="bsock">${sock}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactList(order, true)}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.need ? `<p class="note">${t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
