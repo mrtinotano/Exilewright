@@ -4880,8 +4880,9 @@ export function initScene(el, api) {
   const immune = a => me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
   function charmUse(on) {
     charms().forEach((f, n) => {
-      if (!f || f.on !== on || me.cu[n] || charmLeft(n) < f.per) return;
-      if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
+      const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges
+      if (!f || f.on !== on || me.cu[n] || lack && !(CM > 0 && me.mana >= CM)) return;
+      if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
       me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
       if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
       const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }

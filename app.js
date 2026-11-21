@@ -115,6 +115,9 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   const all = [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b))) sum[s] = (sum[s] || 0) + v * k; }
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
+  // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
+  const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
+  if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
   // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
   // radius of the socket (tree units). note: attribute passives counted as small ones (they are no notables)
   for (const [slot, it] of Object.entries(b.items || {})) {
