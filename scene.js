@@ -2327,6 +2327,9 @@ export function initScene(el, api) {
           if (T && S.dmg.totemLife) { const X = asTrig(S, T, scale(T.hits, S.dmg.totemLife * T.stats['base_physical_damage_equal_to_%_of_totem_life'] / 1e4)), p = { x: e.pos.x, z: e.pos.z }; say(X.label, X.el); boom(p, X.A, X); }
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
+      // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
+      const TL = S.dmg?.totemLife;
+      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, hurt(n) { if (!e.dead && this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });
       objs.push(e);
     },
     travel(S) {
@@ -3761,7 +3764,7 @@ export function initScene(el, api) {
     }
     // Spell Totem: it consumes its number of Power and Endurance Charges in any combination, for its more damage per Power
     // Charge and its more totem duration per Endurance Charge
-    // note: which it takes first is the player's choice; Power Charges first here. The totem's life is not simulated
+    // note: which it takes first is the player's choice; Power Charges first here
     const NC = !auto && S.dmg?.stats?.active_skill_requires_X_power_or_endurance_charges;
     if (NC) {
       const have = charges.power + charges.endurance; if (have < NC) { toast(t('{0} needs {1} charges and has {2}', S.label, NC, have)); return false; }

@@ -129,7 +129,7 @@ against unique enemies or per charge spent. Curses apply their gem's resistances
 monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, and marks add their
 critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
-speed the planner calculates for a totem, up to the build's totem limit. Minions are the game's monster their gem raises,
+speed the planner calculates for a totem, up to the build's totem limit, with their life (enemies nearer to one than to you attack it). Minions are the game's monster their gem raises,
 at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers (and the increased damage, attack speed and area some gems give them per your Strength or Dexterity; the Infernal Hound Ignites the enemies around it as though dealt its share of its life as fire damage),
 and their life (the allies' life at their level times their monster's, with your increased and more minion life):
 enemies nearer to a minion than to you attack it, and it dies at none left. An Empowered Zombie takes less damage and moves faster. Bone Offering shields them while its spike
