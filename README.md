@@ -133,7 +133,7 @@ speed the planner calculates for a totem, up to the build's totem limit, with th
 at the level the gem gives, with their own attack or spell and what the game passes them of your minion modifiers (and the increased damage, attack speed and area some gems give them per your Strength or Dexterity; the Infernal Hound Ignites the enemies around it as though dealt its share of its life as fire damage),
 and their life (the allies' life at their level times their monster's, with your increased and more minion life):
 enemies nearer to a minion than to you attack it, and it dies at none left. An Empowered Zombie takes less damage and moves faster. Bone Offering shields them while its spike
-stands, Grim Feast gathers the life of the persistent ones slain in your Presence for its Grim Resurrection, and
+stands, Grim Feast gathers the life of the persistent ones slain in your Presence for its Grim Resurrection, Eternal March spends Runic Ward to Revive the slain ones (the most powerful first, up to its multiple of the ward in their life), and
 Healing Runes spends Runic Ward to heal them.
 Chains, projectiles, grenade fuses, curse delays and totem durations are each gem's own. Skills with mechanics of their own follow
 their gem's numbers too: Glory built from the enemy's Power (Banners, Hammer of the Gods, Walking Calamity), Banners and

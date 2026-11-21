@@ -31,7 +31,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
-const NOHIT = new Set(['meditate', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
+const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -3422,11 +3422,25 @@ export function initScene(el, api) {
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
   }
+  // the fallen minions Revived, in their order, up to n total maximum life of theirs
+  function reviveFallen(n) {
+    let used = 0, k = 0;
+    me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n - used) return !!X; used += f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
+    return { used, k };
+  }
   function grim(S) {
-    let n = me.grim, k = 0; me.grim = 0;
-    me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n) return !!X; n -= f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
+    const { k } = reviveFallen(me.grim); me.grim = 0;
     fx.ring(pp, .3, 2, 'chaos', .5); say(t('{0}: {1} Revived', S.label, k), 'chaos');
   }
+  // Eternal March: it spends up to its most Runic Ward to Revive your fallen minions, the most powerful first, with total
+  // maximum life up to its multiple of the ward spent
+  K.march = S => {
+    const st = S.dmg.stats, x = st['skill_eternal_march_life_per_ward_spent_%'] / 100;
+    me.fallen.sort((a, b) => b.life - a.life);
+    const { used, k } = reviveFallen(Math.min(me.ward, st.skill_eternal_march_maximum_ward_cost) * x);
+    if (used) spendWard(used / x);
+    fx.ring(pp, .3, 2, 'holy', .5); say(t('{0}: {1} Revived', S.label, k), 'holy');
+  };
   // Wither: channelled, its area drifts toward where you aim at its speed; each use Withers the enemies in it
   K.wither = S => {
     const st = S.dmg.stats, W = me.wither, c = W && time - W.t < .5 ? W : { x: S.at.x, z: S.at.z }, l = dist(c, S.at), v = Math.min(l, st.wither_channeled_move_targeting_area_X_units_per_second / 10 * (time - (W?.t ?? time)));
