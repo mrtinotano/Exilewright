@@ -390,7 +390,7 @@ export function recovery(c, sum) {
       stunRare: v(sum, 'recover_%_life_on_heavy_stunning_rare_or_unique_enemy'), stunned: v(sum, 'regenerate_%_life_over_1_second_when_stunned') },
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
     recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
-      prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
+      all: v(sum, 'damage_taken_goes_to_life_over_4_seconds_%'), prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
       es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), time: 8 / pct('recoup_speed_+%') },
   };
 }
