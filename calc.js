@@ -345,6 +345,7 @@ export function character(b, sum) {
     grin: v(sum, 'infernalist_burn_life_and_es_%_per_second_if_crit_recently'),   // Infernalist's Grinning Immolation: ignited after your critical hits
     wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
+    pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
