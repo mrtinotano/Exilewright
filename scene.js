@@ -3435,6 +3435,14 @@ export function initScene(el, api) {
     const { k } = reviveFallen(me.grim); me.grim = 0;
     fx.ring(pp, .3, 2, 'chaos', .5); say(t('{0}: {1} Revived', S.label, k), 'chaos');
   }
+  // Wind Serpent's Fury: its spear thrust in a line in front of you (its area long, its secondary radius wide), then for
+  // each Frenzy Charge it consumed a Wind Serpent (its part) along it, one after another. note: the knockback is not
+  // simulated, nor a serpent's own path (the data gives none): they follow the thrust's line
+  K.serpent = S => {
+    const c = S.from, b = { x: c.x + S.dx * S.A, z: c.z + S.dz * S.A }, w = S.G.radius2 || 1, X = partOf(S, 'WindSerpentsFurySnakePlayer');
+    const thrust = T => { fx.strip(c, b, w * 2, T.el, .4, { a: .7 }); for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w + SIM.body) hit(d, T); };
+    thrust(S); if (X) for (let k = 1; k <= S.spent; k++) later(.2 * k, () => thrust(X));
+  };
   // Eternal March: it spends up to its most Runic Ward to Revive your fallen minions, the most powerful first, with total
   // maximum life up to its multiple of the ward spent
   K.march = S => {
