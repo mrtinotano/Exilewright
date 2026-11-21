@@ -330,7 +330,7 @@ export function character(b, sum) {
       r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
       // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
       // duration, its recovery's faster expiry
-      archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster') },
+      archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster'), archonEffect: pct('archon_effect_on_you_+%') },
     // Elemental Infusions (keywords.json): the most of each kind (Verisium's: the most of any one), their duration,
     // the chances of one more on collecting, of not removing it when consumed, and what consuming one grants
     heat: { delay: CHAR.heat_base_delay_before_decay_ms / 1000, rate: CHAR.heat_base_decay_rate_ms / 1000 },   // crossbow Heat: held a while, then lost one at a time
