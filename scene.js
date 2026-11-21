@@ -170,8 +170,11 @@ export function initScene(el, api) {
   function base(i) {
     const g = api.build().gems[i]; if (!g) return null;
     const c = cache.get(i); if (c && c.g === g && time - c.at < .5) return c.S;
-    const inf = api.info(g), G = api.geo(g), BA = banner('banner_attack_speed_+%'), g1 = archonOn() && inf.gem?.tags?.includes('plant') ? withArchon(g) : g;
-    const dmg = api.damage?.(BA ? { ...g1, add: { ...g1.add, 'attack_speed_+%': BA } } : g1) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
+    const inf = api.info(g), BA = banner('banner_attack_speed_+%'), g1 = archonOn() && inf.gem?.tags?.includes('plant') ? withArchon(g) : g;
+    // Sands of Time (KeywordPopups Chronobuff): 60% increased skill speed scaling down to 1% over 10 seconds and back up, the
+    // area of effect the other way round, from 1% to 60%
+    const ST = sheet().sands && 1 + 59 * Math.abs(time % 20 - 10) / 10, add = { ...g1.add, ...(BA && { 'attack_speed_+%': BA }), ...(ST && { 'skill_speed_+%': (g1.add?.['skill_speed_+%'] || 0) + ST, 'base_skill_area_of_effect_+%': (g1.add?.['base_skill_area_of_effect_+%'] || 0) + 61 - ST }) };
+    const g2 = BA || ST ? { ...g1, add } : g1, G = api.geo(ST ? g2 : g), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight

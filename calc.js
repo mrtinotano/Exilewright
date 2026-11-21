@@ -362,6 +362,7 @@ export function character(b, sum) {
     tides: sum.blood_mage_life_flask_buff_duration_ms ? { gain: v(sum, 'gain_X_life_flask_charges_per_4%_life_spent'), use: v(sum, 'blood_mage_life_flask_buff_%_charges_to_consume'),
       per: v(sum, 'blood_mage_life_flask_buff_%_damage_to_gain_as_physical_per_charge_consumed'), dur: sum.blood_mage_life_flask_buff_duration_ms / 1000, dry: !!sum.base_life_flasks_do_not_recover_life } : null,
     shot: [v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_decreases'), v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_increases')],   // Deadeye's Point Blank / Far Shot: projectile hits' more damage by how far they have travelled
+    sands: !!sum['chronomancer_grant_cast_speed_+%'],   // Chronomancer's Quicksand Hourglass: Sands of Time
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
