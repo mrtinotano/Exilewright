@@ -378,6 +378,7 @@ export function recovery(c, sum) {
     lifeInc, manaInc,
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
+    blindEffect: v(sum, 'blind_effect_+%'),
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
