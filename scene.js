@@ -4817,7 +4817,7 @@ export function initScene(el, api) {
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
-    if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on   // overflowed ward stays
+    if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
     leylines(dt); bells(dt); withering(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
