@@ -294,7 +294,7 @@ export function initScene(el, api) {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
-    frags.forEach(f => f.dec?.remove()); frags = [];
+    frags.forEach(f => f.dec.remove()); frags = [];
     timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; clog = []; byS = {}; lastHit = null; dummies.forEach(restore); heal(); hudT = 0;
@@ -1660,12 +1660,12 @@ export function initScene(el, api) {
   // Kept so a skill can set them off sooner (Cross Slash pulls them in)
   function frag(p, R, delay, go) {
     const F = { p, R, go, dec: fx.decal(p, R, 'patch', 'cold', { a: .6, k: 1 }) };
-    F.off = () => { if (!frags.includes(F)) return; frags = frags.filter(f => f !== F); F.dec?.remove(); F.dec = null; pop(F.p, F.R, 'ice'); F.go(F.p); };
+    F.off = () => { if (!frags.includes(F)) return; frags = frags.filter(f => f !== F); F.dec.remove(); pop(F.p, F.R, 'ice'); F.go(F.p); };
     frags.push(F); later(delay, F.off);
   }
   // Ice-Tipped Arrows, Escape Shot: where an empowered (its) projectile hits, its number of ice fragments scatter forward
   // in its cone, each landing between its least and most distance, and explode after its detonation time (its fragment part)
-  // the fragments' hit: the attack's, its physical as cold, at their part's multiplier over the attack's own (note: the
+  // the fragments' hit: the attack's, all its physical as cold (their part converts all of it), at their part's multiplier over the attack's own (note: the
   // data has them as a spell part, with no weapon damage of their own)
   function fragsOf(S, X) {
     const H = { ...S.dmg.hits }; if (H.physical) { const c = H.cold || [0, 0]; H.cold = [c[0] + H.physical[0], c[1] + H.physical[1]]; delete H.physical; }
@@ -3174,8 +3174,8 @@ export function initScene(el, api) {
     }
     for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
     for (const F of frags.filter(F => dist(F.p, c) <= st.ice_chunk_refire_search_radius / 10)) {
-      frags = frags.filter(f => f !== F); F.dec.remove(); F.dec = null;
-      lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(c.x, .1, c.z), .2, .5, () => { F.p = c; frags.push(F); F.off(); });
+      frags = frags.filter(f => f !== F); F.dec.remove();
+      lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(c.x, .1, c.z), .2, .5, () => { pop(c, F.R, 'ice'); F.go(c); });
     }
     const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
   };
