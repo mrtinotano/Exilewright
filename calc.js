@@ -411,7 +411,7 @@ export function recovery(c, sum) {
     parryMag: v(sum, 'parried_magnitude_+%'), debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
-    killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
+    killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
       full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
     // what an event recovers: consuming a power charge (% of maximum mana) or an endurance charge (% of life), a block
     // (flat life), using your mana flask (% of life) or a charm (% of mana), heavily stunning a rare or unique enemy (% of
@@ -1194,7 +1194,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
-  const FB = 1 + all('faster_burn_%') / 100;   // Burnout, Searing Heat: ignites deal their damage faster (more a second, over a shorter time)
+  const FA = 1 + all('damaging_ailments_deal_damage_+%_faster') / 100, FB = FA + all('faster_burn_%') / 100;   // Fast Acting Toxins (all three), Burnout, Searing Heat (ignites): damaging ailments deal their damage faster (more a second, over a shorter time)
   // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
@@ -1212,13 +1212,13 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
-    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/),   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/),
+    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
+    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
-    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final'), poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/),   // Escalating Poison's less
+    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA,   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),

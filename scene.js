@@ -1232,7 +1232,7 @@ export function initScene(el, api) {
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
     const KR = S && sheet().killRecover;   // none while the sheet is not there yet
-    if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100); }
+    if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100); }
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
