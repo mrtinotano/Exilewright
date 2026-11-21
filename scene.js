@@ -4708,13 +4708,13 @@ export function initScene(el, api) {
   }
   function activeBlock(d, a) {
     const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised, RF = time < me.refute?.until && me.refute.st;
-    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 }; blocked(d); return true; }
+    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) }; blocked(d); return true; }
     if (!P && !R) return false;
     if (P) {
       const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
       if (l > far + SIM.body * d.sc) return false;
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
-      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 };
+      d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
     } else { R.blocked = time; spray(d); }
     blocked(d); return true;
   }

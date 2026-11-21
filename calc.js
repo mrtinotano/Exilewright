@@ -448,7 +448,7 @@ export function recovery(c, sum) {
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
-    parryMag: v(sum, 'parried_magnitude_+%'), debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
+    parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
