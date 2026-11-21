@@ -385,6 +385,8 @@ export function recovery(c, sum) {
     // Witchhunter's Witchbane: enemies' Focus (a share of their maximum life) your hits drain, coming back after its delay; No Mercy
     focus: sum['%_maximum_life_as_focus'] ? { life: sum['%_maximum_life_as_focus'], drain: v(sum, 'drain_focus_%_of_damage_dealt_on_hit'), decay: v(sum, 'focus_decay_%_per_minute'), delay: v(sum, 'focus_decay_delay_ms') / 1000,
       mercy: v(sum, 'witchhunter_up_to_damage_+%_final_against_targets_with_missing_focus') } : null,
+    // Infernalist's Pyromantic Pact: Infernal Flame instead of mana
+    flame: sum['infernal_flame_instead_of_mana_at_%_ratio'] ? { ratio: sum['infernal_flame_instead_of_mana_at_%_ratio'], decay: v(sum, 'lose_%_of_max_infernal_flame_per_minute'), hit: v(sum, 'hit_for_%_max_life_es_on_max_infernal_flame'), lose: v(sum, 'lose_%_of_infernal_flame_on_reaching_max') } : null,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
