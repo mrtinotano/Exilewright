@@ -150,7 +150,9 @@ function inc(sum, suffix, tags) {
 }
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
-  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || d.tags || [], T = treeSum(), { sum, finals } = withSupports(g, g.add ? Object.entries(g.add).reduce((o, [k, n]) => (o[k] = (o[k] || 0) + n, o), { ...T }) : T);  // supports' area / speed count; a buff the scene has on (g.add)
+  const d = SK.skills[g.name] || {}, tags = gems.find(x => x.name === g.name)?.tags || d.tags || [], T = { ...treeSum() };
+  for (const [k, n] of Object.entries(g.add || {})) T[k] = (T[k] || 0) + n;   // a buff the scene has on (g.add)
+  const { sum, finals } = withSupports(g, T);  // supports' area / speed count
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
   const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
   const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
