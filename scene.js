@@ -395,6 +395,14 @@ export function initScene(el, api) {
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
+    // His Winnowing Flame: its sweep consumes an enemy's Ignite for its pillars of flame (up to its most per use), each that
+    // share of the Ignite's remaining damage as fire. note: the pillar's area is not in the data (the enemy alone), nor
+    // an aggravated Ignite's extra pillars
+    const WF = !S.src && D?.stats?.unique_pillar_of_flame_consume_ignite_to_create_X_pillars, WS = WF && SK.skills[S.name]?.part;
+    if (WS && d.st.ignite > 0 && (S.pillars = (S.pillars || 0) + WF) <= D.stats.flame_pillar_unique_maximum_pillars_per_skill_use) {
+      const n = (d.burn.ignite?.dps || 0) * d.st.ignite * WS['unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage'] / 100, c = { x: d.pos.x, z: d.pos.z };
+      clear(d, 'ignite'); fx.pillar(c, .4, 2.6, 'fire', .5, 1); later(.1, () => lifeBlast(c, 0, S, 'fire', n));
+    }
     if (!o.noPay) {
       const C = A?.consume || {}, uniq = d.stat.rarity === 'unique';
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
