@@ -798,6 +798,7 @@
  "Keys and statistics of the simulator": "ปุ่มและสถิติของเครื่องจำลอง",
  "Rage": "คลั่ง",
  "Not enough mana for {0}": "มานาไม่พอสำหรับ {0}",
+ "Not enough Rage for {0}": "คลั่งไม่พอสำหรับ {0}",
  "Not enough life for {0}": "พลังชีวิตไม่พอสำหรับ {0}",
  "Shield": "โล่พลังงาน",
  "Empty": "ว่าง",

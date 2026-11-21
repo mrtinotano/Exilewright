@@ -457,9 +457,12 @@ export function rageOf(b, sum) {
   const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
   const W = weaponStats(b.items); if (W && weaponTags(W).includes('axe')) gain.hit += v(sum, 'gain_x_rage_on_hit_with_axes');   // with an axe in hand
   const fromSupport = (b.gems || []).some(x => (x.supports || []).some(n => ['gain_x_rage_on_melee_hit', 'gain_x%_of_maximum_rage_on_melee_hit'].some(k => SK.skills[n]?.constant?.[k])));   // Rage I-III, Medved's
-  const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage'), any = !!rg || !!sum.maximum_rage || fromSupport || Object.values(gain).some(x => x > 0);
+  // Shaman's Furious Wellspring: more maximum Rage, its % of maximum Rage regenerated a second (with your mana regeneration
+  // rate's modifiers) and its Rage cost on every skill; Druidic Champion: more spell damage per 2 Rage
+  const regenPct = v(sum, 'base_rage_regeneration_rate_per_minute_%') / 6000 * (sum.mana_regeneration_rate_modifiers_apply_to_rage_regeneration ? 1 + v(sum, 'mana_regeneration_rate_+%') / 100 : 1);
+  const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage', 'natures_sustenance_additional_maximum_rage'), any = !!rg || !!sum.maximum_rage || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
   return {
-    base: any ? base : 0, gain, delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000, loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60,
+    base: any ? base : 0, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000, loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60,
     regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
     berserk: bz && { name: bz.name, effect: bs['skill_base_rage_effect_+%_to_apply'] || 0, max: bs['berserk_maximum_rage_granted_+'] || 0, lifePerRage: (bs['skill_base_life_loss_%_per_minute_per_rage_while_not_losing_rage_to_apply'] || 0) / 60 },
   };

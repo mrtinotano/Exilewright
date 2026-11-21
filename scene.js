@@ -463,6 +463,7 @@ export function initScene(el, api) {
       if (EC) { if (!(time < me.conflux?.until)) me.conflux = { el: ELEM[Math.floor(Math.random() * ELEM.length)], until: time + durOf(EC) }; if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
       if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] / 100;
+      const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
       if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((d.bar.stun || 0) / 5) / 100;
@@ -709,6 +710,7 @@ export function initScene(el, api) {
     decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
+    if (on === 'mark' && d) weaken(d, S?.dmg?.sum?.apply_X_critical_weakness_on_consuming_mark || 0);   // Deadeye's Bullseye: Critical Weakness on consuming a Mark
     if (on === 'mark' && S?.called && Math.random() * 100 < (SK.skills['Called Shots'].meta_support?.['your_marks_spread_to_a_nearby_enemies_on_consume_%_chance'] || 0)) later(.1, () => { const e = unmarked(d.pos, CALLED.spread)[0]; if (e) markOn(e, S); });
     for (const T of S?.dmg?.trig || []) {
       const ts = T.stats || {}, U = T.support, kind = KINDS.find(([k]) => ts[k])?.[1];
@@ -3904,6 +3906,7 @@ export function initScene(el, api) {
       if (FT) me.fl[1] -= FT;
       if (OH?.['added_physical_damage_%_ward_cost']) { const H = { ...S.dmg.hits }; for (const [el, k] of [['physical', 'added_physical_damage_%_ward_cost'], ['cold', 'added_cold_damage_%_ward_cost']]) H[el] = (H[el] || [0, 0]).map(v => v + WC * OH[k] / 100); S.dmg = { ...S.dmg, hits: H }; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
+      const RC = sheet().rage?.cost; if (RC && me.rage < RC) { toast(t('Not enough Rage for {0}', S.label)); return false; }   // Furious Wellspring: Rage cost on every skill
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
       if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
@@ -3917,7 +3920,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) me.rage -= RC; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -5123,6 +5126,7 @@ export function initScene(el, api) {
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }
     if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);
+    if (R.regenPct) gainRage(R.regenPct * top * dt);   // Furious Wellspring: its share of maximum Rage a second
     if (time < me.calamity?.until) gainRage(me.calamity.rage / 60 * dt);
     if (time - me.raged > R.delay) me.rage = Math.max(0, me.rage - R.loss * dt);
     me.rage = Math.min(me.rage, top);
