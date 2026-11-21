@@ -301,6 +301,10 @@ export function character(b, sum) {
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
     blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
+    // how long each lasts (times the base) and the chance to gain one more when you gain one
+    chargeTime: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, 1 + v(sum, 'charge_duration_+%', `${c}_charge_duration_+%`, `base_${c}_charge_duration_+%`) / 100])),
+    delayHit: { less: v(sum, 'chronomancer_damage_taken_+%_final'), later: v(sum, 'chronomancer_take_%_of_hit_damage_4_seconds_after_being_hit') },   // Chronomancer
+    chargeMore: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, v(sum, `chance_to_gain_1_more_${c}_charge_%`)])),
     res, penalty,
     // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
     move: (1 + (v(sum, 'base_movement_velocity_+%') - armourItems(b.items).movement) / 100) * (1 + armourItems(b.items).movement / 100) * 100 - 100,

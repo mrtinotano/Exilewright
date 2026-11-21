@@ -345,7 +345,8 @@ export function initScene(el, api) {
   function gainCharge(type, by) {
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
-    charges[type]++; fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
+    charges[type]++; if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
+    fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
   }
   // n: damage in life points, already past the enemy's armour and resistances. Energy shield first, then life.
@@ -2324,7 +2325,7 @@ export function initScene(el, api) {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
-        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: 1 + (st['energy_generated_+%'] || 0) / 100, cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
+        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100),   /* Invoker: more */ cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
@@ -4611,7 +4612,9 @@ export function initScene(el, api) {
     }
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     if (dealt.lightning > 0) valako(dealt.lightning);
-    const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
+    // Chronomancer: less damage taken now, and its share of the hit taken 4 seconds later (its stat's own delay)
+    const RT = tempered(d), DH = sheet().delayHit, k = 1 + (DH?.less || 0) / 100; hurt(total * RT * k, chaos * RT * k, top, crit, d);
+    if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
@@ -5128,7 +5131,7 @@ export function initScene(el, api) {
       for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S, 1, g.S?.raw);   // raw: a ground with a damage of its own (Burning Inscription)
     }
     vitals(dt); tickHazards(dt);
-    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME) charges[c] = 0;
+    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) charges[c] = 0;   // with the build's charge duration
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); if (d.agony && time >= d.agony.until) agonyEnds(d); }
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);
