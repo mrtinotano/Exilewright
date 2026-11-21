@@ -460,7 +460,9 @@ export function initScene(el, api) {
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
-      const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
+      // Pain Attunement: 30% less critical damage bonus on full life, 30% more on low life
+      const PAIN = sheet().pain && S.src !== 'minionHit' ? me.life <= me.maxL * LOW ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1;
+      const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       const LK = !/minion/.test(S.src || '') && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0);
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
@@ -4210,7 +4212,7 @@ export function initScene(el, api) {
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
   function roll() {
-    if (move || rollCd > 0 || stuck()) return;
+    if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
@@ -4733,14 +4735,15 @@ export function initScene(el, api) {
     // rolling restores your life first and grants Sight Beyond Sight (its secondary duration: you cannot die), then
     // Hindsight again. note: her copy (foresight_clone_duration_ms) is a look the scene does not have
     const FP = onS('Future-Past'), foresight = seen();
-    if (move && !move.S && !a.area && !foresight) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
+    if (move && !move.S && !a.area && !foresight && !sheet().bulwark) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
     if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }
     if (!a.unblockable && activeBlock(d, a)) return;
     // Runic Reprieve's bubble Blocks the hit: you take its share of the damage, also taken off your Runic Ward, and are not
     // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
     if (RR) blocked(d);
-    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
+    if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
@@ -4748,11 +4751,11 @@ export function initScene(el, api) {
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
     // deals its less damage
-    const DF = c.deflect && deflection(c), dfl = DF > 0 && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF);
+    const DF = c.deflect && deflection(c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || c.glancing && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
     if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
+    const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
@@ -4844,7 +4847,7 @@ export function initScene(el, api) {
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
     me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
     const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
-    if (!frozen() && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
+    if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
     if (x('physical') && roll((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
@@ -5176,7 +5179,7 @@ export function initScene(el, api) {
       // Grinning Immolation: ignited after dealing a critical hit, its % of your maximum life and energy shield as fire a second
       const GI = c.grin && meIs.CritRecently() ? playerTakes(withCharms(c), 'fire', (me.maxL + me.maxE) * c.grin / 100, false) * .5 : 0;
       if (GI) { n += GI; if (GI > best) worst = 'fire'; }
-      if (n > 0) hurt(n, chaos, worst, false, me.by);
+      if (n > 0) { const k = heart(); hurt(n * k, chaos * k, worst, false, me.by); }
     }
     const p = { x: pp.x, y: .9, z: pp.z }, S = me.st;
     if (S.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
@@ -5233,8 +5236,14 @@ export function initScene(el, api) {
       if (me.safe > 0 || dist(h, pp) > h.r) continue;
       const c = withCharms(sheet()); let n = 0, chaos = 0;
       for (const el in h.dot) { const got = playerTakes(c, el, h.dot[el], false) * .5; n += got; if (el === 'chaos') chaos += got; }
-      hurt(n, chaos, h.el, false, h.d);
+      const k = heart(); hurt(n * k, chaos * k, h.el, false, h.d);
     }
+  }
+  // Heartstopper: 50% less damage over time for a second after it starts, 50% more after (its start: none in the tick before)
+  function heart() {
+    if (!sheet().heart) return 1;
+    if (!(time - (me.dotLast ?? -99) <= .6)) me.dotStart = time;
+    me.dotLast = time; return time - me.dotStart <= 1 ? .5 : 1.5;
   }
   function step(dt) {
     // movement: a roll or a dash, else W A S D or the stick (not while a skill is being used: note: the game's own lock is
