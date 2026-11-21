@@ -293,7 +293,7 @@ export function character(b, sum) {
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
-    block: v(sum, 'additional_block_%', 'block_%'),
+    block: v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0),   // Renly's Training: the shield's base chance (note: a shield's own is not in the data)
     takenAs: takenAs(sum),
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
