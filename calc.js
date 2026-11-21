@@ -923,7 +923,7 @@ export function skill(g, b, treeGear) {
   // a minion gem: the hits are its minion's (the DPS one minion's)
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
   const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
-  const mn = out.minion = mid ? minionOf(st, sum, fin, mid) : null;
+  const mn = out.minion = mid ? minionOf(st, sum, fin, mid, attributes(sum, b?.asc)) : null;
   out.minionLife = mid ? minionLife(st, sum, mid, finals) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
@@ -1037,11 +1037,15 @@ function minionStats(st, sum, ms) {
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
   return ms;
 }
-function minionOf(st, sum, fin, id) {
+function minionOf(st, sum, fin, id, at = {}) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1];
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
   const a = attackOf(m, level, key, 'normal', true), ms = minionStats(st, sum, { ...SK.minion_intrinsic });
+  // Ancestral Spirits, Manifest Weapon, Supporting Fire, Azmerian Swarms: 1% increased minion damage, attack speed and area
+  // per their amount of your Strength / Dexterity
+  for (const [k, to, a] of [['minion_1%_damage_+%_per_X_player_strength', 'damage_+%', 'str'], ['active_skill_minion_1%_attack_speed_+%_per_X_player_dexterity', 'attack_speed_+%', 'dex'],
+    ['minion_1%_area_of_effect_+%_per_X_player_dexterity', 'base_skill_area_of_effect_+%', 'dex']]) if (st[k]) ms[to] = (ms[to] || 0) + Math.floor((at[a] || 0) / st[k]);
   const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
   // added damage, then physical converted and gained as other types, as for the character
   const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
