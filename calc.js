@@ -1051,8 +1051,11 @@ export function skill(g, b, treeGear) {
   // a minion gem: the hits are its minion's (the DPS one minion's)
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
   const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
-  const mn = out.minion = mid ? minionOf(st, sum, fin, mid, attributes(sum, b?.asc)) : null;
-  out.minionLife = mid ? minionLife(st, sum, mid, finals) : null;
+  // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
+  // speed, area, resistances). note: the ones with no such twin (damage as chaos / cold, movement speed) are not counted
+  const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
+  const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc)) : null;
+  out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
@@ -1161,6 +1164,7 @@ function minionLife(st, sum, id, finals = {}) {
   return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
     * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1));
 }
+const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
@@ -1203,6 +1207,9 @@ if (SK.minions['Raise Zombie']) {
   // life: a level 2 zombie (gem level 1) has floor(83 x 0.7) = 58, as PoB2's (RaisedZombie life 0.7); 50% increased: 87
   const l = n => skill({ name: 'Raise Zombie', level: 1, supports: [] }, { gems: [], items: {} }, n ? { 'minion_maximum_life_+%': n } : {}).minionLife;
   console.assert(l() === 58 && l(50) === 87, 'minion life', l(), l(50));
+  // a Companion takes "Companions have #% increased Damage / maximum Life"; a zombie does not
+  const w = n => skill({ name: n, level: 10, supports: [] }, { gems: [], items: {} }, { 'companion_damage_+%': 100, 'companion_maximum_life_+%': 50 }), w0 = skill({ name: 'Azmerian Wolf', level: 10, supports: [] }, { gems: [], items: {} }, {});
+  console.assert(Math.abs(w('Azmerian Wolf').dps - 2 * w0.dps) < 1e-6 && w('Azmerian Wolf').minionLife === Math.round(w0.minionLife * 1.5) && w('Raise Zombie').minionLife === 620, 'companion stats');
 }
 
 function markOf(st) {
