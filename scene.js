@@ -3502,6 +3502,13 @@ export function initScene(el, api) {
       fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
     } }));
   };
+  // Tame Beast: its wisps engulf the Rare Beast nearest your aim, Hindering it by its % for its duration. note: capturing
+  // the beast is not simulated
+  K.tame = S => {
+    const d = dummies.filter(e => !e.dead && e.mon.category === 'Beast' && e.stat.rarity === 'rare').sort((p, q) => dist(p.pos, S.at) - dist(q.pos, S.at))[0];
+    if (!d) return;
+    d.slows.push({ until: time + durOf(S), pct: -S.dmg.stats['tame_beast_hinder_%'] }); fx.ring(d.pos, .2, 1, 'poison', .5, { a: .5 });
+  };
   // Temporal Rift: an afterimage of you every its interval, up to its most (vitals); used, you go back to the oldest, with
   // the life, mana and energy shield you had then
   K.trift = S => {
