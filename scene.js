@@ -628,7 +628,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -940,14 +940,15 @@ export function initScene(el, api) {
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
     if (FF != null) { d.st.ignite = Math.max(d.st.ignite, d.full?.ignite || DUR.ignite); d.noIgn = time + d.st.ignite; }
     const EAx = S.P.spell && !S.src && time < me.earch ? 1 + EARCHON.ail / 100 : 1;   // Elemental Archon: more Flammability, Shock chance and Freeze buildup
+    const AR = (['rare', 'unique'].includes(d.stat.rarity) ? A.ailRare || 1 : 1) * (!S.src && meIs.ShapeshiftedRecently() ? A.ailShift || 1 : 1), AC = (A.ailChance || 1) * AR;   // the tree's increased chance to inflict ailments (bleeding, poison; ignite and shock have it in theirs)
     if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite && !(d.noIgn > time)) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
-      d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance * EAx, s: GC.BaseFlammabilityDuration });
+      d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance * EAx * AR, s: GC.BaseFlammabilityDuration });
       if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
+    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
       const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
@@ -968,18 +969,19 @@ export function initScene(el, api) {
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
     if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
-    if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
+    const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1);   // the tree's stun buildup after Shapeshifting, within 2 m
+    if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);
     // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
     // against the enemy's maximum life, 100% at all of it, none under the least chance (GameConstants); it cannot act for
     // its length (monster.ot)
-    const LS = Math.min(100, all * A.stunMelee * A.stun * (o.stunX || 1) / Math.max(1, d.max) * 100);
+    const LS = Math.min(100, all * A.stunMelee * A.stun * STX * (o.stunX || 1) / Math.max(1, d.max) * 100);
     if (!N.stun && !(d.st.stun > 0) && LS >= GAME.light_stun_min && roll(LS)) {
       d.lstun = time + GAME.light_stun_ms / 1000; fx.ring(d.pos, .2, .8, 'white', .2, { a: .5 });
       if (!S.src) { vanguard(S, false); remnantOn('stun', d); }
     }
     // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding
     // is more effective per Incision removed recently
-    if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (A.incFx || 1) * (d.inc || 0) + (o.crit ? A.bleedCrit || 0 : 0))) {
+    if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * AC * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (A.incFx || 1) * (d.inc || 0) + (o.crit ? A.bleedCrit || 0 : 0))) {
       const cut = d.inc > 0; me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
       const ri = me.incs.reduce((t, u) => t + u.n, 0);
       inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: (A.bleedBase ?? DUR.bleed) * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) * (cut ? A.bleedIncision || 1 : 1) });   // Concoct; the tree's against Incision
@@ -994,7 +996,7 @@ export function initScene(el, api) {
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
-    if (xa('poison', 'physical') + x('chaos') && roll(A.poison)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
+    if (xa('poison', 'physical') + x('chaos') && roll(A.poison * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -2622,7 +2624,7 @@ export function initScene(el, api) {
         const ps = S.dmg?.part || {};
         for (let k = 1; k <= cs; k++) later(k * ps.aftershock_delay_ms / 1000, () => boom(c, R + k * ps['aftershock_radius_+_per_previous_aftershock'] / 10, S));
         // Tremors (and Titan's Earthbreaker): its independent chances for one, two and three more Aftershocks, each the slam's damage in its area after it (keywords.json)
-        const TR = !S.src && S.dmg?.sum, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3], ['your_slam_aftershock_chance_%', 1]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) ? k : 0), 0) : 0;
+        const TR = !S.src && S.dmg?.sum, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3], ['your_slam_aftershock_chance_%', 1]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) ? k : 0), 0) + (Math.random() * 100 < (sh(S).aftershock || 0) ? 1 : 0) : 0;
         for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R, S); });
         // Titan's Mountain Splitter: every third Slam you use yourself that doesn't create Fissures, its Aftershocks ahead and to
         // each side of the slam (one each). note: their delay is not in its data: at once, the slam's damage and area
@@ -4796,7 +4798,7 @@ export function initScene(el, api) {
     if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => Math.random() * 100 < a.crit, crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
+    const OR = sheet(), roll = () => Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {

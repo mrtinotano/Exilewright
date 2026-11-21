@@ -325,7 +325,7 @@ export function character(b, sum) {
     accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (weaponStats(b.items)?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * pct('accuracy_rating_+%')), accuracyInc: pct('accuracy_rating_+%'), lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
-      'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%'),
+      'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
     missingBase: lifeBase == null,
     // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
     // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
@@ -459,7 +459,7 @@ export function recovery(c, sum) {
     lifeInc, manaInc,
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
-    blindEffect: v(sum, 'blind_effect_+%'),
+    blindEffect: v(sum, 'blind_effect_+%'), blindCrit: v(sum, 'enemies_you_blind_have_critical_strike_chance_+%'),   // and the critical hit chance of enemies you Blind
     // Martial Artist's Mountain's Teachings (Way of the Mountain)
     mountain: sum.stone_skin_maximum_stacks ? { chance: v(sum, 'chance_%_to_gain_one_stone_skin_stack_on_immobilising'), max: sum.stone_skin_maximum_stacks, dur: v(sum, 'stone_skin_duration_ms') / 1000,
       attack: v(sum, 'stone_skin_grants_attack_damage_+%_final_you_use_yourself'), taken: v(sum, 'stone_skin_grants_damage_taken_+%_final'), stun: v(sum, 'stone_skin_grants_stun_threshold_+%_final'), upTo: v(sum, 'stone_skin_grants_damage_reduction_life_threshold_%') || 100 } : null,
@@ -761,7 +761,7 @@ const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
   ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
   ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently'],
-  ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently']];
+  ['critical_hit_chance_+%_vs_humanoids', 'crit', 'Humanoid', 'e'], ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -1178,6 +1178,8 @@ export function skill(g, b, treeGear) {
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
     // the tree's chances for more projectiles: "Surpassing" (each full 100% one more, the rest a chance), with bow
     // attacks too; spells' chance for 2 more
+    // the tree's chance for another Aftershock with Mace Slams or Shapeshift Slams (as "your_slam_aftershock_chance_%", by the scene)
+    aftershock: own.includes('slam') ? (tags.includes('mace') && attack ? v(sum, 'your_mace_slam_aftershock_chance_%') : 0) + (own.includes('shapeshift') ? v(sum, 'shapeshift_slam_skill_aftershock_chance_%') : 0) : 0,
     extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0),
       two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (sum.keystone_hex_master ? 2 : 1)),
@@ -1313,6 +1315,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   // buildup of the skill's tags or weapon (melee_, projectile_, quarterstaff_, mace_, ballista_, hazard_, parry_...)
   const tagInc = k => inc(sum, k, tags) - (sum[k] || 0) - (sum['base_' + k] || 0);
+  const ailInc = all('ailment_chance_+%') + tagInc('ailment_chance_+%'), stunInc = all('hit_damage_stun_multiplier_+%') + tagInc('hit_damage_stun_multiplier_+%');
   // with critical hits: more of the ailments' magnitude, with their other increased ([increased, the critical ones])
   const critX = (incs, ...c) => { const i = incs.reduce((t, k) => t + all(k), 0), x = c.reduce((t, k) => t + all(k), 0); return x ? (1 + (i + x) / 100) / (1 + i / 100) : 1; };
   const dmgI = ['ailment_effect_+%', 'base_damaging_ailment_effect_+%'], nonI = ['ailment_effect_+%', 'non_damaging_ailment_effect_+%'];
@@ -1330,11 +1333,19 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),
     maimMore: all('spearfield_maim_slows_an_additional_%'),   // Spearfield's maims slow more
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
-    igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
+    // increased chance to inflict Ailments (the skill's tags': projectile_, one_handed_attack_) counts for bleeding, poison,
+    // ignite and shock (PoB2 CalcOffence AilmentChance); more against rare or unique enemies, shock against electrocuted
+    ailChance: 1 + ailInc / 100, ailRare: (1 + (ailInc + all('ailment_chance_+%_vs_rare_or_unique_enemy')) / 100) / (1 + ailInc / 100),
+    shockElectro: (1 + (ailInc + all('shock_chance_+%') + all('shock_chance_+%_vs_electrocuted_enemies')) / 100) / (1 + (ailInc + all('shock_chance_+%')) / 100),
+    igniteChance: (1 + (all('ignite_chance_+%') + ailInc) / 100) * more(/(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: (1 + (all('shock_chance_+%') + ailInc) / 100) * more(/(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
     freeze: (1 + (all('hit_damage_freeze_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_freeze_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * more('hit_damage_freeze_multiplier_+%_final') * SF,
     immob: (1 + (all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
-    stun: (1 + (all('hit_damage_stun_multiplier_+%') + tagInc('hit_damage_stun_multiplier_+%')) / 100) * more('hit_damage_stun_multiplier_+%_final'),
+    stun: (1 + stunInc / 100) * more('hit_damage_stun_multiplier_+%_final'),
+    // more of it if you've Shapeshifted to an Animal form Recently, against enemies within 2 m; elemental ailment chance after Shapeshifting
+    stunShift: (1 + (stunInc + all('hit_damage_stun_multiplier_+%_if_youve_shapeshifted_to_animal_recently')) / 100) / (1 + stunInc / 100),
+    stunClose: (1 + (stunInc + all('hit_damage_stun_multiplier_+%_vs_enemies_at_close_range')) / 100) / (1 + stunInc / 100),
+    ailShift: (1 + (ailInc + all('elemental_ailment_chance_+%_if_youve_shapeshifted_to_animal_recently')) / 100) / (1 + ailInc / 100),
     // "increased Magnitude of Ailments you inflict" counts for each, of Damaging Ailments for ignite, poison and bleeding, of Non-Damaging ones for shock and chill
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
@@ -1402,6 +1413,8 @@ const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%
 const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = OWN[k] || 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
+  // what Allies in your Presence get. ponytail: counted always (a minion is near you most of the time); the scene's presence check if it matters
+  for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }
