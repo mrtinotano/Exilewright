@@ -931,6 +931,11 @@ export function skill(g, b, treeGear) {
   }
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
+  // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
+  // note: not counted "while Shapeshifted" (the scene has none) nor the weapon's local penetration
+  out.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, v(sum, `base_reduce_enemy_${e}_resistance_%`, 'reduce_enemy_elemental_resistance_%', 'base_penetrate_elemental_resistances_%')
+    + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') : 0)]));
+  if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
   if (infSpell) out.when.push({ cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });

@@ -126,7 +126,7 @@ movement and lowers their evasion. The tree's and gear's increased damage agains
 heavy stunned, on full life, rare or unique...) counts on the hits that find it so. Each skill keeps its own rules: what it
 never or always inflicts, the more damage it deals when it consumes a state or hits one (frozen, shocked, immobilised...),
 against unique enemies or per charge spent. Curses apply their gem's resistances, armour, damage and speed (less on rarer
-monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, and marks add their
+monsters, none above the gem's level limit), Exposure lowers resistances by its source's magnitude, a hit's penetration (supports, tree; lightning on low mana) lowers a positive resistance, never below 0, and marks add their
 critical damage or freeze / electrocute buildup (Freezing and Voltaic Mark grant their extra damage when that fills).
 Totems use their gem's own attack or spell, or the gem placed in them (Mortar Cannon's grenade), with the damage and
 speed the planner calculates for a totem, up to the build's totem limit, with their life (enemies nearer to one than to you attack it). Minions are the game's monster their gem raises,

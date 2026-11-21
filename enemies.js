@@ -155,9 +155,11 @@ export function playerTakes(c, type, raw, isHit = true) {
   return raw * (1 - AR) * (1 - (c.res?.[type]?.capped || 0) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
-export function enemyTakes(st, type, raw, isHit = true) {
+// pen: the hit's penetration of that resistance, which lowers only a positive resistance and not below 0 (PoB2)
+export function enemyTakes(st, type, raw, isHit = true, pen = 0) {
   if (type === 'physical') return isHit ? raw * (1 - armourCut(st.armour, raw, K.monster_max_physical_reduction ?? 75)) : raw;
-  return raw * (1 - (st.res[type] || 0) / 100);
+  const res = st.res[type] || 0;
+  return raw * (1 - (isHit && pen && res > 0 ? Math.max(res - pen, 0) : res) / 100);
 }
 // block applies to strikes and projectiles, not to area damage or to skills the data marks as unblockable
 export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp(c.block || 0, 0, K.player_max_block ?? 50);
@@ -188,7 +190,7 @@ export function versusPlayer(atk, st, c) {
 export function versusEnemy(dmg, st, accuracy) {
   const types = TYPES.filter(el => dmg.hits[el]).map(el => {
     const [lo, hi] = dmg.hits[el];
-    return { type: el, raw: [lo, hi], taken: [enemyTakes(st, el, lo), enemyTakes(st, el, hi)].map(Math.round) };
+    return { type: el, raw: [lo, hi], taken: [enemyTakes(st, el, lo, true, dmg.pen?.[el]), enemyTakes(st, el, hi, true, dmg.pen?.[el])].map(Math.round) };
   });
   if (!types.length && !Object.keys(dmg.dot).length) return null;
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);

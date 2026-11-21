@@ -489,7 +489,7 @@ export function initScene(el, api) {
       if (D.attack && d.impales.length && !IP?.keep) raw.physical = ph + d.impales.splice(d.impales.indexOf(Math.max(...d.impales)), 1)[0];
       if (ph && Math.random() * 100 < IP?.chance) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
       const dealt = {};
-      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit']); total += got; if (got > best) { best = got; top = el; } }
+      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el]); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
@@ -593,12 +593,13 @@ export function initScene(el, api) {
     return c.neg ? +!n : n;
   }
   function when(D, d, S) {
-    const W = { dmg: {}, crit: S.critX || 1, critBonus: 1 };   // Potential's consumed power charge
+    const W = { dmg: {}, crit: S.critX || 1, critBonus: 1, pen: { ...D.pen } };   // Potential's consumed power charge
     for (const w of D.when || []) {
       let n = w.cond.reduce((t, c) => t * condN(c, d, S), 1);
       if (!n) continue;
       const p = w.val * Math.min(n, w.stacks || Infinity), pct = w.cap == null ? p : p < 0 ? Math.max(w.cap, p) : Math.min(w.cap, p);
       if (w.what === 'damage') for (const el in w.w) W.dmg[el] = (W.dmg[el] ?? 1) * (1 + pct / 100 * w.w[el]);
+      else if (w.what === 'pen') W.pen[w.el] = (W.pen[w.el] || 0) + pct;   // penetration adds up
       else W[w.what] *= 1 + pct / 100 * w.w;
     }
     return W;
@@ -803,17 +804,17 @@ export function initScene(el, api) {
   // shocked enemies take more damage from everything (BaseShockMagnitude, or the shock's own)
   const shocked = d => d.st.shock > 0 ? 1 + (d.mag.shock ?? GC.BaseShockMagnitude) / 100 : 1;
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
-  // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), and shock
+  // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), then by the hit's penetration, and shock
   // Intimidated, they take more. note: as a factor of its own, not added to the other increases
-  function takes(d, el, r, isHit = true, ow) { return defence(d, el, r, isHit, ow) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1); }
-  function defence(d, el, r, isHit = true, ow = 0) {
+  function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1); }
+  function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const C = d.curse?.C, k = d.curse?.k || 0;
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || C?.armour)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - (C?.armour || 0) * k) };
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - (C?.res[el] || 0) * k;
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
-    const got = enemyTakes(st, el, r, isHit), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
+    const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
     return (got + over + crush) * (isHit && el === 'physical' && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) / 100 : 1) * (1 + W / 100);
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
@@ -4761,7 +4762,7 @@ export function initScene(el, api) {
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
     DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => me.life <= me.maxL * LOW,
-    FullMana: () => me.mana >= me.maxM, NotLowMana: () => me.mana > me.maxM * LOW, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
+    FullMana: () => me.mana >= me.maxM, NotLowMana: () => me.mana > me.maxM * LOW, LowMana: () => me.mana <= me.maxM * LOW, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
     ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt?.[1] ?? -99) <= RECENT,
     LifeFlaskEffect: () => !!me.drink[0], LifeFlaskPast10: () => time - (me.drankAt?.[0] ?? -99) <= 10, Shocked: () => me.st.shock > 0,
     DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
