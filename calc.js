@@ -277,6 +277,7 @@ export function character(b, sum) {
   // deflection: its % of armour and of evasion as deflection rating, its increases, and how much less a deflected hit deals
   const deflect = { arm: v(sum, 'base_deflection_rating_%_of_armour'), eva: v(sum, 'base_deflection_rating_%_of_evasion_rating'), inc: pct('deflection_rating_+%'),
     less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
+  const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%');
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
@@ -285,10 +286,10 @@ export function character(b, sum) {
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
-    es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%') + v(sum, 'total_maximum_energy_shield_+')),
+    es: Math.round(v(sum, 'base_maximum_energy_shield') * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
-    armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc: pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%'),
+    armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
