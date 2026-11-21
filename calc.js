@@ -357,6 +357,10 @@ export function character(b, sum) {
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
+    // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
+    // for its share of damage gained as physical per charge, for its duration; flasks recover no life
+    tides: sum.blood_mage_life_flask_buff_duration_ms ? { gain: v(sum, 'gain_X_life_flask_charges_per_4%_life_spent'), use: v(sum, 'blood_mage_life_flask_buff_%_charges_to_consume'),
+      per: v(sum, 'blood_mage_life_flask_buff_%_damage_to_gain_as_physical_per_charge_consumed'), dur: sum.blood_mage_life_flask_buff_duration_ms / 1000, dry: !!sum.base_life_flasks_do_not_recover_life } : null,
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },

@@ -496,9 +496,11 @@ export function initScene(el, api) {
       // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
       // Thrill of the Kill, Archmage and Ambrosia as lightning
       const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
+      const SG = !S.src && sheet().tides, LF = SG && flasks()[0];   // Sanguine Tides: a hit while the life flask is full
+      if (LF && flaskLeft(0) >= LF.max) { const n = Math.floor(LF.max * SG.use / 100); me.fl[0] -= n; me.tides = { pct: n * SG.per, until: time + SG.dur }; }
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, ...(S.gains || []), { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -3940,7 +3942,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) me.rage -= RC; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) me.rage -= RC; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -4825,9 +4827,9 @@ export function initScene(el, api) {
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
-  const flaskHeal = (f, n, B = sheet().brew) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
+  const flaskHeal = (f, n, B = sheet().brew, dry = sheet().tides?.dry) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
     if (f.k === 'mana' || B) me.mana = gain(me.mana, me.maxM, n);
-    if (f.k === 'mana' && !B) return;
+    if (f.k === 'mana' && !B || dry) return;   // Sanguine Tides: flasks recover no life
     me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);
   };
   function drink(n) {
@@ -4853,7 +4855,7 @@ export function initScene(el, api) {
       if (!f || f.on !== on || me.cu[n] || charmLeft(n) < f.per) return;
       if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
       me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
-      if (f.life) flaskHeal({ k: 'life' }, f.life, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false); if (f.guard) me.guard = f.guard;
+      if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
       const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
       say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
     });
