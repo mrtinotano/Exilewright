@@ -3064,7 +3064,7 @@ export function initScene(el, api) {
     const st = S.dmg?.stats || {}, su = S.dmg?.sup || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v]] : []; }));
     for (const k of ['%_armour_to_apply_to_elemental_damage', 'deflection_rating_%_of_evasion_rating']) if (su['support_tempered_valour_' + k]) give[k] = su['support_tempered_valour_' + k];
     const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
-    for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;
+    if (!S.dmg?.sum?.unlimited_banners_allowed) for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;   /* Tactician: any number */
     const c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', 'gold', { a: .35, rot: 0 });
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
     const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
@@ -3657,7 +3657,7 @@ export function initScene(el, api) {
     } });
   }
   // what the Banners you stand in grant: their buff's stat, summed
-  const banner = k => objs.reduce((n, o) => n + (o.banner && !o.dead && dist(o.c, pp) <= o.R ? o.banner[k] || 0 : 0), 0);
+  const banner = k => { const by = {}; for (const o of objs) if (o.banner && !o.dead && dist(o.c, pp) <= o.R && o.banner[k]) by[o.name] = o.name in by ? Math.max(by[o.name], o.banner[k]) : o.banner[k]; return Object.values(by).reduce((n, x) => n + x, 0); };   // the same Banner twice (Tactician's any number) does not add up
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
   // ---------- using a skill
@@ -3982,7 +3982,7 @@ export function initScene(el, api) {
   function gloryAdd(S, n) {
     if (!(n > 0) || (/Banner/.test(S.name) ? !tog[S.name] : objs.some(o => o.name === S.name && !o.dead))) return;   // a Banner builds it while its Spirit is reserved
     const max = gloryNeed(S), v = me.glory[S.name] || 0; if (v >= max) return;
-    me.glory[S.name] = Math.min(max, v + n * (1 + (S.dmg?.sum?.['glory_generation_+%'] || 0) / 100)); me.gloryAt[S.name] = time; hudT = 0;   // with the tree's increased Glory generation
+    me.glory[S.name] = Math.min(max, v + n * (1 + ((S.dmg?.sum?.['glory_generation_+%'] || 0) + (/Banner/.test(S.name) && S.dmg?.sum?.['glory_generation_+%_for_banners'] || 0)) / 100)); me.gloryAt[S.name] = time; hudT = 0;   // with the tree's increased Glory generation
   }
   function glory(d, ev) {
     for (const S of gloryOf()) {
@@ -4998,6 +4998,7 @@ export function initScene(el, api) {
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
     const TR = trinity(); if (TR) for (const e of ELEM) if (time - (me.affAt[e] ?? -99) > TR.trinity_resonance_decay_delay_ms / 1000) me.aff[e] = Math.max(0, me.aff[e] - TR.trinity_resonance_loss_per_second * dt);
+    for (const S of gloryOf()) if (/Banner/.test(S.name) && S.dmg?.sum?.banners_gain_X_glory_per_second) gloryAdd(S, S.dmg.sum.banners_gain_X_glory_per_second * dt);   /* Tactician: Banners gain Glory every second */
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt;
