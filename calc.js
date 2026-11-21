@@ -1185,6 +1185,8 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
+  // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
+  const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   const melee = tags.includes('melee'), proj = tags.includes('projectile');
   return {
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%'), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
@@ -1195,7 +1197,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     maimMore: all('spearfield_maim_slows_an_additional_%'),   // Spearfield's maims slow more
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     igniteChance: scale(['ignite_chance_+%'], /(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: scale(['shock_chance_+%'], /(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
-    freeze: scale(['hit_damage_freeze_multiplier_+%', 'hit_damage_immobilisation_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final'), immob: 1 + all('hit_damage_immobilisation_multiplier_+%') / 100,   // increased Immobilisation buildup: freeze, electrocute, pin
+    freeze: scale(['hit_damage_freeze_multiplier_+%', 'hit_damage_immobilisation_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final') * SF, immob: (1 + all('hit_damage_immobilisation_multiplier_+%') / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
     // "increased Magnitude of Ailments you inflict" counts for each
