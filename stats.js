@@ -35,14 +35,15 @@ const num = v => +v.toFixed(2);
 const BY = byStat;
 
 export const statLinesEn = stats => statLines(stats, EN);
+const unlink = t => t.replace(/\[([^\]|]+)\|([^\]]+)\]/g, '$2').replace(/\[([^\]]+)\]/g, '$1');   // "[Attack|ataque]" -> "ataque"
 // a line of an item in the page's language -> the same line in English, its numbers as "#": the game's own description
 // of it in both (the same stats, the row of the same conditions), as Exiled Exchange 2 reads lines no modifier of its
 // own words ("+3 al nivel de todas las habilidades de ataque" -> "+# to Level of all Attack Skills"); null if none
-const TPL = t => t.replace(/\[([^\]|]+)\|([^\]]+)\]/g, '$2').replace(/\[([^\]]+)\]/g, '$1').replace(/\{\d*(?::\+?d)?\}/g, '#');
+const TPL = t => unlink(t).replace(/\{\d*(?::\+?d)?\}/g, '#');
 const KEY = l => l.toLowerCase().replace(/[+-]?\d+(?:\.\d+)?/g, '#').replace(/\+/g, '').replace(/\s+/g, ' ').trim();
 let LOCAL = null;
 export function englishOf(line) {
-  if (!LOCAL) { LOCAL = new Map(); for (const ds of Object.values(byStat)) for (const d of ds) if (!d.skill) for (const r of d.rows) if (r.t && !r.t.includes('\n')) LOCAL.set(KEY(TPL(r.t)), [d, r]); }
+  if (!LOCAL) { LOCAL = new Map(); for (const ds of Object.values(byStat)) for (const d of ds) if (!d.skill) for (const r of d.rows) if (r.t && !r.t.includes('\\n')) LOCAL.set(KEY(TPL(r.t)), [d, r]); }
   const [d, r] = LOCAL.get(KEY(line)) || [];
   const en = d && EN[d.stats[0]]?.find(e => !e.skill && e.stats.join() === d.stats.join()), er = en?.rows.find(x => x.c.join() === r.c.join());
   return er?.t ? TPL(er.t) : null;
@@ -67,9 +68,9 @@ export function statLines(stats, byStat = BY, skill) {
       const k = +row.h[i + 1];
       if (k) { v[k - 1] = apply(row.h[i], v[k - 1]); i++; }
     }
-    out.push(row.t
+    out.push(unlink(row.t)
       .replace(/\{(\d*)(?::\+?d)?\}/g, (m, i) => (m.includes('+') && v[+i || 0] >= 0 ? '+' : '') + num(v[+i || 0]))
-      .replace(/\[([^\]|]+)\|([^\]]+)\]/g, '$2').replace(/\[([^\]]+)\]/g, '$1').replace(/\\n/g, '\n'));
+      .replace(/\\n/g, '\n'));
   }
   return out;
 }
