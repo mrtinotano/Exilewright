@@ -280,7 +280,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -789,11 +789,16 @@ export function initScene(el, api) {
     if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
       const v = ailDps(d, a, raw), w = d.st[a] > 0 && d.burn[a];
       if (o?.eff) v.dps *= o.eff;
+      // Pathfinder's Overwhelming Toxicity: two of your poisons at once, the weaker kept with its own time (burn2)
+      if (a === 'poison' && w && !w.sim && !v.sim && S.dmg?.sum?.double_number_of_poison_you_can_inflict) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
     if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
-    const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
+    const fresh = !(d.st[a] > 0), left = d.st[a] || 0; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
+    // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
+    const two = o?.mag && !fresh && (a === 'shock' || a === 'chill') && S.dmg?.sum?.[`can_apply_additional_${a}`];
+    if (two) { const M = d.mag[a] || 0, lo = Math.min(M, o.mag), keep = M <= o.mag ? left : o.dur ?? DUR[a]; if (!(d.mag2?.[a]?.until > time && d.mag2[a].mag >= lo)) (d.mag2 ||= {})[a] = { mag: lo, until: time + keep }; }
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
@@ -842,7 +847,8 @@ export function initScene(el, api) {
   };
   const expoMag = S => (S.dmg?.ail?.expo.skill ?? EXPO.res) * (S.dmg?.ail?.expo.effect ?? 1);   // the skill's own (Oil, Frost Bomb)
   // shocked enemies take more damage from everything (BaseShockMagnitude, or the shock's own)
-  const shocked = d => d.st.shock > 0 ? 1 + (d.mag.shock ?? GC.BaseShockMagnitude) / 100 : 1;
+  const mag2 = (d, a) => d.mag2?.[a]?.until > time ? d.mag2[a].mag : 0;   // a second shock / chill (Strike Twice, Heavy Snows)
+  const shocked = d => d.st.shock > 0 ? 1 + ((d.mag.shock ?? GC.BaseShockMagnitude) + mag2(d, 'shock')) / 100 : 1;
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
   // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), then by the hit's penetration, and shock
   // Intimidated, they take more. note: as a factor of its own, not added to the other increases
@@ -4409,6 +4415,7 @@ export function initScene(el, api) {
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a], a !== 'ignite');
+      if (d.burn2?.until > time) add(d.burn2.v, true);   // a second poison (Overwhelming Toxicity)
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
       d.dots.forEach(v => add(v));
@@ -4985,7 +4992,7 @@ export function initScene(el, api) {
     if (d.dead) return;
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
-    let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
+    let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
     const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // its slows: Entangle's vines, Hinder

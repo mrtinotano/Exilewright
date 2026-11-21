@@ -1220,7 +1220,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
-    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA,   // Escalating Poison's less
+    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),
