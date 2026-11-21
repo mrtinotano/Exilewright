@@ -1258,14 +1258,14 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     freeze: scale(['hit_damage_freeze_multiplier_+%', 'hit_damage_immobilisation_multiplier_+%'], 'hit_damage_freeze_multiplier_+%_final') * SF, immob: (1 + all('hit_damage_immobilisation_multiplier_+%') / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
     stun: scale(['hit_damage_stun_multiplier_+%', ...(melee ? ['melee_hit_damage_stun_multiplier_+%'] : []), ...(proj ? ['projectile_hit_damage_stun_multiplier_+%'] : [])], 'hit_damage_stun_multiplier_+%_final'),
-    // "increased Magnitude of Ailments you inflict" counts for each
-    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
-    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,
-    shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%'], 'shock_duration_+%_final'),
-    chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%'], 'chill_duration_+%_final'),
-    freezeTime: scale(['freeze_duration_+%'], 'freeze_duration_+%_final'),
-    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
+    // "increased Magnitude of Ailments you inflict" counts for each, of Damaging Ailments for ignite, poison and bleeding, of Non-Damaging ones for shock and chill
+    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
+    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
+    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,
+    shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
+    chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
+    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'),
+    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
     bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
