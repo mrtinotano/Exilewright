@@ -265,6 +265,7 @@ export function character(b, sum) {
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc),
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
+    speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
     res, penalty,
@@ -539,6 +540,18 @@ const DEF_WHILE = [['global_armour_evasion_energy_shield_while_in_presence_of_co
   ['evasion_rating_+%_if_sprinting', 'e', 'Sprinting'], ['armour_evasion_energy_shield_+%_while_channelling', 'ae', 'Channelling'], ['evasion_rating_+%_if_you_have_hit_an_enemy_recently', 'e', 'HitRecently'],
   ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
   ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife']];
+// the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
+// counted "per Enemy in Close Range" (the game data has no distance for it), "while Shapeshifted", against Bloodlusting
+// enemies, "if you've consumed a Frenzy Charge Recently", Parry's own speed after a Parry
+const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
+  ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
+  ['attack_speed_+%_if_have_crit_recently', 'a', 'CritRecently'], ['cast_speed_+%_if_have_crit_recently', 'c', 'CritRecently'],
+  ['attack_speed_+%_if_rare_or_unique_enemy_nearby', 'a', 'RareOrUniqueInPresence'], ['attack_speed_+%_if_you_have_not_attacked_recently', 'a', 'NotAttackedRecently'],
+  ['attack_speed_+%_while_in_presence_of_companion', 'a', 'CompanionInPresence'], ['attack_speed_+%_while_leeching', 'a', 'Leeching'],
+  ['attack_speed_+%_while_not_on_low_mana', 'a', 'NotLowMana'], ['attack_speed_+%_while_surrounded', 'a', 'Surrounded'],
+  ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
+  ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
+  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana']];
 const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence', you_have_arcane_surge: 'ArcaneSurge' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
@@ -786,15 +799,22 @@ export function skill(g, b, treeGear) {
   // 16/11: 1.75 s with one, 1.61 s with two right after placing them, as 4 + 4 + Carved Earth's 6% on placing gives).
   // note: "on placing a Totem" buffs not counted (they wear off)
   const speedInc = mod(mods, 'INC', ['Speed'], spHit), speedMods = mod(mods, 'MORE', ['Speed'], spHit);
-  if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
-  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
+  // the tree's speed with skills of a kind (Lightning, Elemental, Cold, channelling skills) and, for attacks, while
+  // holding a shield, dual wielding, per 25 Dexterity or per 200 Accuracy
+  const tagSp = (tags.includes('lightning') ? v(sum, 'attack_and_cast_speed_+%_with_lightning_skills') : 0) + (tags.some(x => x === 'fire' || x === 'cold' || x === 'lightning') ? v(sum, 'attack_and_cast_speed_+%_with_elemental_skills') : 0)
+    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0);
+  const per = attack && (v(sum, 'attack_speed_+%_per_25_dex') || v(sum, 'attack_speed_+%_per_200_accuracy_rating')) && character(b, sum);
+  const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
+    + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
+  if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + perTotemSpeed + atkSp) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed;
+  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods;
   // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
   // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
   const bolts = attack && w?.reload && v(st, 'base_number_of_crossbow_bolts') + v(sum, 'support_double_barrel_number_of_crossbow_bolts_+');
   if (bolts && out.speed) {
     const reloadMore = Object.entries({ ...finals, 'active_skill_reload_speed_+%_final': v(st, 'active_skill_reload_speed_+%_final') })
       .reduce((m, [k, x]) => { const sign = k.match(/reload_speed_([+-])%_final$/)?.[1]; return sign ? m * (1 + (sign === '-' ? -x : x) / 100) : m; }, 1);
-    const reload = w.reload / ((1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%', 'reload_speed_+%') + speedInc) / 100) * speedMods * reloadMore);
+    const reload = w.reload / ((1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%', 'reload_speed_+%') + speedInc + atkSp) / 100) * speedMods * reloadMore);
     const keep = Math.min(v(sum, 'crossbow_attack_%_chance_to_not_consume_ammo') / 100, 1), shots = bolts / (1 - keep);
     out.clip = { bolts, reload, keep, fire: out.speed };   // fire: shots per second between reloads
     out.speed = keep >= 1 ? out.speed : shots / (shots / out.speed + reload);

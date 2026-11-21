@@ -573,17 +573,16 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity) }
-      : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
+      : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
-        Stationary: (S.still || 0) > 0, Channelling: !!charge, Moving: walk || !!move, ArcaneSurge: surge() > 0, Surrounded: inside(pp, SURROUNDED.r).length >= SURROUNDED.n,
-        CompanionInPresence: inPresence(o => o.companion), AllyInPresence: inPresence(o => o.minion), EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
+        Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length };
     let n;
-    if (c.type === 'ActorCondition' || c.type === 'Condition') n = is[v] ? 1 : 0;
+    if (c.type === 'ActorCondition' || c.type === 'Condition') n = (v in is ? is[v] : !en && meIs[v]?.()) ? 1 : 0;
     else if (c.type === 'MultiplierThreshold') n = v === 'Rage' && S.enraged || v in count && count[v] >= (c.threshold || 0) ? 1 : 0;
     else if (c.type === 'Multiplier') n = v in count ? Math.floor(count[v] / (c.div || 1)) : 0;
     else if (c.type === 'DistanceRamp') {   // [distance in tenths of a metre, share] points, as PoB2 has them (Longshot: "7m+")
@@ -1157,7 +1156,7 @@ export function initScene(el, api) {
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
   function kill(d, S) {
-    d.dead = true; stats.kills++; record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; if (S) me.killAt = time; record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -3919,7 +3918,7 @@ export function initScene(el, api) {
       M.push({ S: { ...S, mult: S.mult * less }, run, until: time + (TS.shape?.duration || TS.stats.base_skill_effect_duration / 1000) }); fx.ring(S.from, .2, .8, S.el, .5);
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation)
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', t: time });   // placing a totem is not attacking while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation)
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
@@ -3986,7 +3985,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1)
+      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4687,7 +4686,7 @@ export function initScene(el, api) {
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
-    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time };
+    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; if (n) me.drankAt = time;
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
@@ -4740,7 +4739,15 @@ export function initScene(el, api) {
     Surrounded: () => inside(pp, SURROUNDED.r).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
-    DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL };
+    DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => me.life <= me.maxL * LOW,
+    FullMana: () => me.mana >= me.maxM, NotLowMana: () => me.mana > me.maxM * LOW, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
+    ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt ?? -99) <= RECENT, KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
+    CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
+    RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
+    AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
+  // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
+  // increased speed, a factor of its own here
+  const speedWhile = b => 1 + (sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100;
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
