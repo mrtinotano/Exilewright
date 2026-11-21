@@ -140044,6 +140044,139 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "parts": {
+    "SavageFuryActivePlayer": {
+     "constant": {
+      "wild_beast_life_lost_%_per_minute_nonlethal": 180,
+      "base_skill_effect_duration": 500,
+      "movement_speed_+%_final_while_performing_action": -70,
+      "movement_speed_acceleration_+%_per_second_while_performing_action": 160,
+      "movement_speed_while_performing_action_locked_duration_%": 50
+     },
+     "levels": {
+      "1": {
+       "wild_beast_damage_+%_final": 20
+      },
+      "2": {
+       "wild_beast_damage_+%_final": 20
+      },
+      "3": {
+       "wild_beast_damage_+%_final": 21
+      },
+      "4": {
+       "wild_beast_damage_+%_final": 21
+      },
+      "5": {
+       "wild_beast_damage_+%_final": 22
+      },
+      "6": {
+       "wild_beast_damage_+%_final": 22
+      },
+      "7": {
+       "wild_beast_damage_+%_final": 22
+      },
+      "8": {
+       "wild_beast_damage_+%_final": 23
+      },
+      "9": {
+       "wild_beast_damage_+%_final": 23
+      },
+      "10": {
+       "wild_beast_damage_+%_final": 24
+      },
+      "11": {
+       "wild_beast_damage_+%_final": 24
+      },
+      "12": {
+       "wild_beast_damage_+%_final": 25
+      },
+      "13": {
+       "wild_beast_damage_+%_final": 25
+      },
+      "14": {
+       "wild_beast_damage_+%_final": 26
+      },
+      "15": {
+       "wild_beast_damage_+%_final": 26
+      },
+      "16": {
+       "wild_beast_damage_+%_final": 27
+      },
+      "17": {
+       "wild_beast_damage_+%_final": 27
+      },
+      "18": {
+       "wild_beast_damage_+%_final": 28
+      },
+      "19": {
+       "wild_beast_damage_+%_final": 28
+      },
+      "20": {
+       "wild_beast_damage_+%_final": 29
+      },
+      "21": {
+       "wild_beast_damage_+%_final": 30
+      },
+      "22": {
+       "wild_beast_damage_+%_final": 30
+      },
+      "23": {
+       "wild_beast_damage_+%_final": 31
+      },
+      "24": {
+       "wild_beast_damage_+%_final": 31
+      },
+      "25": {
+       "wild_beast_damage_+%_final": 32
+      },
+      "26": {
+       "wild_beast_damage_+%_final": 33
+      },
+      "27": {
+       "wild_beast_damage_+%_final": 33
+      },
+      "28": {
+       "wild_beast_damage_+%_final": 34
+      },
+      "29": {
+       "wild_beast_damage_+%_final": 35
+      },
+      "30": {
+       "wild_beast_damage_+%_final": 35
+      },
+      "31": {
+       "wild_beast_damage_+%_final": 36
+      },
+      "32": {
+       "wild_beast_damage_+%_final": 36
+      },
+      "33": {
+       "wild_beast_damage_+%_final": 36
+      },
+      "34": {
+       "wild_beast_damage_+%_final": 37
+      },
+      "35": {
+       "wild_beast_damage_+%_final": 37
+      },
+      "36": {
+       "wild_beast_damage_+%_final": 38
+      },
+      "37": {
+       "wild_beast_damage_+%_final": 38
+      },
+      "38": {
+       "wild_beast_damage_+%_final": 38
+      },
+      "39": {
+       "wild_beast_damage_+%_final": 39
+      },
+      "40": {
+       "wild_beast_damage_+%_final": 39
+      }
+     }
+    }
+   },
    "meta_support": null
   },
   "Walking Calamity": {

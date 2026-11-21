@@ -46,6 +46,7 @@ const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less ac
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
+const ONSLAUGHT = { speed: 20, move: 10 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
 const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"
@@ -395,6 +396,9 @@ export function initScene(el, api) {
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
+    // Savage Fury, while on and not in its frenzy: Fury on an attack's hit, once per use, up to its most
+    const SF = !S.src && P.attack && !S.wildGot && tog['Savage Fury'] && !(time < me.wildUntil) && onS('Savage Fury')?.dmg.stats;
+    if (SF) { S.wildGot = true; me.wild = Math.min(SF.wild_beast_maximum_energy, (me.wild || 0) + SF.wild_beast_energy_per_hit); }
     // His Winnowing Flame: its sweep consumes an enemy's Ignite for its pillars of flame (up to its most per use), each that
     // share of the Ignite's remaining damage as fire. note: the pillar's area is not in the data (the enemy alone), nor
     // an aggravated Ignite's extra pillars
@@ -2282,6 +2286,7 @@ export function initScene(el, api) {
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
       if (tog[k] && k === 'Plague Bearer') return plague(S);   // Plague Bearer: used, it unleashes
       if (tog[k] && k === 'Grim Feast') return grim(S);   // Grim Feast: used, Grim Resurrection
+      if (tog[k] && k === 'Savage Fury' && me.wild > 0) return frenzy(S);   // Savage Fury: used with Fury, its frenzy
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
@@ -3207,6 +3212,13 @@ export function initScene(el, api) {
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
   // the copies can shatter other mirrors in turn
   const MIRROR = new THREE.BoxGeometry(.5, .9, .05);
+  // Savage Fury's frenzy: its duration per Fury released, its more damage (by its level) and Onslaught, losing its % of
+  // your maximum life per minute (not below 1). note: the animal form it forces you into is not simulated
+  function frenzy(S) {
+    const F = SK.skills[S.name].parts.SavageFuryActivePlayer, lv = F.levels[S.g?.level || 1] || {}, d = me.wild * F.constant.base_skill_effect_duration / 1000;
+    me.wildUntil = time + d; me.wildMore = 1 + (lv['wild_beast_damage_+%_final'] || 0) / 100; me.wildLoss = F.constant['wild_beast_life_lost_%_per_minute_nonlethal']; me.wild = 0;
+    setBuff({ label: S.label, name: S.name, c: css('blood'), s: d }); say(t('{0} active', S.label), 'blood');
+  }
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
@@ -3638,6 +3650,7 @@ export function initScene(el, api) {
     if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     if (S.dmg?.clip && time < me.ereload?.until) S.mult *= me.ereload.more;   // Emergency Reload's empowered bolts
+    if (time < me.wildUntil) S.mult *= me.wildMore;   // Savage Fury's frenzy
     aim(S, o.at || cursor);
     if (!auto && astral(S)) S.from = { ...S.at };   // Astral Projection: the Nova where you aim, not around you
     // Ixchel's Torment: a skill its meta gem triggers has its damage and area each somewhere between its less and more
@@ -3957,6 +3970,8 @@ export function initScene(el, api) {
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
+      // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
+      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4144,7 +4159,7 @@ export function initScene(el, api) {
 
   // ---------- HUD text
   let spdC = { at: -9, v: 0 };
-  const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%')) }; return spdC.v; };
+  const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (time < me.wildUntil ? ONSLAUGHT.move : 0)) }; return spdC.v; };
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
@@ -4832,7 +4847,8 @@ export function initScene(el, api) {
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
-    leylines(dt); bells(dt); withering(dt); mirrors(dt); fate(); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
+    leylines(dt); bells(dt); withering(dt); mirrors(dt); fate();
+    if (time < me.wildUntil) me.life = Math.max(1, me.life - me.maxL * me.wildLoss / 100 / 60 * dt);   // Savage Fury's frenzy jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
