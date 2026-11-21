@@ -912,8 +912,8 @@
  "{0} offers on the Currency Exchange in {1}": "Предложений в «Обмене валют» в {1}: {0}",
  "Level {0} or more, {1}% quality or more": "Уровень {0} или выше, качество {1}% или выше",
  "Level {0} or more": "Уровень {0} или выше",
- "Socketed in yours, lost: {0}": "Вставлено в ваш, теряется: {0}",
- "Socketed in it, gained: {0}": "Вставлено в этот, получаете: {0}",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Ни у одного предмета в продаже нет всех {1} модификаторов: у этих есть хотя бы {0} из них.",
- "Requires {0} {1} (you have {2})": "Требуется {1}: {0} (у вас {2})"
+ "Requires {0} {1} (you have {2})": "Требуется {1}: {0} (у вас {2})",
+ "{0} (Socket {1})": "{0} (гнездо {1})",
+ "Empty (Socket {0})": "Пусто (гнездо {0})"
 }

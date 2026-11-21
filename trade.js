@@ -167,7 +167,7 @@ export function readListing(r) {
   const extra = ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), p = tradeItem({ name, base, lines, runes: extra });
   return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
-    item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [] };
+    item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [], sockets: (it.sockets || []).length };
 }
 
 // ---------- the price check: what an item like this one is worth

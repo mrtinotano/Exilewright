@@ -747,9 +747,13 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
       const order = byGain(rows);   // most improved first
-      // what is socketed (runes, soul cores, idols) and enchanted: what yours has that this one lacks, and what this one brings
-      const mine = statLines(worn?.extra || {}), its = l.item.extra ? statLines(l.item.extra) : l.extra || [], lost = mine.filter(x => !its.includes(x)), got = its.filter(x => !mine.includes(x));
-      const sock = (lost.length ? `<div class="ddn">${esc(t('Socketed in yours, lost: {0}', lost.join(', ')))}</div>` : '') + (got.length ? `<div class="dup">${esc(t('Socketed in it, gained: {0}', got.join(', ')))}</div>` : '');
+      // what is socketed (runes, soul cores, idols) and enchanted, one stat a line with its socket: what yours has that this
+      // one lacks (lost, as a negative), what this one brings, and its empty sockets. note: the socket is the stat's place
+      // among the item's socketed stats (the site and the item keep no socket per stat)
+      const A = worn?.extra || {}, Z = l.item.extra || {}, KA = Object.keys(A), KZ = Object.keys(Z), line = (k, x) => statLines({ [k]: x }).join(', ');
+      const sock = KA.filter(k => Z[k] !== A[k]).map(k => `<div class="ddn">${esc(t('{0} (Socket {1})', line(k, -A[k]), KA.indexOf(k) + 1))}</div>`).join('')
+        + KZ.filter(k => A[k] !== Z[k]).map(k => `<div class="dup">${esc(t('{0} (Socket {1})', line(k, Z[k]), KZ.indexOf(k) + 1))}</div>`).join('')
+        + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
         <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}${sock ? `<div class="bsock">${sock}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactList(order, true)}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>

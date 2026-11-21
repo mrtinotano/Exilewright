@@ -912,8 +912,8 @@
  "{0} offers on the Currency Exchange in {1}": "{1}のカレンシー交換に{0}件の出品",
  "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",
  "Level {0} or more": "レベル{0}以上",
- "Socketed in yours, lost: {0}": "あなたの装備に装着、失う: {0}",
- "Socketed in it, gained: {0}": "こちらに装着、得る: {0}",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "{1}個すべてのモディファイアを持つ出品はありません。以下は少なくとも{0}個を持つものです。",
- "Requires {0} {1} (you have {2})": "{1} {0}が必要（現在 {2}）"
+ "Requires {0} {1} (you have {2})": "{1} {0}が必要（現在 {2}）",
+ "{0} (Socket {1})": "{0}（ソケット {1}）",
+ "Empty (Socket {0})": "空き（ソケット {0}）"
 }
