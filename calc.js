@@ -548,7 +548,8 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   shocked_enemies: 'Shocked', poisoned_enemies: 'Poisoned', bleeding_enemies: 'Bleeding', electrocuted_enemies: 'Electrocuted', pinned_enemies: 'Pinned',
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
-  enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
+  enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
+  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed' };
 // [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "while
 // Shapeshifted" (the scene has none)
 const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
@@ -903,8 +904,12 @@ export function skill(g, b, treeGear) {
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
   // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
   for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
-    const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']);
-    if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: out.incW });
+    const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'ActorCondition', actor: 'enemy', var: cv }];
+    if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
+    // and its critical hit chance / damage bonus ("critical_strike_chance_+%_vs_shocked_enemies")
+    const cc = inc(sum, `critical_strike_chance_+%_${sep}_${s}`, tags), cb = inc(sum, `critical_strike_multiplier_+_${sep}_${s}`, tags);
+    if (cc) out.when.push({ cond, val: cc, what: 'crit', w: 1 / (1 + critInc / 100) });
+    if (cb) out.when.push({ cond, val: cb, what: 'critBonus', w: 100 / (out.critBonus || 100) });
   }
   // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
   for (const [s, cv] of Object.entries(WHILE)) {
