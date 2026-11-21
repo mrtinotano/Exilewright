@@ -3505,7 +3505,7 @@ export function initScene(el, api) {
   // Tame Beast: its wisps engulf the Rare Beast nearest your aim, Hindering it by its % for its duration. note: capturing
   // the beast is not simulated
   K.tame = S => {
-    const d = dummies.filter(e => !e.dead && e.mon.category === 'Beast' && e.stat.rarity === 'rare').sort((p, q) => dist(p.pos, S.at) - dist(q.pos, S.at))[0];
+    const [d] = nearest(S.at, 1, e => e.mon.category === 'Beast' && e.stat.rarity === 'rare');
     if (!d) return;
     d.slows.push({ until: time + durOf(S), pct: -S.dmg.stats['tame_beast_hinder_%'] }); fx.ring(d.pos, .2, 1, 'poison', .5, { a: .5 });
   };
