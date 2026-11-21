@@ -4026,6 +4026,11 @@ export function initScene(el, api) {
     // Spell Cascade: the spell also lands on either side of its target along a random axis, its number on each side, in its smaller area
     const SC = S.dmg?.sum?.support_spell_cascade_number_of_cascades_per_side;
     if (SC) { const q = Math.random() * TAU, A = S.A * Math.sqrt(1 + S.dmg.sum['support_spell_cascade_area_of_effect_+%_for_cascade'] / 100); for (const sd of [1, -1]) for (let k = 1; k <= SC; k++) { const r = sd * (S.A + A * (2 * k - 1)); later(k * .12, () => run({ ...S, A, at: { x: S.at.x + Math.sin(q) * r, z: S.at.z + Math.cos(q) * r } })); } }
+    // Chronomancer's Now and Again: a repeatable (Unleashable) spell you use yourself its chance to Repeat once, a Cascadable
+    // one its chance to Echo once (as Spell Echo's)
+    const NA = !auto && S.P.spell && S.dmg?.sum, NT = NA && S.g && api.info(S.g).gem?.types || [];
+    if (NT.includes('Unleashable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_spell_%_chance_to_reoccur_an_additional_time'] || 0)) { S.rep = (S.rep || 0) + 1; S.repBy ||= S.label; S.repX ||= 1; }
+    if (NT.includes('Cascadable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_skill_echo_chance_%'] || 0)) later(.25, () => run({ ...S, rep: 0 }));
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
