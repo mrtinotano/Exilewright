@@ -163,7 +163,7 @@ export function initScene(el, api) {
   const profs = new Map(), cache = new Map();
   // Nature's Archon (calc.js character() overgrow: its time; its stats from the game, api.archon) and a plant gem with them
   const archonOn = () => time - archonAt < sheet().overgrow.archonTime, archonG = new WeakMap();
-  const withArchon = g => { if (!archonG.has(g)) archonG.set(g, { ...g, add: Object.fromEntries(Object.entries(api.archon || {}).map(([k, x]) => [k, Math.floor(x * (sheet().overgrow.archonEffect || 1))])) }); return archonG.get(g); };   // with its increased effect on you
+  const withArchon = g => { const e = sheet().overgrow.archonEffect; if (archonG.get(g)?.e !== e) archonG.set(g, { e, g: { ...g, add: Object.fromEntries(Object.entries(api.archon || {}).map(([k, x]) => [k, Math.floor(x * e)])) } }); return archonG.get(g).g; };   // with its increased effect on you
   const prof = (g, inf) => { let P = profs.get(g.name); if (!P) profs.set(g.name, P = profile(inf.gem || { name: g.name }, inf.data || {})); return P; };
   function base(i) {
     const g = api.build().gems[i]; if (!g) return null;
