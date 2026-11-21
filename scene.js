@@ -339,7 +339,7 @@ export function initScene(el, api) {
   // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
   const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
   // Arcane Surge: its increased cast speed (useTime) and more mana regeneration (vitals), by its effect on you
-  const surge = () => time < me.surgeUntil ? sheet().arcaneSurge?.effect || 1 : 0;
+  const surge = () => { const A = sheet().arcaneSurge; return time < me.surgeUntil || A?.always ? (A?.effect || 1) + (A?.missing || 0) * Math.floor(Math.max(0, 1 - me.mana / (me.maxM || 1)) * 10) / 100 : 0; };
   function arcaneSurge(s) {
     if (!(s > 0)) return; me.surgeUntil = Math.max(me.surgeUntil || 0, time + s);
     setBuff({ label: api.info({ name: 'Arcane Surge' })?.label || 'Arcane Surge', name: 'Arcane Surge', c: css('arcane'), s: me.surgeUntil - time });

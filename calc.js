@@ -326,7 +326,7 @@ export function character(b, sum) {
     // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
     // Plants Overgrow: a chance as each is created (passives), a chance as it enters your Presence (items), that Presence's
     // radius in metres (character.ot, its area scaled like calc's sheet)
-    arcaneSurge: { crit: v(sum, 'gain_arcane_surge_on_crit_%_chance'), effect: pct('arcane_surge_effect_on_self_+%') },   // its chance on a critical hit, its effect on you
+    arcaneSurge: { crit: v(sum, 'gain_arcane_surge_on_crit_%_chance'), effect: pct('arcane_surge_effect_on_self_+%'), always: !!sum.base_should_have_arcane_surge_from_stat, missing: v(sum, 'arcane_surge_effect_on_self_+%_per_10%_missing_mana') },   // its chance on a critical hit, its effect on you; Stormweaver's: always, more effect per 10% missing mana
     overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
       r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
       // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
