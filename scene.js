@@ -5088,6 +5088,9 @@ export function initScene(el, api) {
         const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5;
         n += got; if (B.el === 'chaos') chaos += got; if (got > best) { best = got; worst = B.el; }
       }
+      // Grinning Immolation: ignited after dealing a critical hit, its % of your maximum life and energy shield as fire a second
+      const GI = c.grin && meIs.CritRecently() ? playerTakes(withCharms(c), 'fire', (me.maxL + me.maxE) * c.grin / 100, false) * .5 : 0;
+      if (GI) { n += GI; if (GI > best) worst = 'fire'; }
       if (n > 0) hurt(n, chaos, worst, false, me.by);
     }
     const p = { x: pp.x, y: .9, z: pp.z }, S = me.st;
