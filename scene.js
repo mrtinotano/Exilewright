@@ -994,12 +994,12 @@ export function initScene(el, api) {
   const daze = (d, s) => { if (!(s > 0)) return; if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
-    if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun / 100;
+    if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
     const G = BAR[a], hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, d.stat.poise * awe(d, a === 'stun' ? 'stun' : 'ailment')) * hard) * 100; d.calm = 0;
     if (d.bar[a] < 100) return;
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
-    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
+    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
     if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) gainPct('life', recOn('stunRare'));
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
@@ -1276,7 +1276,7 @@ export function initScene(el, api) {
     const hs = st.poison > 0 && onS('Herald of Plague')?.dmg.stats;
     if (hs) for (const e of inside(p, hs.herald_of_agony_poison_spread_on_kill_radius_base_magnitude_to_grant / 10)) {
       e.st.poison = Math.max(e.st.poison || 0, st.poison); e.burn.poison = { ...d.burn.poison }; fx.bolt(V(p.x, 1, p.z), chest(e), 'poison', .2, .03, .4);
-      if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time, pct: -HINDER.slow * slowK(onS('Herald of Plague')) });
+      if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(onS('Herald of Plague')) });
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
@@ -3688,7 +3688,7 @@ export function initScene(el, api) {
     const st = S.dmg.stats, d = near(S.at, 2); if (!d) return;
     fx.streak(chest(d), V(pp.x, 1.2, pp.z), 'lightning', .4, .05, 1);
     const q = me.leech.mana; q.left += st.mana_drain_base_mana_leech_amount * (1 - (d.stat.leechRes || 0)); q.rate = q.left * (1 + st['base_mana_leech_rate_+%'] / 100);
-    d.slows.push({ until: time + HINDER.time, pct: -HINDER.slow * slowK(S) });
+    d.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(S) });
   };
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
   // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
@@ -5155,7 +5155,7 @@ export function initScene(el, api) {
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
     // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
-    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = 0; }
+    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = 0; }
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
     // Seething Body: Elemental Archon does not expire on High Infernal Flame
     if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }

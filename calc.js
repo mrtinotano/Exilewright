@@ -443,7 +443,8 @@ export function recovery(c, sum) {
     allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
-    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volImmune: !!sum.immune_to_volatility_damage,   // Acolyte of Chayula
+    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
+    hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
@@ -1266,7 +1267,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
-    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'),
+    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: 1 + all('pin_duration_+%') / 100,
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
     bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
