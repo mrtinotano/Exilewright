@@ -119,7 +119,7 @@ the build's Spirit covers them, and the skill placed in a meta gem is used by it
 after the monster's defences, and ailments follow the game's rules (`GameConstants` and each monster's thresholds per level
 and rarity): the chance to shock and the flammability that ignites grow with the damage against the monster's ailment
 threshold, chill slows by its magnitude, freeze and heavy stun fill a bar against its poise (harder to fill again for a
-while after one), bleeding and poison need a chance from the skill or the build, Armour Break lowers its armour until it
+while after one), a hit can Light Stun it (its damage against the enemy's maximum life, none under the game's least chance; it cannot act for half a second), bleeding and poison need a chance from the skill or the build, Armour Break lowers its armour until it
 is Fully Broken, Electrocute and Pin build up from the skills that can inflict them, and Maim (from the skill, the weapon,
 the tree, on fully breaking armour or once Pin ends; Spearfield, Artillery Ballista and Brambles always) slows their
 movement and lowers their evasion. The tree's and gear's increased damage against an enemy in a state (frozen, maimed,

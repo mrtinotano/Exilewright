@@ -845,6 +845,14 @@ export function initScene(el, api) {
     if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
+    // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
+    // against the enemy's maximum life, 100% at all of it, none under the least chance (GameConstants); it cannot act for
+    // its length (monster.ot)
+    const LS = Math.min(100, all * A.stunMelee * A.stun * (o.stunX || 1) / Math.max(1, d.max) * 100);
+    if (!N.stun && !(d.st.stun > 0) && LS >= GAME.light_stun_min && roll(LS)) {
+      d.lstun = time + GAME.light_stun_ms / 1000; fx.ring(d.pos, .2, .8, 'white', .2, { a: .5 });
+      if (!S.src) { vanguard(S, false); remnantOn('stun', d); }
+    }
     // Incision: each stack on the enemy adds to the chance to bleed it; bleeding it removes them, and the support's bleeding
     // is more effective per Incision removed recently
     if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (d.inc || 0))) {
@@ -891,10 +899,13 @@ export function initScene(el, api) {
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
-    // Vanguard: heavy stunning with a supported skill grants its Guard per 10 Strength for its duration
-    // note: the scene has no light stun, so its Guard on a light stun is not simulated
-    const VG = a === 'stun' && !S.src && S.dmg?.sum?.gain_X_guard_on_heavy_stun_per_10_strength;
-    if (VG) { const g = Math.min(VG * Math.floor((sheet().attrs?.str || 0) / 10), 2 * (me.maxL || 0)); if (g > me.guard) { me.guard = g; later(S.dmg.sum.guard_on_stun_guard_duration_ms / 1000, () => { if (me.guard === g) me.guard = 0; }); } }
+    if (a === 'stun' && !S.src) vanguard(S, true);
+  }
+  // Vanguard: stunning with a supported skill grants its Guard per 10 Strength for its duration, more on a heavy stun
+  function vanguard(S, heavy) {
+    const U = S.dmg?.sum || {}, per = (U.gain_X_guard_on_stun_per_10_strength || 0) + (heavy ? U.gain_X_guard_on_heavy_stun_per_10_strength || 0 : 0);
+    const g = Math.min(per * Math.floor((sheet().attrs?.str || 0) / 10), 2 * (me.maxL || 0));
+    if (g > me.guard) { me.guard = g; later(U.guard_on_stun_guard_duration_ms / 1000, () => { if (me.guard === g) me.guard = 0; }); }
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
@@ -4691,7 +4702,7 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
-    if (d.st.freeze > 0 || d.st.stun > 0 || d.st.electrocute > 0 || d.halt > time) { d.wind = null; return; }   // frozen, heavily stunned, electrocuted and time-stopped enemies cannot act
+    if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
     let k = (d.st.chill > 0 ? 1 - (d.mag.chill ?? CHILL_MIN) * d.stat.slowEffect / 100 : 1) * (1 + (d.curse?.C?.speed || 0) * (d.curse?.k || 0) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);

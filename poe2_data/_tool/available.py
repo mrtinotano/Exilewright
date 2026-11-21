@@ -905,6 +905,8 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             # light stun on you (players cannot be heavily stunned by plain hits: KeywordPopups HeavyStunPlayer): its length,
             # the least chance that counts, and the higher threshold for each stun in the last few seconds (character.ot)
             'player_light_stun_ms': char_stats.get('stun_base_duration_override_ms'), 'player_light_stun_min': game['LightStunMinimumChancePlayer'],
+            # light stun on a monster: its length (monster.ot) and the least chance that counts
+            'light_stun_ms': mon_stats.get('stun_base_duration_override_ms'), 'light_stun_min': game['LightStunMinimumChance'],
             'player_light_stun_repeat_pct': char_stats.get('light_stun_threshold_+%_final_per_number_of_times_stunned_in_past_duration_from_ot'),
             'player_light_stun_repeat_ms': char_stats.get('x_ms_for_number_of_times_stunned_in_past_duration_from_ot'),
             'player_poise_decay_delay_ms': char_stats.get('poise_decay_delay_ms'), 'player_poise_decay_per_second': char_stats.get('poise_decay_%_per_second'),
