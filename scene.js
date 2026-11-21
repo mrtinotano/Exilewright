@@ -283,7 +283,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { owls: 0, owlT: 0, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -703,7 +703,7 @@ export function initScene(el, api) {
       }
     }
   }
-  const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
+  const AGGRAVATED = 2, OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty (above)   // "100% extra damage" (keywords.json Aggravate)
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -1958,7 +1958,7 @@ export function initScene(el, api) {
     projectile(S) {
       const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
       if (X && X.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
-      const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2, a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
+      const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
     },
@@ -3499,6 +3499,7 @@ export function initScene(el, api) {
           S.icetip = { ...E.X, dmg: { ...E.X.dmg, hits: scale(H, fm) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
           say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (--E.uses <= 0) empower.splice(k, 1);
         }
+        else if (E.type === 'bounty' && S.kind === 'projectile') { S.addProj = E.add; S.G = { ...S.G, speed: (S.G?.speed || SIM.projSpeed) * (1 + E.speed / 100) }; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
         else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
       }
       // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time, up to its most; casting it breaks them,
@@ -3686,9 +3687,10 @@ export function initScene(el, api) {
   }
   function glory(d, ev) {
     for (const S of gloryOf()) {
-      const st = gst(S), k = (st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0) + (st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0);
-      const seen = d.gloryAt ||= {}; if (!k || time - (seen[S.name] ?? -9) < GLORY_EVERY) continue;
-      seen[S.name] = time; gloryAdd(S, k / 100 * (POWER[d.stat.rarity] || 1));
+      // its % of the enemy's Power, or a hundredth of its number whatever the enemy (Spear of Solaris' Ignite and Shock)
+      const st = gst(S), mp = st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0, flat = st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0;
+      const seen = d.gloryAt ||= {}; if (!mp && !flat || time - (seen[S.name] ?? -9) < GLORY_EVERY) continue;
+      seen[S.name] = time; gloryAdd(S, (mp * (POWER[d.stat.rarity] || 1) + flat) / 100);
     }
   }
   // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
@@ -3791,6 +3793,17 @@ export function initScene(el, api) {
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
+    // Primal Bounty: the dodge expends an Owl Feather (up to its number more with The Mhacha's Gift, each 100% more
+    // Empowerment effect) to empower your next projectile skill: its additional projectiles and faster flight
+    // note: 2 additional projectiles is poe2db's (Primal_Bounty), not in the data; the granted skill's level is not in
+    // the data either: 20
+    const OW = sheet().owl, PB = OW && me.owls > 0 && granted('Primal Bounty', 20)?.stats;
+    if (PB) {
+      const n = Math.min(me.owls, OW.stack >= 2 ? OW.stack + 1 : 1); me.owls -= n;
+      empower = empower.filter(e => e.type !== 'bounty');
+      empower.push({ type: 'bounty', label: api.info({ name: 'Primal Bounty' }).label, name: 'Primal Bounty', el: 'gold', uses: 1, s: PB.owl_feather_buff_timer_ms / 1000, eff: n, add: OWL.proj * n, speed: PB['multishot_empowered_projectile_speed_+%'] * n });
+      say(t('{0} active', api.info({ name: 'Primal Bounty' }).label) + (n > 1 ? ` ×${n}` : ''), 'gold');
+    }
     // Trail of Caltrops: its number of drops, the first at its share of the dodge and the others at its interval after it
     const TC = onS('Trail of Caltrops'), st = TC?.dmg.stats;
     if (TC) Object.assign(move, { TC, drops: Array.from({ length: st.caltrops_on_dodge_X_triggers }, (_, k) => (st['caltrops_on_dodge_first_trigger_at_%_dodge'] + k * st['caltrops_on_dodge_trigger_interval_%_dodge']) / 100) });
@@ -3952,6 +3965,7 @@ export function initScene(el, api) {
     for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${Math.floor(T.energy)}/${Math.ceil(T.need)}` : k === 'Trinity' ? [...ELEM].map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '')); }   // Trinity: its Affinity, fire / cold / lightning
     const sg = {}; for (const s of surges) if (s.until > time) (sg[s.name + s.el] ??= { s, n: 0 }).n++;
     for (const { s, n } of Object.values(sg)) { const I = api.info({ name: s.name }); b.push(one(I.icon, css(s.el), `${I.label}: ${t(s.el[0].toUpperCase() + s.el.slice(1))}`, n, s.until - time)); }
+    if (sheet().owl) { const I = api.info({ name: 'Primal Bounty' }); b.push(one(I.icon, css('gold'), I.label, me.owls || 0)); }   // its Owl Feathers
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
@@ -4598,6 +4612,9 @@ export function initScene(el, api) {
       if (time - (me.ghostAt ?? -99) <= RECENT) me.es = Math.min(me.maxE, me.es + (c.evasion || 0) * GD['skill_base_ghost_dance_grants_%_evasion_as_es_regeneration_per_minute_if_have_lost_ghost_dance_shroud_recently'] / 100 / 60 * dt);
     }
     if (me.demon) { me.life -= demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60 * dt; if (me.life <= 1) { me.life = 1; demonOff(); } }
+    // Primal Bounty (Spirit Walker): an Owl Feather every 4 s (its % faster), up to 3 ("Gain a Primal Owl Feather every
+    // 4 seconds, up to a maximum of 3", stat_texts owl_feather_max_bonus_to_stack)
+    const OW = sheet().owl; if (OW) { me.owlT = (me.owlT || 0) + dt * (1 + OW.faster / 100); if (me.owlT >= OWL.every) { me.owlT = 0; if ((me.owls || 0) < OWL.max) { me.owls = (me.owls || 0) + 1; hudT = 0; } } }
     const MB = magma()?.dmg.stats; me.lava = MB ? Math.min(1, (me.lava || 0) + dt * 1000 / (MB.igneous_shield_charge_up_time_ms * (1 + MB['igneous_shield_charge_up_time_+%'] / 100))) : 0;
     for (const S of remnantSkills()) { const R = REMNANT[S.name], s = rstats(S); if (R.spawn && time - (remnantAt[S.name] ?? -99) >= R.spawn(s) / 1000) { remnantAt[S.name] = time; remnant(S, around(pp, s.breach_flame_spawn_radius / 10)); } }   // Flames, Blooms
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley

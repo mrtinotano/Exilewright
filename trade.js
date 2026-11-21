@@ -91,12 +91,13 @@ const shape = (s, loose) => { s = s.replace(/[+-]?\d+(\.\d+)?/g, '#').replace(/\
 //      "+# to Dexterity": an attribute or a resistance), when it has one }
 async function statIndex() {
   let known = null;
-  const des = [new Map(), new Map()], text = new Map(), totals = new Map();
+  const des = [new Map(), new Map()], text = new Map(), totals = new Map(), worded = new Map();
   try {
     const groups = (await data('stats')).result;
     known = new Set(groups.flatMap(g => g.entries.map(e => e.id)));
     for (const e of groups.find(g => g.id === 'desecrated')?.entries || []) des.forEach((m, loose) => m.has(shape(e.text, loose)) || m.set(shape(e.text, loose), e.id));
     for (const e of groups.find(g => g.id === 'explicit')?.entries || []) text.set(e.id, shape(e.text));
+    for (const g of groups.filter(g => ['explicit', 'crafted', 'fractured', 'desecrated'].includes(g.id))) for (const e of g.entries) worded.has(shape(e.text)) ? worded.get(shape(e.text)).push(e.id) : worded.set(shape(e.text), [e.id]);
     for (const e of groups.find(g => g.id === 'pseudo')?.entries || []) if (/ total to /.test(e.text)) totals.set(shape(e.text.replace(' total to ', ' to ')), e.id);
   } catch (e) { if (!(e instanceof TradeError)) throw e; }
   const desecrated = en => des[0].get(shape(en)) || des[1].get(shape(en, 1)) || null, total = hash => totals.get(text.get('explicit.stat_' + hash)) || null;
@@ -104,7 +105,10 @@ async function statIndex() {
   // item's total of it, any other as a normal, crafted, fractured or desecrated modifier alike
   const idsOf = l => l.en ? [desecrated(l.en)].filter(Boolean) : total(l.hash) ? [total(l.hash)]
     : ['explicit', 'crafted', 'fractured', 'desecrated'].map(k => `${k}.stat_${l.hash}`).filter(id => known ? known.has(id) : id.startsWith('explicit'));
-  return { known, desecrated, idsOf };
+  // a line the app does not know (no modifier of its data words it so: "+3 to Level of all Attack Skills"), by the
+  // site's own wording of it, as any kind of modifier (English text only)
+  const byWords = line => worded.get(shape(line)) || [];
+  return { known, desecrated, idsOf, byWords };
 }
 export async function withIds(wants) {
   const { known, desecrated } = await statIndex();
@@ -239,9 +243,10 @@ function sameAs(r) {
 export async function priceOf({ league, r, text = '', state = 'available', near = 10, deep = false }) {
   const item = r.item;
   const props = propsOf(text);
-  const { desecrated, idsOf } = await statIndex();
-  const lines = priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
-    .map(l => ({ ...l, ids: idsOf(l) }))
+  const { desecrated, idsOf, byWords } = await statIndex();
+  const unknown = (r.missed || []).map(l => ({ text: l, ids: byWords(l), value: +(l.match(/[+-]?\d+(\.\d+)?/)?.[0] || 0) })).filter(l => l.ids.length);
+  const lines = [...unknown, ...priceLines(item).filter(l => l.varies && !(l.local && Object.keys(props).length))
+    .map(l => ({ ...l, ids: idsOf(l) }))]
     .filter(l => l.ids.length).slice(0, 8), n = lines.length;
   // a rare weapon or armour whose damage or defence is asked: any base of its kind, as Exiled Exchange 2 asks (the
   // base gives nothing more than those); a ring, amulet or belt keeps its base, whose own line is not asked
@@ -274,7 +279,7 @@ export async function priceOf({ league, r, text = '', state = 'available', near 
   // a listing with a skill level line this one does not have ("+3 to Level of all Attack Skills", by the site's stat
   // number and wording) can be many times dearer: never one of the prices shown. note: only those, as every rare alike
   // has some other line, and which other ones raise a price this much is no table's
-  const ours = new Set(priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()).filter(Boolean));
+  const ours = new Set([...priceLines(item).map(l => l.hash ? String(l.hash) : l.en && desecrated(l.en)?.split('_').pop()), ...unknown.flatMap(l => l.ids.map(id => id.split('_').pop()))].filter(Boolean));
   const more = it => ['explicitMods', 'fracturedMods', 'craftedMods', 'desecratedMods'].flatMap(k => it?.[k] || [])
     .some(m => m.hash && !ours.has(/(\d+)$/.exec(m.hash)?.[1]) && /\bto Level of\b/i.test(m.description || ''));
   const sided = n || Object.keys(props).length;
