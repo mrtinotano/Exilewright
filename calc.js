@@ -319,15 +319,16 @@ export function recovery(c, sum) {
   // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
+  const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%');
   return {
     lifeRegen: lifePctRegen && c.life == null ? null
-      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'),
+      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
     esRate, esDelay: CHAR.energy_shield_delay_ms / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
     esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     manaRegen: c.mana == null || manaLife && c.life == null ? null
-      : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
+      : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * manaInc,
     // their increases, and the tree's regeneration while you are in a state (the scene checks it)
-    lifeInc: pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc: pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
+    lifeInc, manaInc,
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),

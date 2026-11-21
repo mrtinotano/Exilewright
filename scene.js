@@ -1186,7 +1186,7 @@ export function initScene(el, api) {
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
-    const KR = S && sheet().killRecover;
+    const KR = S && sheet().killRecover;   // none while the sheet is not there yet
     if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100); }
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
@@ -4752,7 +4752,7 @@ export function initScene(el, api) {
     AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
   // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
   // increased speed, a factor of its own here
-  // and its regeneration (calc.js REGEN_WHILE): life and mana per second
+  // the tree's life and mana regeneration per second while you are in a state (calc.js REGEN_WHILE)
   const regenNow = c => {
     const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = sum('l') / 100;
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) };
