@@ -184,6 +184,7 @@ export function profile(gem, d = {}) {
     object: has('ObjectDurability'), earthen: has('CanCreateStoneElementals'),
     rainy: has('Rain'),
     spiral: has('ProjectileSpiral'),
+    single: has('SingleMainProjectile'),   // one main projectile (Eye of Winter: its projectiles are its shards)
     dotHit: has('DamageOverTime') && !has('CreatesGroundEffect'),
     empowers: has('EmpowersOtherSkill', 'ModifiesNextSkill'),
     needsCharges: has('RequiresCharges'),

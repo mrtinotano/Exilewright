@@ -389,6 +389,8 @@ export function initScene(el, api) {
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = o.stunX ?? 1;
+    const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
+    if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
     if (!o.noPay) {
@@ -1723,6 +1725,10 @@ export function initScene(el, api) {
     const bst = S.dmg?.stats || {}, every = bst.ball_lightning_base_hit_frequency_ms / 1000, fi = S.infs?.includes('fire') && bst.ball_lightning_infused_acceleration != null;
     const BG = fi && partOf(S, 'BallLightningIgnitedGround'), BX = fi && partOf(S, 'BallLightningInfusedExplosionPlayer');
     const FR = S.dmg?.parts?.FragmentationRoundsFreezeShatterPlayer;   // Fragmentation Rounds: its bolts burst the Ice Crystals they reach
+    // Eye of Winter: the Eye hits nothing; it releases its shard projectiles in a spiral, evenly along its flight, and each
+    // enemy's first shard hit of the use deals its more damage (hit). note: the shards' speed and range are the scene's
+    const EW = P.spiral && !o.shard && bst['eye_of_winter_first_hit_damage_+%_final'] != null, EN = EW ? sh(S).projectiles || bst.base_number_of_projectiles : 0, gap = EW && left / EN;
+    let shot = 0, shardT = 0; if (EW) cur = { ...S, first: new Set() };
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -1753,7 +1759,7 @@ export function initScene(el, api) {
       update(dt) {
         if (P.wander) { a0 += rnd(-1, 1) * 9 * dt; dx = Math.sin(a0); dz = Math.cos(a0); m.rotation.y = a0; }
         if (fi) spd = Math.max(.3, spd * (1 + bst.ball_lightning_infused_acceleration / 100 * dt));
-        let stepLeft = Math.min(left, spd * dt); left -= stepLeft; trail += stepLeft;
+        let stepLeft = Math.min(left, spd * dt); left -= stepLeft; trail += stepLeft; shardT += stepLeft;
         while (stepLeft > 0 && !q.dead) {
           const s = Math.min(.3, stepLeft); stepLeft -= s; m.position.x += dx * s; m.position.z += dz * s;
           if (!cur.fired) for (const w of objs) if (w.wall && w.fire && !w.dead && segDist(m.position, w.a, w.b) < .45) {   // through a wall of fire
@@ -1767,7 +1773,7 @@ export function initScene(el, api) {
           if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
-          for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
+          for (const d of dummies) if (!EW && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d); shrapnel(cur, d); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
@@ -1786,9 +1792,10 @@ export function initScene(el, api) {
           }
         }
         if (q.dead) return;
+        for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
         fx.emit(slow ? 2 : 1, { p: m.position, v: .4, life: .35, size: slow ? .3 : .16, c: cur.el, c2: 'white', drag: 1 });
         if (slow) {
-          if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)); if (n !== cur) { cur = n; tint(m, cur.el); } }
+          if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
           if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
           if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, radOf(BG, 'tertiary'), BG.dmg.shape?.duration || 4, BG); }
@@ -2010,7 +2017,7 @@ export function initScene(el, api) {
     projectile(S) {
       const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
       if (X && X.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
-      const n = (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
+      const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
     },
