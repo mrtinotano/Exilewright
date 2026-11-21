@@ -1360,7 +1360,7 @@ export function initScene(el, api) {
     'Life Remnants': { c: 'blood', kill: s => s['life_remnants_chance_to_spawn_orb_on_killing_enemy_%'], every: s => s.life_remnants_spawn_remnant_on_hit_vs_enemy_every_X_ms,
       get: (s, k) => { me.life = overflow(me.life, me.maxL, s.life_remnants_gain_per_globe * k); } },
     'Mana Remnants': { c: 'lightning', ail: true, kill: s => s['mana_remnants_chance_to_spawn_orb_on_killing_enemy_with_elemental_ailment_%'], crit: true,
-      every: s => s.mana_remnants_spawn_remnant_on_crit_vs_elemental_ailment_enemy_every_X_ms, get: (s, k) => { me.mana = gain(me.mana, me.maxM, s.mana_remnants_gain_per_globe * k); } },
+      every: s => s.mana_remnants_spawn_remnant_on_crit_vs_elemental_ailment_enemy_every_X_ms, get: (s, k) => { me.mana = gain(me.mana, me.maxM, s.mana_remnants_mana_gain_per_globe * k); } },
     'Sanguine Revelry': { c: 'fire', bleed: true, kill: s => s['sanguine_revelry_%_change_to_create_remnant_on_killing_bleeding_enemy'], every: s => s.create_furious_remnant_when_hitting_bleeding_enemies_once_every_x_ms,
       get: (s, k) => { gainRage(s.sanguine_revelry_rage_gain_per_pickup * k);   // the life by the Rage you have once it is granted
         me.life = gain(me.life, me.maxL, me.maxL * (s['sanguine_revelry_remnant_restore_%_permyriad_of_max_life_per_5_current_rage'] || 0) / 1e6 * k * Math.floor(me.rage / 5)); } },
