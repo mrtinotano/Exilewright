@@ -3012,10 +3012,10 @@ export function initScene(el, api) {
   K.parry = S => { me.parry = { S, until: time + PARRY_WAIT }; fx.ring(pp, .3, .9, 'white', .3, { a: .5 }); };
   K.shield = S => { me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
   // Triskelion Cascade: your next Cascadable spell is empowered (its less damage and area), centred on you, for its duration
-  // note: the cast time it adds to its cooldown is not simulated
+  // and its share of the empowered spell's cast time is added to its cooldown (its last use's, use())
   K.triskelion = S => {
     const st = S.dmg?.stats || {}; empower = empower.filter(e => e.type !== 'trisk');
-    empower.push({ type: 'trisk', n: st.number_of_triskelion_cascades_for_next_skill, mult: 1 + st['triskelion_cascade_next_skill_damage_+%_final'] / 100, area: Math.sqrt(1 + st['triskelion_cascade_next_skill_area_of_effect_+%_final'] / 100), label: S.label, name: S.name, s: durOf(S) });
+    empower.push({ type: 'trisk', n: st.number_of_triskelion_cascades_for_next_skill, mult: 1 + st['triskelion_cascade_next_skill_damage_+%_final'] / 100, area: Math.sqrt(1 + st['triskelion_cascade_next_skill_area_of_effect_+%_final'] / 100), cd: st['triskelion_cascade_cooldown_%_of_cast_time'] || 0, label: S.label, name: S.name, s: durOf(S) });
     fx.ring(pp, .3, 1.8, 'fire', .45); say(t('{0} active', S.label), 'fire');
   };
   // Hollow Focus: while it is on, a bell appears near you every its interval, up to its most, lasting its secondary
@@ -3548,7 +3548,8 @@ export function initScene(el, api) {
           if (--E.uses <= 0) empower.splice(k, 1);
         } else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); }
-        else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'fire'); }
+        else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
+          const R = cdReady[E.name]; if (R?.length && S.dmg?.speed > 0) R[R.length - 1] += E.cd / 100 / S.dmg.speed; say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
