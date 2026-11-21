@@ -347,6 +347,7 @@ export function character(b, sum) {
     wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
+    totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
@@ -372,6 +373,7 @@ export function recovery(c, sum) {
   // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
+  const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
   const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%');
   return {
     lifeRegen: lifePctRegen && c.life == null ? null
@@ -394,10 +396,11 @@ export function recovery(c, sum) {
     // Infernalist's Pyromantic Pact: Infernal Flame instead of mana
     flame: sum['infernal_flame_instead_of_mana_at_%_ratio'] ? { ratio: sum['infernal_flame_instead_of_mana_at_%_ratio'], decay: v(sum, 'lose_%_of_max_infernal_flame_per_minute'), hit: v(sum, 'hit_for_%_max_life_es_on_max_infernal_flame'), lose: v(sum, 'lose_%_of_infernal_flame_on_reaching_max') } : null,
     // Lich: Unholy Might's magnitude (per 100 maximum mana), its spells' Sacrifice and Power Charge, Eternal Life, mana lost a second
-    unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100 : 0,
+    unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? umag : 0,
+    allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final') },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
-    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volImmune: !!sum.immune_to_volatility_damage,   // Acolyte of Chayula
+    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volImmune: !!sum.immune_to_volatility_damage,   // Acolyte of Chayula
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich

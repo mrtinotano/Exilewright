@@ -454,7 +454,7 @@ export function initScene(el, api) {
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
       const tot = Object.values(raw).reduce((t, x) => t + x, 0);   // both gain from the hit before either
       if (!S.src && time < me.volPower?.until) raw.chaos = (raw.chaos || 0) + tot * me.volPower.n * VOLATILITY.power / 100;   // Volatile Power
-      const UM = !S.src && sheet().unholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;
+      const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
@@ -1200,7 +1200,7 @@ export function initScene(el, api) {
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
   function kill(d, S) {
-    d.dead = true; stats.kills++; if (S) me.killAt = time; record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + 1); me.volAt = time; }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -4482,6 +4482,9 @@ export function initScene(el, api) {
     // Loyalty: its share of a hit's damage taken from the life of the Companion of the skill it supports, before you
     const LY = d && objs.find(o => o.loyal && !o.dead && o.segs[0].life > 0);
     if (LY) { const k = LY.loyal / 100; LY.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
+    // Warbringer's Wooden Wall: its share taken from the life of your nearest totem, before you
+    const TW = sheet().totemWall, TT = TW && objs.filter(o => o.totemOf && !o.dead && o.segs?.[0].life > 0).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0];
+    if (TT) { const k = TW / 100; TT.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const other = n - chaos, es0 = me.es; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
