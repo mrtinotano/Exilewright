@@ -233,6 +233,13 @@ function perAttr(attr) {
   return out;
 }
 
+// "<type> damage (from hits / hit and dot) taken as <type>": { hit: { physical: { fire: 10 } }, dot: {...} }
+function takenAs(sum) {
+  const out = { hit: {}, dot: {} };
+  for (const [k, x] of Object.entries(sum)) { const m = x && k.match(/^(physical|fire|cold|lightning|chaos)_(hit_and_dot_damage|damage_from_hits)_%_taken_as_(fire|cold|lightning|chaos)$/); if (!m) continue;
+    for (const w of m[2] === 'damage_from_hits' ? ['hit'] : ['hit', 'dot']) { const o = (out[w][m[1]] ||= {}); o[m[3]] = (o[m[3]] || 0) + x; } }
+  return out;
+}
 export function character(b, sum) {
   const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
   const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0);
@@ -247,9 +254,12 @@ export function character(b, sum) {
   const penalty = SK.resistance_penalty?.[Math.min(lvl, SK.resistance_penalty.length) - 1] || 0;
   for (const [k, others] of Object.entries({ fire: ['cold', 'lightning', 'chaos'], cold: ['fire', 'lightning', 'chaos'], lightning: ['fire', 'cold', 'chaos'], chaos: ['fire', 'cold', 'lightning'] })) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
-    const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%']))
+    // Smith of Kitava: modifiers to fire resistance grant cold and lightning resistance at their share, and to maximum fire resistance too
+    const fromFire = k === 'cold' || k === 'lightning' ? v(sum, 'base_fire_damage_resistance_%', ...['cold', 'lightning', 'chaos'].flatMap(o => [`fire_and_${o}_damage_resistance_%`, `${o}_and_fire_damage_resistance_%`])) : 0;
+    const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%'])) + fromFire * v(sum, 'modifiers_to_fire_resistance_also_apply_to_cold_lightning_resistance_at_%_value') / 100
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
-    const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']));
+    const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
+      + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0);
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -265,7 +275,7 @@ export function character(b, sum) {
     less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
   return {
     level: lvl, attrs: at, armourEl, deflect,
-    life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%')),
+    life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final')),   // Titan: more
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
@@ -279,6 +289,9 @@ export function character(b, sum) {
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%'),
+    // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
+    takenAs: takenAs(sum),
+    blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
     res, penalty,
     // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
@@ -940,6 +953,7 @@ export function skill(g, b, treeGear) {
       if (x) out.when.push({ cond, val: x, what: 'damage', w: Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) });
     }
   }
+  if (sum['titan_damage_+%_final_against_heavy_stunned_enemies']) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: sum['titan_damage_+%_final_against_heavy_stunned_enemies'], what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });   // Titan's Crushing Impacts: more
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.

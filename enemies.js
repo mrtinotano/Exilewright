@@ -145,7 +145,11 @@ export const armourCut = (armour, raw, cap) => armour > 0 && raw > 0 ? Math.min(
 // deflection rating of the character c (calc.js character(), its armour and evasion as they are now)
 export const deflection = c => (c.armour * c.deflect.arm + (c.evasion || 0) * c.deflect.eva) / 100 * c.deflect.inc;
 // one damage type of a hit against the character c (calc.js character()); returns what gets through
-export function playerTakes(c, type, raw, isHit = true) {
+// c.takenAs: shares of a type's damage taken as another ("Physical damage from Hits taken as Fire"), each part
+// mitigated as its new type. note: armour then counts against each part, not the whole hit
+export function playerTakes(c, type, raw, isHit = true, conv = true) {
+  const to = conv && c.takenAs?.[isHit ? 'hit' : 'dot']?.[type];
+  if (to) { let left = raw, t = 0; for (const [e, p] of Object.entries(to)) { const x = raw * Math.min(p, 100) / 100; left -= x; t += playerTakes(c, e, x, isHit, false); } return t + (left > 0 ? playerTakes(c, type, left, isHit, false) : 0); }
   // c.physDR: additional physical damage reduction (Jade), within the same cap
   const cap = K.player_max_physical_reduction ?? 90;
   if (type === 'physical') return isHit ? raw * (1 - Math.min(cap / 100, armourCut(c.armour, raw, cap) + (c.physDR || 0) / 100)) : raw;
@@ -162,7 +166,7 @@ export function enemyTakes(st, type, raw, isHit = true, pen = 0) {
   return raw * (1 - (isHit && pen && res > 0 ? Math.max(res - pen, 0) : res) / 100);
 }
 // block applies to strikes and projectiles, not to area damage or to skills the data marks as unblockable
-export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp(c.block || 0, 0, K.player_max_block ?? 50);
+export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp(c.block || 0, 0, c.blockMax ?? K.player_max_block ?? 50);
 
 // Expected result of an attack (attackOf) of a monster (enemyStats) against the character c: what the panel lists.
 // Ailments the monster could inflict, and your recovery while fighting, are not part of it.
@@ -174,7 +178,7 @@ export function versusPlayer(atk, st, c) {
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
   const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;
   const crit = clamp(atk.crit, 0, 100) / 100, critMult = 1 + atk.critBonus / 100;
-  const perUse = taken * (1 + crit * (critMult - 1)) * hit / 100 * (1 - block / 100);
+  const perUse = taken * (1 + crit * (critMult - 1)) * hit / 100 * (1 - block / 100 * (1 - (c.blockTaken || 0) / 100));   // a blocked hit deals its share you still take
   const dots = TYPES.filter(el => atk.dot[el]).map(el => ({ type: el, raw: atk.dot[el], taken: playerTakes(c, el, atk.dot[el], false) }));
   const dotTaken = dots.reduce((s, x) => s + x.taken, 0);
   const dps = perUse / atk.interval + dotTaken;

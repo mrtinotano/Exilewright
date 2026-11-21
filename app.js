@@ -5,7 +5,7 @@ import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet } from './items.js';
+import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, bodyArmour } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -104,10 +104,16 @@ function cycleAttr(id) {
   b.attrs[id] = NEXT[b.attrs[id]];
   save(); renderSide(); drawTree();
 }
+const BODY_GRANTS = [['body_armour_grants_spirit_+%', 'spirit_+%'], ['body_armour_grants_x_life_regeneration_rate_per_minute_%', 'life_regeneration_rate_per_minute_%'],
+  ['body_armour_grants_x_physical_damage_taken_%_as_fire', 'physical_damage_from_hits_%_taken_as_fire'], ['body_armour_grants_x_strength_+%', 'strength_+%'],
+  ['body_armour_grants_x_maximum_life_+%', 'maximum_life_+%'], ['body_armour_grants_x_base_fire_damage_resistance_%', 'base_fire_damage_resistance_%'],
+  ['body_armour_grants_thorns_damage_+%', 'thorns_damage_+%'], ['body_armour_grants_glory_generation_+%', 'glory_generation_+%']];
 function sumOf(b) {   // every stat of a build's passives (with the weapon set in use), gear, campaign rewards and buffs of its own
   const sum = questStats(b);
   for (const [k, v] of Object.entries(skillStats(b))) sum[k] = (sum[k] || 0) + v;
-  for (const id of [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)]) for (const [k, v] of Object.entries(nodeStats(id, b))) sum[k] = (sum[k] || 0) + v;
+  // Titan's Hulking Form: increased effect of the small passives (attribute ones included)
+  const all = [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
+  for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b))) sum[s] = (sum[s] || 0) + v * k; }
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => !slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)))))) sum[k] = (sum[k] || 0) + v;
   // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
   // radius of the socket (tree units). note: attribute passives counted as small ones (they are no notables)
@@ -120,6 +126,10 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
       if (k && !x.ascendancy && Math.hypot(x.x - J.x, x.y - J.y) <= R.r) n[k]++; }
     for (const k of ['small', 'notable']) for (const [s, v] of Object.entries(R[k])) sum[s] = (sum[s] || 0) + v * n[k];
   }
+  // Smith of Kitava: what the passives say the body armour grants, while one is worn; their hidden armour
+  if (b.items?.body) for (const [k, to] of BODY_GRANTS) if (sum[k]) sum[to] = (sum[to] || 0) + sum[k];
+  sum.base_physical_damage_reduction_rating = (sum.base_physical_damage_reduction_rating || 0) + (sum.base_physical_damage_reduction_rating_no_display || 0)
+    + bodyArmour(b.items) * (sum['ascendancy_titan_damage_reduction_rating_from_body_armour_+%_final'] || 0) / 100;   // Titan's Stone Skin: more armour from the body armour
   for (const [k, v] of Object.entries(auraStats(b, sum))) sum[k] = (sum[k] || 0) + v;   // after the rest: their level and magnitude come from it
   return sum;
 }
