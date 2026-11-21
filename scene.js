@@ -2680,6 +2680,9 @@ export function initScene(el, api) {
         const g = Math.min(w * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
       // note: Crackling Palm and Gelid Palm (Thunderfist) call down their bolts on Unarmed melee attack hits; no gem is an
       // Unarmed melee attack and the game's Punch has no damage data, so they are not simulated
+      // Refutation: spends all your Runic Ward; for its duration you Block every blockable hit and Parry its attacker
+      // (activeBlock). note: its less Stun Threshold is not simulated
+      if (st['runic_fortress_stun_threshold_+%_final'] != null) { spendWard(me.ward); me.refute = { until: time + durOf(S), st }; return say(t('{0} active', S.label), 'gold'); }
       // Rain of Blades: for its duration its blades fall on the enemies your projectile attacks hit (hit)
       if (st['triggered_rain_of_blades_%'] != null) { me.blades = { until: time + durOf(S), S }; return say(t('{0} active', S.label), 'gold'); }
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
@@ -4489,7 +4492,8 @@ export function initScene(el, api) {
     chargeBy('endurance', S); say(S.label, 'fire');
   }
   function activeBlock(d, a) {
-    const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised;
+    const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised, RF = time < me.refute?.until && me.refute.st;
+    if (RF) { d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'], until: time + RF.base_parry_duration_ms / 1000 }; blocked(d); return true; }
     if (!P && !R) return false;
     if (P) {
       const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10, l = dist(d.pos, pp) || 1;
