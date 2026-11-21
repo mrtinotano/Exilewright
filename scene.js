@@ -4574,7 +4574,7 @@ export function initScene(el, api) {
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
   function struck(d) {
-    const a = d.atk; let c = withCharms(sheet());
+    const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.jade) c = { ...c, physDR: me.jade * c.jade.dr };   // Jade: its additional physical damage reduction a stack
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };

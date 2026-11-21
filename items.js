@@ -153,7 +153,7 @@ export function charmOf(it, sum = {}) {
   return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm,
     img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%')) / 100),
     max: mostCharges(F, s), per: Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),
-    gain: 1 + g('charm_charges_gained_+%') / 100, keep: g('charms_%_chance_to_not_consume_charges'),
+    gain: (1 + g('charm_charges_gained_+%') / 100) * (1 + g('primalist_charm_charges_gained_+%_final') / 100),   // Ritualist: more keep: g('charms_%_chance_to_not_consume_charges'),
     life: s.charm_recover_X_life_when_used || 0, mana: s.charm_recover_X_mana_when_used || 0, guard: s.charm_gain_X_guard_for_duration || 0 };
 }
 // self-check: a Lesser Life Flask recovers 50 life over 3 s with 60 charges, 10 a use

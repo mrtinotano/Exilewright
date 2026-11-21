@@ -277,8 +277,8 @@ export function character(b, sum) {
     less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
-    life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final')),   // Titan: more
-    mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%')),
+    life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + fromAttr('life')) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
+    mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('oracle_maximum_mana_+%_final')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
@@ -296,6 +296,7 @@ export function character(b, sum) {
     // share of evasion that also grants elemental damage reduction (as armour does)
     armourX: sum.double_armour_effect ? 2 : 1, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
     evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical
+    esArm: v(sum, 'current_energy_shield_%_as_physical_damage_reduction'),   // Disciple of Varashta: its share of your current energy shield added to armour against physical
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
     blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
@@ -363,7 +364,7 @@ export function recovery(c, sum) {
   return {
     lifeRegen: lifePctRegen && c.life == null ? null
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
-    esRate, esDelay: CHAR.energy_shield_delay_ms / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),
+    esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     manaRegen: c.mana == null || manaLife && c.life == null ? null
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * manaInc,
@@ -894,7 +895,8 @@ export function skill(g, b, treeGear) {
   // the tree's speed with skills of a kind (Lightning, Elemental, Cold, channelling skills) and, for attacks, while
   // holding a shield, dual wielding, per 25 Dexterity or per 200 Accuracy
   const tagSp = (tags.includes('lightning') ? v(sum, 'attack_and_cast_speed_+%_with_lightning_skills') : 0) + (tags.some(x => x === 'fire' || x === 'cold' || x === 'lightning') ? v(sum, 'attack_and_cast_speed_+%_with_elemental_skills') : 0)
-    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0);   // Warcry Speed: its use time
+    + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0)   // Warcry Speed: its use time
+    + (byTotem ? v(sum, attack ? 'totem_skill_attack_speed_+%' : 'totem_skill_cast_speed_+%') : 0);   // attacks / spells used by totems
   const per = attack && (v(sum, 'attack_speed_+%_per_25_dex') || v(sum, 'attack_speed_+%_per_200_accuracy_rating')) && character(b, sum);
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);

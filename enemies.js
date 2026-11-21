@@ -154,7 +154,7 @@ export function playerTakes(c, type, raw, isHit = true, conv = true) {
   // c.physDR: additional physical damage reduction (Jade), within the same cap
   const cap = K.player_max_physical_reduction ?? 90;
   const A = (c.armour || 0) * (c.armourX || 1), pcap = Math.min(cap, c.physMax ?? cap);   // Tactician: armour at 200%, its cap
-  if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(A + (c.evaPhys ? c.evasion || 0 : 0), raw, pcap) + (c.physDR || 0) / 100)) : raw;
+  if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(A + (c.evaPhys ? c.evasion || 0 : 0) + (c.esNow ?? c.es ?? 0) * (c.esArm || 0) / 100, raw, pcap) + (c.physDR || 0) / 100)) : raw;
   // the share of armour that applies to the type (c.armourEl) cuts its hits like physical ones, then resistances
   // note: armour taken against the hit's damage before resistances
   const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder)
