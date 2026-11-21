@@ -31,7 +31,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
-const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
+const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'reprieve', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -3120,6 +3120,12 @@ export function initScene(el, api) {
   K.meditate = () => fx.ring(pp, .2, .9, 'holy', .25, { a: .4 });   // its recharge: update
   K.parry = S => { me.parry = { S, until: time + PARRY_WAIT }; fx.ring(pp, .3, .9, 'white', .3, { a: .5 }); };
   K.shield = S => { me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
+  // Runic Reprieve: channelled (from at least its share of your maximum Runic Ward), its bubble around you (struck)
+  K.reprieve = S => {
+    const st = S.dmg.stats, on = time < me.reprieve?.until;
+    if (!on && me.ward < me.maxW * st['rune_ward_requires_%_maximum_ward_to_perform'] / 100) return toast(t('Not enough Runic Ward for {0}', S.label));
+    me.reprieve = { st, until: time + SIM.channelTick * 2 }; if (!on) fx.ring(pp, .3, 1.2, 'holy', .4, { a: .5 });
+  };
   // Triskelion Cascade: your next Cascadable spell is empowered (its less damage and area), centred on you, for its duration
   // and its share of the empowered spell's cast time is added to its cooldown (use(): lengthen)
   K.triskelion = S => {
@@ -4357,7 +4363,7 @@ export function initScene(el, api) {
     if (N) hits.cold = N.thorns.map(x => x * (T.thornsX || 1));
     if (n) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + n * SP[k ? 'scavenged_plating_thorns_maximum_physical_damage' : 'scavenged_plating_thorns_minimum_physical_damage'] * (T.thornsX || 1));
     // Crackling Barrier: while you channel the skill it supports, its share of your maximum mana as lightning thorns
-    const ci = held?.i ?? charge?.i, cb = ci != null && base(ci), CB = cb?.P.channel && cb.dmg?.sum?.['return_%_of_maximum_mana_as_lightning_damage_to_attacker_while_channelling'];
+    const ci = held?.i ?? charge?.i, cb = ci != null ? base(ci) : null, CB = cb?.P.channel && cb.dmg?.sum?.['return_%_of_maximum_mana_as_lightning_damage_to_attacker_while_channelling'];
     if (CB) { const x = me.maxM * CB / 100 * (T.thornsX || 1); hits.lightning = [0, 1].map(k => (hits.lightning?.[k] || 0) + x); }
     return Object.values(hits).some(([, hi]) => hi > 0) ? { ...T, hits } : null;
   }
@@ -4517,8 +4523,12 @@ export function initScene(el, api) {
     if (move && !move.S && !a.area && !foresight) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
     if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }
     if (!a.unblockable && activeBlock(d, a)) return;
-    if (Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
-    if (Math.random() * 100 < blockChance(c, a)) return blocked(d);
+    // Runic Reprieve's bubble Blocks the hit: you take its share of the damage, also taken off your Runic Ward, and are not
+    // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
+    const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
+    if (RR) blocked(d);
+    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1))) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (!RR && Math.random() * 100 < blockChance(c, a)) return blocked(d);
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
@@ -4527,7 +4537,7 @@ export function initScene(el, api) {
     const DF = c.deflect && deflection(c), dfl = DF > 0 && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1), DF);
     if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
-    const crit = Math.random() * 100 < a.crit, cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1);   // and Intimidated ones
+    const crit = Math.random() * 100 < a.crit, cm = (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus / 100 : 1) * (1 + (d.curse?.C?.damage || 0) * (d.curse?.k || 0) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1);   // and Intimidated ones
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + Math.random() * (hi - lo)) * cm);
@@ -4538,6 +4548,7 @@ export function initScene(el, api) {
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     if (dealt.lightning > 0) valako(dealt.lightning);
     const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
+    if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
@@ -4806,7 +4817,7 @@ export function initScene(el, api) {
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
-    if (me.ward < W) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // overflowed ward stays
+    if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on   // overflowed ward stays
     if (me.heat && time - me.heatAt > c.heat.delay) me.heat = Math.max(0, me.heat - dt / c.heat.rate);   // Heat cools off
     leylines(dt); bells(dt); withering(dt); mirrors(dt); jade(dt); if (me.locust && !me.sprint && time - me.locustAt > 4) me.locust = 0; boils(); attrition(dt); malice(); regulation();
     const TRF = onS('Temporal Rift')?.dmg?.stats;
