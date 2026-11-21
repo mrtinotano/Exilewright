@@ -720,7 +720,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {}, rows = gain(slot, l.item, 'buy' + i);
       // the piece's own armour, evasion and energy shield against the worn one's
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
-        return `<span>${t(name)}: <b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}</i>` : ''}</span>`; }).join('');
+        return `<span>${t(name)}: <b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
       const order = byGain(rows);   // most improved first
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
         <span><b>${esc(l.name || l.base)} <small class="up" title="${esc(t('How much higher its modifiers are than yours, on average'))}">+${fmt(l.up * 100, 0)}%</small></b>${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactLine(order, 4, true)}
