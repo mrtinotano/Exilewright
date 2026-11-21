@@ -1923,6 +1923,7 @@ export function initScene(el, api) {
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
+        if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
         // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
         // damage (every half second here)
         const IB = S.dmg?.stats?.['infernal_familiar_minion_burns_for_%_max_life'];
@@ -1945,7 +1946,10 @@ export function initScene(el, api) {
         if (e.keep && e.slain) fallen(S, e);
       } };
     const L = S.dmg?.minionLife;
-    if (L > 0) Object.assign(e, { decoy: true, loyal: S.dmg?.sum?.['companion_takes_%_damage_before_you_from_support'], segs: [{ p: e.pos, r: .3, life: L, max: L, hurt(n) {
+    // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
+    const SU = S.dmg?.sum || {}, bear = S.name === 'Wild Protector';
+    if (L > 0) Object.assign(e, { decoy: true, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0),
+      regen: bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0, segs: [{ p: e.pos, r: .3, life: L, max: L, hurt(n) {
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
