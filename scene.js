@@ -3396,6 +3396,12 @@ export function initScene(el, api) {
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
   // ---------- using a skill
+  // what a use costs: mana (a channel's for one tick, or `held` s), and life
+  function costOf(S, held) {
+    const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
+    return { cost: (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
+      life: (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
+  }
   function use(i, o = {}) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
@@ -3537,10 +3543,8 @@ export function initScene(el, api) {
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     if (!auto && me.maxM && !tog[S.name]) {
-      const AM = archmage(S), per = S.dmg?.costPerSecond ? o.held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent,
-        cost = (S.dmg?.cost || 0) * per * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
-        life = (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0);
-      if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label)); return false; }
+      const { cost, life } = costOf(S, o.held);
+      if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label) + ` (${Math.ceil(cost)})`); return false; }
       // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it. note: added as they are, not scaled by the skill's modifiers; its physical's freeze buildup is not simulated
       const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
@@ -3916,8 +3920,9 @@ export function initScene(el, api) {
     put(bar, `<span class="s-belt">${flaskHtml(0)}${flaskHtml(1)}${[0, 1, 2].map(charmHtml).join('')}</span>` + (list.length ? at.map((i, k) => {
       if (i == null) return `<button class="s-slot none" data-k="${k}"><b>${keyLabel(k)}</b></button>`;
       if (i === MOVED) return `<button class="s-slot" data-k="${k}" title="${esc(t('Move'))}">${moveImg}<b>${keyLabel(k)}</b></button>`;
-      const g = gems[i], inf = api.info(g), P = prof(g, inf), GN = gloryNeed(base(i)), gl = GN && Math.floor(me.glory[g.name] || 0);
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}${GN && gl < GN ? ' dim' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${GN ? `<i class="gl" title="${esc(t('Glory'))}">${gl}/${Math.ceil(GN)}</i>` : ''}<b>${keyLabel(k)}</b></button>`;
+      const g = gems[i], inf = api.info(g), P = prof(g, inf), B = base(i), GN = gloryNeed(B), gl = GN && Math.floor(me.glory[g.name] || 0);
+      const poor = B && me.maxM && !tog[g.name] && costOf(B).cost > me.mana;   // not enough mana for it: greyed, as in the game
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}${GN && gl < GN || poor ? ' dim' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${GN ? `<i class="gl" title="${esc(t('Glory'))}">${gl}/${Math.ceil(GN)}</i>` : ''}<b>${keyLabel(k)}</b></button>`;
     }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
