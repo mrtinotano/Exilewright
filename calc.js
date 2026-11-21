@@ -291,7 +291,7 @@ export function character(b, sum) {
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
-    es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield')) * esInc + v(sum, 'total_maximum_energy_shield_+')),
+    es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceDef(b.items, 'body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
@@ -442,6 +442,14 @@ export function recovery(c, sum) {
     esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
+    // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
+    esDelayHurt: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_when_not_on_full_life') / 100),
+    // while Shapeshifted: factors on the energy shield delay and recharge, accuracy and life leech with their other
+    // increases, armour applied to elemental damage, more maximum Rage
+    shift: (k => k.some(x => sum[x]) ? { esDelay: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_while_shapeshifted') / 100),
+      esRecharge: pct('energy_shield_recharge_rate_+%', 'energy_shield_recharge_rate_+%_while_shapeshifted') / pct('energy_shield_recharge_rate_+%'), acc: v(sum, 'accuracy_rating_+%_while_shapeshifted'),
+      leech: v(sum, 'life_leech_amount_+%_while_shapeshifted'), armourEl: v(sum, 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted'), rage: v(sum, 'maximum_rage_+_while_shapeshifted') } : null)(
+      ['energy_shield_delay_-%_while_shapeshifted', 'energy_shield_recharge_rate_+%_while_shapeshifted', 'accuracy_rating_+%_while_shapeshifted', 'life_leech_amount_+%_while_shapeshifted', 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted', 'maximum_rage_+_while_shapeshifted']),
     lifeRecharge: sum.keystone_eternal_youth ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
     // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
     zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
@@ -465,7 +473,7 @@ export function recovery(c, sum) {
     allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
-    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
+    volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
@@ -1084,7 +1092,7 @@ export function skill(g, b, treeGear) {
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
-    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
+    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
@@ -1137,6 +1145,8 @@ export function skill(g, b, treeGear) {
     + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') + (w?.pen?.[e] || 0) : 0)]));
   if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
   out.projSpeed = 1 + (v(sum, 'base_projectile_speed_+%') + (spell ? v(sum, 'spell_skill_projectile_speed_+%') : 0) + (tags.includes('crossbow') ? v(sum, 'projectile_speed_+%_with_crossbow_skills') : 0)) / 100;   // increased projectile speed (the scene's projectiles)
+  for (const el of ['fire', 'cold', 'lightning']) if (sum['penetrate_elemental_resistance_%_while_shapeshifted']) out.when.push({ cond: [{ type: 'Condition', var: 'Shapeshifted' }], val: sum['penetrate_elemental_resistance_%_while_shapeshifted'], what: 'pen', el });
+  if (sum['damage_+%_vs_immobilised_enemies_while_shapeshifted']) out.when.push({ cond: [{ type: 'Condition', var: 'Shapeshifted' }, { type: 'ActorCondition', actor: 'enemy', var: 'Immobilised' }], val: sum['damage_+%_vs_immobilised_enemies_while_shapeshifted'], what: 'damage', w: out.incW });
   if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
@@ -1166,6 +1176,10 @@ export function skill(g, b, treeGear) {
   out.shape = { chains: both('number_of_chains') * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
+    // the tree's chances for more projectiles: "Surpassing" (each full 100% one more, the rest a chance), with bow
+    // attacks too; spells' chance for 2 more
+    extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0),
+      two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (sum.keystone_hex_master ? 2 : 1)),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
     // Pierce, Fork and Chain as PoB2 counts them (CalcOffence, SkillStatMap) and the glossary orders them: a projectile
@@ -1324,6 +1338,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),
+    // more of it against enemies with an ailment (its increased with the others), Fully Broken Armour's effect and duration
+    breakAil: (1 + (all('armour_break_amount_+%') + all('armour_break_amount_+%_vs_enemies_affected_by_ailments')) / 100) / (1 + all('armour_break_amount_+%') / 100),
+    brokenEff: 1 + all('broken_armour_and_sundered_armour_debuff_effect_+%') / 100, brokenTime: 1 + all('armour_break_and_sundered_armour_duration_+%') / 100,
     // what every hit of a player has (character.ot): more heavy stun buildup from physical damage and melee hits, and
     // more Armour Break against normal and magic monsters
     stunPhys: 1 + (CHAR['physical_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100,

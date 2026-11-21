@@ -187,6 +187,8 @@ export function initScene(el, api) {
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
+  const moreProj = S => { const E = sh(S).extraProj; if (!E) return 0; const p = Math.random() * 100;   // calc.js shape extraProj
+    return Math.floor(E.chance / 100) + (p < E.chance % 100 ? 1 : 0) + (Math.random() * 100 < E.two ? 2 : 0); };
   const offerX = () => 1 + (sheet().offerEff || 0) / 100;   // the tree's increased Offering buff effect
   const sh = S => S.dmg?.shape || {}, durOf = S => sh(S).duration || (S.dmg?.stats?.base_skill_effect_duration || 0) / 1000;   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
@@ -297,7 +299,8 @@ export function initScene(el, api) {
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
-  const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
+  const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
+  const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) + (shifted()?.rage || 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
   // your death, by an enemy or by your own life loss: everything restored
@@ -413,7 +416,7 @@ export function initScene(el, api) {
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
-      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : falloff(d), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
+      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : falloff(d), acc = c.accuracy * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0)) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
@@ -554,6 +557,7 @@ export function initScene(el, api) {
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
     if (!S.src) me.hitAt = time;   // you have hit an enemy recently
+    if (!S.src && S.P.spell && Math.random() * 100 < (S.dmg?.sum?.['spells_chance_to_hinder_on_hit_%'] || 0)) d.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(S) });   // the tree's chance to Hinder with spells
     // Rain of Blades: its blades (its chance) fall where the enemy is after its delay, hitting in its area for the attack's
     // damage at its own base multiplier. note: the attack's modifiers are kept (the weapon's base alone is not told apart)
     const RB = !S.src && P.attack && P.kind === 'projectile' && time < me.blades?.until && me.blades.S, RS = RB && RB.dmg.stats;
@@ -662,7 +666,7 @@ export function initScene(el, api) {
   function leech(D, dealt, total, d) {
     const k = Math.min(1, GAME.leech_max_damage / (total || 1)) * (1 - (d.stat.leechRes || 0));
     for (const r of ['life', 'mana']) {
-      const x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * x.more * k;
+      const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k;   // more life leeched while Shapeshifted
       if (!(n > 0)) continue;
       const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
     }
@@ -860,7 +864,7 @@ export function initScene(el, api) {
       buffs.push({ label: M.label, name: M.name, c: css(MD.gain.el), s: MD.gain.time, gain: MD.gain }); say(t('{0} consumes {1}', S.label, M.label), 'mark');
     }
     if (a === 'freeze') gainBuff(S, 'freeze');
-    if (a === 'ignite') d.ignBy = S;   // Fiery Death: the enemies the supported skill ignites
+    if (a === 'ignite') { d.ignBy = S; if (!S?.src) gainRage(S?.dmg?.sum?.gain_X_rage_on_ignite_hit || 0); }   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'pin' && !S?.src) me.pinAt = time;   // "if you've Pinned an enemy Recently"
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
@@ -898,7 +902,7 @@ export function initScene(el, api) {
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
-    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1);
+    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1);
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
   function withers(d, s, pct = WITHER.per) { const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct }); if (w.length > WITHER.max) w.shift(); }
@@ -992,11 +996,11 @@ export function initScene(el, api) {
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
     const brk = N.armour ? 0 : (A.breakFlat + (S.breakAdd || 0) + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
       + (d.crushed > time ? x('physical') * (S.dmg.sum?.['crushed_target_%_physical_damage_taken_as_armour_break'] || 0) / 100 : 0)
-      + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * (S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore;   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
+      + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * (S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
-      if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
+      if (d.cut >= d.stat.armour) { d.cut = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -2210,7 +2214,7 @@ export function initScene(el, api) {
     projectile(S) {
       const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
       if (X && X.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
-      const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
+      const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
     },
@@ -4828,7 +4832,7 @@ export function initScene(el, api) {
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
-    if (a === 'stun') me.stunAt = time;   // "if you haven't been Stunned Recently"
+    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + 1); me.volAt = time; } }   // "if you haven't been Stunned Recently"; Volatility when Stunned
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
@@ -4934,11 +4938,17 @@ export function initScene(el, api) {
       const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges
       if (!f || f.on !== on || me.cu[n] || lack && !(CM > 0 && me.mana >= CM)) return;
       if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
-      me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
-      if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
-      const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
-      say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
+      useCharm(f, n);
+      // the tree's chance to use another charm without consuming its charges
+      const m = Math.random() * 100 < (sheet().charmAnother || 0) ? charms().findIndex((g, j) => g && j !== n && !me.cu[j]) : -1;
+      if (m >= 0) useCharm(charms()[m], m);
     });
+  }
+  function useCharm(f, n) {
+    me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
+    if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
+    const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
+    say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
   }
   // the attack damage your Rage adds now (berserk's effect while it is on), and against what the skill's numbers assume
   const rageNow = () => { const R = sheet().rage; return R?.noEffect ? 0 : me.rage * (100 + (R?.berserk && tog[R.berserk.name] ? R.berserk.effect : 0)) / 100; };
@@ -5000,8 +5010,8 @@ export function initScene(el, api) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
-    const RA = banner('%_armour_to_apply_to_elemental_damage'), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating
-    if ((RA || RE) && c.deflect) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: { ...c.deflect, eva: c.deflect.eva + RE } };
+    const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
+    if ((RA || RE) && c.armourEl) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: c.deflect && { ...c.deflect, eva: c.deflect.eva + RE } };
     if (AE || MR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
@@ -5244,7 +5254,7 @@ export function initScene(el, api) {
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
     else if (c.lifeRecharge && !c.vaal && me.life < L && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(L, me.life + c.lifeRecharge * dt);   // Eternal Youth
-    else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
+    else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
