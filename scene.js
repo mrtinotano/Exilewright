@@ -944,10 +944,11 @@ export function initScene(el, api) {
   // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power (per block: Cast / Curse on Block)
   // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
-  // many times as its energy covers
-  // note: that modifiers to total use time count double here is not simulated
+  // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the
+  // whole of them, increased and more together, against its base cast time
   function gainEnergy(T, n, j) {
-    T.need = 1000 / (base(j).dmg?.speed || 1 / SIM.castTime) / T.perMs;
+    const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
+    T.need = 1000 / sp / T.perMs;
     T.energy = Math.min(T.cap || T.need, T.energy + n * T.more);
   }
   function invoke(T) {
