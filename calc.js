@@ -363,6 +363,8 @@ export function character(b, sum) {
       per: v(sum, 'blood_mage_life_flask_buff_%_damage_to_gain_as_physical_per_charge_consumed'), dur: sum.blood_mage_life_flask_buff_duration_ms / 1000, dry: !!sum.base_life_flasks_do_not_recover_life } : null,
     shot: [v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_decreases'), v(sum, 'deadeye_projectile_damage_+%_final_max_as_distance_travelled_increases')],   // Deadeye's Point Blank / Far Shot: projectile hits' more damage by how far they have travelled
     sands: !!sum['chronomancer_grant_cast_speed_+%'],   // Chronomancer's Quicksand Hourglass: Sands of Time
+    frenzyX: v(sum, 'chance_%_to_double_effect_of_removing_frenzy_charges'),   // Deadeye's Thrilling Chase: chance to double what consuming a frenzy charge gives
+    cover: !!sum.enemy_hits_against_you_have_distance_based_accuracy_falloff,   // Tactician's Stay Light, Use Cover: enemies' accuracy falls off with distance, as yours
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
@@ -378,6 +380,9 @@ export function character(b, sum) {
   // Fleshcrafting, Enhanced Barrier: that share of maximum life converted to maximum energy shield
   const LC = c.life != null && Math.min(100, v(sum, 'maximum_life_%_to_convert_to_maximum_energy_shield')); if (LC) { const k = Math.round(c.life * LC / 100); c.life -= k; c.es += k; }
   c.spirit += per(pieceDef(b.items, 'body', 'evasion'), sum['+1_spirit_per_X_evasion_rating_on_body_armour']) + per(pieceDef(b.items, 'body', 'energy_shield'), sum['+1_spirit_per_X_energy_shield_on_body_armour']);
+  // Acolyte of Chayula's Embrace the Darkness: no Spirit; maximum Darkness, its base and per level, with its increases (per 1% chaos
+  // resistance too); damage taken is reserved from it before life or energy shield, each reservation lasting its time
+  if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
 

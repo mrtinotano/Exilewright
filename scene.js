@@ -3966,7 +3966,7 @@ export function initScene(el, api) {
     // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
     const U = !auto && S.dmg?.onUse; nextCdX = 1;
     if (U) {
-      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n, c); return n * (Math.random() * 100 < U.double ? 2 : 1); };
+      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n, c); return n * (Math.random() * 100 < U.double + (c === 'frenzy' ? sheet().frenzyX || 0 : 0) ? 2 : 1); };   // Deadeye's Thrilling Chase: frenzy charges' too
       let n;
       if (U.speed && (n = take('frenzy'))) nextCdX = 1 + U.speed * n / 100;
       if (U.breakPct && (n = take('frenzy'))) S.breakPct = U.breakPct * n;
@@ -4512,6 +4512,8 @@ export function initScene(el, api) {
     // Warbringer's Wooden Wall: its share taken from the life of your nearest totem, before you
     const TW = sheet().totemWall, TT = TW && objs.filter(o => o.totemOf && !o.dead && o.segs?.[0].life > 0).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0];
     for (const [o, p] of [[LY, LY?.loyal], [TT, TW]]) if (o) { const k = p / 100; o.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
+    // Darkness: the damage is reserved from what is left of it before energy shield and life, each part back after its time
+    const DK = sheet().darkness; if (DK) { me.dark = (me.dark || []).filter(u => u.until > time); const k = Math.min(n, DK - me.dark.reduce((t, u) => t + u.v, 0)); if (k > 0) { me.dark.push({ v: k, until: time + sheet().darkFor }); chaos *= 1 - k / n; n -= k; } }
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const other = n - chaos, es0 = me.es; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
@@ -4709,7 +4711,7 @@ export function initScene(el, api) {
     // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
     if (RR) blocked(d);
-    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (!RR && Math.random() * 100 >= hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - clamp((dist(pp, d.pos) - 2) / 7, 0, 1) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax)) return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
