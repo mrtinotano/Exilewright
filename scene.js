@@ -2258,8 +2258,7 @@ export function initScene(el, api) {
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
-          if (d.curse && d.curse.name !== S.name) d.hexes = [d.curse, ...(d.hexes || []).filter(u => u.name !== S.name)].slice(0, (sheet().curseLimit || 1) - 1);
-          else d.hexes = (d.hexes || []).filter(u => u.name !== S.name);
+          d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, (sheet().curseLimit || 1) - 1);
           d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
