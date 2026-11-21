@@ -911,7 +911,7 @@ export function initScene(el, api) {
     // Drain Ailments: a spell's damage over time Consumes an ailment of the enemy (one at random) for its more damage
     const DA = S.P.spell && S.dmg?.finals?.['support_drained_ailment_damage_over_time_+%_final_if_ailment_consumed'], on = DA ? DRAINED.filter(a => has(d, a)) : [];
     if (on.length) { consume(d, S, on[Math.floor(Math.random() * on.length)]); v.dps *= 1 + DA / 100; }
-    if (o) Object.assign(o, v, { s, S }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
+    if (o) Object.assign(o, v, { s, S, spreads: 0 }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
   function markOn(d, S) {
@@ -1152,9 +1152,13 @@ export function initScene(el, api) {
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
-    if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it
+    if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it; its own deals its more damage
+      // for each time it has spread, up to its most
       const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
-      for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) e.dots.push({ ...o, s: 5, ...dotOf(e, o.S) }); e.by = S; }
+      for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) {
+        const v = dotOf(e, o.S), CS = o.spread && o.S.dmg?.stats, n = (o.spreads || 0) + 1;
+        if (CS?.['contagion_spread_magnitude_+%_final']) v.dps *= 1 + Math.min(CS['contagion_maximum_spread_magnitude_+%_final'], CS['contagion_spread_magnitude_+%_final'] * n) / 100;
+        e.dots.push({ ...o, s: 5, ...v, spreads: o.spread ? n : o.spreads }); } e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
     if (S.P.gain && !S.P.corpse && !S.src && !KG.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
