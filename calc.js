@@ -349,6 +349,7 @@ export function character(b, sum) {
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
     implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage,   // Warbringer's Imploding Impacts: Fully Broken Armour increases all hit damage taken
+    bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },

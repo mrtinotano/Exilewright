@@ -2326,6 +2326,10 @@ export function initScene(el, api) {
       const ES = !S.echoK && S.dmg?.sum || {}, EN = ES.base_warcry_echo_X_times;
       for (let k = 1; k <= (EN || 0); k++) later(k * ES.warcry_echo_delay_ms_from_support / 1000, () => K.warcry({ ...S, echoK: k, from: { x: pp.x, z: pp.z }, A: S.A * Math.sqrt(1 + (ES['warcry_echo_area_of_effect_+%_final_per_repeat'] || 0) * k / 100) }));
       const c = S.from, R = S.A, col = S.P.els.length ? S.el : 'gold';
+      // Warcaller's Bellow: the corpses in its area explode for their share of their life as physical damage. note: the
+      // explosion's area is not in the data: the scene's
+      const BC = !S.echoK && sheet().bellow.corpse;
+      if (BC) for (const d of corpses(c, R)) { const p = { x: d.pos.x, z: d.pos.z }, x = d.max * BC / 100; eat(d, 'blood'); boom(p, SIM.area, { ...S, dmg: { ...S.dmg, hits: { physical: [x, x] }, trig: [] }, els: ['physical'], el: 'physical', mult: 1, src: 'trigger' }); }
       fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
@@ -3725,7 +3729,7 @@ export function initScene(el, api) {
     const lodged = !auto && S.dmg?.stats?.forge_hammer_maximum_hammers && objs.find(o => o.earth && o.name === S.name && !o.dead);
     if (lodged) { recall(S, lodged); cdReady[S.name] = []; return true; }
     // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
-    const C = !auto && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
+    const C = !auto && !(S.kind === 'warcry' && sheet().bellow.free) && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     // one whose game text says a charge can bypass its cooldown (Ice-Tipped Arrows a Frenzy Charge, Fortifying Cry an
     // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
     // (its only use of charges: none spent otherwise)
