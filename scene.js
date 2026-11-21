@@ -392,11 +392,14 @@ export function initScene(el, api) {
     d.aggro = true;   // hit, it comes at you
     const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
+    let overHit = 0;   // Amazon: a share of the chance to hit over 100% as critical hit chance
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : clamp((dist(pp, d.pos) - 2) / 7, 0, 1), acc = c.accuracy * (S.accX || 1) * (1 + banner('banner_accuracy_+%') / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
-      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1))) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - BLIND.less / 100 : 1);
+      if (acc > 0 && c.critFromHit) overHit = Math.max(0, acc * 1.25 / (acc + evNow * .3) * 100 - 100) * c.critFromHit / 100;
+      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
@@ -434,7 +437,7 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d); if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
       if (crit && D.sum?.critical_strikes_ignore_positive_elemental_resistances) for (const e of ELEM) W.pen[e] = Infinity;   // Invoker: a critical hit ignores non-negative elemental resistances
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
@@ -4788,7 +4791,7 @@ export function initScene(el, api) {
   // increased speed, a factor of its own here
   // the tree's life and mana regeneration per second while you are in a state (calc.js REGEN_WHILE)
   const regenNow = c => {
-    const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = sum('l') / 100;
+    const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) };
   };
   const speedWhile = b => 1 + (sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100;

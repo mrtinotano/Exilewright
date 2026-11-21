@@ -76,6 +76,7 @@ function local(item) {
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
     r.crit = w.crit + (s.local_critical_strike_chance || 0) / 100;
     r.range = w.range;
+    r.accuracy = s.local_accuracy_rating || 0;   // its own accuracy, for attacks with it
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
     // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)

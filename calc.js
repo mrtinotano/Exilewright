@@ -313,7 +313,7 @@ export function character(b, sum) {
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + fromAttr('accuracy')) * pct('accuracy_rating_+%')), accuracyInc: pct('accuracy_rating_+%'), lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (weaponStats(b.items)?.accuracy || 0) + fromAttr('accuracy')) * pct('accuracy_rating_+%')), accuracyInc: pct('accuracy_rating_+%'), lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%'),
@@ -374,6 +374,8 @@ export function recovery(c, sum) {
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * manaInc,
     // their increases, and the tree's regeneration while you are in a state (the scene checks it)
     lifeInc, manaInc,
+    recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
+    critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
@@ -738,9 +740,22 @@ function more(fin, suffix, tags, type) {
 // game it takes 26% off: Cluster Grenade of Mortar Cannon, one totem, no Berserk (18/11) gives 4306-9367 without it and
 // 3186-6932 with it, x0.740 for every damage type. Multishot I (35% less) the same way: 2756-5995, x0.640
 const MEASURED_MORE = { 'Multishot I': 0.64 / 0.65, 'Multishot II': 0.74 / 0.75 };
+function gemlingOf(g, sum, b) {
+  const red = v(sum, 'skills_gain_damage_+%_per_sockted_or_adjacent_red_support_gem'), green = v(sum, 'skills_gain_skill_speed_+%_per_sockted_or_adjacent_green_support_gem');
+  const blue = v(sum, 'skills_gain_critical_strike_chance_+%_per_sockted_or_adjacent_blue_support_gem'), cost = v(sum, 'skill_cost_+%_final_if_blue_support_count_highest'), lich = v(sum, 'lich_mana_cost_+%_final_if_you_have_no_energy_shield');
+  if (!red && !green && !blue && !cost && !lich) return null;
+  const n = { str: 0, dex: 0, int: 0 };
+  for (const s of g.supports || []) { const a = GEM[s] && Object.entries(GEM[s].attr || {}).sort((x, y) => y[1] - x[1])[0]; if (a?.[1]) n[a[0]]++; }
+  const costMore = (n.int && n.int >= n.str && n.int >= n.dex ? 1 + cost / 100 : 1) * (lich && !character(b, sum).es ? 1 + lich / 100 : 1);
+  return { 'damage_+%': red * n.str, 'skill_speed_+%': green * n.dex, 'critical_strike_chance_+%': blue * n.int, 'gemling_skill_cost_+%_final': (costMore - 1) * 100 };
+}
 export function skill(g, b, treeGear) {
   // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
   if (g.add) { treeGear = { ...treeGear }; for (const [k, x] of Object.entries(g.add)) treeGear[k] = (treeGear[k] || 0) + x; }
+  // Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
+  // and less cost when blue supports are the most; Lich: more mana cost with no maximum energy shield
+  const gemExtra = gemlingOf(g, treeGear, b);
+  if (gemExtra) { treeGear = { ...treeGear }; for (const [k, x] of Object.entries(gemExtra)) treeGear[k] = (treeGear[k] || 0) + x; }
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
@@ -760,6 +775,9 @@ export function skill(g, b, treeGear) {
   // MinDamage-MaxDamage physical, WeaponSpeed ms, MaxAttackDistance; unarmed_base_critical_strike_chance)
   const cb = ascOf(b.asc).class_base, bare = attack && !b.items?.weapon && d.weapons?.includes('') && cb?.WeaponSpeed;
   const w = attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
+  // Amazon: physical damage added to attacks with the weapon, a share of the weapon's own accuracy
+  const accPhys = w?.accuracy && v(sum, 'real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy') * w.accuracy / 100;
+  if (accPhys) w.physical = w.physical.map(x => x + accPhys);
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w && !bare && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
