@@ -888,9 +888,12 @@ export function skill(g, b, treeGear) {
   const supMult = own.includes('meta') ? 1 : Math.floor((g.supports || []).reduce((x, n) => x * ({ ...SK.skills[n]?.constant, ...Object.values(SK.skills[n]?.levels || {})[0] }._cost_multiplier ?? 100) / 100, 1) * 1e4) / 1e4;
   const perSec = st._cost?.ManaPerSecond != null, baseCost = (perSec ? st._cost.ManaPerSecond : st._cost?.Mana) || 0;
   if (baseCost && !sum.no_mana_cost) {
+    // cost efficiency, of every cost (Deep Trance) and of attacks (Price of Freedom): with the mana cost's own, and the life cost's
+    const effAll = v(sum, 'base_skill_cost_efficiency_+%') + (own.includes('attack') ? v(sum, 'base_attack_skill_cost_efficiency_+%') : 0);
     const step = (x, f) => f < 1 ? Math.ceil(x * f) : Math.floor(x * f), raw = baseCost * supMult + v(sum, 'base_mana_cost_+');
     const inc1 = 1 + (inc(sum, 'mana_cost_+%', tags) - v(sum, 'base_mana_cost_-%') + v(sum, 'base_cost_+%')) / 100;
-    const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100), eff = 1 + v(sum, 'base_mana_cost_efficiency_+%') / 100;
+    const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100), eff = 1 + (v(sum, 'base_mana_cost_efficiency_+%') + effAll + (own.includes('spell') ? v(sum, 'base_spell_mana_cost_efficiency_+%') : 0)
+      + (own.includes('mark') ? v(sum, 'base_mana_cost_efficiency_+%_of_mark_skills') : 0) + (own.includes('command') ? v(sum, 'base_mana_cost_efficiency_+%_of_command_skills') : 0)) / 100;
     const moreCost = 1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100;   // Efficiency: "more Cost", every resource
     // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
     // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
@@ -898,7 +901,8 @@ export function skill(g, b, treeGear) {
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
       const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + v(sum, 'base_cost_+%') / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
-      out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost) : Math.max(0, step(step(step(life, inc2), more2), moreCost));
+      const eff2 = 1 + (effAll + v(sum, 'base_life_cost_efficiency_+%')) / 100;
+      out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost / eff2) : Math.max(0, Math.round(step(step(step(life, inc2), more2), moreCost) / eff2));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
     }
     // Paquate's Pact: a % of maximum life more for each use or trigger of the skill Recently, up to the stat's own cap
