@@ -809,6 +809,7 @@ export function initScene(el, api) {
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (A.electrocute) build(d, 'electrocute', x('lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    const wasPinned = d.st.pin > 0;
     if (A.pin) build(d, 'pin', Object.values(raw).reduce((t, v) => t + v, 0) * GC.PinDamageScale * A.pin, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * (o.stunX || 1), S, A);
@@ -820,10 +821,11 @@ export function initScene(el, api) {
       inflict(d, 'bleed', S, 1, raw, { dur: DUR.bleed * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) });   // Concoct
     }
     if (A.incision) d.inc = Math.min(INCISION.max, (d.inc || 0) + A.incision);
-    // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction) aggravates the bleeding the enemy
-    // has, treated as moving for the rest of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra
-    // bleeding damage is not simulated, nor Herald of Blood's and Rusted Spikes' chances
-    const AG = S.P.attack && S.dmg?.stats?.['base_aggravate_bleeding_on_attack_hit_chance_%'];
+    // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction), Herald of Blood's explosion's
+    // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
+    // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
+    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0);
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     if ((x('physical') || x('chaos')) && roll(A.poison)) inflict(d, 'poison', S, 1, raw, { dur: DUR.poison * A.poisonTime, eff: A.poisonEffect });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
@@ -1136,9 +1138,9 @@ export function initScene(el, api) {
     const S = { ...b, src: 'herald', ail: ailOf(T.P.els) };
     say(t('{0} explodes on the kill', T.label), T.el);
     // Herald of Blood, Herald of the Royal Queen: its % of the Blood Loss the enemy took, as physical that nothing scales,
-    // over its area. note: its chance to Aggravate the bleeding it inflicts is not simulated
+    // over its area, with its chance to Aggravate the bleeding it inflicts (hit)
     const BL = b.dmg?.stats?.['skill_herald_bleeding_enemies_explode_for_%_blood_loss_as_unscalable_physical_damage'];
-    if (BL) { pop(p, b.A, 'blood'); return lifeBlast(p, b.A, S, 'physical', blood * BL / 100); }
+    if (BL) { pop(p, b.A, 'blood'); return lifeBlast(p, b.A, { ...S, aggX: b.dmg.stats['skill_herald_of_blood_explosion_aggravate_bleeding_chance_%'] }, 'physical', blood * BL / 100); }
     if (T.P.el === 'lightning') {   // bolts on the enemies around instead of one blast
       nearest(p, b.dmg?.stats?.herald_of_thunder_storm_max_hits ?? 3, e => dist(e.pos, p) <= 7).forEach((e, k) => later(k * .08, () => {
         fx.bolt(V(e.pos.x + rnd(-1.5, 1.5), 13, e.pos.z + rnd(-1.5, 1.5)), V(e.pos.x, 0, e.pos.z), 'lightning', .22, .07, .5); pop(e.pos, 1.1, 'lightning'); area(e.pos, 1.1, S);
@@ -1653,7 +1655,7 @@ export function initScene(el, api) {
     pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * (fr ? uniqueMore(d, X.dmg.stats['snipe_damage_+%_final_if_created_from_unique']) : 1) }, { noPay: true });
   }
   // Fragmentation Rounds: a bolt reaching a Frozen enemy Consumes the Freeze for an explosion of shrapnel around it (its
-  // part, more from a Unique). note: its bolts setting off Ice Crystals are not simulated
+  // part, more from a Unique). Its bolts burst the Ice Crystals they reach (shoot)
   function shrapnel(S, d) {
     const X = has(d, 'freeze') && partOf(S, 'FragmentationRoundsFreezeShatterPlayer'); if (!X) return;
     consume(d, S, 'freeze'); const p = { x: d.pos.x, z: d.pos.z };
@@ -1690,6 +1692,7 @@ export function initScene(el, api) {
     // time, leaves Ignited Ground at its interval and explodes where it ends (its infused parts)
     const bst = S.dmg?.stats || {}, every = bst.ball_lightning_base_hit_frequency_ms / 1000, fi = S.infs?.includes('fire') && bst.ball_lightning_infused_acceleration != null;
     const BG = fi && partOf(S, 'BallLightningIgnitedGround'), BX = fi && partOf(S, 'BallLightningInfusedExplosionPlayer');
+    const FR = S.dmg?.parts?.FragmentationRoundsFreezeShatterPlayer;   // Fragmentation Rounds: its bolts burst the Ice Crystals they reach
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -1733,6 +1736,7 @@ export function initScene(el, api) {
           if (cur.P.attack && !cur.copied) for (const w of objs) if (w.copy && !w.dead && dist(w.pos, m.position) <= w.R) { w.spit(cur, mult()); q.dead = true; break; }
           if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
+          if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
           for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d); shrapnel(cur, d); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
