@@ -852,7 +852,7 @@ export function initScene(el, api) {
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
+    const brk = N.armour ? 0 : (A.breakFlat + (S.breakAdd || 0) + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
       + (d.crushed > time ? x('physical') * (S.dmg.sum?.['crushed_target_%_physical_damage_taken_as_armour_break'] || 0) / 100 : 0)) * A.breakMore;   // Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
@@ -2194,7 +2194,10 @@ export function initScene(el, api) {
       // note: that added damage as the gem gives it, without your modifiers
       const wc = ws.wolf_warcry_empowered_attack_cold_damage_min_per_5_power_up_to_cap, k5 = wc && Math.floor(mp / 5), IC = ws['infernal_cry_exerted_attack_all_damage_%_to_gain_as_fire_%'];
       gainRage(Math.floor(pw / 5) * S.dmg?.sum?.warcry_grant_X_rage_per_5_power);   // Raging Cry: its Rage per 5 Power of the enemies in its area
-      if (wc && uses) { empower = empower.filter(e => e.type !== 'cold'); empower.push({ type: 'cold', label: S.label, name: S.name, uses, s: 12, add: [wc * k5, ws.wolf_warcry_empowered_attack_cold_damage_max_per_5_power_up_to_cap * k5], chill: (ws.base_secondary_skill_effect_duration || 0) / 1000 }); say(t('{0} gains {1} from {2}', t('Attack'), t('Cold'), S.label) + ` ×${uses}`, 'cold'); }
+      // Ferocious Roar: its Rage per Power of the enemies in its area (centirage); its Empowered attacks Break its Armour
+      const FR = ws.warcry_grant_break_X_armour_on_hit; gainRage(pw * (ws.bear_warcry_gain_X_centirage_per_enemy_power || 0) / 100);
+      if (FR && uses) { empower = empower.filter(e => e.type !== 'break'); empower.push({ type: 'break', label: S.label, name: S.name, uses, s: 12, n: FR }); say(`${S.label} ×${uses}`, 'dust'); }
+      else if (wc && uses) { empower = empower.filter(e => e.type !== 'cold'); empower.push({ type: 'cold', label: S.label, name: S.name, uses, s: 12, add: [wc * k5, ws.wolf_warcry_empowered_attack_cold_damage_max_per_5_power_up_to_cap * k5], chill: (ws.base_secondary_skill_effect_duration || 0) / 1000 }); say(t('{0} gains {1} from {2}', t('Attack'), t('Cold'), S.label) + ` ×${uses}`, 'cold'); }
       // Infernal Cry: its Empowered melee attacks gain its share of all their damage as fire
       else if (IC && uses) { empower = empower.filter(e => e.type !== 'fire'); empower.push({ type: 'fire', label: S.label, name: S.name, uses, s: durOf(S), pct: IC }); say(t('{0} gains {1} from {2}', t('Attack'), t('Fire'), S.label) + ` ×${uses}`, 'fire'); }
       else if (S.P.empowers && uses && !FG) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
@@ -3568,6 +3571,7 @@ export function initScene(el, api) {
           const h = S.dmg.hits.cold || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, cold: [h[0] + E.add[0], h[1] + E.add[1]] } }; S.els = [...new Set([...S.els, 'cold'])]; if (P.slams) S.chillFor = E.chill;
           if (--E.uses <= 0) empower.splice(k, 1);
         } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (--E.uses <= 0) empower.splice(k, 1); }
+        else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
