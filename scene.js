@@ -105,7 +105,7 @@ export function initScene(el, api) {
 
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
-  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
+  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
     st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
@@ -552,7 +552,7 @@ export function initScene(el, api) {
     const AW = !S.src && S.dmg?.stats?.apply_x_wither_on_hit;   // Chaos Bolt: its Withered stacks on hit, for its duration
     for (let k = 0; k < AW; k++) withers(d, S.dmg.stats.active_skill_withered_base_duration_ms / 1000);
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
-    if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.has(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
+    if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.includes(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (P.dotHit) dot(d, S);
@@ -3947,7 +3947,7 @@ export function initScene(el, api) {
   // Glory (keywords.json): each skill that requires it builds its own, up to what it requires, from its Glorious actions:
   // the Power of the enemy (its % of it) once every 0.5 s per enemy, not while that skill is active (but a Banner), or
   // its % of the Ward or of the life you spend; it loses 2 a second after 15 s without gaining any, and is spent on use
-  const SEQ_GAP = 2, PARRY_WAIT = 1, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2, ELEM = new Set(['fire', 'cold', 'lightning']);
+  const SEQ_GAP = 2, PARRY_WAIT = 1, GLORY_EVERY = .5, GLORY_IDLE = 15, GLORY_LOSS = 2;
   const trinity = () => onS('Trinity')?.dmg?.stats;
   const gst = S => ({ ...S?.dmg?.sum, ...S?.dmg?.stats }), spendWard = n => { me.ward -= n; gloryPaid('ward', n); };
   const gloryNeed = S => { const st = gst(S), n = st.active_skill_requires_X_glory; return n ? n * (1 + (st['support_glory_required_+%_final'] || 0) / 100) : 0; };
@@ -4593,6 +4593,10 @@ export function initScene(el, api) {
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     if (dealt.lightning > 0) valako(dealt.lightning);
     const RT = tempered(d); hurt(total * RT, chaos * RT, top, crit, d);
+    // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
+    const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
+    if (RC) for (const [k, n] of [['life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * ((dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
+      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100], ['es', el * RT * RC.es / 100]]) if (n > 0) me.recoup.push({ k, left: n, rate: n / RC.time });
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
@@ -4992,6 +4996,7 @@ export function initScene(el, api) {
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
+    me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;

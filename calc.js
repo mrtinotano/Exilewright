@@ -333,6 +333,10 @@ export function recovery(c, sum) {
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
       full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
+    // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
+    recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
+      prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
+      es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), time: 8 / pct('recoup_speed_+%') },
   };
 }
 // What ailments do to you: your ailment threshold (half your life, PlayerAilmentThresholdLifeFactor, plus what adds to it)
