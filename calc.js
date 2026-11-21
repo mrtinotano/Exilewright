@@ -161,7 +161,8 @@ export function gemStats(g, sum = {}) {
 export function reservation(g, sum = {}, b) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
   const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
-  const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length;
+  const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
+    + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
   // Lord of the Wilds: non-minion skills 50% less efficiency; Trusted Kinship: companions 30% more, the rest 20% less
   const T = GEM[g.name]?.tags || [], more = (sum.keystone_lord_of_the_wilds && !T.includes('minion') ? .5 : 1) * (sum.keystone_2_companions ? T.includes('companion') ? 1.3 : .8 : 1);
   return Math.round(own * 100 / (100 + eff) / more);
@@ -201,8 +202,8 @@ export function totem(g, sum = {}) {
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
     elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
-    limit: (st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
-      + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
+    limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
+      + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0)) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
   };
 }
 // self-check: Mortar Cannon at gem level 18 is a level 36 totem with 2091 life and 1123 ailment threshold, as in the game
@@ -464,7 +465,7 @@ export function recovery(c, sum) {
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff you inflict; how fast debuffs on you expire
-    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper,   // keystones the scene plays
+    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
@@ -872,14 +873,21 @@ export function skill(g, b, treeGear) {
   // an empty main hand, for a skill used unarmed (WeaponRequirements ''): the class's own unarmed attack (Characters:
   // MinDamage-MaxDamage physical, WeaponSpeed ms, MaxAttackDistance; unarmed_base_critical_strike_chance)
   const cb = ascOf(b.asc).class_base, bare = attack && !b.items?.weapon && d.weapons?.includes('') && cb?.WeaponSpeed;
-  const w = attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
+  // Hollow Palm Technique: with both hands empty a Quarterstaff skill attacks unarmed, its physical damage by the skill's
+  // level (pob2.json hollow_palm: Path of Building 2's Misc.lua), 1% more attack speed per 75 evasion and +0.1% critical
+  // hit chance per 10 energy shield of the equipped armour
+  const HP = SK.hollow_palm, palm = attack && sum.keystone_hollow_palm_technique && !b.items?.weapon && !b.items?.offhand && d.weapons?.includes('Quarterstaves') && cb?.WeaponSpeed && HP?.length;
+  const pw = palm && armourItems(b.items), lv = palm && Math.min(HP.length, Math.max(1, st._level || g.level || 1));
+  const w = palm ? { physical: [...HP[lv - 1]], attacks_per_second: 1000 / cb.WeaponSpeed * (1 + Math.floor(pw.evasion / 75) / 100),
+    crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100 + Math.floor(pw.energy_shield / 10) * .1, range: cb.MaxAttackDistance }
+    : attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
   // Dance with Death: 25% more skill speed with the off hand empty and a one-handed martial weapon in the main hand
   const dwd = sum.keystone_dance_with_death && !b?.items?.offhand && w && weaponTags(w).includes('onehand') && !/^(Wands|Sceptres)$/.test(classOf(b.items.weapon)) ? 1.25 : 1;
   // Amazon: physical damage added to attacks with the weapon, a share of the weapon's own accuracy
   const accPhys = w?.accuracy && v(sum, 'real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy') * w.accuracy / 100;
   if (accPhys) w.physical = w.physical.map(x => x + accPhys);
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
-  if (w && !bare && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
+  if (w && !bare && !palm && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
   // Path of Building group comes in) is a totem's ballista attack: "increased Ballista / Totem Damage" count, "per active
   // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
@@ -970,6 +978,12 @@ export function skill(g, b, treeGear) {
   }
   const kept = 1 - Math.min(1, DMG.slice(1).reduce((s, t) => s + (st[`active_skill_base_physical_damage_%_to_convert_to_${t}`] || 0), 0) / 100);
   base.physical = base.physical.map(x => x * kept);
+  // Avatar of Fire: 75% of every other type converted to fire, and no non-fire damage dealt; Blackflame Covenant: a fire
+  // spell's fire converted to chaos, which counts for its Ignite (a chaos one)
+  const avatar = !!sum.keystone_avatar_of_fire, blackflame = !!sum.keystone_fire_spells_become_chaos_spells && spell && own.includes('fire');
+  if (avatar) for (const t of DMG) if (t !== 'fire') base[t] = base[t].map((x, i) => (base.fire[i] += x * .75, x * .25));
+  if (blackflame) { base.chaos = base.chaos.map((x, i) => x + base.fire[i]); base.fire = [0, 0]; }
+  out.blackflame = blackflame;
   // supports: "gain X% of damage as extra <type>" adds to that type, "deal no <type> damage" removes it, and some
   // only raise the top of the range (Heft)
   // and the tree's, gear's and supports' game stats "gain X% of <all / elemental / a type of> damage as extra <type>"
@@ -982,7 +996,7 @@ export function skill(g, b, treeGear) {
   for (const t of DMG) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     const from = [0, 1].map(i => Object.entries(SRC).reduce((x, [src, ts]) => x + gain(src, t) / 100 * ts.reduce((y, u) => y + pre[u][i], 0), 0));
-    base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) ? [0, 0] : [base[t][0] + all[0] * extra + from[0], (base[t][1] + all[1] * extra + from[1]) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
+    base[t] = mods.some(m => m[0] === 'DealNo' + cap(t)) || avatar && t !== 'fire' ? [0, 0] : [base[t][0] + all[0] * extra + from[0], (base[t][1] + all[1] * extra + from[1]) * mod(mods, 'MORE', [`Max${cap(t)}Damage`], hit)];
   }
   // a totem's grenade: "increased Grenade Damage" does not count (the game's window, 16/11: the same 4311-9885 without
   // two Grenade Damage nodes; Volatile Grenades' fuse is not in it either), the grenade cooldown ones do (10.99 s)
@@ -1008,7 +1022,8 @@ export function skill(g, b, treeGear) {
   }
   // Ignite of a hit with fire damage: GameConstants' share of it per second, for its base duration. note: no
   // ignite magnitude or duration modifiers yet (none on the build it was checked with, 163-354.4/s as the game)
-  if (out.hits.fire && CHAR['ignite_%_per_second']) out.ignite = { perSecond: out.hits.fire.map(x => x * CHAR['ignite_%_per_second'] / 100), duration: CHAR.ignite_duration_s };
+  const igFrom = blackflame ? out.hits.chaos : out.hits.fire;
+  if (igFrom && CHAR['ignite_%_per_second']) out.ignite = { chaos: blackflame || undefined, perSecond: igFrom.map(x => x * CHAR['ignite_%_per_second'] / 100), duration: CHAR.ignite_duration_s };
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   // uses per second
@@ -1344,7 +1359,7 @@ function minionLife(st, sum, id, finals = {}) {
 const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || src === sum && k.startsWith('talisman:') && k.slice(9); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // Necromantic Talisman: the amulet's own
   return ms;
 }
 function minionOf(st, sum, fin, id, at = {}, wAdd = null) {

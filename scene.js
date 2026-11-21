@@ -351,7 +351,12 @@ export function initScene(el, api) {
     if (!(s > 0)) return; me.surgeUntil = Math.max(me.surgeUntil || 0, time + s);
     setBuff({ label: api.info({ name: 'Arcane Surge' })?.label || 'Arcane Surge', name: 'Arcane Surge', c: css('arcane'), s: me.surgeUntil - time });
   }
+  // Resonance: each kind of charge gained as the next one; Conduit: allies in your Presence get it instead (theirs are
+  // not played: you get none), only Endurance with the Mercenary notable
+  const RESONANCE = { frenzy: 'power', endurance: 'frenzy', power: 'endurance' };
   function gainCharge(type, by) {
+    if (sheet().resonance) type = RESONANCE[type] || type;
+    if (sheet().conduit === 'all' || sheet().conduit === 'endurance' && type === 'endurance') return;
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
     charges[type]++; if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
@@ -662,8 +667,8 @@ export function initScene(el, api) {
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
   // after the enemy's resistances. Without that hit (grounds, minions, missing damage) they use the scene value, drawn with "~".
   const AIL_DOT = { ignite: ['fire', ['fire']], bleed: ['physical', ['physical']], poison: ['chaos', ['physical', 'chaos']] };
-  function ailDps(d, a, raw) {
-    const [el, from] = AIL_DOT[a], base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
+  function ailDps(d, a, raw, S) {   // Blackflame Covenant: a fire spell's Ignite deals chaos
+    const [el0, from] = AIL_DOT[a], el = a === 'ignite' && S?.dmg?.blackflame ? 'chaos' : el0, base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
     return base > 0 && per ? { dps: defence(d, el, base * per / 6000, false), sim: false, el } : { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el };
   }
   // o (from afflict): the game's duration, magnitude (shock, chill) and effect (damaging ailments) of this one;
@@ -808,7 +813,7 @@ export function initScene(el, api) {
       d.brk = 0;
     } else if (a === 'chill' && d.st.freeze > 0) return;
     if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
-      const v = ailDps(d, a, raw), w = d.st[a] > 0 && d.burn[a];
+      const v = ailDps(d, a, raw, S), w = d.st[a] > 0 && d.burn[a];
       if (o?.eff) v.dps *= o.eff;
       // Pathfinder's Overwhelming Toxicity: two of your poisons at once, the weaker kept with its own time (burn2)
       if (a === 'poison' && w && !w.sim && !v.sim && S.dmg?.sum?.double_number_of_poison_you_can_inflict) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
@@ -915,7 +920,7 @@ export function initScene(el, api) {
     const can = a => PN && a !== 'electrocute' || SU[`all_damage_can_${a}`] || a === 'ignite' && SU.you_and_allies_in_presence_all_damage_can_ignite
       || a === 'electrocute' && S.P.attack && SU.all_attack_damage_can_electrocute
       || a === 'chill' && (SU.all_damage_to_bleeding_enemies_contributes_to_chill && has(d, 'bleed') || SU.all_damage_to_poisoned_enemies_contributes_to_chill && has(d, 'poison'));
-    const adds = a => Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), xa = (a, e) => can(a) ? allD : [...new Set([e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
+    const adds = a => [...Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), ...a === 'ignite' && S.dmg.blackflame ? ['chaos'] : []], xa = (a, e) => can(a) ? allD : [...new Set([e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
     // Frostflame Nova on an Ignited enemy: the Ignite's duration starts over, its Freeze buildup is more per 1% of the
     // enemy's ailment threshold the Ignite deals a second, and no other Ignite takes until that one ends
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
@@ -1065,7 +1070,9 @@ export function initScene(el, api) {
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the
   // whole of them, increased and more together, against its base cast time
+  const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]); };   // what was spent Recently: Primal Hunger
   function gainEnergy(T, n, j) {
+    if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
     const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
     T.need = 1000 / sp / T.perMs;
     T.energy = Math.min(T.cap || T.need, T.energy + n * T.more);
@@ -1549,7 +1556,9 @@ export function initScene(el, api) {
   const chanAt = {}, chanInf = {}, fus = {};   // fus: Ember Fusillade's Embers
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
+  const EQUILIBRIUM = { fire: 'lightning', lightning: 'cold', cold: 'fire' };   // Elemental Equilibrium: the Infusion Remnant you create instead
   function infRemnant(el, p, o = {}) {   // o: its pickup range +% (Siphon Elements), its duration (Runic Extraction's)
+    if (sheet().equilibrium) el = EQUILIBRIUM[el] || el;
     const c = { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(INF_C[el], 2.2), fog: false })), reach = SIM.pickup * (1 + (o.range || 0) / 100); m.position.set(c.x, .5, c.z);
     thing(m, o.dur || SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; infGain(el, c); } } });
   }
@@ -2511,7 +2520,7 @@ export function initScene(el, api) {
         const ms = S.dmg?.stats, mc = ms?.molten_crash_max_number_of_fissures;
         if (mc) {
           const X = partOf(S, 'MoltenCrashFissurePlayer') || S, cost = ms.molten_crash_optionally_consume_X_rage_for_fissures, more = me.rage >= cost ? ms.molten_crash_number_of_additional_fissures_from_rage_consumption : 0;
-          if (more) me.rage -= cost;
+          if (more) spendRage(cost);
           const n = 1 + more, a0 = Math.atan2(S.dx, S.dz);
           for (let j = 0; j < n; j++) fissure(X, at, a0 + (j - (n - 1) / 2) * .5, 5, X.A, 1, { dur: sh(S).duration || ms.base_skill_effect_duration / 1000, max: mc });
           later(.3, () => { boom(at, S.A, Y); slammed(S, at, S.A); });
@@ -2612,7 +2621,7 @@ export function initScene(el, api) {
         const FS = S.dmg?.stats?.bear_slam_spend_X_rage_for_stronger_slam;
         if (FS) {
           const st = S.dmg.stats, X = !S.src && me.rage >= FS && partOf(S, 'FuriousSlamEnragedPlayer'), W = X ? { ...X, mult: S.mult } : S, r = X ? X.A : R, a0 = Math.atan2(S.dx, S.dz), off = st.cascade_aftershock_angle_offset_override * Math.PI / 180, gap = r * 2 * st['cascade_aftershock_spacing_area_%_override'] / 100;
-          if (X) me.rage -= FS;
+          if (X) spendRage(FS);
           for (const sgn of [-1, 1]) later(st.aftershock_delay_ms / 1000, () => { const a = a0 + sgn * off, q = { x: c.x + Math.sin(a) * gap, z: c.z + Math.cos(a) * gap }; boom(q, r, W); if (X) ground('jagged', q, r, durOf(X), W); });
         }
         slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
@@ -3787,7 +3796,7 @@ export function initScene(el, api) {
     const BY = !ER && wait && byCharge && Object.keys(charges).find(c => gi.types?.includes(`SkillConsumes${c[0].toUpperCase() + c.slice(1)}ChargesOnUse`) && charges[c]);
     if (wait && !BY && !RG) return false;
     if (BY) { charges[BY]--; chargesSpent(1, BY); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
-    if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
+    if (RG) { spendRage(ER); say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     if (S.dmg?.clip && time < me.ereload?.until) S.mult *= me.ereload.more;   // Emergency Reload's empowered bolts
     if (time < me.wildUntil) S.mult *= me.wildMore;   // Savage Fury's frenzy
@@ -3977,7 +3986,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) me.rage -= RC; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -3990,7 +3999,7 @@ export function initScene(el, api) {
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
-    if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { me.rage -= S.dmg.enrage; S.enraged = true; }
+    if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { spendRage(S.dmg.enrage); S.enraged = true; }
     // charges the supports consume on use (calc.js onUse): one each, all of them for Rally; Perpetual Charge may keep
     // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
     const U = !auto && S.dmg?.onUse; nextCdX = 1;
@@ -4018,7 +4027,7 @@ export function initScene(el, api) {
     // Spell Totem: it consumes its number of Power and Endurance Charges in any combination, for its more damage per Power
     // Charge and its more totem duration per Endurance Charge
     // note: which it takes first is the player's choice; Power Charges first here
-    const NC = !auto && S.dmg?.stats?.active_skill_requires_X_power_or_endurance_charges;
+    const NC = !auto && !sheet().ancestral && S.dmg?.stats?.active_skill_requires_X_power_or_endurance_charges;   // Ancestral Bond: no charge requirement
     if (NC) {
       const have = charges.power + charges.endurance; if (have < NC) { toast(t('{0} needs {1} charges and has {2}', S.label, NC, have)); return false; }
       const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p; chargesSpent(p, 'power'); chargesSpent(NC - p, 'endurance');
@@ -5221,6 +5230,8 @@ export function initScene(el, api) {
     if (!top) { me.rage = 0; return; }
     if (R.regen && tog[R.regen.name]) gainRage(R.regen.perSec * dt);
     if (R.regenPct) gainRage(R.regenPct * top * dt);   // Furious Wellspring: its share of maximum Rage a second
+    // Primal Hunger: 1 Rage a second per 4 spent Recently
+    if (R.noEffect) { me.rageSpent = (me.rageSpent || []).filter(x => time - x[0] <= RECENT); gainRage(Math.floor(me.rageSpent.reduce((t, x) => t + x[1], 0) / 4) * dt); }
     if (time < me.calamity?.until) gainRage(me.calamity.rage / 60 * dt);
     if (time - me.raged > R.delay) me.rage = Math.max(0, me.rage - R.loss * dt);
     me.rage = Math.min(me.rage, top);
@@ -5331,6 +5342,10 @@ export function initScene(el, api) {
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); if (d.agony && time >= d.agony.until) agonyEnds(d); }
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);
+      // Ritual Cadence: an Invocation triggers its spell every 2 seconds (its Energy no longer does). note: its invoked
+      // spells' 50% less Energy is not played: with no Energy gained there is none to spend
+      if (T.cap && sheet().ritual && time - T.last >= 2) { const j = trigOf(T); T.last = time;
+        if (j >= 0) { say(t('{0} triggers {1}', T.label, base(j).label), T.el); later(.12, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand })); } }
       if (T.kind === 'herald' && Math.random() < dt * 14) { const a = time * 3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .8, y: rnd(.2, 1.8), z: pp.z + Math.sin(a) * .8 }, v: .1, up: .8, life: .6, size: .16, c: T.el }); }
       if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
     }

@@ -237,8 +237,15 @@ stat_sets = {'Midnight Zenith': {'Crystal': stat_set('Skills/other.lua', 'Midnig
 assert stat_sets['Midnight Zenith']['Crystal']['levels'][20]['frost_wall_maximum_life'] == 4768, 'MidnightStarPlayer Crystal'
 assert stat_sets['Tornado Shot']['Tornado']['constant']['base_number_of_projectiles'] == 3, 'TornadoShotPlayer Tornado'
 
-dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, minion lists, stat sets) - game data (c) Grinding Gear Games',
-      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions, 'stat_sets': stat_sets}, 'pob2.json')
+# ---- Hollow Palm Technique --------------------------------------------------------------------------------------------
+# The physical damage an unarmed attack that would use a Quarterstaff deals, by the skill's level (Misc.lua
+# hollowPalmAddedPhys; not in the dumped tables): [min, max] per level from 1
+src = get('Misc.lua'); at = src.index('data.hollowPalmAddedPhys'); hp = Lua(src, src.index('{', at)).value()
+hollow_palm = [hp[k] for k in sorted(hp)] if isinstance(hp, dict) else hp
+assert hollow_palm[0] == [11, 17] and len(hollow_palm) >= 20, 'Misc.lua hollowPalmAddedPhys'
+
+dump({'source': 'Path of Building 2 (Skills/sup_*.lua, SkillStatMap.lua, QuestRewards.lua, Misc.lua, minion lists, stat sets) - game data (c) Grinding Gear Games',
+      'supports': {k: supports[k] for k in sorted(supports)}, 'quests': quests, 'quest_points': quest_points, 'minions': minions, 'stat_sets': stat_sets, 'hollow_palm': hollow_palm}, 'pob2.json')
 print(f'{len(supports)} of {len(support_names)} supports with stats; without: {", ".join(sorted(support_names - set(supports))[:15])}')
 print(f'{len(minions)} minion gems with their monster')
 print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')
