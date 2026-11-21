@@ -3241,8 +3241,8 @@ export function initScene(el, api) {
     hazardAt({ ...X, mult: S.mult }, c, SIM.lifetime, { arm: xs.permafrost_shard_arming_time_ms / 1000, reach: xs.permafrost_shard_detection_base_area_of_effect_radius / 10, c: 'cold',
       more: t => 1 + xs['permafrost_shard_damage_+%_final_after_1_second'] / 100 * Math.min(1, t / (xs.permafrost_shard_bonus_damage_delay_ms / 1000)) });
   };
-  // Stormblast Bolts: its bolts land within its secondary radius of the target and lie there charged for its duration (up
-  // to its most); a detonator explodes them in its part. note: their impact without a detonator is not simulated
+  // Stormblast Bolts: its bolts land within its secondary radius of the target, each hitting its area there, and lie there
+  // charged for its duration (up to its most); a detonator explodes them in its part
   K.stormblast = S => {
     const st = S.dmg.stats, X = partOf(S, 'StormblastBoltsExplosionPlayer') || S, R = radOf(S, 'secondary');
     for (let k = 0; k < (sh(S).projectiles || 1); k++) {
@@ -3250,6 +3250,7 @@ export function initScene(el, api) {
       later(k * st.siege_cascade_fall_time_ms / 1000, () => {
         limit(o => o.stormblast, st.stormblast_bolts_maximum_active_bolt_count);
         const m = fx.orb('lightning', .12); m.position.set(c.x, .3, c.z); fx.streak(V(c.x, 6, c.z), V(c.x, .3, c.z), 'lightning', .1, .04, 1);
+        boom(c, S.A, S, { soft: true, noPay: k > 0 });
         thing(m, durOf(S), { name: S.name, stormblast: true, r: .3,
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; pop(c, X.A, 'lightning'); boom(c, X.A, { ...X, mult: S.mult }); } } });
       });
