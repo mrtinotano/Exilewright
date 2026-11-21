@@ -704,8 +704,9 @@ export function initScene(el, api) {
       }
     }
   }
-  const AGGRAVATED = 2;
-  const DRAINED = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'];   // the ailments Drain Ailments can Consume   // "100% extra damage" (keywords.json Aggravate)
+  const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
+  const DRAINED = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'];   // the ailments Drain Ailments can Consume
+  const DERANGE = 'support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence';
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -874,7 +875,7 @@ export function initScene(el, api) {
     if (!list.length) return { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el: S.el };
     let dps = 0, el = list[0][0], best = 0;
     // Derange: its more damage over time per 100 Intelligence
-    const DR = 1 + (S.dmg.finals?.['support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence'] || 0) * Math.floor((sheet().attrs?.int || 0) / 100) / 100;
+    const DR = 1 + (S.dmg.finals?.[DERANGE] || 0) * Math.floor((sheet().attrs?.int || 0) / 100) / 100;
     for (const [e, v] of list) { const got = defence(d, e, v * S.mult * DR, false); dps += got; if (got > best) { best = got; el = e; } }
     return { dps, sim: Math.abs(S.mult - 1) > .001, el };
   }
@@ -3606,7 +3607,7 @@ export function initScene(el, api) {
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) spendWard(WC);
       // Derange: an Energy Shield cost equal to your Intelligence
-      const DR = S.dmg?.finals?.['support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence'] != null && (sheet().attrs?.int || 0);
+      const DR = S.dmg?.finals?.[DERANGE] != null && (sheet().attrs?.int || 0);
       if (DR > me.es) { toast(t('Not enough Energy Shield for {0}', S.label) + ` (${Math.ceil(DR)})`); return false; }
       if (DR) me.es -= DR;
       // a thrown flask (the Concoctions): its charges from your Mana Flask
