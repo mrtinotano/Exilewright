@@ -2653,9 +2653,12 @@ export function initScene(el, api) {
       // Animus Exchange: it sacrifices up to its life (leaving you 1) for its share as Runic Ward, which can Overflow
       const AX = st['animus_exchange_gain_%_maximum_life_spent_as_ward'];
       if (AX) { const n = Math.max(0, Math.min(st.animus_exchange_spend_up_to_X_life, me.life - 1)); me.life -= n; me.ward = overflow(me.ward, me.maxW, n * AX / 100); fx.ring(pp, .3, 1.2, 'holy', .4); return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, 'holy'); }
-      // Hollow Shell: its share of the Runic Ward it cost as Guard, for its duration (the higher Guard stays, up to 200% of your life)
+      // Hollow Shell: its pulse spends all your Runic Ward (on top of its cost) for its share of it as Guard, for its duration
+      // (the higher Guard stays, up to 200% of your life), on you no more than once every its per-target cooldown
       const HS = st['skill_hollow_shell_spent_ward_%_to_grant_as_guard'];
-      if (HS) { const g = Math.min((S.wardPaid || 0) * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
+      if (HS) { const w = (S.wardPaid || 0) + me.ward; spendWard(me.ward);
+        if (time < me.hollowAt) return; me.hollowAt = time + st.hollow_shell_per_target_cooldown_ms / 1000;
+        const g = Math.min(w * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
       const ER = st['emergency_reload_damage_+%_final'];
       if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
