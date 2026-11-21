@@ -69606,7 +69606,6 @@
  "trade_labels": {
   "en": {
    "gem_level": "Level",
-   "map_tier": "Waystone Tier",
    "map_revives": "Revives Available",
    "map_iir": "Item Rarity",
    "map_packsize": "Pack Size",
@@ -69617,7 +69616,6 @@
   },
   "es": {
    "gem_level": "Nivel",
-   "map_tier": "Grado de la piedra guía",
    "map_revives": "Resurrecciones disponibles",
    "map_iir": "Rareza de objetos",
    "map_packsize": "Tamaño de los grupos de monstruos",
@@ -69628,7 +69626,6 @@
   },
   "pt": {
    "gem_level": "Nível",
-   "map_tier": "Nível da Pedra-guia",
    "map_revives": "Renascimentos Disponíveis",
    "map_iir": "Raridade de Itens",
    "map_packsize": "Tamanho de Grupos de Monstros",
@@ -69639,7 +69636,6 @@
   },
   "fr": {
    "gem_level": "Niveau",
-   "map_tier": "Palier de Pierre de téléportation",
    "map_revives": "Résurrections disponibles",
    "map_iir": "Rareté des objets",
    "map_packsize": "Taille des Groupes",
@@ -69650,7 +69646,6 @@
   },
   "de": {
    "gem_level": "Stufe",
-   "map_tier": "Wegsteinlevel",
    "map_revives": "Wiederbelebungen verfügbar",
    "map_iir": "Gegenstandsseltenheit",
    "map_packsize": "Monstergruppengröße",
@@ -69661,7 +69656,6 @@
   },
   "ru": {
    "gem_level": "Уровень",
-   "map_tier": "Уровень путевого камня",
    "map_revives": "Доступно возрождений",
    "map_iir": "Редкость предметов",
    "map_packsize": "Размер групп монстров",
@@ -69672,7 +69666,6 @@
   },
   "ja": {
    "gem_level": "レベル",
-   "map_tier": "ウェイストーンティア",
    "map_revives": "復活が利用可能",
    "map_iir": "アイテムレアリティ",
    "map_packsize": "パックサイズ",
@@ -69683,7 +69676,6 @@
   },
   "ko": {
    "gem_level": "레벨",
-   "map_tier": "경로석 등급",
    "map_revives": "부활 횟수",
    "map_iir": "아이템 희귀도",
    "map_packsize": "무리 규모",
@@ -69694,7 +69686,6 @@
   },
   "th": {
    "gem_level": "เลเวล",
-   "map_tier": "ระดับศิลานำทาง",
    "map_revives": "จำนวนสิทธิ์คืนชีพ",
    "map_iir": "ระดับความหายากของไอเทม",
    "map_packsize": "ขนาดกองมอนสเตอร์",
@@ -69705,7 +69696,6 @@
   },
   "zh": {
    "gem_level": "等級",
-   "map_tier": "換界石階級",
    "map_revives": "可用的復活數",
    "map_iir": "物品稀有度",
    "map_packsize": "怪群大小",

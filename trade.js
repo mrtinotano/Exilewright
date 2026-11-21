@@ -247,12 +247,13 @@ function sameAs(r) {
 // r: parseItem's (its item, rarity, corrupted...)
 // ---------- the Currency Exchange (the site's bulk exchange): a stackable item, as Exiled Exchange 2 prices it
 const BULK = await fetch('poe2_data/available/bulk.json').then(r => r.ok ? r.json() : []).catch(() => []);
+// the copied text's lines, and those before its first separator (its names)
+const heads = text => { const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l)); return [lines, lines.slice(0, sep < 0 ? lines.length : sep)]; };
 const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k.startsWith('name')).map(([, n]) => [n.toLowerCase(), b])));
 // the copied text -> { id (the exchange's), name (English), name_<lang>..., stack } when the exchange lists it, else null: its name
 // among the lines before the first separator, in any language; its stack the first "label: n/m" line ("Stack Size: 12/40")
 export function bulkOf(text) {
-  const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l));
-  const b = lines.slice(0, sep < 0 ? lines.length : sep).map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b) return null;
+  const [lines, head] = heads(text), b = head.map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b) return null;
   const n = lines.map(l => l.match(/^[^:：]+[:：]\s*([\d.,\s]+?)\s*\/\s*[\d.,\s]+$/)?.[1]).find(Boolean);   // \s: a thousands space too
   return { ...b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
 }
@@ -277,19 +278,18 @@ const LABEL = Object.values(TRADE_LABELS).flatMap(ls => Object.entries(ls).map((
 const propNums = lines => Object.fromEntries(lines.map(l => l.match(/^(.+?)\s*[:：]\s*\+?(-?\d+)/)).filter(Boolean)
   .map(m => [LABEL.find(([l]) => l === m[1].toLowerCase())?.[1], +m[2]]).filter(([f]) => f));
 const quality = lines => +(lines.map(l => l.match(/^Quality: \+?(\d+)|^[^:：]+[:：]\s*\+(\d+)% \(augmented\)$/)?.slice(1).find(Boolean)).find(Boolean) || 0);
-const heads = text => { const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l)); return [lines, lines.slice(0, sep < 0 ? lines.length : sep)]; };
 // the copied text -> { name (English), names (of each language), level, quality, corrupted } when it is a gem, else null
 export function gemOf(text) {
   const [lines, head] = heads(text), g = head.map(l => GEM_BY.get(l.toLowerCase())).find(Boolean); if (!g) return null;
   return { name: g.name, names: g, level: propNums(lines).gem_level || 0, quality: quality(lines), corrupted: isCorrupted(text) };
 }
-// the copied text -> { name (its base, "Waystone (Tier 15)"), names, props: { map_tier, map_iir... }, corrupted } when it is
+// the copied text -> { name (its base, "Waystone (Tier 15)"), names, props: { map_iir, map_packsize... }, corrupted } when it is
 // a waystone with something of its own (its rarity, pack size... raised: a rare or magic one), else null (a plain one is
 // priced on the Currency Exchange, as the many like it are)
 export function wayOf(text) {
   const [lines, head] = heads(text), b = head.map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b?.name.startsWith('Waystone')) return null;
   const props = propNums(lines); delete props.gem_level;
-  return Object.keys(props).some(f => f !== 'map_tier' && f !== 'map_revives' && props[f] > 0) ? { name: b.name, names: b, props, corrupted: isCorrupted(text) } : null;
+  return Object.keys(props).some(f => f !== 'map_revives' && props[f] > 0) ? { name: b.name, names: b, props, corrupted: isCorrupted(text) } : null;
 }
 // the cheapest ones like a gem: its level and quality or more, corrupted or not as it is. -> as priceOf
 export async function priceGem({ league, name, level, quality: q, corrupted, state = 'available' }) {
@@ -301,7 +301,7 @@ export async function priceGem({ league, name, level, quality: q, corrupted, sta
 // the cheapest waystones of its tier that give at least `near` % under each of its numbers (revives: as many or more),
 // corrupted or not as it is (a corrupted one can no longer be crafted). -> as priceOf
 export async function priceWay({ league, name, props, corrupted, state = 'available', near = 10 }) {
-  const map = Object.fromEntries(Object.entries(props).filter(([f, v]) => f !== 'map_tier' && v > 0).map(([f, v]) => [f, f === 'map_revives' ? { min: v } : range(v, near)]));
+  const map = Object.fromEntries(Object.entries(props).filter(([, v]) => v > 0).map(([f, v]) => [f, f === 'map_revives' ? { min: v } : range(v, near)]));
   const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: name, filters: {
     map_filters: { filters: map }, misc_filters: { filters: { corrupted: { option: String(!!corrupted) } } }, ...ONE } }, sort: { price: 'asc' } });
   return { total: s.total, prices: await cheapest(s), id: s.id, near };
