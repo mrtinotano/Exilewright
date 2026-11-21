@@ -334,6 +334,12 @@ export function recovery(c, sum) {
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
       full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
+    // what an event recovers: consuming a power charge (% of maximum mana) or an endurance charge (% of life), a block
+    // (flat life), using your mana flask (% of life) or a charm (% of mana), heavily stunning a rare or unique enemy (% of
+    // life), being stunned (% of life over a second)
+    recoverOn: { power: v(sum, 'recover_x%_of_maximum_mana_when_you_consume_a_power_charge'), endurance: v(sum, 'recover_%_life_per_endurance_charge_consumed'),
+      block: v(sum, 'recover_X_life_on_block'), manaFlask: v(sum, 'recover_%_maximum_life_on_mana_flask_use'), charm: v(sum, 'recover_%_maximum_mana_on_charm_use'),
+      stunRare: v(sum, 'recover_%_life_on_heavy_stunning_rare_or_unique_enemy'), stunned: v(sum, 'regenerate_%_life_over_1_second_when_stunned') },
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
     recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
       prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
@@ -543,9 +549,10 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
-// [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "if you've consumed
-// a charge Recently" and "while Shapeshifted" (the scene has neither)
-const DEF_WHILE = [['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'ae', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
+// [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "while
+// Shapeshifted" (the scene has none)
+const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
+  ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'ae', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
   ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'],
@@ -554,7 +561,7 @@ const DEF_WHILE = [['global_armour_evasion_energy_shield_while_in_presence_of_co
   ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife']];
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
 // counted "per Enemy in Close Range" (the game data has no distance for it), "while Shapeshifted", against Bloodlusting
-// enemies, "if you've consumed a Frenzy Charge Recently", Parry's own speed after a Parry
+// enemies, Parry's own speed after a Parry
 const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
   ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['attack_speed_+%_if_have_crit_recently', 'a', 'CritRecently'], ['cast_speed_+%_if_have_crit_recently', 'c', 'CritRecently'],
@@ -563,7 +570,7 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
   ['attack_speed_+%_while_not_on_low_mana', 'a', 'NotLowMana'], ['attack_speed_+%_while_surrounded', 'a', 'Surrounded'],
   ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
-  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana']];
+  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently']];
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
 // note: not counted against Bloodlusting enemies, "if you've Pinned an enemy Recently", while using a Charm, Parry's own,
 // "if 10 green supports are socketed", the penalties while performing an action
@@ -585,7 +592,7 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
 const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in_presence_of_companion: 'CompanionInPresence', while_ally_in_presence: 'AllyInPresence',
   while_you_have_arcane_surge: 'ArcaneSurge', when_on_full_life: 'FullLife', when_on_low_life: 'LowLife', while_leeching: 'Leeching', while_life_leeching: 'LifeLeeching',
   if_have_crit_in_past_8_seconds: 'CritPast8', while_es_full: 'FullEnergyShield', while_totem_active: 'TotemActive', while_affected_by_a_herald: 'HeraldOn',
-  if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently' };
+  if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently' };
 // the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
 const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],

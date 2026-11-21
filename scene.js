@@ -927,6 +927,7 @@ export function initScene(el, api) {
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : DUR[a] });
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
+    if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) gainPct('life', recOn('stunRare'));
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
     if (a === 'stun' && !S.src) vanguard(S, true);
@@ -1663,7 +1664,16 @@ export function initScene(el, api) {
       surges.push({ name, el, until: time + st.base_skill_effect_duration / 1000 });
     hudT = 0;
   }
-  const chargesSpent = n => { const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n); };
+  // charges of a type consumed: the surges they grant, when (for "if you've consumed a ... Charge Recently") and what the
+  // tree recovers for each (calc.js recoverOn: mana for a power charge, life for an endurance charge)
+  const chargesSpent = (n, c) => {
+    if (!(n > 0)) return; const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n);
+    (me.spentAt ||= {})[c] = time;
+    if (c === 'power') gainPct('mana', recOn('power') * n); if (c === 'endurance') gainPct('life', recOn('endurance') * n);
+  };
+  // the tree's recovery on an event (calc.js recoverOn), a % of your maximum life / mana
+  const recOn = k => sheet().recoverOn?.[k] || 0;
+  const gainPct = (k, pct) => { if (pct > 0) { const top = k === 'life' ? me.maxL : me.maxM; me[k] = Math.min(top, me[k] + top * pct / 100); } };
   const gemini = () => { const U = sheet().surge?.reload, el = (me.gem = !me.gem) ? 'cold' : 'fire'; if (U) surgeGain('Gemini Surge', el, U[el]); };
   function surgeTake() {
     const took = [], G = granted('Gemini Surge')?.stats.surge_can_apply_to_X_number_of_projectiles_per_skill_use;
@@ -2200,7 +2210,7 @@ export function initScene(el, api) {
         // Creeping Chill: the cast consumes its power charges if it can for Chilled Ground around each crystal, its area
         // growing by its share a second up to its most (area: the radius by its square root); its chill the scene's ground's
         const T = S.dmg?.trig?.find(T => T.stats?.['support_creeping_chill_cold_damage_equal_to_%_ice_crystal_maximum_life']), need = T?.support.support_creeping_chill_consume_X_power_charges_to_trigger_on_ice_crystals || 1;
-        const X = T && charges.power >= need && (charges.power -= need, chargesSpent(need), asTrig(S, T));
+        const X = T && charges.power >= need && (charges.power -= need, chargesSpent(need, 'power'), asTrig(S, T));
         if (X) say(X.label, X.el);
         for (let i = 0; i < 6; i++) { const k = i / 5, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k }; later(i * .04, () => { crystal(S, p, dur); if (X) ground('chilled', p, X.A, 0, X, { per: X.dmg.stats['active_skill_ground_effect_area_of_effect_+%_final_per_second'], max: X.dmg.stats['active_skill_ground_effect_area_of_effect_+%_final_per_second_max'] }); }); }
         for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) hit(d, S);
@@ -2289,7 +2299,7 @@ export function initScene(el, api) {
       // Volcanic Eruption (its projectile part)
       const st = S.dmg?.stats || {}, every = st.ancestral_cry_triggers_shockwave_every_X_units_travelled;
       if (every) {
-        const n = charges.endurance; charges.endurance = 0;
+        const n = charges.endurance; charges.endurance = 0; chargesSpent(n, 'endurance');
         me.kaom = { S, walked: 0, every: every / 10, more: st.ancestral_cry_empowered_attacks_strike_X_additional_enemies || 0, X: partOf(S, 'AncestralCryProjectilePlayer'),
           until: time + durOf(S) * (1 + (st['ancestral_cry_duration_+%_final_per_removable_endurance_charge'] || 0) * n / 100) };
         setBuff({ label: S.label, name: S.name, c: css('fire'), s: me.kaom.until - time });
@@ -2321,7 +2331,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, life = durOf(S) || SIM.minionTime, emp = st['power_charged_zombie_hit_damage_+%_final'];
       const raise = (X, p, o) => { limit(o => o.kind === S.name, st.base_number_of_zombies_allowed); minion(X, p, life, { kind: S.name, ...o }); };
       const E = { taken: 1 - st['power_charged_zombie_damage_taken_-%_final'] / 100, speed: 1 + st['power_charged_zombie_movement_speed_+%_final'] / 100 };
-      if (!list.length && emp != null && charges.power > 0) { charges.power--; chargesSpent(1); for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1), k ? {} : E); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
+      if (!list.length && emp != null && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); for (let k = 0; k < 3; k++) raise(k ? S : { ...S, mult: S.mult * (1 + emp / 100) }, around(S.at, 1), k ? {} : E); return say(t('{0}: {1} raised from corpses', S.label, 3), S.el); }
       if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
       for (const d of list) { const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el); raise(S, p); }
       say(t('{0}: {1} raised from corpses', S.label, list.length), S.el);
@@ -3129,7 +3139,7 @@ export function initScene(el, api) {
   // note: its secondary explosions are not simulated (where they happen is not in the data)
   K.oil = S => {
     const st = S.dmg?.stats || {}, n = sh(S).projectiles || st.base_number_of_projectiles || 1, arc = (st.barrage_base_spread_arc_override || 0) * Math.PI / 180, a0 = Math.atan2(S.dx, S.dz), l = Math.max(st['minimum_projectile_target_distance_+'] / 10 || 0, dist(S.at, pp));
-    if (!(time < me.oilUntil) && charges.power > 0) { charges.power--; chargesSpent(1); me.oilUntil = time + st.electric_spit_empowered_channel_consume_power_charge_per_X_ms / 1000; }
+    if (!(time < me.oilUntil) && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); me.oilUntil = time + st.electric_spit_empowered_channel_consume_power_charge_per_X_ms / 1000; }
     const E = time < me.oilUntil && partOf(S, 'OilBarrageEmpoweredPlayer'), X = E ? { ...E, mult: S.mult } : S;
     for (let k = 0; k < n; k++) later(k * .08, () => {
       const a = a0 + (n > 1 ? k / (n - 1) - .5 : 0) * arc, q = { x: pp.x + Math.sin(a) * l, z: pp.z + Math.cos(a) * l };
@@ -3660,7 +3670,7 @@ export function initScene(el, api) {
     const ER = wait && byCharge && S.dmg?.sum?.warcry_bypass_cooldown_spending_X_rage_instead_of_endurance_charge, RG = ER && me.rage >= ER;
     const BY = !ER && wait && byCharge && Object.keys(charges).find(c => gi.types?.includes(`SkillConsumes${c[0].toUpperCase() + c.slice(1)}ChargesOnUse`) && charges[c]);
     if (wait && !BY && !RG) return false;
-    if (BY) { charges[BY]--; chargesSpent(1); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
+    if (BY) { charges[BY]--; chargesSpent(1, BY); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
     if (RG) { me.rage -= ER; say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
     if (S.dmg?.clip && time < me.ereload?.until) S.mult *= me.ereload.more;   // Emergency Reload's empowered bolts
@@ -3716,7 +3726,7 @@ export function initScene(el, api) {
       const sv = S.spent && st['spiral_volley_damage_+%_final_when_frenzy_charges_consumed'];
       if (sv) { S.mult *= (1 + sv / 100) * (1 + S.spent * st['spiral_volley_damage_+%_final_per_frenzy_charge_consumed'] / 100); S.addChains = S.spent * st.spiral_volley_X_chains_per_frenzy_charge_consumed; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
-      if (!inhib && !byCharge) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n); charges[c] -= n; }
+      if (!inhib && !byCharge) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n, c); charges[c] -= n; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
@@ -3852,7 +3862,7 @@ export function initScene(el, api) {
     // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
     const U = !auto && S.dmg?.onUse; nextCdX = 1;
     if (U) {
-      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n); return n * (Math.random() * 100 < U.double ? 2 : 1); };
+      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n, c); return n * (Math.random() * 100 < U.double ? 2 : 1); };
       let n;
       if (U.speed && (n = take('frenzy'))) nextCdX = 1 + U.speed * n / 100;
       if (U.breakPct && (n = take('frenzy'))) S.breakPct = U.breakPct * n;
@@ -3878,7 +3888,7 @@ export function initScene(el, api) {
     const NC = !auto && S.dmg?.stats?.active_skill_requires_X_power_or_endurance_charges;
     if (NC) {
       const have = charges.power + charges.endurance; if (have < NC) { toast(t('{0} needs {1} charges and has {2}', S.label, NC, have)); return false; }
-      const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p; chargesSpent(NC);
+      const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p; chargesSpent(p, 'power'); chargesSpent(NC - p, 'endurance');
       S.totemMult = 1 + p * st['spell_totem_damage_+%_final_per_power_charge_consumed'] / 100; S.totemTime = 1 + (NC - p) * st['spell_totem_totem_duration_+%_final_per_endurance_charge_consumed'] / 100;
     }
     // Spectral Volley: a supported projectile attack you use deals its less damage and leaves a Spectral Projectile, up to
@@ -3927,7 +3937,7 @@ export function initScene(el, api) {
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
     // Jagged Ground: a slam consumes its Endurance Charges for Jagged Ground in its area for its duration
     const JG = !auto && P.slams && su?.support_consume_X_endurance_charges_on_use;
-    if (JG && charges.endurance >= JG) { charges.endurance -= JG; chargesSpent(JG); later(.12, () => ground('jagged', S.at, S.A, su.support_jagged_ground_base_duration_ms / 1000, S)); }
+    if (JG && charges.endurance >= JG) { charges.endurance -= JG; chargesSpent(JG, 'endurance'); later(.12, () => ground('jagged', S.at, S.A, su.support_jagged_ground_base_duration_ms / 1000, S)); }
     if (!auto && P.spell) briar(S);
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
     const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
@@ -4523,7 +4533,7 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
-  const blocked = d => { me.blockAt = time; fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
+  const blocked = d => { me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block')); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here
@@ -4531,7 +4541,7 @@ export function initScene(el, api) {
   function regulation() {
     const st = onS('Charge Regulation')?.dmg.stats; if (!st) { me.regAt = null; return; }
     if (time - (me.regAt ??= time) < st.consume_frenzy_power_and_endurance_charge_every_x_ms / 1000) return;
-    me.regAt = time; for (const c of ['frenzy', 'power', 'endurance']) if (charges[c] > 0) { charges[c]--; chargesSpent(1); }
+    me.regAt = time; for (const c of ['frenzy', 'power', 'endurance']) if (charges[c] > 0) { charges[c]--; chargesSpent(1, c); }
   }
   // Magma Barrier: while on, its increased block chance (withCharms), and its lava fills over its charge-up time; a
   // block with your shield raised once it is full spends it on Magma Spray, its cone toward the attacker, and an
@@ -4616,6 +4626,7 @@ export function initScene(el, api) {
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
+    if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
     if (o.dot && (fresh || o.dot.dps > (me.burn[a]?.dps || 0))) me.burn[a] = o.dot;
     if (!fresh) return;
@@ -4695,7 +4706,7 @@ export function initScene(el, api) {
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
-    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; (me.drankAt ||= [])[n] = time;
+    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
@@ -4712,7 +4723,7 @@ export function initScene(el, api) {
     charms().forEach((f, n) => {
       if (!f || f.on !== on || me.cu[n] || charmLeft(n) < f.per) return;
       if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
-      me.cu[n] = { c: f, s: f.time };
+      me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
       if (f.life) flaskHeal({ k: 'life' }, f.life); if (f.mana) flaskHeal({ k: 'mana' }, f.mana); if (f.guard) me.guard = f.guard;
       const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
       say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
@@ -4756,7 +4767,8 @@ export function initScene(el, api) {
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
-    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
+    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4,
+    ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT, MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
     RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
     AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
   // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
