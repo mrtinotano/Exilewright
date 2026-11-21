@@ -151,7 +151,9 @@ const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges
 export function charmOf(it, sum = {}) {
   const base = BASE[it?.base]; if (!base?.charm) return null;
   const s = rolled(it), g = id => sum[id] || 0, F = base.flask;
-  return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm,
+  // increased Charm Effect: what its buff grants, rounded towards zero
+  const E = 1 + g('charm_effect_+%') / 100, stats = base.charm.stats && Object.fromEntries(Object.entries(base.charm.stats).map(([k, x]) => [k, Math.trunc(x * E)]));
+  return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm, ...stats && { stats },
     img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%')) / 100),
     max: mostCharges(F, s), per: Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),
     gain: (1 + g('charm_charges_gained_+%') / 100) * (1 + g('primalist_charm_charges_gained_+%_final') / 100), keep: g('charms_%_chance_to_not_consume_charges'),   // Ritualist: more charges
@@ -159,7 +161,7 @@ export function charmOf(it, sum = {}) {
 }
 // self-check: a Lesser Life Flask recovers 50 life over 3 s with 60 charges, 10 a use
 { const f = flaskOf({ base: 'Lesser Life Flask' }); console.assert(f.amount === 50 && f.time === 3 && f.max === 60 && f.per === 10 && f.k === 'life', 'flaskOf');
-  const c = charmOf({ base: 'Ruby Charm' }); console.assert(c.on === 'fire_damage_taken' && c.stats['base_fire_damage_resistance_%'] === 25 && c.time === 4 && c.max === 40 && c.per === 20 && !flaskOf({ base: 'Ruby Charm' }), 'charmOf'); }
+  const c = charmOf({ base: 'Ruby Charm' }); console.assert(c.on === 'fire_damage_taken' && c.stats['base_fire_damage_resistance_%'] === 25 && charmOf({ base: 'Ruby Charm' }, { 'charm_effect_+%': 10 }).stats['base_fire_damage_resistance_%'] === 27 && c.time === 4 && c.max === 40 && c.per === 20 && !flaskOf({ base: 'Ruby Charm' }), 'charmOf'); }
 
 // ---------- item text, in English like Path of Building and the game's Ctrl+C copy
 const RARITY = { normal: 'NORMAL', magic: 'MAGIC', rare: 'RARE', unique: 'UNIQUE' };
