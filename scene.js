@@ -1801,7 +1801,7 @@ export function initScene(el, api) {
   function shoot(S, from, dx, dz, o = {}) {
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
-    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0, spd = speed, burn = 0;
+    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0, spd = speed * (o.speed ? 1 : S.dmg?.projSpeed || 1), burn = 0;
     // Ball Lightning: its hits on the enemies around it at its frequency; with a Fire Infusion consumed it slows down over
     // time, leaves Ignited Ground at its interval and explodes where it ends (its infused parts)
     const bst = S.dmg?.stats || {}, every = bst.ball_lightning_base_hit_frequency_ms / 1000, fi = S.infs?.includes('fire') && bst.ball_lightning_infused_acceleration != null;

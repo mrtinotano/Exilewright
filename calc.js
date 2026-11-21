@@ -1006,6 +1006,7 @@ export function skill(g, b, treeGear) {
   // note: not counted "while Shapeshifted" (the scene has none) nor the weapon's local penetration
   out.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, v(sum, `base_reduce_enemy_${e}_resistance_%`, 'reduce_enemy_elemental_resistance_%', 'base_penetrate_elemental_resistances_%')
     + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') : 0)]));
+  out.projSpeed = 1 + (v(sum, 'base_projectile_speed_+%') + (spell ? v(sum, 'spell_skill_projectile_speed_+%') : 0) + (tags.includes('crossbow') ? v(sum, 'projectile_speed_+%_with_crossbow_skills') : 0)) / 100;   // increased projectile speed (the scene's projectiles)
   if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
