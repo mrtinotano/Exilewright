@@ -278,7 +278,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -434,6 +434,9 @@ export function initScene(el, api) {
     const M = d.mark;
     fx.emit(5, { p: chest(d), v: 2.5, up: 1, life: .3, size: .12, c: S.el, c2: 'white', drag: 2 });
     let total = 0, top = S.el, best = 0, crit = false;
+    // Witchhunter: enemies have Focus, a share of their maximum life, your hits drain it; No Mercy: up to its more
+    // damage by the share of Focus they miss
+    const FO = !S.src && sheet().focus; if (FO && d.focusMax == null) d.focusMax = d.focus = d.max * FO.life / 100;
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
@@ -444,6 +447,7 @@ export function initScene(el, api) {
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + Math.random() * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
@@ -531,6 +535,7 @@ export function initScene(el, api) {
       if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
+    if (FO && d.focusMax > 0) { d.focus = Math.max(0, d.focus - total * FO.drain / 100); d.focusAt = time; }
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
@@ -4331,6 +4336,7 @@ export function initScene(el, api) {
     for (const k in d.imm) d.imm[k] -= dt;
     for (let i = d.flam.length - 1; i >= 0; i--) if ((d.flam[i].s -= dt) <= 0) d.flam.splice(i, 1);
     // the bars empty after a while without buildup (monster.ot poise decay)
+    if (d.focusMax > 0 && time - (d.focusAt ?? -99) > sheet().focus?.delay) d.focus = Math.min(d.focusMax, d.focus + d.focusMax * sheet().focus.decay / 100 / 60 * dt);   // drained Focus comes back after its delay
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
     if (d.curse && (d.curse.s -= dt) <= 0) d.curse = d.hexes?.pop() || null;
     if (d.hexes?.length) d.hexes = d.hexes.filter(u => (u.s -= dt) > 0);
