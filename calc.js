@@ -262,6 +262,9 @@ export function character(b, sum) {
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
     es: Math.round(v(sum, 'base_maximum_energy_shield') * pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
+    // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
+    armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc),
+    defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
     res, penalty,
@@ -527,6 +530,15 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
+// [stat, a(rmour) / e(vasion), the scene's condition]. note: an Energy Shield part is not counted, nor "if you've consumed
+// a charge Recently" and "while Shapeshifted" (the scene has neither)
+const DEF_WHILE = [['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'ae', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
+  ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
+  ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
+  ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'],
+  ['evasion_rating_+%_if_sprinting', 'e', 'Sprinting'], ['armour_evasion_energy_shield_+%_while_channelling', 'ae', 'Channelling'], ['evasion_rating_+%_if_you_have_hit_an_enemy_recently', 'e', 'HitRecently'],
+  ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
+  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife']];
 const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence', you_have_arcane_surge: 'ArcaneSurge' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be

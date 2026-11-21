@@ -505,6 +505,7 @@ export function initScene(el, api) {
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
+    if (!S.src) me.hitAt = time;   // you have hit an enemy recently
     // Rain of Blades: its blades (its chance) fall where the enemy is after its delay, hitting in its area for the attack's
     // damage at its own base multiplier. note: the attack's modifiers are kept (the weapon's base alone is not told apart)
     const RB = !S.src && P.attack && P.kind === 'projectile' && time < me.blades?.until && me.blades.S, RS = RB && RB.dmg.stats;
@@ -4063,7 +4064,7 @@ export function initScene(el, api) {
     if (move || rollCd > 0 || stuck()) return;
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
@@ -4735,6 +4736,11 @@ export function initScene(el, api) {
     };
   }
   // your resistances with those of the charms in use
+  const meIs = { CompanionInPresence: () => inPresence(o => o.companion), Still: () => !walk && !move, Bleeding: () => me.st.bleed > 0, Ignited: () => me.st.ignite > 0,
+    Surrounded: () => inside(pp, SURROUNDED.r).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
+    NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
+    HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
+    DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL };
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
@@ -4742,6 +4748,9 @@ export function initScene(el, api) {
     const RA = banner('%_armour_to_apply_to_elemental_damage'), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating
     if ((RA || RE) && c.deflect) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: { ...c.deflect, eva: c.deflect.eva + RE } };
     if (AE || MR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
+    // the tree's increased armour / evasion while you are in a state, added to the increases they have
+    const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
+    if (DW.length) c = { ...c, armour: c.armour * (1 + inc('a') / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + inc('e') / 100 / (c.evasionInc || 1)) };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
     if (!Object.keys(add).length || !c.res) return c;
