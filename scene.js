@@ -49,6 +49,7 @@ const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness:
 const ONSLAUGHT = { speed: 20, move: 10 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
+const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
 const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
@@ -335,6 +336,12 @@ export function initScene(el, api) {
   }
   // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
   const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
+  // Arcane Surge: its increased cast speed (useTime) and more mana regeneration (vitals), by its effect on you
+  const surge = () => time < me.surgeUntil ? sheet().arcaneSurge?.effect || 1 : 0;
+  function arcaneSurge(s) {
+    if (!(s > 0)) return; me.surgeUntil = Math.max(me.surgeUntil || 0, time + s);
+    setBuff({ label: api.info({ name: 'Arcane Surge' })?.label || 'Arcane Surge', name: 'Arcane Surge', c: css('arcane'), s: me.surgeUntil - time });
+  }
   function gainCharge(type, by) {
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
@@ -519,6 +526,7 @@ export function initScene(el, api) {
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
+    if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     if (own && !S.src) { if (SHOCKWAVE[S.name]) wingBlast(S, d); if (S.vb) discharge(S.vb, d); if (P.melee && me.lunar?.until > time) moonbeams(d); }
@@ -566,7 +574,7 @@ export function initScene(el, api) {
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity) }
       : { LowLife: me.life <= me.maxL * LOW, FullLife: me.life >= me.maxL, FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
-        Stationary: (S.still || 0) > 0, Channelling: !!charge, Moving: walk || !!move, Surrounded: inside(pp, SURROUNDED.r).length >= SURROUNDED.n,
+        Stationary: (S.still || 0) > 0, Channelling: !!charge, Moving: walk || !!move, ArcaneSurge: surge() > 0, Surrounded: inside(pp, SURROUNDED.r).length >= SURROUNDED.n,
         CompanionInPresence: inPresence(o => o.companion), AllyInPresence: inPresence(o => o.minion), EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
@@ -3824,6 +3832,9 @@ export function initScene(el, api) {
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
       me.mana -= cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1); me.life -= life; if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) gloryPaid('life', life, S.name);
+      // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
+      const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
+      if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
       // Concoct / Ambrosia: the use consumes their share of your life / mana flask's most charges, for their more bleeding
       // effect / damage gained as lightning per charge consumed
       const flaskUse = (n, k, per) => { const f = flasks()[n], U = S.dmg?.sum || {}; if (!f || !U[k]) return 0; const c = Math.floor(Math.min(flaskLeft(n), f.max * U[k] / 100)); me.fl[n] -= c; return c * (U[per] || 0); };
@@ -3974,7 +3985,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1)
+      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4953,7 +4964,7 @@ export function initScene(el, api) {
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
-    if (c.manaRegen > 0 && me.mana < M) me.mana = Math.min(M, me.mana + c.manaRegen * dt);
+    if (c.manaRegen > 0 && me.mana < M) me.mana = Math.min(M, me.mana + c.manaRegen * (1 + ARCANE.regen * surge() / 100) * dt);
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;

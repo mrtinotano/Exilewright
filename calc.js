@@ -282,6 +282,7 @@ export function character(b, sum) {
     // runic ward: flat ward, and the share of maximum life some modifiers grant as ward, scaled by increased ward
     // Plants Overgrow: a chance as each is created (passives), a chance as it enters your Presence (items), that Presence's
     // radius in metres (character.ot, its area scaled like calc's sheet)
+    arcaneSurge: { crit: v(sum, 'gain_arcane_surge_on_crit_%_chance'), effect: pct('arcane_surge_effect_on_self_+%') },   // its chance on a critical hit, its effect on you
     overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
       r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
       // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
@@ -526,7 +527,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered' };
-const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence' };
+const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence', you_have_arcane_surge: 'ArcaneSurge' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
