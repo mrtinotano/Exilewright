@@ -4887,7 +4887,7 @@ export function initScene(el, api) {
     utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun', utility_charm_slow_immunity: 'maim' };
   const charms = () => sheet().charms || [];
   const charmLeft = n => { const f = charms()[n]; if (!f) return 0; return me.cc[n] = Math.min(me.cc[n] ?? f.max, f.max); };
-  const immune = a => me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
+  const immune = a => a === 'bleed' && sheet().bleedImmune || me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
   function charmUse(on) {
     charms().forEach((f, n) => {
       const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges

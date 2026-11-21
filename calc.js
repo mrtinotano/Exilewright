@@ -162,7 +162,9 @@ export function reservation(g, sum = {}, b) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
   const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length;
-  return Math.round(own * 100 / (100 + eff));
+  // Lord of the Wilds: non-minion skills 50% less efficiency; Trusted Kinship: companions 30% more, the rest 20% less
+  const T = GEM[g.name]?.tags || [], more = (sum.keystone_lord_of_the_wilds && !T.includes('minion') ? .5 : 1) * (sum.keystone_2_companions ? T.includes('companion') ? 1.3 : .8 : 1);
+  return Math.round(own * 100 / (100 + eff) / more);
 }
 // self-check: Eternal Rage (100 spirit, 0.75% efficiency per quality as its second effect) with 6% quality and +2 levels
 { const g = { name: 'Eternal Rage', level: 15 }, sum = { 'all_skill_gem_quality_+': 6, ascendancy_gemling_enable_thaumaturgy_quality_stats: 1, 'strength_skill_gem_level_+': 2, 'spell_skill_gem_level_+': 3 };
@@ -200,7 +202,7 @@ export function totem(g, sum = {}) {
     elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
     limit: (st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
-      + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0),
+      + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
   };
 }
 // self-check: Mortar Cannon at gem level 18 is a level 36 totem with 2091 life and 1123 ailment threshold, as in the game
@@ -402,6 +404,15 @@ export function character(b, sum) {
   c.spirit += per(pieceDef(b.items, 'body', 'evasion'), sum['+1_spirit_per_X_evasion_rating_on_body_armour']) + per(pieceDef(b.items, 'body', 'energy_shield'), sum['+1_spirit_per_X_energy_shield_on_body_armour']);
   // Acolyte of Chayula's Embrace the Darkness: no Spirit; maximum Darkness, its base and per level, with its increases (per 1% chaos
   // resistance too); damage taken is reserved from it before life or energy shield, each reservation lasting its time
+  // keystones, as their texts say: Chaos Inoculation (maximum life 1, immune to chaos damage and bleeding), Eldritch Battery
+  // (maximum energy shield converted to maximum mana), Blood Magic (no mana), Iron Reflexes (evasion converted to armour),
+  // Resolute Technique (accuracy doubled), Lord of the Wilds (50% less Spirit)
+  if (sum.keystone_chaos_inoculation) { c.life = 1; c.res.chaos = { ...c.res.chaos, capped: 100, immune: true }; c.bleedImmune = true; }
+  if (sum.keystone_eldritch_battery && c.mana != null) { c.mana += c.es; c.es = 0; }
+  if (sum.keystone_blood_magic && c.mana != null) c.mana = 0;
+  if (sum.keystone_iron_reflexes) { c.armour += c.evasion; c.evasion = 0; c.armourPct = armourReduction(c.armour, lvl); c.evadePct = 0; }
+  if (sum.resolute_technique) c.accuracy *= 2;
+  if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
@@ -447,7 +458,7 @@ export function recovery(c, sum) {
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
-    curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed'), curseForever: !!sum.curses_never_expire,   // Lich
+    curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff's magnitude you inflict; how fast debuffs on you expire
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
@@ -846,6 +857,7 @@ export function skill(g, b, treeGear) {
   // a warcry's part with damage (Fortifying Cry's shockwave, Ancestral Cry's projectiles, Lunar Blessing's Moonbeams) is
   // an attack with the weapon (PoB2's baseFlags attack), though the warcry itself is not
   const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem') || !!g.part && gt.includes('Warcry'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
+  const wild = !!sum.keystone_wildsurge_incantation && spell && (own.includes('storm') || own.includes('plant'));   // Wildsurge Incantation: 50% more damage, 50% less cost, 75% less duration
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
@@ -894,12 +906,12 @@ export function skill(g, b, treeGear) {
     const effAll = v(sum, 'base_skill_cost_efficiency_+%') + (own.includes('attack') ? v(sum, 'base_attack_skill_cost_efficiency_+%') : 0);
     const step = (x, f) => f < 1 ? Math.ceil(x * f) : Math.floor(x * f), raw = baseCost * supMult + v(sum, 'base_mana_cost_+');
     const inc1 = 1 + (inc(sum, 'mana_cost_+%', tags) - v(sum, 'base_mana_cost_-%') + v(sum, 'base_cost_+%')) / 100;
-    const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100), eff = 1 + (v(sum, 'base_mana_cost_efficiency_+%') + effAll + (own.includes('spell') ? v(sum, 'base_spell_mana_cost_efficiency_+%') : 0)
+    const more1 = (1 + (v(sum, 'mana_cost_+%_final') + (finals['mana_cost_+%_final'] || 0)) / 100) * (1 + v(sum, 'gemling_skill_cost_+%_final') / 100) * (sum.keystone_eldritch_battery ? 2 : 1), eff = 1 + (v(sum, 'base_mana_cost_efficiency_+%') + effAll + (own.includes('spell') ? v(sum, 'base_spell_mana_cost_efficiency_+%') : 0)
       + (own.includes('mark') ? v(sum, 'base_mana_cost_efficiency_+%_of_mark_skills') : 0) + (own.includes('command') ? v(sum, 'base_mana_cost_efficiency_+%_of_command_skills') : 0)) / 100;
-    const moreCost = 1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100;   // Efficiency: "more Cost", every resource
+    const moreCost = (1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100) * (wild ? .5 : 1);   // Wildsurge Incantation: 50% less   // Efficiency: "more Cost", every resource
     // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
     // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
-    const toLife = Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%')) / 100;
+    const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%')) / 100;   // Blood Magic: all of it
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
       const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + v(sum, 'base_cost_+%') / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
@@ -976,7 +988,7 @@ export function skill(g, b, treeGear) {
   const trigSpell = spell && (gt.includes('Triggered') || meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
@@ -1035,7 +1047,7 @@ export function skill(g, b, treeGear) {
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    out.crit = mods.some(m => m[0] === 'NeverCrit') ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
@@ -1112,11 +1124,11 @@ export function skill(g, b, treeGear) {
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null, both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0) + ['banner', 'hazard', 'grenade'].reduce((t, x) => t + (own.includes(x) ? v(sum, `${x}_duration_+%`, `${x}_skill_duration_+%`) : 0), 0)
-    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
+    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: both('number_of_chains') * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
-    detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', 1 + v(sum, 'curse_delay_+%') / 100),
+    detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (sum.keystone_hex_master ? 2 : 1)),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
     // Pierce, Fork and Chain as PoB2 counts them (CalcOffence, SkillStatMap) and the glossary orders them: a projectile
     // pierces, else forks (the first time it hits), else chains; chaining reaches 6 m from a projectile, 4 m otherwise
