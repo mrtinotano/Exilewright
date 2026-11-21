@@ -247,7 +247,7 @@ export function character(b, sum) {
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
-  const res = {};
+  const res = {}, SN = supportsOf((b.gems || []).flatMap(g => g.supports || []));   // the red / green / blue supports socketed in your skills (Gemling)
   // the game lowers elemental resistances by the level of the area (ResistancePenaltyPerAreaLevel: none at first,
   // -60% from level 65 on): taken as the character's level
   const thornsX = pct('thorns_damage_+%');
@@ -262,7 +262,7 @@ export function character(b, sum) {
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
-      + (perSup ? Math.floor(supportsOf((b.gems || []).flatMap(g => g.supports || []))[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0);   // Gemling: red / green / blue supports
+      + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0);   // Gemling: red / green / blue supports
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -390,7 +390,6 @@ export function character(b, sum) {
   const LC = c.life != null && Math.min(100, v(sum, 'maximum_life_%_to_convert_to_maximum_energy_shield')); if (LC) { const k = Math.round(c.life * LC / 100); c.life -= k; c.es += k; }
   // the critical damage bonus of hits against you, as a share: the Oracle's and the Smith's less; Gemling's Gem Studded none
   // while red supports are the most socketed in your skills
-  const SN = supportsOf((b.gems || []).flatMap(g => g.supports || []));
   c.selfCrit = sum.no_self_critical_strike_multiplier_if_red_support_count_highest && SN.str && SN.str >= SN.dex && SN.str >= SN.int ? 0 : Math.max(0, 1 - v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%') / 100);
   // Shaman's Sacred Flow: Spirit per charm slot (the belt's, the Ritualist's more) with no charm in it
   const CS = v(sum, 'spirit_+_per_empty_charm_slot'); if (CS) c.spirit += CS * Math.max(0, Math.min(3, v(sum, 'local_charm_slots', 'local_additional_charm_slots', 'num_charm_slots')) - ['charm1', 'charm2', 'charm3'].filter(k => b.items?.[k]).length);
