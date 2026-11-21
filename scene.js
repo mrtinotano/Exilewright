@@ -485,6 +485,13 @@ export function initScene(el, api) {
     floatN(d, total, top, { sim: !real || Math.abs(m - 1) > .001, crit });
     if (!S.src) remnantOn('hit', d, crit);
     if (!S.src && P.attack) { if (P.kind === 'projectile') me.projHit = time; if (P.melee) me.meleeHit = time; }   // for Pursuit and Retreat
+    // Rain of Blades: its blades (its chance) fall where the enemy is after its delay, hitting in its area for the attack's
+    // damage at its own base multiplier. note: the attack's modifiers are kept (the weapon's base alone is not told apart)
+    const RB = !S.src && P.attack && P.kind === 'projectile' && time < me.blades?.until && me.blades.S, RS = RB && RB.dmg.stats;
+    if (RB && D && Math.random() * 100 < RS['triggered_rain_of_blades_%']) {
+      const c = { x: d.pos.x, z: d.pos.z }, X = { ...S, name: RB.name, label: RB.label, A: RB.A, src: 'blades', dmg: { ...D, hits: scale(D.hits, RS._base_multiplier / (D.stats?._base_multiplier || 10000)), trig: [] } };
+      later(RS.rain_of_blades_fall_delay_ms / 1000, () => { pop(c, RB.A, 'dust'); boom(c, RB.A, X); });
+    }
     // Rage: "Only one Hit every 0.5 seconds can cause you to gain Rage" (keywords.json); the tree's gains and the skill's
     // supports' (calc.js onHit); a crit can cost it (Prototype Seventeen); Combo from Strikes; a perfectly timed hit's charge
     const H = real ? D.onHit : null;
@@ -2660,6 +2667,8 @@ export function initScene(el, api) {
         if (time < me.hollowAt) return; me.hollowAt = time + st.hollow_shell_per_target_cooldown_ms / 1000;
         const g = Math.min(w * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
+      // Rain of Blades: for its duration its blades fall on the enemies your projectile attacks hit (hit)
+      if (st['triggered_rain_of_blades_%'] != null) { me.blades = { until: time + durOf(S), S }; return say(t('{0} active', S.label), 'gold'); }
       const ER = st['emergency_reload_damage_+%_final'];
       if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
       fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
@@ -4832,7 +4841,8 @@ export function initScene(el, api) {
     // Consecrated Ground: on it you regenerate 5% of your maximum life a second (keywords.json), more by its effect (Consecrate)
     const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r);
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
-    const FC = banner('flask_charge_per_min'); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
+    // Dread Banner's flask charges, Alchemist's Boon's while it is on
+    const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); if (FC) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + FC / 60 * dt); });
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
     const TR = trinity(); if (TR) for (const e of ELEM) if (time - (me.affAt[e] ?? -99) > TR.trinity_resonance_decay_delay_ms / 1000) me.aff[e] = Math.max(0, me.aff[e] - TR.trinity_resonance_loss_per_second * dt);
