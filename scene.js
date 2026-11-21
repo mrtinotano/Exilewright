@@ -288,7 +288,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) : 0; };
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
@@ -4464,7 +4464,7 @@ export function initScene(el, api) {
     me.flame = (me.flame || 0) + n * F.ratio / 100;
     if (me.maxM > 0 && me.flame >= me.maxM) { me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
   }
-  function hurt(n, chaos, el, crit, d) {
+  function hurt(n, chaos, el, crit, d, hit = false) {
     if (!(n > 0)) return;
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     stats.taken += n; me.hurt = time; me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
@@ -4484,6 +4484,8 @@ export function initScene(el, api) {
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
     // Oracle's Harmony Within: from mana before life while mana is higher than life
     if (sheet().manaFirst && me.mana > me.life) { const m = Math.min(me.mana, left); me.mana -= m; left -= m; }
+    // Blood Mage's Grasping Wounds: its share of the life a hit takes is lost over 4 seconds instead
+    const GW = hit && sheet().wounds; if (GW && left > 0) { me.wounds.push({ rate: left * GW / 400, until: time + 4 }); left *= 1 - GW / 100; }
     if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
@@ -4696,8 +4698,8 @@ export function initScene(el, api) {
     // Chronomancer: less damage taken now, and its share of the hit taken 4 seconds later (its stat's own delay)
     // Mountain's Teachings: its less damage taken from the hit, which loses one. note: its life threshold stat is not simulated
     const MO = time < me.mountUntil && me.mount > 0 && sheet().mountain; if (MO && --me.mount <= 0) me.mountUntil = 0;
-    const RT = tempered(d), DH = sheet().delayHit, k = (1 + (DH?.less || 0) / 100) * (MO ? 1 + MO.taken / 100 : 1); hurt(total * RT * k, chaos * RT * k, top, crit, d);
-    if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d));
+    const RT = tempered(d), DH = sheet().delayHit, k = (1 + (DH?.less || 0) / 100) * (MO ? 1 + MO.taken / 100 : 1); hurt(total * RT * k, chaos * RT * k, top, crit, d, true);
+    if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d, true));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
@@ -5054,6 +5056,7 @@ export function initScene(el, api) {
       me.ghost = Math.min(GD.ghost_dance_max_stacks, (me.ghost || 0) + dt * 1000 / GD.base_cooldown_modifiable_repeat_interval_ms);
       if (time - (me.ghostAt ?? -99) <= RECENT) me.es = gain(me.es, me.maxE, (c.evasion || 0) * GD['skill_base_ghost_dance_grants_%_evasion_as_es_regeneration_per_minute_if_have_lost_ghost_dance_shroud_recently'] / 100 / 60 * dt);
     }
+    me.wounds = (me.wounds || []).filter(w => w.until > time); for (const w of me.wounds) me.life -= w.rate * dt; if (me.life <= 0 && me.known) died('?');   // Grasping Wounds
     if (me.demon) { me.life -= demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60 * dt; if (me.life <= 1) { me.life = 1; demonOff(); } }
     // Primal Bounty (Spirit Walker, OWL): an Owl Feather every 4 s (its % faster), up to 3 ("Gain a Primal Owl Feather every
     // 4 seconds, up to a maximum of 3", stat_texts owl_feather_max_bonus_to_stack)
