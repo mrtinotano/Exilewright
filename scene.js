@@ -463,6 +463,7 @@ export function initScene(el, api) {
       if (EC) { if (!(time < me.conflux?.until)) me.conflux = { el: ELEM[Math.floor(Math.random() * ELEM.length)], until: time + durOf(EC) }; if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
       if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] / 100;
+      const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
       const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
@@ -5115,7 +5116,7 @@ export function initScene(el, api) {
     // a hit ends it (hurt), as does a full Overflow
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
-    else if (me.es < E && time - me.hurt + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * dt);
+    else if (me.es < E && time - me.hurt + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
