@@ -1185,6 +1185,9 @@ export function initScene(el, api) {
     deathBlast(d, frozen, S);
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
+    // the tree's recovery on kill (calc.js killRecover)
+    const KR = S && sheet().killRecover;
+    if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100); }
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
@@ -4686,7 +4689,7 @@ export function initScene(el, api) {
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
-    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; if (n) me.drankAt = time;
+    me.fl[n] -= f.per; me.drink[n] = { k: f.k, es: f.es, rate: f.amount / f.time, s: f.time }; (me.drankAt ||= [])[n] = time;
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
@@ -4718,7 +4721,7 @@ export function initScene(el, api) {
   function live() {
     const c = sheet(), w = withCharms(c), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain, R = c.rage;
     const rate = (k, on) => (on ? me.drink : flasks().filter(f => f?.always).map(f => ({ k: f.k, rate: f.amount / f.time }))).reduce((t, D) => t + (D?.k === k ? D.rate : 0), 0);
-    const rec = k => { const r = (k === 'life' ? c.lifeRegen : c.manaRegen) || 0, own = r + rate(k); return [own + rate(k, true), own]; };
+    const RG = regenNow(c), rec = k => { const own = RG[k] + rate(k); return [own + rate(k, true), own]; };
     let dot = 0;
     for (const a in me.burn) if (me.st[a] > 0) dot += playerTakes(w, me.burn[a].el, me.burn[a].dps, false);
     if (!(me.safe > 0)) for (const h of hazards) if (dist(h, pp) <= h.r) for (const el in h.dot) dot += playerTakes(w, el, h.dot[el], false);
@@ -4741,12 +4744,19 @@ export function initScene(el, api) {
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
     DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => me.life <= me.maxL * LOW,
     FullMana: () => me.mana >= me.maxM, NotLowMana: () => me.mana > me.maxM * LOW, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
-    ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt ?? -99) <= RECENT, KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
+    ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt?.[1] ?? -99) <= RECENT,
+    LifeFlaskEffect: () => !!me.drink[0], LifeFlaskPast10: () => time - (me.drankAt?.[0] ?? -99) <= 10, Shocked: () => me.st.shock > 0,
+    DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
     RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
     AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
   // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
   // increased speed, a factor of its own here
+  // and its regeneration (calc.js REGEN_WHILE): life and mana per second
+  const regenNow = c => {
+    const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = sum('l') / 100;
+    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) };
+  };
   const speedWhile = b => 1 + (sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100;
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
@@ -4964,7 +4974,8 @@ export function initScene(el, api) {
     if (S.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
-    if (c.lifeRegen > 0 && me.life < L) me.life = Math.min(L, me.life + c.lifeRegen * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt);   // Rip's faster regeneration
+    const RG = regenNow(c);
+    if (RG.life > 0 && me.life < L) me.life = Math.min(L, me.life + RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt);   // Rip's faster regeneration
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;
@@ -4980,7 +4991,7 @@ export function initScene(el, api) {
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
-    if (c.manaRegen > 0 && me.mana < M) me.mana = Math.min(M, me.mana + c.manaRegen * (1 + ARCANE.regen * surge() / 100) * dt);
+    if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;

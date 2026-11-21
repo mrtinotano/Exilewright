@@ -326,6 +326,12 @@ export function recovery(c, sum) {
     esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     manaRegen: c.mana == null || manaLife && c.life == null ? null
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
+    // their increases, and the tree's regeneration while you are in a state (the scene checks it)
+    lifeInc: pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc: pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%'),
+    regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
+    // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
+    killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
+      full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
   };
 }
 // What ailments do to you: your ailment threshold (half your life, PlayerAilmentThresholdLifeFactor, plus what adds to it)
@@ -552,6 +558,18 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
   ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
   ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana']];
+// the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
+// rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
+// only, not flasks; not counted "per 5% missing life", "while Shapeshifted", "if you've Shocked an enemy Recently"
+const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited'], ['life_regeneration_rate_+%_while_moving', 'l', 'Moving'],
+  ['life_regeneration_rate_+%_while_on_low_life', 'l', 'LowLife'], ['life_regeneration_rate_+%_while_stationary', 'l', 'Still'],
+  ['life_regeneration_rate_+%_while_using_life_flask', 'l', 'LifeFlaskEffect'], ['life_recovery_rate_while_in_presence_of_companion_+%', 'l', 'CompanionInPresence'],
+  ['life_regeneration_rate_per_minute_%_if_have_been_hit_recently', 'L', 'BeenHitRecently'], ['life_regeneration_rate_per_minute_%_if_used_life_flask_in_past_10_seconds', 'L', 'LifeFlaskPast10'],
+  ['life_regeneration_rate_per_minute_%_when_on_low_life', 'L', 'LowLife'], ['life_regeneration_rate_per_minute_%_while_affected_by_damaging_ailment', 'L', 'DamagingAilment'],
+  ['life_regeneration_rate_per_minute_%_while_stationary', 'L', 'Still'], ['life_regeneration_rate_per_minute_%_while_surrounded', 'L', 'Surrounded'],
+  ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
+  ['mana_regeneration_rate_+%_while_moving', 'm', 'Moving'], ['mana_regeneration_rate_+%_while_not_on_low_mana', 'm', 'NotLowMana'],
+  ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still']];
 const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence', you_have_arcane_surge: 'ArcaneSurge' };
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
