@@ -5187,7 +5187,7 @@ export function initScene(el, api) {
     me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
-      flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
+      flaskHeal(D, got); if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) me.drink[n] = null;   // a life flask's effect ends when your life is full (Enduring Elixirs' text), unless Enduring Elixirs
     });
     for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
