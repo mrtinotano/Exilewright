@@ -374,6 +374,8 @@ export function initScene(el, api) {
   // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
   function hit(d, S, o = {}) {
     if (d.dead) return false;
+    const FF = S.dmg?.stats?.[FROSTFLAME];   // Frostflame Nova: its wave touches only the Ignited, and deals them no damage (afflict)
+    if (FF != null && !(d.st.ignite > 0)) return false;
     if (S.dmg?.stats?.['time_rip_damage_share_%']) visage(d, S);
     // Temper Weapon: an Empowered attack Combusts on its first hit (its chance): its own hit, fire, in its area around the enemy
     const CB = S.combust; if (CB && !CB.done && Math.random() * 100 < CB.T.dmg.stats['imbue_weapon_combust_trigger_chance_%']) { CB.done = true; const c = { x: d.pos.x, z: d.pos.z }; later(.05, () => boom(c, CB.T.A, CB.T)); }
@@ -467,7 +469,7 @@ export function initScene(el, api) {
       if (D.attack && d.impales.length && !IP?.keep) raw.physical = ph + d.impales.splice(d.impales.indexOf(Math.max(...d.impales)), 1)[0];
       if (ph && Math.random() * 100 < IP?.chance) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
       const dealt = {};
-      for (const el in raw) { const got = dealt[el] = takes(d, el, raw[el], true, D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit']); total += got; if (got > best) { best = got; top = el; } }
+      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit']); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
@@ -712,6 +714,7 @@ export function initScene(el, api) {
   const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
   const DRAINED = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'];   // the ailments Drain Ailments can Consume
   const DERANGE = 'support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence';
+  const FROSTFLAME = 'active_skill_hit_damage_freeze_multiplier_+permyriad_final_per_1%_of_target_ailment_threshold_being_dealt_by_ignite_per_second';
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -730,7 +733,7 @@ export function initScene(el, api) {
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
     }
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
-    const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S;
+    const fresh = !(d.st[a] > 0); d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur;
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
@@ -809,7 +812,11 @@ export function initScene(el, api) {
       || a === 'electrocute' && S.P.attack && SU.all_attack_damage_can_electrocute
       || a === 'chill' && (SU.all_damage_to_bleeding_enemies_contributes_to_chill && has(d, 'bleed') || SU.all_damage_to_poisoned_enemies_contributes_to_chill && has(d, 'poison'));
     const adds = a => Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), xa = (a, e) => can(a) ? allD : [...new Set([e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
-    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
+    // Frostflame Nova on an Ignited enemy: the Ignite's duration starts over, its Freeze buildup is more per 1% of the
+    // enemy's ailment threshold the Ignite deals a second, and no other Ignite takes until that one ends
+    const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
+    if (FF != null) { d.st.ignite = Math.max(d.st.ignite, d.full?.ignite || DUR.ignite); d.noIgn = time + d.st.ignite; }
+    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite && !(d.noIgn > time)) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
@@ -826,7 +833,7 @@ export function initScene(el, api) {
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (A.electrocute) build(d, 'electrocute', xa('electrocute', 'lightning') * GC.ElectrocuteDamageScale * A.electrocute * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
