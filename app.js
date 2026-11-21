@@ -161,7 +161,7 @@ function inc(sum, suffix, tags) {
 }
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
-  const d = SK.skills[g.name] || {}, tags = [...gems.find(x => x.name === g.name)?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gems.find(x => x.name === g.name)?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
+  const d = SK.skills[g.name] || {}, gm = gems.find(x => x.name === g.name), tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
   for (const [k, n] of Object.entries(g.add || {})) T[k] = (T[k] || 0) + n;   // a buff the scene has on (g.add)
   const { sum, finals } = withSupports(g, T);  // supports' area / speed count
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')

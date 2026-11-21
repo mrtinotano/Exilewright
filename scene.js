@@ -1345,8 +1345,9 @@ export function initScene(el, api) {
   function useCorpse(S) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
-    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;
-    if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.el);   // the tree's chance to not destroy it if (S.P.gain) chargeBy(S.P.gain, S);   // life: the corpse's monster's
+    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;   // life: the corpse's monster's
+    if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.el);   // the tree's chance to not destroy it
+    if (S.P.gain) chargeBy(S.P.gain, S);
     return p;
   }
 
@@ -4914,7 +4915,7 @@ export function initScene(el, api) {
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
-    const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + ((f.inc || 0) + (sheet().lowFlask || 0)) / 100) / (1 + (f.inc || 0) / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
+    const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
     me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
