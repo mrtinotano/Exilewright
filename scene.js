@@ -646,7 +646,7 @@ export function initScene(el, api) {
   function leech(D, dealt, total, d) {
     const k = Math.min(1, GAME.leech_max_damage / (total || 1)) * (1 - (d.stat.leechRes || 0));
     for (const r of ['life', 'mana']) {
-      const x = D.leech?.[r], n = x && ((dealt.physical || 0) * x.phys + total * x.all) / 100 * x.more * k;
+      const x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * x.more * k;
       if (!(n > 0)) continue;
       const q = me.leech[r]; q.left += n; q.rate = q.left * x.rate; q.keep = r === 'life' && D.leech.keep;
     }
@@ -3228,7 +3228,7 @@ export function initScene(el, api) {
     for (const d of inside(pp, R)) {
       const n = d.lances || 0; if (!n) continue; d.lances = 0;
       const p = { x: d.pos.x, z: d.pos.z }, A = S.A * (n >= 5 ? Math.sqrt(1 + st['shattering_spite_area_+%_per_lance_with_at_least_5_lances'] * n / 100) : 1), lf = S.dmg.leech?.life;
-      const dmg = n >= 10 ? { ...S.dmg, leech: { ...S.dmg.leech, life: { all: 0, more: 1, rate: 1, ...lf, phys: (lf?.phys || 0) + L } } } : S.dmg;
+      const dmg = n >= 10 ? { ...S.dmg, leech: { ...S.dmg.leech, life: { all: 0, more: 1, rate: 1, of: ['physical'], ...lf, phys: (lf?.phys || 0) + L } } } : S.dmg;
       pop(p, A, 'blood'); boom(p, A, { ...S, dmg, mult: S.mult * (1 + st['damage_per_bloodstone_lance_+%_final'] * n / 100) });
     }
   };

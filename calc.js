@@ -1117,7 +1117,9 @@ export function skill(g, b, treeGear) {
   const leechOf = r => {
     const phys = attack ? (both(`base_${r}_leech_from_physical_attack_damage_permyriad`) + (w?.leech?.[r] || 0)) / 100 : 0;
     const all = spell ? both(`base_${r}_leech_from_all_spell_damage_permyriad`) / 100 : 0;
-    return phys || all ? { phys, all, more: 1 + v(sum, `base_${r}_leech_amount_+%`) / 100, rate: 1 + v(sum, `base_${r}_leech_rate_+%`) / 100 } : null;
+    // the Amazon's Mystic Harvest: life leech of the elemental damage too; Acolyte of Chayula's Sap of Nightmares: leech of the chaos damage too
+    const of = ['physical', ...(r === 'life' && sum.life_leech_also_recovers_based_on_elemental_damage_types ? ['fire', 'cold', 'lightning'] : []), ...(sum.leech_also_recovers_based_on_chaos_damage_as_well ? ['chaos'] : [])];
+    return phys || all ? { phys, of, all, more: 1 + v(sum, `base_${r}_leech_amount_+%`) / 100, rate: 1 + v(sum, `base_${r}_leech_rate_+%`) / 100 } : null;
   };
   out.enrage = v(sum, 'support_rageforged_consumes_X_rage_to_enrage_skill_use');   // Rageforged: Rage spent on a use to enrage it
   // what the skill's hits and uses do with Rage, charges and Combo (its supports' stats; the tree's Rage gains are
