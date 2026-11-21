@@ -3212,12 +3212,12 @@ export function initScene(el, api) {
   // Spell yourself before the next visage Empowers it for its more damage (use)
   function fate() {
     const F = onS('Align Fate'), st = F?.dmg?.stats; if (!st) return;
-    const ok = api.build().gems.map((g, j) => j).filter(j => { const b = api.byHand(j) && base(j); return b && b.P.spell && !b.P.channel && !b.dmg?.cooldown && !NOHIT.has(b.kind); });
+    const ok = [...api.build().gems.keys()].filter(j => { const b = api.byHand(j) && base(j); return b && b.P.spell && !b.P.channel && !b.dmg?.cooldown && !NOHIT.has(b.kind); });
     if (!ok.length || time < (me.fateAt ??= time)) return;
     me.fateAt = time + st.base_cooldown_modifiable_repeat_interval_ms / 1000 / (1 + st['spellflux_frequency_+%_final_per_socketed_valid_spell'] * ok.length / 100) / (1 + (F.dmg.sum?.['cooldown_speed_+%'] || 0) / 100);
-    const j = ok[Math.floor(rnd(ok.length))], d = near(pp, 30), b = base(j);
+    const j = ok[Math.floor(rnd(ok.length))], b = base(j);
     empower = empower.filter(e => e.type !== 'fate'); empower.push({ type: 'fate', spell: b.name, label: F.label, mult: 1 + st['spellflux_spell_damage_+%_final_if_matching_flux_cast'] / 100 });
-    fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1, 'gold', .4); use(j, { at: d ? { x: d.pos.x, z: d.pos.z } : { x: pp.x, z: pp.z }, src: 'meta' });
+    fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1, 'gold', .4); use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta' });
   }
   function mirrors(dt) {
     const S = onS('Mirror of Refraction'), st = S?.dmg?.stats; if (!st) return;
