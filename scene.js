@@ -791,13 +791,18 @@ export function initScene(el, api) {
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
     if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
     // "all damage can <ailment>" (the build's, and Pinnacle of Power's buff: every Elemental Ailment, with other damage
-    // types, BuffDefinitions elemental_power): every damage type of the hit counts for it
-    const PN = !S.src && time < me.pinn?.until, can = a => PN || S.dmg.sum?.[`all_damage_can_${a}`], allD = Object.values(raw).reduce((t, v) => t + v, 0), xa = (a, e) => can(a) ? allD : x(e);
-    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite')) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
+    // types, BuffDefinitions elemental_power): every damage type of the hit counts for it; "physical damage can ignite,
+    // freeze and shock", "physical damage from hits also contributes to chill and freeze" (uniques), Olroth's Hubris'
+    // physical contributing to freeze buildup (its text; its stat is its added physical damage): its physical too
+    const SU = S.dmg.sum || {}, PN = !S.src && time < me.pinn?.until, can = a => PN || SU[`all_damage_can_${a}`], allD = Object.values(raw).reduce((t, v) => t + v, 0);
+    const phys = a => SU.physical_damage_can_ignite_freeze_shock && a !== 'chill' || SU.physical_damage_from_hits_also_contributes_to_chill_and_freeze && (a === 'chill' || a === 'freeze')
+      || a === 'freeze' && SU['added_physical_damage_%_ward_cost'];
+    const xa = (a, e) => can(a) ? allD : x(e) + (phys(a) ? x('physical') : 0);
+    if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || phys('ignite')) && !N.ignite) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance, s: GC.BaseFlammabilityDuration });
-      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, can('ignite') ? { ...raw, fire: allD } : raw, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
+      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); }   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
@@ -3614,7 +3619,7 @@ export function initScene(el, api) {
       const { cost, life } = costOf(S, o.held);
       if (cost > me.mana) { toast(t('Not enough mana for {0}', S.label) + ` (${Math.ceil(cost)})`); return false; }
       // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
-      // cold damage of their shares of it. note: added as they are, not scaled by the skill's modifiers; its physical's freeze buildup is not simulated
+      // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
       const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) spendWard(WC);
