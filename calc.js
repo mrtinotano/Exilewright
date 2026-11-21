@@ -1134,7 +1134,10 @@ export function skill(g, b, treeGear) {
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: the ones with no such twin (damage as chaos / cold, movement speed) are not counted
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
-  const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc)) : null;
+  // Spirit Walker's The Catha's Balance: Companions gain added Attack damage equal to a share of your main hand Weapon's damage
+  const cw = msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions'), W = cw && weaponStats(b.items);
+  const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
+  const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc), wAdd) : null;
   out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
   if (mn) {
     const ty = Object.values(mn.hits);
@@ -1251,7 +1254,7 @@ function minionStats(st, sum, ms) {
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k]; if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }
   return ms;
 }
-function minionOf(st, sum, fin, id, at = {}) {
+function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1];
   const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
@@ -1262,7 +1265,7 @@ function minionOf(st, sum, fin, id, at = {}) {
     ['minion_1%_area_of_effect_+%_per_X_player_dexterity', 'base_skill_area_of_effect_+%', 'dex']]) if (st[k]) ms[to] = (ms[to] || 0) + Math.floor((at[a] || 0) / st[k]);
   const tags = ['minion', a.attack ? 'attack' : 'spell', ...(a.shape === 'melee' || a.shape === 'slam' ? ['melee'] : []), ...(a.shape === 'projectile' ? ['projectile'] : []), ...(a.area ? ['area'] : [])];
   // added damage, then physical converted and gained as other types, as for the character
-  const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0);
+  const added = (t, i) => v(ms, `global_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) + (a.attack ? v(ms, `attack_${i ? 'maximum' : 'minimum'}_added_${t}_damage`) : 0) + (a.attack ? wAdd?.[t]?.[i] || 0 : 0);
   const base = Object.fromEntries(DMG.map(t => [t, [0, 1].map(i => (a.hits[t]?.[i] || 0) + added(t, i))]));
   const conv = t => v(ms, `non_skill_base_physical_damage_%_to_convert_to_${t}`, `active_skill_base_physical_damage_%_to_convert_to_${t}`);
   const phys = base.physical, kept = 1 - Math.min(1, DMG.slice(1).reduce((x, t) => x + conv(t), 0) / 100);
