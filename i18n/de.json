@@ -902,5 +902,9 @@
  "How much higher its modifiers are than yours, on average": "Wie viel höher seine Modifikatoren als deine sind, im Schnitt",
  "Only this base": "Nur diese Basis",
  "Modifiers it must have, at least as high as yours": "Modifikatoren, die er haben muss, mindestens so hoch wie deine",
- "Aggravated Bleeding": "Verschlimmertes Bluten"
+ "Aggravated Bleeding": "Verschlimmertes Bluten",
+ "{0} for {1}": "{0} für {1}",
+ "{0} in stock": "{0} vorrätig",
+ "Your stack of {0}: about {1}": "Dein Stapel von {0}: etwa {1}",
+ "{0} offers on the Currency Exchange in {1}": "{0} Angebote auf dem Währungsmarkt in {1}"
 }

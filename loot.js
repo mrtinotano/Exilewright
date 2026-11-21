@@ -12,7 +12,7 @@ import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
-import { priceOf, priceUnid, leagues, siteLink, TradeError } from './trade.js';
+import { priceOf, priceUnid, priceBulk, bulkOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings, wornRow } from './settings.js';
 
 const KEY = 'poe2loot';
@@ -154,6 +154,8 @@ export function initLoot(el, ctx) {
   // judged
   async function priceCheck(text) {
     const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
+    const B = bulkOf(text.replace(/\r/g, '').trim());
+    if (B) return bulkCheck(B, show);
     const r = parseItem(text.replace(/\r/g, '').trim());
     if (!r) return show({ lines: [t('That is not item text, or the planner does not have its base.')] });
     const name = r.name || nameOf(r.item), s = settings();
@@ -174,6 +176,25 @@ export function initLoot(el, ctx) {
         ...p.within < p.of ? [[[t('With {0} of its {1} modifiers', p.within, p.of), 'dim']]] : [],
         ...p.raised ? [[[t('{0} of its modifiers searched up to {1}% to find any', p.raised, p.upTo), 'dim']]] : [],
         ...asked.length ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
+    } catch (e) {
+      if (!(e instanceof TradeError)) throw e;
+      show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
+    }
+  }
+  // a stackable item (currency, runes, essences, omens...): the best rates its sellers ask on the Currency Exchange, and
+  // what your stack comes to at the best one
+  async function bulkCheck(B, show) {
+    const s = settings(), name = B.entry['name_' + lang] || B.name;
+    show({ name, lines: [t('Searching the trade site…')] });
+    try {
+      const league = s.league || (await leagues())[0], p = await priceBulk({ league, id: B.id, state: s.state }), link = p.id ? siteLink(league, p.id, true) : '';
+      if (!p.offers.length) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
+      const num = x => +x.toPrecision(3), best = p.offers[0], unit = best.pay / best.get, cur = t(best.currency);
+      show({ name, link, lines: [
+        ...p.offers.slice(0, 5).map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${cur}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']]),
+        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, `${num(unit * B.stack)} ${cur}`), '']]] : [],
+        [[t('{0} offers on the Currency Exchange in {1}', p.total, league), 'dim']],
+        [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] });
     } catch (e) {
       if (!(e instanceof TradeError)) throw e;
       show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });

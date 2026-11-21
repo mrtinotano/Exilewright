@@ -712,6 +712,23 @@ for e in next(g for g in trade_data('static') if g['id'] == 'Currency')['entries
 price_opts = next(f for g in trade_data('filters') for f in g['filters'] if f['id'] == 'price')['option']['options']
 save('currency.json', {'price': [o['id'] or '' for o in price_opts if not o['id'] or o['id'] in cur_out or o['id'] == 'exalted_divine'], 'currency': cur_out})
 
+# --- what the trade site's bulk exchange (Currency Exchange) lists, every group of its static data (api/trade2/data/
+# static): its id there -> the game's name in every language (BaseItemTypes, by the English name: "Uncut Skill Gem
+# (Level 19)", "Waystone (Tier 15)" are bases of their own), for the price check of a stackable item (trade.js priceBulk)
+any_name = {}
+for i, b in enumerate(bit):
+    if ok(b['Name']):
+        any_name.setdefault(b['Name'], i)
+bulk = []
+for g in trade_data('static'):
+    for e in g['entries']:
+        i = any_name.get(e.get('text'))
+        if i is not None:
+            bulk.append({'id': e['id'], 'group': g['id'], 'name': bit[i]['Name'], **tr(bases_tr, i)})
+assert len(bulk) > 500 and any(x['id'] == 'divine' for x in bulk), 'bulk.json: the bulk exchange'
+save('bulk.json', bulk)
+
+
 # --- monsters of the 3D scene (enemies.js): every monster with its own multipliers, resistances and skills, and the
 # per-level tables that turn the multipliers into life, armour, evasion, accuracy and damage
 ELEMENTS = ('physical', 'fire', 'cold', 'lightning', 'chaos')

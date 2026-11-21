@@ -902,5 +902,9 @@
  "How much higher its modifiers are than yours, on average": "其詞綴平均比你的高多少",
  "Only this base": "僅限此基底",
  "Modifiers it must have, at least as high as yours": "必須擁有的詞綴，至少與你的相同",
- "Aggravated Bleeding": "加劇流血"
+ "Aggravated Bleeding": "加劇流血",
+ "{0} for {1}": "{1} 換 {0} 個",
+ "{0} in stock": "庫存 {0}",
+ "Your stack of {0}: about {1}": "你的 {0} 個堆疊：約 {1}",
+ "{0} offers on the Currency Exchange in {1}": "{1} 的通貨交換中有 {0} 筆報價"
 }

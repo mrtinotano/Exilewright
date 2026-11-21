@@ -42,8 +42,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // What the site allows: [calls, seconds] windows per kind of call (it says so in every answer: "5:10:60" is 5 calls
 // in 10 seconds, or 60 seconds locked out). Going over locks out for longer each time, so the planner counts its own
 // calls and stays one short of every window: a short wait is slept, a long one is told to the user.
-const LIMITS = { search: [[5, 10], [15, 60], [30, 300]], fetch: [[12, 4], [16, 12]] }, sent = { search: [], fetch: [] };
-const kindOf = path => path.startsWith('search') ? 'search' : path.startsWith('fetch') ? 'fetch' : null;
+// (the exchange's: one in 5 s, as Exiled Exchange 2 starts from, till the site says)
+const LIMITS = { search: [[5, 10], [15, 60], [30, 300]], fetch: [[12, 4], [16, 12]], exchange: [[2, 5]] }, sent = { search: [], fetch: [], exchange: [] };
+const kindOf = path => ['search', 'fetch', 'exchange'].find(k => path.startsWith(k)) || null;
 function waitFor(kind, now = Date.now()) {   // seconds until one more call of this kind fits
   let w = 0;
   for (const [n, secs] of LIMITS[kind]) {
@@ -150,7 +151,7 @@ export function weighted({ cls, wants, price, level, state = 'securable' }) {
   return { query: { status: { option: state }, filters: filters(cls, price, level),
     stats: [{ type: 'weight', value: { min: 1 }, filters: list.map(w => ({ id: w.id, value: { weight: +(100 * w.gain / w.roll / top).toPrecision(3) } })) }] }, sort: { 'statgroup.0': 'desc' } };
 }
-export const siteLink = (league, queryId) => SITE + encodeURIComponent(league) + (queryId ? '/' + queryId : '');
+export const siteLink = (league, queryId, bulk) => (bulk ? SITE.replace('/search/', '/exchange/') : SITE) + encodeURIComponent(league) + (queryId ? '/' + queryId : '');
 export const siteQuery = (league, body) => SITE + encodeURIComponent(league) + '?q=' + encodeURIComponent(JSON.stringify(body));
 
 // ---------- reading what the site lists
@@ -242,6 +243,28 @@ function sameAs(r) {
     equipment_filters: { ...r.corrupted && r.sockets && { rune_sockets: { min: r.sockets } } } };
 }
 // r: parseItem's (its item, rarity, corrupted...)
+// ---------- the Currency Exchange (the site's bulk exchange): a stackable item, as Exiled Exchange 2 prices it
+const BULK = await fetch('poe2_data/available/bulk.json').then(r => r.ok ? r.json() : []).catch(() => []);
+const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k === 'name' || k.startsWith('name_')).map(([, n]) => [n.toLowerCase(), b])));
+// the copied text -> { id (the exchange's), name (English), entry (its names), stack } when the exchange lists it, else null: its name
+// among the lines before the first separator, in any language; its stack the first "label: n/m" line ("Stack Size: 12/40")
+export function bulkOf(text) {
+  const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l));
+  const b = lines.slice(0, sep < 0 ? lines.length : sep).map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b) return null;
+  const n = lines.map(l => l.match(/^[^:：]+[:：]\s*([\d.,\s]+?)\s*\/\s*[\d.,\s]+$/)?.[1]).find(Boolean);   // \s: a thousands space too
+  return { id: b.id, name: b.name, entry: b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
+}
+// what its sellers ask for it: in the currency most of them take (Exalted, Divine or Chaos Orbs; the site's market is thin,
+// nobody may sell divines for exalts there), the offers of one item each, the best rate first, as Exiled Exchange 2 lists them
+// -> { total, offers: [{ pay, get (for `pay` of currency, `get` of it), stock, currency }] (at most MANY), id (the exchange search) }
+export async function priceBulk({ league, id, state = 'available' }) {
+  const have = ['exalted', 'divine', 'chaos'].filter(h => h !== id);
+  const s = await call('exchange?league=' + encodeURIComponent(league), { engine: 'new', query: { status: { option: state === 'any' ? 'any' : 'online' }, have, want: [id] }, sort: { have: 'asc' } });
+  const offers = Object.values(s.result || {}).filter(r => r?.listing?.offers?.length === 1).map(r => r.listing.offers[0]);
+  const count = h => offers.filter(o => o.exchange.currency === h).length, currency = have.reduce((a, b) => count(b) > count(a) ? b : a);   // the one most sellers take
+  return { total: s.total || 0, id: s.id, offers: offers.filter(o => o.exchange.currency === currency)
+    .map(o => ({ pay: o.exchange.amount, get: o.item.amount, stock: o.item.stock, currency })).sort((a, b) => a.pay / a.get - b.pay / b.get).slice(0, MANY) };
+}
 export async function priceOf({ league, r, text = '', state = 'available', near = 10, deep = false }) {
   const item = r.item;
   const props = propsOf(text);

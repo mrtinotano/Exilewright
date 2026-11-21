@@ -902,5 +902,9 @@
  "How much higher its modifiers are than yours, on average": "옵션이 평균적으로 당신 것보다 얼마나 높은지",
  "Only this base": "이 베이스만",
  "Modifiers it must have, at least as high as yours": "있어야 할 옵션 (당신 것 이상)",
- "Aggravated Bleeding": "가중된 출혈"
+ "Aggravated Bleeding": "가중된 출혈",
+ "{0} for {1}": "{1}에 {0}개",
+ "{0} in stock": "재고 {0}",
+ "Your stack of {0}: about {1}": "보유 중인 {0}개 묶음: 약 {1}",
+ "{0} offers on the Currency Exchange in {1}": "{1} 화폐 교환의 제안 {0}건"
 }

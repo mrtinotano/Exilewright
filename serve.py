@@ -11,6 +11,7 @@ here that way: the game's site hands characters only to programs registered with
 /trade/... passes the gear search (trade.js) on to the official trade site's API, pathofexile.com/api/trade2:
   GET  /trade/data/<stats|filters|leagues|static>   what can be searched (kept in memory)
   POST /trade/search?league=<name>                   body = the query (JSON) -> ids of the items listed
+  POST /trade/exchange?league=<name>                 body = a bulk exchange query (JSON) -> the offers
   GET  /trade/fetch?ids=<a,b,...>&query=<search id>  the items (10 at most)
 The site's answers, errors and rate limit headers go back as they come. No login: weighted searches open on the
 official site instead.
@@ -611,6 +612,10 @@ class Handler(SimpleHTTPRequestHandler):
                 if not re.fullmatch(r'[\w ]{1,60}', one('league')) or len(body) > 20000 or not isinstance(json.loads(body), dict):
                     return self.reply_json(400, b'{"error":{"message":"bad search"}}')
                 return self.reply_json(*trade('search/poe2/' + quote(one('league')), body))
+            if what == 'exchange' and body is not None:   # the bulk exchange: a stackable item's price (trade.js priceBulk)
+                if not re.fullmatch(r'[\w ]{1,60}', one('league')) or len(body) > 2000 or not isinstance(json.loads(body), dict):
+                    return self.reply_json(400, b'{"error":{"message":"bad exchange"}}')
+                return self.reply_json(*trade('exchange/poe2/' + quote(one('league')), body))
         except Exception as e:
             return self.reply_json(502, json.dumps({'error': {'message': str(e)}}).encode())
         self.reply_json(404, b'{"error":{"message":"not found"}}')
@@ -685,7 +690,7 @@ class Handler(SimpleHTTPRequestHandler):
             piece = lambda p: (str(p[0])[:160], str(p[1])) if isinstance(p, list) and len(p) == 2 else (str(p)[:160], '')
             link = str(v.get('link') or '')   # only a search on the official trade site is ever opened
             OVER[0]({'kind': str(v.get('kind')), 'title': str(v.get('title', ''))[:120], 'name': str(v.get('name', ''))[:120],
-                     'link': link if re.fullmatch(r'https://www\.pathofexile\.com/trade2/search/poe2/[\w%.-]+/[\w-]+', link) else '',
+                     'link': link if re.fullmatch(r'https://www\.pathofexile\.com/trade2/(search|exchange)/poe2/[\w%.-]+/[\w-]+', link) else '',
                      'open': str(v.get('open', ''))[:60],
                      'lines': [[piece(p) for p in (x if isinstance(x, list) else [x])[:6]] for x in (lines if isinstance(lines, list) else [])[:30]]})
         self.reply(200, 'ok')

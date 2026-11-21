@@ -902,5 +902,9 @@
  "How much higher its modifiers are than yours, on average": "ม็อดของมันสูงกว่าของคุณเท่าไรโดยเฉลี่ย",
  "Only this base": "เฉพาะเบสนี้",
  "Modifiers it must have, at least as high as yours": "ม็อดที่ต้องมี อย่างน้อยเท่ากับของคุณ",
- "Aggravated Bleeding": "เลือดไหลรุนแรง"
+ "Aggravated Bleeding": "เลือดไหลรุนแรง",
+ "{0} for {1}": "{0} ต่อ {1}",
+ "{0} in stock": "มีในสต็อก {0}",
+ "Your stack of {0}: about {1}": "กองของคุณ {0} ชิ้น: ประมาณ {1}",
+ "{0} offers on the Currency Exchange in {1}": "ข้อเสนอ {0} รายการในค้าเงินตรา ใน {1}"
 }
