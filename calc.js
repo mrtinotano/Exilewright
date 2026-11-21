@@ -256,12 +256,12 @@ export function character(b, sum) {
     const combos = others.flatMap(o => [`${k}_and_${o}_damage_resistance_%`, `${o}_and_${k}_damage_resistance_%`]);
     // Smith of Kitava: modifiers to fire resistance grant cold and lightning resistance at their share, and to maximum fire resistance too
     const fromFire = k === 'cold' || k === 'lightning' ? v(sum, 'base_fire_damage_resistance_%', ...['cold', 'lightning', 'chaos'].flatMap(o => [`fire_and_${o}_damage_resistance_%`, `${o}_and_fire_damage_resistance_%`])) : 0;
-    const val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%'])) + fromFire * v(sum, 'modifiers_to_fire_resistance_also_apply_to_cold_lightning_resistance_at_%_value') / 100
+    let val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%'])) + fromFire * v(sum, 'modifiers_to_fire_resistance_also_apply_to_cold_lightning_resistance_at_%_value') / 100
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
+    if (k === 'chaos' && sum.chaos_damage_resistance_is_doubled) val *= 2;   // Acolyte of Chayula
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0);
-    const val2 = k === 'chaos' && sum.chaos_damage_resistance_is_doubled ? val * 2 : val;   // Acolyte of Chayula
-    res[k] = { value: val2, max, capped: Math.min(val2, max) };
+    res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
   const WH = pct('witchhunter_armour_evasion_+%_final'), EV = pct('master_of_elements_evasion_rating_+%_final');   // Witchhunter: less armour and evasion; Invoker: less evasion
@@ -294,7 +294,8 @@ export function character(b, sum) {
     takenAs: takenAs(sum),
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
-    armourX: sum.double_armour_effect ? 2 : 1, evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+    armourX: sum.double_armour_effect ? 2 : 1, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+    evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
     blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
