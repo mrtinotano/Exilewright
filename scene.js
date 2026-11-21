@@ -3154,7 +3154,9 @@ export function initScene(el, api) {
   // (its base_skill_buff_<stat>_to_apply, and Refraction's Refractive Plating), one of each Banner at a time. Refraction
   // III: the enemies in its area have its Exposure per 1000 of your armour, up to 80% (its text)
   K.banner = S => {
-    const st = S.dmg?.stats || {}, su = S.dmg?.sup || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v]] : []; }));
+    // its buff with the increased Aura Magnitudes of auras and of Banners
+    const AE = 1 + ((S.dmg?.sum?.['aura_effect_+%'] || 0) + (S.dmg?.sum?.['banner_aura_effect_+%'] || 0)) / 100;
+    const st = S.dmg?.stats || {}, su = S.dmg?.sup || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v * AE]] : []; }));
     for (const k of ['%_armour_to_apply_to_elemental_damage', 'deflection_rating_%_of_evasion_rating']) if (su['support_tempered_valour_' + k]) give[k] = su['support_tempered_valour_' + k];
     const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
     if (!S.dmg?.sum?.unlimited_banners_allowed) for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;   /* Tactician: any number */
