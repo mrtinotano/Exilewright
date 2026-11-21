@@ -4481,10 +4481,9 @@ export function initScene(el, api) {
     if (me.guard > 0) { const g = Math.min(me.guard, n), k = 1 - g / n; me.guard -= g; n *= k; chaos *= k; }   // a charm's guard takes it before anything
     // Loyalty: its share of a hit's damage taken from the life of the Companion of the skill it supports, before you
     const LY = d && objs.find(o => o.loyal && !o.dead && o.segs[0].life > 0);
-    if (LY) { const k = LY.loyal / 100; LY.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
     // Warbringer's Wooden Wall: its share taken from the life of your nearest totem, before you
     const TW = sheet().totemWall, TT = TW && objs.filter(o => o.totemOf && !o.dead && o.segs?.[0].life > 0).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0];
-    if (TT) { const k = TW / 100; TT.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
+    for (const [o, p] of [[LY, LY?.loyal], [TT, TW]]) if (o) { const k = p / 100; o.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const other = n - chaos, es0 = me.es; let e = Math.min(me.es, other), left = other - e; me.es -= e;
     e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
