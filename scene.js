@@ -45,6 +45,7 @@ const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 
 const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
 const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 };   // note: keywords.json Volatility
 const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos
+const JAGGED = { slow: 20 };   // keywords.json Jagged Ground: slows enemies in its area by 20%
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
@@ -884,7 +885,7 @@ export function initScene(el, api) {
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
-    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) / 100 : 1) * (1 + W / 100);
+    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1);
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
   function withers(d, s, pct = WITHER.per) { const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct }); if (w.length > WITHER.max) w.shift(); }
@@ -1388,7 +1389,7 @@ export function initScene(el, api) {
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
-    const g = { type, x: c.x, z: c.z, r, r0: r, age: 0, grow, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1), tick: .2, S, decal, dead: false }; grounds.push(g); return g;
+    const g = { type, x: c.x, z: c.z, r, r0: r, age: 0, grow, s: (dur || GROUND_TIME[type] || SIM.groundTime) * (S ? sh(S).ground || 1 : 1) * (type === 'jagged' ? 1 + (S?.dmg?.sum?.['jagged_ground_duration_+%'] || 0) / 100 : 1), tick: .2, S, decal, dead: false }; grounds.push(g); return g;
   }
   function groundFx(g) {
     const p = { x: g.x, y: .05, z: g.z }, r = g.r * .9;
@@ -5302,7 +5303,12 @@ export function initScene(el, api) {
       if (g.dead || g.s <= 0) { g.decal.remove(); grounds.splice(i, 1); continue; }
       if (Math.random() < dt * (3 + g.r * g.r * 3)) groundFx(g);
       if (g.tick > 0) continue;
-      g.tick = .5; const a = GAIL[g.type]; if (!a) continue;
+      g.tick = .5;
+      // Jagged Ground slows the enemies standing in it, more with increased Jagged Ground effect, and they take its increased damage (Spike Pit)
+      if (g.type === 'jagged') { const U = g.S?.dmg?.sum || {}, T = U['jagged_ground_enemy_damage_taken_+%'];
+        standSlow(g.slow ||= new Map(), g, g.r, -JAGGED.slow * (1 + (U['jagged_ground_effect_+%'] || 0) / 100) * slowK(g.S), .6);
+        if (T) for (const d of inside(g, g.r)) { d.jag = time + .6; d.jagPct = T; } }
+      const a = GAIL[g.type]; if (!a) continue;
       for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S, 1, g.S?.raw);   // raw: a ground with a damage of its own (Burning Inscription)
     }
     vitals(dt); tickHazards(dt);
