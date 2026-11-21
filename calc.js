@@ -575,7 +575,16 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
   ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
   ['mana_regeneration_rate_+%_while_moving', 'm', 'Moving'], ['mana_regeneration_rate_+%_while_not_on_low_mana', 'm', 'NotLowMana'],
   ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still']];
-const WHILE = { surrounded: 'Surrounded', moving: 'Moving', in_presence_of_companion: 'CompanionInPresence', ally_in_presence: 'AllyInPresence', you_have_arcane_surge: 'ArcaneSurge' };
+// "damage_+%_<state>" while you are in it: [the stat's end, the scene's condition]
+const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in_presence_of_companion: 'CompanionInPresence', while_ally_in_presence: 'AllyInPresence',
+  while_you_have_arcane_surge: 'ArcaneSurge', when_on_full_life: 'FullLife', when_on_low_life: 'LowLife', while_leeching: 'Leeching', while_life_leeching: 'LifeLeeching',
+  if_have_crit_in_past_8_seconds: 'CritPast8', while_es_full: 'FullEnergyShield', while_totem_active: 'TotemActive', while_affected_by_a_herald: 'HeraldOn',
+  if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently' };
+// the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
+const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit', 'KilledRecently'], ['critical_strike_chance_+%_if_have_not_crit_recently', 'crit', 'NotCritRecently'],
+  ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
+  ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
+  ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -884,11 +893,13 @@ export function skill(g, b, treeGear) {
     const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']);
     if (val) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val, what: 'damage', w: out.incW });
   }
-  // and while you are in a state ("attack_damage_+%_while_surrounded", "damage_+%_while_in_presence_of_companion")
+  // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
   for (const [s, cv] of Object.entries(WHILE)) {
-    const val = inc(sum, `damage_+%_while_${s}`, [...dmgTags, 'hit']);
+    const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']);
     if (val) out.when.push({ cond: [{ type: 'Condition', var: cv }], val, what: 'damage', w: out.incW });
   }
+  for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
+    w: what === 'crit' ? 1 / (1 + critInc / 100) : 100 / (out.critBonus || 100) });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
   if (infSpell) out.when.push({ cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });

@@ -433,7 +433,7 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d); if (crit) (me.critAt ||= {})[S.name] = time;
+      crit = Math.random() * 100 < (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d); if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
@@ -4752,7 +4752,10 @@ export function initScene(el, api) {
     ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt?.[1] ?? -99) <= RECENT,
     LifeFlaskEffect: () => !!me.drink[0], LifeFlaskPast10: () => time - (me.drankAt?.[0] ?? -99) <= 10, Shocked: () => me.st.shock > 0,
     DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
-    CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
+    CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
+    CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
+    LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
+    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
     RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
     AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
   // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
