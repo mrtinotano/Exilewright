@@ -704,7 +704,8 @@ export function initScene(el, api) {
       }
     }
   }
-  const AGGRAVATED = 2;   // "100% extra damage" (keywords.json Aggravate)
+  const AGGRAVATED = 2;
+  const DRAINED = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'];   // the ailments Drain Ailments can Consume   // "100% extra damage" (keywords.json Aggravate)
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -872,11 +873,16 @@ export function initScene(el, api) {
     const list = S.dmg && !APPROX.has(S.src) ? Object.entries(S.dmg.dot) : [];
     if (!list.length) return { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el: S.el };
     let dps = 0, el = list[0][0], best = 0;
-    for (const [e, v] of list) { const got = defence(d, e, v * S.mult, false); dps += got; if (got > best) { best = got; el = e; } }
+    // Derange: its more damage over time per 100 Intelligence
+    const DR = 1 + (S.dmg.finals?.['support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence'] || 0) * Math.floor((sheet().attrs?.int || 0) / 100) / 100;
+    for (const [e, v] of list) { const got = defence(d, e, v * S.mult * DR, false); dps += got; if (got > best) { best = got; el = e; } }
     return { dps, sim: Math.abs(S.mult - 1) > .001, el };
   }
   function dot(d, S) {
     const o = d.dots.find(o => o.name === S.name), s = S.P.dur || 5, v = dotOf(d, S);
+    // Drain Ailments: a spell's damage over time Consumes an ailment of the enemy (one at random) for its more damage
+    const DA = S.P.spell && S.dmg?.finals?.['support_drained_ailment_damage_over_time_+%_final_if_ailment_consumed'], on = DA ? DRAINED.filter(a => has(d, a)) : [];
+    if (on.length) { consume(d, S, on[Math.floor(Math.random() * on.length)]); v.dps *= 1 + DA / 100; }
     if (o) Object.assign(o, v, { s, S }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
@@ -3599,6 +3605,10 @@ export function initScene(el, api) {
       const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) spendWard(WC);
+      // Derange: an Energy Shield cost equal to your Intelligence
+      const DR = S.dmg?.finals?.['support_shield_sacrifice_damage_over_time_+%_final_per_100_intelligence'] != null && (sheet().attrs?.int || 0);
+      if (DR > me.es) { toast(t('Not enough Energy Shield for {0}', S.label) + ` (${Math.ceil(DR)})`); return false; }
+      if (DR) me.es -= DR;
       // a thrown flask (the Concoctions): its charges from your Mana Flask
       const FT = !S.src && S.dmg?.stats?.flask_throw_base_charges_used;
       if (FT && flaskLeft(1) < FT) { toast(t('Not enough Flask charges for {0}', S.label)); return false; }

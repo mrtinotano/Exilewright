@@ -864,6 +864,7 @@
  "{0} needs {1} Glory": "{0}需要{1}榮耀",
  "Culling Strike": "撲殺",
  "Not enough Runic Ward for {0}": "符文保護不足，無法使用{0}",
+ "Not enough Energy Shield for {0}": "能量護盾不足，無法使用{0}",
  "Not enough Flask charges for {0}": "藥劑充能不足，無法使用{0}",
  "{0}: move {1} m first": "{0}：先移動{1}公尺",
  "{0}: Final Strike": "{0}：最終打擊",
