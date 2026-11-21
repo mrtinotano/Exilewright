@@ -365,6 +365,7 @@ export function rageOf(b, sum) {
   const rg = find('ceaseless_rage_base_rage_regeneration_per_minute'), bz = find('skill_base_rage_effect_+%_to_apply');
   const bs = bz ? gemStats(bz, sum) : {};
   const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
+  const W = weaponStats(b.items); if (W && weaponTags(W).includes('axe')) gain.hit += v(sum, 'gain_x_rage_on_hit_with_axes');   // with an axe in hand
   const fromSupport = (b.gems || []).some(x => (x.supports || []).some(n => ['gain_x_rage_on_melee_hit', 'gain_x%_of_maximum_rage_on_melee_hit'].some(k => SK.skills[n]?.constant?.[k])));   // Rage I-III, Medved's
   const base = (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage'), any = !!rg || !!sum.maximum_rage || fromSupport || Object.values(gain).some(x => x > 0);
   return {
