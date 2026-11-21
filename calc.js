@@ -371,6 +371,8 @@ export function character(b, sum) {
       keep: !!sum.elemental_archon_does_not_expire_while_on_high_infernal_flame, full: !!sum.lose_elemental_archone_on_reaching_full_infernal_flame } : null,
     elixir: !!sum.life_flask_effects_are_not_removed_at_full_life,   // Pathfinder's Enduring Elixirs
     tailwind: sum.gain_tailwind_stack_on_skill_use ? { lose: !!sum.lose_all_tailwind_when_hit } : null,   // Deadeye's Gathering Winds: a Tailwind stack on each skill use
+    // the Amazon's Predatory Instinct: Revealed Weaknesses, its more damage against an enemy with an Open Weakness; In for the Kill: movement and skill speed against them
+    weakness: sum.bloodlust_reveal_weakness ? { more: v(sum, 'damage_+%_final_against_bloodlusting_enemies'), move: v(sum, 'movement_speed_+%_against_bloodlusting_enemies'), speed: v(sum, 'skill_speed_+%_against_bloodlusting_enemies') } : null,
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },

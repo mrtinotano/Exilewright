@@ -285,7 +285,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -470,6 +470,7 @@ export function initScene(el, api) {
       const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
+      if (!S.src && openWeak(d)) for (const e in raw) raw[e] *= 1 + sheet().weakness.more / 100;   // Predatory Instinct
       if (S.P.spell && !S.src && time < me.earch) { for (const e of ELEM) if (raw[e]) raw[e] *= 1 + EARCHON.more / 100; delete raw.physical; delete raw.chaos; }   // Elemental Archon: no non-elemental spell damage
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
       // Elemental Conflux: while on, its more damage of one element, a random one again every its duration
@@ -3178,6 +3179,9 @@ export function initScene(el, api) {
   // Critical Weakness: each stack adds critical hit chance to hits against the enemy. Malice: while on, a stack every its
   // interval on the enemies in your Presence, for its duration
   const weakOf = d => (d.weak = (d.weak || []).filter(u => u > time)).length * WEAK.per;
+  // Revealed Weaknesses (KeywordPopups RevealWeakness): segments of the enemy's life bar, 45% of it in all, at random; while its
+  // life is within one it has an Open Weakness. note: how many segments is not in the data (three of 15% here)
+  const openWeak = d => { if (!sheet().weakness || d.dead) return false; d.gaps ||= [0, 1, 2].map(k => { const a = k / 3 + Math.random() * (1 / 3 - .15); return [a, a + .15]; }); const f = d.life / d.max; return d.gaps.some(([a, b]) => f >= a && f < b); };
   const weaken = (d, n, s = WEAK.time) => { weakOf(d); for (let k = 0; k < n; k++) d.weak.push(time + s); d.weak.sort((a, b) => a - b); d.weak.splice(0, d.weak.length - WEAK.max); };
   function malice() {
     const S = onS('Malice'), st = S?.dmg?.stats; if (!st || time - (me.maliceAt ?? -99) < st.critical_chance_against_aura_apply_brittle_every_x_ms / 1000) return;
@@ -4121,7 +4125,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
+      / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (topD && openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4310,7 +4314,7 @@ export function initScene(el, api) {
   // ---------- HUD text
   let spdC = { at: -9, v: 0 };
   const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (time < me.wildUntil ? ONSLAUGHT.move : 0)
-    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE)
+    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (topD && openWeak(topD) ? sheet().weakness.move : 0)) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE)
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
