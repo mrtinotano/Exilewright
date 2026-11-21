@@ -656,7 +656,7 @@ export function initScene(el, api) {
     for (const r of ['life', 'mana']) {
       const x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * x.more * k;
       if (!(n > 0)) continue;
-      const q = me.leech[r]; q.left += n; q.rate = q.left * x.rate; q.keep = r === 'life' && D.leech.keep;
+      const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
     }
   }
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
@@ -4550,8 +4550,8 @@ export function initScene(el, api) {
     // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
     const BK = d && es0 > me.es && onS('Barkskin');
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
-    // Oracle's Harmony Within: from mana before life while mana is higher than life
-    if (sheet().manaFirst && me.mana > me.life) { const m = Math.min(me.mana, left); me.mana -= m; left -= m; }
+    // Oracle's Harmony Within: from mana before life while mana is higher than life; Mind Over Matter: always
+    if ((sheet().manaFirst && me.mana > me.life || sheet().mom) && me.mana > 0) { const m = Math.min(me.mana, left); me.mana -= m; left -= m; }
     // Blood Mage's Grasping Wounds: its share of the life a hit takes is lost over 4 seconds instead
     const GW = hit && sheet().wounds; if (GW && left > 0) { me.wounds.push({ rate: left * GW / 400, until: time + 4 }); left *= 1 - GW / 100; }
     if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
@@ -4779,7 +4779,7 @@ export function initScene(el, api) {
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
-      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', el * RT * RC.es / 100); add('mana', total * RT * RC.mana / 100); }
+      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', el * RT * RC.es / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * RC.mana / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
@@ -4871,7 +4871,7 @@ export function initScene(el, api) {
   const flaskHeal = (f, n, B = sheet().brew, dry = sheet().tides?.dry) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
     if (f.k === 'mana' || B) me.mana = gain(me.mana, me.maxM, n);
     if (f.k === 'mana' && !B || dry) return;   // Sanguine Tides: flasks recover no life
-    me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);
+    if (!sheet().vaal) me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life
   };
   function drink(n) {
     const f = flasks()[n];
@@ -5189,7 +5189,9 @@ export function initScene(el, api) {
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     const RG = regenNow(c);
-    if (RG.life > 0 && me.life < L) me.life = Math.min(L, me.life + RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt);   // Rip's faster regeneration
+    // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
+    const LG = RG.life > 0 && !c.vaal ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, L - me.life));
+    me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI);
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;
@@ -5200,6 +5202,7 @@ export function initScene(el, api) {
     // a hit ends it (hurt), as does a full Overflow
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
+    else if (c.lifeRecharge && !c.vaal && me.life < L && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(L, me.life + c.lifeRecharge * dt);   // Eternal Youth
     else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
@@ -5207,7 +5210,7 @@ export function initScene(el, api) {
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
-    me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
+    me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) me.drink[n] = null;   // a life flask's effect ends when your life is full (Enduring Elixirs' text), unless Enduring Elixirs

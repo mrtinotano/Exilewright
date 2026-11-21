@@ -136,7 +136,7 @@ export function flaskOf(it, sum = {}) {
   const base = BASE[it?.base]; if (!base?.flask || base.charm) return null;
   const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
   const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
-    * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1);   // Oasis: 30% more
+    * (1 + (g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%')) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1) * (k === 'life' && g('keystone_eternal_youth') ? .5 : 1);   // Oasis: 30% more; Eternal Youth: 50% less life
   const time = F.recovery_s / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
   const max = mostCharges(F, s);
   const per = Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('flask_charges_used_+%') + (k === 'mana' ? g('flask_mana_charges_used_+%') : 0)) / 100));

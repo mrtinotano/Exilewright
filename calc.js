@@ -428,12 +428,16 @@ export function recovery(c, sum) {
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
   const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
-  const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%');
+  const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1);   // Mind Over Matter: 50% less
   return {
     lifeRegen: lifePctRegen && c.life == null ? null
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
     esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
-    esRecharge: c.es * esRate * pct('energy_shield_recharge_rate_+%'),
+    // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
+    esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
+    lifeRecharge: sum.keystone_eternal_youth ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
+    // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
+    zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
     manaRegen: c.mana == null || manaLife && c.life == null ? null
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * manaInc,
     // their increases, and the tree's regeneration while you are in a state (the scene checks it)
@@ -474,7 +478,8 @@ export function recovery(c, sum) {
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
     recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
       all: v(sum, 'damage_taken_goes_to_life_over_4_seconds_%'), prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
-      es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), mana: v(sum, 'damage_taken_goes_to_mana_%'), totem: v(sum, 'recoup_%_of_damage_taken_by_your_totems_as_life'), time: 8 / pct('recoup_speed_+%') },
+      es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), mana: v(sum, 'damage_taken_goes_to_mana_%'), totem: v(sum, 'recoup_%_of_damage_taken_by_your_totems_as_life'), time: 8 / pct('recoup_speed_+%'),
+      scarred: sum.keystone_alternate_es_recovery ? 5 : 0 },   // Scarred Faith: 5% of physical damage prevented as energy shield per enemy Power
   };
 }
 // What ailments do to you: your ailment threshold (half your life, PlayerAilmentThresholdLifeFactor, plus what adds to it)
