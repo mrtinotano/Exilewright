@@ -4825,9 +4825,9 @@ export function initScene(el, api) {
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
-  const flaskHeal = (f, n) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
-    if (f.k === 'mana' || f.brew) me.mana = gain(me.mana, me.maxM, n);
-    if (f.k === 'mana' && !f.brew) return;
+  const flaskHeal = (f, n, B = sheet().brew) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
+    if (f.k === 'mana' || B) me.mana = gain(me.mana, me.maxM, n);
+    if (f.k === 'mana' && !B) return;
     me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);
   };
   function drink(n) {
@@ -4853,7 +4853,7 @@ export function initScene(el, api) {
       if (!f || f.on !== on || me.cu[n] || charmLeft(n) < f.per) return;
       if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
       me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
-      if (f.life) flaskHeal({ k: 'life' }, f.life); if (f.mana) flaskHeal({ k: 'mana' }, f.mana); if (f.guard) me.guard = f.guard;
+      if (f.life) flaskHeal({ k: 'life' }, f.life, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false); if (f.guard) me.guard = f.guard;
       const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
       say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
     });
@@ -5162,9 +5162,9 @@ export function initScene(el, api) {
     me.recoup = me.recoup.filter(R => { const n = Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : E; R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
-      flaskHeal({ ...D, brew: sheet().brew }, got); if (D.s <= 0) me.drink[n] = null;
+      flaskHeal(D, got); if (D.s <= 0) me.drink[n] = null;
     });
-    for (const f of flasks()) if (f?.always) flaskHeal({ ...f, brew: sheet().brew }, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
+    for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }

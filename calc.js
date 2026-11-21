@@ -354,7 +354,7 @@ export function character(b, sum) {
     watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
     blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical') },   // Lich's Rupture the Soul (a quarter of their life as chaos), Witchhunter's Zealous Inquisition (all of it as physical)
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
-    adapt: v(sum, 'gain_X_adaptation_matching_type_when_hit_by_elemental_damage') ? { gain: v(sum, 'gain_X_adaptation_matching_type_when_hit_by_elemental_damage'), max: v(sum, 'base_max_adaptations') || 3,
+    adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
