@@ -823,7 +823,11 @@ export function skill(g, b, treeGear) {
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   // "increased Spell Damage with Spells that cost Life": a spell with a life cost (Lifetap, Blood Magic)
-  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
+  // the tree's increased damage per attribute, maximum mana or block chance (the character's own, with this skill's supports)
+  const PA = [['damage_+%_per_15_strength', c => c.attrs.str / 15], ['damage_+%_per_5_of_your_lowest_attribute', c => Math.min(c.attrs.str || 0, c.attrs.dex || 0, c.attrs.int || 0) / 5],
+    ['damage_+%_per_1%_block_chance', c => c.block], ...spell ? [['spell_damage_+%_per_10_strength', c => c.attrs.str / 10], ['spell_damage_+%_per_100_maximum_mana', c => c.mana / 100]] : []].filter(([k]) => sum[k]);
+  const ch = PA.length && character(b, sum), perAttr = PA.reduce((t, [k, f]) => t + Math.floor(f(ch) || 0) * sum[k], 0);
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
