@@ -37,6 +37,7 @@ const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', 
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
 const GRUEL = { slow: 15, pot: 10, max: 10, decay: 2 };   // KeywordPopups GruellingMadness: the first slows movement 15%, each more +10% slow potency of debuffs, at most 10, one lost every 2 s without more
+const DIVINE = { every: 4, time: 10 };   // The Ordained's Fragments of Divinity: one every 4 s (its text), each lasting 10 s (KeywordPopups DivineFragment)
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
 const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
@@ -113,6 +114,7 @@ export function initScene(el, api) {
 
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
+  let divine = [];   // Fragments of Divinity lying in your Presence: { p, until, dec }
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
     st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
@@ -330,6 +332,7 @@ export function initScene(el, api) {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
+    divine.forEach(f => f.dec.remove()); divine = [];
     frags.forEach(f => f.dec.remove()); frags = [];
     timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0; me.pup = []; me.uarch = me.uarchOff = -9;
     for (const k in charges) charges[k] = 0;
@@ -3918,7 +3921,12 @@ export function initScene(el, api) {
     const lodged = !auto && S.dmg?.stats?.forge_hammer_maximum_hammers && objs.find(o => o.earth && o.name === S.name && !o.dead);
     if (lodged) { recall(S, lodged); cdReady[S.name] = []; return true; }
     // a skill with a cooldown is used while one of its uses is left (Second Wind doubles them); each recharges over it
-    const C = !auto && !(S.kind === 'warcry' && sheet().bellow.free) && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
+    // Righteous Descent consumes a Fragment of Divinity near you or the target to be Empowered (ActiveSkills): its Boosted part,
+    // its life and mana recovered over 2 s, no cooldown used. note: how near is not in the data, here within its area
+    const FD = !auto && S.name === 'Righteous Descent' && divine.find(f => dist(f.p, pp) <= S.A || dist(f.p, o.at || cursor) <= S.A), FB = FD && partOf(S, 'RighteousDescentPlayerBoosted');
+    if (FB) { divine = divine.filter(f => f !== FD || f.dec.remove()); fx.ring(FD.p, .2, 1.2, 'lightning', .35); S = { ...FB, label: S.label, g: S.g }; const st = FB.dmg.stats || {};
+      for (const [k, M, r] of [['life', me.maxL, 'recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment'], ['mana', me.maxM, 'recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment']]) { const n = M * (st[r] || 0) / 100; if (n) me.recoup.push({ k, left: n, rate: n / 2 }); } }
+    const C = !auto && !FB && !(S.kind === 'warcry' && sheet().bellow.free) && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     // one whose game text says a charge can bypass its cooldown (Ice-Tipped Arrows a Frenzy Charge, Fortifying Cry an
     // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
     // (its only use of charges: none spent otherwise)
@@ -5433,6 +5441,8 @@ export function initScene(el, api) {
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
     daemons();
+    divine = divine.filter(f => f.until > time || f.dec.remove());
+    if (sheet().ordained && time - (me.fragAt ?? -9) >= DIVINE.every) { me.fragAt = time; const p = around(pp, sheet().overgrow.r); divine.push({ p, until: time + DIVINE.time, dec: fx.decal(p, .35, 'rune', 'lightning', { a: .8, spin: 1 }) }); }
     if (sheet().auspex && time - (me.auspexAt ?? -9) >= 1) { me.auspexAt = time; for (const d of inside(pp, sheet().overgrow.r)) madness(d); }   // The Auspex: 1 Gruelling Madness each second in your Presence
     // The Hammer of Faith: every its interval a random lesser (non-damaging) Shrine's buff for that Shrine's duration (skills.json lesser_shrines)
     const HF = sheet().shrineEvery, LS = SK.lesser_shrines || [];
