@@ -864,8 +864,8 @@ export function initScene(el, api) {
     const CF = ['freeze', 'electrocute', 'pin'].includes(a) && onS('Combat Frenzy');
     if (CF && time - (me.cfAt ?? -99) >= CF.dmg.stats.skill_combat_frenzy_x_ms_cooldown / 1000) { me.cfAt = time; gainCharge('frenzy', CF.label); }
     // Breachlord's Rift: freezing or electrocuting breaks its share of the enemy's armour (the tree: pinning, heavy stunning)
-    const SU = S.dmg?.sum || {}, BR = d.stat.armour > 0 && !(d.st.armour > 0) && ((a === 'freeze' || a === 'electrocute' ? SU['support_break_%_armour_on_freeze_or_electrocute'] || 0 : 0)
-      + (a === 'pin' ? SU['break_%_armour_on_pin'] || 0 : 0) + (a === 'stun' ? SU['armour_break_%_of_armour_on_heavy_stunning'] || 0 : 0));   // and the tree's on Pinning and Heavy Stunning
+    const FE = 'support_break_%_armour_on_freeze_or_electrocute', BR = d.stat.armour > 0 && !(d.st.armour > 0)
+      && S.dmg?.sum?.[{ freeze: FE, electrocute: FE, pin: 'break_%_armour_on_pin', stun: 'armour_break_%_of_armour_on_heavy_stunning' }[a]];   // and the tree's on Pinning and Heavy Stunning
     if (BR && (d.cut = (d.cut || 0) + d.stat.armour * BR / 100) >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, {}); }
     const MD = d.mark?.D;   // Freezing / Voltaic Mark: the state it builds up consumes it and grants you its buff
     if (MD?.gain && (a === 'freeze' && MD.freeze || a === 'electrocute' && MD.electrocute)) {
@@ -907,7 +907,7 @@ export function initScene(el, api) {
   // note: as a factor of its own, as Intimidate's
   const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0)) / 100 : 1; };
   function takes(d, el, r, isHit = true, ow, pen, inv) { return defence(d, el, r, isHit, ow, pen, inv) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
-  function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv = false) {
+  function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
