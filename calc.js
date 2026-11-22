@@ -417,7 +417,8 @@ export function character(b, sum) {
     surrArea: v(sum, 'surrounded_area_of_effect_+%'), rollSurr: v(sum, 'dodge_roll_travel_distance_+_while_surrounded') / 10, echoSpeed: v(sum, 'cast_speed_+%_per_spell_echoed_recently_up_to_30%'), igniteFire: v(sum, 'permanent_fire_damage_+%_per_second_of_ignite_up_to_10%'),
     flaskGuard: v(sum, 'gain_%_of_expected_recovery_over_1_second_as_guard_on_life_flask_use'), blockDaze: v(sum, 'daze_enemies_on_block_with_shield_raised_chance_%'), invokeMax: v(sum, 'invocation_skill_maximum_energy_+%'),
     invokeHalf: v(sum, 'invocation_spell_chance_to_cost_half_energy_%'), trigRefund: v(sum, 'trigger_skills_refund_half_energy_spent_chance_%'),
-    tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
+    resummon: { base: (CHAR.global_resummon_time_ms || 0) / 1000, speed: 1 + v(sum, 'minion_resummon_speed_+%') / 100 },   // Reviving Minions: their delay (character stats), faster with the tree
+    stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'), tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
     splash: sum.melee_splash ? 100 : mwTags.includes('mace') ? v(sum, 'your_mace_strike_melee_splash_chance_%') : 0, volMinion: v(sum, 'gain_X_volatility_on_persistent_minion_death'), reviveLife: v(sum, 'you_gain_%_life_when_one_of_your_minions_is_revived'),
     bannerBack: v(sum, 'on_banner_expiry_recover_%_of_required_glory'), bannerLinger: v(sum, 'banner_buff_lingers_for_X_seconds_after_leaving_area'), shockBack: v(sum, 'reapply_enemy_shock_on_consuming_enemy_shock_chance_%'), rareGlory: v(sum, 'gain_1_glory_every_X_seconds_per_rare_unique_monster_in_presence'), shockSpread: v(sum, 'shock_enemies_in_150cm_radius_on_shock_chance_%'),
@@ -1486,7 +1487,7 @@ const MS_ALSO = { 'minion_skill_area_of_effect_+%': 'base_skill_area_of_effect_+
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
   // what Allies in your Presence get. ponytail: counted always (a minion is near you most of the time); the scene's presence check if it matters
-  for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];
+  for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%'], ['allies_in_presence_critical_strike_chance_+%', 'critical_strike_chance_+%']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || MS_ALSO[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }

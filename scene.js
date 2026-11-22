@@ -3682,6 +3682,7 @@ export function initScene(el, api) {
   const gainVol = n => { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
+    const RS = sheet().resummon; if (RS?.base) me.reviveAt = time + ((S.dmg?.stats?.minion_base_resummon_time_ms || 0) / 1000 || RS.base) / RS.speed;   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
@@ -4141,6 +4142,8 @@ export function initScene(el, api) {
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
+    // a Command skill (keywords.json Minion Commands): the tree's chance to Revive a random fallen persistent minion
+    if (!auto && me.fallen.length && api.info(S.g)?.gem?.types?.includes('CommandsMinions') && Math.random() * 100 < sheet().reviveCmd) { me.fallen.unshift(...me.fallen.splice(Math.floor(Math.random() * me.fallen.length), 1)); reviveFallen(me.fallen[0].life); }
     if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
@@ -5283,6 +5286,7 @@ export function initScene(el, api) {
     for (const S of gloryOf()) if (/Banner/.test(S.name) && S.dmg?.sum?.banners_gain_X_glory_per_second) gloryAdd(S, S.dmg.sum.banners_gain_X_glory_per_second * dt);   /* Tactician: Banners gain Glory every second */
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
+    if (me.fallen.length && time >= me.reviveAt) { me.reviveAt = Infinity; reviveFallen(Infinity); }
     const RU = sheet().rareGlory; if (RU) { me.rg = (me.rg || 0) + dt * dummies.filter(d => !d.dead && ['rare', 'unique'].includes(d.stat.rarity) && dist(d.pos, pp) <= sheet().overgrow.r).length / RU; if (me.rg >= 1) { for (const S of gloryOf()) gloryAdd(S, Math.floor(me.rg)); me.rg %= 1; } }   // Glory per rare or unique monster in your Presence
     const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
@@ -5295,7 +5299,7 @@ export function initScene(el, api) {
     if (!(time < me.earch) && buffs.some(b => b.earch)) buffs = buffs.filter(b => !b.earch);   // Elemental Archon lost early (an attack, the most Flame)
     for (let i = me.flam.length - 1; i >= 0; i--) if ((me.flam[i].s -= dt) <= 0) me.flam.splice(i, 1);
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
-    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt);
+    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + sheet().stunDecay / 100 : 1));   // the tree's Heavy Stun buildup emptying faster
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick
       me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0;
       for (const a in me.burn) if (me.st[a] > 0) {
