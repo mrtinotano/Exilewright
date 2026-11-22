@@ -309,6 +309,8 @@
  "Path of Building 2 code: paste it in Path of Building (Import/Export Build) or on any of these sites.": "Path of Building 2 코드: Path of Building(Import/Export Build)이나 이 사이트들에 붙여넣으세요.",
  "Import as a new build": "새 빌드로 가져오기",
  "From Path of Building 2 on this computer…": "이 컴퓨터의 Path of Building 2에서…",
+ "Your character can only come in through Path of Building 2: the official Path of Exile site gives an account's characters only to programs registered with Grinding Gear Games. Import it there (Import/Export Build, Import from website) and save it: it shows up in the list above, or copy its code and paste it here.": "캐릭터는 Path of Building 2를 통해서만 가져올 수 있습니다. Path of Exile 공식 사이트는 계정의 캐릭터를 Grinding Gear Games에 등록된 프로그램에만 제공합니다. 그곳에서 가져오기(Import/Export Build, Import from website)를 하고 저장하면 위 목록에 나타납니다. 또는 코드를 복사해 여기에 붙여 넣으세요.",
+ "Download Path of Building 2": "Path of Building 2 다운로드",
  "Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.": "0.5부터 게임 내 빌드 플래너가 .build 파일을 불러옵니다: 문서/My Games/Path of Exile 2/BuildPlanner에 저장하세요. 트리, 전직, 젬과 보조 젬이 들어가며 젬 레벨과 장비는 메모로 들어갑니다.",
  ".build file for the game": "게임용 .build 파일",
  "To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.": "장비를 가져오려면 게임에서 아이템에 마우스를 올리고 Ctrl+C를 누른 뒤 장비에 붙여넣으세요. 아이템의 복사(⧉)는 Path of Building과 거래 사이트용 텍스트를 제공합니다.",
