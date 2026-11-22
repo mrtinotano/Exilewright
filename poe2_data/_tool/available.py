@@ -649,6 +649,9 @@ save('items.json', {
     'runes': rune_sets,
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
     'jewel_radii': {r['Radius']: re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', r['ID']) for r in load('PassiveJewelRadii')},
+    # the rings a jewel can be limited to ("Only affects Passives in Medium-Large Ring": local_jewel_variable_ring_radius_value
+    # 5, the fifth row): [inner, outer] radius
+    'jewel_rings': [[r['RingInnerRadius'], r['RingOuterRadius']] for r in load('PassiveJewelRadii')],
     # how the game opens a radius jewel's line in each language (ClientStrings ModStatJewelAddTo*: "Small Passive Skills
     # in Radius also grant {0}", "[SmallPassive|Small Passive]" markup shown as its second part): {0} is the stat's line
     'radius_grant': {c: {k: re.sub(r'\[(?:[^|\]]*\|)?([^\]]*)\]', r'\1', t['ModStatJewelAddTo' + k.title()]).strip()

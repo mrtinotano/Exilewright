@@ -61,16 +61,30 @@ const plus = (to, stats) => { for (const id in stats) to[id] = (to[id] || 0) + s
 // passive it can still pay the way to, alone and with the useful passives around it, works out the objective with
 // them added, and takes the group that gives the most per point. So it is a heuristic (greedy): good paths, not a
 // proven best one. Attribute passives on the way become the attribute that helps the objective (else `pref`).
-// Keystones change rules the app does not calculate and jewel sockets are empty: neither is ever a reason to walk.
+// Keystones change rules the app does not calculate: never a reason to walk. A jewel socket is, for the jewel the build
+// has for it; and the passives in a jewel's radius get what it adds to them (Time-Lost jewels), or can be taken without
+// a link to the tree (Controlled Metamorphosis, From Nothing) once its socket is allocated.
 //   tree: passive_tree.json; root: the class start; base: the summed stats of b (app.js sumOf); f(sum) -> number.
+//   jewels: the build's socketed jewels, allocated or not (app.js jewelsOf): id (its socket), R (items.js radiusOf),
+//   in(id) (within its radius), stats (what it grants with its socket allocated), free (the passives it frees)
 //   tick({ spent, left, value }) may return a promise (lets the page breathe); stop() true ends the search.
 // Returns { nodes (new ids, in order), attrs ({id: str|dex|int}), from, to (objective before / after), steps }.
-export async function optimizeTree({ tree, b, base, root, extra = [], f, points, pref = 'str', tick, stop }) {
+export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [], f, points, pref = 'str', tick, stop }) {
   const N = tree.nodes, roots = new Set(tree.class_roots.map(String));
   const ok = id => { const n = N[id]; return n && !n.ascendancy && n.type !== 'keystone' && (!roots.has(id) || id === root); };
   const counted = new Set(b['set' + (b.wset || 1)] || []);   // passives of the weapon set in use are in `base` already
   const have = new Set(b.nodes.length ? [...b.nodes, ...extra] : [root]);   // extra: the starts Split Personality opens
-  const statsOf = (id, a) => counted.has(id) ? NONE : N[id].type === 'attribute' ? plain[b.attrs?.[id] || a] : N[id].stats;
+  const bySocket = new Map(jewels.map(j => [j.id, j]));
+  const kind = id => N[id].type === 'notable' ? 'notable' : N[id].type === 'small' || N[id].type === 'attribute' ? 'small' : null;
+  // what a passive gives: its own stats, what the jewels with their socket allocated add to it in their radius, and for
+  // a socket with a jewel, the jewel and what its radius adds to the passives allocated already
+  const statsOf = (id, a) => {
+    const own = counted.has(id) ? NONE : N[id].type === 'attribute' ? plain[b.attrs?.[id] || a] : N[id].stats, k = kind(id), add = [];
+    if (k && own !== NONE) for (const j of jewels) if (j.R && have.has(j.id) && j.in(id)) add.push(j.R[k]);
+    const j = bySocket.get(id);
+    if (j && !have.has(id)) { add.push(j.stats); if (j.R) for (const x of have) { const kx = kind(x); if (kx && j.in(x)) add.push(j.R[kx]); } }
+    return add.length ? add.reduce(plus, plus({}, own)) : own;
+  };
   const plain = Object.fromEntries(Object.entries(ATTR).map(([k, id]) => [k, tree.attribute_options[id]]));
   const sig = new Map(), sigOf = id => sig.get(id) ?? (sig.set(id, JSON.stringify(N[id].stats)), sig.get(id));
   let sum = { ...base }, left = points, cur = f(sum) || 0;
@@ -78,6 +92,7 @@ export async function optimizeTree({ tree, b, base, root, extra = [], f, points,
   while (left > 0 && !stop?.()) {
     // every passive within reach of the points left, and the way to it
     const dist = new Map([...have].map(u => [u, 0])), prev = new Map(), q = [...have];
+    for (const j of jewels) if (have.has(j.id)) for (const x of j.free) if (!dist.has(x) && ok(x)) { dist.set(x, 1); q.push(x); }   // free passives: a point each, no way to them
     for (let i = 0; i < q.length; i++) {
       const u = q[i], d = dist.get(u); if (d >= left) continue;
       for (const w of N[u].links) { const s = String(w); if (!dist.has(s) && ok(s)) { dist.set(s, d + 1); prev.set(s, u); q.push(s); } }
@@ -91,7 +106,7 @@ export async function optimizeTree({ tree, b, base, root, extra = [], f, points,
     const memo = new Map(), own = new Map();
     for (const id of q) {
       if (!dist.get(id)) continue;
-      const st = statsOf(id, attr), k = st === N[id].stats ? sigOf(id) : st === NONE ? '' : attr;
+      const st = statsOf(id, attr), k = st === N[id].stats ? sigOf(id) : st === NONE ? '' : JSON.stringify(st);
       if (!memo.has(k)) memo.set(k, k === '' || k === '{}' ? 0 : gain(st));
       if (memo.get(k) > eps) own.set(id, memo.get(k));
     }

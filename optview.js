@@ -86,7 +86,7 @@ export function initOpt(el, ctx) {
     veil.querySelector('span').textContent = line(); veil.querySelector('button').onclick = () => { me.stop = true; };
     document.body.append(veil);
     await new Promise(r => setTimeout(r, 30));   // the progress line gets on screen first
-    const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), extra: ctx.splitRoots(b0), f: s => score(key, bL, s, g), points: pts,
+    const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), extra: ctx.splitRoots(b0), jewels: ctx.jewels(b0), f: s => score(key, bL, s, g), points: pts,
       pref: S.pref || g && colour(GEM[g.name]) || 'str', stop: () => me.stop || ctx.rev() !== rev,
       tick: p => { me.spent = p.spent; veil.querySelector('span').textContent = line(); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).finally(() => veil.remove());
     if (run === me) run = null;

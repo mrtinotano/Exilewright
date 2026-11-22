@@ -8,7 +8,10 @@ const EN = index(await load('stat_texts.json'));
 const byStat = lang === 'en' ? EN : await load(`stat_texts.${lang}.json`).then(index).catch(() => EN);
 
 const DIV = { two: 2, three: 3, four: 4, five: 5, ten: 10, fifteen: 15, twenty: 20, fifty: 50, one_hundred: 100 };
+// a passive's hash -> its name (set by the tree: Megalomaniac's "Allocates {0}", From Nothing's keystone)
+export const NAMES = { passive: null };
 function apply(h, v) {
+  if (h === 'passive_hash') return v && NAMES.passive?.(v) || '—';
   if (h === 'negate') return -v;
   if (h === 'negate_and_double') return -2 * v;
   if (h === 'double') return 2 * v;
@@ -31,10 +34,14 @@ const inRange = (c, v) => {
   const [a, b] = c.split('|');
   return (a === '#' || v >= +a) && (b === '#' || v <= +b);
 };
-const num = v => +v.toFixed(2);
+const num = v => typeof v === 'string' ? v : +v.toFixed(2);
 const BY = byStat;
 
 export const statLinesEn = stats => statLines(stats, EN);
+// the line a stat whose number is a passive is worded with ("Allocates {0}"), in English and the page's language: a regex
+// that takes the passive's name (only the first line of a two-line text)
+export const nameLines = id => [...new Set([EN, byStat].flatMap(by => (by[id] || []).flatMap(d => d.rows.map(r => r.t)).filter(Boolean)))]
+  .map(t => new RegExp('^' + unlink(t).split('\\n')[0].split(/\{\d*\}/).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(.+?)') + '$'));
 const unlink = t => t.replace(/\[([^\]|]+)\|([^\]]+)\]/g, '$2').replace(/\[([^\]]+)\]/g, '$1');   // "[Attack|ataque]" -> "ataque"
 // a line of an item in the page's language -> the same line in English, its numbers as "#": the game's own description
 // of it in both (the same stats, the row of the same conditions), as Exiled Exchange 2 reads lines no modifier of its

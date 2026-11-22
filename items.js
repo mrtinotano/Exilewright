@@ -1,7 +1,7 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn, lang, fmt, KW } from './i18n.js';
-import { statLines, statLinesEn, shownLines } from './stats.js';
+import { statLines, statLinesEn, shownLines, nameLines } from './stats.js';
 import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
@@ -15,6 +15,19 @@ export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', 
   ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
 const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
+export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || BASE[it?.base]?.img); };
+// stats whose number is a passive of the tree (its hash: Megalomaniac's notables, From Nothing's keystone), set by the
+// tree (setTree): any value, picked by name
+export const HASHED = /_hash(_\d+)?$/;
+let TREE = {}, BY_NAME = new Map();
+export function setTree(nodes, label) {
+  TREE = { nodes, label };
+  for (const [id, n] of Object.entries(nodes)) if (!n.ascendancy) for (const k in n) if (k.startsWith('name') && n[k]) BY_NAME.set(n[k].toLowerCase(), id);
+}
+const hashKind = id => id.includes('keystone') ? 'keystone' : 'notable';
+const hashPick = (id, v, path, k) => `<select data-path="${path}" data-k="${k}" data-act="hash"><option value="0">—</option>${Object.entries(TREE.nodes || {})
+  .filter(([, n]) => n.type === hashKind(id) && !n.ascendancy).map(([h, n]) => [h, TREE.label(n)]).sort((a, b) => a[1].localeCompare(b[1]))
+  .map(([h, name]) => `<option value="${h}"${+h === +v ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select>`;
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 
 // first spawn tag the base has decides the weight (game rule); weight 0 = cannot roll
@@ -39,10 +52,16 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
 }
 // A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius, tree units: PassiveJewelRadii "Small" is
 // 1000) and what each small / notable passive allocated in it also grants -> { r, small: {stat: value}, notable }, or null
+// ring: [inner, outer] when it only affects a ring (local_jewel_variable_ring_radius_value, PassiveJewelRadii's row from 1);
+// free: the passives it affects can be allocated without being connected (Controlled Metamorphosis); around: the keystone
+// whose radius it is instead of the socket's (From Nothing)
 export function radiusOf(item) {
-  const base = BASE[item?.base], r = base && rolled(item).local_jewel_effect_base_radius;
+  const base = BASE[item?.base], st = base && rolled(item), r = st?.local_jewel_effect_base_radius;
   if (!r) return null;
-  const out = { r, small: {}, notable: {} };
+  const KS = 'local_unique_jewel_disconnected_passives_can_be_allocated_around_keystone_hash', around = st[KS];
+  if (KS in st && !around) return null;   // From Nothing with no keystone picked yet
+  const out = { r, small: {}, notable: {}, ring: D.jewel_rings?.[st.local_jewel_variable_ring_radius_value - 1] || null,
+    free: !!(around || st.local_unique_jewel_nearby_disconnected_passives_can_be_allocated), around: around ? String(around) : null };
   for (const m of item.mods || []) { const a = AFFIX[m.id]; if (a?.radius) a.stats.forEach(([id], k) => { out[a.radius][id] = (out[a.radius][id] || 0) + (m.values?.[k] ?? 0); }); }
   return out;
 }
@@ -404,6 +423,10 @@ export function parseItem(text) {
     const mut = ex.found.find(f => u.mutated?.some(m => m.id === f.key)), from = mut && u.replaceable.find(id => !ex.found.some(f => f.key === id)), mi = item.mods.findIndex(m => m.id === from);
     if (mi >= 0) { item.mods[mi] = { id: mut.key, values: [] }; item.mutatedFrom = from; }
     ex.found.forEach(f => { const m = item.mods.find(m => m.id === f.key); if (m) m.values = f.values; });
+    // the passive a line names ("Allocates Heavy Buffer", "Passives in Radius of Zealot's Oath can be Allocated"): its hash
+    for (const m of item.mods) AFFIX[m.id].stats.forEach(([id], k) => { if (!HASHED.test(id)) return;
+      const re = nameLines(id), hit = expl.map(l => re.map(r => l.match(r)?.[1]).find(Boolean)).find(x => x && BY_NAME.has(x.toLowerCase()) && !item.mods.some(o => o.values?.includes(+BY_NAME.get(x.toLowerCase()))));
+      if (hit) m.values[k] = +BY_NAME.get(hit.toLowerCase()); });
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
   } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }));   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
@@ -655,19 +678,24 @@ export function tradeItem({ name, base: baseName, lines, runes = [] }) {
 
 // ---------- UI (laid out like the in-game item tooltip)
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => lo === hi ? '' :
+const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => HASHED.test(id) ? hashPick(id, vals?.[k], path, k) : lo === hi ? '' :
   `<input type="number" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" value="${vals?.[k] ?? hi}" data-path="${path}" data-k="${k}" title="${id}: ${lo}–${hi}">`).join('');
 // a modifier's numbers as the item has them: one rolled before a patch can be off its tier's range now
 const filled = (stats, vals) => stats.map(([, , hi], k) => vals?.[k] ?? hi);
-function fixVals(stats, vals) { return stats.map(([, lo, hi], k) => Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi))); }   // hoisted: parseItem can run before this line is reached (an import cycle)
-const text = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
+function fixVals(stats, vals) { return stats.map(([id, lo, hi], k) => HASHED.test(id) ? vals?.[k] ?? 0 : Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi))); }   // hoisted: parseItem can run before this line is reached (an import cycle)
+const text = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
+// a modifier's lines, its jewel radius as the game shows it ("Radius: Small"), not as a stat of its own
+function modLines(o) {
+  const { local_jewel_effect_base_radius: r, ...rest } = o;
+  return r == null ? statLines(o) : [...statLines(rest), t('Radius: {0}', t((D.jewel_radii || {})[r] || String(r)))];
+}
 const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => AFFIX[m.id].affix === a).length;
   return it.unique ? 'unique' : !mods.length ? 'normal' : c('prefix') <= 1 && c('suffix') <= 1 ? 'magic' : 'rare'; };
 // an item for a card, in the language of the page: its names, art, own numbers and modifier lines (loot.js)
 export function itemView(it) {
   const base = BASE[it?.base];
   if (!base) return null;
-  const l = local(it), say = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]])));
+  const l = local(it), say = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]])));
   const hit = ['physical', 'fire', 'cold', 'lightning'].reduce((s, k) => s + (l[k] ? (l[k][0] + l[k][1]) / 2 : 0), 0);
   return { rarity: rarityOf(it), name: it.unique ? tn(UNIQ[it.unique]) || it.unique : '', base: tn(base) || base.name, cls: base.class, img: img(it.unique && D.unique_img[it.unique] || base.img),
     dps: hit * (l.attacks_per_second || 0),   // the weapon's own damage per second
@@ -716,6 +744,7 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 // snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
 // trade: { can(slot), money() -> [[currency, name]], go(slot, max, currency) }: the search for one like the item worn or better
+//   (and map(canvas, socket) / show(socket): where a jewel socket is on the tree)
 export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, trade) {
   const giant = () => tree().keystone_giants_blood, staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
   const types = [...Object.keys(SLOTS), 'jewel'];
@@ -872,7 +901,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p>
       <textarea class="pasteItem" data-act="paste" rows="2" placeholder="${t('Paste an item here: Ctrl+C on it in the game, or copied from Path of Building')}"></textarea>
       <p class="note" data-msg>${msg}</p>${stashHtml()}</div>
-      <div class="editor">${card(sel, names[sel], items[sel])}</div></div>`;
+      <div class="editor">${slotType(sel) === 'jewel' ? `<canvas class="jmap" data-act="jmap" title="${esc(t('Show on the tree'))}"></canvas>` : ''}${card(sel, names[sel], items[sel])}</div></div>`;
+    const map = el.querySelector('.jmap'); if (map) trade?.map(map, sel.slice(6));   // where the socket is on the tree
     fillGains();
   }
 
@@ -933,6 +963,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   el.addEventListener('click', e => {
     const t = e.target, items = getBuild().items || {}, pick = t.closest('[data-pick]');
     if (pick) { sel = pick.dataset.pick; render(); return; }
+    if (t.dataset.act === 'jmap') { trade?.show(sel.slice(6)); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
     if (t.dataset.act === 'like') {
