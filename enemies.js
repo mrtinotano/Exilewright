@@ -158,7 +158,7 @@ export function playerTakes(c, type, raw, isHit = true, conv = true) {
   if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(A + (c.evaPhys ? c.evasion || 0 : 0) + (c.esNow ?? c.es ?? 0) * (c.esArm || 0) / 100, raw, pcap) + (c.physDR || 0) / 100)) : raw;
   // the share of armour that applies to the type (c.armourEl) cuts its hits like physical ones, then resistances
   // note: armour taken against the hit's damage before resistances
-  const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 + (c.esNow ?? c.es ?? 0) * (c.esEl || 0) / 100 : 0);   // Silks of Veneration: current energy shield's share too   // and evasion's share against elements (Pathfinder)
+  const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 + (c.esNow ?? c.es ?? 0) * (c.esEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder), current energy shield's (Silks of Veneration)
   const AR = isHit && ER ? armourCut(ER, raw, pcap) : 0;
   return raw * (1 - AR) * (1 - (c.res?.[type]?.capped || 0) / 100);
 }

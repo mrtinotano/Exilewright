@@ -5082,7 +5082,7 @@ export function initScene(el, api) {
   // half the monster's power for a normal one, all of it for a magic one, twice it for rare and unique ones, the power being
   // the rarity's 1 / 2 / 5 times the monster's own, and 20 for a unique (note: a monster's own power is not in the tables:
   // the glossary's average, 1, is used). Dying and refilling fill them, as a checkpoint or a well does.
-  const pow = d => pow(d) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1);   // a monster's Power (Redblade Banner: more in your Presence)
+  const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1);   // a monster's Power (Redblade Banner: more in your Presence)
   const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
@@ -5101,7 +5101,7 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, over: f.over, rate: f.amount * LL / f.time, s: f.time, m0: me.spentM || 0, nt: 3 }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
+    me.drink[n] = { k: f.k, es: f.es, over: f.over, rate: f.amount * LL / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
@@ -5467,7 +5467,7 @@ export function initScene(el, api) {
       if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
       if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
       if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m
-      if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) hurt(me.mana * F.endChaos / 100, me.mana * F.endChaos / 100, 'chaos'); }   // when its effect ends: Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you   // a life flask's effect ends when your life is full (Enduring Elixirs' text), unless Enduring Elixirs
+      if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) { const x = me.mana * F.endChaos / 100; hurt(x, x, 'chaos'); } }   // when its effect ends (a life flask's when your life is full, unless Enduring Elixirs): Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you
     });
     for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
