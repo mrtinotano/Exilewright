@@ -4823,7 +4823,7 @@ export function initScene(el, api) {
     const DW = OR.defendWith; if (DW) { const x = [[DW.crit, crit], [DW.projAttack, a.attack && a.shape === 'projectile'], [DW.far, dist(d.pos, pp) > 6], [DW.notLowES, me.maxE > 0 && me.es >= me.maxE * LOW], [DW.double && 200, Math.random() * 100 < DW.double]]
       .reduce((m, [p, ok]) => p && ok ? m * p / 100 : m, 1); if (x !== 1) c = { ...c, armourX: (c.armourX || 1) * x }; }
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
-    me.hitAt = [...(me.hitAt || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
+    me.struck = [...(me.struck || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
@@ -4915,7 +4915,7 @@ export function initScene(el, api) {
       * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
     me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
     // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
-    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.hitAt?.length || 0));   // per time you were Hit Recently, up to 100%
+    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
       return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
     const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
     if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
