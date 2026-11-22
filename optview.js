@@ -250,8 +250,8 @@ export function initOpt(el, ctx) {
     return `<div class="likes">${list.map((l, i) => `<div class="likerow"><span>${esc(hashed(l.text))}</span>
         <label>${t('at least')} <input type="number" step="any" value="${l.value || ''}" placeholder="—" data-like="${i}"></label><button data-do="unlike" data-i="${i}" title="${t('Remove')}">✕</button></div>`).join('')
       || `<p class="note">${t('Pick the modifiers the item must have, each with the least of it.')}</p>`}</div>
-      <div class="optrow likepick"><div><button data-do="likeOpen">${t('+ Modifier')} ▾</button>${likeOpen ? `<div class="likemenu"><input type="search" data-likefind placeholder="${esc(t('Search'))}" title="${esc(t('Filters the list of modifiers'))}">
-        <div class="likeopts">${more.map(o => `<button data-do="addlike" data-k="${esc(lk(o))}">${esc(hashed(o.text))}</button>`).join('')}</div></div>` : ''}</div>
+      <div class="optrow likepick"><button data-do="likeOpen">${t('+ Modifier')} ▾</button>${likeOpen ? `<div class="likemenu"><input type="search" data-likefind placeholder="${esc(t('Search'))}" title="${esc(t('Filters the list of modifiers'))}">
+        <div class="likeopts">${more.map(o => `<button data-do="addlike" data-k="${esc(lk(o))}">${esc(hashed(o.text))}</button>`).join('')}</div></div>` : ''}
         <button data-do="fromWorn"${worn && classOf(worn) === sel.cls ? '' : ' disabled'}>${t('The modifiers of the item worn')}</button>
         ${list.length ? `<button data-do="clearLike">${t('Clear')}</button>` : ''}</div>`;
   }
@@ -322,9 +322,9 @@ export function initOpt(el, ctx) {
     if (what === 'sup') return runSup();
     if (what === 'gear') return runGear();
     if (what === 'like') return runLike();
-    const ls = gearSel(b).slot;
+    const gs = gearSel(b), ls = gs.slot;
     if (what === 'likeOpen') { likeOpen = !likeOpen; render(); el.querySelector('[data-likefind]')?.focus(); return; }
-    if (what === 'addlike') { const o = affixLines(gearSel(b).cls).find(o => String(lk(o)) === btn.dataset.k); likeOpen = false; if (o) { likeOf(ls).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); keep(); } return render(); }
+    if (what === 'addlike') { const o = affixLines(gs.cls).find(o => String(lk(o)) === btn.dataset.k); likeOpen = false; if (o) { likeOf(ls).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); keep(); } return render(); }
     if (what === 'unlike') { likeOf(ls).splice(+btn.dataset.i, 1); keep(); return render(); }
     if (what === 'clearLike') { S.like[ls] = []; keep(); return render(); }
     if (what === 'fromWorn') { S.like[ls] = wornLines(b.items[ls]); keep(); return render(); }
