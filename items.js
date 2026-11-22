@@ -767,7 +767,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
         <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
-      ${res.need ? `<p class="note">${t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
+      ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;
   }

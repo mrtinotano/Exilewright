@@ -394,14 +394,19 @@ export async function findBetter({ league, item, base, skip = [], price, level, 
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
+  // those with every line first; fewer than 10 of them: the rest from those with one line less, then two (each search's
+  // own listings read with it, cheapest first)
+  const groups = [], seen = new Set();
   let s = await call('search?league=' + encodeURIComponent(league), body), need = 0;
-  for (const k of fewer(stats)) { if (s.result?.length) break; body.query.stats = atLeast(stats, k); need = k; s = await call('search?league=' + encodeURIComponent(league), body); }
+  const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, 10 - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
+  take(); const full = seen.size;
+  for (const k of fewer(stats)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call('search?league=' + encodeURIComponent(league), body); take(); }
   const found = [];
-  tick?.('Reading {0} items…', Math.min(10, s.result?.length || 0));
-  if (s.result?.length) for (const r of (await call(`fetch?ids=${s.result.slice(0, 10).join()}&query=${s.id}`)).result || []) {
-    const l = r && readListing(r); if (l?.item) found.push(l);
-  }
-  return { found: found.reverse(), body, left, ...need && { need, of: stats[0].filters.length } };
+  tick?.('Reading {0} items…', seen.size);
+  for (const { ids, q } of groups) { const got = [];
+    for (const r of (await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []) { const l = r && readListing(r); if (l?.item) got.push(l); }
+    found.push(...got.reverse()); }
+  return { found, body, left, ...need && seen.size > full && { need, of: stats[0].filters.length, full } };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, tick }, plan) {

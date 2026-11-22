@@ -913,6 +913,7 @@
  "Level {0} or more, {1}% quality or more": "Уровень {0} или выше, качество {1}% или выше",
  "Level {0} or more": "Уровень {0} или выше",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Ни у одного предмета в продаже нет всех {1} модификаторов: у этих есть хотя бы {0} из них.",
+ "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "{0} в продаже имеют все {1} модификаторов (первые); остальные — хотя бы {2} из них.",
  "Requires {0} {1} (you have {2})": "Требуется {1}: {0} (у вас {2})",
  "Empty (Socket {0})": "Пусто (гнездо {0})",
  "Socket {0}": "гнездо {0}",

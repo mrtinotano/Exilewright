@@ -913,6 +913,7 @@
  "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",
  "Level {0} or more": "レベル{0}以上",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "{1}個すべてのモディファイアを持つ出品はありません。以下は少なくとも{0}個を持つものです。",
+ "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "出品中の{0}件は{1}個すべてのモディファイアを持っています（最初のもの）。残りは少なくとも{2}個を持つものです。",
  "Requires {0} {1} (you have {2})": "{1} {0}が必要（現在 {2}）",
  "Empty (Socket {0})": "空き（ソケット {0}）",
  "Socket {0}": "ソケット{0}",

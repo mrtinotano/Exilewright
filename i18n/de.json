@@ -913,6 +913,7 @@
  "Level {0} or more, {1}% quality or more": "Stufe {0} oder höher, Qualität {1} % oder mehr",
  "Level {0} or more": "Stufe {0} oder höher",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Keiner im Angebot hat alle {1} Modifikatoren: Diese haben mindestens {0} davon.",
+ "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "{0} im Angebot haben alle {1} Modifikatoren (die ersten); die anderen haben mindestens {2} davon.",
  "Requires {0} {1} (you have {2})": "Benötigt {0} {1} (du hast {2})",
  "Empty (Socket {0})": "Leer (Sockel {0})",
  "Socket {0}": "Sockel {0}",
