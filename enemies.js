@@ -160,7 +160,7 @@ export function playerTakes(c, type, raw, isHit = true, conv = true) {
   // note: armour taken against the hit's damage before resistances
   const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 + (c.esNow ?? c.es ?? 0) * (c.esEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder), current energy shield's (Silks of Veneration)
   const AR = isHit && ER ? armourCut(ER, raw, pcap) : 0;
-  return raw * (1 - AR) * (1 - (c.res?.[type]?.capped || 0) / 100);
+  return raw * (1 - AR) * (1 - (c.resOff === type ? 0 : c.res?.[type]?.capped || 0) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
 // pen: the hit's penetration of that resistance, which lowers only a positive resistance and not below 0 (PoB2)

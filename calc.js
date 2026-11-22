@@ -507,6 +507,7 @@ export function character(b, sum) {
   c.thorns.manaCold = v(sum, 'added_thorns_cold_base_damage_%_of_maximum_mana');
   // the critical damage bonus of hits against you, as a share: the Oracle's and the Smith's less; Gemling's Gem Studded none
   // while red supports are the most socketed in your skills
+  if (sum.lightning_resistance_does_not_apply_to_lighting_damage) c.resOff = 'lightning';   // Doryani's Prototype
   c.selfCrit = sum.self_take_no_extra_damage_from_critical_strikes || sum.no_self_critical_strike_multiplier_if_red_support_count_highest && SN.str && SN.str >= SN.dex && SN.str >= SN.int ? 0 : Math.max(0, 1 - v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%') / 100);
   // Shaman's Sacred Flow: Spirit per charm slot (the belt's, the Ritualist's more) with no charm in it
   c.emptyCharms = Math.max(0, Math.min(3, v(sum, 'local_charm_slots', 'local_additional_charm_slots', 'num_charm_slots')) - ['charm1', 'charm2', 'charm3'].filter(k => b.items?.[k]).length);
@@ -563,7 +564,11 @@ export function recovery(c, sum) {
     armourPerRage: v(sum, 'armour_+%_per_rage'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors
     lifeToEs: !!sum.regenerate_energy_shield_instead_of_life,   // Ligurium Talisman, Soul Tether: life regeneration applied to energy shield instead (the scene plays it)
     manaNoCrit: !!sum.no_mana_regeneration_if_not_crit_recently,   // Nightscale: none unless you crit recently (the scene checks it)
-    esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
+    lightResNear: !!sum.enemies_in_presence_lightning_resist_equal_to_yours, onsKill: v(sum, 'onslaught_buff_duration_on_kill_ms') / 1000,   // Doryani's Prototype; Death Rush
+    skillLife: v(sum, 'lose_x_life_when_you_use_skill'), rageCritTaken: v(sum, 'gain_x_rage_when_taken_crit'),   // Crown of Thorns; Bristleboar
+    esOnManaFlask: !!sum.start_energy_shield_recharge_when_you_use_a_mana_flask, lowCap: !!sum.cannot_recover_above_low_life_except_flasks,   // Bitterbloom; Cat O' Nine Tails
+    luckySurr: !!sum.attack_damage_is_lucky_if_surrounded,   // Empire's Grasp
+    esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
@@ -1623,7 +1628,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     alwaysHit: F('global_always_hit'),
     // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them
     impale: { chance: all('impale_on_hit_%_chance') + all(tags.includes('attack') ? 'attacks_impale_on_hit_%_chance' : 'spells_impale_on_hit_%_chance'),
-      mag: scale(['impale_magnitude_+%', ...tags.includes('spell') ? ['spell_impale_magnitude_+%'] : []], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale') },
+      mag: scale(['impale_magnitude_+%', ...tags.includes('spell') ? ['spell_impale_magnitude_+%'] : []], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale'), crit: F('critical_hits_always_apply_impale') },   // Dreadfist: critical hits always Impale
     // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
     electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     electrocuteIf: scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/),   // on an enemy any lightning can electrocute (Enervating Nova)

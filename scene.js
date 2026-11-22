@@ -490,7 +490,7 @@ export function initScene(el, api) {
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
-      const mine = !/minion/.test(S.src || ''), LK = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
+      const mine = !/minion/.test(S.src || ''), LK = mine && (Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0) || D.attack && sheet().luckySurr && meIs.Surrounded()), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK || LS || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       // gained as extra damage of another type against an enemy in a state: of the hit's damage after its modifiers, not
       // scaled again by the other type's (as Unholy Might below)
@@ -561,7 +561,7 @@ export function initScene(el, api) {
       // number of them) for a share of its physical damage times its magnitude, up to their most on the enemy
       const IP = A?.impale, ph = raw.physical || 0;
       if (D.attack && d.impales.length && !IP?.keep) raw.physical = ph + d.impales.splice(d.impales.indexOf(Math.max(...d.impales)), 1)[0];
-      if (ph && Math.random() * 100 < IP?.chance) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
+      if (ph && (Math.random() * 100 < IP?.chance || crit && IP?.crit)) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
       const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0);   // the tree's chance for Thorns to ignore armour
       const INV = Math.random() * 100 < (D.sum?.['treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance'] || 0);   // the tree's chance to treat elemental resistances as inverted
       const ZR = crit && !S.src ? sheet().critIgnoreRes : null;   // Beacon of Azis, Choir of the Storm: your critical hits ignore those resistances
@@ -946,6 +946,7 @@ export function initScene(el, api) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour), SE = sheet(), near = () => dist(d.pos, pp) <= SE.overgrow.r;
     // Leopold's Applause (in your Presence: Sacred Flame): elemental damage resisted by its lowest elemental resistance;
     // The Coming Calamity: none in your Presence; a critical hit's ignored ones (zero)
+    if (el === 'lightning' && SE.lightResNear && near()) st = { ...st, res: { ...st.res, lightning: SE.res?.lightning?.capped || 0 } };   // Doryani's Prototype: equal to yours
     if (ELEM.includes(el) && (SE.lowestRes || SE.lowestResNear && near())) st = { ...st, res: { ...st.res, [el]: Math.min(...ELEM.map(e => st.res[e] || 0)) } };
     if (ELEM.includes(el) && (zero?.includes(el) || SE.noResNear && near())) st = { ...st, res: { ...st.res, [el]: 0 } };
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
@@ -1356,6 +1357,7 @@ export function initScene(el, api) {
     // the tree's recovery on kill (calc.js killRecover)
     const KR = S && sheet().killRecover;   // none while the sheet is not there yet
     if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.max(0, Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100 + KR.manaFlat)); }   // Blessed Bonds' flat mana (Bluetongue's a loss)
+    if (S && sheet().onsKill) me.onsUntil = Math.max(me.onsUntil || 0, time + sheet().onsKill);   // Death Rush: Onslaught on kill
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
@@ -4107,7 +4109,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life; if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life + (sheet().skillLife || 0); if (me.life <= 0) died(S.label); if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -4974,6 +4976,7 @@ export function initScene(el, api) {
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
     const OR = sheet(), roll = () => Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
+    if (crit) gainRage(OR.rageCritTaken);   // Bristleboar: Rage when critically hit
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     // "Defend with X% of Armour" against this hit: a critical one, a projectile attack, from further than 6 m, while your
     // energy shield is not low (as Low Life: below its share of the most), or its chance for 200%. note: several multiply
@@ -5124,6 +5127,7 @@ export function initScene(el, api) {
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
     me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
+    if (n && sheet().esOnManaFlask) me.esEarly = 1e9;   // Bitterbloom: a mana flask starts energy shield recharge
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     if (f.instant || f.instantLow && (f.k === 'life' ? lowLife() : lowMana())) { flaskHeal(me.drink[n], f.amount * LL); me.drink[n].s = 0; }   // Belly of the Beast; Birthright Buckle on Low Life / Low Mana
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
@@ -5466,9 +5470,9 @@ export function initScene(el, api) {
     if (S.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
-    const RG = regenNow(c);
+    const RG = regenNow(c), RL = c.lowCap ? L * LOW : L;   // Cat O' Nine Tails: recovery other than flasks only up to Low Life
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
-    const LG = RG.life > 0 && !c.vaal ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, L - me.life));
+    const LG = RG.life > 0 && !c.vaal ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, RL - me.life));
     if (c.lifeToEs) me.es = Math.min(E, me.es + LG); else { me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI); }   // Ligurium Talisman: all of it to energy shield
     if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (note: its damage over time bypassing energy shield is not played)
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
@@ -5479,7 +5483,7 @@ export function initScene(el, api) {
     if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved
     if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
-    for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
+    for (const [r, top] of [['life', RL], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;
       // Couture of Crimson: life leech Overflows; Soul Tether: what goes over maximum life to energy shield
       const cap = r === 'life' && c.leechOver ? top * OVERFLOW : top, toES = r === 'life' && c.leechToEs && me.es < E;
@@ -5490,7 +5494,7 @@ export function initScene(el, api) {
     // a hit ends it (hurt), as does a full Overflow
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
-    else if (c.lifeRecharge && !c.vaal && me.life < L && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(L, me.life + c.lifeRecharge * dt);   // Eternal Youth
+    else if (c.lifeRecharge && !c.vaal && me.life < RL && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(RL, me.life + c.lifeRecharge * dt);   // Eternal Youth
     else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
