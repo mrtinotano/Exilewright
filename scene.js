@@ -816,7 +816,7 @@ export function initScene(el, api) {
   const FROSTFLAME = 'active_skill_hit_damage_freeze_multiplier_+permyriad_final_per_1%_of_target_ailment_threshold_being_dealt_by_ignite_per_second';
   // the increased Slow Magnitude of the debuffs a skill inflicts (Hinder, Maim, its slowing zones): the tree's and its supports' (Slow Potency)
   // note: not chill, an ailment
-  const slowK = S => 1 + (S?.dmg?.sum?.['base_debuff_slow_magnitude_+%'] || 0) / 100;
+  const slowK = S => 1 + ((S?.dmg?.sum?.['base_debuff_slow_magnitude_+%'] || 0) + (S?.haz ? S.dmg.sum['hazard_base_debuff_slow_magnitude_+%'] || 0 : 0)) / 100;   // and a Hazard's
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0) return;
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
@@ -1776,7 +1776,7 @@ export function initScene(el, api) {
     const e = thing(g, dur, { name: X.name, hazard: true,
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
-        const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
+        const S2 = { ...X, haz: true, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
         later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; for (const d of inside(p, X.A)) d.hazAt = time; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
@@ -3219,6 +3219,7 @@ export function initScene(el, api) {
     const AE = 1 + ((S.dmg?.sum?.['aura_effect_+%'] || 0) + (S.dmg?.sum?.['banner_aura_effect_+%'] || 0)) / 100;
     const st = S.dmg?.stats || {}, su = S.dmg?.sup || {}, give = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/^base_skill_buff_(.+)_to_apply$/); return m ? [[m[1], v * AE]] : []; }));
     for (const k of ['%_armour_to_apply_to_elemental_damage', 'deflection_rating_%_of_evasion_rating']) if (su['support_tempered_valour_' + k]) give[k] = su['support_tempered_valour_' + k];
+    if (S.dmg?.sum?.['base_banner_resist_all_elements_%_to_apply']) give['resist_all_elements_%'] = S.dmg.sum['base_banner_resist_all_elements_%_to_apply'] * AE;   // the tree's resistances from Banners
     const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
     if (!S.dmg?.sum?.unlimited_banners_allowed) for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;   /* Tactician: any number */
     const c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', 'gold', { a: .35, rot: 0 });
@@ -3817,7 +3818,7 @@ export function initScene(el, api) {
     } });
   }
   // what the Banners you stand in grant: their buff's stat, summed
-  const banner = k => { const by = {}; for (const o of objs) if (o.banner && !o.dead && dist(o.c, pp) <= o.R && o.banner[k]) by[o.name] = o.name in by ? Math.max(by[o.name], o.banner[k]) : o.banner[k]; return Object.values(by).reduce((n, x) => n + x, 0); };   // the same Banner twice (Tactician's any number) does not add up
+  const banner = k => { const by = {}; for (const o of objs) if (o.banner && !o.dead && (dist(o.c, pp) <= o.R ? (o.inAt = time, true) : time - (o.inAt ?? -99) <= (sheet().bannerLinger || 0)) && o.banner[k]) by[o.name] = o.name in by ? Math.max(by[o.name], o.banner[k]) : o.banner[k]; return Object.values(by).reduce((n, x) => n + x, 0); };   // the same Banner twice (Tactician's any number) does not add up
   function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
   // ---------- using a skill
@@ -5076,11 +5077,11 @@ export function initScene(el, api) {
   const speedWhile = b => 1 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
-    const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
+    const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), BR = banner('resist_all_elements_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
     const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
     if ((RA || RE) && c.armourEl) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: c.deflect && { ...c.deflect, eva: c.deflect.eva + RE } };
-    if (AE || MR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: MR && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, capped: Math.min(r.max + MR, r.value) }])) : c.res };
+    if (AE || MR || BR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: (MR || BR) && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, value: r.value + BR, capped: Math.min(r.max + MR, r.value + BR) }])) : c.res };
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
     if (DW.length) c = { ...c, armour: c.armour * (1 + inc('a') / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + inc('e') / 100 / (c.evasionInc || 1)) };
