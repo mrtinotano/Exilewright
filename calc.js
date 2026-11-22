@@ -414,7 +414,8 @@ export function character(b, sum) {
     elixir: !!sum.life_flask_effects_are_not_removed_at_full_life,   // Pathfinder's Enduring Elixirs
     tailwind: sum.gain_tailwind_stack_on_skill_use ? { lose: !!sum.lose_all_tailwind_when_hit } : null,   // Deadeye's Gathering Winds: a Tailwind stack on each skill use
     // the Amazon's Predatory Instinct: Revealed Weaknesses, its more damage against an enemy with an Open Weakness; In for the Kill: movement and skill speed against them
-    weakness: sum.bloodlust_reveal_weakness ? { more: v(sum, 'damage_+%_final_against_bloodlusting_enemies'), move: v(sum, 'movement_speed_+%_against_bloodlusting_enemies'), speed: v(sum, 'skill_speed_+%_against_bloodlusting_enemies') } : null,
+    weakness: sum.bloodlust_reveal_weakness || sum.unique_reveal_weakness ? { more: v(sum, 'damage_+%_final_against_bloodlusting_enemies'), move: v(sum, 'movement_speed_+%_against_bloodlusting_enemies'), speed: v(sum, 'skill_speed_+%_against_bloodlusting_enemies'),
+      rareOnly: !sum.bloodlust_reveal_weakness, recoupL: v(sum, 'recoup_%_of_damage_taken_from_enemies_with_open_weakness_as_life'), recoupLE: v(sum, 'recoup_%_of_damage_taken_from_enemies_with_open_weakness_as_life_and_energy_shield') } : null,   // The Master's Reach: against rare and unique enemies, its damage taken from them recouped
     charmMana: v(sum, 'drain_%_max_mana_to_activate_expended_charms'),   // Ritualist's Mind Phylacteries: that share of maximum mana for a charm without the charges
     // the tree: Thirst for Power / Endurance's chance of one more charge; Harness the Elements' increased damage per elemental ailment
     // on the enemy; Deep Freeze's cold resistance of the Frozen; Urgent Call's life and mana on a warcry; Ancestral Alacrity's attack
@@ -439,6 +440,7 @@ export function character(b, sum) {
     prowess: v(sum, 'gain_druidic_prowess_per_X_rage_spent'),   // Amor Mandragora
     volCold: v(sum, 'volatility_physical_damage_taken_%_as_cold'),   // Dream Fragments
     molten: v(sum, 'local_%_chance_to_trigger_molten_shower_on_hit_with_this_weapon_per_25_strength') * Math.floor((at.str || 0) / 25),   // Brutus' Lead Sprinkler: its chance per 25 Strength
+    furyGround: v(sum, 'unique_boots_secondary_ground_ignite_while_moving_base_fire_damage_%_of_life'),   // Birth of Fury
     lethal: { pct: v(sum, 'consume_%_of_maximum_life_flask_charges_on_bow_attack'), add: v(sum, 'bow_attacks_deal_added_physical_damage_equal_to_x%_of_life_flask_recovery_amount') },   // The Lethal Draw
     allyRegen: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_your_maximum_life_%'), allyRegenOwn: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_their_maximum_life_%'), allyRegenBase: v(sum, 'base_life_regeneration_rate_per_minute') * v(sum, 'total_base_life_regeneration_rate_per_minute_%_granted_to_allies_in_your_presence') / 100,   // Allies in your Presence regenerate life per minute: its % of your maximum life, Sacred Flame's of their own, Guiding Palm's share of your base life regeneration
     stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'),
@@ -473,6 +475,9 @@ export function character(b, sum) {
   const VS = k => 1 + v(sum, `vivisection_${k}_+%_final`) / 100;
   if (c.life != null) c.life = Math.round(c.life * VS('maximum_life')); if (c.mana != null) c.mana = Math.round(c.mana * VS('maximum_mana')); c.spirit = Math.round(c.spirit * VS('spirit'));
   if (VS('armour_evasion_energy_shield') !== 1) { for (const k of ['armour', 'evasion', 'es']) c[k] = Math.round(c[k] * VS('armour_evasion_energy_shield')); c.armourPct = armourReduction(c.armour, lvl); c.evadePct = evadeChance(c.evasion, lvl); }
+  // Immaculate Adherence: maximum energy shield converted to maximum Divinity (its increased, less per corrupted item equipped); no energy shield
+  if (sum['convert_100%_energy_shield_to_divinity']) { const nC = Object.values(b.items || {}).filter(it => it?.corrupted).length; c.divinity = Math.round(c.es * Math.max(0, 1 + (v(sum, 'maximum_divinity_+%') + v(sum, 'maximum_divinity_+%_per_equipped_corrupted_item') * nC) / 100)); c.divCost = !!sum.skills_cost_divinity_instead_of_mana_or_life; }
+  if (sum['convert_100%_energy_shield_to_divinity'] || sum.cannot_have_current_energy_shield) c.es = 0;
   // resistances per equipped item with a modifier to another one (Safrin's Resolve, Eshtera's Path, Zaida's Longevity).
   // note: a modifier to all elemental resistances is not counted as one to each
   for (const [k, of, to] of [['cold_and_lightning_resist_+_per_equipped_item_with_a_fire_resistance_mod', 'fire', ['cold', 'lightning']], ['fire_and_cold_resist_+_per_equipped_item_with_a_lightning_resistance_mod', 'lightning', ['fire', 'cold']], ['fire_and_lightning_resist_+_per_equipped_item_with_a_cold_resistance_mod', 'cold', ['fire', 'lightning']]]) {

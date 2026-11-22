@@ -3296,7 +3296,7 @@ export function initScene(el, api) {
   const weakOf = d => (d.weak = (d.weak || []).filter(u => u > time)).length * WEAK.per;
   // Revealed Weaknesses (KeywordPopups RevealWeakness): segments of the enemy's life bar, 45% of it in all, at random; while its
   // life is within one it has an Open Weakness. note: how many segments is not in the data (three of 15% here)
-  const openWeak = d => { if (!d || !sheet().weakness || d.dead) return false; d.gaps ||= [0, 1, 2].map(k => { const a = k / 3 + Math.random() * (1 / 3 - .15); return [a, a + .15]; }); const f = d.life / d.max; return d.gaps.some(([a, b]) => f >= a && f < b); };
+  const openWeak = d => { const W = sheet().weakness; if (!d || !W || d.dead || W.rareOnly && !/rare|unique/.test(d.stat.rarity || '')) return false; d.gaps ||= [0, 1, 2].map(k => { const a = k / 3 + Math.random() * (1 / 3 - .15); return [a, a + .15]; }); const f = d.life / d.max; return d.gaps.some(([a, b]) => f >= a && f < b); };
   const weaken = (d, n, s = WEAK.time) => { weakOf(d); for (let k = 0; k < n; k++) d.weak.push(time + s); d.weak.sort((a, b) => a - b); d.weak.splice(0, d.weak.length - WEAK.max); };
   function malice() {
     const S = onS('Malice'), st = S?.dmg?.stats; if (!st || time - (me.maliceAt ?? -99) < st.critical_chance_against_aura_apply_brittle_every_x_ms / 1000) return;
@@ -4070,7 +4070,8 @@ export function initScene(el, api) {
     // as in the game, a skill the weapon in hand cannot use is not used (calc.js skill)
     if (S.dmg?.reason === 'This skill cannot be used with the weapon in hand') { toast(`${S.label}: ${t(S.dmg.reason)}`); return false; }
     if (!auto && me.maxM && !tog[S.name]) {
-      const { cost, life } = costOf(S, o.held);
+      let { cost, life } = costOf(S, o.held);
+      if (sheet().divCost) { me.div = Math.min(me.div ?? sheet().divinity, sheet().divinity || 0); if (cost + life > me.div) { toast(t('Not enough Divinity for {0}', S.label) + ` (${Math.ceil(cost + life)})`); return false; } me.div -= cost + life; cost = life = 0; }   // Immaculate Adherence: skills cost Divinity instead of mana or life
       if (cost > me.mana && !sheet().flame) { toast(t('Not enough mana for {0}', S.label) + ` (${Math.ceil(cost)})`); return false; }
       // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
@@ -5003,6 +5004,7 @@ export function initScene(el, api) {
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
+    { const W = sheet().weakness; if ((W?.recoupL || W?.recoupLE) && openWeak(d)) for (const [k, p] of [['life', W.recoupL + W.recoupLE], ['es', W.recoupLE]]) if (p) me.recoup.push({ k, left: total * p / 100, rate: total * p / 100 / (RC?.time || 8) }); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
     { const BG = me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0), p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * BG / 100; if (p > 0) for (const k of ['life', 'mana']) me.recoup.push({ k, left: p, rate: p / (RC?.time || 8) }); }   // Forsaken Bangle: the chaos damage prevented, during its effect
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * pow(d) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
@@ -5141,6 +5143,7 @@ export function initScene(el, api) {
   }
   function useCharm(f, n) {
     me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
+    if (f.igGround) ground('burning', { x: pp.x, z: pp.z }, SIM.area, 4, { el: 'fire', els: ['fire'], ail: ['ignite'], src: 'ground', label: f.name, raw: { fire: me.maxL * f.igGround / 100 } });   // Beira's Anguish: Ignited Ground for 4 s (note: its radius is not in the data: the scene's)
     if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
     const [LF, MF] = flasks(); if (f.lifeOfMana && MF) flaskHeal({ k: 'life' }, MF.amount * f.lifeOfMana / 100, false, false); if (f.manaOfLife && LF) flaskHeal({ k: 'mana' }, LF.amount * f.manaOfLife / 100, false, false);   // Arakaali's Gift
     const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
@@ -5453,6 +5456,8 @@ export function initScene(el, api) {
     if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (note: its damage over time bypassing energy shield is not played)
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
     if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
+    if (c.furyGround && (walk || move) && time - (me.furyAt ?? -9) >= .5) { me.furyAt = time; ground('burning', { x: pp.x, z: pp.z }, .8, 8, { el: 'fire', els: ['fire'], ail: ['ignite'], src: 'ground', label: 'Birth of Fury', raw: { fire: L * c.furyGround / 100 } }); }   // Birth of Fury: Ignited Ground while moving, 8 s (note: its radius is not in the data)
+    if (c.divinity) me.div = Math.min(c.divinity, (me.div ?? c.divinity) + c.divinity * .25 * dt);   // Divinity regenerates 25% a second (KeywordPopups Divinity)
     if (c.regrow) me.regrow = Math.min(c.regrow.max, (me.regrow || 0) + c.regrow.gain * dt);   // Dustbloom: Fragile Regrowth a second, up to its most
     if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved
     if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
