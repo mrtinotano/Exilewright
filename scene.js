@@ -4902,7 +4902,7 @@ export function initScene(el, api) {
   function blockU(d) {   // the uniques' effects of a block (calc.js uBlock). note: the blocked damage recouped is the hit's average
     const U = sheet().uBlock; if (!U || d.dead) return;
     if (U.poison) inflict(d, 'poison', thornX({ hits: {} }, t('Blocked')), 1, { chaos: U.poison }, {});
-    if (U.cull && d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] / 100) { fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, thornX({ hits: {} }, t('Blocked'))); return; }   // Doomgate
+    if (U.cull && underCull(d, {})) { fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, thornX({ hits: {} }, t('Blocked'))); return; }   // Doomgate
     if (U.mana) { const n = avgHit({ dmg: d.atk }) * U.mana / 100, RT = sheet().recoup?.time || 8; me.recoup.push({ k: 'mana', left: n, rate: n / RT }); }
     if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.find(x => x.name === v.name); if (o) Object.assign(o, v); else d.dots.push(v); }
   }
