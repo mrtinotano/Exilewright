@@ -1567,6 +1567,7 @@ export function initScene(el, api) {
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
     fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
     if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
+    const RP = sheet().remnantPick; me.life = Math.min(me.maxL, me.life + me.maxL * RP.life / 100); me.mana = Math.min(me.maxM, me.mana + me.maxM * RP.mana / 100);   // the tree's life and mana on collecting one
     later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k, S); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
   }
   // a hit of yours (each skill no more than once in its time; Mana Remnants on a critical hit on an enemy with an elemental
@@ -3812,8 +3813,9 @@ export function initScene(el, api) {
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
   function costOf(S, held) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
-    return { cost: (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0),
-      life: (S.dmg?.lifeCost || 0) * per + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
+    const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
+    const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
+    return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
   }
   function use(i, o = {}) {
     let S = mk(i); if (!S) return false;
@@ -3973,10 +3975,13 @@ export function initScene(el, api) {
     if (GN) {
       if ((me.glory[S.name] || 0) < GN) { toast(t('{0} needs {1} Glory', S.label, Math.ceil(GN))); return false; }
       const st = gst(S);
+      const g0 = me.glory[S.name] || 0;
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
+      const GL = sheet().gloryLife * (g0 - me.glory[S.name]); if (GL > 0) me.life = Math.min(me.maxL, me.life + me.maxL * GL / 100);   // the tree's life per Glory consumed
       hudT = 0;
     }
     const KA = !auto && P.melee && time < me.kaom?.until && me.kaom;
+    if (!auto && P.attack && P.projectile && (walk || move) && Math.random() * 100 < sheet().moveProj) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), projectiles: (sh(S).projectiles || 1) + 2 } } };   // the tree's two more projectiles while moving
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
     S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
