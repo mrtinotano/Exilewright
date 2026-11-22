@@ -511,7 +511,7 @@ export function recovery(c, sum) {
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff you inflict; how fast debuffs on you expire
     pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, actMove: { inc: v(sum, 'movement_speed_penalty_+%_while_performing_action'), fire: v(sum, 'movement_speed_penalty_+%_while_performing_fire_skills'), cold: v(sum, 'movement_speed_penalty_+%_while_performing_cold_skills'), more: v(sum, 'deadeye_movement_speed_penalty_+%_final_while_performing_action') }, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
-    regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
+    regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv, x = 1]) => ({ to, cv, val: sum[k] * x })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
       full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
@@ -774,6 +774,7 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
   ['life_regeneration_rate_+%_while_on_low_life', 'l', 'LowLife'], ['life_regeneration_rate_+%_while_stationary', 'l', 'Still'],
   ['life_regeneration_rate_+%_while_using_life_flask', 'l', 'LifeFlaskEffect'], ['life_recovery_rate_while_in_presence_of_companion_+%', 'l', 'CompanionInPresence'],
   ['life_regeneration_rate_per_minute_%_if_have_been_hit_recently', 'L', 'BeenHitRecently'], ['life_regeneration_rate_per_minute_%_if_used_life_flask_in_past_10_seconds', 'L', 'LifeFlaskPast10'],
+  ['life_regenerate_rate_per_second_%_while_totem_active', 'L', 'TotemActive', 60],   // per second: x60 to the minute's
   ['life_regeneration_rate_per_minute_%_when_on_low_life', 'L', 'LowLife'], ['life_regeneration_rate_per_minute_%_while_affected_by_damaging_ailment', 'L', 'DamagingAilment'],
   ['life_regeneration_rate_per_minute_%_while_stationary', 'L', 'Still'], ['life_regeneration_rate_per_minute_%_while_surrounded', 'L', 'Surrounded'],
   ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
