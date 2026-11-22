@@ -1350,7 +1350,7 @@ export function initScene(el, api) {
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
     const KR = S && sheet().killRecover;   // none while the sheet is not there yet
-    if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.max(0, Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100 + (KR.manaFlat || 0))); }   // Blessed Bonds' flat mana (Bluetongue's a loss)
+    if (KR) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * KR.poisoned / 100 : 0)); me.mana = Math.max(0, Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100 + KR.manaFlat)); }   // Blessed Bonds' flat mana (Bluetongue's a loss)
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
       const T = tog[k], a = T.kind === 'herald' && !['Herald of Ash', 'Herald of Plague'].includes(k) && (k !== 'Herald of Thunder' || S?.P?.attack) && AILMENT[T.P.el];   // Herald of Ash: ash(); Herald of Thunder: attack kills
@@ -4512,7 +4512,7 @@ export function initScene(el, api) {
   const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
   let spdC = { at: -9, v: 0 };
   const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (onsl() ? ONSLAUGHT.move : 0)
-    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0) + charges.frenzy * (sheet().movePerFrenzy || 0)) }; return spdC.v; };   // Darkray Vectors: per Frenzy Charge   // the tree's while you are in a state (calc.js MOVE_WHILE)
+    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0) + charges.frenzy * sheet().movePerFrenzy) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE); Darkray Vectors: per Frenzy Charge
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
@@ -5107,7 +5107,7 @@ export function initScene(el, api) {
   const flaskHeal = (f, n, B = sheet().brew, dry = sheet().tides?.dry) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
     if (f.k === 'mana' || B) me.mana = (f.over ? overflow : gain)(me.mana, me.maxM, n);   // Uhtred's Chalice: over maximum mana during its effect
     if (f.k === 'mana' && !B || dry) return;   // Sanguine Tides: flasks recover no life
-    if (!sheet().vaal) me.life = (f.overLife ? overflow : gain)(me.life, me.maxL, n);   // The Gnashing Sash: over maximum life if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life
+    if (!sheet().vaal) me.life = (f.overLife ? overflow : gain)(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life; The Gnashing Sash: over maximum life
   };
   // Guard for s seconds, the higher one kept, up to 200% of your maximum life (keywords.json Guard)
   function guardFor(g, s) { g = Math.min(g, 2 * (me.maxL || 0)); if (g > me.guard) { me.guard = g; later(s, () => { if (me.guard === g) me.guard = 0; }); } }
@@ -5221,7 +5221,7 @@ export function initScene(el, api) {
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
     if (c.evaDouble && meIs.NotHitRecently()) c = { ...c, evasion: (c.evasion || 0) * 2 };   // Hyrri's Ire
-    if (c.armourPerRage && me.rage > 0) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
+    if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
     if (DW.length) c = { ...c, armour: c.armour * (1 + inc('a') / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + inc('e') / 100 / (c.evasionInc || 1)) };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
