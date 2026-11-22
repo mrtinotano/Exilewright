@@ -610,10 +610,9 @@ export function recovery(c, sum) {
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),   // chance for hits' damage against you to be Unlucky (Oracle: always)
     // uniques: enemies' damage Lucky (+) / Unlucky (-) while on Low Life (The Barrow Dweller), of a type (The Sunken Vessel,
-    // The Burrower); Perfidy's chance to avoid a type of a hit's damage; more / less damage taken while on Low Life, while
-    // not hit recently (The Dancing Mirage)
+    // The Burrower); more / less damage taken while on Low Life, while not hit recently (The Dancing Mirage)
     dmgRolls: { low: v(sum, 'enemy_extra_damage_rolls_when_on_low_life'), physical: v(sum, 'enemies_extra_damage_rolls_with_physical_damage'), lightning: v(sum, 'enemies_extra_damage_rolls_with_lightning_damage') },
-    takenWhile: [['hand_wraps_damage_taken_+%_final_on_low_life', 'LowLife'], ['damage_taken_+%_if_not_hit_recently_final', 'NotHitRecently']].filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),   // chance for hits' damage against you to be Unlucky (Oracle: always)
+    takenWhile: [['hand_wraps_damage_taken_+%_final_on_low_life', 'LowLife'], ['damage_taken_+%_if_not_hit_recently_final', 'NotHitRecently']].filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),
     unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
