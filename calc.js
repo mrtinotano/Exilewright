@@ -417,6 +417,7 @@ export function character(b, sum) {
     surrArea: v(sum, 'surrounded_area_of_effect_+%'), rollSurr: v(sum, 'dodge_roll_travel_distance_+_while_surrounded') / 10, echoSpeed: v(sum, 'cast_speed_+%_per_spell_echoed_recently_up_to_30%'), igniteFire: v(sum, 'permanent_fire_damage_+%_per_second_of_ignite_up_to_10%'),
     flaskGuard: v(sum, 'gain_%_of_expected_recovery_over_1_second_as_guard_on_life_flask_use'), blockDaze: v(sum, 'daze_enemies_on_block_with_shield_raised_chance_%'), invokeMax: v(sum, 'invocation_skill_maximum_energy_+%'),
     invokeHalf: v(sum, 'invocation_spell_chance_to_cost_half_energy_%'), trigRefund: v(sum, 'trigger_skills_refund_half_energy_spent_chance_%'),
+    tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
     splash: sum.melee_splash ? 100 : mwTags.includes('mace') ? v(sum, 'your_mace_strike_melee_splash_chance_%') : 0, volMinion: v(sum, 'gain_X_volatility_on_persistent_minion_death'), reviveLife: v(sum, 'you_gain_%_life_when_one_of_your_minions_is_revived'),
     bannerBack: v(sum, 'on_banner_expiry_recover_%_of_required_glory'), bannerLinger: v(sum, 'banner_buff_lingers_for_X_seconds_after_leaving_area'), shockBack: v(sum, 'reapply_enemy_shock_on_consuming_enemy_shock_chance_%'), rareGlory: v(sum, 'gain_1_glory_every_X_seconds_per_rare_unique_monster_in_presence'), shockSpread: v(sum, 'shock_enemies_in_150cm_radius_on_shock_chance_%'),

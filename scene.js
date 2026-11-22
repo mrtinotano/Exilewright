@@ -257,7 +257,7 @@ export function initScene(el, api) {
   const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
   const coneHalf = S => (S.cone / 2 || (S.kind === 'cone' ? SIM.cone / 2 : 65)) * Math.PI / 180;   // S.cone: the data's angle (Deadly Resolve)
   function aim(S, p) {
-    const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange;
+    const max = S.kind === 'grenade' ? SIM.throwRange : S.kind === 'travel' ? sh(S).travel ?? SIM.travelRange : S.kind === 'slam' ? meleeR(S) : SIM.castRange * (S.kind === 'totem' ? 1 + sheet().totemRange / 100 : 1);   // the tree's increased totem placement range
     let dx = p.x - pp.x, dz = p.z - pp.z, l = Math.hypot(dx, dz);
     if (l < .001) { dx = Math.sin(facing); dz = Math.cos(facing); l = 0; } else { dx /= l; dz /= l; }
     const k = S.src ? l : Math.min(l, max);
@@ -2938,7 +2938,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, VM = st.verisium_comet_number_of_minions_to_create;
       if (VM) later(delay, () => {
         const n = VM + (S.infs?.includes('verisium') ? partOf(S, 'SkyfallInfusedPlayer')?.dmg.stats.verisium_comet_number_of_minions_to_create || 0 : 0);
-        for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_verisium_octopus_minions_allowed); minion(S, around(c, R), durOf(S), { kind: S.name }); }
+        for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_verisium_octopus_minions_allowed + sheet().tempMinion); minion(S, around(c, R), durOf(S), { kind: S.name }); }
       });
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
       const fly = Math.min(.4, delay);
@@ -3382,7 +3382,7 @@ export function initScene(el, api) {
   K.wardbound = S => {
     const st = S.dmg.stats, n = Math.min(Math.floor(((st._cost?.Ward || 0) + me.ward) / st.wardbound_minions_summon_minion_for_every_X_runic_ward_spent), st.base_number_of_wardbound_minions_allowed);
     spendWard(me.ward);
-    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
+    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed + sheet().tempMinion); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
   };
   // Queen's Procession: while it is on and you sprint, the swarm hits everything in its area every its interval, its more
   // damage per Swarm's Advance; a use that hits grants one (up to its most) and hits you for its self damage. note: losing
@@ -3561,7 +3561,7 @@ export function initScene(el, api) {
     K.sweep({ ...S, from: c, R: S.A, cone: st.bone_cone_angle });
     for (const d of corpses(c, S.A).filter(d => inCone(c, a0, half, d.pos))) {
       const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el);
-      limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed); minion(S, p, durOf(S), { kind: S.name });
+      limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed + sheet().tempMinion); minion(S, p, durOf(S), { kind: S.name });
     }
   };
   // Toxic Domain: its Toxic Bloom around you for its duration; in it you regenerate its life and your skills cost more
@@ -4129,7 +4129,7 @@ export function initScene(el, api) {
     // most per use and its limit, for its duration
     const RS = !auto && S.P.spell && S.els.includes('fire') && onS('Raging Spirits'), rs = RS && RS.dmg.stats;
     if (RS) for (let k = Math.min(rs.skill_raging_spirits_max_per_action, Math.max(1, Math.floor(S.A * 10 / rs.skill_raging_spirit_per_x_radius))); k > 0; k--) {
-      limit(o => o.kind === RS.name, rs.base_number_of_raging_spirits_allowed); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
+      limit(o => o.kind === RS.name, rs.base_number_of_raging_spirits_allowed + sheet().tempMinion); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
     }
     if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
     // Trickster's Shard: a spell you cast leaves a Fractured Mimic where you cast it, for its duration; at their limit they
@@ -5253,7 +5253,7 @@ export function initScene(el, api) {
     // duration, up to its most (the oldest gives way). note: the cooldown rate that speeds it up is not in the scene
     const RS = onS('Ravenous Swarm'), rs = RS?.dmg.stats;
     if (rs && near(pp, RS.A) && time - (me.swarmAt ?? -99) >= rs.base_cooldown_modifiable_repeat_interval_ms / 1000) {
-      me.swarmAt = time; limit(o => o.kind === RS.name, rs.ravenous_swarm_maximum_swarm_count); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
+      me.swarmAt = time; limit(o => o.kind === RS.name, rs.ravenous_swarm_maximum_swarm_count + sheet().tempMinion); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
     }
     const SW = onS('Sorcery Ward')?.dmg.stats, GD = onS('Ghost Dance')?.dmg.stats;
     if (!SW) me.aegis = 0; else if (time - (me.aegisAt ?? -99) >= SW.aegis_recharge_delay_ms / 1000) me.aegis = ((c.armour || 0) + (c.evasion || 0)) * SW['aegis_unique_shield_max_value_from_%_armour_evasion'] / 100;
