@@ -36,6 +36,7 @@ const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'o
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
 const GC = GAME.game || {};
+const GRUEL = { slow: 15, pot: 10, max: 10, decay: 2 };   // KeywordPopups GruellingMadness: the first slows movement 15%, each more +10% slow potency of debuffs, at most 10, one lost every 2 s without more
 const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
 const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
@@ -306,7 +307,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.gm = null; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -608,6 +609,7 @@ export function initScene(el, api) {
       const G = sheet().rage?.gain, n = (P.spell ? 3 * prowess().length : 0) + (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
       if (n > 0) { me.rageHit = time; gainRage(n); if (Math.random() * 100 < (sheet().rage?.fill || 0)) me.rage = rageMax(); }   // the tree's chance to gain all of it
     }
+    if (real) { const n = S.src === 'minionHit' ? sheet().gmMinion : !S.src ? S.dmg?.sum?.['chance_to_apply_gruelling_madness_on_hit_%'] : 0; if (Math.random() * 100 < (n || 0)) madness(d); if (!S.src && S.P.attack) madness(d, sheet().gmHit); }   // Gruelling Madness on hit
     if (!S.src && real && crit && S.P.melee && sheet().thornsCrit) later(.02, () => retaliate(d));   // Dreadfist: your Thorns damage to enemies you critically hit with melee
     if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
     if (!S.src && real && S.dmg?.attack) { const O = sheet(); if (O.perHit?.life || O.perHit?.mana) { me.life = gain(me.life, me.maxL, O.perHit.life); me.mana = gain(me.mana, me.maxM, O.perHit.mana); }   // The Lethal Draw, Thief's Torment
@@ -860,6 +862,7 @@ export function initScene(el, api) {
   const FROSTFLAME = 'active_skill_hit_damage_freeze_multiplier_+permyriad_final_per_1%_of_target_ailment_threshold_being_dealt_by_ignite_per_second';
   // the increased Slow Magnitude of the debuffs a skill inflicts (Hinder, Maim, its slowing zones): the tree's and its supports' (Slow Potency)
   // note: not chill, an ailment
+  const madness = (d, n = 1) => { if (n > 0) d.gm = { n: Math.min(GRUEL.max, (d.gm?.n || 0) + n), at: time }; };
   const slowK = S => 1 + ((S?.dmg?.sum?.['base_debuff_slow_magnitude_+%'] || 0) + (S?.haz ? S.dmg.sum['hazard_base_debuff_slow_magnitude_+%'] || 0 : 0)) / 100;   // and a Hazard's
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0 || sheet().noEleAil && !S.src && ['ignite', 'chill', 'freeze', 'shock'].includes(a)) return;   // Plaguefinger: no elemental ailments of yours
@@ -5145,7 +5148,7 @@ export function initScene(el, api) {
   // half the monster's power for a normal one, all of it for a magic one, twice it for rare and unique ones, the power being
   // the rarity's 1 / 2 / 5 times the monster's own, and 20 for a unique (note: a monster's own power is not in the tables:
   // the glossary's average, 1, is used). Dying and refilling fill them, as a checkpoint or a well does.
-  const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1);   // a monster's Power (Redblade Banner: more in your Presence)
+  const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1) + (sheet().gmPower && d?.gm && dist(d.pos, pp) <= sheet().overgrow.r ? d.gm.n : 0);   // a monster's Power (Redblade Banner: more in your Presence)
   const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
@@ -5357,8 +5360,10 @@ export function initScene(el, api) {
     let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
+    if (d.gm && time - d.gm.at >= GRUEL.decay) { d.gm.at = time; if (!--d.gm.n) d.gm = null; }
+    const GP = d.gm ? 1 + GRUEL.pot * (d.gm.n - 1) / 100 : 1;   // Gruelling Madness: more slow potency per stack after the first
     const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // its slows: Entangle's vines, Hinder
-    const maim = Math.max(SLOW_FLOOR / ks, (d.st.maim > 0 ? 1 - (d.mag.maim ?? MAIM.move) * d.stat.slowEffect / 100 : 1) * (1 + VS * d.stat.slowEffect / 100) * (d.debil > time ? 1 - DEBIL.slow / 100 : 1));   // and Debilitate
+    const maim = Math.max(SLOW_FLOOR / ks, (d.st.maim > 0 ? 1 - (d.mag.maim ?? MAIM.move) * d.stat.slowEffect * GP / 100 : 1) * (1 + VS * d.stat.slowEffect * GP / 100) * (d.debil > time ? 1 - DEBIL.slow / 100 : 1) * (d.gm ? Math.max(0, 1 - GRUEL.slow * d.stat.slowEffect * GP / 100) : 1));   // and Debilitate
     const SR = d.st.bleed > 0 && d.red;
     d.wait -= dt * (SR ? 1 + SR['bleeding_monsters_attack_speed_+%'] / 100 : 1);
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
@@ -5428,6 +5433,7 @@ export function initScene(el, api) {
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
     daemons();
+    if (sheet().auspex && time - (me.auspexAt ?? -9) >= 1) { me.auspexAt = time; for (const d of inside(pp, sheet().overgrow.r)) madness(d); }   // The Auspex: 1 Gruelling Madness each second in your Presence
     // The Hammer of Faith: every its interval a random lesser (non-damaging) Shrine's buff for that Shrine's duration (skills.json lesser_shrines)
     const HF = sheet().shrineEvery, LS = SK.lesser_shrines || [];
     if (HF && LS.length && time - (me.shrineAt ?? -99) >= HF) { me.shrineAt = time; const r = LS[Math.floor(Math.random() * LS.length)]; me.shrineBuff = { stats: r.stats, until: time + r.duration }; setBuff({ label: tn(r), c: css('gold'), s: r.duration }); shC.at = -99; }
