@@ -68,6 +68,8 @@ function local(item) {
     r.evasion = Math.round((base.armour.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
     r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
     r.movement = base.armour['movement_speed_%'] / 100;
+    // its Strength requirement with its own reduced / no requirements. note: the tree's increased / reduced ones not counted
+    r.str = s.local_no_attribute_requirements ? 0 : Math.floor((base.req?.str || 0) * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
   }
   if (base.weapon) {
     const w = base.weapon, phys = (1 + (s['local_physical_damage_+%'] || 0) / 100) * q;
