@@ -797,7 +797,7 @@ export function initScene(el, api) {
         F.push(me2);
         const gap = kind === 'rift' ? ts.shocking_rift_pulse_interval_ms / 1000 / (1 + (ts['shocking_rift_speed_+%_per_shock_consumed'] || 0) * near4.length / 100) : ts.grounding_shocks_pulse_delay_ms / 1000;
         const pulses = kind === 'rift' ? ts.shocking_rift_number_of_pulses : Math.floor((sh(X).duration || ts.base_skill_effect_duration / 1000) / gap);
-        if (near4) for (const e of near4) { e.st.shock = 0; e.inRift = true; }
+        if (near4) for (const e of near4) { if (!(Math.random() * 100 < (sheet().shockBack || 0))) e.st.shock = 0; e.inRift = true; }   // the tree's chance to reapply it
         const pulse = k => {
           if (me2.dead) return;
           if (k >= pulses) { me2.dead = true; me2.in.forEach(e => e.inRift = false); F.splice(F.indexOf(me2), 1); return; }
@@ -1009,7 +1009,7 @@ export function initScene(el, api) {
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
-      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
@@ -1564,12 +1564,12 @@ export function initScene(el, api) {
   function remnant(S, p) {
     const s = rstats(S), R = REMNANT[S.name], n = 1 + (Math.random() * 100 < (s['chance_%_to_create_additional_remnant'] || 0) ? 1 : 0);
     const reach = SIM.pickup * (1 + (s['remnant_pickup_range_+%'] || 0) / 100);
-    for (let j = 0; j < n; j++) {
-      const V = R.kinds ? R.kinds[Math.floor(rnd(R.kinds.length))] : R, c = j ? around(p, SIM.pickup) : { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(V.c, 2.2), fog: false }));
+    const drop = (V, c, again) => { const m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(V.c, 2.2), fog: false }));
       m.position.set(c.x, .5, c.z);
       thing(m, (s.base_remnant_duration_ms || SIM.lifetime * 1000) / 1000, { name: S.name, c,
-        tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, V, c); } } });
-    }
+        tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, V, c); if (!again && s.remnants_you_create_reappear_X_ms_after_being_collected) later(s.remnants_you_create_reappear_X_ms_after_being_collected / 1000, () => drop(V, c, true)); } } });   // Stormweaver's reappearing once
+    };
+    for (let j = 0; j < n; j++) drop(R.kinds ? R.kinds[Math.floor(rnd(R.kinds.length))] : R, j ? around(p, SIM.pickup) : { x: p.x, z: p.z });
   }
   function collect(S, R, c) {
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
@@ -2433,7 +2433,7 @@ export function initScene(el, api) {
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); }   // Dazing Cry
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = per ? Math.floor(mp / per) : 2;
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
@@ -4877,8 +4877,8 @@ export function initScene(el, api) {
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
-    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
-      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', el * RT * RC.es / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * RC.mana / 100); }
+    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100 + total * RT * RC.lme / 100
+      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
