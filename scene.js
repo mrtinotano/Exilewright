@@ -4789,8 +4789,8 @@ export function initScene(el, api) {
     const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.tail) c = { ...c, evasion: (c.evasion || 0) * (1 + me.tail * TAILWIND.evasion / 100 / (c.evasionInc || 1)), deflect: c.deflect && { ...c.deflect, less: 100 - (100 - c.deflect.less) * (1 - me.tail * TAILWIND.deflect / 100) } };   // Tailwind (its increased evasion added to yours)
-    if (me.jade) c = { ...c, physDR: me.jade * c.jade.dr };
-    if (c.archonRes && meIs.Archon()) c = { ...c, res: { ...c.res, ...Object.fromEntries(ELEM.map(e => [e, { ...c.res[e], capped: Math.min(c.res[e].max, c.res[e].value + c.archonRes) }])) } };   // Archon buffs' elemental resistances   // Jade: its additional physical damage reduction a stack
+    if (me.jade) c = { ...c, physDR: me.jade * c.jade.dr };   // Jade: its additional physical damage reduction a stack
+    if (c.archonRes && meIs.Archon()) c = { ...c, res: { ...c.res, ...Object.fromEntries(ELEM.map(e => [e, { ...c.res[e], capped: Math.min(c.res[e].max, c.res[e].value + c.archonRes) }])) } };   // Archon buffs' elemental resistances
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     // Future-Past: after its Hindsight (its duration) Hinekora's Foresight keeps the roll from avoiding hits; a hit while
