@@ -112,7 +112,7 @@ function motes(b) {
   const c = (b.gems || []).map(g => SK.skills[g.name]?.constant).find(c => c?.['gem_barrier_red_grants_maximum_life_+%']);
   if (!c) return {};
   const motes = Object.fromEntries(ATTRS.map(a => [a, c.skill_specific_stat_description_mode || 0]));
-  for (const [i, g] of b.gems.entries()) { if (usedBy(b, i)) continue; const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
+  for (const g of b.gems) { const req = ATTRS.filter(a => GEM[g.name]?.tags?.includes(a)); for (const a of req) motes[a] += req.length === 1 ? 2 : 1; }
   const per = (id, a) => (c[id] || 0) * motes[a];
   return { 'maximum_life_+%': per('gem_barrier_red_grants_maximum_life_+%', 'strength'),
     'global_armour_evasion_energy_shield_+%': per('gem_barrier_green_grants_evasion_rating_+%', 'dexterity'),
@@ -123,9 +123,9 @@ function motes(b) {
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
-// self-check: 3 Strength Motes of its own, 2 for Berserk, which requires Strength alone, and 1 for Mortar Cannon with the
-// Cluster Grenade it uses, at 2% life each
-console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }, { name: 'Cluster Grenade' }] })['maximum_life_+%'] === 12 && skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Ancestral Warrior Totem' }, { name: 'Orb of Storms' }] })['life_regeneration_rate_+%'] === 25 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
+// self-check: 3 Strength Motes of its own, 2 for Berserk, which requires Strength alone, and 1 each for Mortar Cannon and
+// the Cluster Grenade it uses (a skill gem of its own, as PoB2 counts it), at 2% life each
+console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }, { name: 'Cluster Grenade' }] })['maximum_life_+%'] === 14 && skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Ancestral Warrior Totem' }, { name: 'Orb of Storms' }] })['life_regeneration_rate_+%'] === 25 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
 const CHAR = SK.character_stats || {};
 const v = (sum, ...ids) => ids.reduce((t, id) => t + (sum[id] || 0), 0);
 const first = (...xs) => xs.find(x => x != null) ?? null;
