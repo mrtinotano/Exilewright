@@ -1176,6 +1176,13 @@ export function skill(g, b, treeGear) {
   const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
   if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
   if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
+  // the tree's per recent use: elemental penetration per Glory skill used in the last 6 s; increased damage per Glory consumed
+  // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
+  const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
+  by('%_attack_damage_per_glory_consumed_for_6_seconds_up_to_100', 'GloryConsumedPast6', 100, attack); by('combo_finisher_damage_+%_up_to_40%', 'ComboConsumed', 40);
+  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50);
+  const GP = v(sum, 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds');
+  if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
   for (const [s, cv] of Object.entries(WHILE)) {
     const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'Condition', var: cv }];
     if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });

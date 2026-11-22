@@ -642,7 +642,9 @@ export function initScene(el, api) {
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length,
-      EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0) };
+      EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0),
+      GloryConsumedPast6: (me.gloryEaten || []).reduce((t, x) => t + (time - x.t <= 6 ? x.n : 0), 0), GlorySkillsUsedPast6: (me.gloryEaten || []).filter(x => time - x.t <= 6).length,
+      ComboConsumed: S.comboSpent || 0, HazardsTriggeredRecently: (me.hazTrig || []).filter(t => time - t <= RECENT).length };
     let n;
     if (c.type === 'ActorCondition' || c.type === 'Condition') n = (v in is ? is[v] : !en && meIs[v]?.()) ? 1 : 0;
     else if (c.type === 'MultiplierThreshold') n = v === 'Rage' && S.enraged || v in count && count[v] >= (c.threshold || 0) ? 1 : 0;
@@ -938,7 +940,7 @@ export function initScene(el, api) {
   function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
-    if (roll(S.dmg.stats?.['base_chance_to_daze_%'] || 0)) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike
+    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time);   /* and the tree's projectiles from further than 6 m */   // Wind Blast, Siphoning Strike
     // the damage of the hit that counts for an ailment: its own type's, every type's with "all damage can <ailment>" (the
     // build's; Pinnacle of Power's buff: every Elemental Ailment, BuffDefinitions elemental_power; all damage to bleeding /
     // poisoned enemies contributing to chill), and the types the build's "<type> damage can <ailment>" add (EXTRA)
@@ -1004,7 +1006,7 @@ export function initScene(el, api) {
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
-      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
@@ -1768,7 +1770,7 @@ export function initScene(el, api) {
     const e = thing(g, dur, { name: X.name, hazard: true,
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
-        const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true;
+        const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
         later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
@@ -3949,6 +3951,8 @@ export function initScene(el, api) {
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
+      const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
+      if (tally() < had && EF && ph) { const f = S.dmg.hits.fire || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: [f[0] + ph[0] * EF / 100, f[1] + ph[1] * EF / 100] } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
       if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
         if (ts.length) S.mult *= 1 + EA / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length;
@@ -3978,6 +3982,7 @@ export function initScene(el, api) {
       const st = gst(S);
       const g0 = me.glory[S.name] || 0; me.gloryUsed = time;
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
+      me.gloryEaten = [...(me.gloryEaten || []).filter(x => time - x.t <= 6), { t: time, n: g0 - me.glory[S.name] }];   // the Glory consumed in the last 6 s, a use each
       const GL = sheet().gloryLife * (g0 - me.glory[S.name]); if (GL > 0) me.life = Math.min(me.maxL, me.life + me.maxL * GL / 100);   // the tree's life per Glory consumed
       hudT = 0;
     }
@@ -3997,7 +4002,7 @@ export function initScene(el, api) {
     if (MV) me.travAt[S.name] = me.trav;
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
-    if (!auto && CB?.need) { me.esEarly = (me.esEarly || 0) + comboNow(S) * (CB.esSooner || 0); me.combo = 0; }   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
+    if (!auto && CB?.need) { S.comboSpent = comboNow(S); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB.esSooner || 0); me.combo = 0; }   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
     // as in the game, a skill the weapon in hand cannot use is not used (calc.js skill)
     if (S.dmg?.reason === 'This skill cannot be used with the weapon in hand') { toast(`${S.label}: ${t(S.dmg.reason)}`); return false; }
     if (!auto && me.maxM && !tog[S.name]) {
