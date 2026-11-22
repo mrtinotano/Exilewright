@@ -426,12 +426,13 @@ export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slo
 export function offhandFits(weapon, off, giant, staffFocus) {
   const w = BASE[weapon?.base], quiver = !!BASE[off?.base]?.tags.includes('quiver');
   if (!w) return true;
-  if (staffFocus && w.class === 'Staves' && isFocus(off)) return true;
+  if (staffTakesFocus(weapon, staffFocus) && isFocus(off)) return true;
   if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
   return !bothHands(weapon, giant);
 }
 // a weapon that takes both hands (the game shows it in the off hand too): two-handed, not a bow (it holds a quiver), and
 // not one Giant's Blood holds in one hand
+const staffTakesFocus = (weapon, staffFocus) => !!staffFocus && classOf(weapon) === 'Staves';
 export const bothHands = (weapon, giant) => { const w = BASE[weapon?.base];
   return !!w?.tags.includes('twohand') && !w.tags.includes('bow') && !(giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class)); };
 // Weapon sets (the game's I and II): the set not in use waits in b.swap (its weapon and off hand) and b.wset is the one
@@ -668,7 +669,8 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 // snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
 // trade: { can(slot), money() -> [[currency, name]], go(slot, max, currency) }: the search for one like the item worn or better
-export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, trade, staffFocus) {
+export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, trade) {
+  const giant = () => tree().keystone_giants_blood, staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -804,7 +806,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
     if (!names[sel]) sel = 'weapon';
     // a weapon that takes both hands shows in the off hand too, dimmed, as in the game (picking it there picks the weapon)
-    const both = !items.offhand && bothHands(items.weapon, giant?.()) && !(staffFocus?.() && classOf(items.weapon) === 'Staves');   // Instruments of Power: its Focus slot stays open
+    const both = !items.offhand && bothHands(items.weapon, giant()) && !staffTakesFocus(items.weapon, staffFocus());   // Instruments of Power: its Focus slot stays open
     const cell = (slot, area) => {
       const ghost = both && slot === 'offhand', at = ghost ? 'weapon' : slot, it = items[at], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
       return `<div class="cell ${base ? rarityOf(it) : ''}${ghost ? ' ghost' : ''}${slot === sel ? ' sel' : ''}" data-pick="${at}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
@@ -828,7 +830,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'filter') { el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value); fillGains(); }
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
-  const put = (slot, it) => wear(getBuild(), slot, it, giant?.(), staffFocus?.());
+  const put = (slot, it) => wear(getBuild(), slot, it, giant(), staffFocus());
   // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
   function paste(text) {
     const r = parseItem(text);
