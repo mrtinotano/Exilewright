@@ -966,7 +966,7 @@ export function initScene(el, api) {
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
-      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect * (S.shockX || 1) };   // S.shockX: Vivid Stampede's more per leap inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
+      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect * (S.shockX || 1) }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);   // S.shockX: Vivid Stampede's more per leap
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
       const SCn = S.dmg.sum?.['support_%_chance_to_shock_nearby_enemy_on_shock'];
@@ -4303,8 +4303,8 @@ export function initScene(el, api) {
     const VS = sheet().vivid, D = VS && time >= (me.vividAt ?? -9) && granted('Vivid Stampede', 20); if (!D) return;
     const st = D.stats, X = { ...asTrig(S, { ...D, id: 'Vivid Stampede' }), src: 'vivid' }, n = me.wisps, legs = st.vivid_stag_cascade_number_of_damaging_areas || 1, step = 2 * X.A + (st.vivid_stag_spacing || 0) / 10;
     me.wisps = 0; me.vividAt = time + (st._cooldown_ms || 0) / 1000; say(X.label + (n > 1 ? ` ×${n}` : ''), 'lightning');
-    const half = (VS.home || 0) * Math.PI / 360, off = d => Math.abs(Math.atan2(Math.sin(Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z) - facing), Math.cos(Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z) - facing)));
-    const aim = half && near(pp, legs * step, d => off(d) <= half), a0 = aim ? Math.atan2(aim.pos.x - pp.x, aim.pos.z - pp.z) : facing, o = { x: pp.x, z: pp.z };
+    const half = (VS.home || 0) * Math.PI / 360, ang = d => Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), off = d => Math.abs(Math.atan2(Math.sin(ang(d) - facing), Math.cos(ang(d) - facing)));
+    const aim = half && near(pp, legs * step, d => off(d) <= half), a0 = aim ? ang(aim) : facing, o = { x: pp.x, z: pp.z };
     for (let j = 0; j < n; j++) { const a = a0 + (j - (n - 1) / 2) * .3;
       for (let k = 0; k < legs; k++) later(.1 + k * .15, () => { const c = { x: o.x + Math.sin(a) * step * (k + 1), z: o.z + Math.cos(a) * step * (k + 1) };
         fx.ring(c, .2, X.A, 'lightning', .3); area(c, X.A, { ...X, mult: X.mult * (1 + VS.more * k / 100), shockX: 1 + VS.shock * k / 100 });
