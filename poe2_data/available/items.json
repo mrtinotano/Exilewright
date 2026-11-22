@@ -156036,8 +156036,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceCorruptForTwoEnchantments1",
@@ -156067,8 +156066,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence1",
@@ -156103,8 +156101,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence2",
@@ -156139,8 +156136,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence3",
@@ -156175,8 +156171,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence4",
@@ -156211,8 +156206,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence5",
@@ -156247,8 +156241,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence6",
@@ -156283,8 +156276,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskLifeRecoveryRateEssence7",
@@ -156319,8 +156311,7 @@
     "flask",
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskManaRecoveryRateEssence1",
@@ -156355,8 +156346,7 @@
     "flask",
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskManaRecoveryRateEssence2",
@@ -156391,8 +156381,7 @@
     "flask",
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BeltFlaskManaRecoveryRateEssence3",
@@ -156427,8 +156416,7 @@
     "flask",
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence2_",
@@ -156463,8 +156451,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence3",
@@ -156499,8 +156486,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence4",
@@ -156535,8 +156521,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence5",
@@ -156571,8 +156556,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence6",
@@ -156607,8 +156591,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidShockEssence7",
@@ -156643,8 +156626,7 @@
     "elemental",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AttackerTakesDamageEssence5",
@@ -156679,8 +156661,7 @@
     "physical_damage",
     "damage",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AttackerTakesDamageEssence6",
@@ -156715,8 +156696,7 @@
     "physical_damage",
     "damage",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AttackerTakesDamageEssence7",
@@ -156751,8 +156731,7 @@
     "physical_damage",
     "damage",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidFreezeEssence3",
@@ -156792,8 +156771,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidFreezeEssence4",
@@ -156833,8 +156811,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidFreezeEssence5",
@@ -156874,8 +156851,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidFreezeEssence6",
@@ -156915,8 +156891,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidFreezeEssence7",
@@ -156956,8 +156931,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AdditionalShieldBlockChance1",
@@ -156990,8 +156964,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AdditionalShieldBlockChance2",
@@ -157024,8 +156997,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AdditionalShieldBlockChance3",
@@ -157058,8 +157030,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AdditionalShieldBlockChance4",
@@ -157092,8 +157063,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidIgniteEssence4",
@@ -157128,8 +157098,7 @@
     "elemental",
     "fire",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidIgniteEssence5",
@@ -157164,8 +157133,7 @@
     "elemental",
     "fire",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidIgniteEssence6",
@@ -157200,8 +157168,7 @@
     "elemental",
     "fire",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidIgniteEssence7_",
@@ -157236,8 +157203,7 @@
     "elemental",
     "fire",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ReducedManaReservationCostEssence4",
@@ -157271,8 +157237,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ReducedManaReservationCostEssence5",
@@ -157306,8 +157271,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ReducedManaReservationCostEssence6",
@@ -157341,8 +157305,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ReducedManaReservationCostEssence7",
@@ -157376,8 +157339,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaReservationEfficiencyEssence4",
@@ -157411,8 +157373,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaReservationEfficiencyEssence5__",
@@ -157446,8 +157407,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaReservationEfficiencyEssence6_",
@@ -157481,8 +157441,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaReservationEfficiencyEssence7",
@@ -157516,8 +157475,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalIncreasedMeleeWeaponRangeEssence5",
@@ -157550,8 +157508,7 @@
    ],
    "tags": [
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalIncreasedMeleeWeaponRangeEssence6",
@@ -157584,8 +157541,7 @@
    ],
    "tags": [
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalIncreasedMeleeWeaponRangeEssence7",
@@ -157618,8 +157574,7 @@
    ],
    "tags": [
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FishingLineStrength",
@@ -157893,8 +157848,7 @@
     "flask",
     "chaos",
     "resistance"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedChaosDamageEssence5",
@@ -157929,8 +157883,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedChaosDamageEssence6",
@@ -157965,8 +157918,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedChaosDamageEssence7",
@@ -158001,8 +157953,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedLifeLeechRateEssence1",
@@ -158036,8 +157987,7 @@
    "tags": [
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChaosLeechedAsLifeEssence1_",
@@ -158072,8 +158022,7 @@
     "resource",
     "life",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationEssence1_",
@@ -158109,8 +158058,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationEssence2",
@@ -158146,8 +158094,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationEssence3",
@@ -158183,8 +158130,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationEssence4",
@@ -158220,8 +158166,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationTwoHandEssence1_",
@@ -158257,8 +158202,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationTwoHandEssence2",
@@ -158294,8 +158238,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationTwoHandEssence3_",
@@ -158331,8 +158274,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LightningResistancePenetrationTwoHandEssence4",
@@ -158368,8 +158310,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationEssence1",
@@ -158405,8 +158346,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationEssence2",
@@ -158442,8 +158382,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationEssence3",
@@ -158479,8 +158418,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationEssence4___",
@@ -158516,8 +158454,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationEssence5",
@@ -158553,8 +158490,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationTwoHandEssence1",
@@ -158590,8 +158526,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationTwoHandEssence2_",
@@ -158627,8 +158562,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationTwoHandEssence3",
@@ -158664,8 +158598,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationTwoHandEssence4",
@@ -158701,8 +158634,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireResistancePenetrationTwoHandEssence5",
@@ -158738,8 +158670,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence1",
@@ -158775,8 +158706,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence2",
@@ -158812,8 +158742,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence3",
@@ -158849,8 +158778,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence4_",
@@ -158886,8 +158814,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence5",
@@ -158923,8 +158850,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationEssence6_",
@@ -158960,8 +158886,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence1",
@@ -158997,8 +158922,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence2",
@@ -159034,8 +158958,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence3",
@@ -159071,8 +158994,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence4",
@@ -159108,8 +159030,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence5",
@@ -159145,8 +159066,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ColdResistancePenetrationTwoHandEssence6__",
@@ -159182,8 +159102,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidElementalStatusAilmentsEssence1",
@@ -159220,8 +159139,7 @@
     "cold",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidElementalStatusAilmentsEssence2",
@@ -159258,8 +159176,7 @@
     "cold",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidElementalStatusAilmentsEssence3",
@@ -159296,8 +159213,7 @@
     "cold",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToAvoidElementalStatusAilmentsEssence4",
@@ -159334,8 +159250,7 @@
     "cold",
     "lightning",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence1",
@@ -159371,8 +159286,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence2",
@@ -159408,8 +159322,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence3",
@@ -159445,8 +159358,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence4",
@@ -159482,8 +159394,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence5",
@@ -159519,8 +159430,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence6",
@@ -159556,8 +159466,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LifeLeechPermyriadLocalEssence7",
@@ -159593,8 +159502,7 @@
     "life",
     "physical",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SummonTotemCastSpeedEssence1",
@@ -159627,8 +159535,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SummonTotemCastSpeedEssence2",
@@ -159661,8 +159568,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SummonTotemCastSpeedEssence3",
@@ -159695,8 +159601,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SummonTotemCastSpeedEssence4",
@@ -159729,8 +159634,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "StunAvoidanceEssence5",
@@ -159760,8 +159664,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "StunAvoidanceEssence6",
@@ -159791,8 +159694,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "StunAvoidanceEssence7",
@@ -159822,8 +159724,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedStunThresholdEssence5",
@@ -159853,8 +159754,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedStunThresholdEssence6",
@@ -159884,8 +159784,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "IncreasedStunThresholdEssence7",
@@ -159915,8 +159814,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedFireDamageEssence7",
@@ -159959,8 +159857,7 @@
     "elemental",
     "fire",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedColdDamageEssence7",
@@ -160003,8 +159900,7 @@
     "elemental",
     "cold",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedLightningDamageEssence7",
@@ -160047,8 +159943,7 @@
     "elemental",
     "lightning",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedFireDamageTwoHandEssence7_",
@@ -160091,8 +159986,7 @@
     "elemental",
     "fire",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedColdDamageTwoHandEssence7",
@@ -160135,8 +160029,7 @@
     "elemental",
     "cold",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellAddedLightningDamageTwoHandEssence7",
@@ -160179,8 +160072,7 @@
     "elemental",
     "lightning",
     "caster"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageEssence1_",
@@ -160221,8 +160113,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageEssence2__",
@@ -160263,8 +160154,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageEssence3",
@@ -160305,8 +160195,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageTwoHandEssence1",
@@ -160347,8 +160236,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageTwoHandEssence2",
@@ -160389,8 +160277,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "LocalAddedChaosDamageTwoHandEssence3",
@@ -160431,8 +160318,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "CannotBePoisonedEssence1",
@@ -160467,8 +160353,7 @@
     "poison",
     "chaos",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "QuiverAddedChaosEssence1_",
@@ -160509,8 +160394,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "QuiverAddedChaosEssence2_",
@@ -160551,8 +160435,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "QuiverAddedChaosEssence3__",
@@ -160593,8 +160476,7 @@
     "damage",
     "chaos",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedGemsDealAdditionalFireDamageEssence1",
@@ -160637,8 +160519,7 @@
     "elemental",
     "fire",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedGemsHaveMoreAttackAndCastSpeedEssenceNew1",
@@ -160676,8 +160557,7 @@
     "caster",
     "speed",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedGemsAddPercentageOfPhysicalAsLightningEssence1",
@@ -160717,8 +160597,7 @@
     "elemental",
     "lightning",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedGemsDealMoreElementalDamageEssence1",
@@ -160755,8 +160634,7 @@
     "damage",
     "elemental",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ElementalDamageTakenWhileStationaryEssence1",
@@ -160794,8 +160672,7 @@
    ],
    "tags": [
     "elemental"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "BurningGroundWhileMovingEssence1",
@@ -160825,8 +160702,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "PhysicalDamageTakenAsColdEssence1",
@@ -160861,8 +160737,7 @@
     "physical",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireDamageAsPortionOfPhysicalDamageEssence1",
@@ -160900,8 +160775,7 @@
     "physical",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireDamageAsPortionOfPhysicalDamageEssence2",
@@ -160939,8 +160813,7 @@
     "physical",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChaosDamageOverTimeTakenEssence1",
@@ -160973,8 +160846,7 @@
    ],
    "tags": [
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedSkillsCriticalChanceEssence1",
@@ -161007,8 +160879,7 @@
    ],
    "tags": [
     "critical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MovementVelocityDuringFlaskEffectEssence1",
@@ -161042,8 +160913,7 @@
    "tags": [
     "flask",
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AddedColdDamagePerFrenzyChargeEssence1",
@@ -161084,8 +160954,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AddedColdDamagePerFrenzyChargeEssenceQuiver1",
@@ -161126,8 +160995,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AddedFireDamageIfBlockedRecentlyEssence1",
@@ -161168,8 +161036,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedSkillAlwaysIgniteEssence1",
@@ -161204,8 +161071,7 @@
     "elemental",
     "fire",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedSkillDamageOnLowLifeEssence1__",
@@ -161238,8 +161104,7 @@
    ],
    "tags": [
     "damage"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ElementalPenetrationDuringFlaskEffectEssence1",
@@ -161275,8 +161140,7 @@
     "flask",
     "damage",
     "elemental"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AdditionalPhysicalDamageReductionDuringFlaskEffectEssence1",
@@ -161310,8 +161174,7 @@
    "tags": [
     "flask",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ReflectDamageTakenEssence1",
@@ -161341,8 +161204,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "PowerChargeOnBlockEssence1",
@@ -161376,8 +161238,7 @@
    "tags": [
     "block",
     "power_charge"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "NearbyEnemiesChilledOnBlockEssence1",
@@ -161413,8 +161274,7 @@
     "elemental",
     "cold",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "PoisonDamageEssence1",
@@ -161451,8 +161311,7 @@
     "damage",
     "chaos",
     "ailment"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChanceToRecoverManaOnSkillUseEssence1",
@@ -161486,8 +161345,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FortifyEffectEssence1",
@@ -161517,8 +161375,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "CrushOnHitChanceEssence1",
@@ -161551,8 +161408,7 @@
    ],
    "tags": [
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AlchemistsGeniusOnFlaskEssence1_",
@@ -161585,8 +161441,7 @@
    ],
    "tags": [
     "flask"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "PowerFrenzyOrEnduranceChargeOnKillEssence1",
@@ -161621,8 +161476,7 @@
     "endurance_charge",
     "frenzy_charge",
     "power_charge"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SocketedAuraGemLevelsEssence1",
@@ -161656,8 +161510,7 @@
    "tags": [
     "aura",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "FireBurstOnHitEssence1",
@@ -161691,8 +161544,7 @@
    "tags": [
     "skill",
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpiritMinionEssence1",
@@ -161725,8 +161577,7 @@
    ],
    "tags": [
     "minion"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AreaOfEffectEssence1",
@@ -161756,8 +161607,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "OnslaughtWhenHitEssence1",
@@ -161787,8 +161637,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "OnslaughtWhenHitNewEssence1",
@@ -161818,8 +161667,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SupportDamageOverTimeEssence1",
@@ -161854,8 +161702,7 @@
     "skill",
     "damage",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellBlockOnLowLifeEssence1",
@@ -161888,8 +161735,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MaximumDoomEssence1__",
@@ -161923,8 +161769,7 @@
    "tags": [
     "caster",
     "curse"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MaximumDoomAmuletEssence1",
@@ -161958,8 +161803,7 @@
    "tags": [
     "caster",
     "curse"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MarkEffectEssence1",
@@ -161989,8 +161833,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "DecayOnHitEssence1",
@@ -162025,8 +161868,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "SpellBlockAmuletEssence1",
@@ -162059,8 +161901,7 @@
    ],
    "tags": [
     "block"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MovementSpeedOnBurningChilledShockedGroundEssence1",
@@ -162093,8 +161934,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaRegenerationWhileShockedEssence1",
@@ -162128,8 +161968,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ManaGainedOnBlockEssence1",
@@ -162164,8 +162003,7 @@
     "block",
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ChaosNonAilmentDamageOverTimeMultiplierUber1",
@@ -162555,8 +162393,7 @@
    "tags": [
     "resource",
     "life"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceIncreasedManaPercent1",
@@ -162590,8 +162427,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceGlobalDefences1",
@@ -162624,8 +162460,7 @@
    ],
    "tags": [
     "defences"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraPhysical1",
@@ -162660,8 +162495,7 @@
     "physical_damage",
     "damage",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraPhysical2H",
@@ -162696,8 +162530,7 @@
     "physical_damage",
     "damage",
     "physical"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraFire1",
@@ -162733,8 +162566,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraFire2H",
@@ -162770,8 +162602,7 @@
     "damage",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraCold1",
@@ -162807,8 +162638,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraCold2H",
@@ -162844,8 +162674,7 @@
     "damage",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraLightning1",
@@ -162881,8 +162710,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceDamageasExtraLightning2H",
@@ -162918,8 +162746,7 @@
     "damage",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceFireRecoupLife1",
@@ -162955,8 +162782,7 @@
     "life",
     "elemental",
     "fire"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceColdRecoupLife1",
@@ -162992,8 +162818,7 @@
     "life",
     "elemental",
     "cold"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceLightningRecoupLife1",
@@ -163029,8 +162854,7 @@
     "life",
     "elemental",
     "lightning"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssencePhysicalDamageTakenAsChaos1",
@@ -163064,8 +162888,7 @@
    "tags": [
     "physical",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceAttackSkillLevel1H1",
@@ -163098,8 +162921,7 @@
    ],
    "tags": [
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceAttackSkillLevel2H1",
@@ -163132,8 +162954,7 @@
    ],
    "tags": [
     "attack"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceSpellSkillLevel1H1",
@@ -163167,8 +162988,7 @@
    "tags": [
     "caster",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceSpellSkillLevel2H1",
@@ -163202,8 +163022,7 @@
    "tags": [
     "caster",
     "gem"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceOnslaughtonKill1",
@@ -163236,8 +163055,7 @@
    ],
    "tags": [
     "speed"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceManaCostReduction",
@@ -163271,8 +163089,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceManaCostReduction2H",
@@ -163306,8 +163123,7 @@
    "tags": [
     "resource",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssencePercentStrength1",
@@ -163340,8 +163156,7 @@
    ],
    "tags": [
     "attribute"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssencePercentDexterity1",
@@ -163374,8 +163189,7 @@
    ],
    "tags": [
     "attribute"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssencePercentIntelligence1",
@@ -163408,8 +163222,7 @@
    ],
    "tags": [
     "attribute"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceReducedCriticalDamageAgainstYou1",
@@ -163439,8 +163252,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceGoldDropped1",
@@ -163470,8 +163282,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "EssenceAuraEffect1",
@@ -163501,8 +163312,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "AbyssModRadiusJewelPrefixDamageTakenRecoupLife",
@@ -175451,8 +175261,7 @@
      "default",
      0
     ]
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "HandWrapsEssenceGoldDropped1",
@@ -175485,8 +175294,7 @@
    ],
    "tags": [
     "charm"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "HandWrapsEssenceLocalRuneAndSoulCoreEffect1",
@@ -175527,8 +175335,7 @@
     "resource",
     "life",
     "mana"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "MinionDamage1",
@@ -181545,8 +181352,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "ConvertedEssenceDamageasExtraChaos2H",
@@ -181581,8 +181387,7 @@
     "chaos_damage",
     "damage",
     "chaos"
-   ],
-   "essence": true
+   ]
   },
   {
    "id": "TimeInfluenceIncreasedDuration1",

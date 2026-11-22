@@ -643,8 +643,8 @@ export function tradeItem({ name, base: baseName, lines, runes = [] }) {
   const kind = a => a.domain === base.domain || a.desecrated && canRoll(a, base, true), left = () => rest.map(l => l.text).filter(x => missed.has(x));
   const late = byText(left(), kind);
   late.found.forEach(f => missed.delete(f.src));
-  const bare = x => x.replace(/\bGlobal /, ''), was = left().filter(x => bare(x) !== x), unglobal = byText(was.map(bare), a => kind(a) && !a.stats.some(([id]) => id.startsWith('local_')));
-  unglobal.found.forEach(f => missed.delete(was.find(x => bare(x) === f.src)));
+  const was = new Map(left().filter(x => /\bGlobal /.test(x)).map(x => [x.replace(/\bGlobal /, ''), x])), unglobal = byText([...was.keys()], a => kind(a) && !a.stats.some(([id]) => id.startsWith('local_')));
+  unglobal.found.forEach(f => missed.delete(was.get(f.src)));
   late.found.push(...unglobal.found);
   item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: f.values })).concat([...dm.found, ...late.found].map(f => ({ id: f.key, values: f.raw })));
   return { item, slots: base.slots, missed: [...missed] };
