@@ -26,6 +26,7 @@ for (const m of MON.monsters) {
 export const ENEMIES = [...MON.monsters].sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 const BY_ID = new Map(ENEMIES.map(m => [m.id, m]));
 export const enemy = id => BY_ID.get(id) || null;
+export const monSkill = key => MON.skills?.[key] || null;   // a monster skill as the data has it (its cast time, cooldown)
 // every word of the query has to appear in the name, category or areas; names that start with the query come first
 export function search(q, limit = 80) {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean), first = words.join(' ');

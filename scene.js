@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, fmt, cap } from './i18n.js';
-import { K as GAME, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemy, monSkill, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
@@ -1362,6 +1362,7 @@ export function initScene(el, api) {
     const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed + (/^minion/.test(S.src) ? XB.allyCursed : 0) ? [.25, 'chaos'] : R() < XB.any * (['Undead', 'Demon'].includes(d.mon?.category) ? 2 : 1) ? [1, 'physical']
       : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
     if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'physical' ? 'blood' : XK[1]); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
+    if (S && sheet().gloom) later(.05, () => { pop(p, SIM.heraldR, 'chaos'); lifeBlast(p, SIM.heraldR, S, 'chaos', d.max * .25); });   // Palm of the Dreamer's Gloom Shrine: explode_enemies_for_25%_life_as_chaos_on_kill_chance_% (100). note: its radius is the scene's
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
@@ -4797,6 +4798,20 @@ export function initScene(el, api) {
     if (CB) { const x = me.maxM * CB / 100 * (T.thornsX || 1); hits.lightning = [0, 1].map(k => (hits.lightning?.[k] || 0) + x); }
     return Object.values(hits).some(([, hi]) => hi > 0) ? { ...T, hits } : null;
   }
+  // the Guiding Palms' Guided Shrines (Shrines.dat UniqueGuidingPalm*Shrine, monsters.json): a Daemon of yours that marks an
+  // enemy within its aggro range every its marking skill's time (cooldown) and strikes it with its damaging skill, at your
+  // level. note: it strikes from you (it is not drawn following you) and its skills' ailment chances are not played
+  const DAEMON = { fire: ['Fire', 'GTShrineFirePlayer', 'GSShrineFirePlayer'], cold: ['Cold', 'GTShrineColdPlayer', 'MPSShrineColdPlayer'], lightning: ['Lightning', 'GTShrineLightningPlayer', 'GSShrineLightningPlayer'] };
+  function daemons() {
+    for (const el of sheet().daemons || []) {
+      const [n, mark, key] = DAEMON[el], m = enemy(`Metadata/Monsters/Daemon/Shrines/Shrine${n}DaemonPlayer`), G = monSkill(mark); if (!m || !G) continue;
+      if (time - (me.daemonAt?.[el] ?? -99) < Math.max(G.cast || 1, (G.cooldown || 0) / (G.uses || 1))) continue;
+      const d = near(pp, (m.aggro || 105) / 10); if (!d) continue;
+      (me.daemonAt ||= {})[el] = time; const a = attackOf(m, sheet().level || 1, key, 'normal', true), X = { ...thornX({ hits: a.hits, crit: a.crit }, m.name), name: 'Daemon' };
+      later(.3, () => a.area ? area(d.pos, X.A, X, { noPay: true, noTouch: true }) : hit(d, X, { noPay: true }));
+      fx.ring(d.pos, .2, X.A, el, .4);
+    }
+  }
   const thornX = (D, label) => { const els = Object.keys(D.hits).filter(e => D.hits[e][1] > 0); return { name: 'Thorns', label, P: THORN_P, G: {}, A: SIM.area, dmg: { attack: false, dot: {}, trig: [], ...D }, src: 'thorns', el: els.find(e => e !== 'physical') || els[0], els, ail: [], mult: 1, gm: 1, spent: 0 }; };
   // Arctic Armour: while on, a stage every its interval you stand still, up to its most; a melee hit you take removes one
   // for a burst of ice at the attacker, its cold damage per stage the barrier had
@@ -5402,6 +5417,7 @@ export function initScene(el, api) {
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
+    daemons();
     // uniques: enemies in your Presence Blinded (Sandstorm Visage), Intimidated (Perfidy), Hindered (Amor Mandragora), while they are in it
     const PS = sheet().presence || {};
     if (PS.blind || PS.intim || PS.hinder) for (const d of dummies) if (d.inPres) {

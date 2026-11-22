@@ -575,6 +575,8 @@ export function recovery(c, sum) {
     poisonKill: v(sum, 'recover_permyriad_maximum_life_per_poison_on_enemy_on_kill') / 100, killTwice: !!sum.on_kill_effects_occur_twice,   // Snakebite; Killjoy
     regenPulse: sum.life_recovery_from_regeneration_is_not_applied ? v(sum, 'recover_1_life_per_x_life_regeneration_per_minute_every_4_seconds') || Infinity : 0,   // Igniferis
     manaRegenOnly: !!sum.cannot_recover_mana_except_regeneration,   // Indigon
+    // Guiding Palms: their Guided Shrine's Daemon; Palm of the Dreamer: Dreaming Gloom Shrine (enemies you kill explode)
+    daemons: ['fire', 'cold', 'lightning'].filter(e => sum[`has_unique_${e}_shrine_effect`]), gloom: !!sum.has_unique_chaos_shrine_effect,
     redflare: !!sum.gain_power_charge_per_second_if_have_not_lost_power_charge_recently, stunPerRage: v(sum, 'stun_threshold_+%_per_rage'),   // Redflare Conduit; Wings of Caelyn
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
