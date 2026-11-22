@@ -2030,7 +2030,7 @@ export function initScene(el, api) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
     // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies. With its life (calc.js
     // minionLife) enemies nearer to it than to you attack it (a decoy, as Lingering Illusion), and it dies at none left.
-    // note: what its defences take off their hits is not counted (the scene's minions have no armour or resistances)
+    // its resistances take their share off enemy hits (calc.js minionOf). note: its armour and evasion are not counted
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 * S.mult }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
@@ -2065,7 +2065,7 @@ export function initScene(el, api) {
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
     const SU = S.dmg?.sum || {}, bear = S.name === 'Wild Protector';
     if (L > 0) Object.assign(e, { decoy: true, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0),
-      regen: bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0, segs: [{ p: e.pos, r: .3, life: L, max: L, hurt(n) {
+      regen: bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0, segs: [{ p: e.pos, r: .3, life: L, max: L, res: S.dmg?.minion?.res, hurt(n) {
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
@@ -5190,7 +5190,7 @@ export function initScene(el, api) {
     if (q) {
       const k = dist(d.pos, q.p), stop = q.r + SIM.body;
       if (k > stop && v > 0 && !(d.st.pin > 0) && !api.still?.()) { const m = Math.min(k - stop, v * dt) / k; d.pos.x += (q.p.x - d.pos.x) * m; d.pos.z += (q.p.z - d.pos.z) * m; }
-      else if (d.wait <= 0 && k <= R + q.r && api.fight?.()) { d.wait = Math.max(.25, d.atk.period); d.lunge = 1; q.hurt(Object.values(d.atk.hits || {}).reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0)); }
+      else if (d.wait <= 0 && k <= R + q.r && api.fight?.()) { d.wait = Math.max(.25, d.atk.period); d.lunge = 1; q.hurt(Object.entries(d.atk.hits || {}).reduce((t, [el, [lo, hi]]) => t + (lo + hi) / 2 * (1 - (q.res?.[el] || 0) / 100), 0)); }   // less its resistance (a minion's: calc.js minionOf)
       return;
     }
     if (d.aggro && v > 0 && far > R * .8 && !(d.st.pin > 0) && !api.still?.()) {

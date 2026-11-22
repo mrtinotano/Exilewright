@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, attackOf, attacksOf, ENEMIES, deflection } from './enemies.js';
+import { enemy, attackOf, attacksOf, ENEMIES, deflection, K as MON_K } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -1483,7 +1483,7 @@ function minionLife(st, sum, id, finals = {}) {
 const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%_to_gain_as_chaos', 'companion_%_damage_as_cold': 'minion:non_skill_base_all_damage_%_to_gain_as_cold' };
 const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = OWN[k] || 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
 // the tree's minion stats the game's table does not list, as their minion_area_of_effect_+% twin
-const MS_ALSO = { 'minion_skill_area_of_effect_+%': 'base_skill_area_of_effect_+%' };
+const MS_ALSO = { 'minion_skill_area_of_effect_+%': 'base_skill_area_of_effect_+%', ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [`minion_${e}_damage_resistance_%`, `base_${e}_damage_resistance_%`])) };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
   // what Allies in your Presence get. ponytail: counted always (a minion is near you most of the time); the scene's presence check if it matters
@@ -1518,7 +1518,10 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
   const speed = a.attack ? (1 + (inc(ms, 'attack_speed_+%', tags) + both) / 100) * (1 + v(ms, 'attack_speed_+%_final_for_minions') / 100) : 1 + (inc(ms, 'cast_speed_+%', tags) + both) / 100;
   const period = st.living_lightning_beam_attack_time_ms ? st.living_lightning_beam_attack_time_ms / 1000 : a.period;   // Living Lightning: its beam's attack time
-  return { name: m.name, level, hits, speed: Math.min(speed / period, a.cooldown ? 1 / a.cooldown : Infinity),
+  // its resistances: the monster's own (up to the monsters' maximum, more with its maximum) and what the build gives minions
+  const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map((e, i) => [e, Math.min((MON_K.monster_max_resistance ?? 75) + (e === 'chaos' ? 0 : v(ms, `base_maximum_${e}_damage_resistance_%`, 'additional_maximum_all_elemental_resistances_%')),
+    (m.res?.[i] || 0) + v(ms, `base_${e}_damage_resistance_%`) + (e === 'chaos' ? 0 : v(ms, 'base_resist_all_elements_%')))]));
+  return { name: m.name, level, hits, res, speed: Math.min(speed / period, a.cooldown ? 1 / a.cooldown : Infinity),
     crit: Math.min(100, a.crit * (1 + inc(ms, 'critical_strike_chance_+%', tags) / 100)),
     critBonus: a.critBonus + v(ms, 'base_critical_hit_damage_bonus') + inc(ms, 'critical_strike_multiplier_+', tags) };
 }
