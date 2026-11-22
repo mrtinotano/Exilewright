@@ -229,7 +229,7 @@ export function initOpt(el, ctx) {
           ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}
           <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Trade')}</a></div></div></div>`;
     };
-    const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, req: hit.req, state: hit.state });
+    const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, state: hit.state });
     return `<div class="optres">${res.errors.map(e => `<p class="opterr">${esc(errText(e))}</p>`).join('')}
       ${res.unread ? `<p class="note">${t('{0} listed items were left out: the planner does not have their base or they go in another slot.', res.unread)}</p>` : ''}
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
