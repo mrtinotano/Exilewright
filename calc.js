@@ -408,7 +408,8 @@ export function character(b, sum) {
     // on the enemy; Deep Freeze's cold resistance of the Frozen; Urgent Call's life and mana on a warcry; Ancestral Alacrity's attack
     // and cast speed after summoning a totem; First Sting's poison magnitude on the not yet Poisoned
     more1: { power: v(sum, 'chance_to_gain_1_more_power_charge_%'), endurance: v(sum, 'chance_to_gain_1_more_endurance_charge_%') }, perAil: v(sum, 'damage_+%_per_enemy_elemental_ailment'),
-    frozenRes: v(sum, 'freeze_applies_cold_resistance_+'), cryHeal: v(sum, 'restore_life_and_mana_on_warcry_%'), totemSpeed: v(sum, 'attack_and_cast_speed_+%_on_placing_totem'), firstPoison: v(sum, 'poison_effect_+%_vs_non_poisoned_enemies'),
+    frozenRes: v(sum, 'freeze_applies_cold_resistance_+'), ignitedRes: v(sum, 'ignites_apply_fire_resistance_+'), expoExtra: v(sum, 'exposure_you_inflict_lowers_affected_resistance_by_extra_%'),
+    markedAcc: v(sum, 'marked_enemy_accuracy_rating_+%'), avoidDeath: v(sum, 'chance_to_avoid_death_%'), offerHeal: v(sum, 'recover_%_life_when_you_create_an_offering'), chaosLoss: v(sum, 'lose_%_of_life_and_energy_shield_when_you_use_a_chaos_skill'), cryHeal: v(sum, 'restore_life_and_mana_on_warcry_%'), totemSpeed: v(sum, 'attack_and_cast_speed_+%_on_placing_totem'), firstPoison: v(sum, 'poison_effect_+%_vs_non_poisoned_enemies'),
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },

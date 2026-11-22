@@ -183,7 +183,7 @@ export function initScene(el, api) {
     // gas and oil only burn once something sets them alight
     if (P.ground === 'gas' || P.ground === 'oil') { els = els.filter(e => e !== 'fire'); ail = ail.filter(a => a !== 'ignite'); col = P.ground === 'gas' ? 'gas' : 'dust'; }
     const tags = inf.gem?.tags || [];
-    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? (1 + (me.ley?.more || 0) / 100) * (1 + banner('circle_of_power_spell_damage_+%_final') / 100) : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), shape: !!inf.gem?.types?.includes('Shapeshift'), dmg, elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
+    const S = { i, g, P, G, kind: P.kind, name: g.name, label: inf.label, el: col, els, ail, mult: dmg?.attack ? 1 + banner('attack_damage_+%_final') / 100 : P.spell ? (1 + (me.ley?.more || 0) / 100) * (1 + banner('circle_of_power_spell_damage_+%_final') / 100) : 1, gm: 1, spent: 0, R, A: R || SIM.area, aoe: P.aoe ?? (P.explodes || tags.includes('area')), spear: inf.gem?.types?.includes('Spear'), shape: !!inf.gem?.types?.includes('Shapeshift'), dmg, chaos: tags.includes('chaos'), elemental: tags.some(x => ['fire', 'cold', 'lightning'].includes(x)) };
     cache.set(i, { g, at: time, S }); return S;
   }
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
@@ -908,7 +908,7 @@ export function initScene(el, api) {
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
-    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
@@ -3647,6 +3647,7 @@ export function initScene(el, api) {
     if (!m) return toast(t('{0} needs a Minion', S.label));
     const c = { x: m.pos.x, z: m.pos.z }, ring = fx.decal(c, S.A, 'outline', 'blood', { a: .4, rot: 0 }); m.dead = true;
     limit(o => o[tag], max);
+    const OH = sheet().offerHeal; if (OH) me.life = Math.min(me.maxL, me.life + me.maxL * OH / 100);   // the tree's life recovered when you create an Offering
     fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: S.dmg.stats, R: S.A, off: () => ring.remove() }); say(t('{0} active', S.label), 'blood');
   }
   K.pain = S => offer(S, 'pain', S.dmg.stats.base_number_of_pain_offerings_allowed);
@@ -4110,6 +4111,7 @@ export function initScene(el, api) {
     }
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; }
+    const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
@@ -4616,6 +4618,7 @@ export function initScene(el, api) {
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
     if (me.life < 1 && time < me.sight) me.life = 1;   // Future-Past's Sight Beyond Sight
+    if (me.life <= 0 && hit && Math.random() * 100 < (sheet().avoidDeath || 0)) me.life = 1;   // the tree's chance to Avoid Death from Hits
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -4800,7 +4803,7 @@ export function initScene(el, api) {
     // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
     if (RR) blocked(d);
-    const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
+    const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (d.mark ? 1 + (c.markedAcc || 0) / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
     if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
