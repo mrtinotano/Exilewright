@@ -930,5 +930,7 @@
  "Archon of Undeath": "亡靈統治者",
  "Puppet Master": "魁儡大師",
  "Search in the Optimizer": "在最佳化工具中搜尋",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "以這些詞綴、價格與勾選開啟最佳化工具，用它的其他選項搜尋。"
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "以這些詞綴、價格與勾選開啟最佳化工具，用它的其他選項搜尋。",
+ "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "策匠石：傳奇物品的一條詞綴被替換為瓦爾詞綴",
+ "No Vaal modifier": "無瓦爾詞綴"
 }

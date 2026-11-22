@@ -14,7 +14,7 @@ The raw dump (not in the repo, regenerate it with `_tool/extract.mjs`):
 Update after a patch:
 
     cd _tool && npm i && node extract.mjs "C:/Program Files (x86)/Steam/steamapps/common/Path of Exile 2" ..
-    python -I available.py && python -I uniques.py && python images.py "<game dir>" && python -I pob2.py
+    python -I available.py && python -I uniques.py && python -I mutated.py && python images.py "<game dir>" && python -I pob2.py
 
 The extraction takes a while (ten languages).
 
@@ -39,7 +39,9 @@ The extraction takes a while (ten languages).
   trade list has with no place in that tab (tablets, relics, the newest ones). The name is the one the game shows
   (`Words.Text2`, also the translated column; `Text` is the internal name).
 - `unique_items.json` (`uniques.py`) — the mods of each unique: the unique → mods link comes from poe2db (its list
-  and, for those not in it yet, their own page); the base is the trade list's one.
+  and, for those not in it yet, their own page); the base is the trade list's one. `mutated.py` adds the Vaal
+  modifiers an Architect's Orb can give each one (`mutated`, from its poe2db page, matched to the game's
+  UniqueMutatedVaal* mods) and its modifiers it can replace (`replaceable`, the game's Incursion2MutatedUniqueModsClient).
 - `skills.json` — per gem: cast time, constant and per-level stats (damage, cost, spirit, cooldown…), plus the
   character constants (`character.ot`, `GameConstants`) and the monster table per level.
 - `char_panel.json` — the game's character panel list (`CharacterPanelStats`, `CharacterPanelTabs`,

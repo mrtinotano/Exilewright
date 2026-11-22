@@ -73,7 +73,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Frostbreath",
@@ -154,7 +156,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Trenchtimbre",
@@ -219,7 +223,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sculpted Suffering",
@@ -284,7 +290,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Brutus' Lead Sprinkler",
@@ -365,7 +373,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Nebuloch",
@@ -446,7 +456,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mjölner",
@@ -519,7 +531,9 @@
   ],
   "unmatched": [
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Olrovasara",
@@ -584,7 +598,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Serle's Grit",
@@ -670,7 +686,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hoghunt",
@@ -746,7 +764,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hrimnor's Hymn",
@@ -806,7 +826,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Trephina",
@@ -871,7 +893,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Brain Rattler",
@@ -925,7 +949,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Empty Roar",
@@ -1001,7 +1027,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Shyaba",
@@ -1083,7 +1111,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Chober Chaber",
@@ -1170,7 +1200,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Quecholli",
@@ -1241,7 +1273,62 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalAreaOfEffectIfKilledRecently",
+    "text": "(10—25)% increased Area of Effect if you've Killed Recently",
+    "stats": [
+     [
+      "skill_area_of_effect_+%_if_enemy_killed_recently",
+      10,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAftershockChance",
+    "text": "(5—10)% chance for Slam Skills you use yourself to cause an additional Aftershock",
+    "stats": [
+     [
+      "your_slam_aftershock_chance_%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPercentageStrength",
+    "text": "(5—10)% increased Strength",
+    "stats": [
+     [
+      "strength_+%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamage1",
+    "text": "Adds (40—60) to (70—90) Physical Damage",
+    "stats": [
+     [
+      "local_minimum_added_physical_damage",
+      40,
+      60
+     ],
+     [
+      "local_maximum_added_physical_damage",
+      70,
+      90
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLifeGainedFromEnemyDeath8",
+   "UniqueLocalCritChanceOverride1"
+  ]
  },
  {
   "name": "Tidebreaker",
@@ -1312,7 +1399,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Marohi Erqi",
@@ -1394,7 +1483,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Hammer of Faith",
@@ -1465,7 +1556,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Splinter of Lorrata",
@@ -1541,7 +1634,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Tyranny's Grip",
@@ -1623,7 +1718,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Chainsting",
@@ -1699,7 +1796,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Skysliver",
@@ -1775,7 +1874,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Daevata's Wind",
@@ -1851,7 +1952,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Tangletongue",
@@ -1927,7 +2030,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Saitha's Spear",
@@ -2008,7 +2113,70 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalFireExposureOnHit",
+    "text": "(30—50)% chance to inflict Exposure on Hit",
+    "stats": [
+     [
+      "base_inflict_fire_exposure_on_hit_%_chance",
+      30,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIgniteChanceIncrease1",
+    "text": "(15—25)% increased Flammability Magnitude",
+    "stats": [
+     [
+      "ignite_chance_+%",
+      15,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamagePercent",
+    "text": "(300—400)% increased Physical Damage",
+    "stats": [
+     [
+      "local_physical_damage_+%",
+      300,
+      400
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGlobalFireGemLevel",
+    "text": "+1 to Level of all Fire Skills",
+    "stats": [
+     [
+      "fire_skill_gem_level_+",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalCullingStrikeLocalVsBleeding",
+    "text": "Hits with this Weapon have Culling Strike against Bleeding Enemies",
+    "stats": [
+     [
+      "local_culling_strike_vs_bleeding_enemies",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalAddedPhysicalDamage20",
+   "UniqueLocalAddedFireDamage1",
+   "UniqueAggravateIgnites1",
+   "UniqueLocalChanceToAggravateBleed1"
+  ]
  },
  {
   "name": "Spire of Ire",
@@ -2086,7 +2254,9 @@
   ],
   "unmatched": [
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Blood Thorn",
@@ -2156,7 +2326,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Pillar of the Caged God",
@@ -2205,7 +2377,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Sentry",
@@ -2292,7 +2466,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Matsya",
@@ -2384,7 +2560,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Nazir's Judgement",
@@ -2460,7 +2638,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Collapsing Horizon",
@@ -2520,7 +2700,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Wicked Quill",
@@ -2580,7 +2762,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sanguine Diviner",
@@ -2640,7 +2824,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lifesprig",
@@ -2700,7 +2886,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Adonia's Ego",
@@ -2787,7 +2975,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Enezun's Charge",
@@ -2847,7 +3037,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cursecarver",
@@ -2907,7 +3099,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Liminal Coil",
@@ -2989,7 +3183,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Runeseeker's Call",
@@ -3032,7 +3228,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Dusk Vigil",
@@ -3103,7 +3301,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Taryn's Shiver",
@@ -3163,7 +3363,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Earthbound",
@@ -3234,7 +3436,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Searing Touch",
@@ -3305,7 +3509,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sire of Shards",
@@ -3376,7 +3582,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Burden of Shadows",
@@ -3425,7 +3633,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Unborn Lich",
@@ -3452,7 +3662,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Whispering Ice",
@@ -3528,7 +3740,9 @@
     "stats": []
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atziri's Rule",
@@ -3599,7 +3813,57 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles1",
+    "text": "(10—25)% chance for Spell Skills to fire 2 additional Projectiles",
+    "stats": [
+     [
+      "spell_skills_fire_2_additional_projectiles_final_chance_%",
+      10,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeCostEfficiency2",
+    "text": "(10—20)% increased Life Cost Efficiency",
+    "stats": [
+     [
+      "base_life_cost_efficiency_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield",
+    "text": "(10—15)% of Maximum Life Converted to Energy Shield",
+    "stats": [
+     [
+      "maximum_life_%_to_convert_to_maximum_energy_shield",
+      10,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellDamageLifeLeech",
+    "text": "5% of Spell Damage Leeched as Life",
+    "stats": [
+     [
+      "base_life_leech_from_all_spell_damage_permyriad",
+      500,
+      500
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueGlobalCorruptedSpellSkillLevel1",
+   "UniqueSpellsThatCostLifeGainDamageAsExtraPhys1"
+  ]
  },
  {
   "name": "The Raven's Flock",
@@ -3670,7 +3934,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Widowhail",
@@ -3697,7 +3963,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Quill Rain",
@@ -3757,7 +4025,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ironbound",
@@ -3844,7 +4114,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Splinterheart",
@@ -3904,7 +4176,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Doomfletch",
@@ -3969,7 +4243,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Death's Harp",
@@ -4029,7 +4305,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Slivertongue",
@@ -4116,7 +4394,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Fairgraves' Curse",
@@ -4208,7 +4488,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lioneye's Glare",
@@ -4300,7 +4582,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mist Whisper",
@@ -4376,7 +4660,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rampart Raptor",
@@ -4436,7 +4722,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Double Vision",
@@ -4517,7 +4805,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Dark Defiler",
@@ -4577,7 +4867,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sylvan's Effigy",
@@ -4659,7 +4951,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Font of Power",
@@ -4719,7 +5013,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sacred Flame",
@@ -4779,7 +5075,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Guiding Palm of the Heart",
@@ -4866,7 +5164,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Guiding Palm of the Eye",
@@ -4953,7 +5253,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Guiding Palm of the Mind",
@@ -5040,7 +5342,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Palm of the Dreamer",
@@ -5127,7 +5431,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Amor Mandragora",
@@ -5203,7 +5509,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Spiteful Floret",
@@ -5279,7 +5587,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hysseg's Claw",
@@ -5355,7 +5665,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Flesh Poppet",
@@ -5426,7 +5738,53 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalBaseCriticalStrikeChance",
+    "text": "+(2—4)% to Critical Hit Chance",
+    "stats": [
+     [
+      "local_critical_strike_chance",
+      200,
+      400
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamage",
+    "text": "Adds (65—73) to (83—91) Physical Damage",
+    "stats": [
+     [
+      "local_minimum_added_physical_damage",
+      65,
+      73
+     ],
+     [
+      "local_maximum_added_physical_damage",
+      83,
+      91
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalDamageAsExtraFire",
+    "text": "Gain (25—40)% of Damage as Extra Fire Damage",
+    "stats": [
+     [
+      "non_skill_base_all_damage_%_to_gain_as_fire",
+      25,
+      40
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedPhysicalDamagePercent18",
+   "UniqueLocalIncreasedAttackSpeed24",
+   "UniquePresenceRadius4",
+   "UniqueGainAModifierFromEachEnemyInPresenceOnShapeshift1"
+  ]
  },
  {
   "name": "Surge of the Tide",
@@ -5497,7 +5855,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Seeing Stars",
@@ -5567,7 +5927,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sadist's Mercy",
@@ -5643,7 +6005,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Twisted Empyrean",
@@ -5756,7 +6120,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Duality",
@@ -5827,7 +6193,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Voltaxic Rift",
@@ -5892,7 +6260,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Periphery",
@@ -5983,7 +6353,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Last Lament",
@@ -6076,7 +6448,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Redemption",
@@ -6136,7 +6510,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atziri's Contempt",
@@ -6233,7 +6609,60 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalIncreasedWeaponElementalDamagePercent",
+    "text": "(100—150)% increased Elemental Damage with Attacks",
+    "stats": [
+     [
+      "elemental_damage_with_attack_skills_+%",
+      100,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalBaseCriticalStrikeChance",
+    "text": "+(2—4)% to Critical Hit Chance",
+    "stats": [
+     [
+      "local_critical_strike_chance",
+      200,
+      400
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalTreatResistsAsInvertedChance",
+    "text": "Hits have (15—30)% chance to treat Enemy Monster Elemental Resistance values as inverted",
+    "stats": [
+     [
+      "treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance",
+      15,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalProjectileForkChanceIfMeleeRecently",
+    "text": "Projectiles have (50—75)% chance to Fork if you've dealt a Melee Hit in the past eight seconds",
+    "stats": [
+     [
+      "projectiles_fork_chance_%_if_youve_dealt_melee_hit_recently",
+      50,
+      75
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedPhysicalDamagePercent20",
+   "UniqueLocalAddedFireDamage8",
+   "UniqueLocalAddedLightningDamage8",
+   "UniqueLocalIncreasedAttackSpeed27",
+   "UniquePresenceRadius5"
+  ]
  },
  {
   "name": "The Ordained",
@@ -6314,7 +6743,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Fury of the King",
@@ -6411,7 +6842,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bramblejack",
@@ -6482,7 +6915,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blackbraid",
@@ -6564,7 +6999,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Edyrn's Tusks",
@@ -6629,7 +7066,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Titanrot Cataphract",
@@ -6700,7 +7139,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wandering Reliquary",
@@ -6771,7 +7212,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Kingsguard",
@@ -6842,7 +7285,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Greed's Embrace",
@@ -6913,7 +7358,36 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalPresenceRadius",
+    "text": "100% reduced Presence Area of Effect",
+    "stats": [
+     [
+      "presence_area_+%",
+      -100,
+      -100
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAttackDamageWhileSurrounded",
+    "text": "(-40—40)% reduced Attack Damage while Surrounded",
+    "stats": [
+     [
+      "attack_damage_+%_while_surrounded",
+      -40,
+      40
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedStrengthRequirements1",
+   "UniqueMovementVelocity8",
+   "UniqueItemFoundRarityIncrease12"
+  ]
  },
  {
   "name": "The Brass Dome",
@@ -6973,7 +7447,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Kaom's Heart",
@@ -7011,7 +7487,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bristleboar",
@@ -7082,7 +7560,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Foxshade",
@@ -7142,7 +7622,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ashrend",
@@ -7213,7 +7695,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sands of Silk",
@@ -7306,7 +7790,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Briskwrap",
@@ -7388,7 +7874,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Dustbloom",
@@ -7457,7 +7945,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Rat Cage",
@@ -7517,7 +8007,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Quatl's Molt",
@@ -7599,7 +8091,47 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalIncreasedChaosDamage",
+    "text": "(60—80)% increased Chaos Damage",
+    "stats": [
+     [
+      "chaos_damage_+%",
+      60,
+      80
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalDeflectDamageTakenRecoupedAsLife",
+    "text": "(10—20)% of Damage taken from Deflected Hits Recouped as Life",
+    "stats": [
+     [
+      "deflected_hit_damage_taken_%_recouped_as_life",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPoisonStackCount",
+    "text": "Targets can be affected by +1 of your Poisons at the same time",
+    "stats": [
+     [
+      "number_of_additional_poison_stacks",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLifeRegeneration1",
+   "UniqueCannotBePoisoned1",
+   "UniqueEvasionAppliesToDeflection2"
+  ]
  },
  {
   "name": "Queen of the Forest",
@@ -7670,7 +8202,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Yriel's Fostering",
@@ -7752,7 +8286,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Auspex",
@@ -7828,7 +8364,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hyrri's Ire",
@@ -7904,7 +8442,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ghostwrithe",
@@ -7953,7 +8493,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bitterbloom",
@@ -8013,7 +8555,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Black Doubt",
@@ -8073,7 +8617,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Necromantle",
@@ -8144,7 +8690,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cloak of Flame",
@@ -8220,7 +8768,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Temporalis",
@@ -8291,7 +8841,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Prayers for Rain",
@@ -8362,7 +8914,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Tetzlapokal's Desire",
@@ -8433,7 +8987,46 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalEnergyShieldRechargeRatePer4Strength",
+    "text": "1% increased Energy Shield Recharge Rate per 4 Strength",
+    "stats": [
+     [
+      "energy_shield_recharge_rate_+%_per_4_strength",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield",
+    "text": "(10—15)% of Maximum Life Converted to Energy Shield",
+    "stats": [
+     [
+      "maximum_life_%_to_convert_to_maximum_energy_shield",
+      10,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedLife",
+    "text": "+(70—100) to maximum Life",
+    "stats": [
+     [
+      "base_maximum_life",
+      70,
+      100
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedEnergyShieldPercent11",
+   "UniqueLifeRecharge1"
+  ]
  },
  {
   "name": "The Covenant",
@@ -8498,7 +9091,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLifeCostEfficiency1",
+    "text": "(10—25)% increased Life Cost Efficiency",
+    "stats": [
+     [
+      "base_life_cost_efficiency_+%",
+      10,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
+    "text": "(5—10)% increased maximum Life",
+    "stats": [
+     [
+      "maximum_life_+%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeRegenerationRatePercentage1",
+    "text": "Regenerate (1—3)% of maximum Life per second",
+    "stats": [
+     [
+      "life_regeneration_rate_per_minute_%",
+      60,
+      180
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedEnergyShieldPercent11",
+   "UniqueIncreasedLife25",
+   "UniqueSpellDamageLifeLeech1",
+   "UniqueLifeCostAsManaCost1"
+  ]
  },
  {
   "name": "Gloamgown",
@@ -8569,7 +9203,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Vis Mortis",
@@ -8629,7 +9265,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cloak of Defiance",
@@ -8689,7 +9327,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Silks of Veneration",
@@ -8760,7 +9400,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Coat of Red",
@@ -8820,7 +9462,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Barrow Dweller",
@@ -8891,7 +9535,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Irongrasp",
@@ -8962,7 +9608,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Pariah's Embrace",
@@ -9033,7 +9681,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Belly of the Beast",
@@ -9109,7 +9759,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLifeFlaskChargePercentGeneration",
+    "text": "(15—30)% increased Life Flask Charges gained",
+    "stats": [
+     [
+      "life_flask_charges_gained_+%",
+      15,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGlobalFlaskLifeRecovery",
+    "text": "(25—50)% increased Life Recovery from Flasks",
+    "stats": [
+     [
+      "flask_life_to_recover_+%",
+      25,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeLeechFromThorns",
+    "text": "(5—10)% of Thorns Damage Leeched as Life",
+    "stats": [
+     [
+      "base_life_leech_from_all_thorns_damage_permyriad",
+      500,
+      1000
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating2",
+    "text": "+(220—320) to Armour",
+    "stats": [
+     [
+      "local_base_physical_damage_reduction_rating",
+      220,
+      320
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedLife25",
+   "UniqueInstantLifeFlaskRecovery1",
+   "UniqueAttackerTakesDamage6"
+  ]
  },
  {
   "name": "Pragmatism",
@@ -9169,7 +9870,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Doryani's Prototype",
@@ -9240,7 +9943,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLightningResistancePenetration",
+    "text": "Damage Penetrates (10—20)% Lightning Resistance",
+    "stats": [
+     [
+      "base_reduce_enemy_lightning_resistance_%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLightningResistance",
+    "text": "(-60—60)% to Lightning Resistance",
+    "stats": [
+     [
+      "base_lightning_damage_resistance_%",
+      -60,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalElementalPenetrationBelowZero",
+    "text": "Your Hits can Penetrate Elemental Resistances down to a minimum of -50%",
+    "stats": [
+     [
+      "elemental_penetration_can_go_down_to_override",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating3",
+    "text": "+(260—400) to Armour",
+    "stats": [
+     [
+      "local_base_physical_damage_reduction_rating",
+      260,
+      400
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueArmourAppliesToLightningDamage1",
+   "UniqueNearbyEnemyLightningResistanceEqual1",
+   "UniqueLightningResistNoReduction1"
+  ]
  },
  {
   "name": "Widow's Reign",
@@ -9311,7 +10065,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Perfidy",
@@ -9404,7 +10160,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Sunken Vessel",
@@ -9486,7 +10244,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lightning Coil",
@@ -9568,7 +10328,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Coming Calamity",
@@ -9621,7 +10383,9 @@
    "",
    "",
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Enfolding Dawn",
@@ -9681,7 +10445,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Icetomb",
@@ -9741,7 +10507,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Reverie",
@@ -9817,7 +10585,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Soul Mantle",
@@ -9899,7 +10669,70 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalAttackAndCastSpeedOnPlacingTotem",
+    "text": "25% increased Attack and Cast Speed if you've summoned a Totem Recently",
+    "stats": [
+     [
+      "attack_and_cast_speed_+%_on_placing_totem",
+      25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalTotemDamagePerCurseOnSelf",
+    "text": "(10—20)% increased Totem Damage per Curse on you",
+    "stats": [
+     [
+      "totem_damage_+%_per_active_curse_on_self",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalTotemDuration",
+    "text": "(-30—30)% reduced Totem Duration",
+    "stats": [
+     [
+      "totem_duration_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalBaseSpirit1",
+    "text": "+(40—50) to Spirit",
+    "stats": [
+     [
+      "base_spirit_from_equipment",
+      40,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalEnergyShield3",
+    "text": "+(50—80) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      50,
+      80
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIntelligence40",
+   "UniqueAdditionalTotems1",
+   "UniqueRandomlyCursedWhenTotemsDie1",
+   "UniqueIncreasedSpirit15"
+  ]
  },
  {
   "name": "The Mutable Star",
@@ -9981,7 +10814,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Waveshaper",
@@ -10063,7 +10898,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Couture of Crimson",
@@ -10123,7 +10960,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Geofri's Sanctuary",
@@ -10205,7 +11044,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Unleashed",
@@ -10256,7 +11097,9 @@
   ],
   "unmatched": [
    "+(10—20) to Strength and Intelligence"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sacrosanctum",
@@ -10338,7 +11181,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Loreweave",
@@ -10436,7 +11281,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Decree of Loyalty",
@@ -10509,7 +11356,9 @@
   ],
   "unmatched": [
    "+(15—25) to Strength and Intelligence"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Apron of Emiran",
@@ -10569,7 +11418,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Gloomform",
@@ -10640,7 +11491,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sierran Inheritance",
@@ -10722,7 +11575,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Dancing Mirage",
@@ -10782,7 +11637,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Redflare Conduit",
@@ -10853,7 +11710,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalIncreasedEvasionAndEnergyShield",
+    "text": "(150—300)% increased Evasion and Energy Shield",
+    "stats": [
+     [
+      "local_evasion_and_energy_shield_+%",
+      150,
+      300
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalManaGainedOnPowerChargeConsumption",
+    "text": "Recover (2—5)% of maximum Mana when you consume a Power Charge",
+    "stats": [
+     [
+      "recover_x%_of_maximum_mana_when_you_consume_a_power_charge",
+      2,
+      5
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGainPowerChargesNotLostRecently",
+    "text": "Gain a Power Charge every Second if you haven't lost Power Charges Recently",
+    "stats": [
+     [
+      "gain_power_charge_per_second_if_have_not_lost_power_charge_recently",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalReducedShockEffectOnSelf",
+    "text": "(25—50)% reduced effect of Shock on you",
+    "stats": [
+     [
+      "shocked_effect_on_self_+%",
+      -50,
+      -25
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniquePowerChargeOnHit1",
+   "UniqueLosePowerChargesOnMaxCharges1",
+   "UniqueShockOnMaxPowerCharges1"
+  ]
  },
  {
   "name": "Zerphi's Serape",
@@ -10935,7 +11843,60 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalPresenceRadius1",
+    "text": "(15—30)% increased Presence Area of Effect",
+    "stats": [
+     [
+      "presence_area_+%",
+      15,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalEnergyShield",
+    "text": "+(90—120) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      90,
+      120
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGainSoulEaterStackOnHit",
+    "text": "Eat a Soul when you Hit a Unique Enemy, no more than once every 0.5 seconds",
+    "stats": [
+     [
+      "gain_soul_eater_stack_on_hit_vs_unique_cooldown_ms",
+      500,
+      500
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSkillCostEfficiency1",
+    "text": "(-30—30)% reduced Cost Efficiency",
+    "stats": [
+     [
+      "base_skill_cost_efficiency_+%",
+      -30,
+      30
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedEvasionAndEnergyShield9",
+   "UniqueReducedLocalAttributeRequirements3",
+   "UniqueLifeRegenerationRate2",
+   "UniqueManaRegeneration31",
+   "UniqueHasSoulEater1"
+  ]
  },
  {
   "name": "Cospri's Will",
@@ -11008,7 +11969,9 @@
   ],
   "unmatched": [
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wings of Caelyn",
@@ -11079,7 +12042,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Horns of Bynden",
@@ -11150,7 +12115,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ezomyte Peak",
@@ -11221,7 +12188,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Black Sun Crest",
@@ -11292,7 +12261,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Thrillsteel",
@@ -11319,7 +12290,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Deidbell",
@@ -11390,7 +12363,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Corona of the Red Sun",
@@ -11461,7 +12436,46 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalGlobalIncreaseMinionSpellSkillGemLevel",
+    "text": "+(1—2) to Level of all Minion Skills",
+    "stats": [
+     [
+      "minion_skill_gem_level_+",
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPresenceRadius2",
+    "text": "(25—50)% increased Presence Area of Effect",
+    "stats": [
+     [
+      "presence_area_+%",
+      25,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating",
+    "text": "+(100—150) to Armour",
+    "stats": [
+     [
+      "local_base_physical_damage_reduction_rating",
+      100,
+      150
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedAccuracy5",
+   "UniqueLifeLeechToAllies1"
+  ]
  },
  {
   "name": "Blood Price",
@@ -11532,7 +12546,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Innsmouth",
@@ -11603,7 +12619,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Goldrim",
@@ -11652,7 +12670,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Radiant Grief",
@@ -11712,7 +12732,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Elevore",
@@ -11772,7 +12794,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Constricting Command",
@@ -11832,7 +12856,57 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalAttackDamageWhileSurrounded",
+    "text": "(-40—40)% reduced Attack Damage while Surrounded",
+    "stats": [
+     [
+      "attack_damage_+%_while_surrounded",
+      -40,
+      40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeRegenerationWhileSurrounded",
+    "text": "Regenerate (0.5—1.5)% of maximum Life per second while Surrounded",
+    "stats": [
+     [
+      "life_regeneration_rate_per_minute_%_while_surrounded",
+      30,
+      90
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating1",
+    "text": "+(60—75) to Armour",
+    "stats": [
+     [
+      "local_base_physical_damage_reduction_rating",
+      60,
+      75
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSurroundedAreaOfEffect1",
+    "text": "(20—60)% increased Surrounded Area of Effect",
+    "stats": [
+     [
+      "surrounded_area_of_effect_+%",
+      20,
+      60
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedLife15",
+   "UniqueLessEnemiesToBeSurrounded1"
+  ]
  },
  {
   "name": "The Black Insignia",
@@ -11903,7 +12977,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Starkonja's Head",
@@ -11974,7 +13050,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Heatshiver",
@@ -12045,7 +13123,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Myris Uxor",
@@ -12105,7 +13185,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Alpha's Howl",
@@ -12165,7 +13247,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Crown of Thorns",
@@ -12230,7 +13314,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Devouring Diadem",
@@ -12301,7 +13387,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Visage of Ayah",
@@ -12372,7 +13460,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sandstorm Visage",
@@ -12432,7 +13522,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mask of the Stitched Demon",
@@ -12492,7 +13584,46 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalEnergyShield2",
+    "text": "+(70—100) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      70,
+      100
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedLife1",
+    "text": "+(60—80) to maximum Life",
+    "stats": [
+     [
+      "base_maximum_life",
+      60,
+      80
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAllAttributes",
+    "text": "+(17—23) to all Attributes",
+    "stats": [
+     [
+      "additional_all_attributes",
+      17,
+      23
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedEnergyShieldPercent18",
+   "UniqueLifeRegenPerEnergyShield1"
+  ]
  },
  {
   "name": "Atziri's Disdain",
@@ -12552,7 +13683,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLife",
+    "text": "10% of Damage is taken from Mana before Life",
+    "stats": [
+     [
+      "base_damage_removed_from_mana_before_life_%",
+      10,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
+    "text": "(5—10)% increased maximum Life",
+    "stats": [
+     [
+      "maximum_life_+%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPercentDamageGoesToMana",
+    "text": "(6—10)% of Damage taken Recouped as Mana",
+    "stats": [
+     [
+      "damage_taken_goes_to_mana_%",
+      6,
+      10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedMana12",
+   "UniqueItemFoundRarityIncrease10",
+   "UniqueEnergyShieldAsPercentOfLife1",
+   "UniqueDamageBypassEnergyShieldPercent1"
+  ]
  },
  {
   "name": "Crown of Eyes",
@@ -12623,7 +13795,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Scold's Bridle",
@@ -12694,7 +13868,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Indigon",
@@ -12765,7 +13941,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Greymake",
@@ -12825,7 +14003,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Erian's Cobble",
@@ -13006,7 +14186,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ironride",
@@ -13077,7 +14259,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Smiling Knight",
@@ -13137,7 +14321,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Vile Knight",
@@ -13197,7 +14383,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Assailum",
@@ -13257,7 +14445,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Bringer of Rain",
@@ -13350,7 +14540,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Decree of Acuity",
@@ -13421,7 +14613,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Crown of the Victor",
@@ -13481,7 +14675,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bronzebeard",
@@ -13563,7 +14759,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Crown of the Pale King",
@@ -13639,7 +14837,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Veil of the Night",
@@ -13699,7 +14899,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cornathaum",
@@ -13759,7 +14961,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalArmourAndEnergyShield",
+    "text": "(100—150)% increased Armour and Energy Shield",
+    "stats": [
+     [
+      "local_armour_and_energy_shield_+%",
+      100,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGoldFoundIncrease1",
+    "text": "(5—10)% increased Quantity of Gold Dropped by Slain Enemies",
+    "stats": [
+     [
+      "gold_+%_from_enemies",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLightRadiusModifiersApplyToAreaOfEffect",
+    "text": "Increases and Reductions to Light Radius also apply to Area of Effect at (25—50)% of their value",
+    "stats": [
+     [
+      "light_radius_additive_modifiers_apply_to_area_%_value",
+      25,
+      50
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueItemFoundRarityIncrease10",
+   "UniqueIntelligence16",
+   "UniqueLightRadius7",
+   "UniqueExperienceIncrease1"
+  ]
  },
  {
   "name": "Keeper of the Arc",
@@ -13819,7 +15062,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Vestige of Darkness",
@@ -13891,7 +15136,9 @@
   ],
   "unmatched": [
    "+(20—30) to Strength and Intelligence"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Hollow Mask",
@@ -13978,7 +15225,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mask of the Sanguimancer",
@@ -14045,7 +15294,9 @@
   ],
   "unmatched": [
    "Blood Magic"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Leer Cast",
@@ -14116,7 +15367,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atsak's Sight",
@@ -14187,7 +15440,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Vertex",
@@ -14258,7 +15513,56 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalPercentageAllAttributes",
+    "text": "(5—10)% increased Attributes",
+    "stats": [
+     [
+      "all_attributes_+%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalManaCostEfficiency2",
+    "text": "(13—17)% increased Mana Cost Efficiency",
+    "stats": [
+     [
+      "base_mana_cost_efficiency_+%",
+      13,
+      17
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAilmentChance",
+    "text": "(20—30)% increased chance to inflict Ailments",
+    "stats": [
+     [
+      "ailment_chance_+%",
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalCurseGemLevel",
+    "text": "+(3—5) to Level of all Curse Skills",
+    "stats": [
+     [
+      "curse_skill_gem_level_+",
+      3,
+      5
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueGlobalGemAttributeRequirements1"
+  ]
  },
  {
   "name": "Glimpse of Chaos",
@@ -14351,7 +15655,83 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalEnegyShield",
+    "text": "+(50—150) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      50,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChaosDamagePercentage",
+    "text": "(1—60)% increased Chaos Damage",
+    "stats": [
+     [
+      "chaos_damage_+%",
+      1,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalColdDamagePercentage",
+    "text": "(1—60)% increased Cold Damage",
+    "stats": [
+     [
+      "cold_damage_+%",
+      1,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLightningDamagePercentage",
+    "text": "(1—60)% increased Lightning Damage",
+    "stats": [
+     [
+      "lightning_damage_+%",
+      1,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalFireDamagePercentage",
+    "text": "(1—60)% increased Fire Damage",
+    "stats": [
+     [
+      "fire_damage_+%",
+      1,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChaosResistance",
+    "text": "+(1—60)% to Chaos Resistance",
+    "stats": [
+     [
+      "base_chaos_damage_resistance_%",
+      1,
+      60
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueModifyableWhileCorrupted1",
+   "UniqueIncreasedLife37",
+   "UniqueIncreasedMana33",
+   "UniqueFireResist22",
+   "UniqueColdResist19",
+   "UniqueLightningResist17"
+  ]
  },
  {
   "name": "The Three Dragons",
@@ -14422,7 +15802,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mind of the Council",
@@ -14493,7 +15875,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Facebreaker",
@@ -14712,7 +16096,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Treefingers",
@@ -14897,7 +16283,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lochtonial Caress",
@@ -15070,7 +16458,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Dreadfist",
@@ -15238,7 +16628,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atziri's Acuity",
@@ -15411,7 +16803,49 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalAddedMaximumEnergyShield",
+    "text": "+(100—150) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      100,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
+    "text": "(5—10)% increased maximum Life",
+    "stats": [
+     [
+      "maximum_life_+%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChanceToBleed",
+    "text": "(30—50)% increased chance to inflict Bleeding",
+    "stats": [
+     [
+      "bleed_chance_+%",
+      30,
+      50
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
+   "UniqueIncreasedLife25",
+   "PercentOfPhysicalHitDamageAsAdditionalBloodLoss",
+   "UniqueVaalPact1",
+   "PercentOfPhysicalHitDamageAsAdditionalBloodLoss"
+  ]
  },
  {
   "name": "Hateforge",
@@ -15569,7 +17003,51 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalIncreasedAttackSpeed",
+    "text": "25% increased Attack Speed",
+    "stats": [
+     [
+      "attack_speed_+%",
+      25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumRagePerGlorySkillUsed",
+    "text": "+(8—10) maximum Rage if you've used a Skill that Requires Glory in the past 20 seconds",
+    "stats": [
+     [
+      "max_rage_+_if_glory_skill_used_in_last_20_seconds",
+      8,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaxRageFromRageOnHitChance",
+    "text": "(12—16)% chance that if you would gain Rage on Hit, you instead gain up to your maximum Rage",
+    "stats": [
+     [
+      "gain_max_rage_on_rage_gain_from_hit_%_chance",
+      12,
+      16
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedPhysicalDamageReductionRatingPercent23",
+   "UniqueGainChargesOnMaximumRage1",
+   "UniqueLoseRageOnMaximumRage1",
+   "UniqueMaximumRage1",
+   "UniqueRageOnAnyHit1",
+   "UniqueLoseRageOnMaximumRage1",
+   "UniqueMaximumRage1"
+  ]
  },
  {
   "name": "Empire's Grasp",
@@ -15727,7 +17205,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Northpaw",
@@ -15873,7 +17353,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Grip of Winter",
@@ -16041,7 +17523,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Idle Hands",
@@ -16199,7 +17683,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalManaLeechPermyriad",
+    "text": "Leech (4—6)% of Physical Attack Damage as Mana",
+    "stats": [
+     [
+      "base_mana_leech_from_physical_attack_damage_permyriad",
+      400,
+      600
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumManaIncreasePercent",
+    "text": "(10—20)% increased maximum Mana",
+    "stats": [
+     [
+      "maximum_mana_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalManaCostEfficiency",
+    "text": "25% increased Mana Cost Efficiency",
+    "stats": [
+     [
+      "base_mana_cost_efficiency_+%",
+      25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalEnergyOnFullMana",
+    "text": "Meta Skills gain 25% increased Energy while on Full Mana",
+    "stats": [
+     [
+      "energy_generated_+%_on_full_mana",
+      25,
+      25
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueFullManaThreshold1",
+   "UniqueIncreasedAttackSpeedFullMana1",
+   "UniqueIncreasedAccuracy4"
+  ]
  },
  {
   "name": "Snakebite",
@@ -16362,7 +17897,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalPoisonDurationIfConsumedFrenzyChargeRecently",
+    "text": "(30—40)% increased Duration of Poisons you inflict when you've consumed a Frenzy Charge Recently",
+    "stats": [
+     [
+      "poison_duration_+%_if_consumed_frenzy_charge_recently",
+      30,
+      40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalReducedPoisonDuration",
+    "text": "(40—60)% reduced Poison Duration on you",
+    "stats": [
+     [
+      "self_poison_duration_+%",
+      -60,
+      -40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalRecoverLifeOnKillingPoisonedEnemyPerPoison",
+    "text": "Recover (0.5—1)% of maximum Life per Poison affecting Enemies you Kill",
+    "stats": [
+     [
+      "recover_permyriad_maximum_life_per_poison_on_enemy_on_kill",
+      50,
+      100
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueChaosResist6",
+   "UniqueBaseChanceToPoison1",
+   "UniquePoisonStackCount1",
+   "UniqueLifeRegeneration12"
+  ]
  },
  {
   "name": "Maligaro's Virtuosity",
@@ -16533,7 +18109,9 @@
   ],
   "unmatched": [
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Horror's Flight",
@@ -16706,7 +18284,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Painter's Servant",
@@ -16867,7 +18447,9 @@
   "unmatched": [
    "",
    ""
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Candlemaker",
@@ -17052,7 +18634,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Doedre's Tenure",
@@ -17193,7 +18777,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Kitoko's Current",
@@ -17329,7 +18915,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Demon Stitcher",
@@ -17465,7 +19053,59 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalSkillCostEfficiency",
+    "text": "(20—30)% increased Cost Efficiency",
+    "stats": [
+     [
+      "base_skill_cost_efficiency_+%",
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield",
+    "text": "(10—15)% of Maximum Life Converted to Energy Shield",
+    "stats": [
+     [
+      "maximum_life_%_to_convert_to_maximum_energy_shield",
+      10,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellLifeCostPercent",
+    "text": "(25—50)% of Spell Mana Cost Converted to Life Cost",
+    "stats": [
+     [
+      "spells_cost_life_instead_of_mana_%",
+      25,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalArcaneSurgeEffect",
+    "text": "(20—40)% increased effect of Arcane Surge on you",
+    "stats": [
+     [
+      "arcane_surge_effect_on_self_+%",
+      20,
+      40
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedCastSpeed7",
+   "UniqueLocalIncreasedEnergyShield4",
+   "UniqueIncreasedLife15",
+   "UniqueSacrificeLifeToGainEnergyShield1"
+  ]
  },
  {
   "name": "Nightscale",
@@ -17650,7 +19290,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Leopold's Applause",
@@ -17808,7 +19450,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Jarngreipr",
@@ -17971,7 +19615,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Aurseize",
@@ -18085,7 +19731,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Deathblow",
@@ -18243,7 +19891,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Valako's Vice",
@@ -18423,7 +20073,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Aerisvane's Wings",
@@ -18550,7 +20202,9 @@
   ],
   "unmatched": [
    "Deal Double Damage to Enemies that are on Full Life"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Death Articulated",
@@ -18735,7 +20389,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Gravebind",
@@ -18903,7 +20559,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Shackles of the Wretched",
@@ -19072,7 +20730,83 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalCurseEffectiveness",
+    "text": "(10—20)% increased Curse Magnitudes",
+    "stats": [
+     [
+      "curse_effect_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalFreezeDuration",
+    "text": "(10—20)% increased Freeze Duration on Enemies",
+    "stats": [
+     [
+      "freeze_duration_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIgniteEffect1",
+    "text": "(20—40)% increased Ignite Magnitude",
+    "stats": [
+     [
+      "base_ignite_effect_+%",
+      20,
+      40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalShockEffect",
+    "text": "(20—40)% increased Magnitude of Shock you inflict",
+    "stats": [
+     [
+      "shock_effect_+%",
+      20,
+      40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChillEffect",
+    "text": "(20—40)% increased Magnitude of Chill you inflict",
+    "stats": [
+     [
+      "chill_effect_+%",
+      20,
+      40
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalDamagePerCurse",
+    "text": "(10—15)% increased Damage per Curse on you",
+    "stats": [
+     [
+      "damage_+%_per_active_curse_on_self",
+      10,
+      15
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueChillImmunityWhenChilled1",
+   "UniqueFreezeImmunityWhenFrozen1",
+   "UniqueIgniteImmunityWhenIgnited1",
+   "UniqueShockImmunityWhenShocked1",
+   "UniqueReflectCurseToSelf1",
+   "UniqueReflectCurseToSelf1"
+  ]
  },
  {
   "name": "Blueflame Bracers",
@@ -19240,7 +20974,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Prisoner's Manacles",
@@ -19447,7 +21183,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Plaguefinger",
@@ -19594,7 +21332,47 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalGlobalChaosGemLevel",
+    "text": "+1 to Level of all Chaos Skills",
+    "stats": [
+     [
+      "chaos_skill_gem_level_+",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPoisonEffect",
+    "text": "(10—16)% increased Magnitude of Poison you inflict",
+    "stats": [
+     [
+      "base_poison_effect_+%",
+      10,
+      16
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPoisonEffectOnNonPoisoned",
+    "text": "(30—60)% increased Magnitude of Poison you inflict on targets that are not Poisoned",
+    "stats": [
+     [
+      "poison_effect_+%_vs_non_poisoned_enemies",
+      30,
+      60
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedAttackSpeed1",
+   "UniqueBaseChanceToPoison1",
+   "UniqueAllDamageCanPoison1"
+  ]
  },
  {
   "name": "Killjoy",
@@ -19752,7 +21530,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hand of Wisdom and Action",
@@ -19898,7 +21678,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Essentia Sanguis",
@@ -20066,7 +21848,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Thunderfist",
@@ -20255,7 +22039,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Legionstride",
@@ -20315,7 +22101,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Corpsewade",
@@ -20375,7 +22163,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Infinite Pursuit",
@@ -20446,7 +22236,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Trampletoe",
@@ -20506,7 +22298,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Birth of Fury",
@@ -20566,7 +22360,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Briarpatch",
@@ -20642,7 +22438,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Gamblesprint",
@@ -20713,7 +22511,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bushwhack",
@@ -20773,7 +22573,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Luminous Pace",
@@ -20844,7 +22646,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wanderlust",
@@ -20904,7 +22708,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bones of Ullr",
@@ -20975,7 +22781,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wondertrap",
@@ -21057,7 +22865,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Windscream",
@@ -21128,7 +22938,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Knight-errant",
@@ -21199,7 +23011,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Darkray Vectors",
@@ -21270,7 +23084,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Obern's Bastion",
@@ -21352,7 +23168,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Shankgonne",
@@ -21450,7 +23268,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wake of Destruction",
@@ -21515,7 +23335,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Decree of Flight",
@@ -21602,7 +23424,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ghostmarch",
@@ -21673,7 +23497,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Powertread",
@@ -21744,7 +23570,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalCriticalStrikeMultiplierIfConsumedPowerChargeRecently",
+    "text": "(-60—60)% reduced Critical Damage Bonus if you've consumed a Power Charge Recently",
+    "stats": [
+     [
+      "critical_hit_damage_bonus_+%_if_consumed_power_charge_recently",
+      -60,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedPowerChargeDuration",
+    "text": "(-60—60)% reduced Power Charge Duration",
+    "stats": [
+     [
+      "power_charge_duration_+%",
+      -60,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChanceToGainAdditionalPowerCharge",
+    "text": "10% chance when you gain a Power Charge to gain an additional Power Charge",
+    "stats": [
+     [
+      "chance_to_gain_1_more_power_charge_%",
+      10,
+      10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueMovementVelocity17",
+   "UniqueLocalIncreasedEvasionAndEnergyShield9",
+   "UniqueMaximumPowerCharges1",
+   "UniqueCriticalMultiplierPerPowerCharge1"
+  ]
  },
  {
   "name": "Beetlebite",
@@ -21804,7 +23671,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Dionadair",
@@ -21875,7 +23744,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wulfsbane",
@@ -21935,7 +23806,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Doomgate",
@@ -22006,7 +23879,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Window to Paradise",
@@ -22066,7 +23941,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lycosidae",
@@ -22126,7 +24003,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Redblade Banner",
@@ -22197,7 +24076,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Svalinn",
@@ -22262,7 +24143,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Chernobog's Pillar",
@@ -22333,7 +24216,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Arvil's Wheel",
@@ -22415,7 +24300,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Feathered Fortress",
@@ -22486,7 +24373,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Alkem Eira",
@@ -22546,7 +24435,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Oaksworn",
@@ -22606,7 +24497,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Saffell's Frame",
@@ -22688,7 +24581,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Crest of Ardura",
@@ -22748,7 +24643,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mahuxotl's Machination",
@@ -22797,7 +24694,36 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalEnergyShieldDelay1",
+    "text": "(33—66)% faster start of Energy Shield Recharge",
+    "stats": [
+     [
+      "energy_shield_delay_-%",
+      33,
+      66
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalArmourAppliesToElementalDamage",
+    "text": "+(33—66)% of Armour also applies to Elemental Damage",
+    "stats": [
+     [
+      "armour_%_applies_to_fire_cold_lightning_damage",
+      33,
+      66
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedArmourAndEnergyShield16",
+   "UniqueLocalSoulCoreEffect1",
+   "UniqueEverlastingSacrifice1"
+  ]
  },
  {
   "name": "Rise of the Phoenix",
@@ -22868,7 +24794,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalIgniteChanceIncrease",
+    "text": "25% increased Flammability Magnitude",
+    "stats": [
+     [
+      "ignite_chance_+%",
+      25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGlobalFireGemLevel",
+    "text": "+1 to Level of all Fire Skills",
+    "stats": [
+     [
+      "fire_skill_gem_level_+",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeRegenerationRatePercentageWhileIgnited",
+    "text": "Regenerate 3% of maximum Life per second while Ignited",
+    "stats": [
+     [
+      "life_regeneration_per_minute_%_while_ignited",
+      180,
+      180
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueMaximumFireResist2",
+   "UniqueLifeRegenerationPercent1",
+   "UniqueLifeRegenerationPercentOnLowLife1",
+   "UniqueFireResistOnLowLife1"
+  ]
  },
  {
   "name": "Dunkelhalt",
@@ -22928,7 +24895,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Nocturne",
@@ -23004,7 +24973,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rondel de Ezo",
@@ -23075,7 +25046,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bloodbarrier",
@@ -23145,7 +25118,46 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalIncreasedStunThreshold",
+    "text": "(20—30)% increased Stun Threshold",
+    "stats": [
+     [
+      "stun_threshold_+%",
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalDamageTakenGainedAsLife",
+    "text": "(5—10)% of Damage taken Recouped as Life",
+    "stats": [
+     [
+      "damage_taken_goes_to_life_over_4_seconds_%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
+    "text": "(5—10)% increased maximum Life",
+    "stats": [
+     [
+      "maximum_life_+%",
+      5,
+      10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLifeRegeneration21",
+   "UniqueApplyCorruptedBloodOnBlock1"
+  ]
  },
  {
   "name": "Kaltenhalt",
@@ -23232,7 +25244,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Silverthorne",
@@ -23292,7 +25306,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Calgyra's Arc",
@@ -23368,7 +25384,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sunsplinter",
@@ -23437,7 +25455,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Deathrattle",
@@ -23497,7 +25517,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Threaded Light",
@@ -23557,7 +25579,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Effigy of Cruelty",
@@ -23628,7 +25652,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Carrion Call",
@@ -23699,7 +25725,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Serpent's Lesson",
@@ -23759,7 +25787,25 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalEnergyShield1",
+    "text": "+(60—100) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      60,
+      100
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedMana12",
+   "UniqueLowLifeOnManaThreshold1",
+   "UniqueLowManaOnLifeThreshold1"
+  ]
  },
  {
   "name": "The Eternal Spark",
@@ -23830,7 +25876,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Apep's Supremacy",
@@ -23901,7 +25949,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalChaosResistance1",
+    "text": "+(16—26)% to Chaos Resistance",
+    "stats": [
+     [
+      "base_chaos_damage_resistance_%",
+      16,
+      26
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeRegenerationRatePercentage",
+    "text": "Regenerate (1.5—3)% of maximum Life per second",
+    "stats": [
+     [
+      "life_regeneration_rate_per_minute_%",
+      90,
+      180
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalPoisonEffectWhilePoisoned",
+    "text": "(30—40)% increased Magnitude of Poison you inflict while Poisoned",
+    "stats": [
+     [
+      "base_poison_effect_+%_while_poisoned",
+      30,
+      40
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueLocalIncreasedEnergyShieldPercent13",
+   "UniqueEnergyShieldRechargeRate4",
+   "UniqueElementalDamageTakenAsChaos1",
+   "UniqueChanceToBePoisoned1"
+  ]
  },
  {
   "name": "Tabula Rasa",
@@ -23916,7 +26005,9 @@
   "name_zh": "無盡之衣",
   "base": "Garment",
   "mods": [],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Skin of the Loyal",
@@ -23987,7 +26078,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Morior Invictus",
@@ -24014,7 +26107,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atziri's Splendour",
@@ -24085,7 +26180,101 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalSkillCostEfficiency2",
+    "text": "(10—20)% increased Cost Efficiency",
+    "stats": [
+     [
+      "base_skill_cost_efficiency_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalSoulCoreEffect",
+    "text": "(10—20)% increased effect of Socketed Soul Cores",
+    "stats": [
+     [
+      "local_soul_core_effect_+%",
+      10,
+      20
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAtziriSplendourArmour1",
+    "text": "+(100—200) to Armour",
+    "stats": [
+     [
+      "local_base_physical_damage_reduction_rating",
+      100,
+      200
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAtziriSplendourEvasion1",
+    "text": "+(100—200) to Evasion Rating",
+    "stats": [
+     [
+      "local_base_evasion_rating",
+      100,
+      200
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAtziriSplendourEnergyShield1",
+    "text": "+(66—100) to maximum Energy Shield",
+    "stats": [
+     [
+      "local_energy_shield",
+      66,
+      100
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromBoots",
+    "text": "This item gains bonuses from Socketed Soul Cores as though it was also Boots",
+    "stats": [
+     [
+      "local_soul_core_gain_benefits_from_boots_as_well",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromGloves",
+    "text": "This item gains bonuses from Socketed Soul Cores as though it was also Gloves",
+    "stats": [
+     [
+      "local_soul_core_gain_benefits_from_gloves_as_well",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromHelmet",
+    "text": "This item gains bonuses from Socketed Soul Cores as though it was also a Helmet",
+    "stats": [
+     [
+      "local_soul_core_gain_benefits_from_helmet_as_well",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueAtziriSplendourArmourEvasionAndEnergyShield1",
+   "UniqueCorruptedSkillGemManaCostConvertedToLife1"
+  ]
  },
  {
   "name": "Solus Ipse",
@@ -24156,7 +26345,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sine Aequo",
@@ -24292,7 +26483,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ab Aeterno",
@@ -24363,7 +26556,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Voll's Protector",
@@ -24423,7 +26618,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Forgotten Warden",
@@ -24496,7 +26693,9 @@
   ],
   "unmatched": [
    "enable ancient order task [1]"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Master's Reach",
@@ -24696,7 +26895,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Atziri's Step",
@@ -24778,7 +26979,37 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalGlobalDeflectionRatingWhileMoving",
+    "text": "(15—25)% increased Deflection Rating while moving",
+    "stats": [
+     [
+      "deflection_rating_+%_while_moving",
+      15,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLocalEvasionRating",
+    "text": "+(50—150) to Evasion Rating",
+    "stats": [
+     [
+      "local_base_evasion_rating",
+      50,
+      150
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueMovementVelocity27",
+   "UniqueEvasionAppliesToDeflection2",
+   "UniqueDeflectDamagePrevented1",
+   "UniqueCannotBeLightStunnedByDeflectedHits1"
+  ]
  },
  {
   "name": "The Surrender",
@@ -24838,7 +27069,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Nightfall",
@@ -24925,7 +27158,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Eyes of the Runefather",
@@ -24990,7 +27225,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Prism Guardian",
@@ -25061,7 +27298,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rathpith Globe",
@@ -25147,7 +27386,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLifeCostEfficiency",
+    "text": "(8—15)% increased Life Cost Efficiency",
+    "stats": [
+     [
+      "base_life_cost_efficiency_+%",
+      8,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellAilmentEffectPerLife",
+    "text": "Non-Channelling Spells have 3% increased Magnitude of Ailments per 100 maximum Life",
+    "stats": [
+     [
+      "spell_ailment_magnitude_+%_per_100_max_life_with_non_channelling_skills",
+      3,
+      3
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellCriticalChancePerMana",
+    "text": "Non-Channelling Skills have 3% increased Spell Critical Hit Chance per 100 maximum Mana",
+    "stats": [
+     [
+      "spell_critical_strike_chance_+%_per_100_max_mana_with_non_channelling_skills",
+      3,
+      3
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellDamagePerMana",
+    "text": "Non-Channelling Spells deal 6% increased Damage per 100 maximum Mana",
+    "stats": [
+     [
+      "spell_damage_+%_per_100_max_mana_with_non_channelling_skills",
+      6,
+      6
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueNonChannellingSpellLifeCost1",
+   "UniqueNonChannellingSpellCriticalChance1",
+   "UniqueNonChannellingSpellDamage1"
+  ]
  },
  {
   "name": "Heroic Tragedy",
@@ -25204,7 +27494,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Undying Hate",
@@ -25261,7 +27553,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Grand Spectrum",
@@ -25293,7 +27587,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Split Personality",
@@ -25320,7 +27616,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Voices",
@@ -25347,7 +27645,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Megalomaniac",
@@ -25396,7 +27696,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "From Nothing",
@@ -25428,7 +27730,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Controlled Metamorphosis",
@@ -25482,7 +27786,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Prism of Belief",
@@ -25514,7 +27820,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Adorned",
@@ -25541,7 +27849,100 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalFireDamagePercentage1",
+    "text": "(-30—30)% reduced Fire Damage",
+    "stats": [
+     [
+      "fire_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalColdDamagePercentage1",
+    "text": "(-30—30)% reduced Cold Damage",
+    "stats": [
+     [
+      "cold_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLightningDamagePercentage1",
+    "text": "(-30—30)% reduced Lightning Damage",
+    "stats": [
+     [
+      "lightning_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedChaosDamage1",
+    "text": "(-30—30)% reduced Chaos Damage",
+    "stats": [
+     [
+      "chaos_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedArmourForJewel",
+    "text": "(-30—30)% reduced Armour",
+    "stats": [
+     [
+      "physical_damage_reduction_rating_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedEvasionForJewel",
+    "text": "(-30—30)% reduced Evasion Rating",
+    "stats": [
+     [
+      "evasion_rating_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedEnergyShieldForJewel",
+    "text": "(-30—30) to maximum Energy Shield",
+    "stats": [
+     [
+      "base_maximum_energy_shield",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMinionDamage",
+    "text": "Minions deal (-30—30)% reduced Damage",
+    "stats": [
+     [
+      "minion_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "CorruptedMagicJewelModEffectUnique__1"
+  ]
  },
  {
   "name": "Heart of the Well",
@@ -25556,7 +27957,9 @@
   "name_zh": "水井之心",
   "base": "Diamond",
   "mods": [],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Flesh Crucible",
@@ -25583,7 +27986,78 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceDamage",
+    "text": "(10—20)% less Damage",
+    "stats": [
+     [
+      "vivisection_damage_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceDefences",
+    "text": "(10—20)% less Armour, Evasion and Energy Shield",
+    "stats": [
+     [
+      "vivisection_armour_evasion_energy_shield_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceLife",
+    "text": "(10—20)% less maximum Life",
+    "stats": [
+     [
+      "vivisection_maximum_life_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceMana",
+    "text": "(10—20)% less maximum Mana",
+    "stats": [
+     [
+      "vivisection_maximum_mana_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceMovementSpeed",
+    "text": "(10—20)% less Movement Speed",
+    "stats": [
+     [
+      "vivisection_movement_speed_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVivisectionPriceSpirit",
+    "text": "(10—20)% less Spirit",
+    "stats": [
+     [
+      "vivisection_spirit_+%_final",
+      -20,
+      -10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueRandomKeystoneFromTable1"
+  ]
  },
  {
   "name": "Against the Darkness",
@@ -25598,7 +28072,9 @@
   "name_zh": "力抗黑暗",
   "base": "Time-Lost Diamond",
   "mods": [],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Peacemaker's Draught",
@@ -25647,7 +28123,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Desperate Alliance",
@@ -25707,7 +28185,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Changing Seasons",
@@ -25756,7 +28236,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Burden of Leadership",
@@ -25805,7 +28287,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Last Flame",
@@ -25876,7 +28360,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Asphyxia's Wrath",
@@ -25952,7 +28438,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blackgleam",
@@ -26028,7 +28516,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Lethal Draw",
@@ -26093,7 +28583,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rearguard",
@@ -26158,7 +28650,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLocalEvasionRating",
+    "text": "+(50—150) to Evasion Rating",
+    "stats": [
+     [
+      "local_base_evasion_rating",
+      50,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSurroundedAreaOfEffect",
+    "text": "(20—30)% increased Surrounded Area of Effect",
+    "stats": [
+     [
+      "surrounded_area_of_effect_+%",
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedAttackSpeed",
+    "text": "25% increased Attack Speed",
+    "stats": [
+     [
+      "attack_speed_+%",
+      25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalGlobalDeflectionRating",
+    "text": "(15—25)% increased Deflection Rating",
+    "stats": [
+     [
+      "deflection_rating_+%",
+      15,
+      25
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueAddedPhysicalDamage5",
+   "UniqueIncreasedPhysicalDamageReductionRating4",
+   "UniqueBlockPercent2"
+  ]
  },
  {
   "name": "Murkshaft",
@@ -26234,7 +28777,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cadiro's Gambit",
@@ -26261,7 +28806,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Drillneck",
@@ -26343,7 +28890,50 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalProjectileSpeed",
+    "text": "(16—24)% increased Projectile Speed",
+    "stats": [
+     [
+      "base_projectile_speed_+%",
+      16,
+      24
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalEvasionRatingPercentWhileSprinting",
+    "text": "(100—150)% increased Evasion Rating while Sprinting",
+    "stats": [
+     [
+      "evasion_rating_+%_if_sprinting",
+      100,
+      150
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalAdditionalArrowPierce",
+    "text": "Arrows Pierce 1 additional Targets",
+    "stats": [
+     [
+      "arrow_base_number_of_targets_to_pierce",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedLife56",
+   "UniqueIncreasedAttackSpeed15",
+   "UniqueEvasionAppliesToDeflection5",
+   "UniqueArrowsReturnAfterPiercingXTimes1",
+   "UniqueProjectileIncreasedDamagePerPierce1",
+   "UniqueProjectileIncreasedCriticalHitChancePerPierce1"
+  ]
  },
  {
   "name": "Beyond Reach",
@@ -26403,7 +28993,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Igniferis",
@@ -26474,7 +29066,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Idol of Uldurn",
@@ -26545,7 +29139,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Everlasting Gaze",
@@ -26594,7 +29190,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ungil's Harmony",
@@ -26665,7 +29263,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Revered Resin",
@@ -26714,7 +29314,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Carnage Heart",
@@ -26785,7 +29387,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Xoph's Blood",
@@ -26834,7 +29438,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Surefooted Sigil",
@@ -26894,7 +29500,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Choir of the Storm",
@@ -26943,7 +29551,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Defiance of Destiny",
@@ -27003,7 +29613,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ligurium Talisman",
@@ -27063,7 +29675,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Pandemonius",
@@ -27112,7 +29726,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Stone of Lazhwar",
@@ -27161,7 +29777,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rondel of Fragility",
@@ -27221,7 +29839,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Anvil",
@@ -27292,7 +29912,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Yoke of Suffering",
@@ -27352,7 +29974,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Astramentis",
@@ -27390,7 +30014,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Fixation of Yix",
@@ -27472,7 +30098,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Strugglescream",
@@ -27499,7 +30127,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Hinekora's Sight",
@@ -27553,7 +30183,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Beacon of Azis",
@@ -27613,7 +30245,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Fireflower",
@@ -27673,7 +30307,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Immaculate Adherence",
@@ -27755,7 +30391,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Eye of Chayula",
@@ -27804,7 +30442,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Serpent's Egg",
@@ -27864,7 +30504,45 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalChanceToGainAdditionalRandomCharge",
+    "text": "50% chance to gain an additional random Charge when you gain a Charge",
+    "stats": [
+     [
+      "chance_to_gain_1_more_random_charge_%",
+      50,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChargeDuration",
+    "text": "(-60—60)% reduced Endurance, Frenzy and Power Charge Duration",
+    "stats": [
+     [
+      "charge_duration_+%",
+      -60,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChargeChanceToNotConsume",
+    "text": "Skills have (10—15)% chance to not remove Charges but still count as consuming them",
+    "stats": [
+     [
+      "charge_skip_consume_chance_%",
+      10,
+      15
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueAdditionalChargeGeneration1"
+  ]
  },
  {
   "name": "Eventide Petals",
@@ -27929,7 +30607,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blackheart",
@@ -27994,7 +30674,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Icefang Orbit",
@@ -28081,7 +30763,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Prized Pain",
@@ -28146,7 +30830,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Venopuncture",
@@ -28233,7 +30919,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Doedre's Damning",
@@ -28282,7 +30970,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Glowswarm",
@@ -28342,7 +31032,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Seed of Cataclysm",
@@ -28413,7 +31105,45 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalCastSpeedIfCriticalStrikeDealtRecently",
+    "text": "(-15—15)% reduced Cast Speed if you've dealt a Critical Hit Recently",
+    "stats": [
+     [
+      "cast_speed_+%_if_have_crit_recently",
+      -15,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVolatilityOnCritChance",
+    "text": "(30—50)% chance to grant Volatility on Critical Hit",
+    "stats": [
+     [
+      "instability_on_critical_%_chance",
+      30,
+      50
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellsFire8AdditionalProjectileChance",
+    "text": "(5—10)% chance for Spell Skills to fire 8 additional Projectiles in a circle",
+    "stats": [
+     [
+      "spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova",
+      5,
+      10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueManaCostReduction2"
+  ]
  },
  {
   "name": "Cracklecreep",
@@ -28473,7 +31203,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blistering Bond",
@@ -28544,7 +31276,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Polcirkeln",
@@ -28604,7 +31338,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Dream Fragments",
@@ -28653,7 +31389,57 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLife",
+    "text": "10% of Damage is taken from Mana before Life",
+    "stats": [
+     [
+      "base_damage_removed_from_mana_before_life_%",
+      10,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIceCrystalMaximumLife",
+    "text": "(40—60)% increased Ice Crystal Life",
+    "stats": [
+     [
+      "ice_crystal_maximum_life_+%",
+      40,
+      60
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalMaximumManaOnKillPercent",
+    "text": "Recover (1—2)% of maximum Mana on Kill",
+    "stats": [
+     [
+      "recover_%_maximum_mana_on_kill",
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalVolatilityDamageTakenAsColdPercent",
+    "text": "(50—100)% of Volatility Physical Damage Taken as Cold Damage",
+    "stats": [
+     [
+      "volatility_physical_damage_taken_%_as_cold",
+      50,
+      100
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueMaximumManaIncrease1",
+   "UniqueManaRegeneration3"
+  ]
  },
  {
   "name": "Whisper of the Brotherhood",
@@ -28713,7 +31499,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Burrower",
@@ -28762,7 +31550,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Call of the Brotherhood",
@@ -28822,7 +31612,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Levinstone",
@@ -28882,7 +31674,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ming's Heart",
@@ -28931,7 +31725,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Original Sin",
@@ -28969,7 +31765,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blackflame",
@@ -29056,7 +31854,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Veilpiercer",
@@ -29138,7 +31938,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Vigilant View",
@@ -29220,7 +32022,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Death Rush",
@@ -29280,7 +32084,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Thief's Torment",
@@ -29362,7 +32168,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Evergrasping Ring",
@@ -29411,7 +32219,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Snakepit",
@@ -29504,7 +32314,72 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles",
+    "text": "(5—10)% chance for Spell Skills to fire 2 additional Projectiles",
+    "stats": [
+     [
+      "spell_skills_fire_2_additional_projectiles_final_chance_%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalManaCostEfficiency3",
+    "text": "(-30—30)% reduced Mana Cost Efficiency",
+    "stats": [
+     [
+      "base_mana_cost_efficiency_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalEnergyGeneration",
+    "text": "Meta Skills gain (-30—30)% reduced Energy",
+    "stats": [
+     [
+      "energy_generated_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalSpellSkillProjectileSpeed",
+    "text": "(-30—30)% reduced Projectile Speed for Spell Skills",
+    "stats": [
+     [
+      "spell_skill_projectile_speed_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalChanceToNotConsumeInfusion",
+    "text": "Skills have (5—10)% chance to not remove Elemental Infusions but still count as consuming them",
+    "stats": [
+     [
+      "chance_to_not_consume_infusion_%",
+      5,
+      10
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueSpellDamage2",
+   "UniqueIncreasedCastSpeed9",
+   "UniqueLeftRingSpellProjectilesCannotChain1",
+   "UniqueLeftRingSpellProjectilesFork1",
+   "UniqueRightRingSpellProjectilesChain1",
+   "UniqueRightRingSpellProjectilesCannotFork1"
+  ]
  },
  {
   "name": "Heartbound Loop",
@@ -29575,7 +32450,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Gifts from Above",
@@ -29646,7 +32523,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Taming",
@@ -29721,7 +32600,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Perandus Seal",
@@ -29770,7 +32651,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Andvarius",
@@ -29819,7 +32702,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ventor's Gamble",
@@ -29901,7 +32786,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bursting Decay",
@@ -29961,7 +32848,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Grip of Kulemak",
@@ -30010,7 +32899,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Berek's Pass",
@@ -30061,7 +32952,9 @@
   ],
   "unmatched": [
    "+(10—20) to Strength and Intelligence"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Berek's Respite",
@@ -30112,7 +33005,9 @@
   ],
   "unmatched": [
    "+(10—20) to Strength and Dexterity"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Berek's Grip",
@@ -30163,7 +33058,9 @@
   ],
   "unmatched": [
    "+(10—20) to Dexterity and Intelligence"
-  ]
+  ],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Meginord's Girdle",
@@ -30223,7 +33120,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Midnight Braid",
@@ -30272,7 +33171,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Keelhaul",
@@ -30332,7 +33233,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Umbilicus Immortalis",
@@ -30414,7 +33317,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Birthright Buckle",
@@ -30474,7 +33379,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Byrnabas",
@@ -30534,7 +33441,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Gnashing Sash",
@@ -30594,7 +33503,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Soul Tether",
@@ -30654,7 +33565,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalEnergyShieldRecoveryRate",
+    "text": "(10—15)% increased Energy Shield Recovery rate",
+    "stats": [
+     [
+      "energy_shield_recovery_rate_+%",
+      10,
+      15
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalLifeDegenerationPercentGracePeriod",
+    "text": "Lose (2.5—5)% of maximum Life per second",
+    "stats": [
+     [
+      "life_degeneration_%_per_minute_not_in_grace",
+      150,
+      300
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalIncreasedLifeLeechRate",
+    "text": "Leech Life (-25—25)% slower",
+    "stats": [
+     [
+      "base_life_leech_rate_+%",
+      -25,
+      25
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalZealotsOath",
+    "text": "Life Regeneration is applied to Energy Shield instead",
+    "stats": [
+     [
+      "regenerate_energy_shield_instead_of_life",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueIncreasedEnergyShield2",
+   "UniqueLoseEnergyShieldPerSecond1",
+   "UniqueLifeLeechExcessToEnergyShield1"
+  ]
  },
  {
   "name": "Goregirdle",
@@ -30714,7 +33676,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ryslatha's Coil",
@@ -30774,7 +33738,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Coward's Legacy",
@@ -30834,7 +33800,48 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalLifeRegenerationOnLowLife",
+    "text": "Regenerate (2—3)% of maximum Life per second while on Low Life",
+    "stats": [
+     [
+      "life_regeneration_rate_per_minute_%_when_on_low_life",
+      120,
+      180
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalBeltIncreasedFlaskChargesGained",
+    "text": "(20—30)% increased Flask Charges gained",
+    "stats": [
+     [
+      "flask_charges_gained_+%",
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalEvasionOnLowLife",
+    "text": "+(100—150) to Evasion Rating while on Low Life",
+    "stats": [
+     [
+      "evasion_rating_+_when_on_low_life",
+      100,
+      150
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueStrength4",
+   "UniqueDexterity3",
+   "UniqueBeltFlaskRecoveryRate1",
+   "UniqueLowLifeThreshold1"
+  ]
  },
  {
   "name": "Bijouborne",
@@ -30899,7 +33906,9 @@
     "stats": []
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Waistgate",
@@ -30970,7 +33979,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Headhunter",
@@ -31030,7 +34041,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Zerphi's Genesis",
@@ -31112,7 +34125,58 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [
+   {
+    "id": "UniqueMutatedVaalBeltIncreasedCharmChargesGained",
+    "text": "(10—30)% increased Charm Charges gained",
+    "stats": [
+     [
+      "charm_charges_gained_+%",
+      10,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalBeltFlaskLifeRecovery",
+    "text": "(10—30)% increased Life Recovery from Flasks",
+    "stats": [
+     [
+      "flask_life_to_recover_+%",
+      10,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalCharmChargeGeneration",
+    "text": "Charms gain 0.5 charges per Second",
+    "stats": [
+     [
+      "generate_x_charges_for_charms_per_minute",
+      30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalRemoveBleedOnLifeFlaskUse",
+    "text": "Remove Bleeding when you use a Life Flask",
+    "stats": [
+     [
+      "remove_bleed_on_life_flask_use",
+      1,
+      1
+     ]
+    ]
+   }
+  ],
+  "replaceable": [
+   "UniqueStrength28",
+   "UniqueCorruptedBloodImmunity1",
+   "UniqueCharmChargesToLifeFlasks1"
+  ]
  },
  {
   "name": "Cat O' Nine Tails",
@@ -31188,7 +34252,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ingenuity",
@@ -31248,7 +34314,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mageblood",
@@ -31319,7 +34387,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Shavronne's Satchel",
@@ -31379,7 +34449,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Darkness Enthroned",
@@ -31417,7 +34489,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blood of the Warrior",
@@ -31487,7 +34561,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Olroth's Resolve",
@@ -31535,7 +34611,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Opportunity",
@@ -31628,7 +34706,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Lavianga's Spirits",
@@ -31666,7 +34746,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Uhtred's Chalice",
@@ -31737,7 +34819,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Melting Maelstrom",
@@ -31791,7 +34875,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Nascent Hope",
@@ -31829,7 +34915,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Sanguis Heroum",
@@ -31877,7 +34965,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Arakaali's Gift",
@@ -31915,7 +35005,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Beira's Anguish",
@@ -31953,7 +35045,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Black Cat",
@@ -31991,7 +35085,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "For Utopia",
@@ -32018,7 +35114,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Fall of the Axe",
@@ -32045,7 +35143,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Ngamahu's Chosen",
@@ -32083,7 +35183,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Breath of the Mountains",
@@ -32121,7 +35223,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Valako's Roar",
@@ -32159,7 +35263,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Forsaken Bangle",
@@ -32197,7 +35303,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Rite of Passage",
@@ -32212,7 +35320,9 @@
   "name_zh": "儀式通道",
   "base": "Golden Charm",
   "mods": [],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Kalandra's Touch",
@@ -32239,7 +35349,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Safrin's Resolve",
@@ -32299,7 +35411,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Eshtera's Path",
@@ -32359,7 +35473,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Zaida's Longevity",
@@ -32419,7 +35535,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Wraeclast Besieged",
@@ -32479,7 +35597,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Clear Skies",
@@ -32522,7 +35642,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Freedom of Faith",
@@ -32560,7 +35682,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Grand Project",
@@ -32587,7 +35711,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Visions of Paradise",
@@ -32614,7 +35740,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Mastered Domain",
@@ -32641,7 +35769,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Season of the Hunt",
@@ -32668,7 +35798,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Cruel Hegemony",
@@ -32695,7 +35827,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Unforeseen Consequences",
@@ -32747,7 +35881,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Blessed Bonds",
@@ -32823,7 +35959,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Bluetongue",
@@ -32888,7 +36026,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Demigod's Virtue",
@@ -32926,7 +36066,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Forgotten By Time",
@@ -32964,7 +36106,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Redbeak",
@@ -33029,7 +36173,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Dancing Dervish",
@@ -33077,7 +36223,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Remembered Tales",
@@ -33126,7 +36274,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "The Road Warrior",
@@ -33197,7 +36347,9 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  },
  {
   "name": "Winter's Bite",
@@ -33251,6 +36403,8 @@
     ]
    }
   ],
-  "unmatched": []
+  "unmatched": [],
+  "mutated": [],
+  "replaceable": []
  }
 ]

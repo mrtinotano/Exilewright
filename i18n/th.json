@@ -930,5 +930,7 @@
  "Archon of Undeath": "อาร์คอนอันเดด",
  "Puppet Master": "ผู้เชิดหุ่น",
  "Search in the Optimizer": "ค้นหาในตัวปรับแต่ง",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "เปิดตัวปรับแต่งพร้อมม็อด ราคา และตัวเลือกที่ติ๊กไว้นี้ เพื่อค้นหาด้วยตัวเลือกอื่นของมัน"
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "เปิดตัวปรับแต่งพร้อมม็อด ราคา และตัวเลือกที่ติ๊กไว้นี้ เพื่อค้นหาด้วยตัวเลือกอื่นของมัน",
+ "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "ลูกแก้วสถาปนิก: ม็อดหนึ่งของไอเทมยูนีคถูกแทนที่ด้วยม็อดวาล",
+ "No Vaal modifier": "ไม่มีม็อดวาล"
 }

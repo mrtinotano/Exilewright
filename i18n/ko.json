@@ -930,5 +930,7 @@
  "Archon of Undeath": "불사의 집정관",
  "Puppet Master": "인형사",
  "Search in the Optimizer": "최적화에서 검색",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "이 속성, 가격, 체크 항목으로 최적화를 열어 다른 옵션과 함께 검색합니다."
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "이 속성, 가격, 체크 항목으로 최적화를 열어 다른 옵션과 함께 검색합니다.",
+ "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "건축가의 오브: 고유 아이템의 속성 하나를 바알 속성으로 교체",
+ "No Vaal modifier": "바알 속성 없음"
 }

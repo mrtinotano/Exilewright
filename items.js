@@ -10,7 +10,7 @@ const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
 const UNIQUES = await fetch('poe2_data/available/unique_items.json').then(r => r.ok ? r.json() : []).catch(() => []);
 const UNIQ = Object.fromEntries(UNIQUES.filter(u => BASE[u.base]).map(u => [u.name, u]));
 const AFFIX = Object.fromEntries([...D.affixes.map(a => [a.id, a]),
-  ...UNIQUES.flatMap(u => u.mods.map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);
+  ...UNIQUES.flatMap(u => [...u.mods, ...u.mutated || []].map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);   // and the Vaal modifiers an Architect's Orb can give it
 export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots', amulet: 'Amulet',
   ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
 const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
@@ -374,7 +374,7 @@ export function parseItem(text) {
   // an anointed amulet's enchantment (Distilled Emotions): "Allocates Cooked", the passive by its name. note: English text only
   for (const l of tagged.keys()) { const m = l.match(/^Allocates (.+)$/); if (m) { item.anoint = m[1]; tagged.delete(l); } }
   const left = runesOf([...tagged.keys()], base, addExtra);
-  const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
+  const own = x => matchLines(expl, [...x.mods, ...x.mutated || []].flatMap(m => shapes(m.id, m.stats)));
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
   // a flask: no modifier ends in one) are not modifiers
   const noise = l => META.test(l) || UNID.test(l) || /^\(.*\)$/.test(l) || /^[\p{L}\p{M}]+$/u.test(l) || /[.。]$/.test(l);
@@ -392,7 +392,10 @@ export function parseItem(text) {
     item.unique = u.name;
     item.mods = u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) }));
     ex = own(u);
-    ex.found.forEach(f => item.mods.find(m => m.id === f.key).values = f.values);
+    // a Vaal modifier (Architect's Orb) in place of the replaceable one whose line the item no longer has
+    const mut = ex.found.find(f => u.mutated?.some(m => m.id === f.key)), from = mut && u.replaceable.find(id => !ex.found.some(f => f.key === id)), mi = item.mods.findIndex(m => m.id === from);
+    if (mi >= 0) { item.mods[mi] = { id: mut.key, values: [] }; item.mutatedFrom = from; }
+    ex.found.forEach(f => { const m = item.mods.find(m => m.id === f.key); if (m) m.values = f.values; });
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
   } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }));   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
@@ -747,6 +750,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
+      // an Architect's Orb's Vaal modifier (poe2db's per unique: mutated.py) in place of one of its replaceable ones
+      + (uniq?.mutated?.length ? `<div class="mod"><select data-slot="${slot}" data-act="mutate" title="${esc(t("Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier"))}"><option value="">${t('No Vaal modifier')}</option>${uniq.replaceable.flatMap(from => uniq.mutated.map(m => {
+          const say = x => statLines(Object.fromEntries(AFFIX[x].stats.map(([id, , hi]) => [id, hi]))).join(' / ');
+          return `<option value="${from}>${m.id}"${it.mutatedFrom === from && mods.some(x => x.id === m.id) ? ' selected' : ''}>${esc(say(from))} → ${esc(say(m.id))}</option>`; })).join('')}</select></div>` : '')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
@@ -876,6 +883,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     } else if (t.dataset.act === 'quality') {
       const q = Math.max(0, Math.round(+t.value) || 0);
       if (q) items[slot].quality = q; else delete items[slot].quality;
+    } else if (t.dataset.act === 'mutate') {   // back to its own modifier, then the Vaal one picked in its place
+      const it = items[slot], u = UNIQ[it.unique], back = it.mods.findIndex(m => u?.mutated?.some(x => x.id === m.id));
+      if (back >= 0 && it.mutatedFrom) it.mods[back] = { id: it.mutatedFrom, values: fixVals(AFFIX[it.mutatedFrom].stats) };
+      delete it.mutatedFrom;
+      const [from, to] = t.value.split('>'), i = it.mods.findIndex(m => m.id === from);
+      if (to && i >= 0) { it.mods[i] = { id: to, values: fixVals(AFFIX[to].stats) }; it.mutatedFrom = from; }
     } else if (t.dataset.act === 'add' && t.value) {
       items[slot].mods.push({ id: t.value, values: fixVals(AFFIX[t.value].stats) });
     } else if (t.dataset.path) {

@@ -930,5 +930,7 @@
  "Archon of Undeath": "Arconte da Morte-viva",
  "Puppet Master": "Mestre das Marionetes",
  "Search in the Optimizer": "Buscar no Otimizador",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Abre o Otimizador com estes modificadores, preço e opções marcadas, para buscar com as demais opções dele."
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Abre o Otimizador com estes modificadores, preço e opções marcadas, para buscar com as demais opções dele.",
+ "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Orbe do Arquiteto: um dos modificadores do único substituído por um modificador vaal",
+ "No Vaal modifier": "Sem modificador vaal"
 }
