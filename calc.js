@@ -467,7 +467,8 @@ export function recovery(c, sum) {
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
     esDelayHurt: esD('energy_shield_delay_-%_when_not_on_full_life'),
-    esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'),
+    esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'), esDelayArchon: esD('energy_shield_delay_-%_while_affected_by_archon'),
+    archonRes: v(sum, 'archon_grants_all_elemental_resistance_+%'),   // Archon buffs also grant it
     // while Shapeshifted: factors on the energy shield delay and recharge, accuracy and life leech with their other
     // increases, armour applied to elemental damage, more maximum Rage
     shift: (k => k.some(x => sum[x]) ? { esDelay: esD('energy_shield_delay_-%_while_shapeshifted'),
@@ -770,7 +771,7 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
 // none), the penalties while performing an action
 const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_+%_if_pinned_enemy_recently', 'PinnedRecently'], ['movement_speed_+%_while_using_charm', 'UsingCharm'],
   ['parry_movement_speed_+%_if_youve_parried_recently', 'ParriedRecently'], ['movement_speed_+%_if_10_green_supports_socketed', 'Green10'], ['movement_speed_+%_if_enemy_killed_recently', 'KilledRecently'], ['movement_speed_+%_while_surrounded', 'Surrounded'],
-  ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently']];
+  ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently'], ['archon_grants_movement_speed_+%', 'Archon']];
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
 // only, not flasks; not counted "per 5% missing life"
@@ -1167,6 +1168,10 @@ export function skill(g, b, treeGear) {
     if (cb) out.when.push({ cond, val: cb, what: 'critBonus', w: cbW });
   }
   // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
+  // what Archon buffs also grant (the tree): increased critical hit chance and damage bonus while you have one
+  const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
+  if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
+  if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
   for (const [s, cv] of Object.entries(WHILE)) {
     const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'Condition', var: cv }];
     if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
