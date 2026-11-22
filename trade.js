@@ -397,15 +397,14 @@ export async function findBetter({ league, item, base, skip = [], price, level, 
   // those with every line first; fewer than 10 of them: the rest from those with one line less, then two (each search's
   // own listings read with it, cheapest first)
   const groups = [], seen = new Set();
-  let s = await call('search?league=' + encodeURIComponent(league), body), need = 0;
+  const url = 'search?league=' + encodeURIComponent(league);
+  let s = await call(url, body), need = 0;
   const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, 10 - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
   take(); const full = seen.size;
-  for (const k of fewer(stats)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call('search?league=' + encodeURIComponent(league), body); take(); }
+  for (const k of fewer(stats)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
   const found = [];
   tick?.('Reading {0} items…', seen.size);
-  for (const { ids, q } of groups) { const got = [];
-    for (const r of (await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []) { const l = r && readListing(r); if (l?.item) got.push(l); }
-    found.push(...got.reverse()); }
+  for (const { ids, q } of groups) found.push(...((await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []).map(r => r && readListing(r)).filter(l => l?.item).reverse());
   return { found, body, left, ...need && seen.size > full && { need, of: stats[0].filters.length, full } };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
