@@ -183,7 +183,7 @@ export function itemParts(it, en = true) {
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
   const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang).map(l => en && m.kind ? `{${m.kind}}${l}` : l));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
-  const rune = it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [];   // runes and enchantments (parseItem)
+  const rune = [...it.anoint ? [say({ mod_granted_passive_hash: 1 })[0].replace('1', it.anoint)] : [], ...it.extra ? say(it.extra).flatMap(l => l.split('\n')) : []];   // its anointment, runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
   return { r, base: en ? base : { ...base, name: tn(base) || base.name }, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name };
 }
@@ -321,8 +321,7 @@ export function parseItem(text) {
   // Path of Building's unrolled line: "{range:0.5}(5-10)% of Damage..." is its min + range x (max - min), rounded (its
   // ItemTools applyRange; 0.5 where no range is given). A roll followed by its range ("34(33-38)%", the game's) is not it
   const ranged = l => { const R = +(l.match(/\{range:([\d.]+)\}/)?.[1] ?? .5);
-    const rs = (x, d) => Math.sign(x) * Math.round(Math.abs(x) * d) / d;   // rounded away from 0 at a half, as its roundSymmetric
-    return l.replace(/\((-?\d+\.?\d*)-(-?\d+\.?\d*)\)/g, (m, lo, hi, at, all) => /\d$/.test(all.slice(0, at)) ? m : String(rs(+lo + R * (hi - lo), /\./.test(lo + hi) ? 100 : 1))); };
+    return l.replace(/(?<!\d)\((-?\d+\.?\d*)-(-?\d+\.?\d*)\)/g, (m, lo, hi) => { const d = /\./.test(lo + hi) ? 100 : 1, x = +lo + R * (hi - lo); return String(Math.sign(x) * Math.round(Math.abs(x) * d) / d); }); };   // rounded away from 0 at a half (its roundSymmetric)
   const body = raw.slice(ri + 1 + head.length).map(ranged).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => !rest ? rest : /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : /\{(fractured|crafted)\}/.test(tags) ? `${rest} (${tags.match(/\{(fractured|crafted)\}/)[1]})` : rest)
     .replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').trim()).filter(Boolean);
   let impl = [], expl = [];
@@ -372,6 +371,8 @@ export function parseItem(text) {
   // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item, else
   // as what the runes themselves give (SoulCoreStats: "32% increased Life and Mana Recovery from Flasks"): the stats are
   // that one's and the number is the line's own (two runes add up in one line). The rest is left out
+  // an anointed amulet's enchantment (Distilled Emotions): "Allocates Cooked", the passive by its name. note: English text only
+  for (const l of tagged.keys()) { const m = l.match(/^Allocates (.+)$/); if (m) { item.anoint = m[1]; tagged.delete(l); } }
   const left = runesOf([...tagged.keys()], base, addExtra);
   const own = x => matchLines(expl, x.mods.flatMap(m => shapes(m.id, m.stats)));
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
@@ -943,6 +944,6 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
 console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15
   && affixLines('Helmets').some(o => o.desecrated && o.en), 'desecrated: trade listing and gear search');
-// self-check: Path of Building's unrolled lines, at their range
-{ const r = parseItem('Rarity: RARE\nNew Item\nFeathered Raiment\nImplicits: 1\n{tags:resource}{range:0.5}(5-10)% of Damage is taken from Mana before Life\n{range:0.2}+(10-20) to maximum Life');
-  console.assert(r?.item.implicits[0]?.[0] === 8 && r.item.mods[0]?.values[0] === 12 && !r.missed.length, 'parseItem: {range:} lines', r); }
+// self-check: Path of Building's unrolled lines, at their range, and an anointed passive
+{ const r = parseItem('Rarity: RARE\nNew Item\nFeathered Raiment\nImplicits: 2\n{enchant}Allocates Cooked\n{tags:resource}{range:0.5}(5-10)% of Damage is taken from Mana before Life\n{range:0.2}+(10-20) to maximum Life');
+  console.assert(r?.item.implicits[0]?.[0] === 8 && r.item.mods[0]?.values[0] === 12 && r.item.anoint === 'Cooked' && !r.missed.length, 'parseItem: {range:} lines, an anointment', r); }

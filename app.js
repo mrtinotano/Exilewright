@@ -19,7 +19,7 @@ import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, b
 const $ = id => document.getElementById(id);
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [tree, gems, ascs] = await Promise.all([load('passive_tree.json'), load('gems.json'), load('ascendancies.json')]);
-const N = tree.nodes;
+const N = tree.nodes, NODE_BY_NAME = new Map(Object.entries(N).filter(([, n]) => !n.ascendancy).map(([id, n]) => [n.name, id]));
 const ROOTS = new Set(tree.class_roots.map(String));
 const label = tn;
 
@@ -114,6 +114,8 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Titan's Hulking Form: increased effect of the small passives (attribute ones included)
   const all = [...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1)], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b))) sum[s] = (sum[s] || 0) + v * k; }
+  // an anointed amulet's passive ("Allocates Cooked", items.js parseItem), unless the tree has it already
+  for (const it of Object.values(b.items || {})) { const id = it.anoint && NODE_BY_NAME.get(it.anoint); if (id && !all.includes(id)) for (const [s, v] of Object.entries(nodeStats(id, b))) sum[s] = (sum[s] || 0) + v; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
