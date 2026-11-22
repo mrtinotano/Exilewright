@@ -300,7 +300,7 @@ export function initScene(el, api) {
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
-  const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) + (shifted()?.rage || 0) : 0; };
+  const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) + (shifted()?.rage || 0) + (time - (me.gloryUsed ?? -99) <= 20 ? R.glory || 0 : 0) : 0; };   // the tree's more if you used a Glory skill in the last 20 s
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
   // your death, by an enemy or by your own life loss: everything restored
@@ -575,7 +575,7 @@ export function initScene(el, api) {
     const H = real ? D.onHit : null;
     if (!S.src && time - (me.rageHit ?? -9) >= .5) {
       const G = sheet().rage?.gain, n = (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
-      if (n > 0) { me.rageHit = time; gainRage(n); }
+      if (n > 0) { me.rageHit = time; gainRage(n); if (Math.random() * 100 < (sheet().rage?.fill || 0)) me.rage = rageMax(); }   // the tree's chance to gain all of it
     }
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
@@ -1299,8 +1299,9 @@ export function initScene(el, api) {
     deathBlast(d, frozen, S);
     // the tree's explosions on kill: a cursed enemy for a quarter of its maximum life as chaos, any for all of it as physical.
     // note: their radius is not in the data (a herald's here); Zealous Inquisition's doubled chance against Undead and Demons is left out
-    const XB = S && sheet().blast, XK = XB && (d.curse && Math.random() * 100 < XB.cursed ? [.25, 'chaos'] : Math.random() * 100 < XB.any ? [1, 'physical'] : null);
-    if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'chaos' ? 'chaos' : 'blood'); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
+    const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed ? [.25, 'chaos'] : R() < XB.any ? [1, 'physical']
+      : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
+    if (XK) later(.05, () => { pop(p, SIM.heraldR, { chaos: 'chaos', fire: 'fire' }[XK[1]] || 'blood'); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
@@ -3948,7 +3949,7 @@ export function initScene(el, api) {
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
-      if (tally() < had) { const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
+      if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
         if (ts.length) S.mult *= 1 + EA / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length;
         S.costX = 1 + (F['support_discount_skill_cost_+%_final_if_empowered'] || 0) / 100; S.accX = 1 + (F['support_discount_accuracy_rating_+%_final_if_empowered'] || 0) / 100; }
@@ -3975,7 +3976,7 @@ export function initScene(el, api) {
     if (GN) {
       if ((me.glory[S.name] || 0) < GN) { toast(t('{0} needs {1} Glory', S.label, Math.ceil(GN))); return false; }
       const st = gst(S);
-      const g0 = me.glory[S.name] || 0;
+      const g0 = me.glory[S.name] || 0; me.gloryUsed = time;
       if (!(Math.random() * 100 < (st['chance_to_not_consume_glory_%'] || 0))) me.glory[S.name] = Math.random() * 100 < (st['chance_to_retain_40%_of_glory_on_use_%'] || 0) ? GN * .4 : 0;
       const GL = sheet().gloryLife * (g0 - me.glory[S.name]); if (GL > 0) me.life = Math.min(me.maxL, me.life + me.maxL * GL / 100);   // the tree's life per Glory consumed
       hudT = 0;

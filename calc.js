@@ -379,7 +379,8 @@ export function character(b, sum) {
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     chargeGen: [v(sum, 'generate_x_charges_for_life_flasks_per_minute'), v(sum, 'generate_x_charges_for_mana_flasks_per_minute'), v(sum, 'generate_x_charges_for_charms_per_minute')],   // life / mana flask and charm charges a minute
     watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
-    blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical') },   // Lich's Rupture the Soul (a quarter of their life as chaos), Witchhunter's Zealous Inquisition (all of it as physical)
+    blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical'),
+      burning: v(sum, 'explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%'), empowered: v(sum, 'explode_enemies_for_10%_life_as_fire_on_kill_with_empowered_attacks_chance_%') },   // Lich's Rupture the Soul (a quarter of their life as chaos), Witchhunter's Zealous Inquisition (all of it as physical)
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
@@ -589,6 +590,7 @@ export function rageOf(b, sum) {
     any = !!rg || !!sum.maximum_rage || !!axe || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
   return {
     base: any ? base : 0, noEffect: !!sum.keystone_druidic_rage, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000 / (1 + v(sum, 'rage_loss_delay_recovery_rate_+%') / 100), loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60 * Math.max(0, 1 + v(sum, 'rage_decay_speed_+%') / 100),   // its loss faster or slower, and its start
+    glory: v(sum, 'max_rage_+_if_glory_skill_used_in_last_20_seconds'), fill: v(sum, 'gain_max_rage_on_rage_gain_from_hit_%_chance'),   // the tree's
     regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
     berserk: bz && { name: bz.name, effect: bs['skill_base_rage_effect_+%_to_apply'] || 0, max: bs['berserk_maximum_rage_granted_+'] || 0, lifePerRage: (bs['skill_base_life_loss_%_per_minute_per_rage_while_not_losing_rage_to_apply'] || 0) / 60 },
   };
