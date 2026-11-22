@@ -4800,6 +4800,10 @@ export function initScene(el, api) {
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
     const OR = sheet(), roll = () => Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - c.deflect.less / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1);   // and Intimidated ones
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
+    // "Defend with X% of Armour" against this hit: a critical one, a projectile attack, from further than 6 m, while your
+    // energy shield is not low (as Low Life: below its share of the most), or its chance for 200%. note: several multiply
+    const DW = OR.defendWith; if (DW) { const x = [[DW.crit, crit], [DW.projAttack, a.attack && a.shape === 'projectile'], [DW.far, dist(d.pos, pp) > 6], [DW.notLowES, me.maxE > 0 && me.es >= me.maxE * LOW], [DW.double && 200, Math.random() * 100 < DW.double]]
+      .reduce((m, [p, ok]) => p && ok ? m * p / 100 : m, 1); if (x !== 1) c = { ...c, armourX: (c.armourX || 1) * x }; }
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (OR.unluckyDmg ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);

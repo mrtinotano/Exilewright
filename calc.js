@@ -314,7 +314,10 @@ export function character(b, sum) {
     takenAs: takenAs(sum),
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
-    armourX: sum.double_armour_effect ? 2 : 1, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+    armourX: sum.double_armour_effect ? 2 : 1,
+    // "Defend with X% of Armour" against a kind of hit (the scene checks it), and the chance to defend with 200% of it
+    defendWith: { crit: v(sum, 'defend_with_%_armour_against_critical_strikes'), projAttack: v(sum, 'defend_with_%_armour_against_ranged_attacks'),
+      far: v(sum, 'defend_with_%_armour_against_hits_from_distance_greater_than_6m'), notLowES: v(sum, 'defend_with_%_of_armour_while_not_on_low_energy_shield'), double: v(sum, 'chance_to_double_armour_effect_on_hit_%') }, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
     evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical
     esArm: v(sum, 'current_energy_shield_%_as_physical_damage_reduction'),   // Disciple of Varashta: its share of your current energy shield added to armour against physical
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
@@ -558,8 +561,9 @@ export function rageOf(b, sum) {
   // Shaman's Furious Wellspring: more maximum Rage, its % of maximum Rage regenerated a second (with your mana regeneration
   // rate's modifiers) and its Rage cost on every skill; Druidic Champion: more spell damage per 2 Rage
   const regenPct = v(sum, 'base_rage_regeneration_rate_per_minute_%') / 6000 * (sum.mana_regeneration_rate_modifiers_apply_to_rage_regeneration ? 1 + v(sum, 'mana_regeneration_rate_+%') / 100 : 1);
-  const base = ((CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage', 'natures_sustenance_additional_maximum_rage')) * (sum.keystone_druidic_rage ? 2 : 1),   // Primal Hunger: 100% more
-    any = !!rg || !!sum.maximum_rage || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
+  const axe = W && weaponTags(W).includes('axe') ? v(sum, 'maximum_rage_+_while_wielding_axe') : 0;
+  const base = ((CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage', 'natures_sustenance_additional_maximum_rage') + axe) * (sum.keystone_druidic_rage ? 2 : 1),   // Primal Hunger: 100% more
+    any = !!rg || !!sum.maximum_rage || !!axe || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
   return {
     base: any ? base : 0, noEffect: !!sum.keystone_druidic_rage, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000 / (1 + v(sum, 'rage_loss_delay_recovery_rate_+%') / 100), loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60 * Math.max(0, 1 + v(sum, 'rage_decay_speed_+%') / 100),   // its loss faster or slower, and its start
     regen: rg && { name: rg.name, perSec: (gemStats(rg, sum).ceaseless_rage_base_rage_regeneration_per_minute + v(sum, 'base_rage_regeneration_per_minute')) / 60 },
