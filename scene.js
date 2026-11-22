@@ -4303,8 +4303,8 @@ export function initScene(el, api) {
     const VS = sheet().vivid, D = VS && time >= (me.vividAt ?? -9) && granted('Vivid Stampede', 20); if (!D) return;
     const st = D.stats, X = { ...asTrig(S, { ...D, id: 'Vivid Stampede' }), src: 'vivid' }, n = me.wisps, legs = st.vivid_stag_cascade_number_of_damaging_areas || 1, step = 2 * X.A + (st.vivid_stag_spacing || 0) / 10;
     me.wisps = 0; me.vividAt = time + (st._cooldown_ms || 0) / 1000; say(X.label + (n > 1 ? ` ×${n}` : ''), 'lightning');
-    const half = (VS.home || 0) * Math.PI / 360, ang = d => Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), off = d => Math.abs(Math.atan2(Math.sin(ang(d) - facing), Math.cos(ang(d) - facing)));
-    const aim = half && near(pp, legs * step, d => off(d) <= half), a0 = aim ? ang(aim) : facing, o = { x: pp.x, z: pp.z };
+    const half = (VS.home || 0) * Math.PI / 360, ang = d => Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z);
+    const aim = half && near(pp, legs * step, d => inCone(pp, Math.PI / 2 - facing, half, d.pos)), a0 = aim ? ang(aim) : facing, o = { x: pp.x, z: pp.z };
     for (let j = 0; j < n; j++) { const a = a0 + (j - (n - 1) / 2) * .3;
       for (let k = 0; k < legs; k++) later(.1 + k * .15, () => { const c = { x: o.x + Math.sin(a) * step * (k + 1), z: o.z + Math.cos(a) * step * (k + 1) };
         fx.ring(c, .2, X.A, 'lightning', .3); area(c, X.A, { ...X, mult: X.mult * (1 + VS.more * k / 100), shockX: 1 + VS.shock * k / 100 });
