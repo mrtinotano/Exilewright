@@ -853,7 +853,7 @@ export function initScene(el, api) {
     if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const i = byName('Unbound Avatar'), UA = i >= 0 && base(i)?.dmg?.stats; if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
     // Acolyte of Chayula's Inner Turmoil: Volatility on inflicting an elemental ailment (once every its interval, up to its most)
     const VG = !S.src && EL_AIL.includes(a) && sheet().volatility;
-    if (VG && time - (me.volAt ?? -99) >= VOLATILITY.every) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + VG); me.volAt = time; }
+    if (VG && time - (me.volAt ?? -99) >= VOLATILITY.every) gainVol(VG);
     // Invoker's I am the Blizzard / I am the Thunder: Chilled Ground on freezing an enemy, its chance of Shocked Ground on
     // shocking one, where it is (keywords.json: 6 s). note: the ground's area is not in the data: the scene's
     const GS = !/minion/.test(S.src || '') && S.dmg?.sum, GK = GS && (a === 'freeze' ? GS.create_chilling_ground_on_freeze && 'chilled' : a === 'shock' && Math.random() * 100 < (GS['chance_%_to_create_shocking_ground_on_shock'] || 0) && 'shocked');
@@ -1278,7 +1278,7 @@ export function initScene(el, api) {
   const onsl = () => time < me.wildUntil || time < me.onsUntil;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
-    d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + 1); me.volAt = time; }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -1633,7 +1633,7 @@ export function initScene(el, api) {
   // goes; for its duration
   // up to a limit: the oldest of the objects f picks gives way
   // S: the skill, for the tree's more of it (Orb skills', Elemental skills')
-  const limit = (f, max, S) => { if (max && S) max += (S.kind === 'orb' ? sheet().orbLimit || 0 : 0) + (S.els?.some(e => ELEM.includes(e)) ? sheet().elLimit || 0 : 0);
+  const limit = (f, max, S) => { const T = S && max && sheet(); if (T) max += (S.kind === 'orb' ? T.orbLimit : 0) + (S.els?.some(e => ELEM.includes(e)) ? T.elLimit : 0);
     const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
   const SPEAR = new THREE.CylinderGeometry(.03, .03, 1.3, 5), SPEAR_M = new THREE.MeshStandardMaterial({ color: 0x8a8070, metalness: .6, roughness: .5 });
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
@@ -1851,7 +1851,7 @@ export function initScene(el, api) {
     const su = S.dmg.sum, D = granted("Doedre's Undoing", S.g?.level, 'ChaosFrogExplosionPlayer'); if (!D) return;
     const X = asTrig(S, { ...D, id: "Doedre's Undoing" }), toads = [], dec = fx.decal(c, R, 'rune', 'curse', { a: .45, spin: .4 }); let tk = 0;
     X.A = (D.stats.active_skill_base_area_of_effect_radius || 10) / 10;
-    limit(o => o.doedre, su.maximum_curse_zones_allowed);
+    limit(o => o.doedre, su.maximum_curse_zones_allowed, S);
     thing(holder(c), sh(S).duration || SIM.curseTime, { name: S.name, doedre: true,
       tick(dt) {
         for (const d of inside(c, R)) if (d.curse?.label !== S.label) curseOn(d, true);
@@ -2091,7 +2091,7 @@ export function initScene(el, api) {
   function briarStore(n) { const st = onS('Briarpatch')?.dmg.stats; if (st) me.briar = Math.min(st.briarpatch_maximum_stored_physical_damage, (me.briar || 0) + n * st.briarpatch_stores_permyriad_of_physical_damage_dealt / 1e4); }
   function briar(by) {
     const S = onS('Briarpatch'), st = S?.dmg.stats, n = me.briar || 0; if (!st || !n || time < me.briarAt) return;
-    me.briar = 0; me.briarAt = time + st.briarpatch_ground_creation_delay_ms / 1000; limit(o => o.briar, st.base_briarpatch_ground_limit);
+    me.briar = 0; me.briarAt = time + st.briarpatch_ground_creation_delay_ms / 1000; limit(o => o.briar, st.base_briarpatch_ground_limit, S);
     const c = { ...by.at }, X = { ...S, el: 'physical', els: ['physical'], dmg: { ...S.dmg, hits: { physical: [n, n] } } }, dec = fx.decal(c, S.A, 'patch', 'dust', { a: .45, k: 1 });
     let tk = 0; say(S.label, 'dust');
     thing(holder(c), durOf(S), { briar: 1, off: () => dec.remove(), tick(dt) {
@@ -2211,7 +2211,7 @@ export function initScene(el, api) {
     const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
     if (o.dur) {
       const mine = fissures.filter(f => f.S.name === S.name);
-      if (mine.length >= o.max + (sheet().fissureLimit || 0)) { const old = mine[0]; old.decal.t = old.decal.dur; fissures.splice(fissures.indexOf(old), 1); }
+      if (mine.length >= o.max + sheet().fissureLimit) { const old = mine[0]; old.decal.t = old.decal.dur; fissures.splice(fissures.indexOf(old), 1); }
       fissures.push({ a: { x: from.x, z: from.z }, b, S, r, mult, decal, end: time + o.dur, next: 0 });
     }
     for (let k = 1; k <= len; k++) later(k * .06, () => {
@@ -3019,7 +3019,7 @@ export function initScene(el, api) {
     fragments(S) {
       const st = S.dmg?.stats || {}, c = S.at, X = partOf(S, 'FragmentsOfThePastFragmentPlayer'), xs = X?.dmg?.stats || {}, n = sh(X || S).projectiles || 1;
       const lo = (xs.ice_fragment_min_chunk_distance || 0) / 10, hi = (xs.ice_fragment_max_chunk_distance || 0) / 10, wait = (xs.base_skill_detonation_time || 0) / 1000;
-      limit(o => o.fragments, st.base_number_of_ice_volcanos_allowed);
+      limit(o => o.fragments, st.base_number_of_ice_volcanos_allowed, S);
       const fire = k => { for (let j = 0; j < k; j++) {
         const d = near(c, hi), a = rnd(TAU), r = lo + Math.sqrt(rnd()) * (hi - lo), q = d && dist(d.pos, c) >= lo ? { x: d.pos.x, z: d.pos.z } : { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
         lob(fx.orb('cold', .14), V(c.x, 1.2, c.z), V(q.x, .1, q.z), .5, 2.4, () => { const m = fx.decal(q, .35, 'ring', 'cold', { a: .8 }); later(wait, () => { m.remove(); boom(q, X.A, { ...X, mult: S.mult }, { soft: true }); }); }, { trail: 'cold' }); } };
@@ -3142,7 +3142,7 @@ export function initScene(el, api) {
     // its share of all its damage as the element it picked up (the slash's own, from the ground under you)
     const WG = st['windstorm_gain_all_damage_%_as_corresponding_element_if_empowered'], X0 = S.got ? gainAs(W, S.got, WG) : W;
     const make = () => {
-      if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms);
+      if (lance) limit(o => o.whirl && o.lance, st.windstorm_base_maximum_number_of_storms, S);
       const e = thing(holder(c), lance ? durOf(W) : Infinity, { whirl: true, lance, stage: lance ? top + (S.spent ? 1 : 0) : 1, c, out: !lance || dist(pp, c) > W.A, X: X0,
         R: () => W.A + st['sandstorm_swipe_storm_radius_+_per_stage'] * (e.stage - 1) / 10,
         tick(dt) {
@@ -3474,7 +3474,7 @@ export function initScene(el, api) {
         }
         return ground('burning', c, is.active_skill_base_tertiary_area_of_effect_radius / 10, durOf(I), I);
       }
-      limit(o => o.espear, st.base_number_of_remote_spear_mines_allowed);
+      limit(o => o.espear, st.base_number_of_remote_spear_mines_allowed, S);
       const m = fx.arrow(S.el); m.position.set(c.x, .4, c.z); m.rotation.x = -1.1;
       const e = thing(m, st.base_skill_detonation_time / 1000, { name: S.name, espear: true, r: .4, touch(by) { if (by.P.detonator && by.name !== S.name) e.s = e.dur; }, end: () => { pop(c, X.A, 'fire'); boom(c, X.A, X); } });
     });
@@ -3590,7 +3590,7 @@ export function initScene(el, api) {
     for (let k = 0; k < (sh(S).projectiles || 1); k++) {
       const c = around(S.at, R);
       later(k * st.siege_cascade_fall_time_ms / 1000, () => {
-        limit(o => o.stormblast, st.stormblast_bolts_maximum_active_bolt_count);
+        limit(o => o.stormblast, st.stormblast_bolts_maximum_active_bolt_count, S);
         const m = fx.orb('lightning', .12); m.position.set(c.x, .3, c.z); fx.streak(V(c.x, 6, c.z), V(c.x, .3, c.z), 'lightning', .1, .04, 1);
         boom(c, S.A, S, { soft: true, noPay: k > 0 });
         thing(m, durOf(S), { name: S.name, stormblast: true, r: .3,
@@ -3679,9 +3679,10 @@ export function initScene(el, api) {
   // Grim Remnant. Used again (Grim Resurrection), the life you hold Revives the dead minions, oldest first, up to that
   // much total life of theirs; it is all consumed. note: the game's own Revive after a delay is not in the data
   // (PoB2 MinionRevivalTimeBase), so the scene's minions come back only this way or by using their skill again
+  const gainVol = n => { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
-    const VM = sheet().volMinion; if (VM) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + VM); me.volAt = time; }   // the tree's Volatility on a persistent minion's death
+    if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
   }
@@ -3689,7 +3690,7 @@ export function initScene(el, api) {
   function reviveFallen(n) {
     let used = 0, k = 0;
     me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n - used) return !!X; used += f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
-    me.life = Math.min(me.maxL, me.life + me.maxL * k * (sheet().reviveLife || 0) / 100);   // the tree's life per minion Revived
+    me.life = Math.min(me.maxL, me.life + me.maxL * k * sheet().reviveLife / 100);   // the tree's life per minion Revived
     return { used, k };
   }
   function grim(S) {
@@ -3812,7 +3813,7 @@ export function initScene(el, api) {
   K.galvanic = S => { me.galv = S; say(t('{0} active', S.label), 'lightning'); };
   function galvanic(d) {
     const S = me.galv, st = S.dmg.stats, m = fx.orb('lightning', .2); me.galv = null;
-    limit(o => o.galvOf, st.galvanic_field_maximum_number_of_spheres);
+    limit(o => o.galvOf, st.galvanic_field_maximum_number_of_spheres, S);
     let tk = 0;
     thing(m, durOf(S), { galvOf: 1, name: S.name, tick(dt, e) {
       if (d.dead) { e.dead = true; return; }
@@ -4901,7 +4902,7 @@ export function initScene(el, api) {
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
-    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + 1); me.volAt = time; } }   // "if you haven't been Stunned Recently"; Volatility when Stunned
+    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } }   // "if you haven't been Stunned Recently"; Volatility when Stunned
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
