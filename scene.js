@@ -633,7 +633,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Humanoid: d.mon?.category === 'Humanoid' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -1306,8 +1306,8 @@ export function initScene(el, api) {
     if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) { const q = around(p, 1.5); later(.5, () => { pop(q, T.A, 'chaos'); boom(q, T.A, { ...T, src: 'toad' }); }); }
     deathBlast(d, frozen, S);
     // the tree's explosions on kill: a cursed enemy for a quarter of its maximum life as chaos, any for all of it as physical.
-    // note: their radius is not in the data (a herald's here); Zealous Inquisition's doubled chance against Undead and Demons is left out
-    const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed ? [.25, 'chaos'] : R() < XB.any ? [1, 'physical']
+    // Zealous Inquisition's chance doubled against Undead and Demons (its text). note: their radius is not in the data (a herald's here)
+    const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed + (/^minion/.test(S.src) ? XB.allyCursed : 0) ? [.25, 'chaos'] : R() < XB.any * (['Undead', 'Demon'].includes(d.mon?.category) ? 2 : 1) ? [1, 'physical']
       : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
     if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'physical' ? 'blood' : XK[1]); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
     // Cannibalism, on a persistent buff that is up: life recovered on kill
@@ -2040,6 +2040,7 @@ export function initScene(el, api) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
+        const AR = sheet().allyRegen, q0 = e.segs?.[0]; if (AR && q0?.life > 0 && dist(e.pos, pp) <= sheet().overgrow.r) q0.life = Math.min(q0.max, q0.life + me.maxL * AR / 6000 * dt);   // the tree's, in your Presence
         // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
         // damage (every half second here)
         const IB = S.dmg?.stats?.['infernal_familiar_minion_burns_for_%_max_life'];
@@ -5221,7 +5222,7 @@ export function initScene(el, api) {
     }
     if (d.wait > 0 || dist(d.pos, pp) > R || !api.fight?.()) return;   // they attack only when asked (Enemies attack)
     // with stored uses it strikes at its own speed while one is left; each used one recharges over the cooldown
-    const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; d.ready.push(time + A.cooldown);
+    const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; d.ready.push(time + A.cooldown / Math.max(.01, 1 + (dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presCd : 0) / 100));   // the tree's on enemies in your Presence
     d.wait = Math.max(.25, A.period, used + 1 < A.uses ? 0 : Math.min(...d.ready) - time); strike(d);
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage
@@ -5229,6 +5230,7 @@ export function initScene(el, api) {
     const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges')
       * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
+    if (c.lifeReserved) me.life = Math.min(me.life, me.maxL * (1 - c.lifeReserved / 100));   // the reserved life cannot be filled
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays

@@ -383,11 +383,13 @@ export function character(b, sum) {
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     chargeGen: [v(sum, 'generate_x_charges_for_life_flasks_per_minute'), v(sum, 'generate_x_charges_for_mana_flasks_per_minute'), v(sum, 'generate_x_charges_for_charms_per_minute')],   // life / mana flask and charm charges a minute
     watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
-    blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical'),
+    blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), allyCursed: v(sum, 'allies_in_presence_have_explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical'),
       burning: v(sum, 'explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%'), empowered: v(sum, 'explode_enemies_for_10%_life_as_fire_on_kill_with_empowered_attacks_chance_%') },   // Lich's Rupture the Soul (a quarter of their life as chaos), Witchhunter's Zealous Inquisition (all of it as physical)
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%'),   // Infernalist's Beidat's Gaze: its share of life reserved
+    presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
     // for its share of damage gained as physical per charge, for its duration; flasks recover no life
@@ -424,6 +426,7 @@ export function character(b, sum) {
     // Guidance's more damage and Shock magnitude per leap and Wisps when it ends; Sacred Unity's leap toward enemies within its angle
     vivid: sum.vivid_stag_maximum_stag_wisps_allowed ? { max: sum.vivid_stag_maximum_stag_wisps_allowed, per: v(sum, 'vivid_stag_metres_travled_per_wisp_gain') / 10, more: v(sum, 'vivid_stag_damage_%_final_per_cascade'),
       shock: v(sum, 'vivid_stag_shock_effect_%_final_per_cascade'), onEnd: v(sum, 'ascendancy_vivid_stag_gain_wisps_on_end'), home: v(sum, 'ascendancy_vivid_stag_home_in_on_enemies_within_X_angle_in_front') } : null,
+    allyRegen: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_your_maximum_life_%'),   // Allies in your Presence regenerate life per minute equal to its % of your maximum life
     stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'), tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
     splash: sum.melee_splash ? 100 : mwTags.includes('mace') ? v(sum, 'your_mace_strike_melee_splash_chance_%') : 0, volMinion: v(sum, 'gain_X_volatility_on_persistent_minion_death'), reviveLife: v(sum, 'you_gain_%_life_when_one_of_your_minions_is_revived'),
@@ -765,7 +768,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
-  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon' };
+  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon', undead: 'Undead' };
 // [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
 const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
@@ -1340,8 +1343,9 @@ export function skill(g, b, treeGear) {
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
-  // Spirit Walker's The Catha's Balance: Companions gain added Attack damage equal to a share of your main hand Weapon's damage
-  const cw = msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions'), W = cw && weaponStats(b.items);
+  // Spirit Walker's The Catha's Balance: Companions gain added Attack damage equal to a share of your main hand Weapon's damage;
+  // Tactician's aura the same for every Ally in your Presence
+  const cw = (msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions')) + v(sum, 'aura_grant_%_base_main_hand_attack_damage_to_nearby_allies'), W = cw && weaponStats(b.items);
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
   const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc), wAdd) : null;
   out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
