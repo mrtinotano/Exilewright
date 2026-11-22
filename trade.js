@@ -376,14 +376,15 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
   out.found.sort((a, b) => (b.value ?? -Infinity) - (a.value ?? -Infinity));
   return out;
 }
-// The lines of an item (priceLines, or picked by hand: { hash | en (desecrated), kind, value }) as the site's
-// conditions: every one of them, each as the kind of modifier it is (normal, fractured, crafted, desecrated: the site's
-// groups; none given: normal) and at least its number (a negative one, or 0: just having it). -> { stats, left }
+// The lines of an item (priceLines, or picked by hand: { hash | en (desecrated), value }) as the site's conditions:
+// every one of them as any kind of modifier (normal, crafted, fractured, desecrated: idsOf; one worded only as desecrated
+// also as the others worded so: byWords), each at least its number (a negative one, or 0: just having it): one count
+// of all their ids, at least one a line. note: an item with the same line in two kinds counts it twice. -> { stats, n, left }
 async function asLines(lines) {
-  const { known, desecrated } = await statIndex(), kind = l => `${l.kind || 'explicit'}.stat_${l.hash}`;
-  const asked = lines.map(l => ({ ...l, id: l.en ? desecrated(l.en) : known && !known.has(kind(l)) ? null : kind(l) })).filter(l => l.id);
-  return { left: lines.length - asked.length,
-    stats: asked.length ? [{ type: 'and', filters: asked.map(l => ({ id: l.id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } })) }] : [] };
+  const { idsOf, byWords } = await statIndex();
+  const asked = lines.map(l => ({ ...l, ids: [...new Set([...idsOf(l), ...l.en ? byWords(l.en) : []])] })).filter(l => l.ids.length);
+  return { left: lines.length - asked.length, n: asked.length,
+    stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(l => l.ids.map(id => ({ id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } }))) }] : [] };
 }
 // the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
 // by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
@@ -394,12 +395,12 @@ const DEAREST = { price: 'desc' };
 // -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for) }
 // A rare has at most 6 modifiers, so asking for all of them is asking for a twin of it (2 gloves of a whole league had
 // one's 6 lines, none as high). Nothing found: at least one fewer of them, then two, never under 2 (fewer -> those counts)
-const fewer = stats => { const n = stats[0]?.filters.length || 0; return [n - 1, n - 2].filter(k => k >= 2); };
-const atLeast = (stats, k) => [{ type: 'count', value: { min: k }, filters: stats[0].filters }];
-console.assert(JSON.stringify(fewer([{ filters: [1, 2, 3, 4, 5, 6] }])) === '[5,4]' && fewer([{ filters: [1, 2] }]).length === 0, 'fewer');
+const fewer = n => [n - 1, n - 2].filter(k => k >= 2);
+const atLeast = (stats, k) => [{ ...stats[0], value: { min: k } }];
+console.assert(JSON.stringify(fewer(6)) === '[5,4]' && fewer(2).length === 0, 'fewer');
 const lineKey = l => l.hash ?? 'd:' + l.en;
 export async function findBetter({ league, item, base, skip = [], price, req, state, tick }) {   // skip: lines left out (lineKey)
-  const { stats, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
+  const { stats, n, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
@@ -410,11 +411,11 @@ export async function findBetter({ league, item, base, skip = [], price, req, st
   let s = await call(url, body), need = 0;
   const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, 10 - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
   take(); const full = seen.size;
-  for (const k of fewer(stats)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
+  for (const k of fewer(n)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
   const found = [];
   tick?.('Reading {0} items…', seen.size);
   for (const { ids, q } of groups) found.push(...((await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []).map(r => r && readListing(r)).filter(l => l?.item && fits(req, l)).reverse());
-  return { found, body, left, ...need && seen.size > full && { need, of: stats[0].filters.length, full } };
+  return { found, body, left, ...need && seen.size > full && { need, of: n, full } };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, req, tick }, plan) {
@@ -441,11 +442,11 @@ async function search(out, seen, { league, slot, items, value, per, req, tick },
 // `per` down from the dearest under the price, read and rated. -> findGear's answer, with body (the search, to open on
 // the site) and left (lines the site has no stat for)
 export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, req, state, tick }) {
-  const { stats, left } = await asLines(lines);
+  const { stats, n, left } = await asLines(lines);
   const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price) }, sort: DEAREST };
   const out = { found: [], searches: [], unread: 0, errors: [], body, left };
   await search(out, new Set(), { league, slot, items, value, per: 10, req, tick }, { body });
-  for (const k of fewer(stats)) { if (out.found.length || out.errors.length || out.searches.at(-1)?.total) break; body.query.stats = atLeast(stats, k); out.need = k; out.of = stats[0].filters.length;
+  for (const k of fewer(n)) { if (out.found.length || out.errors.length || out.searches.at(-1)?.total) break; body.query.stats = atLeast(stats, k); out.need = k; out.of = n;
     await search(out, new Set(), { league, slot, items, value, per: 10, req, tick }, { body }); }
   out.found.reverse();
   return out;

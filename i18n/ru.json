@@ -894,6 +894,7 @@
  "at least": "не меньше",
  "Pick the modifiers the item must have, each with the least of it.": "Выберите модификаторы, которые должны быть у предмета, и минимум каждого.",
  "+ Modifier": "+ Модификатор",
+ "Filters the list of modifiers": "Фильтрует список модификаторов",
  "The modifiers of the item worn": "Модификаторы надетого предмета",
  "Clear": "Очистить",
  "Look for": "Искать",
@@ -932,8 +933,6 @@
  "{0} cannot be used while mounted": "{0} нельзя использовать верхом",
  "Archon of Undeath": "Архонт бессмертия",
  "Puppet Master": "Кукловод",
- "Search in the Optimizer": "Искать в оптимизаторе",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Открывает оптимизатор с этими модификаторами, ценой и отметками, чтобы искать с его другими настройками.",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Сфера архитектора: один из модификаторов уникального предмета заменён модификатором ваал",
  "No Vaal modifier": "Без модификатора ваал"
 }

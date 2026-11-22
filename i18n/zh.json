@@ -894,6 +894,7 @@
  "at least": "至少",
  "Pick the modifiers the item must have, each with the least of it.": "選擇物品必須擁有的詞綴，以及各自的最低值。",
  "+ Modifier": "+ 詞綴",
+ "Filters the list of modifiers": "篩選詞綴清單",
  "The modifiers of the item worn": "已裝備物品的詞綴",
  "Clear": "清除",
  "Look for": "搜尋",
@@ -932,8 +933,6 @@
  "{0} cannot be used while mounted": "{0} 騎乘時無法使用",
  "Archon of Undeath": "亡靈統治者",
  "Puppet Master": "魁儡大師",
- "Search in the Optimizer": "在最佳化工具中搜尋",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "以這些詞綴、價格與勾選開啟最佳化工具，用它的其他選項搜尋。",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "策匠石：傳奇物品的一條詞綴被替換為瓦爾詞綴",
  "No Vaal modifier": "無瓦爾詞綴"
 }

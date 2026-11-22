@@ -249,7 +249,7 @@ export function initOpt(el, ctx) {
     return `<div class="likes">${list.map((l, i) => `<div class="likerow"><span>${esc(hashed(l.text))}</span>
         <label>${t('at least')} <input type="number" step="any" value="${l.value || ''}" placeholder="—" data-like="${i}"></label><button data-do="unlike" data-i="${i}" title="${t('Remove')}">✕</button></div>`).join('')
       || `<p class="note">${t('Pick the modifiers the item must have, each with the least of it.')}</p>`}</div>
-      <div class="optrow"><select data-addlike><option value="">${t('+ Modifier')}</option>${more.map(o => opt(lk(o), hashed(o.text), false)).join('')}</select>
+      <div class="optrow"><input type="search" data-likefind placeholder="${esc(t('Search'))}" title="${esc(t('Filters the list of modifiers'))}"><select data-addlike><option value="">${t('+ Modifier')}</option>${more.map(o => opt(lk(o), hashed(o.text), false)).join('')}</select>
         <button data-do="fromWorn"${worn && classOf(worn) === sel.cls ? '' : ' disabled'}>${t('The modifiers of the item worn')}</button>
         ${list.length ? `<button data-do="clearLike">${t('Clear')}</button>` : ''}</div>`;
   }
@@ -291,6 +291,11 @@ export function initOpt(el, ctx) {
       ${treeCard(b, g, why)}${supCard(b, g, sum)}${gearCard(b, g)}</div>`;
     el.scrollTop = top;
   }
+  el.oninput = e => {   // the search over the list of modifiers: only those with its words
+    const x = e.target; if (!('likefind' in x.dataset)) return;
+    const q = x.value.trim().toLowerCase().split(/\s+/).filter(Boolean), S2 = el.querySelector('[data-addlike]');
+    for (const o of S2?.options || []) if (o.value) o.hidden = !q.every(w => o.text.toLowerCase().includes(w));
+  };
   el.onchange = e => {
     const x = e.target, d = x.dataset;
     let other = false;   // the tree search in progress is for something else now
@@ -339,13 +344,6 @@ export function initOpt(el, ctx) {
       // a rare keeps its name, as one read from the game's text does
       ctx.change(b => wear(b, sel.slot, { ...structuredClone(item), ...l.name && !item.unique && { name: l.name } }, ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
     }
-  };
-  // from the Equipment tab: its search for the item worn in `slot` (its lines not left out, the price, the checks) as
-  // the Chosen modifiers here, with this tab's other choices
-  render.from = (slot, { skip, max, cur, lvl, attr }) => {
-    const it = ctx.build().items?.[slot]; if (!it) return;
-    Object.assign(S, { slot, how: 'like', max, currency: cur, reqLvl: lvl, reqAttr: attr }); S.cls[slot] = classOf(it);
-    S.like[slot] = wornLines(it).filter(l => !skip.includes(String(lk(l)))); keep();
   };
   render.money = () => CURRENCY.map(c => [c, moneyName(c)]);
   render.price = priceHtml;

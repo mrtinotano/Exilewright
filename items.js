@@ -531,28 +531,30 @@ export function affixLines(cls, first) {
   const bases = [BASE[first], ...D.bases.filter(b => b.class === cls).sort((a, b) => b.level - a.level)]
     .filter(b => b && b.class === cls && !seen.has(kind(b)) && seen.add(kind(b)));
   for (const base of bases) {
-    const top = new Map();   // family -> its highest tier this base rolls
-    for (const a of D.affixes) if (canRoll(a, base) && !(top.get(a.family)?.level >= a.level)) top.set(a.family, a);
+    const top = new Map(), fk = a => a.family + '|' + a.stats.map(([id]) => id);   // family and stats -> its highest tier this base rolls (a family holds several: +# to Level of all Melee / Spell / Projectile Skills)
+    for (const a of D.affixes) if (canRoll(a, base) && !(top.get(fk(a))?.level >= a.level)) top.set(fk(a), a);
     for (const a of top.values()) {
       const tr = TRADE[a.id]; if (tr?.length !== 2) continue;
       const [hash, ...shown] = tr[1], vals = fixVals(a.stats), his = shown.filter((_, i) => i % 2).map(Math.abs);
-      const o = out.get(hash) || out.set(hash, { hash, text: statLines(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '),
+      const o = out.get(hash) || out.set(hash, { hash, text: statLines(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '), words: statLinesEn(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '),
         local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: his.reduce((x, y) => x + y, 0) / (his.length || 1), tries: [] }).get(hash);
       const bare = make(base.name);
       o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
     }
     const des = new Map();   // the same for its desecrated modifiers: one line each
-    for (const a of D.affixes) if (a.desecrated && canRoll(a, base, true) && !(des.get(a.family)?.level >= a.level)) des.set(a.family, a);
+    for (const a of D.affixes) if (a.desecrated && canRoll(a, base, true) && !(des.get(fk(a))?.level >= a.level)) des.set(fk(a), a);
     for (const a of des.values()) {
       const vals = fixVals(a.stats), on = Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]])), en = statLinesEn(on);
       if (en.length !== 1) continue;
-      const o = out.get('d:' + en[0]) || out.set('d:' + en[0], { hash: null, desecrated: true, en: en[0], text: statLines(on).join(' / ') + ' · ' + t('Desecrated'),
+      const o = out.get('d:' + en[0]) || out.set('d:' + en[0], { hash: null, desecrated: true, en: en[0], text: statLines(on).join(' / '),
         local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: vals.reduce((x, y) => x + Math.abs(y), 0) / vals.length, tries: [] }).get('d:' + en[0]);
       const bare = make(base.name);
       o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
     }
   }
-  return [...out.values()];
+  // one entry a stat: a desecrated one worded as a normal one is that one (the search asks every kind of modifier)
+  const shape = w => w.replace(/[+-]?\d+(\.\d+)?/g, '#').toLowerCase(), normal = new Set([...out.values()].filter(o => o.hash).map(o => shape(o.words)));
+  return [...out.values()].filter(o => o.hash || !normal.has(shape(o.en)));
 }
 // An item as the trade site lists it -> { item, slots, missed: [lines not counted] } like parseItem, null when the app
 // does not have its base. Each line comes with the site's stat and the modifiers it adds up (English name, level and
@@ -769,7 +771,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
           return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
-        </div><div class="likego"><div class="likechk"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likelvl"${buy.lvl ? ' checked' : ''}> ${t('Usable at its level')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likeattr"${buy.attr ? ' checked' : ''}> ${t('Usable with its attributes')}</label></div><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button><button data-act="toopt" data-slot="${slot}" title="${esc(t('Opens the Optimizer with these modifiers, price and checks, to search with its other choices.'))}">${t('Search in the Optimizer')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
+        </div><div class="likego"><div class="likechk"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likelvl"${buy.lvl ? ' checked' : ''}> ${t('Usable at its level')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likeattr"${buy.attr ? ' checked' : ''}> ${t('Usable with its attributes')}</label></div><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';
@@ -910,7 +912,6 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
-    if (t.dataset.act === 'toopt') { trade.toOpt(t.dataset.slot, { skip: [...buy.skip], max: buy.max, cur: buy.cur, lvl: buy.lvl, attr: buy.attr }); return; }
     if (t.dataset.act === 'like') {
       const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
       render();

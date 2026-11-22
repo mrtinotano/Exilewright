@@ -894,6 +894,7 @@
  "at least": "อย่างน้อย",
  "Pick the modifiers the item must have, each with the least of it.": "เลือกม็อดที่ไอเท็มต้องมี พร้อมค่าต่ำสุดของแต่ละอัน",
  "+ Modifier": "+ ม็อด",
+ "Filters the list of modifiers": "กรองรายการม็อด",
  "The modifiers of the item worn": "ม็อดของไอเท็มที่สวมอยู่",
  "Clear": "ล้าง",
  "Look for": "ค้นหา",
@@ -932,8 +933,6 @@
  "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้",
  "Archon of Undeath": "อาร์คอนอันเดด",
  "Puppet Master": "ผู้เชิดหุ่น",
- "Search in the Optimizer": "ค้นหาในตัวปรับแต่ง",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "เปิดตัวปรับแต่งพร้อมม็อด ราคา และตัวเลือกที่ติ๊กไว้นี้ เพื่อค้นหาด้วยตัวเลือกอื่นของมัน",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "ลูกแก้วสถาปนิก: ม็อดหนึ่งของไอเทมยูนีคถูกแทนที่ด้วยม็อดวาล",
  "No Vaal modifier": "ไม่มีม็อดวาล"
 }

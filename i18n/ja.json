@@ -894,6 +894,7 @@
  "at least": "最低",
  "Pick the modifiers the item must have, each with the least of it.": "アイテムに必要なモディファイアと、それぞれの最低値を選んでください。",
  "+ Modifier": "+ モディファイア",
+ "Filters the list of modifiers": "モディファイアの一覧を絞り込む",
  "The modifiers of the item worn": "装備中のアイテムのモディファイア",
  "Clear": "クリア",
  "Look for": "検索対象",
@@ -932,8 +933,6 @@
  "{0} cannot be used while mounted": "{0}は騎乗中に使用できません",
  "Archon of Undeath": "不死のアルコン",
  "Puppet Master": "パペットマスター",
- "Search in the Optimizer": "オプティマイザーで探す",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "これらの修正値・価格・チェックでオプティマイザーを開き、その他の設定で検索します。",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "アーキテクトオーブ: ユニークの修正値のひとつをヴァールの修正値に置き換える",
  "No Vaal modifier": "ヴァールの修正値なし"
 }

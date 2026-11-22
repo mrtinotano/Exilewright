@@ -894,6 +894,7 @@
  "at least": "au moins",
  "Pick the modifiers the item must have, each with the least of it.": "Choisissez les modificateurs que l'objet doit avoir, chacun avec son minimum.",
  "+ Modifier": "+ Modificateur",
+ "Filters the list of modifiers": "Filtre la liste des modificateurs",
  "The modifiers of the item worn": "Les modificateurs de l'objet porté",
  "Clear": "Vider",
  "Look for": "Chercher",
@@ -932,8 +933,6 @@
  "{0} cannot be used while mounted": "{0} ne peut pas être utilisé monté",
  "Archon of Undeath": "Archonte de la Non-mort",
  "Puppet Master": "Marionnettiste",
- "Search in the Optimizer": "Chercher dans l'Optimiseur",
- "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Ouvre l'Optimiseur avec ces modificateurs, ce prix et ces cases, pour chercher avec ses autres options.",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Orbe d'architecte : un des modificateurs de l'unique remplacé par un modificateur vaal",
  "No Vaal modifier": "Aucun modificateur vaal"
 }
