@@ -1163,7 +1163,7 @@ export function initScene(el, api) {
     if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
     const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
     T.need = 1000 / sp / T.perMs;
-    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more);
+    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more * (sheet().energyFullMana && me.mana >= me.maxM ? 1 + sheet().energyFullMana / 100 : 1));   // Idle Hands: more on full mana
   }
   function invoke(T) {
     const j = trigOf(T); let n = 0;
@@ -2011,7 +2011,7 @@ export function initScene(el, api) {
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
     const D = sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
-    const pierceN = Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
+    const pierceN = S.P.spell && sheet().spellNoPierce ? 0 : Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
     let pierced = o.pierced || 0;
     // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
     // the second's none within 3.5 scaling up to all of it at 7
@@ -5065,7 +5065,7 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 ? 1 - me.mag.chill / 100 : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100),   // Pathfinder: unaffected by slows
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100),   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
@@ -5104,7 +5104,7 @@ export function initScene(el, api) {
     const though = a => 1 + (A[`active_skill_${a}_as_though_damage_+%_final`] || 0) / 100;
     if (x('lightning') && roll(x('lightning') * though('shock') / thr * GC.ShockChanceMultiplier * more('shock_chance_+%', 'active_skill_shock_chance_+%_final')) && can('shock'))
       suffer('shock', PL.BaseShockDuration * D.dur.shock, { mag: GC.BaseShockMagnitude * D.eff.shock });
-    const SC = sheet(), CX = SC.chillPois && me.st.poison > 0 || SC.chillBleed && me.st.bleed > 0 ? Object.values(raw).reduce((t, n) => t + n, 0) : x('cold');   // Icefang Orbit, Venopuncture: all damage taken chills you while poisoned / bleeding
+    const SC = sheet(), CX = SC.chillAll || SC.chillPois && me.st.poison > 0 || SC.chillBleed && me.st.bleed > 0 ? Object.values(raw).reduce((t, n) => t + n, 0) : x('cold');   // Icefang Orbit, Venopuncture: all damage taken chills you while poisoned / bleeding
     if (CX && !frozen()) {
       const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * CX * though('chill') / thr * D.eff.chill);
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });

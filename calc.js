@@ -372,7 +372,7 @@ export function character(b, sum) {
     // radius in metres (character.ot, its area scaled like calc's sheet)
     arcaneSurge: { crit: v(sum, 'gain_arcane_surge_on_crit_%_chance'), effect: pct('arcane_surge_effect_on_self_+%'), always: !!sum.base_should_have_arcane_surge_from_stat, missing: v(sum, 'arcane_surge_effect_on_self_+%_per_10%_missing_mana') },   // its chance on a critical hit, its effect on you; Stormweaver's: always, more effect per 10% missing mana
     overgrow: { now: v(sum, 'chance_for_plants_to_be_overgrown_%'), near: v(sum, 'chance_%_for_plants_to_overgrow_when_entering_your_presence'),
-      r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
+      r: CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) * (sum.unique_double_presence_radius ? 2 : 1) / 10, archon: v(sum, 'chance_%_to_gain_archon_of_nature_on_overgrowing_plant'),
       // an Archon's time, then its recovery before another (SK.archon_time: the game's Archon keyword); its increased
       // duration, its recovery's faster expiry
       archonTime: SK.archon_time[0] * pct('archon_duration_+%'), archonDelay: SK.archon_time[1] / pct('archon_delay_expires_x%_faster'), archonEffect: pct('archon_effect_on_you_+%') },
@@ -464,7 +464,7 @@ export function character(b, sum) {
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
-    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
+    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)), fire: [v(sum, 'thorns_minimum_base_fire_damage'), v(sum, 'thorns_maximum_base_fire_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), lifeShift: v(sum, 'gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted'), ail: ailments({}, sum, {}, []), thornsX },
   };
   // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
@@ -590,6 +590,7 @@ export function recovery(c, sum) {
     igniteChaos: !!sum.base_ignite_deals_chaos_instead, witherFire: !!sum.wither_inflicted_also_does_fire, witherIgn: !!sum.enemies_you_ignite_wither_does_not_expire, bleedFire: !!sum.bleed_damage_applies_as_fire_instead_of_physical, bleedSelfFire: !!sum.bleeding_damage_on_self_taken_as_fire_instead,   // Blackflame, Blistering Bond
     thornsAny: !!sum.thorns_proc_off_any_hit, noSprint: !!sum.cannot_sprint, gambleMove: v(sum, 'maximum_random_movement_velocity_+%_when_hit'), noCurseDelay: !!sum.unique_no_curse_delay, curseIgnore: !!sum.curse_ignores_curse_limit,   // Crown of the Pale King, Shankgonne, Gamblesprint, Windscream, Liminal Coil
     cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
+    chillAll: !!sum.base_all_damage_taken_can_chill, chillReversed: !!sum.chill_effect_is_reversed, sprintNoSlow: !!sum.slows_have_no_potency_on_you_while_sprinting, spellNoPierce: !!sum.projectiles_from_spells_cannot_pierce, energyFullMana: v(sum, 'energy_generated_+%_on_full_mana'),   // Sierran Inheritance, Ab Aeterno, Snakepit, Idle Hands
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
@@ -881,7 +882,7 @@ export function sheet(b, sum) {
     // from Mana before Life: each type's is the general one plus its own (the game shows the general row alone when they match)
     ...Object.fromEntries(['physical', 'fire', 'cold', 'lightning', 'chaos'].map(e => [`${e}_damage_removed_from_mana_before_life_%`, manaFirst + (e === 'physical' || e === 'chaos' ? 0 : fromMana)])),
     // presence: character.ot's radius, its area scaled as an area of effect (the radius grows with the square root)
-    'presence_radius': sum['presence_area_+%'] && Math.round(CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%'))),
+    'presence_radius': sum['presence_area_+%'] && Math.round(CHAR.base_presence_radius * Math.sqrt(pct('presence_area_+%')) * (sum.unique_double_presence_radius ? 2 : 1)),
     'self_critical_strike_multiplier_+%': -v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%'),
   }, new Set([...fromMana ? [] : ['PhysicalDamageRemovedFromManaBeforeLife', 'FireDamageRemovedFromManaBeforeLife', 'ColdDamageRemovedFromManaBeforeLife',
     'LightningDamageRemovedFromManaBeforeLife', 'ChaosDamageRemovedFromManaBeforeLife'], ...asOne ? ['ArmourVsFire', 'ArmourVsCold', 'ArmourVsLightning', 'EstimateFireReductionVsHits', 'EstimateColdReductionVsHits', 'EstimateLightningReductionVsHits'] : ['ArmourVsElemental', 'EstimateElementalReductionVsHits']]));
