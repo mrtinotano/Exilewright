@@ -313,7 +313,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -716,8 +716,9 @@ export function initScene(el, api) {
   // instance recovers at a time: a new one is added to what is left (note: how the game joins them is not in the data)
   function leech(D, dealt, total, d) {
     const k = Math.min(1, GAME.leech_max_damage / (total || 1)) * (1 - (d.stat.leechRes || 0));
+    const SH = sheet(), ofL = (r, x) => r !== 'life' ? x.of : [...x.of.map(e => e === 'physical' && SH.leechChaos ? 'chaos' : e), ...(SH.leechLightning ? ['lightning'] : [])];   // Spire of Ire: chaos instead of physical; The Ordained: lightning as well
     for (const r of ['life', 'mana']) {
-      const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k;   // more life leeched while Shapeshifted
+      const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (ofL(r, x).reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k * (r === 'mana' && SH.manaLeechCrit && meIs.CritRecently() ? 1 + SH.manaLeechCrit / 100 : 1);   // more life leeched while Shapeshifted
       if (!(n > 0) || r === 'mana' && sheet().noManaLeech) continue;   // Lochtonial Caress: no mana leech
       const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
     }
@@ -2546,7 +2547,7 @@ export function initScene(el, api) {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
-        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + (sheet().invokeMax || 0) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
+        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + (sheet().invokeMax || 0) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' ? 1 : 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
@@ -4748,7 +4749,7 @@ export function initScene(el, api) {
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
-    stats.taken += n; me.hurt = time; me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
+    stats.taken += n; me.hurt = time; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
     const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
@@ -5047,7 +5048,7 @@ export function initScene(el, api) {
     if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d, true));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
-    const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / (RC?.time || 8) }), W = sheet().weakness;
+    const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / (RC?.time || 8) }, ...(k === 'life' && sheet().recoupEs ? [{ k: 'es', left: n, rate: n / (RC?.time || 8) }] : [])), W = sheet().weakness;
     if ((W?.recoupL || W?.recoupLE) && openWeak(d)) { add('life', total * (W.recoupL + W.recoupLE) / 100); add('es', total * W.recoupLE / 100); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
     { const p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0) / 100; add('life', p); add('mana', p); }   // Forsaken Bangle: the chaos damage prevented, during its effect
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
@@ -5103,8 +5104,9 @@ export function initScene(el, api) {
     const though = a => 1 + (A[`active_skill_${a}_as_though_damage_+%_final`] || 0) / 100;
     if (x('lightning') && roll(x('lightning') * though('shock') / thr * GC.ShockChanceMultiplier * more('shock_chance_+%', 'active_skill_shock_chance_+%_final')) && can('shock'))
       suffer('shock', PL.BaseShockDuration * D.dur.shock, { mag: GC.BaseShockMagnitude * D.eff.shock });
-    if (x('cold') && !frozen()) {
-      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * x('cold') * though('chill') / thr * D.eff.chill);
+    const SC = sheet(), CX = SC.chillPois && me.st.poison > 0 || SC.chillBleed && me.st.bleed > 0 ? Object.values(raw).reduce((t, n) => t + n, 0) : x('cold');   // Icefang Orbit, Venopuncture: all damage taken chills you while poisoned / bleeding
+    if (CX && !frozen()) {
+      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * CX * though('chill') / thr * D.eff.chill);
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
         D.freeze, PL.FreezeDuration * D.dur.freeze * more('freeze_duration_+%'));
@@ -5525,6 +5527,7 @@ export function initScene(el, api) {
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', RL], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0) || r === 'mana' && c.manaRegenOnly) continue;   // Indigon: no mana leech
+      if (r === 'life' && c.leechEs || r === 'mana' && c.manaLeechEs) { const n = Math.min(q.left, q.rate * dt); if (me.es < E) me.es = Math.min(E, me.es + n); if (r === 'life') { q.left -= n; if (me.es >= E) q.left = 0; continue; } }   // Essentia Sanguis: life leech as energy shield leech, mana leech recovering it as well
       // Couture of Crimson: life leech Overflows; Soul Tether: what goes over maximum life to energy shield
       const cap = r === 'life' && c.leechOver ? top * OVERFLOW : top, toES = r === 'life' && c.leechToEs && me.es < E;
       if (me[r] >= cap && !q.keep && !toES) { q.left = 0; continue; }
@@ -5535,7 +5538,7 @@ export function initScene(el, api) {
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
     else if (c.lifeRecharge && !c.vaal && me.life < RL && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(RL, me.life + c.lifeRecharge * dt);   // Eternal Youth
-    else if (me.es < E && time - Math.max(me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1)) me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
+    else if (me.es < E && time - Math.max(me.esHurt ?? me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1)) me.esRech ??= time, me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;

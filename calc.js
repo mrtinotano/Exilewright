@@ -584,11 +584,14 @@ export function recovery(c, sum) {
     projBlock: v(sum, 'block_chance_+%_against_projectiles'), luckyBlock: !!sum.base_block_chance_luck, luckyDeflLow: !!sum.deflect_chance_is_lucky_while_on_low_life, deflMove: v(sum, 'deflection_rating_+%_while_moving'),   // Rondel de Ezo, Svalinn, The Auspex, Atziri's Step
     noLightStun: !!sum.cannot_be_light_stunned, noStunDeflected: !!sum.cannot_be_light_stunned_by_deflected_hits, loseRage: !!sum.lose_all_rage_on_reaching_maximum_rage, onsAlways: !!sum.base_should_have_onslaught_from_stat,   // Eye of Chayula, Atziri's Step, Hateforge, Thrillsteel
     perHit: { life: v(sum, 'base_life_gain_per_target'), mana: v(sum, 'mana_gain_per_target') },   // The Lethal Draw, Thief's Torment: per enemy hit with attacks
+    leechChaos: !!sum.life_leech_recovers_based_on_your_chaos_damage_instead_of_physical_damage, leechLightning: !!sum.life_leech_also_recovers_based_on_lightning_damage, manaLeechCrit: v(sum, 'mana_leech_amount_+%_if_crit_recently'),   // Spire of Ire, The Ordained, Nightscale
+    leechEs: !!sum.convert_all_life_leech_to_energy_shield_leech, manaLeechEs: !!sum.mana_leech_applies_recovery_to_energy_shield_also, recoupEs: !!sum.life_recoup_also_applies_to_energy_shield, esKeep: !!sum.energy_shield_recharge_is_not_interrupted_if_recharge_begaen_recently,   // Essentia Sanguis, Sacrosanctum, Prayers for Rain
+    chillPois: !!sum.all_damage_taken_chills_you_while_poisoned, chillBleed: !!sum.all_damage_taken_chills_you_while_bleeding, energyX2: !!sum.energy_generation_is_doubled,   // Icefang Orbit, Venopuncture, Seeing Stars
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
-    esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
+    esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%', ...(sum.additive_modifiers_to_mana_regeneration_also_apply_to_energy_shield_recharge_rate ? ['mana_regeneration_rate_+%'] : [])),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
     esDelayHurt: esD('energy_shield_delay_-%_when_not_on_full_life'),
     esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'), esDelayArchon: esD('energy_shield_delay_-%_while_affected_by_archon'),
