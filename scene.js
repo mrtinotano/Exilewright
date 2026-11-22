@@ -4984,7 +4984,7 @@ export function initScene(el, api) {
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
-    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
+    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
@@ -5090,7 +5090,7 @@ export function initScene(el, api) {
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
-    if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
+    if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
     me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
@@ -5111,7 +5111,7 @@ export function initScene(el, api) {
     charms().forEach((f, n) => {
       const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges
       if (!f || f.on !== on || me.cu[n] || lack && !(CM > 0 && me.mana >= CM)) return;
-      if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) me.cc[n] -= f.per;
+      if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) { me.cc[n] -= f.per; flaskGain(0, f.per * (sheet().zerphi?.toFlask || 0) / 100); }
       useCharm(f, n);
       // the tree's chance to use another charm without consuming its charges
       const m = Math.random() * 100 < (sheet().charmAnother || 0) ? charms().findIndex((g, j) => g && j !== n && !me.cu[j]) : -1;
@@ -5121,6 +5121,7 @@ export function initScene(el, api) {
   function useCharm(f, n) {
     me.cu[n] = { c: f, s: f.time }; gainPct('mana', recOn('charm'));
     if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
+    const [LF, MF] = flasks(); if (f.lifeOfMana && MF) flaskHeal({ k: 'life' }, MF.amount * f.lifeOfMana / 100, false, false); if (f.manaOfLife && LF) flaskHeal({ k: 'mana' }, LF.amount * f.manaOfLife / 100, false, false);   // Arakaali's Gift
     const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
     say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
   }
@@ -5380,7 +5381,7 @@ export function initScene(el, api) {
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
-    if (FC || GN[0] || GN[1]) flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + (FC + (GN[n] || 0)) / 60 * dt); });   // with the tree's per flask
+    flasks().forEach((f, n) => { const g = FC + (GN[n] || 0) + (f?.regen || 0); if (g) me.fl[n] = Math.min(f.max, flaskLeft(n) + g / 60 * dt); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
     if (GN[2]) charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + GN[2] / 60 * dt); });   // and per charm
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);

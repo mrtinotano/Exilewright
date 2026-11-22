@@ -143,14 +143,15 @@ export function flaskOf(it, sum = {}) {
   const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
   const gInc = g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%');   // the character's increased
   const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
-    * (1 + gInc / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1) * (k === 'life' && g('keystone_eternal_youth') ? .5 : 1);   // Oasis: 30% more; Eternal Youth: 50% less life
+    * (1 + gInc / 100) * (1 + (s[`local_flask_${k}_to_recover_+%_final`] || 0) / 100) * (k === 'life' ? 1 + g('unique_body_armour_life_flask_life_recovery_+%_final') / 100 : 1) * (g('keystone_oasis') ? 1.3 : 1) * (k === 'life' && g('keystone_eternal_youth') ? .5 : 1);   // Oasis: 30% more; Eternal Youth: 50% less life
   // increased Flask Effect Duration: the same recovery over a longer time
   const time = F.recovery_s * (1 + g('flask_duration_+%') / 100) / (1 + ((s['local_flask_recovery_speed_+%'] || 0) + g(`flask_${k}_recovery_rate_+%`) + g('flask_recovery_speed_+%')) / 100);
   const max = mostCharges(F, s);
   const per = Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('flask_charges_used_+%') + (k === 'mana' ? g('flask_mana_charges_used_+%') : 0)) / 100));
   const gain = 1 + (g('flask_charges_gained_+%') + g(`${k}_flask_charges_gained_+%`)) / 100;
   const always = !!s.local_flask_always_drinking || k === 'life' && !it.unique && !!g('non_unique_life_flasks_always_applied_with_no_instant_recovery_only_to_you');
-  return { k, amount, inc: gInc, time, max, per, gain, always, keep: g('flasks_%_chance_to_not_consume_charges'), es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
+  // Sanguis Heroum's charges a minute; Blood of the Warrior's damage taken recouped as life during its effect
+  return { k, amount, inc: gInc, time, max, per, gain, always, regen: s.local_flask_gain_X_charges_every_minute || 0, recoup: s['local_flask_damage_taken_goes_to_life_over_4_seconds_%_during_effect'] || 0, keep: g('flasks_%_chance_to_not_consume_charges'), es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
 }
 const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
 // A charm: what sets it off (on: its implicit "used when...", local_flask_use_on_<on>), what it grants while it lasts (its
@@ -162,6 +163,7 @@ export function charmOf(it, sum = {}) {
   // increased Charm Effect: what its buff grants, rounded towards zero
   const E = 1 + g('charm_effect_+%') / 100, stats = base.charm.stats && Object.fromEntries(Object.entries(base.charm.stats).map(([k, x]) => [k, Math.trunc(x * E)]));
   return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm, ...stats && { stats },
+    lifeOfMana: s['charm_recover_life_equal_to_x%_of_mana_flask_recovery_amount'] || 0, manaOfLife: s['charm_recover_mana_equal_to_x%_of_life_flask_recovery_amount'] || 0,   // Arakaali's Gift
     img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%')) / 100),
     max: mostCharges(F, s), per: Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),
     gain: (1 + g('charm_charges_gained_+%') / 100) * (1 + g('primalist_charm_charges_gained_+%_final') / 100), keep: g('charms_%_chance_to_not_consume_charges'),   // Ritualist: more charges

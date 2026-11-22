@@ -627,6 +627,7 @@ export function recovery(c, sum) {
     // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
     uBlock: { poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
       blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
+    zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
