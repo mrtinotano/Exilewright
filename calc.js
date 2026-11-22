@@ -455,6 +455,7 @@ export function recovery(c, sum) {
   // life: flat regen + % of max life per minute, scaled by regeneration / recovery rate
   const lifePctRegen = v(sum, 'life_regeneration_rate_per_minute_%');
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
+  const esD = k => (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', k) / 100);   // the start of the recharge under a condition, against always
   const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
   const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1);   // Mind Over Matter: 50% less
   return {
@@ -464,11 +465,11 @@ export function recovery(c, sum) {
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
-    esDelayHurt: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_when_not_on_full_life') / 100),
-    esDelayStun: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_if_stunned_recently') / 100),
+    esDelayHurt: esD('energy_shield_delay_-%_when_not_on_full_life'),
+    esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'),
     // while Shapeshifted: factors on the energy shield delay and recharge, accuracy and life leech with their other
     // increases, armour applied to elemental damage, more maximum Rage
-    shift: (k => k.some(x => sum[x]) ? { esDelay: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_while_shapeshifted') / 100),
+    shift: (k => k.some(x => sum[x]) ? { esDelay: esD('energy_shield_delay_-%_while_shapeshifted'),
       esRecharge: pct('energy_shield_recharge_rate_+%', 'energy_shield_recharge_rate_+%_while_shapeshifted') / pct('energy_shield_recharge_rate_+%'), acc: v(sum, 'accuracy_rating_+%_while_shapeshifted'),
       leech: v(sum, 'life_leech_amount_+%_while_shapeshifted'), armourEl: v(sum, 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted'), rage: v(sum, 'maximum_rage_+_while_shapeshifted') } : null)(
       ['energy_shield_delay_-%_while_shapeshifted', 'energy_shield_recharge_rate_+%_while_shapeshifted', 'accuracy_rating_+%_while_shapeshifted', 'life_leech_amount_+%_while_shapeshifted', 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted', 'maximum_rage_+_while_shapeshifted']),
