@@ -72,7 +72,7 @@ function details(g, b, sum, geo) {
     ${T ? sec('Totem', [
       ['Totem level', T.level], T.limit && ['Totem limit', T.limit], T.duration && ['Totem duration', fmt(T.duration, 1) + ' s'],
       ['Maximum Life', fmt(T.life)], ['Armour', fmt(T.armour)], ['Evasion Rating', fmt(T.evasion)], ['Ailment Threshold', fmt(T.ailment)],
-      ['Elemental Resistances', T.res.fire + '%'], ['Chaos Resistance', T.chaos + '%'],
+      ['Elemental Resistances', T.res.fire + '%'], ['Chaos Resistance', T.res.chaos + '%'],
     ]) : ''}
     ${s.reason ? `<p class="note">${esc(t(s.reason))}</p>` : ''}
     <h4>${t('Skill Stats')}</h4>${lines.length ? `<div class="dlines">${lines.map(esc).join('<br>')}</div>` : `<p class="note">—</p>`}

@@ -195,23 +195,22 @@ export function totem(g, sum = {}) {
   const T = SK.skills[g.name]?.totem; if (!T) return null;
   const s = withSupports(g, sum).sum, st = gemStats(g, s), level = SK.minion_level?.[st._level - 1];
   if (!level) return null;
+  const cap = MON_K.monster_max_resistance ?? 75, er = Math.min(cap + v(s, 'totem_maximum_all_elemental_resistances_%'), (st['totem_elemental_resistance_%'] || 0) + v(s, 'totem_elemental_resistance_%'));
   return {
     level,
     life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + v(s, 'support_totem_life_+%_final') / 100)),   // Tawhoa's Tending: more (PoB2 TotemLife MORE)
     ailment: monster(level, 'AilmentThreshold'),
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
     regen: v(s, 'totems_regenerate_%_life_per_minute') / 60,   // % of its life a second
-    elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
     // what each type of a hit on it loses: its resistances (up to the monsters' maximum, more with the tree's) and its additional physical damage reduction
-    res: { physical: v(s, 'totem_additional_physical_damage_reduction_%'), chaos: Math.min(MON_K.monster_max_resistance ?? 75, st['totem_chaos_resistance_%'] || 0),
-      ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, Math.min((MON_K.monster_max_resistance ?? 75) + v(s, 'totem_maximum_all_elemental_resistances_%'), (st['totem_elemental_resistance_%'] || 0) + v(s, 'totem_elemental_resistance_%'))])) },
+    res: { physical: v(s, 'totem_additional_physical_damage_reduction_%'), chaos: Math.min(cap, st['totem_chaos_resistance_%'] || 0), fire: er, cold: er, lightning: er },
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
     limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
       + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0)) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
   };
 }
 // self-check: Mortar Cannon at gem level 18 is a level 36 totem with 2091 life and 1123 ailment threshold, as in the game
-{ const m = totem({ name: 'Mortar Cannon', level: 18 }), ok = !SK.minion_level || m && m.level === 36 && m.life === 2091 && m.ailment === 1123 && m.elemental === 55 && m.chaos === 25 && m.armour === 1268
+{ const m = totem({ name: 'Mortar Cannon', level: 18 }), ok = !SK.minion_level || m && m.level === 36 && m.life === 2091 && m.ailment === 1123 && m.res.fire === 55 && m.res.chaos === 25 && m.armour === 1268
     && totem({ name: 'Shockwave Totem', level: 8 })?.armour === 60
     && totem({ name: 'Ancestral Warrior Totem', level: 15, quality: 6 }, { ascendancy_gemling_enable_thaumaturgy_quality_stats: 1 })?.life === 1807;
   console.assert(ok, 'Mortar Cannon totem', m); }
