@@ -165,7 +165,7 @@ export function reservation(g, sum = {}, b) {
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
   // Lord of the Wilds: non-minion skills 50% less efficiency; Trusted Kinship: companions 30% more, the rest 20% less
   const T = GEM[g.name]?.tags || [], more = (sum.keystone_lord_of_the_wilds && !T.includes('minion') ? .5 : 1) * (sum.keystone_2_companions ? T.includes('companion') ? 1.3 : .8 : 1);
-  return Math.round(own * 100 / (100 + eff) / more);
+  return Math.round(own * 100 / (100 + eff) / more * (sum.unique_spirit_reservations_are_halved ? .5 : 1));   // Matsya: 50% less
 }
 // self-check: Eternal Rage (100 spirit, 0.75% efficiency per quality as its second effect) with 6% quality and +2 levels
 { const g = { name: 'Eternal Rage', level: 15 }, sum = { 'all_skill_gem_quality_+': 6, ascendancy_gemling_enable_thaumaturgy_quality_stats: 1, 'strength_skill_gem_level_+': 2, 'spell_skill_gem_level_+': 3 };
@@ -581,6 +581,9 @@ export function recovery(c, sum) {
     noManaLeech: !!sum.base_cannot_leech_mana,   // Lochtonial Caress
     shrineEvery: sum.local_gain_shrine_buff_every_10_seconds ? 10 : 0,   // The Hammer of Faith: a random lesser Shrine buff every 10 s (its stat's name)
     redflare: !!sum.gain_power_charge_per_second_if_have_not_lost_power_charge_recently, stunPerRage: v(sum, 'stun_threshold_+%_per_rage'),   // Redflare Conduit; Wings of Caelyn
+    projBlock: v(sum, 'block_chance_+%_against_projectiles'), luckyBlock: !!sum.base_block_chance_luck, luckyDeflLow: !!sum.deflect_chance_is_lucky_while_on_low_life, deflMove: v(sum, 'deflection_rating_+%_while_moving'),   // Rondel de Ezo, Svalinn, The Auspex, Atziri's Step
+    noLightStun: !!sum.cannot_be_light_stunned, noStunDeflected: !!sum.cannot_be_light_stunned_by_deflected_hits, loseRage: !!sum.lose_all_rage_on_reaching_maximum_rage, onsAlways: !!sum.base_should_have_onslaught_from_stat,   // Eye of Chayula, Atziri's Step, Hateforge, Thrillsteel
+    perHit: { life: v(sum, 'base_life_gain_per_target'), mana: v(sum, 'mana_gain_per_target') },   // The Lethal Draw, Thief's Torment: per enemy hit with attacks
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
@@ -1333,7 +1336,7 @@ export function skill(g, b, treeGear) {
   // Uhtred's Constellation adds its uses to a skill that is not instant
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
   if (st._cooldown_ms) {
-    out.cooldown = st._cooldown_ms / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
+    out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
     // Second Wind: less recovery rate, twice the uses (support_double_number_of_cooldown_uses)
     out.uses = ((st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags) + (d.cast_time_ms ? v(sum, 'support_added_cooldown_count_if_not_instant') : 0)) * ((g.supports || []).some(n => SK.skills[n]?.flags?.includes('support_double_number_of_cooldown_uses')) ? 2 : 1);
     out.useTime = out.speed && 1 / out.speed;   // the game's "Attack time", apart from the cooldown
@@ -1440,7 +1443,7 @@ export function skill(g, b, treeGear) {
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0) + ['banner', 'hazard', 'grenade'].reduce((t, x) => t + (own.includes(x) ? v(sum, `${x}_duration_+%`, `${x}_skill_duration_+%`) : 0), 0)
     + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
-  out.shape = { chains: both('number_of_chains') * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
+  out.shape = { chains: (both('number_of_chains') + (attack ? v(sum, 'attacks_num_of_additional_chains') : 0) + (own.includes('lightning') ? v(sum, 'lightning_skill_additional_chains') : 0)) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
     // the tree's chances for more projectiles: "Surpassing" (each full 100% one more, the rest a chance), with bow

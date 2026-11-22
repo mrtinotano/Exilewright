@@ -322,7 +322,7 @@ export function initScene(el, api) {
   const spendEmp = E => !(Math.random() * 100 < (sheet().empKeep || 0)) && --E.uses <= 0;   // an empowered attack used (Serle's Grit: its chance not to count)
   // Hateforge on reaching maximum Rage: a random Charge (once every its time), Runic Ward
   const rageFull = () => { const H = sheet().hate; if (H?.cd && time - (me.hateAt ?? -99) >= H.cd) { me.hateAt = time; gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], t('Rage')); } if (H?.ward && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * H.ward / 100); };
-  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; if (me.rage < M && me.rage + n >= M) rageFull(); const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
+  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; if (me.rage < M && me.rage + n >= M) rageFull(); const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); if (me.rage >= M && sheet().loseRage) me.rage = 0; }   // Hateforge: all of it lost at the top
   // your death, by an enemy or by your own life loss: everything restored
   function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
@@ -609,7 +609,7 @@ export function initScene(el, api) {
     }
     if (!S.src && real && crit && S.P.melee && sheet().thornsCrit) later(.02, () => retaliate(d));   // Dreadfist: your Thorns damage to enemies you critically hit with melee
     if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
-    if (!S.src && real && S.dmg?.attack) { const O = sheet();
+    if (!S.src && real && S.dmg?.attack) { const O = sheet(); if (O.perHit?.life || O.perHit?.mana) { me.life = gain(me.life, me.maxL, O.perHit.life); me.mana = gain(me.mana, me.maxM, O.perHit.mana); }   // The Lethal Draw, Thief's Torment
       if (O.olro) me.olro = [...(me.olro || []).filter(u => u.until > time), { v: pow(d), until: time + 20 }];   // Olrovasara: the enemy's Power for 20 s
       if (Math.random() * 100 < (O.molten || 0)) { const j = api.build().gems.findIndex(g => g.name === 'Molten Shower'); if (j >= 0) later(.05, () => use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' })); } }   // Brutus' Lead Sprinkler: hits trigger its Molten Shower
     if (!S.src && H) {
@@ -1328,7 +1328,7 @@ export function initScene(el, api) {
     const v = place(d.pos.x + rnd(-1, 1), d.pos.z + rnd(-1, 1), d.mon, d.level); if (!v) return;
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
-  const onsl = () => time < me.wildUntil || time < me.onsUntil;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
+  const onsl = () => time < me.wildUntil || time < me.onsUntil || !!sheet().onsAlways;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
     const HS = d.curse && sheet().uEv?.hexSpread; if (HS) for (const e of inside(d.pos, 3).filter(e => e !== d && !e.curse).slice(0, HS)) e.curse = { ...d.curse };   // Veilpiercer: the curse spreads to that many enemies within its text's 3 m
     const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
@@ -4997,15 +4997,15 @@ export function initScene(el, api) {
     const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (d.mark ? 1 + (c.markedAcc || 0) / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
     if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     if (a.shape === 'projectile' && Math.random() * 100 < (c.avoidProj || 0)) return fx.text(above(), t('Avoided'), GREY, .32), record('avoid', d.mon.name, t('Avoided'), 0, GREY);   // The Sunken Vessel
-    const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
+    const BR = () => Math.random() * 100 < blockChance(c, a), BL = !RR && (BR() || c.luckyBlock && BR());   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
     // deals its less damage
-    const DF = c.deflect && deflection(c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || c.glancing && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
-    if (dfl) fx.text(above(), t('Deflected'), GREY, .32);
+    const DF = c.deflect && deflection(c.deflMove && meIs.Moving() ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + c.deflMove / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
+    if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
     const OR = sheet(), roll = () => Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
@@ -5123,7 +5123,7 @@ export function initScene(el, api) {
     const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
       return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
     const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
-    if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
+    if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
     if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });

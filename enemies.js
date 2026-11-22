@@ -171,7 +171,7 @@ export function enemyTakes(st, type, raw, isHit = true, pen = 0) {
   return raw * (1 - (isHit && pen && res > 0 ? Math.max(res - pen, 0) : res) / 100);
 }
 // block applies to strikes and projectiles, not to area damage or to skills the data marks as unblockable
-export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp(c.block || 0, 0, c.blockMax ?? K.player_max_block ?? 50);
+export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp((c.block || 0) * (atk.shape === 'projectile' ? 1 + (c.projBlock || 0) / 100 : 1), 0, c.blockMax ?? K.player_max_block ?? 50);
 
 // Expected result of an attack (attackOf) of a monster (enemyStats) against the character c: what the panel lists.
 // Ailments the monster could inflict, and your recovery while fighting, are not part of it.
