@@ -5359,9 +5359,9 @@ export function initScene(el, api) {
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
     let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
-    // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
     if (d.gm && time - d.gm.at >= GRUEL.decay) { d.gm.at = time; if (!--d.gm.n) d.gm = null; }
     const GP = d.gm ? 1 + GRUEL.pot * (d.gm.n - 1) / 100 : 1;   // Gruelling Madness: more slow potency per stack after the first
+    // Maim slows only their movement, a slow too: with chill, never under SLOW_FLOOR of their speed
     const ks = Math.max(SLOW_FLOOR, Math.min(1, k)), VS = (d.slows = d.slows.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0);   // its slows: Entangle's vines, Hinder
     const maim = Math.max(SLOW_FLOOR / ks, (d.st.maim > 0 ? 1 - (d.mag.maim ?? MAIM.move) * d.stat.slowEffect * GP / 100 : 1) * (1 + VS * d.stat.slowEffect * GP / 100) * (d.debil > time ? 1 - DEBIL.slow / 100 : 1) * (d.gm ? Math.max(0, 1 - GRUEL.slow * d.stat.slowEffect * GP / 100) : 1));   // and Debilitate
     const SR = d.st.bleed > 0 && d.red;
