@@ -253,6 +253,7 @@ function takenAs(sum) {
 }
 export function character(b, sum) {
   const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
+  if (sum['local_all_attributes_-_per_level']) for (const k of ['str', 'dex', 'int']) at[k] = Math.max(0, (at[k] || 0) - lvl * sum['local_all_attributes_-_per_level']);   // Greymake
   const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
   // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
@@ -473,6 +474,8 @@ export function character(b, sum) {
   }
   // uniques' more Global Evasion Rating and Energy Shield
   const HW = pct('hand_wraps_evasion_rating_and_energy_shield_+%_final'); if (HW !== 1) { c.evasion = Math.round(c.evasion * HW); c.evadePct = evadeChance(c.evasion, lvl); c.es = Math.round(c.es * HW); }
+  // Queen of the Forest: its movement speed alone, 25% and 1% per so much evasion, up to 75% (its text's numbers)
+  const QF = sum['movement_speed_is_only_base_+1%_per_x_evasion_rating']; if (QF) c.move = Math.min(75, 25 + Math.floor(c.evasion / QF));
   const GS = sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']; if (GS) c.es = Math.round(at.str * GS / 100);
   // thorns from your maximum life (Cat O' Nine Tails: physical) and mana (Icetomb: cold), the scene's of its current maximum
   c.thorns.life = ['gain_minimum_physical_thorns_damage_equal_to_x%_of_maximum_life', 'gain_maximum_physical_thorns_damage_equal_to_x%_of_maximum_life'].map(k => v(sum, k));
@@ -603,7 +606,7 @@ export function recovery(c, sum) {
     // the Arc's less damage from hits (every other 5 s); fire resistance and evasion on Low Life; more armour per 1% of your
     // energy shield (The Mutable Star); on casting a spell life leeched or sacrificed for energy shield, on attacking for
     // Runic Ward (Lifesprig, Demon Stitcher); Guard from a mana flask (Glowswarm); damage taken per elemental ailment type (Yoke of Suffering)
-    uDef: { manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
+    uDef: { resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
       rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
       beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
       esArmour: v(sum, 'armour_+%_final_vs_hits_per_1%_current_energy_shield'), spellLeech: v(sum, 'life_leech_%_maximum_life_on_spell_cast'), spellES: v(sum, 'sacrifice_%_maximum_life_to_gain_as_es_on_spell_cast'),
@@ -611,6 +614,8 @@ export function recovery(c, sum) {
     // uniques on an event: Critical Weakness from spell critical hits and on parrying, Volatility on critical hits, your
     // thorns on melee hits (Prized Pain), melee physical damage taken dealt back (Bramblejack), curses spreading when the
     // cursed enemy dies (Veilpiercer: to how many)
+    empKeep: v(sum, 'chance_for_exerted_attacks_to_not_reduce_count_%'), limit: v(sum, 'base_limit_+'),   // Serle's Grit; Idol of Uldurn
+    hate: { cd: v(sum, 'gain_1_random_charge_on_reaching_maximum_rage_no_more_than_once_every_X_ms') / 1000, ward: v(sum, 'ward_%_to_recover_on_reaching_maximum_rage') },   // Hateforge
     ccAt: v(sum, 'crowd_control_effects_are_triggered_at_%_poise_threshold_instead'),   // Sine Aequo
     uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill') },
@@ -620,7 +625,7 @@ export function recovery(c, sum) {
       block: v(sum, 'recover_X_life_on_block'), blockPct: v(sum, 'recover_%_of_maximum_life_on_block'), manaFlask: v(sum, 'recover_%_maximum_life_on_mana_flask_use'), charm: v(sum, 'recover_%_maximum_mana_on_charm_use'),
       stunRare: v(sum, 'recover_%_life_on_heavy_stunning_rare_or_unique_enemy'), stunned: v(sum, 'regenerate_%_life_over_1_second_when_stunned') },
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
-    recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
+    recoup: { perRage: v(sum, 'x%_damage_taken_recouped_as_life_per_5_rage'), phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
       all: v(sum, 'damage_taken_goes_to_life_over_4_seconds_%'), lme: v(sum, 'damage_taken_goes_to_life_mana_es_over_4_seconds_%'), prevented: v(sum, 'physical_damage_prevented_recouped_as_life_%'), channel: v(sum, 'x%_of_damage_taken_while_channelling_recouped_as_life'),
       es: v(sum, 'recoup_%_elemental_damage_as_energy_shield'), mana: v(sum, 'damage_taken_goes_to_mana_%'), totem: v(sum, 'recoup_%_of_damage_taken_by_your_totems_as_life'), time: 8 / pct('recoup_speed_+%'),
       scarred: sum.keystone_alternate_es_recovery ? 5 : 0 },   // Scarred Faith: 5% of physical damage prevented as energy shield per enemy Power
@@ -1175,6 +1180,7 @@ export function skill(g, b, treeGear) {
   const SRC = { all: DMG, elemental: ['fire', 'cold', 'lightning'], ...Object.fromEntries(DMG.map(t => [t, [t]])) }, end = spell ? '_with_spells' : attack ? '_with_attacks' : null;
   const gain = (src, t, k = `non_skill_base_${src}_damage_%_to_gain_as_${t}`) => v(sum, k) + (end ? v(sum, k + end) : 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`)
     + (src === 'all' && t !== 'physical' && t !== 'chaos' ? v(sum, 'non_skill_base_all_damage_%_to_gain_as_random_element') / 3 : 0)   // Shaman: a random element, a third each on average
+    + (src === 'physical' && ELE.includes(t) && attack && w && weaponTags(w).includes('twohand') ? v(sum, 'local_non_skill_physical_damage_%_to_gain_as_each_element_with_attacks_while_have_this_two_handed_hand_weapon') : 0)   // Doomfletch
     + (src !== 'all' ? 0 : t === 'physical' ? (spell && out.lifeCost > 0 ? v(sum, 'spells_gain_%_physical_damage_if_they_cost_life') : 0)   // Atziri's Rule: spells that cost life
       : t === 'chaos' ? Math.floor((out.lifeCost || 0) / 3) * v(sum, 'non_skill_all_damage_%_to_gain_as_chaos_per_3_life_cost')   // The Burden of Shadows
       : t === 'fire' ? perX('int', 'non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence') + (sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] ? (character(b, sum).block || 0) * sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] : 0) : 0);   // Chernobog's Pillar

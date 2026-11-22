@@ -314,7 +314,10 @@ export function initScene(el, api) {
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) + (shifted()?.rage || 0) + (time - (me.gloryUsed ?? -99) <= 20 ? R.glory || 0 : 0) : 0; };   // the tree's more if you used a Glory skill in the last 20 s
   // Rage gained at its most builds Glory (Walking Calamity), one per Rage: note: the data gives no rate
-  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
+  const spendEmp = E => !(Math.random() * 100 < (sheet().empKeep || 0)) && --E.uses <= 0;   // an empowered attack used (Serle's Grit: its chance not to count)
+  // Hateforge on reaching maximum Rage: a random Charge (once every its time), Runic Ward
+  const rageFull = () => { const H = sheet().hate; if (H?.cd && time - (me.hateAt ?? -99) >= H.cd) { me.hateAt = time; gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], t('Rage')); } if (H?.ward && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * H.ward / 100); };
+  function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; if (me.rage < M && me.rage + n >= M) rageFull(); const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); }
   // your death, by an enemy or by your own life loss: everything restored
   function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
@@ -1657,7 +1660,7 @@ export function initScene(el, api) {
   // goes; for its duration
   // up to a limit: the oldest of the objects f picks gives way
   // S: the skill, for the tree's more of it (Orb skills', Elemental skills')
-  const limit = (f, max, S) => { const T = S && max && sheet(); if (T) max += (S.kind === 'orb' ? T.orbLimit : 0) + (S.els?.some(e => ELEM.includes(e)) ? T.elLimit : 0);
+  const limit = (f, max, S) => { const T = S && max && sheet(); if (T) max += (T.limit || 0) + (S.kind === 'orb' ? T.orbLimit : 0) + (S.els?.some(e => ELEM.includes(e)) ? T.elLimit : 0);
     const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
   const SPEAR = new THREE.CylinderGeometry(.03, .03, 1.3, 5), SPEAR_M = new THREE.MeshStandardMaterial({ color: 0x8a8070, metalness: .6, roughness: .5 });
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
@@ -3962,17 +3965,17 @@ export function initScene(el, api) {
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
         } else if (E.type === 'cold' && P.attack && hits && S.dmg) {
           const h = S.dmg.hits.cold || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, cold: [h[0] + E.add[0], h[1] + E.add[1]] } }; S.els = [...new Set([...S.els, 'cold'])]; if (P.slams) S.chillFor = E.chill;
-          if (--E.uses <= 0) empower.splice(k, 1);
-        } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (--E.uses <= 0) empower.splice(k, 1); }
+          if (spendEmp(E)) empower.splice(k, 1);
+        } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (spendEmp(E)) empower.splice(k, 1); }
+        else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (spendEmp(E)) empower.splice(k, 1); }
+        else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
           lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
-        else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (--E.uses <= 0) empower.splice(k, 1); }
-        else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (--E.uses <= 0) empower.splice(k, 1); }
+        else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (spendEmp(E)) empower.splice(k, 1); }
+        else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (spendEmp(E)) empower.splice(k, 1); }
+        else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (spendEmp(E)) empower.splice(k, 1); }
         // Ice-Tipped Arrows: its share of the attack's physical damage as cold (note: all of the hit's physical, its
         // modifiers kept: the weapon's base alone is not told apart here), its fragments on each hit (iceFrags)
         else if (E.type === 'icetip' && P.attack && P.ranged && hits && S.dmg) {
@@ -3980,10 +3983,10 @@ export function initScene(el, api) {
           if (ph) { const c = H.cold || [0, 0]; H.cold = [c[0] + ph[0] * cv, c[1] + ph[1] * cv]; H.physical = [ph[0] * (1 - cv), ph[1] * (1 - cv)]; if (cv >= 1) delete H.physical; }
           const { els, el, ail } = withEl(S, 'cold'); Object.assign(S, { els, el, ail, dmg: { ...S.dmg, hits: H } });
           S.icetip = fragsOf(S, E.X);
-          say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (--E.uses <= 0) empower.splice(k, 1);
+          say(t('{0} gains {1} from {2}', S.label, t('Cold'), E.label), 'cold'); if (spendEmp(E)) empower.splice(k, 1);
         }
         else if (E.type === 'bounty' && S.kind === 'projectile') { S.addProj = E.add; S.G = { ...S.G, speed: (S.G?.speed || SIM.projSpeed) * (1 + E.speed / 100) }; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
-        else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (--E.uses <= 0) empower.splice(k, 1); }
+        else if (E.type === 'spark' && P.attack) { K.projectile({ ...E.X, from: S.from, dx: S.dx, dz: S.dz, P: { ...E.X.P, wander: true } }); if (spendEmp(E)) empower.splice(k, 1); }
       }
       // Empowered (it took something waiting for it): Premeditation's more damage, Unerring Power's less cost and more Accuracy
       // Mountain's Teachings: an attack you use benefits from it and loses one
@@ -4860,7 +4863,7 @@ export function initScene(el, api) {
   }
   function resolve(d) {
     const E = !d.dead && empower.find(e => e.type === 'resolve' && time >= e.next); if (!E) return;
-    E.next = time + E.cd; if (--E.uses <= 0) empower.splice(empower.indexOf(E), 1);
+    E.next = time + E.cd; if (spendEmp(E)) empower.splice(empower.indexOf(E), 1);
     const X = E.X, l = dist(d.pos, pp) || 1, k = 1 + Math.floor((sheet().armour || 0) / X.dmg.stats['dangerous_resolve_attack_damage_+1%_final_per_X_armour']) / 100;
     say(X.label, X.el); K.sweep({ ...X, mult: k, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l, R: X.A, cone: X.dmg.stats.dangerous_resolve_cone_angle });
   }
@@ -4911,6 +4914,7 @@ export function initScene(el, api) {
     { const U = sheet().uDef || {}, low = lowLife();   // uniques: fire resistance and evasion on Low Life, more armour per 1% of your energy shield
       if (low && U.fireLow) { const F = c.res.fire, value = F.value + U.fireLow; c = { ...c, res: { ...c.res, fire: { ...F, value, capped: Math.min(value, F.max) } } }; }
       if (low && U.evaLow) c = { ...c, evasion: (c.evasion || 0) + U.evaLow * (c.evasionInc || 1) };
+      if (U.resPower && charges.power) c = { ...c, res: { ...c.res, ...Object.fromEntries(ELEM.map(e => { const value = c.res[e].value + U.resPower * charges.power; return [e, { ...c.res[e], value, capped: Math.min(value, c.res[e].max) }]; })) } };   // Adonia's Ego: per Power Charge
       if (U.esArmour && me.maxE > 0) c = { ...c, armourX: (c.armourX || 1) * (1 + me.es / me.maxE * U.esArmour) }; }
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
@@ -4972,7 +4976,7 @@ export function initScene(el, api) {
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
-    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
+    if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
