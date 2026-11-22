@@ -554,6 +554,8 @@ export function recovery(c, sum) {
     // Titanrot Cataphract: none; Mask of the Stitched Demon: per maximum energy shield
     lifeRegen: sum.no_life_regeneration ? 0 : lifePctRegen && c.life == null ? null
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.es || 0) * v(sum, 'life_regeneration_per_minute_per_maximum_energy_shield') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
+    leechOver: !!sum.life_leech_can_overcap_life, leechToEs: !!sum.life_leech_excess_goes_to_energy_shield,   // Couture of Crimson; Soul Tether (the scene plays them)
+    armourPerRage: v(sum, 'armour_+%_per_rage'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors
     lifeToEs: !!sum.regenerate_energy_shield_instead_of_life,   // Ligurium Talisman, Soul Tether: life regeneration applied to energy shield instead (the scene plays it)
     manaNoCrit: !!sum.no_mana_regeneration_if_not_crit_recently,   // Nightscale: none unless you crit recently (the scene checks it)
     esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
@@ -620,7 +622,7 @@ export function recovery(c, sum) {
     pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, actMove: { inc: v(sum, 'movement_speed_penalty_+%_while_performing_action'), fire: v(sum, 'movement_speed_penalty_+%_while_performing_fire_skills'), cold: v(sum, 'movement_speed_penalty_+%_while_performing_cold_skills'), more: v(sum, 'deadeye_movement_speed_penalty_+%_final_while_performing_action') }, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv, x = 1]) => ({ to, cv, val: sum[k] * x })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
-    killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
+    killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), manaFlat: v(sum, 'base_mana_gained_on_enemy_death'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
       full: v(sum, 'recover_maximum_life_on_enemy_killed_chance_%') },
     // what an event recovers: consuming a power charge (% of maximum mana) or an endurance charge (% of life), a block
     // (flat life), using your mana flask (% of life) or a charm (% of mana), heavily stunning a rare or unique enemy (% of
