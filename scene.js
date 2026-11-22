@@ -5183,7 +5183,7 @@ export function initScene(el, api) {
     FullMana: () => me.mana >= me.maxM * (TH().fullMana || 100) / 100, NotLowMana: () => !lowMana(), LowMana: lowMana, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
     ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt?.[1] ?? -99) <= RECENT,
     LifeFlaskEffect: () => !!me.drink[0], LifeFlaskPast10: () => time - (me.drankAt?.[0] ?? -99) <= 10, Shocked: () => me.st.shock > 0,
-    DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), Ailing: () => ['ignite', 'bleed', 'poison', 'chill', 'shock', 'freeze'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
+    DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), Ailing: () => meIs.DamagingAilment() || ['chill', 'shock', 'freeze'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
