@@ -5003,10 +5003,9 @@ export function initScene(el, api) {
     if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d, true));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
-    const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
-    const rec = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / (RC?.time || 8) }), W = sheet().weakness;
-    if ((W?.recoupL || W?.recoupLE) && openWeak(d)) { rec('life', total * (W.recoupL + W.recoupLE) / 100); rec('es', total * W.recoupLE / 100); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
-    { const p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0) / 100; rec('life', p); rec('mana', p); }   // Forsaken Bangle: the chaos damage prevented, during its effect
+    const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / (RC?.time || 8) }), W = sheet().weakness;
+    if ((W?.recoupL || W?.recoupLE) && openWeak(d)) { add('life', total * (W.recoupL + W.recoupLE) / 100); add('es', total * W.recoupLE / 100); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
+    { const p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0) / 100; add('life', p); add('mana', p); }   // Forsaken Bangle: the chaos damage prevented, during its effect
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * pow(d) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
