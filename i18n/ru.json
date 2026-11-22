@@ -489,6 +489,7 @@
  "Auto ({0})": "Авто ({0})",
  "Find the best path": "Найти лучший путь",
  "{0} of {1} points placed…": "Распределено {0} из {1} очков…",
+ "This can take several minutes.": "Это может занять несколько минут.",
  "No passive within reach raises this objective.": "Ни одно доступное пассивное умение не повышает эту цель.",
  "{0} points placed, level {1}.": "Распределено очков: {0}, уровень {1}.",
  "The search was stopped before the end.": "Поиск был остановлен до конца.",

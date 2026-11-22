@@ -489,6 +489,7 @@
  "Auto ({0})": "Auto ({0})",
  "Find the best path": "Encontrar o melhor caminho",
  "{0} of {1} points placed…": "{0} de {1} pontos alocados…",
+ "This can take several minutes.": "Isso pode levar vários minutos.",
  "No passive within reach raises this objective.": "Nenhuma passiva ao alcance aumenta este objetivo.",
  "{0} points placed, level {1}.": "{0} pontos alocados, nível {1}.",
  "The search was stopped before the end.": "A busca foi interrompida antes do fim.",

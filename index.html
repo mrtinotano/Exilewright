@@ -232,6 +232,8 @@
   .ask { position:fixed; inset:0; z-index:50; background:#000a; display:flex; align-items:center; justify-content:center; }
   .ask > div { max-width:360px; padding:16px 18px; background:linear-gradient(#211b14, #100d0a); border:1px solid #7a6440; font-family:Georgia, serif; color:#e8d8a8; text-align:center; }
   .ask p { margin:0 0 14px; line-height:1.4; }
+  .dots i { font-style:normal; animation:dot 1.2s infinite; } .dots i:nth-child(2) { animation-delay:.2s; } .dots i:nth-child(3) { animation-delay:.4s; }   /* still working */
+  @keyframes dot { 0%, 60%, 100% { opacity:.15; } 30% { opacity:1; } }
   #sharePanel > div { max-width:560px; width:92vw; text-align:left; max-height:90vh; overflow:auto; }
   #sharePanel h3 { margin:12px 0 6px; font-size:15px; color:#d8b870; }
   #sharePanel h3:first-child { margin-top:0; }

@@ -489,6 +489,7 @@
  "Auto ({0})": "อัตโนมัติ ({0})",
  "Find the best path": "ค้นหาเส้นทางที่ดีที่สุด",
  "{0} of {1} points placed…": "วางแล้ว {0} จาก {1} แต้ม…",
+ "This can take several minutes.": "อาจใช้เวลาหลายนาที",
  "No passive within reach raises this objective.": "ไม่มีพาสซีฟในระยะที่เพิ่มเป้าหมายนี้",
  "{0} points placed, level {1}.": "วาง {0} แต้มแล้ว เลเวล {1}",
  "The search was stopped before the end.": "การค้นหาถูกหยุดก่อนเสร็จสิ้น",

@@ -79,10 +79,15 @@ export function initOpt(el, ctx) {
     const bL = { ...b0, level: Math.min(100, 1 + usedOf(b0) + pts) };
     const me = run = { stop: false, spent: 0, of: pts };
     T = null; render();
+    // the app is blocked while it searches: a dark veil with its progress, dots that keep moving and its Cancel
+    const veil = document.createElement('div'), line = () => runText().replace(/[….]+$/, '');
+    veil.className = 'ask'; veil.innerHTML = `<div><p><span></span><span class="dots"><i>.</i><i>.</i><i>.</i></span></p><p class="note">${t('This can take several minutes.')}</p><button>${t('Cancel')}</button></div>`;
+    veil.querySelector('span').textContent = line(); veil.querySelector('button').onclick = () => { me.stop = true; };
+    document.body.append(veil);
     await new Promise(r => setTimeout(r, 30));   // the progress line gets on screen first
     const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), f: s => score(key, bL, s, g), points: pts,
       pref: S.pref || g && colour(GEM[g.name]) || 'str', stop: () => me.stop || ctx.rev() !== rev,
-      tick: p => { me.spent = p.spent; const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } });
+      tick: p => { me.spent = p.spent; veil.querySelector('span').textContent = line(); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).finally(() => veil.remove());
     if (run === me) run = null;
     if (ctx.rev() === rev) T = { rev, r, fresh, key, after: withPath(b, r, fresh) };
     render();

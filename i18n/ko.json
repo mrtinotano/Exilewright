@@ -489,6 +489,7 @@
  "Auto ({0})": "자동 ({0})",
  "Find the best path": "최적 경로 찾기",
  "{0} of {1} points placed…": "{0}/{1} 포인트 배치됨…",
+ "This can take several minutes.": "몇 분 정도 걸릴 수 있습니다.",
  "No passive within reach raises this objective.": "닿을 수 있는 패시브 중 이 목표를 올리는 것이 없습니다.",
  "{0} points placed, level {1}.": "{0} 포인트 배치됨, 레벨 {1}.",
  "The search was stopped before the end.": "검색이 끝나기 전에 중지되었습니다.",
