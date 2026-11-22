@@ -271,7 +271,7 @@ export function character(b, sum) {
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     if (k === 'chaos' && sum.chaos_damage_resistance_is_doubled) val *= 2;   // Acolyte of Chayula
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
-    const max = sum['override_maximum_damage_resistance_%'] ? sum['override_maximum_damage_resistance_%'] : CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
+    const max = sum['override_maximum_damage_resistance_%'] || CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
       + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0)   // Gemling: red / green / blue supports
       + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0);
@@ -459,7 +459,7 @@ export function character(b, sum) {
   // energy shield equal to a share of Strength (Geofri's Sanctuary)
   c.es += Math.round((c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_maximum_energy_shield') / 100 + (c.mana || 0) * v(sum, 'mana_%_to_gain_as_energy_shield') / 100);
   const MA = Math.round((c.mana || 0) * v(sum, 'mana_%_to_gain_as_armour') / 100); if (MA) { c.armour += MA; c.armourPct = armourReduction(c.armour, lvl); }
-  if (sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']) c.es = Math.round(at.str * sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength'] / 100);
+  const GS = sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']; if (GS) c.es = Math.round(at.str * GS / 100);
   // thorns from your maximum life (Cat O' Nine Tails: physical) and mana (Icetomb: cold), the scene's of its current maximum
   c.thorns.life = ['gain_minimum_physical_thorns_damage_equal_to_x%_of_maximum_life', 'gain_maximum_physical_thorns_damage_equal_to_x%_of_maximum_life'].map(k => v(sum, k));
   c.thorns.manaCold = v(sum, 'added_thorns_cold_base_damage_%_of_maximum_mana');
@@ -1077,12 +1077,12 @@ export function skill(g, b, treeGear) {
   const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
   const base = {};
   // uniques' attack damage added from your maximum life (Bursting Decay) or mana (Mind of the Council, Twisted Empyrean)
-  const POOL = [['physical', 'life', 'attack_added_physical_damage_%_of_maximum_life', 'attack_added_physical_damage_%_of_maximum_life'], ['lightning', 'mana', null, 'attack_maximum_added_lightning_damage_%_of_maximum_mana'],
+  const POOL = [['physical', 'life', 'attack_added_physical_damage_%_of_maximum_life', 'attack_added_physical_damage_%_of_maximum_life'], ['lightning', 'mana', '', 'attack_maximum_added_lightning_damage_%_of_maximum_mana'],
     ['cold', 'mana', 'local_attacks_have_added_min_cold_damage_equal_to_%_of_maximum_mana', 'local_attacks_have_added_max_cold_damage_equal_to_%_of_maximum_mana']];
   const pool = attack && POOL.some(r => sum[r[3]]) && character(b, sum);
   for (const t of DMG) {
     let lo = 0, hi = 0;
-    for (const [k, of, mn, mx] of pool ? POOL.filter(r => r[0] === t) : []) { lo += (pool[of] || 0) * v(sum, mn || '') / 100; hi += (pool[of] || 0) * v(sum, mx) / 100; }
+    for (const [k, of, mn, mx] of pool ? POOL.filter(r => r[0] === t) : []) { const p = (pool[of] || 0) / 100; lo += p * v(sum, mn); hi += p * v(sum, mx); }
     if (attack && (w || nonWeapon || shield)) {   // a non-weapon attack needs no weapon in hand
       const r = shield ? [(st[`off_hand_weapon_minimum_${t}_damage`] || 0) + shieldAdd(t, 0), (st[`off_hand_weapon_maximum_${t}_damage`] || 0) + shieldAdd(t, 1)]
         : nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
