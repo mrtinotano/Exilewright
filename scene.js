@@ -4817,7 +4817,7 @@ export function initScene(el, api) {
     const DW = OR.defendWith; if (DW) { const x = [[DW.crit, crit], [DW.projAttack, a.attack && a.shape === 'projectile'], [DW.far, dist(d.pos, pp) > 6], [DW.notLowES, me.maxE > 0 && me.es >= me.maxE * LOW], [DW.double && 200, Math.random() * 100 < DW.double]]
       .reduce((m, [p, ok]) => p && ok ? m * p / 100 : m, 1); if (x !== 1) c = { ...c, armourX: (c.armourX || 1) * x }; }
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
-    const UL = OR.unluckyDmg || Math.random() * 100 < (OR.unluckyChance || 0);   // the hit's damage Unlucky (Oracle; the tree's chance)
+    const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
     for (const el in a.hits) {
       const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward

@@ -502,7 +502,7 @@ export function recovery(c, sum) {
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
-    unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyChance: v(sum, 'enemy_extra_damage_rolls_chance_%'),   // or its chance on each hit (the tree's)
+    unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),   // chance for hits' damage against you to be Unlucky (Oracle: always)
     unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
