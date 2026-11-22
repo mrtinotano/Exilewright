@@ -577,6 +577,8 @@ export function recovery(c, sum) {
     manaRegenOnly: !!sum.cannot_recover_mana_except_regeneration,   // Indigon
     // Guiding Palms: their Guided Shrine's Daemon; Palm of the Dreamer: Dreaming Gloom Shrine (enemies you kill explode)
     daemons: ['fire', 'cold', 'lightning'].filter(e => sum[`has_unique_${e}_shrine_effect`]), gloom: !!sum.has_unique_chaos_shrine_effect,
+    areaKilled: v(sum, 'skill_area_of_effect_+%_if_enemy_killed_recently'), poisonFrenzy: v(sum, 'poison_duration_+%_if_consumed_frenzy_charge_recently'),   // Quecholli; Snakebite
+    noManaLeech: !!sum.base_cannot_leech_mana,   // Lochtonial Caress
     shrineEvery: sum.local_gain_shrine_buff_every_10_seconds ? 10 : 0,   // The Hammer of Faith: a random lesser Shrine buff every 10 s (its stat's name)
     redflare: !!sum.gain_power_charge_per_second_if_have_not_lost_power_charge_recently, stunPerRage: v(sum, 'stun_threshold_+%_per_rage'),   // Redflare Conduit; Wings of Caelyn
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
@@ -1454,7 +1456,8 @@ export function skill(g, b, treeGear) {
     // (Orb of Storms' own distance), more with increased chaining range. The less damage after piercing or forking
     pierce: flags.has('cannot_pierce') ? 0 : flags.has('always_pierce') ? Infinity : both('projectile_base_number_of_targets_to_pierce')
       + (gt.includes('Bow') ? both('arrow_base_number_of_targets_to_pierce') : 0) + both('base_chance_to_pierce_%', 'pierce_%') / 100,
-    forks: flags.has('projectiles_cannot_fork') || !(flags.has('projectiles_fork') || both('projectiles_fork')) ? 0 : Math.min(2, 1 + both('number_of_additional_forks_base')),
+    forks: flags.has('projectiles_cannot_fork') || !(flags.has('projectiles_fork') || both('projectiles_fork') || gt.includes('Bow') && both('arrows_fork')) ? 0 : Math.min(2, 1 + both('number_of_additional_forks_base')),
+    pierceForked: gt.includes('Bow') && both('arrows_always_pierce_after_forking') > 0,   // Slivertongue: arrows fork, then pierce every enemy
     chainRange: (st.arc_chain_distance ? st.arc_chain_distance / 10 : gt.includes('Projectile') ? 6 : 4) * (1 + both('chaining_range_+%') / 100),
     pierceMore: finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0, perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
     forkMore: finals['support_fork_forked_projectile_damage_+%_final'] || 0, bolts: sec('orb_of_storms_base_bolt_frequency_ms'), maxBolts: st.orb_of_storms_maximum_number_of_hits || null,

@@ -190,8 +190,11 @@ export function initScene(el, api) {
     // Sands of Time (KeywordPopups Chronobuff): 60% increased skill speed scaling down to 1% over 10 seconds and back up, the
     // area of effect the other way round, from 1% to 60%
     const a0 = g1.add || {}, ST = sheet().sands && 1 + 59 * Math.abs(time % 20 - 10) / 10, add = { ...a0, ...(BA && { 'attack_speed_+%': BA }), ...(ST && { 'skill_speed_+%': (a0['skill_speed_+%'] || 0) + ST, 'base_skill_area_of_effect_+%': (a0['base_skill_area_of_effect_+%'] || 0) + 61 - ST }) };
-    const SB = shrineOn(); if (SB) for (const [k, n] of Object.entries(SB)) add[k] = (add[k] || 0) + n;   // and the Shrine buff's
-    const g2 = BA || ST || SB ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
+    // and the Shrine buff's; Quecholli's area if you killed recently; Snakebite's poison duration after consuming a frenzy charge
+    const SB = { ...shrineOn() }, SH = sheet(); if (SH.areaKilled && meIs.KilledRecently()) SB['base_skill_area_of_effect_+%'] = (SB['base_skill_area_of_effect_+%'] || 0) + SH.areaKilled;
+    if (SH.poisonFrenzy && meIs.ConsumedFrenzyRecently()) SB['base_poison_duration_+%'] = SH.poisonFrenzy;
+    for (const [k, n] of Object.entries(SB)) add[k] = (add[k] || 0) + n;
+    const g2 = BA || ST || Object.keys(SB).length ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
@@ -715,7 +718,7 @@ export function initScene(el, api) {
     const k = Math.min(1, GAME.leech_max_damage / (total || 1)) * (1 - (d.stat.leechRes || 0));
     for (const r of ['life', 'mana']) {
       const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (x.of.reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k;   // more life leeched while Shapeshifted
-      if (!(n > 0)) continue;
+      if (!(n > 0) || r === 'mana' && sheet().noManaLeech) continue;   // Lochtonial Caress: no mana leech
       const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
     }
   }
@@ -2060,7 +2063,7 @@ export function initScene(el, api) {
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
-            else if (pierced < pierceN || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
+            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
             else if (forked < (D.forks || 0)) {
               hit(d, cur, { mult: mult() }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
