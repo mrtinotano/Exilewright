@@ -638,8 +638,14 @@ export function tradeItem({ name, base: baseName, lines, runes = [] }) {
   // a line under a name the data does not have (a revealed desecrated modifier the site lists among the explicit ones,
   // "+1 to maximum number of Summoned Ballista Totems"; "+3 to Level of all Attack Skills"): by its wording, among the
   // modifiers of the item's kind
-  const late = byText(rest.map(l => l.text).filter(x => missed.has(x)), a => a.domain === base.domain || a.desecrated && canRoll(a, base, true));
+  // (the site words some as "Global" where the game does not: an essence's "30% increased Global Armour, Evasion and
+  // Energy Shield"; as worded first, as the game words some so too; without it, never a local modifier)
+  const kind = a => a.domain === base.domain || a.desecrated && canRoll(a, base, true), left = () => rest.map(l => l.text).filter(x => missed.has(x));
+  const late = byText(left(), kind);
   late.found.forEach(f => missed.delete(f.src));
+  const bare = x => x.replace(/\bGlobal /, ''), was = left().filter(x => bare(x) !== x), unglobal = byText(was.map(bare), a => kind(a) && !a.stats.some(([id]) => id.startsWith('local_')));
+  unglobal.found.forEach(f => missed.delete(was.find(x => bare(x) === f.src)));
+  late.found.push(...unglobal.found);
   item.mods = [...found.values()].filter(Boolean).map(f => ({ id: f.a.id, values: f.values })).concat([...dm.found, ...late.found].map(f => ({ id: f.key, values: f.raw })));
   return { item, slots: base.slots, missed: [...missed] };
 }

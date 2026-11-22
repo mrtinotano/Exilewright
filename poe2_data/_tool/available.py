@@ -677,12 +677,14 @@ save('items.json', {
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])],
                  **({'tags': [tags_tab[t]['Id'] for t in m['ImplicitTags']]} if m['ImplicitTags'] else {}),
                  **({'desecrated': True} if m['Domain'] == 28 else {}),
+                 **({'essence': True} if not any(m['SpawnWeight_Values']) else {}),
                  # a radius jewel's modifier is given by the passives in its radius (Mods.RadiusJewelType: 1 small ones,
                  # 2 notable ones; "Small Passive Skills in Radius also grant ...")
                  **({'radius': {1: 'small', 2: 'notable'}[m['RadiusJewelType']]} if m.get('RadiusJewelType') in (1, 2) else {})}
                 # desecrated modifiers (Abyss: "Ulaman's", "of Kurgal"...) are AbyssMod* of domain 28, for any item their tags fit
                 for i, m in enumerate(mods) if (m['Domain'] in (1, 2, 11) or m['Domain'] == 28 and m['Id'].startswith('AbyssMod'))
-                and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])],
+                # an essence's modifiers ("Essences", "of the Essence") never roll (no spawn weight): only read on an item
+                and m['GenerationType'] in (1, 2) and (any(m['SpawnWeight_Values']) or m['Domain'] == 1 and m['Name'] in ('Essences', 'of the Essence'))],
 })
 
 # --- the loot filter creator (filter.js): every item class and base the trade list has, with the names each language

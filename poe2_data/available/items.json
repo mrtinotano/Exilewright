@@ -156009,6 +156009,1619 @@
    "radius": "notable"
   },
   {
+   "id": "EssenceLocalRuneAndSoulCoreEffect1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 3894,
+   "stats": [
+    [
+     "local_socketed_items_effect_+%",
+     60,
+     60
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceCorruptForTwoEnchantments1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 3656,
+   "stats": [
+    [
+     "local_force_corruption_outcome_two_enchants",
+     1,
+     1
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 1,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     8,
+     11
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 10,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     12,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     16,
+     19
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence4",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     20,
+     23
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     24,
+     27
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence6",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     28,
+     31
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskLifeRecoveryRateEssence7",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_life_recovery_rate_+%",
+     32,
+     35
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskManaRecoveryRateEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_mana_recovery_rate_+%",
+     11,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskManaRecoveryRateEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_mana_recovery_rate_+%",
+     16,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BeltFlaskManaRecoveryRateEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 212,
+   "stats": [
+    [
+     "flask_mana_recovery_rate_+%",
+     21,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence2_",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 10,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     35,
+     38
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence3",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 26,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     39,
+     42
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     43,
+     46
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     47,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     51,
+     55
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidShockEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 232,
+   "stats": [
+    [
+     "base_avoid_shock_%",
+     56,
+     60
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AttackerTakesDamageEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1734,
+   "stats": [
+    [
+     "physical_damage_to_return_to_melee_attacker",
+     51,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "damage",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AttackerTakesDamageEssence6",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1734,
+   "stats": [
+    [
+     "physical_damage_to_return_to_melee_attacker",
+     101,
+     150
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "damage",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AttackerTakesDamageEssence7",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1734,
+   "stats": [
+    [
+     "physical_damage_to_return_to_melee_attacker",
+     151,
+     200
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "damage",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidFreezeEssence3",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 237,
+   "stats": [
+    [
+     "base_avoid_chill_%",
+     0,
+     0
+    ],
+    [
+     "base_avoid_freeze_%",
+     39,
+     42
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidFreezeEssence4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 237,
+   "stats": [
+    [
+     "base_avoid_chill_%",
+     0,
+     0
+    ],
+    [
+     "base_avoid_freeze_%",
+     43,
+     46
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidFreezeEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 237,
+   "stats": [
+    [
+     "base_avoid_chill_%",
+     0,
+     0
+    ],
+    [
+     "base_avoid_freeze_%",
+     47,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidFreezeEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 237,
+   "stats": [
+    [
+     "base_avoid_chill_%",
+     0,
+     0
+    ],
+    [
+     "base_avoid_freeze_%",
+     51,
+     55
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidFreezeEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 237,
+   "stats": [
+    [
+     "base_avoid_chill_%",
+     0,
+     0
+    ],
+    [
+     "base_avoid_freeze_%",
+     56,
+     60
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AdditionalShieldBlockChance1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 18,
+   "stats": [
+    [
+     "local_additional_block_chance_%",
+     1,
+     2
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AdditionalShieldBlockChance2",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 18,
+   "stats": [
+    [
+     "local_additional_block_chance_%",
+     3,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AdditionalShieldBlockChance3",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 18,
+   "stats": [
+    [
+     "local_additional_block_chance_%",
+     5,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AdditionalShieldBlockChance4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 18,
+   "stats": [
+    [
+     "local_additional_block_chance_%",
+     7,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidIgniteEssence4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 474,
+   "stats": [
+    [
+     "base_avoid_ignite_%",
+     43,
+     46
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidIgniteEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 474,
+   "stats": [
+    [
+     "base_avoid_ignite_%",
+     47,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidIgniteEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 474,
+   "stats": [
+    [
+     "base_avoid_ignite_%",
+     51,
+     55
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidIgniteEssence7_",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 474,
+   "stats": [
+    [
+     "base_avoid_ignite_%",
+     56,
+     60
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ReducedManaReservationCostEssence4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "mana_reservation_efficiency_-2%_per_1",
+     -2,
+     -2
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ReducedManaReservationCostEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "mana_reservation_efficiency_-2%_per_1",
+     -3,
+     -3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ReducedManaReservationCostEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "mana_reservation_efficiency_-2%_per_1",
+     -4,
+     -4
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ReducedManaReservationCostEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "mana_reservation_efficiency_-2%_per_1",
+     -5,
+     -5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaReservationEfficiencyEssence4",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "base_mana_reservation_efficiency_+%",
+     3,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaReservationEfficiencyEssence5__",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "base_mana_reservation_efficiency_+%",
+     5,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaReservationEfficiencyEssence6_",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "base_mana_reservation_efficiency_+%",
+     7,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaReservationEfficiencyEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 568,
+   "stats": [
+    [
+     "base_mana_reservation_efficiency_+%",
+     9,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalIncreasedMeleeWeaponRangeEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 663,
+   "stats": [
+    [
+     "local_weapon_range_+",
+     1,
+     1
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalIncreasedMeleeWeaponRangeEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 663,
+   "stats": [
+    [
+     "local_weapon_range_+",
+     2,
+     2
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalIncreasedMeleeWeaponRangeEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 663,
+   "stats": [
+    [
+     "local_weapon_range_+",
+     3,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attack"
+   ],
+   "essence": true
+  },
+  {
    "id": "FishingLineStrength",
    "name": "Filigree",
    "name_es": "<if:MS>{afiligranado}<elif:FS>{afiligranada}<elif:MP>{afiligranados}<elif:FP>{afiligranadas}",
@@ -156245,6 +157858,4314 @@
      0
     ]
    ]
+  },
+  {
+   "id": "ChaosResistanceWhileUsingFlaskEssence1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 980,
+   "stats": [
+    [
+     "chaos_resistance_+_while_using_flask",
+     50,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_resistance",
+    "flask",
+    "chaos",
+    "resistance"
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedChaosDamageEssence5",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 1184,
+   "stats": [
+    [
+     "chaos_damage_+%",
+     23,
+     26
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedChaosDamageEssence6",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 1184,
+   "stats": [
+    [
+     "chaos_damage_+%",
+     27,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedChaosDamageEssence7",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 1184,
+   "stats": [
+    [
+     "chaos_damage_+%",
+     31,
+     34
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedLifeLeechRateEssence1",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1186,
+   "stats": [
+    [
+     "base_life_leech_rate_+%",
+     150,
+     150
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChaosLeechedAsLifeEssence1_",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "之精髓",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1649,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     50,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationEssence1_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     6,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     7,
+     7
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationEssence4",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     8,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationTwoHandEssence1_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     9,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationTwoHandEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     11,
+     12
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationTwoHandEssence3_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     13,
+     14
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LightningResistancePenetrationTwoHandEssence4",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1257,
+   "stats": [
+    [
+     "base_reduce_enemy_lightning_resistance_%",
+     15,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     4,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     6,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationEssence4___",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     7,
+     7
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     8,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationTwoHandEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     7,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationTwoHandEssence2_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     9,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationTwoHandEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     11,
+     12
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationTwoHandEssence4",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     13,
+     14
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireResistancePenetrationTwoHandEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1623,
+   "stats": [
+    [
+     "base_reduce_enemy_fire_resistance_%",
+     15,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 10,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     3,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     4,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence4_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     6,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     7,
+     7
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationEssence6_",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     8,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 10,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     5,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence2",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     7,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence3",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     9,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence4",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     11,
+     12
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence5",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     13,
+     14
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ColdResistancePenetrationTwoHandEssence6__",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1624,
+   "stats": [
+    [
+     "base_reduce_enemy_cold_resistance_%",
+     15,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidElementalStatusAilmentsEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 1407,
+   "stats": [
+    [
+     "avoid_all_elemental_status_%",
+     16,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "cold",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidElementalStatusAilmentsEssence2",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 1407,
+   "stats": [
+    [
+     "avoid_all_elemental_status_%",
+     21,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "cold",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidElementalStatusAilmentsEssence3",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 1407,
+   "stats": [
+    [
+     "avoid_all_elemental_status_%",
+     26,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "cold",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToAvoidElementalStatusAilmentsEssence4",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 1407,
+   "stats": [
+    [
+     "avoid_all_elemental_status_%",
+     31,
+     35
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "cold",
+    "lightning",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 1,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     50,
+     70
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence2",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 10,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     60,
+     80
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence3",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 26,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     70,
+     90
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence4",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 42,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     80,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence5",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 58,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     90,
+     110
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence6",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     100,
+     120
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LifeLeechPermyriadLocalEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 7,
+   "stats": [
+    [
+     "local_life_leech_from_physical_damage_permyriad",
+     110,
+     130
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "physical",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SummonTotemCastSpeedEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 42,
+   "domain": 1,
+   "family": 1551,
+   "stats": [
+    [
+     "summon_totem_cast_speed_+%",
+     21,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SummonTotemCastSpeedEssence2",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 1551,
+   "stats": [
+    [
+     "summon_totem_cast_speed_+%",
+     26,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SummonTotemCastSpeedEssence3",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 1551,
+   "stats": [
+    [
+     "summon_totem_cast_speed_+%",
+     31,
+     35
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SummonTotemCastSpeedEssence4",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 1551,
+   "stats": [
+    [
+     "summon_totem_cast_speed_+%",
+     36,
+     45
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "StunAvoidanceEssence5",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 1318,
+   "stats": [
+    [
+     "base_avoid_stun_%",
+     23,
+     26
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "StunAvoidanceEssence6",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 1318,
+   "stats": [
+    [
+     "base_avoid_stun_%",
+     27,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "StunAvoidanceEssence7",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 1318,
+   "stats": [
+    [
+     "base_avoid_stun_%",
+     31,
+     44
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedStunThresholdEssence5",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 58,
+   "domain": 1,
+   "family": 1696,
+   "stats": [
+    [
+     "stun_threshold_+%",
+     31,
+     39
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedStunThresholdEssence6",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 74,
+   "domain": 1,
+   "family": 1696,
+   "stats": [
+    [
+     "stun_threshold_+%",
+     40,
+     45
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "IncreasedStunThresholdEssence7",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 82,
+   "domain": 1,
+   "family": 1696,
+   "stats": [
+    [
+     "stun_threshold_+%",
+     46,
+     60
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedFireDamageEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_fire_damage",
+     67,
+     67
+    ],
+    [
+     "spell_maximum_added_fire_damage",
+     80,
+     90
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedColdDamageEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_cold_damage",
+     35,
+     45
+    ],
+    [
+     "spell_maximum_added_cold_damage",
+     66,
+     74
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedLightningDamageEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_lightning_damage",
+     4,
+     11
+    ],
+    [
+     "spell_maximum_added_lightning_damage",
+     134,
+     144
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedFireDamageTwoHandEssence7_",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_fire_damage",
+     67,
+     81
+    ],
+    [
+     "spell_maximum_added_fire_damage",
+     120,
+     135
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedColdDamageTwoHandEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_cold_damage",
+     57,
+     66
+    ],
+    [
+     "spell_maximum_added_cold_damage",
+     100,
+     111
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellAddedLightningDamageTwoHandEssence7",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 1564,
+   "stats": [
+    [
+     "spell_minimum_added_lightning_damage",
+     6,
+     16
+    ],
+    [
+     "spell_maximum_added_lightning_damage",
+     201,
+     216
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning",
+    "caster"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageEssence1_",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 62,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     37,
+     59
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     79,
+     103
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageEssence2__",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     43,
+     67
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     89,
+     113
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageEssence3",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     53,
+     79
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     101,
+     131
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageTwoHandEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 62,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     61,
+     103
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     149,
+     193
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageTwoHandEssence2",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     73,
+     113
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     163,
+     205
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "LocalAddedChaosDamageTwoHandEssence3",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 721,
+   "stats": [
+    [
+     "local_minimum_added_chaos_damage",
+     89,
+     131
+    ],
+    [
+     "local_maximum_added_chaos_damage",
+     181,
+     229
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "CannotBePoisonedEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1848,
+   "stats": [
+    [
+     "cannot_be_poisoned",
+     1,
+     1
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "poison",
+    "chaos",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "QuiverAddedChaosEssence1_",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 62,
+   "domain": 1,
+   "family": 170,
+   "stats": [
+    [
+     "attack_minimum_added_chaos_damage",
+     11,
+     15
+    ],
+    [
+     "attack_maximum_added_chaos_damage",
+     27,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "QuiverAddedChaosEssence2_",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 74,
+   "domain": 1,
+   "family": 170,
+   "stats": [
+    [
+     "attack_minimum_added_chaos_damage",
+     17,
+     21
+    ],
+    [
+     "attack_maximum_added_chaos_damage",
+     37,
+     43
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "QuiverAddedChaosEssence3__",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 82,
+   "domain": 1,
+   "family": 170,
+   "stats": [
+    [
+     "attack_minimum_added_chaos_damage",
+     23,
+     37
+    ],
+    [
+     "attack_maximum_added_chaos_damage",
+     49,
+     61
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedGemsDealAdditionalFireDamageEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1757,
+   "stats": [
+    [
+     "local_display_socketed_gems_minimum_added_fire_damage",
+     175,
+     175
+    ],
+    [
+     "local_display_socketed_gems_maximum_added_fire_damage",
+     225,
+     225
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "skill",
+    "damage",
+    "elemental",
+    "fire",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedGemsHaveMoreAttackAndCastSpeedEssenceNew1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1757,
+   "stats": [
+    [
+     "local_display_socketed_gems_attack_and_cast_speed_+%_final",
+     16,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_speed",
+    "skill",
+    "attack",
+    "caster",
+    "speed",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedGemsAddPercentageOfPhysicalAsLightningEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1757,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     50,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "physical_damage",
+    "skill",
+    "damage",
+    "physical",
+    "elemental",
+    "lightning",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedGemsDealMoreElementalDamageEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1757,
+   "stats": [
+    [
+     "local_display_socketed_gems_elemental_damage_+%_final",
+     30,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "skill",
+    "damage",
+    "elemental",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ElementalDamageTakenWhileStationaryEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1758,
+   "stats": [
+    [
+     "essence_buff_elemental_damage_taken_+%",
+     -5,
+     -5
+    ],
+    [
+     "essence_display_elemental_damage_taken_while_not_moving_+%",
+     -5,
+     -5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental"
+   ],
+   "essence": true
+  },
+  {
+   "id": "BurningGroundWhileMovingEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2677,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     2500,
+     2500
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "PhysicalDamageTakenAsColdEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 2824,
+   "stats": [
+    [
+     "physical_damage_taken_%_as_cold",
+     15,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireDamageAsPortionOfPhysicalDamageEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 135,
+   "stats": [
+    [
+     "non_skill_base_physical_damage_%_to_gain_as_fire",
+     10,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "physical_damage",
+    "damage",
+    "physical",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireDamageAsPortionOfPhysicalDamageEssence2",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 135,
+   "stats": [
+    [
+     "non_skill_base_physical_damage_%_to_gain_as_fire",
+     15,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "physical_damage",
+    "damage",
+    "physical",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChaosDamageOverTimeTakenEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2083,
+   "stats": [
+    [
+     "chaos_damage_taken_over_time_+%",
+     -25,
+     -25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedSkillsCriticalChanceEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2084,
+   "stats": [
+    [
+     "local_display_socketed_gems_additional_critical_strike_chance_%",
+     350,
+     350
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "critical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "MovementVelocityDuringFlaskEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1687,
+   "stats": [
+    [
+     "movement_speed_+%_during_flask_effect",
+     10,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AddedColdDamagePerFrenzyChargeEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 2086,
+   "stats": [
+    [
+     "minimum_added_cold_damage_per_frenzy_charge",
+     4,
+     4
+    ],
+    [
+     "maximum_added_cold_damage_per_frenzy_charge",
+     7,
+     7
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AddedColdDamagePerFrenzyChargeEssenceQuiver1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 2086,
+   "stats": [
+    [
+     "minimum_added_cold_damage_per_frenzy_charge",
+     8,
+     8
+    ],
+    [
+     "maximum_added_cold_damage_per_frenzy_charge",
+     12,
+     12
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AddedFireDamageIfBlockedRecentlyEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2087,
+   "stats": [
+    [
+     "minimum_added_fire_damage_if_blocked_recently",
+     60,
+     60
+    ],
+    [
+     "maximum_added_fire_damage_if_blocked_recently",
+     100,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedSkillAlwaysIgniteEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 680,
+   "stats": [
+    [
+     "local_display_socketed_gems_have_%_chance_to_ignite_with_fire_damage",
+     50,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental",
+    "fire",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedSkillDamageOnLowLifeEssence1__",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 681,
+   "stats": [
+    [
+     "local_display_socketed_gems_damage_+%_final_while_on_low_life",
+     30,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "damage"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ElementalPenetrationDuringFlaskEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2089,
+   "stats": [
+    [
+     "elemental_penetration_%_during_flask_effect",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "flask",
+    "damage",
+    "elemental"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AdditionalPhysicalDamageReductionDuringFlaskEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2090,
+   "stats": [
+    [
+     "additional_physical_damage_reduction_%_during_flask_effect",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ReflectDamageTakenEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2091,
+   "stats": [
+    [
+     "reflect_damage_taken_and_minion_reflect_damage_taken_+%",
+     -40,
+     -40
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "PowerChargeOnBlockEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2092,
+   "stats": [
+    [
+     "power_charge_on_block_%_chance",
+     25,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block",
+    "power_charge"
+   ],
+   "essence": true
+  },
+  {
+   "id": "NearbyEnemiesChilledOnBlockEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2093,
+   "stats": [
+    [
+     "nearby_enemies_chilled_on_block",
+     1,
+     1
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block",
+    "elemental",
+    "cold",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "PoisonDamageEssence1",
+   "name": "Essences",
+   "name_es": "de Esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓的",
+   "affix": "prefix",
+   "level": 63,
+   "domain": 1,
+   "family": 2094,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     40,
+     40
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "poison",
+    "damage",
+    "chaos",
+    "ailment"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ChanceToRecoverManaOnSkillUseEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2095,
+   "stats": [
+    [
+     "recover_10%_of_maximum_mana_on_skill_use_%",
+     10,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FortifyEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2098,
+   "stats": [
+    [
+     "max_fortification_+1_per_5",
+     15,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "CrushOnHitChanceEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2096,
+   "stats": [
+    [
+     "chance_to_crush_on_hit_%",
+     15,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AlchemistsGeniusOnFlaskEssence1_",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2097,
+   "stats": [
+    [
+     "gain_alchemists_genius_on_flask_use_%",
+     100,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask"
+   ],
+   "essence": true
+  },
+  {
+   "id": "PowerFrenzyOrEnduranceChargeOnKillEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2100,
+   "stats": [
+    [
+     "power_frenzy_or_endurance_charge_on_kill_%",
+     16,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "endurance_charge",
+    "frenzy_charge",
+    "power_charge"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SocketedAuraGemLevelsEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 145,
+   "stats": [
+    [
+     "local_socketed_aura_gem_level_+",
+     2,
+     2
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "aura",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "FireBurstOnHitEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1112,
+   "stats": [
+    [
+     "local_display_fire_burst_on_hit_%",
+     100,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "skill",
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpiritMinionEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2124,
+   "stats": [
+    [
+     "base_number_of_essence_spirits_allowed",
+     3,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "minion"
+   ],
+   "essence": true
+  },
+  {
+   "id": "AreaOfEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 175,
+   "stats": [
+    [
+     "base_skill_area_of_effect_+%",
+     25,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "OnslaughtWhenHitEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2125,
+   "stats": [
+    [
+     "gain_onslaught_for_3_seconds_%_chance_when_hit",
+     100,
+     100
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "OnslaughtWhenHitNewEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2125,
+   "stats": [
+    [
+     "unique_gain_onslaught_when_hit_duration_ms",
+     6000,
+     6000
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "SupportDamageOverTimeEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1757,
+   "stats": [
+    [
+     "local_display_socketed_gems_damage_over_time_+%_final",
+     30,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "skill",
+    "damage",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellBlockOnLowLifeEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1067,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     15,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "MaximumDoomEssence1__",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1460,
+   "stats": [
+    [
+     "curse_effect_+%",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster",
+    "curse"
+   ],
+   "essence": true
+  },
+  {
+   "id": "MaximumDoomAmuletEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1460,
+   "stats": [
+    [
+     "curse_effect_+%",
+     10,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster",
+    "curse"
+   ],
+   "essence": true
+  },
+  {
+   "id": "MarkEffectEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1460,
+   "stats": [
+    [
+     "mark_effect_+%",
+     25,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "DecayOnHitEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2126,
+   "stats": [
+    [
+     "deal_1000_chaos_damage_per_second_for_10_seconds_on_hit",
+     1,
+     1
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "SpellBlockAmuletEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1067,
+   "stats": [
+    [
+     "dummy_stat_display_nothing",
+     6,
+     7
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block"
+   ],
+   "essence": true
+  },
+  {
+   "id": "MovementSpeedOnBurningChilledShockedGroundEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2127,
+   "stats": [
+    [
+     "movement_speed_+%_while_on_burning_chilled_shocked_ground",
+     12,
+     12
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaRegenerationWhileShockedEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 1686,
+   "stats": [
+    [
+     "mana_regeneration_rate_+%_while_shocked",
+     70,
+     70
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ManaGainedOnBlockEssence1",
+   "name": "of the Essence",
+   "name_es": "de la Esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 63,
+   "domain": 1,
+   "family": 2128,
+   "stats": [
+    [
+     "mana_%_gained_on_block",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "block",
+    "resource",
+    "mana"
+   ],
+   "essence": true
   },
   {
    "id": "ChaosNonAilmentDamageOverTimeMultiplierUber1",
@@ -156601,6 +162522,987 @@
     "damage",
     "physical"
    ]
+  },
+  {
+   "id": "EssenceIncreasedLifePercent1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 81,
+   "stats": [
+    [
+     "maximum_life_+%",
+     8,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceIncreasedManaPercent1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 174,
+   "stats": [
+    [
+     "maximum_mana_+%",
+     4,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceGlobalDefences1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 982,
+   "stats": [
+    [
+     "global_armour_evasion_energy_shield_+%",
+     20,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "defences"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraPhysical1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "damage",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraPhysical2H",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical",
+     25,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "damage",
+    "physical"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraFire1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraFire2H",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire",
+     25,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraCold1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraCold2H",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold",
+     25,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraLightning1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceDamageasExtraLightning2H",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 5717,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning",
+     25,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "damage",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceFireRecoupLife1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 455,
+   "stats": [
+    [
+     "fire_damage_taken_goes_to_life_over_4_seconds_%",
+     26,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "elemental",
+    "fire"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceColdRecoupLife1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 456,
+   "stats": [
+    [
+     "cold_damage_taken_goes_to_life_over_4_seconds_%",
+     26,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "elemental",
+    "cold"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceLightningRecoupLife1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 454,
+   "stats": [
+    [
+     "lightning_damage_taken_goes_to_life_over_4_seconds_%",
+     26,
+     30
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "life",
+    "elemental",
+    "lightning"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssencePhysicalDamageTakenAsChaos1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "des Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 3121,
+   "stats": [
+    [
+     "physical_damage_taken_%_as_chaos",
+     10,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceAttackSkillLevel1H1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 144,
+   "stats": [
+    [
+     "attack_skill_gem_level_+",
+     2,
+     2
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceAttackSkillLevel2H1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 144,
+   "stats": [
+    [
+     "attack_skill_gem_level_+",
+     3,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attack"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceSpellSkillLevel1H1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 144,
+   "stats": [
+    [
+     "spell_skill_gem_level_+",
+     3,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceSpellSkillLevel2H1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 144,
+   "stats": [
+    [
+     "spell_skill_gem_level_+",
+     5,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster",
+    "gem"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceOnslaughtonKill1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 3443,
+   "stats": [
+    [
+     "local_chance_to_gain_onslaught_on_killing_blow_%",
+     20,
+     25
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "speed"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceManaCostReduction",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 181,
+   "stats": [
+    [
+     "base_mana_cost_efficiency_+%",
+     18,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceManaCostReduction2H",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 181,
+   "stats": [
+    [
+     "base_mana_cost_efficiency_+%",
+     28,
+     32
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssencePercentStrength1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 1340,
+   "stats": [
+    [
+     "strength_+%",
+     7,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attribute"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssencePercentDexterity1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 1341,
+   "stats": [
+    [
+     "dexterity_+%",
+     7,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attribute"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssencePercentIntelligence1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 1342,
+   "stats": [
+    [
+     "intelligence_+%",
+     7,
+     10
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "attribute"
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceReducedCriticalDamageAgainstYou1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 1292,
+   "stats": [
+    [
+     "base_self_critical_strike_multiplier_-%",
+     40,
+     50
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceGoldDropped1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 5725,
+   "stats": [
+    [
+     "gold_+%_from_enemies",
+     10,
+     15
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "EssenceAuraEffect1",
+   "name": "of the Essence",
+   "name_es": "de la esencia ",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 72,
+   "domain": 1,
+   "family": 537,
+   "stats": [
+    [
+     "aura_effect_+%",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
   },
   {
    "id": "AbyssModRadiusJewelPrefixDamageTakenRecoupLife",
@@ -168522,6 +175424,113 @@
    "desecrated": true
   },
   {
+   "id": "HandWrapsEssenceLightningRecoupLife1",
+   "name": "of the Essence",
+   "name_es": "de decaimiento",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 5781,
+   "stats": [
+    [
+     "deflected_hit_damage_taken_%_recouped_as_life",
+     12,
+     23
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "essence": true
+  },
+  {
+   "id": "HandWrapsEssenceGoldDropped1",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 5435,
+   "stats": [
+    [
+     "generate_x_charges_for_charms_per_minute",
+     8,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "charm"
+   ],
+   "essence": true
+  },
+  {
+   "id": "HandWrapsEssenceLocalRuneAndSoulCoreEffect1",
+   "name": "of the Essence",
+   "name_es": "de la esencia",
+   "name_pt": "da Essência",
+   "name_fr": "de l'Essence",
+   "name_de": "der Essenz",
+   "name_ru": "сущности",
+   "name_ja": "エッセンスの",
+   "name_ko": "- 에센스",
+   "name_th": "of the Essence",
+   "name_zh": "精髓之",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 1,
+   "family": 6076,
+   "stats": [
+    [
+     "generate_x_charges_for_life_flasks_per_minute",
+     8,
+     16
+    ],
+    [
+     "generate_x_charges_for_mana_flasks_per_minute",
+     8,
+     16
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "flask",
+    "resource",
+    "life",
+    "mana"
+   ],
+   "essence": true
+  },
+  {
    "id": "MinionDamage1",
    "name": "Hustler's",
    "name_es": "<if:MS>{del estafador}<elif:NP>{del estafador}",
@@ -174502,6 +181511,78 @@
     "caster",
     "speed"
    ]
+  },
+  {
+   "id": "ConvertedEssenceDamageasExtraChaos1",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 170,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_chaos",
+     15,
+     20
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
+  },
+  {
+   "id": "ConvertedEssenceDamageasExtraChaos2H",
+   "name": "Essences",
+   "name_es": "de esencias",
+   "name_pt": "Essências",
+   "name_fr": "Essences",
+   "name_de": "<if:MS>{Essenzberührter}<elif:FS>{Essenzberührte}<elif:NS>{Essenzberührtes}<elif:MP>{Essenzberührte}<elif:FP>{Essenzberührte}<elif:NP>{Essenzberührte}",
+   "name_ru": "<if:MS>{Сущностный}<elif:FS>{Сущностная}<elif:NS>{Сущностное}<elif:MP>{Сущностные}<elif:FP>{Сущностные}<elif:NP>{Сущностные}",
+   "name_ja": "エッセンス",
+   "name_ko": "에센스",
+   "name_th": "Essences",
+   "name_zh": "精髓",
+   "affix": "prefix",
+   "level": 72,
+   "domain": 1,
+   "family": 170,
+   "stats": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_chaos",
+     25,
+     33
+    ]
+   ],
+   "spawn": [
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "damage",
+    "chaos"
+   ],
+   "essence": true
   },
   {
    "id": "TimeInfluenceIncreasedDuration1",
