@@ -545,7 +545,6 @@
  "Equip": "Equipar",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "{0} itens anunciados ficaram de fora: o planejador não tem a base deles ou eles vão em outro espaço.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Nada anunciado corresponde. Tente outra liga, um preço maior ou o vendedor \"Qualquer\".",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Avaliado com cada item na build. Não contam: qualidade, runas, encantamentos e as linhas em cinza. Os requisitos não são verificados.",
  "Open the weighted search on the trade site": "Abrir a busca ponderada no site de troca",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "cada modificador ponderado pelo que vale para esta build, a busca que o Path of Building faz. O site só a executa quando você está conectado nele.",
  "One Hand Maces": "Maças de Uma Mão",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "Vazio (encaixe {0})",
  "Socket {0}": "engaste {0}",
  "Socket {0} of your {1}": "engaste {0} do seu equipamento: {1}",
- "Trade": "Loja"
+ "Trade": "Loja",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "Avaliado com cada item na build. Não contam: qualidade, runas, encantamentos e as linhas em cinza.",
+ "Usable at its level": "Usável pelo nível",
+ "Usable with its attributes": "Usável pelos atributos",
+ "Leaves out what the character cannot wear yet.": "Deixa de fora o que o personagem ainda não pode equipar.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "Ainda não usável: alcance o nível {0} (faltam {1} níveis).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Não usável: faltam {0} de {1} (exige {2}; você tem {3} sem o item equipado). Redistribua pontos da árvore passiva."
 }

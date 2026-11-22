@@ -545,7 +545,6 @@
  "Equip": "Équiper",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "{0} objets en vente ont été écartés : le planificateur ne connaît pas leur base ou ils vont dans un autre emplacement.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Rien en vente ne correspond. Essayez une autre ligue, un prix plus élevé ou le vendeur « Tous ».",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Évalués avec chaque objet placé sur le build. Non comptés : qualité, runes, enchantements et lignes en gris. Les prérequis ne sont pas vérifiés.",
  "Open the weighted search on the trade site": "Ouvrir la recherche pondérée sur le site d'échange",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "chaque modificateur pondéré selon ce qu'il vaut pour ce build, la recherche que fait Path of Building. Le site ne la lance que si vous y êtes connecté.",
  "One Hand Maces": "Masses à une main",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "Vide (châsse {0})",
  "Socket {0}": "châsse {0}",
  "Socket {0} of your {1}": "châsse {0} de votre équipement : {1}",
- "Trade": "Échange"
+ "Trade": "Échange",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "Évalués avec chaque objet placé sur le build. Non comptés : qualité, runes, enchantements et lignes en gris.",
+ "Usable at its level": "Utilisable à son niveau",
+ "Usable with its attributes": "Utilisable avec ses attributs",
+ "Leaves out what the character cannot wear yet.": "Écarte ce que le personnage ne peut pas encore porter.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "Pas encore utilisable : atteignez le niveau {0} (encore {1} niveaux).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Inutilisable : il manque {0} en {1} (requiert {2} ; vous avez {3} sans l'objet porté). Réattribuez des points de l'arbre passif."
 }

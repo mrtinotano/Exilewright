@@ -7,8 +7,7 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
-import { attributes } from './calc.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, modsOf } from './items.js';
+import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, modsOf, unmet } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
@@ -25,7 +24,7 @@ const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>
 const chk = (k, on, text, tip = '') => `<label class="chk" title="${esc(tip)}"><input type="checkbox" data-c="${k}"${on ? ' checked' : ''}> ${esc(text)}</label>`;
 
 export function initOpt(el, ctx) {
-  const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: '', how: 'best', like: {},
+  const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: '', how: 'best', like: {}, reqLvl: true, reqAttr: true,
     ...JSON.parse(localStorage.getItem(KEY) || '{}') };
   if (!OBJECTIVES[S.key]) S.key = 'dps';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
@@ -155,8 +154,14 @@ export function initOpt(el, ctx) {
   }
   const valueOf = (b, g, key) => items => { const z = { ...b, items }; return g || !OBJECTIVES[key].skill ? score(key, z, ctx.sumOf(z), g) : null; };
   const levelFor = b => Math.max(0, Math.min(100, typed.lvl ?? (b.level > 1 ? b.level : 0)));
-  // what the character could wear in `slot`: its level and its attributes without the item worn there
-  const reqFor = (b, slot) => { const lvl = levelFor(b), { [slot]: _, ...rest } = b.items || {}; return lvl ? { lvl, ...attributes(ctx.sumOf({ ...b, items: rest }), b.asc) } : null; };
+  // the character without the item worn in `slot` (its attributes, the tree's increased / reduced requirements); null:
+  // no character yet, or gloves whose requirements the tree ignores
+  const without = (b, slot) => { const { [slot]: _, ...rest } = b.items || {}, s = b.level > 1 ? ctx.snap({ ...b, items: rest }) : null; return s?.glovesFree && slot === 'gloves' ? null : s; };
+  // what the character could wear in `slot` (use: { lvl, attr }, the checks ticked): its level, and its attributes as the
+  // most the item may ask (the tree's increased / reduced requirements counted)
+  const reqFor = (b, slot, use) => { const lvl = levelFor(b), s = use.attr && without(b, slot), k = 1 + (s?.reqPct || 0) / 100;
+    return { ...use.lvl && lvl && { lvl }, ...s && k > 0 && Object.fromEntries(['str', 'dex', 'int'].map(a => [a, Math.floor((s[a] || 0) / k)])) }; };
+  const useNow = () => ({ lvl: S.reqLvl, attr: S.reqAttr });
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
   const priceNow = () => ({ max: +S.max || 0, currency: CURRENCY.includes(S.currency) ? S.currency : '' });
@@ -178,7 +183,7 @@ export function initOpt(el, ctx) {
       .then(() => { if (net !== me || el.hidden) return; render(); });
   }
   async function runGear() {
-    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel), league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot), state = STATUS[S.state] ? S.state : 'securable';
+    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel), league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot, useNow()), state = STATUS[S.state] ? S.state : 'securable';
     const me = busy = { text: t('Searching the trade site ({0} of {1})…', 1, '…') };
     render();
     try {
@@ -193,7 +198,7 @@ export function initOpt(el, ctx) {
   const likeOf = slot => S.like[slot] ||= [];
   const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, kind, text, value }) => ({ hash, en, kind, text, value: Math.round(value * 100) / 100 }));
   async function runLike() {
-    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot), state = STATUS[S.state] ? S.state : 'securable';
+    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot, useNow()), state = STATUS[S.state] ? S.state : 'securable';
     const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => wornLines(worn).some(w => w.hash === l.hash && w.en === l.en));
     const me = busy = { text: t('Searching the trade site ({0} of {1})…', 1, 1) };
     render();
@@ -213,7 +218,7 @@ export function initOpt(el, ctx) {
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
       .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
-    const onSite = l => siteQuery(league, listingQuery(l, hit.state));
+    const onSite = l => siteQuery(league, listingQuery(l, hit.state)), lvl = b.level > 1 ? b.level : 101, s = without(b, sel.slot);
     const card = ({ l, i, v }) => {
       const off = new Set(l.missed);
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
@@ -221,7 +226,7 @@ export function initOpt(el, ctx) {
         ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
         <div class="gfoot"><div class="gval">${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</div>
           <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
-          ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}
+          ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}
           <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Trade')}</a></div></div></div>`;
     };
     const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, req: hit.req, state: hit.state });
@@ -233,7 +238,7 @@ export function initOpt(el, ctx) {
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       ${hit.like ? `<a class="golink" href="${esc(siteQuery(league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
-      ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.')}</p>` : ''}
+      ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.')}</p>` : ''}
       ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
   }
   // the modifiers picked for the slot: each with the least it must have, a list to add more, and the worn item's to start from
@@ -262,6 +267,7 @@ export function initOpt(el, ctx) {
       <div class="optrow"><label>${t('Price up to')} <input type="number" min="0" value="${esc(S.max)}" data-s="max" placeholder="—"></label>
         <select data-s="currency" title="${esc(t('Currency of the price'))}">${CURRENCY.map(c => opt(c, moneyName(c), c === priceNow().currency)).join('')}</select>
         <label title="${esc(t('Leaves out what the character cannot wear yet. Empty: any level.'))}">${t('Required level up to')} <input type="number" min="0" max="100" value="${levelFor(b) || ''}" data-n="lvl" placeholder="—"></label>
+        ${chk('reqLvl', S.reqLvl, t('Usable at its level'), t('Leaves out what the character cannot wear yet.'))}${chk('reqAttr', S.reqAttr, t('Usable with its attributes'), t('Leaves out what the character cannot wear yet.'))}
         <button class="optgo" data-do="${like ? 'like' : 'gear'}"${blocked || busy || (like ? !likeOf(sel.slot).length : !wants.length) || !net?.leagues ? ' disabled' : ''}>${t('Search')}</button></div>
       ${like ? likeHtml(b, sel) : ''}
       ${net?.offline ? `<p class="opterr">${esc(errText({ kind: 'offline' }))}</p>` : ''}
@@ -339,11 +345,11 @@ export function initOpt(el, ctx) {
   render.price = priceHtml;
   // from the Equipment tab: items better than the one worn in `slot`, up to that price (trade.js findBetter), in the
   // league and with the sellers picked here. -> its answer and the league, or { error } (the text to show)
-  render.better = async (slot, max, currency, base, skip, tick) => {
+  render.better = async (slot, max, currency, base, skip, use, tick) => {
     const b = ctx.build();
     try {
       const ls = net?.leagues?.length ? net.leagues : await leagues(), league = ls.includes(S.league) ? S.league : ls[0];
-      const res = await findBetter({ league, item: b.items[slot], base, skip, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, req: reqFor(b, slot),
+      const res = await findBetter({ league, item: b.items[slot], base, skip, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, req: reqFor(b, slot, use),
         state: STATUS[S.state] ? S.state : 'securable', tick: (text, ...a) => tick(t(text, ...a)) });
       return { ...res, league };
     } catch (e) { if (!e.kind) throw e; return { error: errText(e) }; }

@@ -126,7 +126,7 @@ const propOf = w => { if (!w.local) return null; for (const [re, key] of PROP) i
 
 // req: { lvl, str, dex, int } the character has, to leave out what it cannot wear yet
 const filters = (cls, price, req) => ({ type_filters: { filters: { category: { option: CATEGORY[cls] } } },
-  ...(req?.lvl > 0 && { req_filters: { filters: Object.fromEntries(Object.entries(req).map(([k, n]) => [k, { max: +n }])) } }),
+  ...(req && Object.keys(req).length && { req_filters: { filters: Object.fromEntries(Object.entries(req).map(([k, n]) => [k, { max: +n }])) } }),
   ...(price?.max > 0 && { trade_filters: { filters: { price: { max: +price.max, ...(price.currency && { option: price.currency }) } } } }) });
 // The searches an anonymous visitor can make, best first (at most `n`): the most of one good modifier (with at least
 // one more of the others), or the highest damage / defence of the item when its local modifiers are what counts.
@@ -165,13 +165,15 @@ const KINDS = { implicitMods: 'implicit', explicitMods: 'explicit', fracturedMod
 const linesOf = (it, key) => (it[key] || []).map(m => typeof m === 'string' ? { text: plain(m), kind: KINDS[key], mods: [] } : { text: plain(m.description || ''), kind: KINDS[key],
   hash: +/(\d+)$/.exec(m.hash || '')?.[1] || 0, mods: (m.mods || []).map(x => ({ name: x.name, level: x.level, mags: (x.magnitudes || []).map(g => [+g.min, +g.max]) })) });
 // -> { id, name, base, rarity, mods: [text], extra: [runes and enchants, never counted], price: { amount, currency }, seller,
-//      item (for the build, null when the app does not have its base), slots, missed: [lines not counted] }
+//      item (for the build, null when the app does not have its base), slots, missed: [lines not counted], req: { lvl, str, dex, int } it asks }
+const REQ = { 62: 'lvl', 63: 'str', 64: 'dex', 65: 'int' };   // the site's requirement types
 export function readListing(r) {
   const it = r.item || {}, lines = Object.keys(KINDS).flatMap(k => linesOf(it, k)), name = plain(it.name || ''), base = plain(it.baseType || it.typeLine || '');
   const extra = ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), p = tradeItem({ name, base, lines, runes: extra });
   return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), stats: [...new Set(lines.filter(l => l.hash).map(l => `${l.kind}.stat_${l.hash}`))], extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
-    item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [], sockets: (it.sockets || []).length };
+    item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [], sockets: (it.sockets || []).length,
+    req: Object.fromEntries((it.requirements || []).map(q => [REQ[q.type], parseInt(q.values?.[0]?.[0])]).filter(([k, n]) => k && n > 0)) };
 }
 
 // ---------- the price check: what an item like this one is worth

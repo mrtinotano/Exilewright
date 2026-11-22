@@ -545,7 +545,6 @@
  "Equip": "สวมใส่",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "ไอเทมที่ลงขาย {0} ชิ้นถูกตัดออก: ตัววางแผนไม่มีเบสของมันหรือมันใส่ในช่องอื่น",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "ไม่มีของที่ลงขายตรงกัน ลองลีกอื่น ราคาสูงขึ้น หรือผู้ขาย «ทั้งหมด»",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "ประเมินโดยใส่แต่ละไอเทมในบิลด์ ไม่นับ: ค่าคุณภาพ อักขระ เอนแชนต์ และบรรทัดสีเทา ไม่ได้ตรวจสอบความต้องการ",
  "Open the weighted search on the trade site": "เปิดการค้นหาแบบถ่วงน้ำหนักบนเว็บเทรด",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "ม็อดทุกตัวถ่วงน้ำหนักตามค่าที่มีต่อบิลด์นี้ เป็นการค้นหาแบบเดียวกับที่ Path of Building ทำ เว็บจะรันให้เมื่อคุณล็อกอินที่นั่นเท่านั้น",
  "One Hand Maces": "กระบองมือเดียว",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "ว่าง (ช่อง {0})",
  "Socket {0}": "ช่อง {0}",
  "Socket {0} of your {1}": "ช่อง {0} ของอุปกรณ์คุณ: {1}",
- "Trade": "ซื้อขาย"
+ "Trade": "ซื้อขาย",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "ประเมินโดยใส่แต่ละไอเทมในบิลด์ ไม่นับ: ค่าคุณภาพ อักขระ เอนแชนต์ และบรรทัดสีเทา",
+ "Usable at its level": "ใช้ได้ตามเลเวล",
+ "Usable with its attributes": "ใช้ได้ตามค่าสถานะ",
+ "Leaves out what the character cannot wear yet.": "ตัดสิ่งที่ตัวละครยังสวมใส่ไม่ได้ออก",
+ "Not usable yet: reach level {0} ({1} levels to go).": "ยังใช้ไม่ได้: ต้องถึงเลเวล {0} (อีก {1} เลเวล)",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "ใช้ไม่ได้: ขาด {1} อีก {0} (ต้องการ {2}; คุณมี {3} เมื่อไม่สวมไอเทมเดิม) รีสเปคแผนผังพาสซีฟ"
 }

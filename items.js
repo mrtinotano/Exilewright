@@ -652,6 +652,15 @@ export function modDiff(old, item) {
 const DOLL = ['v v . . . . u u', 'w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
 const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
 const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shield', 'Energy Shield']];   // an armour piece's own defences (local())
+const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
+// why the character cannot wear a listed item yet (l.req, from the site): the levels to go, and each attribute short of
+// it with the tree's increased / reduced requirements (s: the character's snapshot without the item worn there; null: not asked)
+export function unmet(l, lvl, s) {
+  const r = l.req || {}, out = r.lvl > lvl ? [t('Not usable yet: reach level {0} ({1} levels to go).', r.lvl, r.lvl - lvl)] : [];
+  for (const k of s ? Object.keys(ATTR) : []) { const need = Math.floor((r[k] || 0) * Math.max(0, 1 + (s.reqPct || 0) / 100)), have = s[k] || 0;
+    if (need > have) out.push(t('Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.', need - have, t(ATTR[k]), need, have)); }
+  return out;
+}
 const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
@@ -717,7 +726,6 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
     const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
     const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * Math.max(0, 1 + (rp + (without?.reqPct || 0)) / 100))]).filter(([k, x]) => (without?.[k] || 0) < x);
-    const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), without?.[k] || 0)).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
@@ -731,11 +739,11 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
           return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
-        </div><div class="likego"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
+        </div><div class="likego"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likelvl"${buy.lvl ? ' checked' : ''}> ${t('Usable at its level')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likeattr"${buy.attr ? ' checked' : ''}> ${t('Usable with its attributes')}</label><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';
-  const buy = { max: '', cur: '', base: false, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
+  const buy = { max: '', cur: '', base: false, lvl: true, attr: true, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
@@ -745,7 +753,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     const { text, res } = better;
     if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
-    const worn = getBuild().items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {};
+    const B = getBuild(), worn = B.items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {}, { [slot]: _, ...rest } = B.items || {};
+    const lvl = B.level > 1 ? B.level : 101, s0 = B.level > 1 ? snapOf(rest) : null, s = s0?.glovesFree && slotType(slot) === 'gloves' ? null : s0;   // no character yet: nothing to check
     return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {}, rows = gain(slot, { ...l.item, extra: worn?.extra || {} }, 'buy' + i);
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
@@ -765,7 +774,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const sock = alone.join('')
         + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button><a class="buysite" href="${esc(trade.item(res.league, l, res.body?.query?.status?.option))}" target="_blank" rel="noopener">${t('Trade')}</a></div>
-        <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}</span></div>`; }).join('')
+        <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
@@ -841,6 +850,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'likemax') { buy.max = t.value; return; }
     if (t.dataset.act === 'likecur') { buy.cur = t.value; return; }
     if (t.dataset.act === 'likebase') { buy.base = t.checked; return; }
+    if (t.dataset.act === 'likelvl' || t.dataset.act === 'likeattr') { buy[t.dataset.act.slice(4)] = t.checked; return; }
     if (t.dataset.act === 'likeline') { buy.skip[t.checked ? 'delete' : 'add'](t.dataset.k); return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
@@ -868,7 +878,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'like') {
       const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
       render();
-      trade.find(me.slot, buy.max, buy.cur, buy.base, [...buy.skip], text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
+      trade.find(me.slot, buy.max, buy.cur, buy.base, [...buy.skip], { lvl: buy.lvl, attr: buy.attr }, text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
         .then(res => { if (better === me) { me.res = res; render(); } });
       return;
     }

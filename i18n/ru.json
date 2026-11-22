@@ -545,7 +545,6 @@
  "Equip": "Надеть",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "Пропущено выставленных предметов: {0} — у планировщика нет их базы или они идут в другую ячейку.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Ничего подходящего не выставлено. Попробуйте другую лигу, более высокую цену или продавца «Любой».",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Оценено с каждым предметом на билде. Не учитываются: качество, руны, зачарования и строки серым. Требования не проверяются.",
  "Open the weighted search on the trade site": "Открыть взвешенный поиск на торговом сайте",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "каждый модификатор взвешен по его ценности для этого билда — такой поиск делает Path of Building. Сайт выполняет его, только если вы там вошли в учётную запись.",
  "One Hand Maces": "Одноручные булавы",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "Пусто (гнездо {0})",
  "Socket {0}": "гнездо {0}",
  "Socket {0} of your {1}": "гнездо {0} вашего снаряжения: {1}",
- "Trade": "Торговля"
+ "Trade": "Торговля",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "Оценено с каждым предметом на билде. Не учитываются: качество, руны, зачарования и строки серым.",
+ "Usable at its level": "Доступно по уровню",
+ "Usable with its attributes": "Доступно по характеристикам",
+ "Leaves out what the character cannot wear yet.": "Исключает то, что персонаж ещё не может надеть.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "Пока нельзя использовать: достигните уровня {0} (осталось {1} ур.).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Нельзя использовать: не хватает {0} ({1}; требуется {2}, у вас {3} без надетого предмета). Перераспределите очки дерева пассивных умений."
 }

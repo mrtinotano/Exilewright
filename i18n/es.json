@@ -545,7 +545,6 @@
  "Equip": "Equipar",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "{0} objetos a la venta se han dejado fuera: el planificador no tiene su base o van en otra pieza.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "No hay nada a la venta que encaje. Prueba otra liga, un precio más alto o vendedor «Cualquiera».",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Valorados con cada objeto puesto en la build. No se cuentan: calidad, runas, encantamientos ni las líneas en gris. No se comprueban los requisitos.",
  "Open the weighted search on the trade site": "Abrir la búsqueda ponderada en la tienda",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "cada modificador ponderado por lo que vale para esta build, la búsqueda que hace Path of Building. El sitio solo la ejecuta si has iniciado sesión allí.",
  "One Hand Maces": "Mazas a una mano",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "Vacío (hueco {0})",
  "Socket {0}": "hueco {0}",
  "Socket {0} of your {1}": "hueco {0} de tu equipo: {1}",
- "Trade": "Tienda"
+ "Trade": "Tienda",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "Valorados con cada objeto puesto en la build. No se cuentan: calidad, runas, encantamientos ni las líneas en gris.",
+ "Usable at its level": "Usable por nivel",
+ "Usable with its attributes": "Usable por atributos",
+ "Leaves out what the character cannot wear yet.": "Deja fuera lo que el personaje aún no puede equipar.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "No la puedes usar aún: llega al nivel {0} (te faltan {1} niveles).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "No la puedes usar: te faltan {0} de {1} (pide {2}; tienes {3} sin la pieza que llevas). Redistribuye puntos del árbol de pasivas."
 }

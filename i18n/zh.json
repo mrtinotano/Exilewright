@@ -545,7 +545,6 @@
  "Equip": "裝備",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "已略過 {0} 件上架物品：規劃器沒有其基底，或它們屬於其他欄位。",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "沒有符合的上架物品。請嘗試其他聯盟、更高的價格或「任何」賣家。",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "以每件物品裝在配置上的結果評分。未計入：品質、符文、附魔與灰色詞綴。不檢查需求。",
  "Open the weighted search on the trade site": "在交易網站上開啟加權搜尋",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "每個詞綴都依其對此配置的價值加權，即 Path of Building 所做的搜尋。網站只在你登入時才會執行。",
  "One Hand Maces": "單手錘",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "空（插槽 {0}）",
  "Socket {0}": "插槽 {0}",
  "Socket {0} of your {1}": "你的装备的插槽 {0}：{1}",
- "Trade": "交易"
+ "Trade": "交易",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "以每件物品裝在配置上的結果評分。未計入：品質、符文、附魔與灰色詞綴。",
+ "Usable at its level": "等級可用",
+ "Usable with its attributes": "屬性可用",
+ "Leaves out what the character cannot wear yet.": "排除角色尚無法裝備的物品。",
+ "Not usable yet: reach level {0} ({1} levels to go).": "尚無法使用：需達到等級 {0}（還差 {1} 級）。",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "無法使用：{1}不足 {0}（需求 {2}；不含身上這件時你有 {3}）。請重新分配天賦樹點數。"
 }

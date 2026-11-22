@@ -545,7 +545,6 @@
  "Equip": "Ausrüsten",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "{0} angebotene Gegenstände wurden ausgelassen: Der Planer kennt ihre Basis nicht oder sie gehören in einen anderen Platz.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "Nichts Angebotenes passt. Versuche eine andere Liga, einen höheren Preis oder \"Beliebig\" als Verkäufer.",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "Bewertet mit jedem Gegenstand im Build. Nicht gezählt: Qualität, Runen, Verzauberungen und die grauen Zeilen. Anforderungen werden nicht geprüft.",
  "Open the weighted search on the trade site": "Gewichtete Suche auf der Handelsseite öffnen",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "jeder Modifikator gewichtet nach seinem Wert für diesen Build, die Suche, die Path of Building macht. Die Seite führt sie nur aus, wenn du dort angemeldet bist.",
  "One Hand Maces": "Einhandstreitkolben",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "Leer (Sockel {0})",
  "Socket {0}": "Sockel {0}",
  "Socket {0} of your {1}": "Sockel {0} deines Gegenstands: {1}",
- "Trade": "Handel"
+ "Trade": "Handel",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "Bewertet mit jedem Gegenstand im Build. Nicht gezählt: Qualität, Runen, Verzauberungen und die grauen Zeilen.",
+ "Usable at its level": "Auf seiner Stufe nutzbar",
+ "Usable with its attributes": "Mit seinen Attributen nutzbar",
+ "Leaves out what the character cannot wear yet.": "Lässt weg, was der Charakter noch nicht tragen kann.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "Noch nicht nutzbar: erreiche Stufe {0} (noch {1} Stufen).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Nicht nutzbar: {0} {1} fehlen (benötigt {2}; du hast {3} ohne den getragenen Gegenstand). Verteile Punkte im Passivbaum um."
 }

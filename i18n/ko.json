@@ -545,7 +545,6 @@
  "Equip": "장착",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "매물 {0}개 제외됨: 플래너에 베이스가 없거나 다른 슬롯에 들어갑니다.",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "일치하는 매물이 없습니다. 다른 리그, 더 높은 가격 또는 \"전체\" 판매자로 시도하세요.",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "각 아이템을 빌드에 장착한 상태로 평가합니다. 제외: 퀄리티, 룬, 인챈트, 회색 줄. 요구 사항은 확인하지 않습니다.",
  "Open the weighted search on the trade site": "거래 사이트에서 가중치 검색 열기",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "모든 옵션에 이 빌드에서의 가치만큼 가중치를 둔 검색으로, Path of Building이 만드는 검색입니다. 사이트에 로그인한 경우에만 실행됩니다.",
  "One Hand Maces": "한손 철퇴",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "비어 있음 (홈 {0})",
  "Socket {0}": "소켓 {0}",
  "Socket {0} of your {1}": "내 장비의 소켓 {0}: {1}",
- "Trade": "거래"
+ "Trade": "거래",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "각 아이템을 빌드에 장착한 상태로 평가합니다. 제외: 퀄리티, 룬, 인챈트, 회색 줄.",
+ "Usable at its level": "레벨로 사용 가능",
+ "Usable with its attributes": "능력치로 사용 가능",
+ "Leaves out what the character cannot wear yet.": "캐릭터가 아직 착용할 수 없는 것을 제외합니다.",
+ "Not usable yet: reach level {0} ({1} levels to go).": "아직 사용할 수 없음: 레벨 {0} 달성 필요 ({1}레벨 남음).",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "사용할 수 없음: {1} {0} 부족 (요구 {2}, 착용 중인 아이템 없이 {3}). 패시브 트리를 재분배하세요."
 }

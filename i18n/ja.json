@@ -545,7 +545,6 @@
  "Equip": "装備",
  "{0} listed items were left out: the planner does not have their base or they go in another slot.": "出品アイテム{0}個を除外しました: プランナーにベースがないか、別のスロットのアイテムです。",
  "Nothing listed matches. Try another league, a higher price or \"Any\" seller.": "該当する出品がありません。別のリーグ、高い価格、または出品者「すべて」を試してください。",
- "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey. Requirements are not checked.": "各アイテムをビルドに装備して評価。品質、ルーン、エンチャント、灰色の行は含みません。要求値は確認しません。",
  "Open the weighted search on the trade site": "トレードサイトで重み付け検索を開く",
  "every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.": "各モディファイアをこのビルドでの価値で重み付けする、Path of Building と同じ検索です。サイトにログインしている場合のみ実行されます。",
  "One Hand Maces": "片手メイス",
@@ -917,5 +916,11 @@
  "Empty (Socket {0})": "空き（ソケット {0}）",
  "Socket {0}": "ソケット{0}",
  "Socket {0} of your {1}": "あなたの装備のソケット{0}: {1}",
- "Trade": "トレード"
+ "Trade": "トレード",
+ "Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.": "各アイテムをビルドに装備して評価。品質、ルーン、エンチャント、灰色の行は含みません。",
+ "Usable at its level": "レベルで装備可能",
+ "Usable with its attributes": "能力値で装備可能",
+ "Leaves out what the character cannot wear yet.": "キャラクターがまだ装備できないものを除外します。",
+ "Not usable yet: reach level {0} ({1} levels to go).": "まだ使用できません: レベル{0}に到達してください (あと{1}レベル)。",
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "使用できません: {1}が{0}不足しています (要求{2}、装備中のアイテムなしで{3})。パッシブツリーを振り直してください。"
 }
