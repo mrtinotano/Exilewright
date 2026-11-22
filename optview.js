@@ -195,7 +195,7 @@ export function initOpt(el, ctx) {
   }
   // the search for items with the modifiers picked (or the worn item's: one like it or better), cheapest first
   const likeOf = slot => S.like[slot] ||= [];
-  const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, kind, text, value }) => ({ hash, en, kind, text, value: Math.round(value * 100) / 100 }));
+  const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, text, value }) => ({ hash, en, text, value: Math.round(value * 100) / 100 }));
   async function runLike() {
     const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot, useNow()), state = STATUS[S.state] ? S.state : 'securable';
     const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => wornLines(worn).some(w => w.hash === l.hash && w.en === l.en));

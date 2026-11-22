@@ -536,7 +536,8 @@ export function affixLines(cls, first) {
     for (const a of top.values()) {
       const tr = TRADE[a.id]; if (tr?.length !== 2) continue;
       const [hash, ...shown] = tr[1], vals = fixVals(a.stats), his = shown.filter((_, i) => i % 2).map(Math.abs);
-      const o = out.get(hash) || out.set(hash, { hash, text: statLines(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '), words: statLinesEn(Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]))).join(' / '),
+      const on = Object.fromEntries(a.stats.map(([id], k) => [id, vals[k]]));
+      const o = out.get(hash) || out.set(hash, { hash, text: statLines(on).join(' / '), words: statLinesEn(on).join(' / '),
         local: a.stats.some(([id]) => id.startsWith('local_')), stats: a.stats.map(([id]) => id), roll: his.reduce((x, y) => x + y, 0) / (his.length || 1), tries: [] }).get(hash);
       const bare = make(base.name);
       o.tries.push({ bare, item: { ...bare, mods: [{ id: a.id, values: vals }] } });
