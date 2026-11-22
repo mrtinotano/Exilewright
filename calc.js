@@ -476,6 +476,9 @@ export function character(b, sum) {
   const HW = pct('hand_wraps_evasion_rating_and_energy_shield_+%_final'); if (HW !== 1) { c.evasion = Math.round(c.evasion * HW); c.evadePct = evadeChance(c.evasion, lvl); c.es = Math.round(c.es * HW); }
   // Queen of the Forest: its movement speed alone, 25% and 1% per so much evasion, up to 75% (its text's numbers)
   const QF = sum['movement_speed_is_only_base_+1%_per_x_evasion_rating']; if (QF) c.move = Math.min(75, 25 + Math.floor(c.evasion / QF));
+  // Decree of Loyalty: 1% of maximum life to twice as much armour per 1% chaos resistance above 0%
+  const DL = c.life != null && Math.min(100, Math.max(0, c.res.chaos.capped) * v(sum, 'maximum_life_%_to_convert_to_twice_as_much_armour_per_1%_chaos_resistance'));
+  if (DL) { const k = Math.round(c.life * DL / 100); c.life -= k; c.armour += 2 * k; c.armourPct = armourReduction(c.armour, lvl); }
   const GS = sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']; if (GS) c.es = Math.round(at.str * GS / 100);
   // thorns from your maximum life (Cat O' Nine Tails: physical) and mana (Icetomb: cold), the scene's of its current maximum
   c.thorns.life = ['gain_minimum_physical_thorns_damage_equal_to_x%_of_maximum_life', 'gain_maximum_physical_thorns_damage_equal_to_x%_of_maximum_life'].map(k => v(sum, k));
@@ -606,7 +609,10 @@ export function recovery(c, sum) {
     // the Arc's less damage from hits (every other 5 s); fire resistance and evasion on Low Life; more armour per 1% of your
     // energy shield (The Mutable Star); on casting a spell life leeched or sacrificed for energy shield, on attacking for
     // Runic Ward (Lifesprig, Demon Stitcher); Guard from a mana flask (Glowswarm); damage taken per elemental ailment type (Yoke of Suffering)
-    uDef: { resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
+    // The Unleashed's hit damage bypassing energy shield below half of it, Forgotten Warden's deflection per 50 missing
+    // energy shield, The Black Doubt's mana sacrificed for life off full life (a second), ailments you receive when hit (Coat of Red, Apep's Supremacy, The Infinite Pursuit)
+    uDef: { bypass: v(sum, 'hit_damage_bypass_energy_shield_%_when_below_half_energy_shield'), deflMissing: v(sum, '+_deflection_rating_per_50_missing_maximum_energy_shield'), doubt: v(sum, 'unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es'),
+      recvBleed: v(sum, 'receive_bleeding_chance_%_when_hit'), recvPoison: v(sum, 'chance_to_be_poisoned_%'), recvAil: 1 + v(sum, 'chance_to_be_inflicted_with_an_ailment_+%') / 100, resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
       rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
       beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
       esArmour: v(sum, 'armour_+%_final_vs_hits_per_1%_current_energy_shield'), spellLeech: v(sum, 'life_leech_%_maximum_life_on_spell_cast'), spellES: v(sum, 'sacrifice_%_maximum_life_to_gain_as_es_on_spell_cast'),
@@ -1011,6 +1017,8 @@ export function skill(g, b, treeGear) {
   // and Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
   // and less cost when blue supports are the most; Lich: more mana cost with no maximum energy shield
   for (const x of [g.add, gemlingOf(g, treeGear, b)]) if (x) { treeGear = { ...treeGear }; for (const [k, n] of Object.entries(x)) treeGear[k] = (treeGear[k] || 0) + n; }
+  const LR = treeGear['light_radius_additive_modifiers_apply_to_area_%_value'];   // Cornathaum: increased Light Radius as area of effect at its share
+  if (LR) treeGear = { ...treeGear, 'base_skill_area_of_effect_+%': v(treeGear, 'base_skill_area_of_effect_+%') + v(treeGear, 'light_radius_+%') * LR / 100 };
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)

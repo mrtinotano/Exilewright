@@ -145,7 +145,7 @@ export const playerHitChance = (accuracy, evasion) => !evasion ? 100 : !accuracy
 // fraction of a physical hit that armour removes
 export const armourCut = (armour, raw, cap) => armour > 0 && raw > 0 ? Math.min(cap / 100, armour / (armour + raw * 10)) : 0;
 // deflection rating of the character c (calc.js character(), its armour and evasion as they are now)
-export const deflection = c => (c.armour * c.deflect.arm + (c.evasion || 0) * c.deflect.eva) / 100 * c.deflect.inc;
+export const deflection = c => ((c.armour * c.deflect.arm + (c.evasion || 0) * c.deflect.eva) / 100 + (c.deflect.flat || 0)) * c.deflect.inc;   // flat: Forgotten Warden's
 // one damage type of a hit against the character c (calc.js character()); returns what gets through
 // c.takenAs: shares of a type's damage taken as another ("Physical damage from Hits taken as Fire"), each part
 // mitigated as its new type. note: armour then counts against each part, not the whole hit
