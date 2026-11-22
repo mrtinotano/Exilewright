@@ -124,31 +124,31 @@ const PROP = [[/local_.*physical_damage(?!_reduction)/, 'pdps'], [/local_.*(fire
   [/physical_damage_reduction_rating|armour/, 'ar'], [/evasion/, 'ev'], [/energy_shield/, 'es']];
 const propOf = w => { if (!w.local) return null; for (const [re, key] of PROP) if (w.stats.some(id => re.test(id))) return key; return null; };
 
-// level: the character's, to leave out what it cannot wear yet
-const filters = (cls, price, level) => ({ type_filters: { filters: { category: { option: CATEGORY[cls] } } },
-  ...(level > 0 && { req_filters: { filters: { lvl: { max: +level } } } }),
+// req: { lvl, str, dex, int } the character has, to leave out what it cannot wear yet
+const filters = (cls, price, req) => ({ type_filters: { filters: { category: { option: CATEGORY[cls] } } },
+  ...(req?.lvl > 0 && { req_filters: { filters: Object.fromEntries(Object.entries(req).map(([k, n]) => [k, { max: +n }])) } }),
   ...(price?.max > 0 && { trade_filters: { filters: { price: { max: +price.max, ...(price.currency && { option: price.currency }) } } } }) });
 // The searches an anonymous visitor can make, best first (at most `n`): the most of one good modifier (with at least
 // one more of the others), or the highest damage / defence of the item when its local modifiers are what counts.
-export function plans({ cls, wants, price, level, state = 'securable', n = 3 }) {
+export function plans({ cls, wants, price, req, state = 'securable', n = 3 }) {
   const out = new Map();
   for (const w of wants) {
     const prop = propOf(w), key = prop || (w.id && 'stat.' + w.id);
     if (!key || out.has(key)) continue;
     const others = wants.filter(o => o.id && o !== w && !propOf(o)).slice(0, 8);
     const stats = prop ? [] : [{ type: 'and', filters: [{ id: w.id }] }, ...others.length ? [{ type: 'count', value: { min: 1 }, filters: others.map(o => ({ id: o.id })) }] : []];
-    out.set(key, { key, by: prop ? null : w, prop, gain: w.gain, body: { query: { status: { option: state }, stats, filters: filters(cls, price, level) }, sort: { [key]: 'desc' } } });
+    out.set(key, { key, by: prop ? null : w, prop, gain: w.gain, body: { query: { status: { option: state }, stats, filters: filters(cls, price, req) }, sort: { [key]: 'desc' } } });
     if (out.size >= n) break;
   }
   return [...out.values()];
 }
 // The search Path of Building makes: every modifier weighted by what one point of it is worth, best total first.
 // The site only runs it for logged-in users.
-export function weighted({ cls, wants, price, level, state = 'securable' }) {
+export function weighted({ cls, wants, price, req, state = 'securable' }) {
   const list = wants.filter(w => w.id && w.roll > 0).slice(0, 30);
   if (!list.length) return null;
   const top = Math.max(...list.map(w => w.gain / w.roll));
-  return { query: { status: { option: state }, filters: filters(cls, price, level),
+  return { query: { status: { option: state }, filters: filters(cls, price, req),
     stats: [{ type: 'weight', value: { min: 1 }, filters: list.map(w => ({ id: w.id, value: { weight: +(100 * w.gain / w.roll / top).toPrecision(3) } })) }] }, sort: { 'statgroup.0': 'desc' } };
 }
 export const siteLink = (league, queryId, bulk) => (bulk ? SITE.replace('/search/', '/exchange/') : SITE) + encodeURIComponent(league) + (queryId ? '/' + queryId : '');
@@ -362,8 +362,8 @@ export async function priceOf({ league, r, text = '', state = 'available', near 
 // Runs the searches, reads the first `per` items of each and rates them: value(items) with the item in `slot`.
 // tick(text key, args): progress. -> { found: [{ ...listing, value, plan }] best first, searches: [{ plan, id, total }],
 // unread (listed items the app has no base for), errors: [TradeError] }
-export async function findGear({ league, cls, slot, items, value, wants, price, level, state, per = 10, tick }) {
-  const todo = plans({ cls, wants, price, level, state }), out = { found: [], searches: [], unread: 0, errors: [] }, seen = new Set();
+export async function findGear({ league, cls, slot, items, value, wants, price, req, state, per = 10, tick }) {
+  const todo = plans({ cls, wants, price, req, state }), out = { found: [], searches: [], unread: 0, errors: [] }, seen = new Set();
   for (const plan of todo) {
     tick?.('Searching the trade site ({0} of {1})…', out.searches.length + out.errors.length + 1, todo.length);
     if (!await search(out, seen, { league, slot, items, value, per, tick }, plan) && out.errors.at(-1)?.kind !== 'site') break;   // the site turned this search down: the others may still run
@@ -393,10 +393,10 @@ const fewer = stats => { const n = stats[0]?.filters.length || 0; return [n - 1,
 const atLeast = (stats, k) => [{ type: 'count', value: { min: k }, filters: stats[0].filters }];
 console.assert(JSON.stringify(fewer([{ filters: [1, 2, 3, 4, 5, 6] }])) === '[5,4]' && fewer([{ filters: [1, 2] }]).length === 0, 'fewer');
 const lineKey = l => l.hash ?? 'd:' + l.en;
-export async function findBetter({ league, item, base, skip = [], price, level, state, tick }) {   // skip: lines left out (lineKey)
+export async function findBetter({ league, item, base, skip = [], price, req, state, tick }) {   // skip: lines left out (lineKey)
   const { stats, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
   const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
-    stats, filters: filters(classOf(item), price, level) }, sort: DEAREST };
+    stats, filters: filters(classOf(item), price, req) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
   // those with every line first; fewer than 10 of them: the rest from those with one line less, then two (each search's
   // own listings read with it, cheapest first)
@@ -435,9 +435,9 @@ async function search(out, seen, { league, slot, items, value, per, tick }, plan
 // Items with the lines picked by hand (the Optimizer's Chosen modifiers: asLines); a unique: that unique. The first
 // `per` down from the dearest under the price, read and rated. -> findGear's answer, with body (the search, to open on
 // the site) and left (lines the site has no stat for)
-export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, level, state, tick }) {
+export async function findLike({ league, cls, unique, base, slot, items, value, lines, price, req, state, tick }) {
   const { stats, left } = await asLines(lines);
-  const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price, level) }, sort: DEAREST };
+  const body = { query: { status: { option: state }, ...unique && { name: unique, type: base }, stats, filters: filters(cls, price, req) }, sort: DEAREST };
   const out = { found: [], searches: [], unread: 0, errors: [], body, left };
   await search(out, new Set(), { league, slot, items, value, per: 10, tick }, { body });
   for (const k of fewer(stats)) { if (out.found.length || out.errors.length || out.searches.at(-1)?.total) break; body.query.stats = atLeast(stats, k); out.need = k; out.of = stats[0].filters.length;

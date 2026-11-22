@@ -7,6 +7,7 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
+import { attributes } from './calc.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, modsOf } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
@@ -154,6 +155,8 @@ export function initOpt(el, ctx) {
   }
   const valueOf = (b, g, key) => items => { const z = { ...b, items }; return g || !OBJECTIVES[key].skill ? score(key, z, ctx.sumOf(z), g) : null; };
   const levelFor = b => Math.max(0, Math.min(100, typed.lvl ?? (b.level > 1 ? b.level : 0)));
+  // what the character could wear in `slot`: its level and its attributes without the item worn there
+  const reqFor = (b, slot) => { const lvl = levelFor(b), { [slot]: _, ...rest } = b.items || {}; return lvl ? { lvl, ...attributes(ctx.sumOf({ ...b, items: rest }), b.asc) } : null; };
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
   const priceNow = () => ({ max: +S.max || 0, currency: CURRENCY.includes(S.currency) ? S.currency : '' });
@@ -175,14 +178,14 @@ export function initOpt(el, ctx) {
       .then(() => { if (net !== me || el.hidden) return; render(); });
   }
   async function runGear() {
-    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel), league = leagueNow(), price = priceNow(), level = levelFor(b), state = STATUS[S.state] ? S.state : 'securable';
+    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel), league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot), state = STATUS[S.state] ? S.state : 'securable';
     const me = busy = { text: t('Searching the trade site ({0} of {1})…', 1, '…') };
     render();
     try {
       const wants = await withIds(wantsFor(b, g, sel));
-      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()), wants, price, level, state,
+      const res = await findGear({ league, cls: sel.cls, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()), wants, price, req, state,
         tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
-      G[id] = { res, wants, league, price, level, state, cls: sel.cls };
+      G[id] = { res, wants, league, price, req, state, cls: sel.cls };
       if (res.errors.some(e => e.kind === 'offline')) netStart(true);   // the server may be up the next time
     } finally { if (busy === me) busy = null; render(); }
   }
@@ -190,13 +193,13 @@ export function initOpt(el, ctx) {
   const likeOf = slot => S.like[slot] ||= [];
   const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, kind, text, value }) => ({ hash, en, kind, text, value: Math.round(value * 100) / 100 }));
   async function runLike() {
-    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), level = levelFor(b), state = STATUS[S.state] ? S.state : 'securable';
+    const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot), state = STATUS[S.state] ? S.state : 'securable';
     const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => wornLines(worn).some(w => w.hash === l.hash && w.en === l.en));
     const me = busy = { text: t('Searching the trade site ({0} of {1})…', 1, 1) };
     render();
     try {
       const res = await findLike({ league, cls: sel.cls, ...same && { unique: worn.unique, base: worn.base }, slot: sel.slot, items: b.items || {}, value: valueOf(b, g, gk()),
-        lines: likeOf(sel.slot), price, level, state, tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
+        lines: likeOf(sel.slot), price, req, state, tick: (text, ...a) => { me.text = t(text, ...a); const o = el.querySelector('#optBusy'); if (o) o.textContent = me.text; } });
       G[id] = { res, like: true, league, state };
       if (res.errors.some(e => e.kind === 'offline')) netStart(true);
     } finally { if (busy === me) busy = null; render(); }
@@ -221,7 +224,7 @@ export function initOpt(el, ctx) {
           ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}
           <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Trade')}</a></div></div></div>`;
     };
-    const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, level: hit.level, state: hit.state });
+    const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, req: hit.req, state: hit.state });
     return `<div class="optres">${res.errors.map(e => `<p class="opterr">${esc(errText(e))}</p>`).join('')}
       ${res.unread ? `<p class="note">${t('{0} listed items were left out: the planner does not have their base or they go in another slot.', res.unread)}</p>` : ''}
       ${res.searches.length && !res.found.length && !res.errors.length ? `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>` : ''}
@@ -340,7 +343,7 @@ export function initOpt(el, ctx) {
     const b = ctx.build();
     try {
       const ls = net?.leagues?.length ? net.leagues : await leagues(), league = ls.includes(S.league) ? S.league : ls[0];
-      const res = await findBetter({ league, item: b.items[slot], base, skip, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, level: levelFor(b),
+      const res = await findBetter({ league, item: b.items[slot], base, skip, price: { max: +max || 0, currency: CURRENCY.includes(currency) ? currency : '' }, req: reqFor(b, slot),
         state: STATUS[S.state] ? S.state : 'securable', tick: (text, ...a) => tick(t(text, ...a)) });
       return { ...res, league };
     } catch (e) { if (!e.kind) throw e; return { error: errText(e) }; }
