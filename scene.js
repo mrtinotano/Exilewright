@@ -3682,7 +3682,7 @@ export function initScene(el, api) {
   const gainVol = n => { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
-    const RS = sheet().resummon; if (RS?.base) me.reviveAt = time + ((S.dmg?.stats?.minion_base_resummon_time_ms || 0) / 1000 || RS.base) / RS.speed;   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
+    const RS = sheet().resummon; if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / RS.speed;   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
@@ -4141,9 +4141,9 @@ export function initScene(el, api) {
       M.push({ S: { ...S, mult: S.mult * less }, run, until: time + (TS.shape?.duration || TS.stats.base_skill_effect_duration / 1000) }); fx.ring(S.from, .2, .8, S.el, .5);
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
-    // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     // a Command skill (keywords.json Minion Commands): the tree's chance to Revive a random fallen persistent minion
     if (!auto && me.fallen.length && api.info(S.g)?.gem?.types?.includes('CommandsMinions') && Math.random() * 100 < sheet().reviveCmd) { me.fallen.unshift(...me.fallen.splice(Math.floor(Math.random() * me.fallen.length), 1)); reviveFallen(me.fallen[0].life); }
+    // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
