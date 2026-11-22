@@ -377,15 +377,19 @@ export async function findGear({ league, cls, slot, items, value, wants, price, 
   return out;
 }
 // The lines of an item (priceLines, or picked by hand: { hash | en (desecrated), value }) as the site's conditions:
-// every one of them as any kind of modifier (normal, crafted, fractured, desecrated: idsOf; one worded only as desecrated
+// every one of them as any kind of modifier (the explicit stat finds them all: explicitOnly; one worded only as desecrated
 // also as the others worded so: byWords), each at least its number (a negative one, or 0: just having it): one count
-// of all their ids, at least one a line. note: an item with the same line in two kinds counts it twice. -> { stats, n, left }
+// of all their ids, at least one a line. -> { stats, n, left }
 async function asLines(lines) {
   const { idsOf, byWords } = await statIndex();
-  const asked = lines.map(l => ({ ...l, ids: [...new Set([...idsOf(l), ...l.en ? byWords(l.en) : []])] })).filter(l => l.ids.length);
+  const asked = lines.map(l => ({ ...l, ids: explicitOnly([...new Set([...idsOf(l), ...l.en ? byWords(l.en) : []])]) })).filter(l => l.ids.length);
   return { left: lines.length - asked.length, n: asked.length,
     stats: asked.length ? [{ type: 'count', value: { min: asked.length }, filters: asked.flatMap(l => l.ids.map(id => ({ id, ...l.value > 0 && { value: { min: Math.round(l.value * 100) / 100 } } }))) }] : [] };
 }
+// the site's explicit stat finds crafted, fractured and desecrated modifiers too (a 'not explicit' search with any of
+// them finds none): asked as well, a count counts the line twice
+const explicitOnly = ids => ids.filter(id => id.startsWith('explicit.') || !ids.includes('explicit.' + id.split('.').pop()));
+console.assert(JSON.stringify(explicitOnly(['explicit.stat_1', 'crafted.stat_1', 'desecrated.stat_2'])) === '["explicit.stat_1","desecrated.stat_2"]', 'explicitOnly');
 // the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
 // by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
 const DEAREST = { price: 'desc' };
