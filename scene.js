@@ -500,6 +500,9 @@ export function initScene(el, api) {
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
       const tot = Object.values(raw).reduce((t, x) => t + x, 0);   // both gain from the hit before either
       if (!S.src && time < me.volPower?.until) raw.chaos = (raw.chaos || 0) + tot * me.volPower.n * VOLATILITY.power / 100;   // Volatile Power
+      const CO = !S.src && S.P.spell && sheet().coil, nC = CO && [d.curse, ...(d.hexes || [])].filter(Boolean).length;   // Liminal Coil: spells gain as extra chaos / physical per curse on the target
+      if (nC) { raw.chaos = (raw.chaos || 0) + tot * CO.chaos * nC / 100; raw.physical = (raw.physical || 0) + tot * CO.phys * nC / 100; }
+      const HV = !S.src && raw.cold && d.st.chill > 0 && sheet().heatshiver; if (HV) raw.fire = (raw.fire || 0) + raw.cold * (d.mag.chill || 0) * HV / 100;   // Heatshiver: per 1% Chill magnitude on it
       const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       const MX = /^minion/.test(S.src || '') || isCmd(S) ? (uarch() ? 1 + UARCHON.more * sheet().overgrow.archonEffect / 100 : 1) * (isCmd(S) ? 1 + PUPPET.cmdDmg * pup() / 100 : 1) : 1; if (MX !== 1) for (const e in raw) raw[e] *= MX;   // Archon of Undeath, Puppet Master. note: its increased command damage as more here
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
@@ -2432,7 +2435,7 @@ export function initScene(el, api) {
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, (sheet().curseLimit || 1) - 1);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
-          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -4286,7 +4289,7 @@ export function initScene(el, api) {
     const RS = me.raised; me.raised = null;   // Raise Shield: its Shield Bash when released soon after a block
     if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z } });
     const P = c && base(c.i)?.P; if (!P) return;
-    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2, held: c.s })) cd = useTime(base(c.i));
+    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2 * (1 + (sheet().perfectWin || 0) / 100), held: c.s })) cd = useTime(base(c.i));   // Assailum: a longer Perfect Timing window
   }
   // keep: selecting with the number keys does not stop placing enemies
   function select(i, tell = true, keep = false) { if (!api.build().gems[i]) return; sel = i; hudT = 0; if (placing && !keep) setPlacing(false); if (tell) api.onSelect?.(i); }
@@ -5381,6 +5384,7 @@ export function initScene(el, api) {
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
+    const RG2 = sheet().griefIgnite; if (RG2 && time - (me.griefAt ?? -9) >= 1) { me.griefAt = time; const X = thornX({ hits: {} }, 'Radiant Grief'); for (const d of inside(pp, sheet().overgrow.r)) inflict(d, 'ignite', X, 1, { fire: RG2 }, {}); }   // Radiant Grief: enemies in your Presence Ignited as though dealt its base fire damage (note: once a second here)
     flasks().forEach((f, n) => { const g = FC + (GN[n] || 0) + (f?.regen || 0); if (g) me.fl[n] = Math.min(f.max, flaskLeft(n) + g / 60 * dt); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
     if (GN[2]) charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + GN[2] / 60 * dt); });   // and per charm
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);

@@ -628,6 +628,10 @@ export function recovery(c, sum) {
     uBlock: { poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
       blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
+    // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
+    coil: sum['coil_of_undoing_curse_magnitude_+%_final'] || sum['spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'] ? { zero: v(sum, 'coil_of_undoing_curse_magnitude_+%_final'), chaos: v(sum, 'spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'), phys: v(sum, 'spells_gain_%_of_damage_as_extra_phys_per_curse_on_target') } : null,
+    perfectWin: v(sum, 'perfect_timing_window_ms_+%'), griefIgnite: v(sum, 'ignite_as_though_dealing_X_damage_in_your_presence'),
+    heatshiver: v(sum, 'non_skill_cold_damage_%_to_gain_as_fire_per_1%_chill_effect_on_enemy'),
     uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
@@ -1620,7 +1624,9 @@ const MS_ALSO = { 'minion_skill_area_of_effect_+%': 'base_skill_area_of_effect_+
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
   // what Allies in your Presence get. ponytail: counted always (a minion is near you most of the time); the scene's presence check if it matters
-  for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%'], ['allies_in_presence_critical_strike_chance_+%', 'critical_strike_chance_+%']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];
+  for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%'], ['allies_in_presence_critical_strike_chance_+%', 'critical_strike_chance_+%'],
+    ['allies_in_presence_damage_%_to_gain_as_fire', 'non_skill_base_all_damage_%_to_gain_as_fire'], ['allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos', 'non_skill_base_all_damage_%_to_gain_as_chaos'],   // Sacred Flame, Evergrasping Ring
+    ['allies_in_presence_critical_strike_multiplier_+', 'critical_strike_multiplier_+']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];   // Fixation of Yix
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || MS_ALSO[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }
