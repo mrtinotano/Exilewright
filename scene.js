@@ -392,7 +392,7 @@ export function initScene(el, api) {
     stats.dealt += got; B.n += got; B.x++; lastHit = d; record('hit', src, d.mon.name, got, css(S?.el || 'physical'));
     d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
     const e = noEs ? 0 : Math.min(d.es, n); d.es -= e; d.life -= n - e;
-    if (d.life <= 0) { ash(d, -d.life, S); kill(d, S); }
+    if (d.life <= 0) { ash(d, -d.life, S); const TO = S?.src !== 'trample' && sheet().uEv?.overkill; if (TO) for (const e of inside(d.pos, 2)) if (e !== d) damage(e, takes(e, 'physical', -d.life * TO / 100), { ...S, src: 'trample' }); kill(d, S); }   // Trampletoe: its share of the overkill as physical within 2 m
   }
   // Herald of Ash: an attack (not a herald's) that overkills an enemy by its share of its maximum life explodes there,
   // its area Burning the other enemies in it for its share of the overkill per minute, for its duration
@@ -4872,7 +4872,13 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
-  const blocked = d => { me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
+  function blockU(d) {   // the uniques' effects of a block (calc.js uBlock). note: the blocked damage recouped is the hit's average
+    const U = sheet().uBlock; if (!U || d.dead) return;
+    if (U.poison) inflict(d, 'poison', thornX({ hits: {} }, t('Blocked')), 1, { chaos: U.poison }, {});
+    if (U.mana && d.atk?.hits) { const n = Object.values(d.atk.hits).reduce((s, [lo, hi]) => s + (lo + hi) / 2, 0) * U.mana / 100, RT = sheet().recoup?.time || 8; me.recoup.push({ k: 'mana', left: n, rate: n / RT }); }
+    if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.find(x => x.name === v.name); if (o) Object.assign(o, v); else d.dots.push(v); }
+  }
+  const blocked = d => { blockU(d); me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here

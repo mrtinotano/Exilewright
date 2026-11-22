@@ -623,8 +623,12 @@ export function recovery(c, sum) {
     empKeep: v(sum, 'chance_for_exerted_attacks_to_not_reduce_count_%'), limit: v(sum, 'base_limit_+'),   // Serle's Grit; Idol of Uldurn
     hate: { cd: v(sum, 'gain_1_random_charge_on_reaching_maximum_rage_no_more_than_once_every_X_ms') / 1000, ward: v(sum, 'ward_%_to_recover_on_reaching_maximum_rage') },   // Hateforge
     ccAt: v(sum, 'crowd_control_effects_are_triggered_at_%_poise_threshold_instead'),   // Sine Aequo
+    // uniques on blocking: a Poison as though dealing that base chaos damage (Lycosidae), damage blocked recouped as mana
+    // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
+    uBlock: { poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
+      blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
     uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
-      thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill') },
+      thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
     flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
     recoverOn: { power: v(sum, 'recover_x%_of_maximum_mana_when_you_consume_a_power_charge'), endurance: v(sum, 'recover_%_life_per_endurance_charge_consumed'),
