@@ -638,12 +638,13 @@ export function initScene(el, api) {
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
+    const ge = (me.gloryEaten || []).filter(x => time - x.t <= 6);   // the Glory consumed in the last 6 s
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length,
       EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0),
-      GloryConsumedPast6: (me.gloryEaten || []).reduce((t, x) => t + (time - x.t <= 6 ? x.n : 0), 0), GlorySkillsUsedPast6: (me.gloryEaten || []).filter(x => time - x.t <= 6).length,
+      GloryConsumedPast6: ge.reduce((t, x) => t + x.n, 0), GlorySkillsUsedPast6: ge.length,
       ComboConsumed: S.comboSpent || 0, HazardsTriggeredRecently: (me.hazTrig || []).filter(t => time - t <= RECENT).length };
     let n;
     if (c.type === 'ActorCondition' || c.type === 'Condition') n = (v in is ? is[v] : !en && meIs[v]?.()) ? 1 : 0;
@@ -940,7 +941,7 @@ export function initScene(el, api) {
   function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
-    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time);   /* and the tree's projectiles from further than 6 m */   // Wind Blast, Siphoning Strike
+    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike; the tree's projectiles from further than 6 m
     // the damage of the hit that counts for an ailment: its own type's, every type's with "all damage can <ailment>" (the
     // build's; Pinnacle of Power's buff: every Elemental Ailment, BuffDefinitions elemental_power; all damage to bleeding /
     // poisoned enemies contributing to chill), and the types the build's "<type> damage can <ailment>" add (EXTRA)
@@ -3952,8 +3953,9 @@ export function initScene(el, api) {
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
-      if (tally() < had && EF && ph) { const f = S.dmg.hits.fire || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: [f[0] + ph[0] * EF / 100, f[1] + ph[1] * EF / 100] } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
-      if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {}; S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
+      if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {};
+        if (EF && ph) { S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: ph.map((x, i) => (S.dmg.hits.fire?.[i] || 0) + x * EF / 100) } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
+        S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
         if (ts.length) S.mult *= 1 + EA / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length;
         S.costX = 1 + (F['support_discount_skill_cost_+%_final_if_empowered'] || 0) / 100; S.accX = 1 + (F['support_discount_accuracy_rating_+%_final_if_empowered'] || 0) / 100; }
