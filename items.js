@@ -849,8 +849,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     const t = e.target, items = getBuild().items ||= {}, slot = t.dataset.slot;
     if (t.dataset.act === 'likemax') { buy.max = t.value; return; }
     if (t.dataset.act === 'likecur') { buy.cur = t.value; return; }
-    if (t.dataset.act === 'likebase') { buy.base = t.checked; return; }
-    if (t.dataset.act === 'likelvl' || t.dataset.act === 'likeattr') { buy[t.dataset.act.slice(4)] = t.checked; return; }
+    if (['likebase', 'likelvl', 'likeattr'].includes(t.dataset.act)) { buy[t.dataset.act.slice(4)] = t.checked; return; }
     if (t.dataset.act === 'likeline') { buy.skip[t.checked ? 'delete' : 'add'](t.dataset.k); return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
       const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
@@ -878,7 +877,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'like') {
       const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
       render();
-      trade.find(me.slot, buy.max, buy.cur, buy.base, [...buy.skip], { lvl: buy.lvl, attr: buy.attr }, text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
+      trade.find(me.slot, buy.max, buy.cur, buy.base, [...buy.skip], buy, text => { me.text = text; const o = el.querySelector('[data-busy]'); if (o) o.textContent = text; })
         .then(res => { if (better === me) { me.res = res; render(); } });
       return;
     }
