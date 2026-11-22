@@ -152,6 +152,9 @@ export function weighted({ cls, wants, price, level, state = 'securable' }) {
     stats: [{ type: 'weight', value: { min: 1 }, filters: list.map(w => ({ id: w.id, value: { weight: +(100 * w.gain / w.roll / top).toPrecision(3) } })) }] }, sort: { 'statgroup.0': 'desc' } };
 }
 export const siteLink = (league, queryId, bulk) => (bulk ? SITE.replace('/search/', '/exchange/') : SITE) + encodeURIComponent(league) + (queryId ? '/' + queryId : '');
+// the search for one listed item on the site: its base (a unique: and its name), its seller and its price
+export const listingQuery = (l, state) => ({ query: { status: { option: state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
+  filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
 export const siteQuery = (league, body) => SITE + encodeURIComponent(league) + '?q=' + encodeURIComponent(JSON.stringify(body));
 
 // ---------- reading what the site lists

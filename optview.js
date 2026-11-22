@@ -9,7 +9,7 @@ import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, modsOf } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
-import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery } from './trade.js';
+import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
 const KEY = 'poe2opt';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -211,8 +211,7 @@ export function initOpt(el, ctx) {
       .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
     // the item itself on the site: its base (a unique: and its name), its seller and its price
-    const onSite = l => siteQuery(league, { query: { status: { option: hit.state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
-      filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
+    const onSite = l => siteQuery(league, listingQuery(l, hit.state));
     const card = ({ l, i, v }) => {
       const off = new Set(l.missed);
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>

@@ -11,7 +11,7 @@ import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
 import { initSettings, watchUpdates } from './settings.js';
 import { initFilter } from './filter.js';
-import { SEARCH_SLOTS, siteQuery } from './trade.js';
+import { SEARCH_SLOTS, siteQuery, listingQuery } from './trade.js';
 import { diff, impactHtml } from './impact.js';
 import { SK } from './skilldata.js';
 import { encode, decode, toXML, fromXML, SITES, upload, download, toBuildFile, buildFileName } from './share.js';
@@ -1023,7 +1023,7 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
 const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   items => snap({ ...B(), items }), () => treeSum().keystone_giants_blood,
-  { can: slot => SEARCH_SLOTS.includes(slot), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery });
+  { can: slot => SEARCH_SLOTS.includes(slot), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
