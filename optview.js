@@ -210,7 +210,6 @@ export function initOpt(el, ctx) {
     const list = res.found.map((l, i) => ({ l, i, v: value({ ...items, [sel.slot]: l.item }) }))
       .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
-    // the item itself on the site: its base (a unique: and its name), its seller and its price
     const onSite = l => siteQuery(league, listingQuery(l, hit.state));
     const card = ({ l, i, v }) => {
       const off = new Set(l.missed);
