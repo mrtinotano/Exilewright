@@ -572,14 +572,14 @@ function reroot(nodes, root) {
 // the start's attributes; the tree's starts are named by the old classes). The start itself costs no point
 const SPLIT = { str: 'MARAUDER', dex: 'RANGER', int: 'WITCH', strdex: 'DUELIST', strint: 'TEMPLAR', dexint: 'SIX' };
 const ROOT_OF = Object.fromEntries([...ROOTS].map(id => [N[id].name, id]));
-const splitRoots = (b, has) => Object.entries(b.items || {}).flatMap(([slot, it]) => !slot.startsWith('jewel:') || !has.has(slot.slice(6)) ? []
+const splitRoots = (b, has = new Set(b.nodes)) => Object.entries(b.items || {}).flatMap(([slot, it]) => !slot.startsWith('jewel:') || !has.has(slot.slice(6)) ? []
   : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]]).filter(Boolean));
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens in a kept socket
   const keep = new Set([nodes[0]]), q = [nodes[0]], set = new Set(nodes);
-  for (let more = true; more;) {
+  do {
     while (q.length) for (const w of N[q.shift()].links.map(String)) if (set.has(w) && !keep.has(w)) { keep.add(w); q.push(w); }
-    more = false; for (const r of b ? splitRoots(b, keep) : []) if (!keep.has(r)) { keep.add(r); q.push(r); more = true; }
-  }
+    for (const r of b ? splitRoots(b, keep) : []) if (!keep.has(r)) { keep.add(r); q.push(r); }
+  } while (q.length);
   return nodes.filter(n => keep.has(n));
 }
 // what clicking `id` would allocate (empty if it is allocated already or unreachable)
@@ -592,13 +592,13 @@ function preview(id, b = B()) {
   if (mode) {   // weapon set: grows from the normal tree plus that set's passives
     const own = setOf(b, mode);
     if (own.includes(id) || !b.nodes.length || !setOK(id)) return [];
-    const p = pathTo([...b.nodes, ...own, ...splitRoots(b, new Set(b.nodes))], id, w => walkable(w, b.nodes[0]));
+    const p = pathTo([...b.nodes, ...own, ...splitRoots(b)], id, w => walkable(w, b.nodes[0]));
     return p.every(setOK) ? p : [];
   }
   // the tree always grows from the class start, like in the game
   const have = b.nodes.length ? b.nodes : [classRoot(b.asc)].filter(Boolean);
   if (!have.length) return [];
-  const p = id === have[0] ? [] : pathTo([...have, ...splitRoots(b, new Set(b.nodes))], id, w => walkable(w, have[0]));
+  const p = id === have[0] ? [] : pathTo([...have, ...splitRoots(b)], id, w => walkable(w, have[0]));
   if (id !== have[0] && !p.length) return [];
   return [...(b.nodes.length ? [] : have), ...p];
 }
@@ -762,7 +762,7 @@ function drawTree() {
   view.s ||= Math.min(W, H) / 26000;   // fit whole tree on first draw
   const s = view.s, b = B(), st = ascStart(b.asc);
   const set1 = new Set(setOf(b, 1)), set2 = new Set(setOf(b, 2));
-  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b, new Set(b.nodes))]);   // and the starts Split Personality opens
+  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b)]);   // and the starts Split Personality opens
   const setTint = id => b.nodes.includes(id) ? null : set1.has(id) && (mode !== 2 || !set2.has(id)) ? SET_COL[1] : set2.has(id) ? SET_COL[2] : null;
   const pre = new Set(hover ? preview(hover) : []);
   const vis = visible(), visSet = new Set(vis);
@@ -1058,7 +1058,7 @@ const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
-const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots: b => splitRoots(b, new Set(b.nodes)), total: TOTAL.tree, setNodes, showOnTree, ask,
+const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, total: TOTAL.tree, setNodes, showOnTree, ask,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
