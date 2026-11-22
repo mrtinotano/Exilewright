@@ -200,6 +200,7 @@ export function totem(g, sum = {}) {
     life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + v(s, 'support_totem_life_+%_final') / 100)),   // Tawhoa's Tending: more (PoB2 TotemLife MORE)
     ailment: monster(level, 'AilmentThreshold'),
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
+    regen: v(s, 'totems_regenerate_%_life_per_minute') / 60,   // % of its life a second
     elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
     limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
@@ -342,7 +343,7 @@ export function character(b, sum) {
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc), accuracyInc: accInc, lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc), accuracyInc: accInc, accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
@@ -464,6 +465,7 @@ export function recovery(c, sum) {
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
     esDelayHurt: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_when_not_on_full_life') / 100),
+    esDelayStun: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_if_stunned_recently') / 100),
     // while Shapeshifted: factors on the energy shield delay and recharge, accuracy and life leech with their other
     // increases, armour applied to elemental damage, more maximum Rage
     shift: (k => k.some(x => sum[x]) ? { esDelay: (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', 'energy_shield_delay_-%_while_shapeshifted') / 100),
@@ -479,7 +481,7 @@ export function recovery(c, sum) {
     lifeInc, manaInc,
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
-    witherMag: v(sum, 'withered_magnitude_+%'),   // the Withered you inflict
+    witheredDeal: v(sum, 'withered_enemies_deal_+%_damage'), witherMag: v(sum, 'withered_magnitude_+%'),   // the Withered you inflict
     // enemies you curse: their chaos resistance, Hindered (15% reduced movement speed), and your curses' increased
     // magnitudes once half of their duration has expired
     cursed: { chaos: v(sum, 'enemies_chaos_resistance_%_while_cursed'), hinder: sum['enemies_you_curse_have_15%_hinder'] ? 15 : 0, half: v(sum, 'while_curse_is_50%_expired_curse_effect_+%') },
@@ -557,7 +559,7 @@ export function ailmentDefence(c, sum) {
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
   const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
   // the increased stun threshold that counts only in a state, with the always-on one it adds to (the scene's)
-  const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling'), full: v(sum, 'stun_threshold_+%_when_on_full_life'), parry: v(sum, 'parry_stun_threshold_+%_during_parry') };
+  const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling'), full: v(sum, 'stun_threshold_+%_when_on_full_life'), parry: v(sum, 'parry_stun_threshold_+%_during_parry'), perHit: v(sum, 'stun_threshold_+%_for_each_time_hit_recently_up_to_100%') };
   return { stun, ail, freeze, electrocute, avoid, dur, eff, stunIf };
 }
 // self-check: 2000 life gives a 1000 ailment threshold and a 2000 stun / freeze threshold; immunity is 100% avoid
@@ -1281,7 +1283,7 @@ export function skill(g, b, treeGear) {
     ...(c['support_mana_flare_%_of_current_mana_consumed'] || c['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
     ...(c['support_battershout_physical_damage_equal_to_%_of_broken_armour'] || c['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] || c['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] ? unit('physical') : {}),
     ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['base_physical_damage_equal_to_%_of_totem_life'] ? unit('physical') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
-  out.totemLife = totem(g, treeGear)?.life;   // Tawhoa's Tending's explosion
+  const TO = totem(g, treeGear); out.totemLife = TO?.life; out.totemRegen = TO?.regen;   // Tawhoa's Tending's explosion; its regeneration
   // the parts an earthen object deals when it shatters (Earthshatter's spike, Forge Hammer's fissures) or a plant when it
   // bursts (Toxic Growth's Pustules), as the skill
   if (d.parts && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));
@@ -1450,11 +1452,13 @@ function minionLife(st, sum, id, finals = {}) {
 // "Companions gain X% of Damage as extra Chaos / Cold" have no "Minions" twin: the companion's own stat ("minion:")
 const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%_to_gain_as_chaos', 'companion_%_damage_as_cold': 'minion:non_skill_base_all_damage_%_to_gain_as_cold' };
 const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = OWN[k] || 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
+// the tree's minion stats the game's table does not list, as their minion_area_of_effect_+% twin
+const MS_ALSO = { 'minion_skill_area_of_effect_+%': 'base_skill_area_of_effect_+%' };
 // the build's and the gem's stats that are the minion's (SK.minion_stats: "minion_x" -> its "x"), added to `ms`
 function minionStats(st, sum, ms) {
   // what Allies in your Presence get. ponytail: counted always (a minion is near you most of the time); the scene's presence check if it matters
   for (const [k, to] of [['allies_in_presence_damage_+%', 'damage_+%'], ['allies_in_presence_attack_speed_+%', 'attack_speed_+%'], ['allies_in_presence_cast_speed_+%', 'base_cast_speed_+%']]) if (sum[k]) ms[to] = (ms[to] || 0) + sum[k];
-  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
+  for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || MS_ALSO[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }
 function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
