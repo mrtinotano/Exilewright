@@ -265,7 +265,8 @@ export function character(b, sum) {
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
     const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
-      + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0);   // Gemling: red / green / blue supports
+      + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0)   // Gemling: red / green / blue supports
+      + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0);
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -474,6 +475,7 @@ export function recovery(c, sum) {
     lifeInc, manaInc,
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
+    witherMag: v(sum, 'withered_magnitude_+%'),   // the Withered you inflict
     blindEffect: v(sum, 'blind_effect_+%'), blindCrit: v(sum, 'enemies_you_blind_have_critical_strike_chance_+%'),   // and the critical hit chance of enemies you Blind
     // Martial Artist's Mountain's Teachings (Way of the Mountain)
     mountain: sum.stone_skin_maximum_stacks ? { chance: v(sum, 'chance_%_to_gain_one_stone_skin_stack_on_immobilising'), max: sum.stone_skin_maximum_stacks, dur: v(sum, 'stone_skin_duration_ms') / 1000,
