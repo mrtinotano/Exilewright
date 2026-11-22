@@ -575,6 +575,7 @@ export function recovery(c, sum) {
     poisonKill: v(sum, 'recover_permyriad_maximum_life_per_poison_on_enemy_on_kill') / 100, killTwice: !!sum.on_kill_effects_occur_twice,   // Snakebite; Killjoy
     regenPulse: sum.life_recovery_from_regeneration_is_not_applied ? v(sum, 'recover_1_life_per_x_life_regeneration_per_minute_every_4_seconds') || Infinity : 0,   // Igniferis
     manaRegenOnly: !!sum.cannot_recover_mana_except_regeneration,   // Indigon
+    redflare: !!sum.gain_power_charge_per_second_if_have_not_lost_power_charge_recently, stunPerRage: v(sum, 'stun_threshold_+%_per_rage'),   // Redflare Conduit; Wings of Caelyn
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner

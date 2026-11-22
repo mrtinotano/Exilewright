@@ -373,12 +373,14 @@ export function initScene(el, api) {
   // Resonance: each kind of charge gained as the next one; Conduit: allies in your Presence get it instead (theirs are
   // not played: you get none), only Endurance with the Mercenary notable
   const RESONANCE = { frenzy: 'power', endurance: 'frenzy', power: 'endurance' };
+  // Redflare Conduit: reaching the most power charges loses them all and Shocks you for 4 seconds
+  function redflare() { charges.power = 0; me.powerLost = time; suffer('shock', 4, { mag: GC.BaseShockMagnitude }); }
   function gainCharge(type, by) {
     if (sheet().resonance) type = RESONANCE[type] || type;
     if (sheet().conduit === 'all' || sheet().conduit === 'endurance' && type === 'endurance') return;
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
-    charges[type]++; if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
+    charges[type]++; if (type === 'power' && charges.power >= maxC('power') && sheet().redflare) return redflare(); if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
     if (Math.random() * 100 < (sheet().chargeFill?.[type] || 0)) charges[type] = maxC(type);   // the chance of all of them
     fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
@@ -1030,7 +1032,8 @@ export function initScene(el, api) {
     if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1);   // the tree's stun buildup after Shapeshifting, within 2 m
-    if (!N.stun) AL.stun ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) : build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);
+    if (!N.stun) AL.stun || o.full && S.P.attack && SU.local_always_heavy_stun_on_full_life ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) :
+      build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);   // Marohi Erqi: on full life
     // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
     // against the enemy's maximum life, 100% at all of it, none under the least chance (GameConstants); it cannot act for
     // its length (monster.ot)
@@ -1854,7 +1857,7 @@ export function initScene(el, api) {
   // tree recovers for each (calc.js recoverOn: mana for a power charge, life for an endurance charge)
   const chargesSpent = (n, c) => {
     if (!(n > 0)) return; const U = sheet().surge?.charge || {}; for (const el in U) surgeGain(SURGE_OF[el], el, U[el] * n);
-    (me.spentAt ||= {})[c] = time; (me.spentLog = (me.spentLog || []).filter(x => time - x.t <= RECENT)).push({ t: time, n, c });   // how many Recently
+    (me.spentAt ||= {})[c] = time; if (c === 'power') me.powerLost = time; (me.spentLog = (me.spentLog || []).filter(x => time - x.t <= RECENT)).push({ t: time, n, c });   // how many Recently
     if (c === 'power') gainPct('mana', recOn('power') * n); if (c === 'endurance') gainPct('life', recOn('endurance') * n);
   };
   // the tree's recovery on an event (calc.js recoverOn), a % of your maximum life / mana
@@ -5099,7 +5102,7 @@ export function initScene(el, api) {
     // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
     const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
       return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
-    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
+    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
     if (!frozen() && !sheet().unwavering && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
@@ -5638,7 +5641,8 @@ export function initScene(el, api) {
       for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S, 1, g.S?.raw);   // raw: a ground with a damage of its own (Burning Inscription)
     }
     vitals(dt); tickHazards(dt);
-    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) charges[c] = 0;   // with the build's charge duration
+    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) { charges[c] = 0; if (c === 'power') me.powerLost = time; }
+    if (sheet().redflare && time - (me.powerLost ?? -99) > RECENT && time - (me.redflareAt ?? -9) >= 1) { me.redflareAt = time; gainCharge('power', 'Redflare Conduit'); }   // a power charge every second if none lost Recently   // with the build's charge duration
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); if (d.agony && time >= d.agony.until) agonyEnds(d); }
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);
