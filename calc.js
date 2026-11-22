@@ -324,13 +324,13 @@ export function character(b, sum) {
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
     block: v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0),   // Renly's Training: the shield's base chance (note: a shield's own is not in the data)
-    takenAs: takenAs(sum),
+    takenAs: takenAs(sum), physDR: v(sum, 'base_additional_physical_damage_reduction_%'),   // The Hollow Mask
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
     armourX: sum.double_armour_effect ? 2 : 1,
     // "Defend with X% of Armour" against a kind of hit (the scene checks it), and the chance to defend with 200% of it
     defendWith: { crit: v(sum, 'defend_with_%_armour_against_critical_strikes'), projAttack: v(sum, 'defend_with_%_armour_against_ranged_attacks'),
-      far: v(sum, 'defend_with_%_armour_against_hits_from_distance_greater_than_6m'), notLowES: v(sum, 'defend_with_%_of_armour_while_not_on_low_energy_shield'), double: v(sum, 'chance_to_double_armour_effect_on_hit_%') }, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
+      far: v(sum, 'defend_with_%_armour_against_hits_from_distance_greater_than_6m'), notLowES: v(sum, 'defend_with_%_of_armour_while_not_on_low_energy_shield'), haveES: v(sum, 'defend_with_%_armour_while_you_have_energy_shield'), double: v(sum, 'chance_to_double_armour_effect_on_hit_%') }, evadeMax: sum['maximum_chance_to_evade_is_50%'] ? 50 : null, physMax: sum['maximum_physical_damage_reduction_is_50%'] ? 50 : null,
     evaPhys: !!sum.evasion_rating_also_reduces_physical_damage,   // Invoker: armour and evasion together against physical
     esArm: v(sum, 'current_energy_shield_%_as_physical_damage_reduction'),   // Disciple of Varashta: its share of your current energy shield added to armour against physical
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
@@ -840,7 +840,7 @@ const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
 // only, not flasks; not counted "per 5% missing life"
-const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited'], ['life_regeneration_rate_+%_while_moving', 'l', 'Moving'],
+const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited'], ['life_regeneration_per_minute_%_while_ignited', 'L', 'Ignited'], ['life_regeneration_rate_+%_while_moving', 'l', 'Moving'],
   ['life_regeneration_rate_+%_while_on_low_life', 'l', 'LowLife'], ['life_regeneration_rate_+%_while_stationary', 'l', 'Still'],
   ['life_regeneration_rate_+%_while_using_life_flask', 'l', 'LifeFlaskEffect'], ['life_recovery_rate_while_in_presence_of_companion_+%', 'l', 'CompanionInPresence'],
   ['life_regeneration_rate_per_minute_%_if_have_been_hit_recently', 'L', 'BeenHitRecently'], ['life_regeneration_rate_per_minute_%_if_used_life_flask_in_past_10_seconds', 'L', 'LifeFlaskPast10'],
@@ -1468,7 +1468,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   // with critical hits: more of the ailments' magnitude, with their other increased ([increased, the critical ones])
   const critX = (incs, ...c) => { const i = incs.reduce((t, k) => t + all(k), 0), x = c.reduce((t, k) => t + all(k), 0); return x ? (1 + (i + x) / 100) / (1 + i / 100) : 1; };
   const dmgI = ['ailment_effect_+%', 'base_damaging_ailment_effect_+%'], nonI = ['ailment_effect_+%', 'non_damaging_ailment_effect_+%'];
-  const critAil = { ignite: critX(['base_ignite_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'), poison: critX(['base_poison_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'),
+  const critAil = { ignite: critX(['base_ignite_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'), poison: critX(['base_poison_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_poison_effect_+%'),
     bleed: critX(['base_bleeding_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_bleeding_effect_+%'),
     shock: critX(['shock_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes'), chill: critX(['chill_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes') };
   return {
