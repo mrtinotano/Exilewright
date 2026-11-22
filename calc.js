@@ -1159,9 +1159,8 @@ export function skill(g, b, treeGear) {
   const gain = (src, t, k = `non_skill_base_${src}_damage_%_to_gain_as_${t}`) => v(sum, k) + (end ? v(sum, k + end) : 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`)
     + (src === 'all' && t !== 'physical' && t !== 'chaos' ? v(sum, 'non_skill_base_all_damage_%_to_gain_as_random_element') / 3 : 0)   // Shaman: a random element, a third each on average
     + (src !== 'all' ? 0 : t === 'physical' ? (spell && out.lifeCost > 0 ? v(sum, 'spells_gain_%_physical_damage_if_they_cost_life') : 0)   // Atziri's Rule: spells that cost life
-      : t === 'fire' && unarmed && sum['non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence'] ? perX('int', 'non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence')
       : t === 'chaos' ? Math.floor((out.lifeCost || 0) / 3) * v(sum, 'non_skill_all_damage_%_to_gain_as_chaos_per_3_life_cost')   // The Burden of Shadows
-      : t === 'fire' && sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] ? (character(b, sum).block || 0) * sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] : 0);   // Chernobog's Pillar
+      : t === 'fire' ? perX('int', 'non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence') + (sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] ? (character(b, sum).block || 0) * sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] : 0) : 0);   // Chernobog's Pillar
   for (const t of DMG) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     const from = [0, 1].map(i => Object.entries(SRC).reduce((x, [src, ts]) => x + gain(src, t) / 100 * ts.reduce((y, u) => y + pre[u][i], 0), 0));
