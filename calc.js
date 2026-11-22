@@ -480,6 +480,9 @@ export function recovery(c, sum) {
     recPerMissing: v(sum, 'life_recovery_rate_+%_per_5%_missing_life'),
     critFromHit: v(sum, 'gain_additional_crit_chance_from_%_chance_to_hit_over_100'),
     witherMag: v(sum, 'withered_magnitude_+%'),   // the Withered you inflict
+    // enemies you curse: their chaos resistance, Hindered (15% reduced movement speed), and your curses' increased
+    // magnitudes once half of their duration has expired
+    cursed: { chaos: v(sum, 'enemies_chaos_resistance_%_while_cursed'), hinder: sum['enemies_you_curse_have_15%_hinder'] ? 15 : 0, half: v(sum, 'while_curse_is_50%_expired_curse_effect_+%') },
     // increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision (physical); your Ancestrally
     // Boosted attacks' increased damage and area; your minions' and companions' increased movement speed
     takenTree: { mark: v(sum, 'marked_enemy_damage_taken_+%'), electro: v(sum, 'electrocuted_enemy_damage_taken_+%'), frozenCold: v(sum, 'freeze_applies_cold_damage_taken_+%'),

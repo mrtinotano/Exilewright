@@ -897,7 +897,8 @@ export function initScene(el, api) {
   // Intimidated, they take more. note: as a factor of its own, not added to the other increases
   // the curses on an enemy: the latest (d.curse) and those still on from before (d.hexes), up to your curse limit;
   // their effects add up
-  const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) : 0), 0);
+  // (the tree's increased magnitudes once half of a curse's duration has expired. note: as a factor of its own)
+  const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
   // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
@@ -907,7 +908,7 @@ export function initScene(el, api) {
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
-    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0);   // Deep Freeze: the Frozen's cold resistance
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? d.expo.mag * st.expoEffect : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
@@ -2382,6 +2383,7 @@ export function initScene(el, api) {
           n++;
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, (sheet().curseLimit || 1) - 1);
+          if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
           d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
