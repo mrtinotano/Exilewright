@@ -464,6 +464,16 @@ export function character(b, sum) {
   // keystones, as their texts say: Chaos Inoculation (maximum life 1, immune to chaos damage and bleeding), Eldritch Battery
   // (maximum energy shield converted to maximum mana), Blood Magic (no mana), Iron Reflexes (evasion converted to armour),
   // Resolute Technique (accuracy doubled), Lord of the Wilds (50% less Spirit)
+  // the tree's immunities on a condition of your gear: the helmet's higher armour or evasion, the colour most of your
+  // socketed supports have, a body armour worn (Unaffected by Damaging Ailments: as immune here); and those of a state
+  // (the scene's: an Archon buff, shapeshifted, dodge rolling, leeching mana)
+  { const H = k => P('helmet', k), N = SN.str + SN.dex + SN.int, most = a => N > 0 && SN[a] > N / 2, dmgAil = !!(sum.body_armour_grants_unaffected_by_damaging_ailments && b.items?.body);
+    c.immuneIf = { bleed: dmgAil || !!sum.base_unaffected_by_bleeding || !!sum.immune_to_bleeding_if_helmet_grants_higher_armour_than_evasion && H('armour') > H('evasion'),
+      poison: dmgAil || !!sum.immune_to_poison_if_helmet_grants_higher_evasion_than_armour && H('evasion') > H('armour'), ignite: dmgAil || !!sum.immune_to_ignite_if_majority_red_supports_socketed && most('str'),
+      chill: !!sum.immune_to_chill_if_majority_blue_supports_socketed && most('int'), shock: !!sum.immune_to_shock_if_majority_green_supports_socketed && most('dex'), maim: !!sum.immune_to_maim };
+    const when = o => Object.entries(o).flatMap(([k, a]) => sum[k] ? a : []);
+    c.immuneWhen = { archon: when({ immune_to_bleeding_while_archon: ['bleed'], immune_to_freeze_chill_while_archon: ['freeze', 'chill'], immune_to_shock_while_archon: ['shock'] }),
+      shift: when({ immune_to_bleeding_while_shapeshifted: ['bleed'], immune_to_maim_while_shapeshifted: ['maim'] }), roll: when({ unaffected_by_chill_during_dodge_roll: ['chill'] }), leech: when({ unaffected_by_chill_while_mana_leeching: ['chill'] }) }; }
   if (sum.keystone_chaos_inoculation) { c.life = 1; c.res.chaos = { ...c.res.chaos, capped: 100, immune: true }; c.bleedImmune = true; }
   if (sum.keystone_eldritch_battery && c.mana != null) { c.mana += c.es; c.es = 0; }
   if (sum.keystone_blood_magic && c.mana != null) c.mana = 0;
@@ -577,12 +587,12 @@ export function ailmentDefence(c, sum) {
   // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
   const electrocute = ail == null ? null : (ail + v(sum, 'electrocute_threshold_+')) * pct('electrocute_threshold_+%') * pct('electrocute_threshold_+%_final');
   const allAil = v(sum, 'base_all_ailment_duration_on_self_+%'), eleAil = v(sum, 'self_elemental_status_duration_-%');
-  const IMMUNE = { ignite: ['immune_to_ignite', 'base_immune_to_ignite'], chill: ['immune_to_chill', 'base_immune_to_chill'], shock: ['immune_to_shock', 'base_immune_to_shock'],
-    freeze: ['immune_to_freeze', 'base_immune_to_freeze'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'], stun: ['base_cannot_be_stunned'], electrocute: ['base_cannot_be_electrocuted', 'cannot_be_electrocuted'] };
+  const IMMUNE = { ignite: ['immune_to_ignite', 'base_immune_to_ignite', 'base_cannot_be_ignited'], chill: ['immune_to_chill', 'base_immune_to_chill', 'base_cannot_be_chilled_or_frozen'], shock: ['immune_to_shock', 'base_immune_to_shock', 'base_cannot_be_shocked'],
+    freeze: ['immune_to_freeze', 'base_immune_to_freeze', 'base_cannot_be_chilled_or_frozen'], bleed: ['immune_to_bleeding'], poison: ['immune_to_poison', 'cannot_be_poisoned'], stun: ['base_cannot_be_stunned'], electrocute: ['base_cannot_be_electrocuted', 'cannot_be_electrocuted'] };
   const avoid = {}, dur = {};
   for (const [a, ids] of Object.entries(IMMUNE)) {
     const el = ELEM_AIL.includes(a);
-    avoid[a] = ids.some(k => sum[k]) ? 100 : Math.min(100, v(sum, `base_avoid_${a}_%`, `avoid_${a}_%`) + (el ? v(sum, 'avoid_all_elemental_status_%') : 0));
+    avoid[a] = ids.some(k => sum[k]) || c.immuneIf?.[a] ? 100 : Math.min(100, v(sum, `base_avoid_${a}_%`, `avoid_${a}_%`) + (el ? v(sum, 'avoid_all_elemental_status_%') : 0));
     dur[a] = (el ? Math.max(0, 1 - (v(sum, `base_self_${a}_duration_-%`) + eleAil - allAil) / 100)
       : Math.max(0, 1 + (v(sum, `self_${a}_duration_+%`) + allAil) / 100)) * (1 + v(sum, `self_${a}_duration_+%_final`) / 100);
   }

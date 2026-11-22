@@ -5066,7 +5066,8 @@ export function initScene(el, api) {
     utility_charm_ignite_immunity: 'ignite', utility_charm_shock_immunity: 'shock', utility_charm_stun_immunity: 'stun', utility_charm_slow_immunity: 'maim' };
   const charms = () => sheet().charms || [];
   const charmLeft = n => { const f = charms()[n]; if (!f) return 0; return me.cc[n] = Math.min(me.cc[n] ?? f.max, f.max); };
-  const immune = a => a === 'bleed' && sheet().bleedImmune || me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a);
+  const immune = a => { const W = sheet().immuneWhen, has = (k, on) => on && W?.[k]?.includes(a);
+    return a === 'bleed' && sheet().bleedImmune || !!sheet().immuneIf?.[a] || me.cu.some(u => u && IMMUNE_TO[u.c.buff] === a) || has('archon', meIs.Archon()) || has('shift', me.form) || has('roll', move?.roll) || has('leech', me.leech.mana.left > 0); };   // the tree's, in their state
   function charmUse(on) {
     charms().forEach((f, n) => {
       const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges
@@ -5270,6 +5271,7 @@ export function initScene(el, api) {
       * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (c.lifeReserved) me.life = Math.min(me.life, me.maxL * (1 - c.lifeReserved / 100));   // the reserved life cannot be filled
+    for (const a in me.st) if (me.st[a] > 0 && immune(a)) { me.st[a] = 0; delete me.burn[a]; }   // a state that makes you immune ends the ailment
     if (me.mounted && (!c.mountOk || !tog['Rhoa Mount'])) me.mounted = false;   // no Bow or Spear, or Rhoa Mount off: on foot
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
