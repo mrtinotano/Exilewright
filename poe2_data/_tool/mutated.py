@@ -68,7 +68,7 @@ for u in uniques:
         m = match(text)
         if m: out.append({'id': m['Id'], 'text': text, 'stats': mod_stats(m)}); found += 1
         else: missed += 1; print('not matched:', u['name'], '|', text)
-    u['mutated'] = out
-    u['replaceable'] = [m['id'] for m in u['mods'] if m['id'] in original] if out else []
+    u.pop('mutated', None); u.pop('replaceable', None)
+    if out: u['mutated'], u['replaceable'] = out, [m['id'] for m in u['mods'] if m['id'] in original]
 json.dump(uniques, open(path, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
-print(f'{found} mutated modifiers matched, {missed} not; {sum(1 for u in uniques if u["mutated"])} uniques')
+print(f'{found} mutated modifiers matched, {missed} not; {sum(1 for u in uniques if u.get("mutated"))} uniques')
