@@ -502,7 +502,8 @@ export function recovery(c, sum) {
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
-    unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
+    unluckyDmg: !!sum.damage_taken_from_hits_is_unlucky, unluckyChance: v(sum, 'enemy_extra_damage_rolls_chance_%'),   // or its chance on each hit (the tree's)
+    unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff you inflict; how fast debuffs on you expire
@@ -1141,6 +1142,10 @@ export function skill(g, b, treeGear) {
       return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : out.incW[t]])) : kind === 'MORE' ? 1 : name === 'CritChance' ? critW : cbW };
     });
+  // the tree's damage of one type gained as extra damage of another against an enemy in a state (the scene's, on each hit)
+  for (const [k, from, to, cv] of [['physical_damage_%_to_gain_as_lightning_vs_electrocuted', 'physical', 'lightning', 'Electrocuted'],
+    ['physical_damage_%_to_gain_as_fire_vs_heavy_stunned', 'physical', 'fire', 'HeavyStunned'], ['non_skill_cold_damage_%_to_gain_as_fire_vs_frozen_enemies', 'cold', 'fire', 'Frozen']])
+    if (sum[k]) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val: sum[k], what: 'gain', from, to });
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",

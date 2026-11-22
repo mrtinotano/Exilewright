@@ -474,8 +474,12 @@ export function initScene(el, api) {
       const PAIN = sheet().pain && S.src !== 'minionHit' ? me.life <= me.maxL * LOW ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1;
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
-      const LK = !/minion/.test(S.src || '') && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0);
-      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      // and the tree's chance for lightning damage to be Lucky
+      const mine = !/minion/.test(S.src || ''), LK = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0);
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      // gained as extra damage of another type against an enemy in a state: of the hit's damage after its modifiers, not
+      // scaled again by the other type's (as Unholy Might below)
+      for (const [from, to, p] of W.gain) if (raw[from]) raw[to] = (raw[to] || 0) + raw[from] * p / 100;
       if (FO?.mercy && d.focusMax > 0) for (const e in raw) raw[e] *= 1 + FO.mercy * (1 - d.focus / d.focusMax) / 100;
       // Lich: Unholy Might while not on Low Mana, its share of all damage as extra chaos (keywords.json UnholyMight) by
       // its magnitude. note: gained from the hit's damage after its modifiers, not scaled again by chaos modifiers
@@ -649,13 +653,14 @@ export function initScene(el, api) {
     return c.neg ? +!n : n;
   }
   function when(D, d, S) {
-    const W = { dmg: {}, crit: S.critX || 1, critBonus: 1, pen: { ...D.pen } };   // Potential's consumed power charge
+    const W = { dmg: {}, crit: S.critX || 1, critBonus: 1, pen: { ...D.pen }, gain: [] };   // Potential's consumed power charge
     for (const w of D.when || []) {
       let n = w.cond.reduce((t, c) => t * condN(c, d, S), 1);
       if (!n) continue;
       const p = w.val * Math.min(n, w.stacks || Infinity), pct = w.cap == null ? p : p < 0 ? Math.max(w.cap, p) : Math.min(w.cap, p);
       if (w.what === 'damage') for (const el in w.w) W.dmg[el] = (W.dmg[el] ?? 1) * (1 + pct / 100 * w.w[el]);
       else if (w.what === 'pen') W.pen[w.el] = (W.pen[w.el] || 0) + pct;   // penetration adds up
+      else if (w.what === 'gain') W.gain.push([w.from, w.to, pct]);   // damage of a type gained as extra of another
       else W[w.what] *= 1 + pct / 100 * w.w;
     }
     return W;
@@ -4812,8 +4817,9 @@ export function initScene(el, api) {
     const DW = OR.defendWith; if (DW) { const x = [[DW.crit, crit], [DW.projAttack, a.attack && a.shape === 'projectile'], [DW.far, dist(d.pos, pp) > 6], [DW.notLowES, me.maxE > 0 && me.es >= me.maxE * LOW], [DW.double && 200, Math.random() * 100 < DW.double]]
       .reduce((m, [p, ok]) => p && ok ? m * p / 100 : m, 1); if (x !== 1) c = { ...c, armourX: (c.armourX || 1) * x }; }
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
+    const UL = OR.unluckyDmg || Math.random() * 100 < (OR.unluckyChance || 0);   // the hit's damage Unlucky (Oracle; the tree's chance)
     for (const el in a.hits) {
-      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (OR.unluckyDmg ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
+      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
