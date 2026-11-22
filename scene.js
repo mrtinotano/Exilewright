@@ -490,8 +490,8 @@ export function initScene(el, api) {
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
-      const mine = !/minion/.test(S.src || ''), LK = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0);
-      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      const mine = !/minion/.test(S.src || ''), LK = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK || LS || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       // gained as extra damage of another type against an enemy in a state: of the hit's damage after its modifiers, not
       // scaled again by the other type's (as Unholy Might below)
       for (const [from, to, p] of W.gain) if (raw[from]) raw[to] = (raw[to] || 0) + raw[from] * p / 100;
@@ -571,6 +571,7 @@ export function initScene(el, api) {
       if (LX) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
         for (let k = 0; k < LX; k++) { const e = L[k % L.length]; later(.1 * (k + 1), () => { if (!e.dead) { fx.bolt(V(e.pos.x, 12, e.pos.z), V(e.pos.x, 0, e.pos.z), S.el, .2, .06, .5); hit(e, { ...S, src: 'conduit' }); } }); } }
       if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
+      if (dealt.physical && !/minion|totem/.test(S.src || '') && sheet().bloodHit) d.blood = (d.blood || 0) + dealt.physical * sheet().bloodHit / 100;   // Atziri's Acuity: its share of your hits' physical damage as Blood Loss
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
     if (M?.gain && d.mark === M && crit && own) {
@@ -593,10 +594,12 @@ export function initScene(el, api) {
     // supports' (calc.js onHit); a crit can cost it (Prototype Seventeen); Combo from Strikes; a perfectly timed hit's charge
     const H = real ? D.onHit : null;
     if (!S.src && time - (me.rageHit ?? -9) >= .5) {
-      const G = sheet().rage?.gain, n = (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
+      const G = sheet().rage?.gain, n = (P.spell ? 3 * prowess().length : 0) + (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
       if (n > 0) { me.rageHit = time; gainRage(n); if (Math.random() * 100 < (sheet().rage?.fill || 0)) me.rage = rageMax(); }   // the tree's chance to gain all of it
     }
     if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
+    if (!S.src && real && S.dmg?.attack && sheet().olro) me.olro = [...(me.olro || []).filter(u => u.until > time), { v: pow(d), until: time + 20 }];   // Olrovasara: the enemy's Power for 20 s
+    if (!S.src && real && S.dmg?.attack && Math.random() * 100 < (sheet().molten || 0)) { const j = api.build().gems.findIndex(g => g.name === 'Molten Shower'); if (j >= 0) later(.05, () => use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' })); }   // Brutus' Lead Sprinkler: hits trigger its Molten Shower
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
@@ -1131,7 +1134,9 @@ export function initScene(el, api) {
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the
   // whole of them, increased and more together, against its base cast time
-  const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]); };   // what was spent Recently: Primal Hunger
+  const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]);
+    const DP = sheet().prowess; if (DP) for (me.dpRage = (me.dpRage || 0) + n; me.dpRage >= DP; me.dpRage -= DP) me.dp = [...prowess(), time + 10].slice(-3); };   // Amor Mandragora: Druidic Prowess per X Rage spent (KeywordPopups' text: 10 s each, up to 3)
+  const prowess = () => (me.dp || []).filter(u => u > time);   // Druidic Prowess: 10% increased skill speed and 3 Rage on spell hits a stack (its keyword's text)   // what was spent Recently: Primal Hunger
   function gainEnergy(T, n, j) {
     if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
     const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
@@ -1315,6 +1320,7 @@ export function initScene(el, api) {
     const KG = S && !S.src ? ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]) : [];
     for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
+    if (Math.random() * 100 < (sheet().lament?.load || 0)) for (const k in clips) clips[k]++;   // The Last Lament: a bolt loaded into all crossbow skills (note: one already full is not shown as over its clip)
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
     flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + pow(d) * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < f.killCharge)); });   // and its own chance of a charge (Nascent Hope)
@@ -1988,6 +1994,7 @@ export function initScene(el, api) {
     const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
+      const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
       if ((P.chains || S.addChains) && hitD) {
         chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
@@ -2071,7 +2078,7 @@ export function initScene(el, api) {
         if (e.s >= life) { e.dead = true; return; }
         if (e.rhoa && me.mounted) { e.pos.x = pp.x; e.pos.z = pp.z; f.group.rotation.y = facing; return; }   // ridden: under you, no attacks
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
-        const AR = sheet().allyRegen, q0 = e.segs?.[0]; if (AR && q0?.life > 0 && dist(e.pos, pp) <= sheet().overgrow.r) q0.life = Math.min(q0.max, q0.life + me.maxL * AR / 6000 * dt);   // the tree's, in your Presence
+        const SA = sheet(), q0 = e.segs?.[0], AR = (SA.allyRegen || 0) * me.maxL + (SA.allyRegenOwn || 0) * (q0?.max || 0) + (SA.allyRegenBase || 0) * 100; if (AR && q0?.life > 0 && dist(e.pos, pp) <= SA.overgrow.r) q0.life = Math.min(q0.max, q0.life + AR / 6000 * dt);   // the tree's, in your Presence
         // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
         // damage (every half second here)
         const IB = S.dmg?.stats?.['infernal_familiar_minion_burns_for_%_max_life'];
@@ -2280,6 +2287,7 @@ export function initScene(el, api) {
     projectile(S) {
       const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
       if (X && X.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
+      { const SS = S.P.spell && !S.src && S.dmg?.sum, N = SS && (SS.spell_projectile_skills_fire_X_additional_projectiles_in_a_circle || (Math.random() * 100 < (SS['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova'] || 0) ? 8 : 0)); if (N) S = { ...S, circle: true, addProj: (S.addProj || 0) + N }; }   // Sire of Shards, Seed of Cataclysm: spells' additional projectiles in a circle
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
@@ -3961,6 +3969,8 @@ export function initScene(el, api) {
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
       const lengthen = (E, S) => { const R = cdReady[E.name]; if (E.cd && R?.length && S.dmg?.speed > 0) R[R.length - 1] += Math.min(E.max || Infinity, E.cd / 100 / S.dmg.speed); };
       const hits = !NOHIT.has(S.kind), tally = () => empower.reduce((t, e) => t + 1 + (e.uses || 0), 0), had = tally();
+      { const LD = sheet().lethal, F = flasks()[0], need = F && F.max * (LD?.pct || 0) / 100; if (LD?.pct && P.attack && hits && S.dmg && flaskLeft(0) >= need && api.info(S.g)?.gem?.types?.includes('Bow')) { me.fl[0] = flaskLeft(0) - need; const h = S.dmg.hits.physical || [0, 0], n = F.amount * LD.add / 100; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, physical: [h[0] + n, h[1] + n] } }; } }   // The Lethal Draw: bow attacks spend life flask charges for added physical damage
+      { const OV = sheet().olro, n = OV && P.attack && hits && S.dmg ? Math.min(OV, (me.olro || []).reduce((t, u) => t + (u.until > time ? u.v : 0), 0)) : 0; if (n) { const h = S.dmg.hits.lightning || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, lightning: [h[0], h[1] + n] } }; } }   // Olrovasara: maximum added lightning damage from the Power of the enemies hit in the past 20 s
       for (let k = empower.length - 1; k >= 0; k--) {
         const E = empower[k];
         if (E.type === 'infuse' && P.attack && hits) {
@@ -4272,7 +4282,8 @@ export function initScene(el, api) {
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
       / (1 + new Set(used.filter(u => u.spell && time - u.t <= 8).map(u => u.name)).size * (b.P.spell && b.dmg?.sum?.['cast_speed_+%_per_num_unique_spells_cast_in_last_8_seconds'] || 0) / 100);
-    if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); gemini(); while (reloads[0]?.t < time - 8) reloads.shift(); }
+    const LL = sheet().lament?.life;   // The Last Lament: life sacrificed to not consume the last bolt
+    if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0 && !(LL && me.life > LL && (me.life -= LL, clips[b.name] = 1))) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); gemini(); while (reloads[0]?.t < time - 8) reloads.shift(); }
     return t;
   };
   function press(i, key) {
@@ -4710,6 +4721,7 @@ export function initScene(el, api) {
   function hurt(n, chaos, el, crit, d, hit = false) {
     if (!(n > 0)) return;
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
+    if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
     stats.taken += n; me.hurt = time; me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
     const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
@@ -5187,10 +5199,11 @@ export function initScene(el, api) {
   const blindLess = () => BLIND.less * (1 + (sheet().blindEffect || 0) / 100);   // your Blind on enemies, with its increased effect
   const regenNow = c => {
     const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
-    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
+    const FR = c.regrow ? Math.floor(me.regrow || 0) : 0;   // Dustbloom's Fragile Regrowth
+    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
   const echoed = () => me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time];   // the spells Echoed recently
-  const speedWhile = b => 1 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
+  const speedWhile = b => 1 + 10 * prowess().length / 100 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), BR = banner('resist_all_elements_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
@@ -5407,7 +5420,7 @@ export function initScene(el, api) {
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
     // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
-    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = Math.random() * 100 < (sheet().volRefresh || 0) ? me.vol : 0; me.volAt = time; }
+    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) { const VN = me.vol * VOLATILITY.dmg, VC = VN * Math.min(100, sheet().volCold || 0) / 100; hurt(VN - VC + (VC ? playerTakes(sheet(), 'cold', VC, false) : 0), 0, VC ? 'cold' : 'physical', false, null); }   /* Dream Fragments: its share taken as cold */ me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = Math.random() * 100 < (sheet().volRefresh || 0) ? me.vol : 0; me.volAt = time; }
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
     // Seething Body: Elemental Archon does not expire on High Infernal Flame
     if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }
@@ -5440,6 +5453,7 @@ export function initScene(el, api) {
     if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (note: its damage over time bypassing energy shield is not played)
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
     if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
+    if (c.regrow) me.regrow = Math.min(c.regrow.max, (me.regrow || 0) + c.regrow.gain * dt);   // Dustbloom: Fragile Regrowth a second, up to its most
     if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved
     if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
