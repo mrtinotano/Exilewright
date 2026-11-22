@@ -414,7 +414,7 @@ export function character(b, sum) {
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
-      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), ail: ailments({}, sum, {}, []), thornsX },
+      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), lifeShift: v(sum, 'gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted'), ail: ailments({}, sum, {}, []), thornsX },
   };
   // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
   // your maximum life; Invoker: Spirit per evasion and energy shield on the body armour. note: added to the totals, after
@@ -468,7 +468,7 @@ export function recovery(c, sum) {
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
     esDelayHurt: esD('energy_shield_delay_-%_when_not_on_full_life'),
     esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'), esDelayArchon: esD('energy_shield_delay_-%_while_affected_by_archon'),
-    archonRes: v(sum, 'archon_grants_all_elemental_resistance_+%'),   // Archon buffs also grant it
+    archonRes: v(sum, 'archon_grants_all_elemental_resistance_+%'), fireMaxIgnited: v(sum, 'base_maximum_fire_damage_resistance_%_while_ignited'),   // Archon buffs also grant it
     // while Shapeshifted: factors on the energy shield delay and recharge, accuracy and life leech with their other
     // increases, armour applied to elemental damage, more maximum Rage
     shift: (k => k.some(x => sum[x]) ? { esDelay: esD('energy_shield_delay_-%_while_shapeshifted'),
