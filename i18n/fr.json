@@ -489,6 +489,7 @@
  "Auto ({0})": "Auto ({0})",
  "Find the best path": "Trouver le meilleur chemin",
  "{0} of {1} points placed…": "{0} points sur {1} placés…",
+ "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "Ce joyau ne peut pas être retiré : les passifs alloués depuis le point de départ de classe qu'il ouvre ne seraient plus reliés.",
  "{0} (in {1})": "{0} (dans {1})",
  "This can take several minutes.": "Cela peut prendre plusieurs minutes.",
  "No passive within reach raises this objective.": "Aucun talent passif à portée n'augmente cet objectif.",

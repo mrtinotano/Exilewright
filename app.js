@@ -79,6 +79,7 @@ const clsOf = asc => ascs.find(a => a.name === asc)?.class || (CLASSES.includes(
 
 function renderSide() {
   const b = B();
+  seenItems.set(b, structuredClone({ items: b.items || {}, stash: b.stash }));
   b.gems.forEach(g => { g.level ??= 20; });  // builds saved before gem levels existed
   $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
   $('notes').value = b.notes;
@@ -574,13 +575,16 @@ const SPLIT = { str: 'MARAUDER', dex: 'RANGER', int: 'WITCH', strdex: 'DUELIST',
 const ROOT_OF = Object.fromEntries([...ROOTS].map(id => [N[id].name, id]));
 const splitRoots = (b, has = new Set(b.nodes)) => Object.entries(b.items || {}).flatMap(([slot, it]) => !slot.startsWith('jewel:') || !has.has(slot.slice(6)) ? []
   : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]]).filter(Boolean));
-function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens in a kept socket
-  const keep = new Set([nodes[0]]), q = [nodes[0]], set = new Set(nodes);
-  do {
-    while (q.length) for (const w of N[q.shift()].links.map(String)) if (set.has(w) && !keep.has(w)) { keep.add(w); q.push(w); }
-    for (const r of b ? splitRoots(b, keep) : []) if (!keep.has(r)) { keep.add(r); q.push(r); }
-  } while (q.length);
-  return nodes.filter(n => keep.has(n));
+function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
+  // (its socket may hang from that start itself, as in the game: the tree can then leave the class start); sockets that
+  // end up loose close their start, until nothing more goes
+  for (let alive = new Set(nodes); ;) {
+    const keep = new Set([nodes[0], ...(b ? splitRoots(b, alive) : [])]), q = [...keep];
+    while (q.length) for (const w of N[q.shift()].links.map(String)) if (alive.has(w) && !keep.has(w)) { keep.add(w); q.push(w); }
+    const next = nodes.filter(n => keep.has(n));
+    if (next.length === alive.size) return next;
+    alive = new Set(next);
+  }
 }
 // what clicking `id` would allocate (empty if it is allocated already or unreachable)
 function preview(id, b = B()) {
@@ -1053,7 +1057,16 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
   swapSet: () => { swapSet(B(), B().wset === 2 ? 1 : 2); save(); renderSide(); return B().wset; },
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
-const renderItems = initItems($('items'), B, () => { save(); renderSide(); },
+// Split Personality can't be taken out while passives hang from the start it opens (as in the game): that item change is
+// undone (seenItems: the build's gear as the panel last showed it)
+const seenItems = new WeakMap();
+function keepSplit() {
+  const b = B(), was = seenItems.get(b);
+  if (!was || prune(b.nodes, b).length >= prune(b.nodes, { ...b, items: was.items }).length) return;
+  b.items = structuredClone(was.items); b.stash = structuredClone(was.stash);
+  ask(t('This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.'));
+}
+const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
   () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });

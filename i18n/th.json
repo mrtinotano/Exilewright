@@ -489,6 +489,7 @@
  "Auto ({0})": "อัตโนมัติ ({0})",
  "Find the best path": "ค้นหาเส้นทางที่ดีที่สุด",
  "{0} of {1} points placed…": "วางแล้ว {0} จาก {1} แต้ม…",
+ "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "ไม่สามารถถอดอัญมณีนี้ได้: พาสซีฟที่จัดสรรจากจุดเริ่มต้นของคลาสที่อัญมณีนี้เปิดจะไม่เชื่อมต่อกัน",
  "{0} (in {1})": "{0} (ใน {1})",
  "This can take several minutes.": "อาจใช้เวลาหลายนาที",
  "No passive within reach raises this objective.": "ไม่มีพาสซีฟในระยะที่เพิ่มเป้าหมายนี้",
