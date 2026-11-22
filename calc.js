@@ -557,6 +557,7 @@ export function recovery(c, sum) {
     // enemies' elemental resistances: ignored by your critical hits (Beacon of Azis; Choir of the Storm: lightning), none in
     // your Presence (The Coming Calamity), resisted by their lowest (Leopold's Applause; in your Presence: Sacred Flame)
     critIgnoreRes: sum.critical_strikes_ignore_elemental_resistances ? ['fire', 'cold', 'lightning'] : sum.critical_strikes_ignore_lightning_resistance ? ['lightning'] : null,
+    presence: { blind: !!sum.enemies_in_presence_are_blinded, intim: !!sum.enemies_in_presence_are_intimidated, hinder: !!sum.base_enemies_in_your_presence_are_hindered },   // Sandstorm Visage, Perfidy, Amor Mandragora
     noResNear: !!sum.enemies_in_presence_have_no_elemental_resistances, lowestRes: !!sum.elemental_damage_resisted_by_lowest_elemental_resistance, lowestResNear: !!sum.enemies_in_presence_elemental_damage_resisted_by_lowest_elemental_resistance,
     leechOver: !!sum.life_leech_can_overcap_life, leechToEs: !!sum.life_leech_excess_goes_to_energy_shield,   // Couture of Crimson; Soul Tether (the scene plays them)
     armourPerRage: v(sum, 'armour_+%_per_rage'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors

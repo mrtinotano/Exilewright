@@ -5383,6 +5383,12 @@ export function initScene(el, api) {
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
+    // uniques: enemies in your Presence Blinded (Sandstorm Visage), Intimidated (Perfidy), Hindered (Amor Mandragora), while they are in it
+    const PS = sheet().presence || {};
+    if (PS.blind || PS.intim || PS.hinder) for (const d of dummies) if (d.inPres) {
+      if (PS.blind) d.st.blind = Math.max(d.st.blind || 0, .25); if (PS.intim) d.intim = Math.max(d.intim || 0, time + .25);
+      if (PS.hinder) { const h = d.presSlow ||= { pct: -HINDER.slow }; if (!d.slows.includes(h)) d.slows.push(h); h.until = time + .25; }
+    }
     // Healing Runes: while the buff it supports is on, every its interval you lose up to its % of your maximum Ward and
     // heal its % of what you lost, split between your minions not on full life. note: who counts as nearby is not in
     // its data (the scene's: all your minions; you are not healed), nor whether Ward is lost with none to heal (here it is not)
