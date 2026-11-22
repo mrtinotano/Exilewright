@@ -27,6 +27,8 @@ const canRoll = (a, base, desecrated) => { if (a.desecrated ? !desecrated : a.do
 const boost = (item, tags, vals) => !item.catalyst || !tags?.includes(item.catalyst) || !vals ? vals
   : vals.map(v => Math.trunc(v * (1 + (item.quality || 0) / 100)));
 const modVals = (item, m, vals = m.values) => boost(item, AFFIX[m.id]?.tags, vals);
+// the attributes the base needs, with the item's own "+100 Strength Requirement" (Mjölner, Shyaba)
+const reqOf = item => { const s = rolled(item), b = BASE[item.base]?.req || {}; return Object.fromEntries(['str', 'dex', 'int'].map(k => [k, (b[k] || 0) + (s[`local_${{ str: 'strength', dex: 'dexterity', int: 'intelligence' }[k]}_requirement_+`] || 0)])); };
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
@@ -69,7 +71,7 @@ function local(item) {
     r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
     r.movement = base.armour['movement_speed_%'] / 100;
     // its Strength requirement with its own reduced / no requirements. note: the tree's increased / reduced ones not counted
-    r.str = s.local_no_attribute_requirements ? 0 : Math.floor((base.req?.str || 0) * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
+    r.str = s.local_no_attribute_requirements ? 0 : Math.floor(reqOf(item).str * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
   }
   if (base.weapon) {
     const w = base.weapon, phys = (1 + (s['local_physical_damage_+%'] || 0) / 100) * q;
@@ -746,7 +748,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // character's without it (its own attributes do not count), with the tree's increased / reduced ones and its gloves' "ignore"
     const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
     const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
-    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, needOf(without, k, x, it, rp)]).filter(([k, x]) => haveFor(without, k, it) < x);
+    const short = free ? [] : Object.entries(reqOf(it)).filter(([, x]) => x).map(([k, x]) => [k, needOf(without, k, x, it, rp)]).filter(([k, x]) => haveFor(without, k, it) < x);
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')

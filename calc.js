@@ -459,6 +459,8 @@ export function character(b, sum) {
   // energy shield equal to a share of Strength (Geofri's Sanctuary)
   c.es += Math.round((c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_maximum_energy_shield') / 100 + (c.mana || 0) * v(sum, 'mana_%_to_gain_as_energy_shield') / 100);
   const MA = Math.round((c.mana || 0) * v(sum, 'mana_%_to_gain_as_armour') / 100); if (MA) { c.armour += MA; c.armourPct = armourReduction(c.armour, lvl); }
+  // uniques' more Global Evasion Rating and Energy Shield
+  const HW = pct('hand_wraps_evasion_rating_and_energy_shield_+%_final'); if (HW !== 1) { c.evasion = Math.round(c.evasion * HW); c.evadePct = evadeChance(c.evasion, lvl); c.es = Math.round(c.es * HW); }
   const GS = sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']; if (GS) c.es = Math.round(at.str * GS / 100);
   // thorns from your maximum life (Cat O' Nine Tails: physical) and mana (Icetomb: cold), the scene's of its current maximum
   c.thorns.life = ['gain_minimum_physical_thorns_damage_equal_to_x%_of_maximum_life', 'gain_maximum_physical_thorns_damage_equal_to_x%_of_maximum_life'].map(k => v(sum, k));
@@ -1053,6 +1055,12 @@ export function skill(g, b, treeGear) {
       out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost / eff2) : Math.max(0, Math.round(step(step(step(life, inc2), more2), moreCost) / eff2));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
     }
+    // uniques' extra costs: life equal to a share of the mana cost (The Covenant, Prized Pain), a share of maximum life for
+    // non-channelling spells (Rathpith Globe), of maximum mana for attacks (Mind of the Council)
+    const RL = spell && !own.includes('channelling') && v(sum, 'base_life_cost_+_with_non_channelling_spells_%_maximum_life'), AM = attack && v(sum, 'attacks_base_mana_cost_+_%_of_maximum_mana'), pc = (RL || AM) && character(b, sum);
+    const extraLife = out.cost * v(sum, 'base_skill_gain_life_cost_%_of_mana_cost') / 100 + (RL ? (pc.life || 0) * RL / 100 : 0);
+    if (extraLife) out.lifeCost = (out.lifeCost || 0) + (perSec ? extraLife : Math.round(extraLife));
+    if (AM) out.cost += perSec ? (pc.mana || 0) * AM / 100 : Math.round((pc.mana || 0) * AM / 100);
     // Paquate's Pact: a % of maximum life more for each use or trigger of the skill Recently, up to the stat's own cap
     const pact = Object.keys(sum).find(k => k.startsWith('support_corrupting_cry_%_life_cost_per_supported_skill'));
     if (pact) out.lifePerRecent = { pct: sum[pact], max: +pact.match(/up_to_(\d+)%/)[1] };
@@ -1126,7 +1134,10 @@ export function skill(g, b, treeGear) {
   const pre = { ...base }, all = [0, 1].map(i => DMG.reduce((s, t) => s + pre[t][i], 0));
   const SRC = { all: DMG, elemental: ['fire', 'cold', 'lightning'], ...Object.fromEntries(DMG.map(t => [t, [t]])) }, end = spell ? '_with_spells' : attack ? '_with_attacks' : null;
   const gain = (src, t, k = `non_skill_base_${src}_damage_%_to_gain_as_${t}`) => v(sum, k) + (end ? v(sum, k + end) : 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`)
-    + (src === 'all' && t !== 'physical' && t !== 'chaos' ? v(sum, 'non_skill_base_all_damage_%_to_gain_as_random_element') / 3 : 0);   // Shaman: a random element, a third each on average
+    + (src === 'all' && t !== 'physical' && t !== 'chaos' ? v(sum, 'non_skill_base_all_damage_%_to_gain_as_random_element') / 3 : 0)   // Shaman: a random element, a third each on average
+    + (src !== 'all' ? 0 : t === 'physical' ? (spell && out.lifeCost > 0 ? v(sum, 'spells_gain_%_physical_damage_if_they_cost_life') : 0)   // Atziri's Rule: spells that cost life
+      : t === 'chaos' ? Math.floor((out.lifeCost || 0) / 3) * v(sum, 'non_skill_all_damage_%_to_gain_as_chaos_per_3_life_cost')   // The Burden of Shadows
+      : t === 'fire' && sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] ? (character(b, sum).block || 0) * sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] : 0);   // Chernobog's Pillar
   for (const t of DMG) {
     const extra = mod(mods, 'BASE', ['DamageGainAs' + cap(t)], hit) / 100;
     const from = [0, 1].map(i => Object.entries(SRC).reduce((x, [src, ts]) => x + gain(src, t) / 100 * ts.reduce((y, u) => y + pre[u][i], 0), 0));
