@@ -762,7 +762,6 @@
  "General": "Общие",
  "Stat to improve": "Что улучшить",
  "None of the items found improves the current gear.": "Ни один из найденных предметов не улучшает текущее снаряжение.",
- "Open on the web": "Открыть на сайте",
  "Exalted Orb Equivalent": "Эквивалент в сферах возвышения",
  "Exalted or Divine Orbs": "Сферы возвышения или божественные",
  "Saved items": "Сохранённые предметы",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "Требуется {1}: {0} (у вас {2})",
  "Empty (Socket {0})": "Пусто (гнездо {0})",
  "Socket {0}": "гнездо {0}",
- "Socket {0} of your {1}": "гнездо {0} вашего снаряжения: {1}"
+ "Socket {0} of your {1}": "гнездо {0} вашего снаряжения: {1}",
+ "Trade": "Торговля"
 }

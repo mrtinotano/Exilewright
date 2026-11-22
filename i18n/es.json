@@ -762,7 +762,6 @@
  "General": "General",
  "Stat to improve": "Stat a mejorar",
  "None of the items found improves the current gear.": "Ninguno de los objetos encontrados mejora el equipo actual.",
- "Open on the web": "Abrir en la web",
  "Exalted Orb Equivalent": "Equivalente en orbes exaltados",
  "Exalted or Divine Orbs": "Orbes exaltados o divinos",
  "Saved items": "Objetos guardados",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "Requiere {0} de {1} (tienes {2})",
  "Empty (Socket {0})": "Vacío (hueco {0})",
  "Socket {0}": "hueco {0}",
- "Socket {0} of your {1}": "hueco {0} de tu equipo: {1}"
+ "Socket {0} of your {1}": "hueco {0} de tu equipo: {1}",
+ "Trade": "Tienda"
 }

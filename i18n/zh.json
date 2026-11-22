@@ -762,7 +762,6 @@
  "General": "一般",
  "Stat to improve": "要提升的數值",
  "None of the items found improves the current gear.": "找到的物品都沒有比目前的裝備更好。",
- "Open on the web": "在網站上開啟",
  "Exalted Orb Equivalent": "崇高石等值",
  "Exalted or Divine Orbs": "崇高石或神聖石",
  "Saved items": "保存的物品",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "需要 {0} {1}（你有 {2}）",
  "Empty (Socket {0})": "空（插槽 {0}）",
  "Socket {0}": "插槽 {0}",
- "Socket {0} of your {1}": "你的装备的插槽 {0}：{1}"
+ "Socket {0} of your {1}": "你的装备的插槽 {0}：{1}",
+ "Trade": "交易"
 }

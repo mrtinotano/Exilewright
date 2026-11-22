@@ -152,9 +152,10 @@ export function weighted({ cls, wants, price, level, state = 'securable' }) {
     stats: [{ type: 'weight', value: { min: 1 }, filters: list.map(w => ({ id: w.id, value: { weight: +(100 * w.gain / w.roll / top).toPrecision(3) } })) }] }, sort: { 'statgroup.0': 'desc' } };
 }
 export const siteLink = (league, queryId, bulk) => (bulk ? SITE.replace('/search/', '/exchange/') : SITE) + encodeURIComponent(league) + (queryId ? '/' + queryId : '');
-// the search for one listed item on the site: its base (a unique: and its name), its seller and its price
+// that one listing alone: its base (a unique: its name), item level, every modifier, seller and price
 export const listingQuery = (l, state) => ({ query: { status: { option: state }, type: l.base, ...(l.rarity === 'unique' && l.name && { name: l.name }),
-  filters: { trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
+  ...(l.stats?.length && { stats: [{ type: 'and', filters: l.stats.map(id => ({ id })) }] }),
+  filters: { ...(l.ilvl && { type_filters: { filters: { ilvl: { min: l.ilvl, max: l.ilvl } } } }), trade_filters: { filters: { ...(l.seller && { account: { input: l.seller } }), ...(l.price && CURRENCY.includes(l.price.currency) && { price: { min: l.price.amount, max: l.price.amount, option: l.price.currency } }) } } } }, sort: { price: 'asc' } });
 export const siteQuery = (league, body) => SITE + encodeURIComponent(league) + '?q=' + encodeURIComponent(JSON.stringify(body));
 
 // ---------- reading what the site lists
@@ -168,7 +169,7 @@ const linesOf = (it, key) => (it[key] || []).map(m => typeof m === 'string' ? { 
 export function readListing(r) {
   const it = r.item || {}, lines = Object.keys(KINDS).flatMap(k => linesOf(it, k)), name = plain(it.name || ''), base = plain(it.baseType || it.typeLine || '');
   const extra = ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), p = tradeItem({ name, base, lines, runes: extra });
-  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
+  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), stats: [...new Set(lines.filter(l => l.hash).map(l => `${l.kind}.stat_${l.hash}`))], extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
     item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [], sockets: (it.sockets || []).length };
 }

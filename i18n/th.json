@@ -762,7 +762,6 @@
  "General": "ทั่วไป",
  "Stat to improve": "ค่าที่ต้องการเพิ่ม",
  "None of the items found improves the current gear.": "ไม่มีไอเทมที่พบซึ่งดีกว่าอุปกรณ์ปัจจุบัน",
- "Open on the web": "เปิดบนเว็บ",
  "Exalted Orb Equivalent": "เทียบเท่า Exalted Orb",
  "Exalted or Divine Orbs": "Exalted หรือ Divine Orb",
  "Saved items": "ไอเทมที่เก็บไว้",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "ต้องการ {1} {0} (คุณมี {2})",
  "Empty (Socket {0})": "ว่าง (ช่อง {0})",
  "Socket {0}": "ช่อง {0}",
- "Socket {0} of your {1}": "ช่อง {0} ของอุปกรณ์คุณ: {1}"
+ "Socket {0} of your {1}": "ช่อง {0} ของอุปกรณ์คุณ: {1}",
+ "Trade": "ซื้อขาย"
 }

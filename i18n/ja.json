@@ -762,7 +762,6 @@
  "General": "一般",
  "Stat to improve": "向上させるステータス",
  "None of the items found improves the current gear.": "見つかったアイテムで現在の装備より良いものはありません。",
- "Open on the web": "サイトで開く",
  "Exalted Orb Equivalent": "エクザルテッドオーブ相当",
  "Exalted or Divine Orbs": "エクザルテッドかディヴァインオーブ",
  "Saved items": "保存したアイテム",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "{1} {0}が必要（現在 {2}）",
  "Empty (Socket {0})": "空き（ソケット {0}）",
  "Socket {0}": "ソケット{0}",
- "Socket {0} of your {1}": "あなたの装備のソケット{0}: {1}"
+ "Socket {0} of your {1}": "あなたの装備のソケット{0}: {1}",
+ "Trade": "トレード"
 }

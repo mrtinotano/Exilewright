@@ -219,7 +219,7 @@ export function initOpt(el, ctx) {
         <div class="gfoot"><div class="gval">${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</div>
           <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
           ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}
-          <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Open on the web')}</a></div></div></div>`;
+          <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Trade')}</a></div></div></div>`;
     };
     const w = !hit.like && weighted({ cls: hit.cls, wants: hit.wants, price: hit.price, level: hit.level, state: hit.state });
     return `<div class="optres">${res.errors.map(e => `<p class="opterr">${esc(errText(e))}</p>`).join('')}

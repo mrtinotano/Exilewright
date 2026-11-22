@@ -762,7 +762,6 @@
  "General": "Allgemein",
  "Stat to improve": "Zu verbessernder Wert",
  "None of the items found improves the current gear.": "Keiner der gefundenen Gegenstände verbessert die aktuelle Ausrüstung.",
- "Open on the web": "Auf der Website öffnen",
  "Exalted Orb Equivalent": "Gegenwert in Erhabenen Kugeln",
  "Exalted or Divine Orbs": "Erhabene oder Göttliche Kugeln",
  "Saved items": "Gespeicherte Gegenstände",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "Benötigt {0} {1} (du hast {2})",
  "Empty (Socket {0})": "Leer (Sockel {0})",
  "Socket {0}": "Sockel {0}",
- "Socket {0} of your {1}": "Sockel {0} deines Gegenstands: {1}"
+ "Socket {0} of your {1}": "Sockel {0} deines Gegenstands: {1}",
+ "Trade": "Handel"
 }

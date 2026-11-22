@@ -762,7 +762,6 @@
  "General": "일반",
  "Stat to improve": "향상할 능력치",
  "None of the items found improves the current gear.": "찾은 아이템 중 현재 장비보다 나은 것이 없습니다.",
- "Open on the web": "웹에서 열기",
  "Exalted Orb Equivalent": "엑잘티드 오브 환산",
  "Exalted or Divine Orbs": "엑잘티드 또는 디바인 오브",
  "Saved items": "저장한 아이템",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "{1} {0} 필요 (현재 {2})",
  "Empty (Socket {0})": "비어 있음 (홈 {0})",
  "Socket {0}": "소켓 {0}",
- "Socket {0} of your {1}": "내 장비의 소켓 {0}: {1}"
+ "Socket {0} of your {1}": "내 장비의 소켓 {0}: {1}",
+ "Trade": "거래"
 }

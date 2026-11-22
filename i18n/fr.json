@@ -762,7 +762,6 @@
  "General": "Général",
  "Stat to improve": "Statistique à améliorer",
  "None of the items found improves the current gear.": "Aucun des objets trouvés n'améliore l'équipement actuel.",
- "Open on the web": "Ouvrir sur le site",
  "Exalted Orb Equivalent": "Équivalent en Orbes exaltés",
  "Exalted or Divine Orbs": "Orbes exaltés ou divins",
  "Saved items": "Objets gardés",
@@ -917,5 +916,6 @@
  "Requires {0} {1} (you have {2})": "Nécessite {0} en {1} (vous avez {2})",
  "Empty (Socket {0})": "Vide (châsse {0})",
  "Socket {0}": "châsse {0}",
- "Socket {0} of your {1}": "châsse {0} de votre équipement : {1}"
+ "Socket {0} of your {1}": "châsse {0} de votre équipement : {1}",
+ "Trade": "Échange"
 }
