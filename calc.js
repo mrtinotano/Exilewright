@@ -413,7 +413,7 @@ export function character(b, sum) {
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round(x * thornsX)) },
-      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'), ail: ailments({}, sum, {}, []), thornsX },
+      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), ail: ailments({}, sum, {}, []), thornsX },
   };
   // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
   // your maximum life; Invoker: Spirit per evasion and energy shield on the body armour. note: added to the totals, after

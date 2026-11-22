@@ -543,8 +543,8 @@ export function initScene(el, api) {
       const IP = A?.impale, ph = raw.physical || 0;
       if (D.attack && d.impales.length && !IP?.keep) raw.physical = ph + d.impales.splice(d.impales.indexOf(Math.max(...d.impales)), 1)[0];
       if (ph && Math.random() * 100 < IP?.chance) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
-      const dealt = {};
-      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el]); total += got; if (got > best) { best = got; top = el; } }
+      const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0);   // the tree's chance for Thorns to ignore armour
+      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el]); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
