@@ -564,7 +564,8 @@ export function initScene(el, api) {
       if (ph && Math.random() * 100 < IP?.chance) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
       const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0);   // the tree's chance for Thorns to ignore armour
       const INV = Math.random() * 100 < (D.sum?.['treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance'] || 0);   // the tree's chance to treat elemental resistances as inverted
-      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV); total += got; if (got > best) { best = got; top = el; } }
+      const ZR = crit && !S.src ? sheet().critIgnoreRes : null;   // Beacon of Azis, Choir of the Storm: your critical hits ignore those resistances
+      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
@@ -940,9 +941,13 @@ export function initScene(el, api) {
   // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
   // note: as a factor of its own, as Intimidate's
   const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0) + (sheet().uDef?.yoke || 0) * ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(a => d.st[a] > 0).length) / 100 : 1; };   // Yoke of Suffering: per elemental ailment type on them
-  function takes(d, el, r, isHit = true, ow, pen, inv) { return defence(d, el, r, isHit, ow, pen, inv) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
-  function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv) {
-    let st = d.stat; const CA = curseFx(d, C => C?.armour);
+  function takes(d, el, r, isHit = true, ow, pen, inv, zero) { return defence(d, el, r, isHit, ow, pen, inv, zero) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
+  function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv, zero) {
+    let st = d.stat; const CA = curseFx(d, C => C?.armour), SE = sheet(), near = () => dist(d.pos, pp) <= SE.overgrow.r;
+    // Leopold's Applause (in your Presence: Sacred Flame): elemental damage resisted by its lowest elemental resistance;
+    // The Coming Calamity: none in your Presence; a critical hit's ignored ones (zero)
+    if (ELEM.includes(el) && (SE.lowestRes || SE.lowestResNear && near())) st = { ...st, res: { ...st.res, [el]: Math.min(...ELEM.map(e => st.res[e] || 0)) } };
+    if (ELEM.includes(el) && (zero?.includes(el) || SE.noResNear && near())) st = { ...st, res: { ...st.res, [el]: 0 } };
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
     if (el === 'physical' && sheet().hazArmour && time - (d.hazAt ?? -99) <= RECENT) st = { ...st, armour: st.armour * (1 + sheet().hazArmour / 100) };   // the tree's armour of the enemies your Hazards affected recently
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };

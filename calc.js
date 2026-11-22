@@ -554,6 +554,10 @@ export function recovery(c, sum) {
     // Titanrot Cataphract: none; Mask of the Stitched Demon: per maximum energy shield
     lifeRegen: sum.no_life_regeneration ? 0 : lifePctRegen && c.life == null ? null
       : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.es || 0) * v(sum, 'life_regeneration_per_minute_per_maximum_energy_shield') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
+    // enemies' elemental resistances: ignored by your critical hits (Beacon of Azis; Choir of the Storm: lightning), none in
+    // your Presence (The Coming Calamity), resisted by their lowest (Leopold's Applause; in your Presence: Sacred Flame)
+    critIgnoreRes: sum.critical_strikes_ignore_elemental_resistances ? ['fire', 'cold', 'lightning'] : sum.critical_strikes_ignore_lightning_resistance ? ['lightning'] : null,
+    noResNear: !!sum.enemies_in_presence_have_no_elemental_resistances, lowestRes: !!sum.elemental_damage_resisted_by_lowest_elemental_resistance, lowestResNear: !!sum.enemies_in_presence_elemental_damage_resisted_by_lowest_elemental_resistance,
     leechOver: !!sum.life_leech_can_overcap_life, leechToEs: !!sum.life_leech_excess_goes_to_energy_shield,   // Couture of Crimson; Soul Tether (the scene plays them)
     armourPerRage: v(sum, 'armour_+%_per_rage'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors
     lifeToEs: !!sum.regenerate_energy_shield_instead_of_life,   // Ligurium Talisman, Soul Tether: life regeneration applied to energy shield instead (the scene plays it)
@@ -1577,7 +1581,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // ignite and shock (PoB2 CalcOffence AilmentChance); more against rare or unique enemies, shock against electrocuted
     ailChance: 1 + ailInc / 100, ailRare: (1 + (ailInc + all('ailment_chance_+%_vs_rare_or_unique_enemy')) / 100) / (1 + ailInc / 100),
     shockElectro: (1 + (ailInc + all('shock_chance_+%') + all('shock_chance_+%_vs_electrocuted_enemies')) / 100) / (1 + (ailInc + all('shock_chance_+%')) / 100),
-    igniteChance: (1 + (all('ignite_chance_+%') + ailInc) / 100) * more(/(ignite_chance|chance_to_ignite)_\+%_final$/), shockChance: (1 + (all('shock_chance_+%') + ailInc) / 100) * more(/(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow)
+    igniteChance: (1 + (all('ignite_chance_+%') + ailInc) / 100) * more(/(ignite_chance|chance_to_ignite)_\+%_final$/) * (all('chance_to_ignite_is_doubled') ? 2 : 1), shockChance: (1 + (all('shock_chance_+%') + ailInc) / 100) * more(/(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow); Candlemaker: its ignite chance doubled
     freeze: (1 + (all('hit_damage_freeze_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_freeze_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * more('hit_damage_freeze_multiplier_+%_final') * SF,
     immob: (1 + (all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
