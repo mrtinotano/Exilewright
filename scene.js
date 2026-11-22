@@ -5443,6 +5443,9 @@ export function initScene(el, api) {
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());
     if (sheet().ordained && time - (me.fragAt ?? -9) >= DIVINE.every) { me.fragAt = time; const p = around(pp, sheet().overgrow.r); divine.push({ p, until: time + DIVINE.time, dec: fx.decal(p, .35, 'rune', 'lightning', { a: .8, spin: 1 }) }); }
+    // Vestige of Darkness: the Bodach manifests every its seconds (faster per Power of the enemies in your Presence, a random
+    // delay more), Blinding the enemies in your Presence
+    const WG = sheet().wendigo; if (WG && time >= (me.wendigoAt ?? 0)) { const ins = inside(pp, sheet().overgrow.r); me.wendigoAt = time + WG.every / (1 + WG.faster * ins.reduce((t, d) => t + pow(d), 0) / 100) + Math.random() * WG.rand; for (const d of ins) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); if (ins.length) fx.ring(pp, .3, sheet().overgrow.r, 'curse', .5, { a: .4 }); }
     if (sheet().auspex && time - (me.auspexAt ?? -9) >= 1) { me.auspexAt = time; for (const d of inside(pp, sheet().overgrow.r)) madness(d); }   // The Auspex: 1 Gruelling Madness each second in your Presence
     // The Hammer of Faith: every its interval a random lesser (non-damaging) Shrine's buff for that Shrine's duration (skills.json lesser_shrines)
     const HF = sheet().shrineEvery, LS = SK.lesser_shrines || [];
