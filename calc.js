@@ -570,6 +570,11 @@ export function recovery(c, sum) {
     luckySurr: !!sum.attack_damage_is_lucky_if_surrounded,   // Empire's Grasp
     critShocked: v(sum, 'critical_bonus_+%_final_while_shocked'), critChilled: v(sum, 'enemy_hit_critical_strike_chance_+%_against_self_while_chilled'),   // Berek's Respite; Berek's Grip
     chillTaken: !!sum.enemies_chilled_by_hits_take_damage_increased_by_chill_effect, witherForever: !!sum.wither_never_expires,   // Asphyxia's Wrath; Cospri's Will
+    frozenTaken: v(sum, 'frozen_monsters_take_increased_damage'), noEleAil: !!sum.cannot_inflict_elemental_ailments,   // Taryn's Shiver; Plaguefinger
+    blindPoison: !!sum.blind_on_poison_inflicted, flaskUnbleed: !!sum.remove_bleed_on_life_flask_use,   // Murkshaft; Zerphi's Genesis
+    poisonKill: v(sum, 'recover_permyriad_maximum_life_per_poison_on_enemy_on_kill') / 100, killTwice: !!sum.on_kill_effects_occur_twice,   // Snakebite; Killjoy
+    regenPulse: sum.life_recovery_from_regeneration_is_not_applied ? v(sum, 'recover_1_life_per_x_life_regeneration_per_minute_every_4_seconds') || Infinity : 0,   // Igniferis
+    manaRegenOnly: !!sum.cannot_recover_mana_except_regeneration,   // Indigon
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
@@ -584,7 +589,7 @@ export function recovery(c, sum) {
       esRecharge: pct('energy_shield_recharge_rate_+%', 'energy_shield_recharge_rate_+%_while_shapeshifted') / pct('energy_shield_recharge_rate_+%'), acc: v(sum, 'accuracy_rating_+%_while_shapeshifted'),
       leech: v(sum, 'life_leech_amount_+%_while_shapeshifted'), armourEl: v(sum, 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted'), rage: v(sum, 'maximum_rage_+_while_shapeshifted') } : null)(
       ['energy_shield_delay_-%_while_shapeshifted', 'energy_shield_recharge_rate_+%_while_shapeshifted', 'accuracy_rating_+%_while_shapeshifted', 'life_leech_amount_+%_while_shapeshifted', 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted', 'maximum_rage_+_while_shapeshifted']),
-    lifeRecharge: sum.keystone_eternal_youth ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
+    lifeRecharge: sum.keystone_eternal_youth || sum.base_life_recharges_like_energy_shield ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
     // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
     zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
     manaRegen: sum.no_mana_regeneration ? 0 : c.mana == null || manaLife && c.life == null ? null
@@ -669,7 +674,7 @@ export function recovery(c, sum) {
     ccAt: v(sum, 'crowd_control_effects_are_triggered_at_%_poise_threshold_instead'),   // Sine Aequo
     // uniques on blocking: a Poison as though dealing that base chaos damage (Lycosidae), damage blocked recouped as mana
     // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
-    uBlock: { cull: !!sum.culling_strike_enemies_on_block, poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
+    uBlock: { cull: !!sum.culling_strike_enemies_on_block, intim: v(sum, 'intimidate_enemy_on_block_for_duration_ms') / 1000, poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
       blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
