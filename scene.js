@@ -727,7 +727,7 @@ export function initScene(el, api) {
   // after the enemy's resistances. Without that hit (grounds, minions, missing damage) they use the scene value, drawn with "~".
   const AIL_DOT = { ignite: ['fire', ['fire']], bleed: ['physical', ['physical']], poison: ['chaos', ['physical', 'chaos']] };
   function ailDps(d, a, raw, S) {   // Blackflame Covenant: a fire spell's Ignite deals chaos
-    const [el0, from] = AIL_DOT[a], el = a === 'ignite' && S?.dmg?.blackflame ? 'chaos' : el0, base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
+    const [el0, from] = AIL_DOT[a], el = a === 'ignite' && (S?.dmg?.blackflame || !S?.src && sheet().igniteChaos) ? 'chaos' : a === 'bleed' && !S?.src && sheet().bleedFire ? 'fire' : el0,   /* Blackflame; Blistering Bond */ base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
     return base > 0 && per ? { dps: defence(d, el, base * per / 6000, false), sim: false, el } : { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el };
   }
   // o (from afflict): the game's duration, magnitude (shock, chill) and effect (damaging ailments) of this one;
@@ -968,13 +968,13 @@ export function initScene(el, api) {
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - (ELEM.includes(el) && (d.st.ignite > 0 || d.st.chill > 0) ? sheet().igChillRes || 0 : 0) - (el === 'fire' && dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presFireRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
-    const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
+    const W = (el === 'chaos' || el === 'fire' && sheet().witherFire) && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
     return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
-  function withers(d, s, pct = WITHER.per) { if (sheet().witherForever) s = 1e9; const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct: pct * (1 + (sheet().witherMag || 0) / 100) });   /* the tree's increased Withered magnitude */ if (w.length > WITHER.max) w.shift(); }
+  function withers(d, s, pct = WITHER.per) { if (sheet().witherForever || sheet().witherIgn && d.st.ignite > 0) s = 1e9; const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct: pct * (1 + (sheet().witherMag || 0) / 100) });   /* the tree's increased Withered magnitude */ if (w.length > WITHER.max) w.shift(); }
   // What one hit does with ailments, as the game rolls it: its damage before the enemy's mitigation (raw, per type) against the
   // enemy's Elemental Ailment Threshold (chance to shock, flammability for ignite, chill magnitude) and poise (freeze and heavy
   // stun buildup), with GameConstants' rules, the skill's modifiers (calc.js ailments()) and the enemy's rarity. Bleeding and
@@ -1025,7 +1025,7 @@ export function initScene(el, api) {
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
       const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });   // the most: Heavy Snows' override, else the game's
-      if (!N.freeze) AL.freeze ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (o.crit && SU.inflict_lightning_exposure_on_crit) expo(d, ['lightning'], EXPO.res * E.effect);   // Blessed Bonds: lightning exposure on a critical hit
@@ -1191,7 +1191,7 @@ export function initScene(el, api) {
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
   // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
   // maximum life and mana
-  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + (gst(S)['culling_strike_threshold_+%'] || 0) / 100) / 100;
+  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0)) / 100) / 100;
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
     return !d.dead && (S.P.culls || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
@@ -1203,7 +1203,7 @@ export function initScene(el, api) {
   const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
-    fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
@@ -1212,7 +1212,7 @@ export function initScene(el, api) {
     // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
-    fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
     return true;
   }
@@ -1348,7 +1348,7 @@ export function initScene(el, api) {
     flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + pow(d) * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < f.killCharge)); });   // and its own chance of a charge (Nascent Hope)
     charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + pow(d) * CHARM_GAIN * f.gain * bk('charm') + (Math.random() * 100 < f.killCharge)); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
-    const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0 || st.chill > 0 && sheet().chillShatter, M = d.mark, f = d.fig;
+    const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0 || st.chill > 0 && sheet().chillShatter || S && st.armour > 0 && sheet().brokeShatter, M = d.mark, f = d.fig;
     // Crushing Fear: an enemy it kills is crushed into its shockwave (its part, its secondary radius), more damage and area
     // per the enemy's power (note: the stats say per power of a culled enemy; here of any it kills)
     const CF = S && !S.src && partOf(S, 'CrushingFearNovaPlayer');
@@ -2456,7 +2456,7 @@ export function initScene(el, api) {
     },
     curse(S) {
       const c = S.at, R = S.A;
-      const wait = sh(S).curseDelay || SIM.curseDelay;
+      const wait = sheet().noCurseDelay ? 0 : sh(S).curseDelay || SIM.curseDelay;
       fx.telegraph(c, R, 'curse', wait);
       later(wait, () => {
         fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
@@ -2466,7 +2466,7 @@ export function initScene(el, api) {
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
-          d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, (sheet().curseLimit || 1) - 1);
+          d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
           d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
@@ -4537,7 +4537,7 @@ export function initScene(el, api) {
   const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
   let spdC = { at: -9, v: 0 };
   const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (onsl() ? ONSLAUGHT.move : 0)
-    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0) + charges.frenzy * sheet().movePerFrenzy) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE); Darkray Vectors: per Frenzy Charge
+    + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0) + charges.frenzy * sheet().movePerFrenzy + (me.gamble || 0)) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE); Darkray Vectors: per Frenzy Charge
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
     for (const k in tog) if (!names.includes(k)) untoggle(k);
@@ -4749,7 +4749,7 @@ export function initScene(el, api) {
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
-    stats.taken += n; me.hurt = time; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
+    stats.taken += n; me.hurt = time; if (sheet().gambleMove) me.gamble = Math.random() * sheet().gambleMove; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
     const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
@@ -5056,7 +5056,7 @@ export function initScene(el, api) {
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
-    resolve(d); if (a.melee) { retaliate(d); arctic(d); } windDance(); ailed(d, raw, dealt);
+    resolve(d); if (a.melee || sheet().thornsAny) retaliate(d); if (a.melee) arctic(d); windDance(); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -5128,7 +5128,7 @@ export function initScene(el, api) {
     if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
       me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
     }
-    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', 'physical', x('physical')) });
+    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical')) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
     const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);
     if (roll(maim) && can('maim')) suffer('maim', MAIM.time);
@@ -5605,7 +5605,7 @@ export function initScene(el, api) {
         if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', pp, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
         if (!m.h) for (const d of dummies) if (!d.dead && !m.seen.has(d) && dist(d.pos, pp) <= 1 + SIM.body) { if (m.crash) { m.k = 1; m.to = { x: pp.x, z: pp.z }; break; } m.seen.add(d); hit(d, m.S, { mult: .6, noPay: true }); }
       }
-      if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); if (m.roll && rollHeld()) { me.sprint = { at: time }; say(t('Sprinting'), 'gold'); } }
+      if (m.k >= 1) { pp.y = 0; move = null; m.land?.(m.to); if (m.roll && rollHeld() && !sheet().noSprint) { me.sprint = { at: time }; say(t('Sprinting'), 'gold'); } }
     } else if (me.sprint) {
       // Sprint: after a roll, while its key stays held (at least its least time), toward W A S D / the stick or the cursor,
       // turning at its turn rate, faster by its movement speed (character.ot, plus the tree's and gear's); using a skill ends it

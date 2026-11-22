@@ -587,6 +587,9 @@ export function recovery(c, sum) {
     leechChaos: !!sum.life_leech_recovers_based_on_your_chaos_damage_instead_of_physical_damage, leechLightning: !!sum.life_leech_also_recovers_based_on_lightning_damage, manaLeechCrit: v(sum, 'mana_leech_amount_+%_if_crit_recently'),   // Spire of Ire, The Ordained, Nightscale
     leechEs: !!sum.convert_all_life_leech_to_energy_shield_leech, manaLeechEs: !!sum.mana_leech_applies_recovery_to_energy_shield_also, recoupEs: !!sum.life_recoup_also_applies_to_energy_shield, esKeep: !!sum.energy_shield_recharge_is_not_interrupted_if_recharge_begaen_recently,   // Essentia Sanguis, Sacrosanctum, Prayers for Rain
     chillPois: !!sum.all_damage_taken_chills_you_while_poisoned, chillBleed: !!sum.all_damage_taken_chills_you_while_bleeding, energyX2: !!sum.energy_generation_is_doubled,   // Icefang Orbit, Venopuncture, Seeing Stars
+    igniteChaos: !!sum.base_ignite_deals_chaos_instead, witherFire: !!sum.wither_inflicted_also_does_fire, witherIgn: !!sum.enemies_you_ignite_wither_does_not_expire, bleedFire: !!sum.bleed_damage_applies_as_fire_instead_of_physical, bleedSelfFire: !!sum.bleeding_damage_on_self_taken_as_fire_instead,   // Blackflame, Blistering Bond
+    thornsAny: !!sum.thorns_proc_off_any_hit, noSprint: !!sum.cannot_sprint, gambleMove: v(sum, 'maximum_random_movement_velocity_+%_when_hit'), noCurseDelay: !!sum.unique_no_curse_delay, curseIgnore: !!sum.curse_ignores_curse_limit,   // Crown of the Pale King, Shankgonne, Gamblesprint, Windscream, Liminal Coil
+    cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
     enduChaos: v(sum, 'self_chaos_damage_taken_per_minute_per_endurance_charge') / 60, chillShatter: !!sum.chills_from_your_hits_cause_shattering,   // Nebuloch; Polcirkeln
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
@@ -1222,6 +1225,7 @@ export function skill(g, b, treeGear) {
         : nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
       if (r) { lo += r[0]; hi += r[1]; }
       lo += v(sum, `attack_minimum_added_${t}_damage`); hi += v(sum, `attack_maximum_added_${t}_damage`);
+      if (unarmed && tags.includes('melee')) { lo += v(sum, `attack_minimum_added_melee_${t}_damage_while_unarmed`); hi += v(sum, `attack_maximum_added_melee_${t}_damage_while_unarmed`); }   // Thunderfist
     }
     lo += first(st[`spell_minimum_base_${t}_damage`], st[`attack_minimum_added_${t}_damage`], st[`minimum_base_${t}_damage`], 0);
     hi += first(st[`spell_maximum_base_${t}_damage`], st[`attack_maximum_added_${t}_damage`], st[`maximum_base_${t}_damage`], 0);
@@ -1299,7 +1303,7 @@ export function skill(g, b, treeGear) {
   // Ignite of a hit with fire damage: GameConstants' share of it per second, for its base duration. note: no
   // ignite magnitude or duration modifiers yet (none on the build it was checked with, 163-354.4/s as the game)
   const igFrom = blackflame ? out.hits.chaos : out.hits.fire;
-  if (igFrom && CHAR['ignite_%_per_second']) out.ignite = { chaos: blackflame || undefined, perSecond: igFrom.map(x => x * CHAR['ignite_%_per_second'] / 100), duration: CHAR.ignite_duration_s };
+  if (igFrom && CHAR['ignite_%_per_second']) out.ignite = { chaos: blackflame || !!sum.base_ignite_deals_chaos_instead || undefined, perSecond: igFrom.map(x => x * CHAR['ignite_%_per_second'] / 100), duration: CHAR.ignite_duration_s };
   const types = Object.values(out.hits);
   if (types.length) out.avg = types.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   // uses per second
