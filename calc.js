@@ -294,8 +294,7 @@ export function character(b, sum) {
   const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%');
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
-  const accInc = pct('accuracy_rating_+%') + (inc(sum, 'accuracy_rating_+%', mwTags) - inc(sum, 'accuracy_rating_+%', [])
-    + (mw && weaponStats({ weapon: b.items.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
+  const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + Math.floor(at.dex / 4) * v(sum, 'X_life_per_4_dexterity') + fromAttr('life') * (sum.keystone_giants_blood ? .5 : 1)) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
@@ -304,7 +303,7 @@ export function character(b, sum) {
     spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
-    es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + pieceDef(b.items, 'body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
+    es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + P('body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
@@ -335,7 +334,7 @@ export function character(b, sum) {
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (weaponStats(b.items)?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc), accuracyInc: accInc, lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc), accuracyInc: accInc, lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
