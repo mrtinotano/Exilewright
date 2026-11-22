@@ -482,7 +482,8 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc;
+      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc * (o.pierced && sheet().critPierce ? 1 + sheet().critPierce * o.pierced / 100 : 1);   // Drillneck: more crit chance per pierce
+      if (S.P.spell && !S.src && sheet().spellCritPer) { me.spellCrits = (me.spellCrits || []).filter(at => time - at <= RECENT); W.critBonus *= Math.max(0, 1 + sheet().spellCritPer * me.spellCrits.length / 100); if (crit) me.spellCrits.push(time); }   // Seed of Cataclysm: less bonus per spell crit recently
       // Oracle's Forced Outcome, Inevitable Critical Hits (KeywordPopups): a hit that could crit re-rolls until it does, its less
       // critical damage bonus for each re-roll
       const IC = !crit && pc > 0 && D.sum?.['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
@@ -862,6 +863,7 @@ export function initScene(el, api) {
   const slowK = S => 1 + ((S?.dmg?.sum?.['base_debuff_slow_magnitude_+%'] || 0) + (S?.haz ? S.dmg.sum['hazard_base_debuff_slow_magnitude_+%'] || 0 : 0)) / 100;   // and a Hazard's
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0 || sheet().noEleAil && !S.src && ['ignite', 'chill', 'freeze', 'shock'].includes(a)) return;   // Plaguefinger: no elemental ailments of yours
+    if (sheet().noImmob && !/minion|totem/.test(S?.src || '') && ['freeze', 'stun', 'electrocute', 'pin'].includes(a)) return;   // The Prisoner's Manacles: cannot Immobilise
     if (a === 'poison' && !S.src && sheet().blindPoison) d.st.blind = BLIND.time;   // Murkshaft: Blind when you poison
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
     else if (a === 'freeze') {   // freeze builds up over several cold hits
@@ -2064,9 +2066,9 @@ export function initScene(el, api) {
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
-            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult() }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
+            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult(), pierced }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
             else if (forked < (D.forks || 0)) {
-              hit(d, cur, { mult: mult() }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
+              hit(d, cur, { mult: mult(), pierced }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
               for (const s of fk) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
               break;
@@ -4007,7 +4009,7 @@ export function initScene(el, api) {
         } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (spendEmp(E)) empower.splice(k, 1); }
-        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n; S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
+        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n + (S.P.attack && sheet().lioneye && !inside(pp, sheet().overgrow.r).length ? sheet().lioneye : 0); S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
           lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
@@ -4860,6 +4862,7 @@ export function initScene(el, api) {
     const D = thornsOf(); if (!D || d.dead) return;
     fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
     hit(d, thornX(D, t('Thorns')), { noPay: true }); me.quill = 0;
+    if (sheet().thornsLeech) leechIn('life', Object.values(D.hits).reduce((t, [a, b]) => t + (a + b) / 2, 0) * sheet().thornsLeech / 10000);   // Belly of the Beast: life leech from thorns
   }
   function thornHit(S, d) {
     for (const T of S.dmg?.trig || []) {
