@@ -1052,7 +1052,7 @@ export function initScene(el, api) {
   function vanguard(S, heavy) {
     const U = S.dmg?.sum || {}, per = (U.gain_X_guard_on_stun_per_10_strength || 0) + (heavy ? U.gain_X_guard_on_heavy_stun_per_10_strength || 0 : 0);
     const g = Math.min(per * Math.floor((sheet().attrs?.str || 0) / 10), 2 * (me.maxL || 0));
-    if (g > me.guard) { me.guard = g; later(U.guard_on_stun_guard_duration_ms / 1000, () => { if (me.guard === g) me.guard = 0; }); }
+    guardFor(g, U.guard_on_stun_guard_duration_ms / 1000);
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
   function dotOf(d, S) {
@@ -1112,9 +1112,9 @@ export function initScene(el, api) {
     T.energy = Math.min(T.cap || T.need, T.energy + n * T.more);
   }
   function invoke(T) {
-    const j = trigOf(T), n = j < 0 ? 0 : Math.floor(T.energy / T.need);
-    if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need)));
-    T.energy -= n * T.need; say(t('{0} triggers {1}', T.label, base(j).label), T.el);
+    const j = trigOf(T); let n = 0;
+    while (j >= 0 && T.energy >= T.need) { T.energy -= T.need * (Math.random() * 100 < (sheet().invokeHalf || 0) ? .5 : 1); n++; }   // the tree's chance a spell costs half
+    if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need))); say(t('{0} triggers {1}', T.label, base(j).label), T.el);
     for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
   }
   function event(type, p, S, d) {
@@ -1126,6 +1126,7 @@ export function initScene(el, api) {
         if (j < 0) continue;
         if (T.per) { gainEnergy(T, T.per[type] / 100 * (POWER[d?.stat.rarity] || 1), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
         else { if (++T.energy < T.need) continue; T.energy = 0; }
+        if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
         say(t('{0} triggers {1}', T.label, base(j).label), T.el);
         fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
@@ -2450,7 +2451,7 @@ export function initScene(el, api) {
       // per its Power, up to its cap) trigger its Shield Wave where they land. note: any melee attack, not only shield ones
       if (FG) {
         const g = Math.min(FG * Math.floor(Math.min(pw, ws.shielding_cry_grant_X_guard_per_5_mp_mp_cap) / 5), 2 * (me.maxL || 0)), n = Math.floor(Math.min(pw, ws.shielding_cry_an_additional_empowered_attack_per_X_mp_mp_cap) / ws.shielding_cry_an_additional_empowered_attack_per_X_mp);
-        if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); }
+        guardFor(g, durOf(S));
         if (n) { empower = empower.filter(e => e.type !== 'wave'); empower.push({ type: 'wave', label: S.label, name: S.name, uses: n, s: durOf(S), X: { ...partOf(S, 'FortifyingCryShockwavePlayer'), mult: S.mult } }); }
       }
       if (S.P.gain && list.length) chargeBy(S.P.gain, S);
@@ -2477,7 +2478,7 @@ export function initScene(el, api) {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
-        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100),   /* Invoker: more */ cap: st.generic_ongoing_trigger_maximum_energy, manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
+        if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + (sheet().invokeMax || 0) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
@@ -2874,7 +2875,7 @@ export function initScene(el, api) {
       const HS = st['skill_hollow_shell_spent_ward_%_to_grant_as_guard'];
       if (HS) { const w = (S.wardPaid || 0) + me.ward; spendWard(me.ward);
         if (time < me.hollowAt) return; me.hollowAt = time + st.hollow_shell_per_target_cooldown_ms / 1000;
-        const g = Math.min(w * HS / 100, 2 * (me.maxL || 0)); fx.ring(pp, .3, S.A, 'holy', .45); if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); } return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
+        const g = w * HS / 100; fx.ring(pp, .3, S.A, 'holy', .45); guardFor(g, durOf(S)); return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
       // note: Crackling Palm and Gelid Palm (Thunderfist) call down their bolts on Unarmed melee attack hits; no gem is an
       // Unarmed melee attack and the game's Punch has no damage data, so they are not simulated
       // Refutation: spends all your Runic Ward; for its duration you Block every blockable hit and Parry its attacker
@@ -3370,7 +3371,7 @@ export function initScene(el, api) {
   K.jade = S => {
     const n = me.jade; me.jade = 0; if (!n) return;
     const g = Math.min(me.maxL * n * S.dmg.stats['maximum_life_%_damage_absorbed_per_jade_consumed'] / 100, 2 * me.maxL);   // keywords.json Guard: up to 200% of your life
-    if (g > me.guard) { me.guard = g; later(durOf(S), () => { if (me.guard === g) me.guard = 0; }); }
+    guardFor(g, durOf(S));
     fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'cold', .5); say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
   };
   // Wardbound Minions: it spends all your Runic Ward (its cost with it), one caster per its Ward spent, up to its most,
@@ -4811,7 +4812,7 @@ export function initScene(el, api) {
       if (l > far + SIM.body * d.sc) return false;
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
-    } else { R.blocked = time; spray(d); }
+    } else { R.blocked = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
     blocked(d); return true;
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
@@ -4976,6 +4977,8 @@ export function initScene(el, api) {
     if (f.k === 'mana' && !B || dry) return;   // Sanguine Tides: flasks recover no life
     if (!sheet().vaal) me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life
   };
+  // Guard for s seconds, the higher one kept, up to 200% of your maximum life (keywords.json Guard)
+  function guardFor(g, s) { g = Math.min(g, 2 * (me.maxL || 0)); if (g > me.guard) { me.guard = g; later(s, () => { if (me.guard === g) me.guard = 0; }); } }
   function drink(n) {
     const f = flasks()[n];
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
@@ -4983,7 +4986,7 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
     const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
+    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (f.k === 'life' && sheet().flaskGuard) guardFor(f.amount * LL / f.time * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s if (n) gainPct('life', recOn('manaFlask'));
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
