@@ -2,18 +2,25 @@
 .venv-build/Scripts/pip install pyinstaller pywebview, then .venv-build/Scripts/python build_app.py):
   dist/Exilewright/Exilewright.exe     the program (its folder is what the installer installs)
   dist/Exilewright-portable.zip         the same folder with a "portable" file: it keeps its data next to the exe
-  dist/Exilewright-setup.exe            the installer, when Inno Setup 6 is installed (installer.iss)"""
+  dist/Exilewright-setup.exe            the installer, when Inno Setup 6 is installed (installer.iss)
+"build_app.py app" builds only the program and "build_app.py package" only the zip and installer from it, so the
+release workflow can sign the program in between (.github/workflows/release.yml)."""
 import glob
 import os
 import re
 import shutil
 import subprocess
-import PyInstaller.__main__
+import sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-data = ['index.html', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
-PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
-                          *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
+stage = sys.argv[1] if len(sys.argv) > 1 else 'all'
+if stage in ('all', 'app'):
+    import PyInstaller.__main__
+    data = ['index.html', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
+    PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
+                              *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
+    if stage == 'app':
+        sys.exit()
 app = os.path.join('dist', 'Exilewright')
 open(os.path.join(app, 'portable'), 'w').close()
 shutil.make_archive(os.path.join('dist', 'Exilewright-portable'), 'zip', 'dist', 'Exilewright')

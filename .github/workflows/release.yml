@@ -1,0 +1,75 @@
+# Builds Exilewright on GitHub, has SignPath sign the program and then the installer, and publishes them as the release
+# of serve.py's VERSION (the only one kept: the older releases and their tags are deleted).
+# Started by hand: gh workflow run release.yml -f notes="..."
+# Needs, in the repository settings: the secret SIGNPATH_API_TOKEN and the variable SIGNPATH_ORGANIZATION_ID; in SignPath,
+# the project "Exilewright" with the signing policy "release-signing" and the artifact configurations "app" and "setup"
+# (.github/signpath/).
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: Release notes (Markdown)
+        required: true
+permissions:
+  contents: write
+  actions: read
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install pyinstaller==6.22.3 pywebview==6.2.1
+      - run: python build_app.py app
+
+      - id: app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: dist/Exilewright
+      - uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: Exilewright
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: app
+          github-artifact-id: ${{ steps.app.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist/Exilewright
+
+      - name: Inno Setup
+        shell: pwsh
+        run: if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+      - run: python build_app.py package
+
+      - id: setup
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup
+          path: dist/Exilewright-setup.exe
+      - uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: Exilewright
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: setup
+          github-artifact-id: ${{ steps.setup.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist
+
+      - name: Publish
+        shell: pwsh
+        env:
+          NOTES: ${{ inputs.notes }}
+        run: |
+          $v = [regex]::Match((Get-Content serve.py -Raw), "(?m)^VERSION = '([\d.]+)'").Groups[1].Value
+          Set-Content notes.md $env:NOTES -Encoding utf8
+          gh release create "v$v" dist/Exilewright-setup.exe dist/Exilewright-portable.zip --title "Exilewright $v" --notes-file notes.md --target $env:GITHUB_SHA
+          gh release list --limit 100 --json tagName --jq '.[].tagName' | Where-Object { $_ -ne "v$v" } | ForEach-Object { gh release delete $_ --yes --cleanup-tag }
