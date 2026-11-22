@@ -1051,7 +1051,7 @@ export function initScene(el, api) {
   // Vanguard: stunning with a supported skill grants its Guard per 10 Strength for its duration, more on a heavy stun
   function vanguard(S, heavy) {
     const U = S.dmg?.sum || {}, per = (U.gain_X_guard_on_stun_per_10_strength || 0) + (heavy ? U.gain_X_guard_on_heavy_stun_per_10_strength || 0 : 0);
-    const g = Math.min(per * Math.floor((sheet().attrs?.str || 0) / 10), 2 * (me.maxL || 0));
+    const g = per * Math.floor((sheet().attrs?.str || 0) / 10);
     guardFor(g, U.guard_on_stun_guard_duration_ms / 1000);
   }
   // damage over time of the skill itself (Contagion, Essence Drain...): its value per second from the game data, after resistances
@@ -2450,7 +2450,7 @@ export function initScene(el, api) {
       // Fortifying Cry: its Guard per 5 Power of the enemies in its area (up to its cap); its Empowered melee attacks (one
       // per its Power, up to its cap) trigger its Shield Wave where they land. note: any melee attack, not only shield ones
       if (FG) {
-        const g = Math.min(FG * Math.floor(Math.min(pw, ws.shielding_cry_grant_X_guard_per_5_mp_mp_cap) / 5), 2 * (me.maxL || 0)), n = Math.floor(Math.min(pw, ws.shielding_cry_an_additional_empowered_attack_per_X_mp_mp_cap) / ws.shielding_cry_an_additional_empowered_attack_per_X_mp);
+        const g = FG * Math.floor(Math.min(pw, ws.shielding_cry_grant_X_guard_per_5_mp_mp_cap) / 5), n = Math.floor(Math.min(pw, ws.shielding_cry_an_additional_empowered_attack_per_X_mp_mp_cap) / ws.shielding_cry_an_additional_empowered_attack_per_X_mp);
         guardFor(g, durOf(S));
         if (n) { empower = empower.filter(e => e.type !== 'wave'); empower.push({ type: 'wave', label: S.label, name: S.name, uses: n, s: durOf(S), X: { ...partOf(S, 'FortifyingCryShockwavePlayer'), mult: S.mult } }); }
       }
@@ -3370,7 +3370,7 @@ export function initScene(el, api) {
   }
   K.jade = S => {
     const n = me.jade; me.jade = 0; if (!n) return;
-    const g = Math.min(me.maxL * n * S.dmg.stats['maximum_life_%_damage_absorbed_per_jade_consumed'] / 100, 2 * me.maxL);   // keywords.json Guard: up to 200% of your life
+    const g = me.maxL * n * S.dmg.stats['maximum_life_%_damage_absorbed_per_jade_consumed'] / 100;
     guardFor(g, durOf(S));
     fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'cold', .5); say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
   };
@@ -4986,7 +4986,8 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
     const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (f.k === 'life' && sheet().flaskGuard) guardFor(f.amount * LL / f.time * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s if (n) gainPct('life', recOn('manaFlask'));
+    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
+    if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
   // Charms, as the game's: the build's (items.js charmOf()), after the flasks. Each one is used by itself when what its
