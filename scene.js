@@ -4071,7 +4071,7 @@ export function initScene(el, api) {
     if (S.dmg?.reason === 'This skill cannot be used with the weapon in hand') { toast(`${S.label}: ${t(S.dmg.reason)}`); return false; }
     if (!auto && me.maxM && !tog[S.name]) {
       let { cost, life } = costOf(S, o.held);
-      if (sheet().divCost) { me.div = Math.min(me.div ?? sheet().divinity, sheet().divinity || 0); if (cost + life > me.div) { toast(t('Not enough Divinity for {0}', S.label) + ` (${Math.ceil(cost + life)})`); return false; } me.div -= cost + life; cost = life = 0; }   // Immaculate Adherence: skills cost Divinity instead of mana or life
+      if (sheet().divCost) { me.div ??= sheet().divinity || 0; if (cost + life > me.div) { toast(t('Not enough Divinity for {0}', S.label) + ` (${Math.ceil(cost + life)})`); return false; } me.div -= cost + life; cost = life = 0; }   // Immaculate Adherence: skills cost Divinity instead of mana or life
       if (cost > me.mana && !sheet().flame) { toast(t('Not enough mana for {0}', S.label) + ` (${Math.ceil(cost)})`); return false; }
       // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
@@ -5004,8 +5004,9 @@ export function initScene(el, api) {
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
-    { const W = sheet().weakness; if ((W?.recoupL || W?.recoupLE) && openWeak(d)) for (const [k, p] of [['life', W.recoupL + W.recoupLE], ['es', W.recoupLE]]) if (p) me.recoup.push({ k, left: total * p / 100, rate: total * p / 100 / (RC?.time || 8) }); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
-    { const BG = me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0), p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * BG / 100; if (p > 0) for (const k of ['life', 'mana']) me.recoup.push({ k, left: p, rate: p / (RC?.time || 8) }); }   // Forsaken Bangle: the chaos damage prevented, during its effect
+    const rec = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / (RC?.time || 8) }), W = sheet().weakness;
+    if ((W?.recoupL || W?.recoupLE) && openWeak(d)) { rec('life', total * (W.recoupL + W.recoupLE) / 100); rec('es', total * W.recoupLE / 100); }   // The Master's Reach: damage taken from an enemy with an Open Weakness
+    { const p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0) / 100; rec('life', p); rec('mana', p); }   // Forsaken Bangle: the chaos damage prevented, during its effect
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * pow(d) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }

@@ -476,8 +476,9 @@ export function character(b, sum) {
   if (c.life != null) c.life = Math.round(c.life * VS('maximum_life')); if (c.mana != null) c.mana = Math.round(c.mana * VS('maximum_mana')); c.spirit = Math.round(c.spirit * VS('spirit'));
   if (VS('armour_evasion_energy_shield') !== 1) { for (const k of ['armour', 'evasion', 'es']) c[k] = Math.round(c[k] * VS('armour_evasion_energy_shield')); c.armourPct = armourReduction(c.armour, lvl); c.evadePct = evadeChance(c.evasion, lvl); }
   // Immaculate Adherence: maximum energy shield converted to maximum Divinity (its increased, less per corrupted item equipped); no energy shield
-  if (sum['convert_100%_energy_shield_to_divinity']) { const nC = Object.values(b.items || {}).filter(it => it?.corrupted).length; c.divinity = Math.round(c.es * Math.max(0, 1 + (v(sum, 'maximum_divinity_+%') + v(sum, 'maximum_divinity_+%_per_equipped_corrupted_item') * nC) / 100)); c.divCost = !!sum.skills_cost_divinity_instead_of_mana_or_life; }
-  if (sum['convert_100%_energy_shield_to_divinity'] || sum.cannot_have_current_energy_shield) c.es = 0;
+  const toDiv = sum['convert_100%_energy_shield_to_divinity'];
+  if (toDiv) { const nC = Object.values(b.items || {}).filter(it => it?.corrupted).length; c.divinity = Math.round(c.es * Math.max(0, 1 + (v(sum, 'maximum_divinity_+%') + v(sum, 'maximum_divinity_+%_per_equipped_corrupted_item') * nC) / 100)); c.divCost = !!sum.skills_cost_divinity_instead_of_mana_or_life; }
+  if (toDiv || sum.cannot_have_current_energy_shield) c.es = 0;
   // resistances per equipped item with a modifier to another one (Safrin's Resolve, Eshtera's Path, Zaida's Longevity).
   // note: a modifier to all elemental resistances is not counted as one to each
   for (const [k, of, to] of [['cold_and_lightning_resist_+_per_equipped_item_with_a_fire_resistance_mod', 'fire', ['cold', 'lightning']], ['fire_and_cold_resist_+_per_equipped_item_with_a_lightning_resistance_mod', 'lightning', ['fire', 'cold']], ['fire_and_lightning_resist_+_per_equipped_item_with_a_cold_resistance_mod', 'cold', ['fire', 'lightning']]]) {
