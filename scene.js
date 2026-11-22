@@ -2628,7 +2628,9 @@ export function initScene(el, api) {
         for (let k = 1; k <= cs; k++) later(k * ps.aftershock_delay_ms / 1000, () => boom(c, R + k * ps['aftershock_radius_+_per_previous_aftershock'] / 10, S));
         // Tremors (and Titan's Earthbreaker): its independent chances for one, two and three more Aftershocks, each the slam's damage in its area after it (keywords.json)
         const TR = !S.src && S.dmg?.sum, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3], ['your_slam_aftershock_chance_%', 1]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) ? k : 0), 0) + (Math.random() * 100 < (sh(S).aftershock || 0) ? 1 : 0) : 0;
-        for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R, S); });
+        // the tree's increased Aftershock area of the Slams you use yourself
+        const AR = TR ? Math.sqrt(1 + (TR['your_aftershock_area_of_effect_+%'] || 0) / 100) : 1;
+        for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * AR, S); });
         // Titan's Mountain Splitter: every third Slam you use yourself that doesn't create Fissures, its Aftershocks ahead and to
         // each side of the slam (one each). note: their delay is not in its data: at once, the slam's damage and area
         const MS = S.slamN && S.slamN % 3 === 0 && S.dmg?.sum?.num_cascade_aftershocks_every_third_slam && !Object.keys(S.dmg.stats).some(k => k.includes('fissure'));

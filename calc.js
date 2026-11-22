@@ -1334,7 +1334,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
-  const FA = 1 + all('damaging_ailments_deal_damage_+%_faster') / 100, FB = FA + all('faster_burn_%') / 100;   // Fast Acting Toxins (all three), Burnout, Searing Heat (ignites): damaging ailments deal their damage faster (more a second, over a shorter time)
+  const FA = 1 + all('damaging_ailments_deal_damage_+%_faster') / 100, FB = FA + all('faster_burn_%') / 100, FBl = FA + all('faster_bleed_%') / 100;   // Fast Acting Toxins (all three), Burnout, Searing Heat (ignites): damaging ailments deal their damage faster (more a second, over a shorter time)
   // Tactician's Suppressing Fire: more Immobilisation buildup (freeze, electrocute, pin)
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   // buildup of the skill's tags or weapon (melee_, projectile_, quarterstaff_, mace_, ballista_, hazard_, parry_...)
@@ -1373,13 +1373,14 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // "increased Magnitude of Ailments you inflict" counts for each, of Damaging Ailments for ignite, poison and bleeding, of Non-Damaging ones for shock and chill
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA * (sum.keystone_crimson_assault ? 1.5 : 1),
+    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FBl * (sum.keystone_crimson_assault ? 1.5 : 1),
     bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!sum.keystone_crimson_assault,   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: 1 + all('pin_duration_+%') / 100,
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
-    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FA, poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
+    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FBl,   // and Bleeding's own faster
+    poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),
@@ -1397,7 +1398,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     alwaysHit: F('global_always_hit'),
     // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them
     impale: { chance: all('impale_on_hit_%_chance') + all(tags.includes('attack') ? 'attacks_impale_on_hit_%_chance' : 'spells_impale_on_hit_%_chance'),
-      mag: scale(['impale_magnitude_+%'], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale') },
+      mag: scale(['impale_magnitude_+%', ...tags.includes('spell') ? ['spell_impale_magnitude_+%'] : []], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale') },
     // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
     electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     electrocuteIf: scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/),   // on an enemy any lightning can electrocute (Enervating Nova)
