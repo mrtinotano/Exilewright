@@ -848,6 +848,7 @@ export function initScene(el, api) {
     if (o?.mag) d.mag[a] = fresh ? o.mag : Math.max(d.mag[a] || 0, o.mag);   // the strongest shock / chill stays
     else if (fresh) delete d.mag[a];
     if (a === 'shock') trigger(S, 'shock', d);   // a shock over a shock is shocking the enemy too
+    if (a === 'shock' && !o?.spread && !/minion/.test(S.src || '') && Math.random() * 100 < (sheet().shockSpread || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) inflict(e, 'shock', S, k, raw, { ...o, spread: true });   // the tree's shock on those within 1.5 m
     if (!fresh) return;
     if (!S.src && EL_AIL.includes(a) && !(time < me.unbound?.until)) { const i = byName('Unbound Avatar'), UA = i >= 0 && base(i)?.dmg?.stats; if (UA) me.fury = Math.min(UA.ailment_bearer_required_stacks_to_use, (me.fury || 0) + 1); }   // Unbound Fury
     // Acolyte of Chayula's Inner Turmoil: Volatility on inflicting an elemental ailment (once every its interval, up to its most)
@@ -913,6 +914,7 @@ export function initScene(el, api) {
   function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
+    if (el === 'physical' && sheet().hazArmour && time - (d.hazAt ?? -99) <= RECENT) st = { ...st, armour: st.armour * (1 + sheet().hazArmour / 100) };   // the tree's armour of the enemies your Hazards affected recently
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
@@ -1572,7 +1574,7 @@ export function initScene(el, api) {
     fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
     if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
     const RP = sheet().remnantPick; me.life = Math.min(me.maxL, me.life + me.maxL * RP.life / 100); me.mana = Math.min(me.maxM, me.mana + me.maxM * RP.mana / 100);   // the tree's life and mana on collecting one
-    later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k, S); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
+    later((s.remnant_delay_X_ms || 0) / 1000, () => { R.get(s, k, S); if (Math.random() * 100 < (sheet().remnantTwice || 0)) R.get(s, k, S); hudT = 0; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, .9, R.c, .35); });
   }
   // a hit of yours (each skill no more than once in its time; Mana Remnants on a critical hit on an enemy with an elemental
   // ailment, Sanguine Revelry on a bleeding one), a kill (its chance, under the same condition), a heavy stun (Kalguur's
@@ -1772,7 +1774,7 @@ export function initScene(el, api) {
       tick() {
         if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
         const S2 = { ...X, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
-        later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
+        later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; for (const d of inside(p, X.A)) d.hazAt = time; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
   }
@@ -2199,6 +2201,7 @@ export function initScene(el, api) {
   // Aftershock along it, as keywords.json MoltenFissure has it (the rule the game states for its long-lasting fissures):
   // its damage again to those on it, on to the fissures it crosses, each at most once per 0.2 s
   function fissure(S, from, ang, len, r = .8, mult = .5, o = {}) {
+    if (!o.branch && !o.extra && !(time - (S.fissAt ?? -9) < .5) && Math.random() * 100 < (S.dmg?.sum?.['skill_additional_fissure_chance_%'] || 0)) { S.fissAt = time; later(.08, () => fissure(S, from, ang + .5, len, r, mult, { ...o, extra: true })); }   // the tree's chance of another. ponytail: a use's fissures within 0.5 s roll once
     const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len }, seen = new Set();   // each enemy once
     const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
     if (o.dur) {
@@ -2315,14 +2318,15 @@ export function initScene(el, api) {
           return;
         }
         const m = fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
-        const blow = e => {
+        const blow = (e, again) => {
+          if (!again && Math.random() * 100 < (S.dmg?.sum?.['grenade_skill_%_chance_to_explode_twice'] || 0)) later(.3, () => blow(e, true));   // the tree's second activation
           const X = { ...S, self: e }; boom(c, S.A, X);
           for (let i = 0; i < (P.cluster || 0); i++) later(.22 + i * .08, () => { const a = rnd(TAU), r = rnd(.4, .9) * S.A; boom({ x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, S.A * .45, X, { soft: true, mult: .5, noPay: true }); });
         };
         thing(m, sh(S).detonate || (/Flash/.test(S.name) ? .7 : SIM.fuse), { r: .25, name: S.name,
           tick(dt, e) { m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; say(t('{0} detonates {1}', by.label, S.label), 'fire'); later(.06, () => blow(this)); } },
-          end: blow });
+          end: e => blow(e) });
       }, { spin: true, trail: S.el });
     },
     orb(S) {
@@ -3218,7 +3222,7 @@ export function initScene(el, api) {
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
     const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
     g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
-    thing(g, durOf(S), { name: S.name, banner: give, R, c, off: () => ring.remove(), tick(dt) {
+    thing(g, durOf(S), { name: S.name, banner: give, R, c, off: () => { ring.remove(); const B = sheet().bannerBack, N = gloryNeed(S); if (B) me.glory[S.name] = Math.min(N, (me.glory[S.name] || 0) + N * B / 100); }, tick(dt) {   // the tree's Glory back on its expiry
       flag.rotation.y = Math.sin(time * 2) * .15;
       if (RX) { const x = Math.min(80, RX * Math.floor(withCharms(sheet()).armour / 1000)); if (x) for (const d of inside(c, R)) expo(d, ELEM, x, .5); } } });
   };
@@ -3948,7 +3952,7 @@ export function initScene(el, api) {
       const LI = P.spell && !S.src && !auto && sheet().lich;
       if (!S.src && !auto && sheet().tailwind) me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1);   // Gathering Winds
       const EA = !S.src && sheet().earch; if (EA && P.attack && !api.info(S.g)?.gem?.types?.includes('Instant')) me.earch = Math.min(me.earch || 0, time);   // a non-instant attack removes Elemental Archon
-      if (EA && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
+      if (EA?.cast && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) earchGo(EA);
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
@@ -4127,7 +4131,7 @@ export function initScene(el, api) {
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
-    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; }
+    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
@@ -4599,7 +4603,9 @@ export function initScene(el, api) {
   }
   // Infernalist's Pyromantic Pact: a mana cost adds its share as Infernal Flame instead (up to your maximum mana); at the
   // most you take its share of your maximum life and energy shield as fire damage and lose its share of the Flame
+  function earchGo(EA) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
   function payMana(n) {
+    const EA = sheet().earch; if (EA?.mana && me.maxM > 0 && (me.spent = (me.spent || 0) + n) >= me.maxM && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) { me.spent = 0; earchGo(EA); }   // Elemental Archon after spending your maximum mana
     const F = sheet().flame; if (!F) { me.mana -= n; return; }
     me.flame = (me.flame || 0) + n * F.ratio / 100;
     if (me.maxM > 0 && me.flame >= me.maxM) { if (sheet().earch?.full) me.earch = Math.min(me.earch || 0, time); me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
@@ -5260,11 +5266,12 @@ export function initScene(el, api) {
     for (const S of gloryOf()) if (/Banner/.test(S.name) && S.dmg?.sum?.banners_gain_X_glory_per_second) gloryAdd(S, S.dmg.sum.banners_gain_X_glory_per_second * dt);   /* Tactician: Banners gain Glory every second */
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
+    const RU = sheet().rareGlory; if (RU) { me.rg = (me.rg || 0) + dt * dummies.filter(d => !d.dead && ['rare', 'unique'].includes(d.stat.rarity) && dist(d.pos, pp) <= sheet().overgrow.r).length / RU; if (me.rg >= 1) { for (const S of gloryOf()) gloryAdd(S, Math.floor(me.rg)); me.rg %= 1; } }   // Glory per rare or unique monster in your Presence
     const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
     // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
-    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = 0; }
+    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) hurt(me.vol * VOLATILITY.dmg, 0, 'physical', false, null); me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = Math.random() * 100 < (sheet().volRefresh || 0) ? me.vol : 0; me.volAt = time; }
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
     // Seething Body: Elemental Archon does not expire on High Infernal Flame
     if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }

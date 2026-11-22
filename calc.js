@@ -242,6 +242,8 @@ function takenAs(sum) {
   const out = { hit: {}, dot: {} };
   for (const [k, x] of Object.entries(sum)) { const m = x && k.match(/^(physical|fire|cold|lightning|chaos)_(hit_and_dot_damage|damage_from_hits)_%_taken_as_(fire|cold|lightning|chaos)$/); if (!m) continue;
     for (const w of m[2] === 'damage_from_hits' ? ['hit'] : ['hit', 'dot']) { const o = (out[w][m[1]] ||= {}); o[m[3]] = (o[m[3]] || 0) + x; } }
+  const R = v(sum, 'physical_damage_from_hits_%_taken_as_random_element'), P = R && (out.hit.physical ||= {});   // a random element: a third each on average
+  if (R) for (const e of ['fire', 'cold', 'lightning']) P[e] = (P[e] || 0) + R / 3;
   return out;
 }
 export function character(b, sum) {
@@ -398,7 +400,7 @@ export function character(b, sum) {
     cover: !!sum.enemy_hits_against_you_have_distance_based_accuracy_falloff,   // Tactician's Stay Light, Use Cover: enemies' accuracy falls off with distance, as yours
     whisper: v(sum, 'ascendancy_whispers_of_the_flesh_cursed_enemies_have_at_least_life_reserved_%'),   // Blood Mage's Whispers of the Flesh: that share of a Cursed enemy's life reserved
     // Infernalist's Seething Body: Elemental Archon on casting a spell on High Infernal Flame, kept while on it, lost on reaching the most (SK.archon_time: the Archon keyword's time and recovery)
-    earch: sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame ? { time: SK.archon_time[0] * pct('archon_duration_+%'), delay: sum.archon_no_recovery_period ? 0 : SK.archon_time[1] / pct('archon_delay_expires_x%_faster'),
+    earch: sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame || sum['gain_archon_elemental_after_spending_100%_of_your_maximum_mana'] ? { mana: !!sum['gain_archon_elemental_after_spending_100%_of_your_maximum_mana'], cast: !!sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame, time: SK.archon_time[0] * pct('archon_duration_+%'), delay: sum.archon_no_recovery_period ? 0 : SK.archon_time[1] / pct('archon_delay_expires_x%_faster'),
       keep: !!sum.elemental_archon_does_not_expire_while_on_high_infernal_flame, full: !!sum.lose_elemental_archone_on_reaching_full_infernal_flame } : null,
     elixir: !!sum.life_flask_effects_are_not_removed_at_full_life,   // Pathfinder's Enduring Elixirs
     tailwind: sum.gain_tailwind_stack_on_skill_use ? { lose: !!sum.lose_all_tailwind_when_hit } : null,   // Deadeye's Gathering Winds: a Tailwind stack on each skill use
@@ -411,6 +413,8 @@ export function character(b, sum) {
     more1: { power: v(sum, 'chance_to_gain_1_more_power_charge_%'), endurance: v(sum, 'chance_to_gain_1_more_endurance_charge_%') }, perAil: v(sum, 'damage_+%_per_enemy_elemental_ailment'),
     frozenRes: v(sum, 'freeze_applies_cold_resistance_+'), ignitedRes: v(sum, 'ignites_apply_fire_resistance_+'), expoExtra: v(sum, 'exposure_you_inflict_lowers_affected_resistance_by_extra_%'),
     markedAcc: v(sum, 'marked_enemy_accuracy_rating_+%'), avoidDeath: v(sum, 'chance_to_avoid_death_%'), offerHeal: v(sum, 'recover_%_life_when_you_create_an_offering'), chaosLoss: v(sum, 'lose_%_of_life_and_energy_shield_when_you_use_a_chaos_skill'), flaskLifeCost: v(sum, 'skill_mana_costs_converted_to_life_costs_%_during_life_flask'), gloryLife: v(sum, 'recover_%_maximum_life_per_glory_consumed'), moveProj: v(sum, 'projectile_attacks_%_chance_to_fire_2_additional_projectiles_while_moving'),
+    bannerBack: v(sum, 'on_banner_expiry_recover_%_of_required_glory'), rareGlory: v(sum, 'gain_1_glory_every_X_seconds_per_rare_unique_monster_in_presence'), shockSpread: v(sum, 'shock_enemies_in_150cm_radius_on_shock_chance_%'),
+    volRefresh: v(sum, 'volatility_refresh_%_chance'), remnantTwice: v(sum, 'created_remnants_have_%_chance_to_duplicate_pick_up_results'), hazArmour: v(sum, 'enemies_affected_by_your_hazards_recently_have_+%_armour'), revertRage: v(sum, 'consume_rage_when_reverting_to_recover_x%_maximum_life_per_rage'),
     remnantPick: { life: v(sum, 'remnant_recover_%_life_on_pickup'), mana: v(sum, 'remnant_recover_%_mana_on_pickup') }, cryHeal: v(sum, 'restore_life_and_mana_on_warcry_%'), totemSpeed: v(sum, 'attack_and_cast_speed_+%_on_placing_totem'), firstPoison: v(sum, 'poison_effect_+%_vs_non_poisoned_enemies'),
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
