@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
+import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
 import { initItems, gearStats, radiusOf, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus } from './items.js';
 import { initSkills } from './skills.js';
@@ -108,6 +108,13 @@ const BODY_GRANTS = [['body_armour_grants_spirit_+%', 'spirit_+%'], ['body_armou
   ['body_armour_grants_x_physical_damage_taken_%_as_fire', 'physical_damage_from_hits_%_taken_as_fire'], ['body_armour_grants_x_strength_+%', 'strength_+%'],
   ['body_armour_grants_x_maximum_life_+%', 'maximum_life_+%'], ['body_armour_grants_x_base_fire_damage_resistance_%', 'base_fire_damage_resistance_%'],
   ['body_armour_grants_thorns_damage_+%', 'thorns_damage_+%'], ['body_armour_grants_glory_generation_+%', 'glory_generation_+%']];
+const PER_ATTR = [['weapon_damage_+%_per_10_str', 'str', 10, 'attack_damage_+%'], ['attack_speed_+%_per_10_dex', 'dex', 10, 'attack_speed_+%'],
+  ['attack_area_of_effect_+%_per_10_int', 'int', 10, 'attack_area_of_effect_+%'], ['attack_speed_+%_per_20_dex', 'dex', 20, 'attack_speed_+%'],
+  ['area_of_effect_+%_per_20_int', 'int', 20, 'base_skill_area_of_effect_+%'], ['spell_damage_+%_per_10_int', 'int', 10, 'spell_damage_+%'],
+  ['minimum_added_lightning_damage_to_attacks_per_20_intelligence', 'int', 20, 'attack_minimum_added_lightning_damage'], ['maximum_added_lightning_damage_to_attacks_per_20_intelligence', 'int', 20, 'attack_maximum_added_lightning_damage'],
+  ['minimum_added_cold_damage_to_attacks_per_20_dexterity', 'dex', 20, 'attack_minimum_added_cold_damage'], ['maximum_added_cold_damage_to_attacks_per_20_dexterity', 'dex', 20, 'attack_maximum_added_cold_damage'],
+  ['minimum_added_fire_damage_to_attacks_per_25_strength', 'str', 25, 'attack_minimum_added_fire_damage'], ['maximum_added_fire_damage_to_attacks_per_25_strength', 'str', 25, 'attack_maximum_added_fire_damage'],
+  ['energy_shield_recharge_rate_+%_per_4_strength', 'str', 4, 'energy_shield_recharge_rate_+%'], ['base_life_regeneration_rate_per_minute_per_10_intelligence', 'int', 10, 'base_life_regeneration_rate_per_minute']];
 function sumOf(b) {   // every stat of a build's passives (with the weapon set in use), gear, campaign rewards and buffs of its own
   const sum = questStats(b);
   for (const [k, v] of Object.entries(skillStats(b))) sum[k] = (sum[k] || 0) + v;
@@ -149,6 +156,11 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Amazon's Stalking Panther: evasion of the helmet, gloves and boots doubled, the body armour's halved
   if (sum.double_evasion_rating_from_gloves_helmets_boots) sum.base_evasion_rating = (sum.base_evasion_rating || 0) + ['helmet', 'gloves', 'boots'].reduce((t, s) => t + pieceDef(b.items, s, 'evasion'), 0);
   if (sum.halve_evasion_rating_from_body) sum.base_evasion_rating = (sum.base_evasion_rating || 0) - pieceDef(b.items, 'body', 'evasion') / 2;
+  // uniques' stats per so many points of an attribute (Pillar of the Caged God, Hand of Wisdom and Action, Brutus' Lead
+  // Sprinkler, The Whispering Ice, Tetzlapokal's Desire, Geofri's Sanctuary): as the stat they give, for the attribute
+  // you have. note: Pillar's "increased Weapon Damage" counted as attack damage
+  const PA = PER_ATTR.filter(([k]) => sum[k]), at = PA.length && attributes(sum, b.asc);
+  for (const [k, a, n, to] of PA) sum[to] = (sum[to] || 0) + sum[k] * Math.floor((at[a] || 0) / n);
   for (const [k, v] of Object.entries(auraStats(b, sum))) sum[k] = (sum[k] || 0) + v;   // after the rest: their level and magnitude come from it
   return sum;
 }

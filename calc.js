@@ -271,6 +271,7 @@ export function character(b, sum) {
     let val = v(sum, `base_${k}_damage_resistance_%`, ...combos, ...(k === 'chaos' ? [] : ['base_resist_all_elements_%'])) + fromFire * v(sum, 'modifiers_to_fire_resistance_also_apply_to_cold_lightning_resistance_at_%_value') / 100
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     if (k === 'chaos' && sum.chaos_damage_resistance_is_doubled) val *= 2;   // Acolyte of Chayula
+    if (k === 'chaos' ? sum.zero_chaos_resistance : sum.your_elemental_resistances_do_not_exist) val = 0;   // Glimpse of Chaos; Veil of the Night
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
     const max = sum['override_maximum_damage_resistance_%'] || CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
@@ -290,9 +291,13 @@ export function character(b, sum) {
   const pieceE = P('body', 'evasion') * v(sum, 'body_armour_evasion_rating_+%') / 100 + P('gloves', 'armour') * v(sum, 'evasion_rating_+_per_1_armour_on_gloves') + P('helmet', 'energy_shield') * v(sum, 'evasion_rating_+_per_1_helmet_energy_shield');
   const perEva = v(sum, 'maximum_energy_shield_+1_per_x_body_armour_evasion_rating');
   const pieceS = P('helmet', 'energy_shield') * v(sum, 'energy_shield_from_helmet_+%') / 100 + Math.floor(P('helmet', 'armour') / 8) * v(sum, 'energy_shield_+_per_8_helmet_armour') + (perEva ? Math.floor(P('body', 'evasion') / perEva) : 0);
-  const evasion = Math.round((v(sum, 'base_evasion_rating') + offX('evasion') + pieceE + (CHAR.base_evasion_rating || 0)) * pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH * EV);
+  // Skin of the Loyal: armour / evasion / energy shield / ailment threshold increased by an uncapped resistance
+  const UR = (k, r) => sum[k] ? res[r].value / 100 : 0, urA = UR('armour_increased_by_uncapped_fire_resistance', 'fire'), urE = UR('evasion_rating_increased_by_uncapped_lightning_resistance', 'lightning'), urS = UR('energy_shield_increased_by_uncapped_cold_resistance', 'cold');
+  const evasion0 = Math.round((v(sum, 'base_evasion_rating') + offX('evasion') + pieceE + (CHAR.base_evasion_rating || 0)) * (pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) + urE) * WH * EV);
   // "Gain 10% of Evasion Rating as extra Armour": of the evasion after its increases, not raised by the armour's
-  const armour = Math.round((v(sum, 'base_physical_damage_reduction_rating') + offX('armour') + pieceA) * pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) * WH + evasion * v(sum, 'evasion_rating_%_to_gain_as_armour') / 100);
+  const armour0 = Math.round((v(sum, 'base_physical_damage_reduction_rating') + offX('armour') + pieceA + (at.str || 0) * v(sum, 'gain_armour_equal_to_strength')) * (pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc) + urA) * WH + evasion0 * v(sum, 'evasion_rating_%_to_gain_as_armour') / 100);   // Facebreaker: +1 armour per Strength
+  // The Sunken Vessel: all armour converted to evasion
+  const SV = !!sum.converts_all_armour_to_evasion_rating, armour = SV ? 0 : armour0, evasion = SV ? evasion0 + armour0 : evasion0;
   // armour against elements: the % of it that applies to each (passives, and the body armour's own grants)
   const ele = v(sum, 'armour_%_applies_to_fire_cold_lightning_damage', 'body_armour_grants_armour_%_applies_to_fire_cold_lightning_damage');
   const armourEl = { fire: v(sum, 'base_armour_%_applies_to_fire_damage') + ele, cold: v(sum, 'base_armour_%_applies_to_cold_damage') + ele,
@@ -301,7 +306,7 @@ export function character(b, sum) {
   // deflection: its % of armour and of evasion as deflection rating, its increases, and how much less a deflected hit deals
   const deflect = { arm: v(sum, 'base_deflection_rating_%_of_armour'), eva: v(sum, 'base_deflection_rating_%_of_evasion_rating'), inc: pct('deflection_rating_+%'),
     less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected'), lessCrit: v(sum, 'base_damage_%_deflected_vs_crit') };   // and more of a deflected critical hit
-  const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%');
+  const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%') + urS;
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
   const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
@@ -314,11 +319,12 @@ export function character(b, sum) {
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + Math.floor(at.dex / 4) * v(sum, 'X_life_per_4_dexterity') + fromAttr('life') * (sum.keystone_giants_blood ? .5 : 1)) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('oracle_maximum_mana_+%_final')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
-    spirit: Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
+    spirit: sum.spirit_does_not_exist ? 0 : Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
     es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + P('body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
-    armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
+    armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: sum.base_cannot_evade ? 0 : evadeChance(evasion, lvl),   // Bramblejack: cannot evade
+    evaDouble: !!sum.double_evasion_rating_if_you_havent_been_hit_recently,   // Hyrri's Ire: doubled while not hit recently (the scene checks it)
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
@@ -350,9 +356,9 @@ export function character(b, sum) {
     attackSpeed: v(sum, 'attack_speed_+%', 'attack_and_cast_speed_+%'),
     castSpeed: v(sum, 'base_cast_speed_+%', 'attack_and_cast_speed_+%'),
     critInc: v(sum, 'critical_strike_chance_+%'),
-    critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
+    critBonus: sum.no_critical_strike_multiplier ? 0 : sum.critical_strike_multiplier_is_250 ? 250 : 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc), accuracyInc: accInc, accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc * (sum.accuracy_rating_is_doubled ? 2 : 1)), accuracyInc: accInc, accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
@@ -543,8 +549,11 @@ export function recovery(c, sum) {
   const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
   const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1);   // Mind Over Matter: 50% less
   return {
-    lifeRegen: lifePctRegen && c.life == null ? null
-      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
+    // Titanrot Cataphract: none; Mask of the Stitched Demon: per maximum energy shield
+    lifeRegen: sum.no_life_regeneration ? 0 : lifePctRegen && c.life == null ? null
+      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.es || 0) * v(sum, 'life_regeneration_per_minute_per_maximum_energy_shield') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
+    lifeToEs: !!sum.regenerate_energy_shield_instead_of_life,   // Ligurium Talisman, Soul Tether: life regeneration applied to energy shield instead (the scene plays it)
+    manaNoCrit: !!sum.no_mana_regeneration_if_not_crit_recently,   // Nightscale: none unless you crit recently (the scene checks it)
     esRate, esDelay: Math.max(0, CHAR.energy_shield_delay_ms - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
@@ -561,7 +570,7 @@ export function recovery(c, sum) {
     lifeRecharge: sum.keystone_eternal_youth ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
     // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
     zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
-    manaRegen: c.mana == null || manaLife && c.life == null ? null
+    manaRegen: sum.no_mana_regeneration ? 0 : c.mana == null || manaLife && c.life == null ? null
       : (c.mana * manaBase + (c.life || 0) * manaLife / 100 / 60) * manaInc,
     // their increases, and the tree's regeneration while you are in a state (the scene checks it)
     lifeInc, manaInc,
@@ -881,7 +890,7 @@ const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'Con
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'], ['armour_and_evasion_on_low_life_+%', 'ae', 'LowLife'],
   ['evasion_rating_+%_if_sprinting', 'e', 'Sprinting'], ['armour_evasion_energy_shield_+%_while_channelling', 'ae', 'Channelling'], ['evasion_rating_+%_if_you_have_hit_an_enemy_recently', 'e', 'HitRecently'],
   ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
-  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted']];
+  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['evasion_rating_+%_when_on_low_life', 'e', 'LowLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted']];
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
 // counted "per Enemy in Close Range" (the game data has no distance for it), against Bloodlusting
 // enemies, Parry's own speed after a Parry
@@ -893,13 +902,14 @@ const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask',
   ['attack_speed_+%_while_not_on_low_mana', 'a', 'NotLowMana'], ['attack_speed_+%_while_surrounded', 'a', 'Surrounded'],
   ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
-  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently'], ['skill_speed_+%_while_shapeshifted', 'ac', 'Shapeshifted']];
+  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['attack_speed_+%_while_on_full_mana', 'a', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently'], ['skill_speed_+%_while_shapeshifted', 'ac', 'Shapeshifted']];
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
 // 'Green10': 10 green supports socketed, known here. note: not counted against Bloodlusting enemies (the scene's have
 // none), the penalties while performing an action
 const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_+%_if_pinned_enemy_recently', 'PinnedRecently'], ['movement_speed_+%_while_using_charm', 'UsingCharm'],
   ['parry_movement_speed_+%_if_youve_parried_recently', 'ParriedRecently'], ['movement_speed_+%_if_10_green_supports_socketed', 'Green10'], ['movement_speed_+%_if_enemy_killed_recently', 'KilledRecently'], ['movement_speed_+%_while_surrounded', 'Surrounded'],
-  ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently'], ['archon_grants_movement_speed_+%', 'Archon']];
+  ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently'], ['archon_grants_movement_speed_+%', 'Archon'],
+  ['movement_velocity_+%_when_on_full_life', 'FullLife'], ['movement_speed_+%_while_affected_by_ailment', 'Ailing']];   // Foxshade, The Infinite Pursuit
 // the tree's regeneration while you are in a state: [stat, L (life % of the maximum per minute) / l (life regeneration
 // rate) / m (mana regeneration rate), the scene's condition]. note: the "recovery rate" ones count for regeneration
 // only, not flasks; not counted "per 5% missing life"
@@ -913,7 +923,8 @@ const REGEN_WHILE = [['life_regeneration_rate_+%_while_ignited', 'l', 'Ignited']
   ['mana_recovery_rate_+%_while_affected_by_a_mana_flask', 'm', 'ManaFlaskEffect'], ['mana_regeneration_rate_+%_on_full_life', 'm', 'FullLife'],
   ['mana_regeneration_rate_+%_while_moving', 'm', 'Moving'], ['mana_regeneration_rate_+%_while_not_on_low_mana', 'm', 'NotLowMana'],
   ['mana_regeneration_rate_+%_while_shocked', 'm', 'Shocked'], ['mana_regeneration_rate_+%_while_stationary', 'm', 'Still'],
-  ['mana_regeneration_rate_+%_if_enemy_shocked_recently', 'm', 'ShockedEnemyRecently'], ['life_regeneration_rate_+%_while_shapeshifted', 'l', 'Shapeshifted'], ['mana_regeneration_rate_+%_while_shapeshifted', 'm', 'Shapeshifted']];
+  ['mana_regeneration_rate_+%_if_enemy_shocked_recently', 'm', 'ShockedEnemyRecently'], ['life_regeneration_rate_+%_while_shapeshifted', 'l', 'Shapeshifted'], ['mana_regeneration_rate_+%_while_shapeshifted', 'm', 'Shapeshifted'],
+  ['mana_regeneration_rate_+%_if_crit_recently', 'm', 'CritRecently']];   // Nightscale
 // "damage_+%_<state>" while you are in it: [the stat's end, the scene's condition]
 const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in_presence_of_companion: 'CompanionInPresence', while_ally_in_presence: 'AllyInPresence',
   while_you_have_arcane_surge: 'ArcaneSurge', when_on_full_life: 'FullLife', when_on_low_life: 'LowLife', while_leeching: 'Leeching', while_life_leeching: 'LifeLeeching',
@@ -1297,6 +1308,7 @@ export function skill(g, b, treeGear) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
     out.critBonus = (100 + (attack && w?.critBonus || 0) + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
+    if (sum.no_critical_strike_multiplier || sum.critical_strike_multiplier_is_250) out.critBonus = sum.no_critical_strike_multiplier ? 0 : 250;   // Ungil's Harmony: none; Maligaro's Virtuosity: 250%
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
