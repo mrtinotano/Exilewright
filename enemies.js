@@ -177,7 +177,7 @@ export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee',
 export function versusPlayer(atk, st, c) {
   const types = TYPES.filter(el => atk.hits[el]).map(el => {
     const [lo, hi] = atk.hits[el];
-    return { type: el, raw: [lo, hi], taken: [playerTakes(c, el, lo), playerTakes(c, el, hi)].map(Math.round) };
+    return { type: el, raw: [lo, hi], taken: [playerTakes(c, el, lo), playerTakes(c, el, hi)].map(x => Math.round(x * (1 - (c.avoidDmg?.[el] || 0) / 100))) };   // Perfidy: its chance to avoid the type
   });
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
   const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion, c.evadeMax) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;

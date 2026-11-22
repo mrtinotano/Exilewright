@@ -276,7 +276,8 @@ export function character(b, sum) {
     const max = sum['override_maximum_damage_resistance_%'] || CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
       + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0)   // Gemling: red / green / blue supports
-      + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0);
+      + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0)
+      + (sum.maximum_block_modifiers_apply_to_maximum_resistances_instead ? v(sum, 'additional_maximum_block_%') : 0);   // Saffell's Frame
     res[k] = { value: val, max, capped: Math.min(val, max) };
   }
   const defInc = 'global_armour_evasion_energy_shield_+%';
@@ -330,7 +331,7 @@ export function character(b, sum) {
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
-    block: (v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0) + (classOf(b.items?.offhand) === 'Foci' ? v(sum, 'additional_block_chance_%_while_holding_focus') : 0))
+    block: sum.cannot_block ? 0 : (v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0) + (classOf(b.items?.offhand) === 'Foci' ? v(sum, 'additional_block_chance_%_while_holding_focus') : 0))
       * (1 + Math.floor(armourItems(b.items).armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours') / 100),   // Stone of Lazhwar; Ironbound's increased per 100 armour of your armour items; Renly's Training: the shield's base chance (note: a shield's own is not in the data)
     takenAs: takenAs(sum), physDR: v(sum, 'base_additional_physical_damage_reduction_%'),   // The Hollow Mask
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
@@ -343,7 +344,7 @@ export function character(b, sum) {
     esArm: v(sum, 'current_energy_shield_%_as_physical_damage_reduction'), esEl: v(sum, 'current_energy_shield_%_as_elemental_damage_reduction'),   // Disciple of Varashta: its share of your current energy shield added to armour against physical
     evaEl: v(sum, 'elemental_damage_reduction_%_from_evasion_rating'),
     // the cap (character.ot's, raised by "maximum Block chance", or Turtle Charm's own) and the share of a blocked hit you still take
-    blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + v(sum, 'additional_maximum_block_%'), blockTaken: v(sum, 'base_block_%_damage_taken'),
+    blockMax: sum.maximum_block_chance_override || (CHAR['object_inherent_base_maximum_block_%_from_ot'] || 0) + (sum.maximum_block_modifiers_apply_to_maximum_resistances_instead ? 0 : v(sum, 'additional_maximum_block_%')), blockTaken: v(sum, 'base_block_%_damage_taken'),
     charges: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, (CHAR[`max_${c}_charges`] || 0) + v(sum, `max_${c}_charges`)])),
     // how long each lasts (times the base) and the chance to gain one more when you gain one
     chargeTime: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, 1 + v(sum, 'charge_duration_+%', `${c}_charge_duration_+%`, `base_${c}_charge_duration_+%`) / 100])),
@@ -505,7 +506,7 @@ export function character(b, sum) {
   c.thorns.manaCold = v(sum, 'added_thorns_cold_base_damage_%_of_maximum_mana');
   // the critical damage bonus of hits against you, as a share: the Oracle's and the Smith's less; Gemling's Gem Studded none
   // while red supports are the most socketed in your skills
-  c.selfCrit = sum.no_self_critical_strike_multiplier_if_red_support_count_highest && SN.str && SN.str >= SN.dex && SN.str >= SN.int ? 0 : Math.max(0, 1 - v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%') / 100);
+  c.selfCrit = sum.self_take_no_extra_damage_from_critical_strikes ? 0 : sum.no_self_critical_strike_multiplier_if_red_support_count_highest && SN.str && SN.str >= SN.dex && SN.str >= SN.int ? 0 : Math.max(0, 1 - v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%') / 100);
   // Shaman's Sacred Flow: Spirit per charm slot (the belt's, the Ritualist's more) with no charm in it
   c.emptyCharms = Math.max(0, Math.min(3, v(sum, 'local_charm_slots', 'local_additional_charm_slots', 'num_charm_slots')) - ['charm1', 'charm2', 'charm3'].filter(k => b.items?.[k]).length);
   c.spirit += v(sum, 'spirit_+_per_empty_charm_slot') * c.emptyCharms;
@@ -606,7 +607,13 @@ export function recovery(c, sum) {
       lifeByMana: v(sum, 'unique_you_count_as_on_low_life_while_at_%_of_maximum_mana_or_below'), manaByLife: v(sum, 'unique_you_count_as_on_low_mana_while_at_%_of_maximum_health_or_below') }, buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
-    unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),   // chance for hits' damage against you to be Unlucky (Oracle: always)
+    unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),
+    // uniques: enemies' damage Lucky (+) / Unlucky (-) while on Low Life (The Barrow Dweller), of a type (The Sunken Vessel,
+    // The Burrower); Perfidy's chance to avoid a type of a hit's damage; more / less damage taken while on Low Life, while
+    // not hit recently (The Dancing Mirage)
+    dmgRolls: { low: v(sum, 'enemy_extra_damage_rolls_when_on_low_life'), physical: v(sum, 'enemies_extra_damage_rolls_with_physical_damage'), lightning: v(sum, 'enemies_extra_damage_rolls_with_lightning_damage') },
+    avoidDmg: Object.fromEntries(DMG.map(e => [e, v(sum, `avoid_${e}_damage_%`)])),
+    takenWhile: [['hand_wraps_damage_taken_+%_final_on_low_life', 'LowLife'], ['damage_taken_+%_if_not_hit_recently_final', 'NotHitRecently']].filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),   // chance for hits' damage against you to be Unlucky (Oracle: always)
     unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich

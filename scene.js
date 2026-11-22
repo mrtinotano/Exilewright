@@ -4978,12 +4978,15 @@ export function initScene(el, api) {
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     me.struck = [...(me.struck || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
+    const DR = OR.dmgRolls || {}, rollOf = el => { const n = (DR[el] || 0) + (lowLife() ? DR.low || 0 : 0); return UL || n < 0 ? Math.min(Math.random(), Math.random()) : n > 0 ? Math.max(Math.random(), Math.random()) : Math.random(); };   // Lucky: the higher of two rolls
+    const TW = (OR.takenWhile || []).reduce((m, w) => meIs[w.cv]() ? m * (1 + w.val / 100) : m, 1);   // more / less damage taken in a state (before this hit counts)
     const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (note: the other 5 s' less damage over time is not played)
     const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
     const SE = sheet(), EG = SE.enemyChaos && dist(d.pos, pp) <= SE.overgrow.r ? SE.enemyChaos / 100 : 0;   // Evergrasping Ring: enemies in your Presence gain extra chaos
     const AH = EG ? { ...a.hits, chaos: [0, 1].map(k => (a.hits.chaos?.[k] || 0) + Object.values(a.hits).reduce((t, h) => t + h[k], 0) * EG) } : a.hits;
     for (const el in AH) {
-      const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)));
+      if (Math.random() * 100 < (OR.avoidDmg?.[el] || 0)) continue;   // Perfidy: that type of the hit avoided
+      const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + rollOf(el) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0))) * TW;
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
