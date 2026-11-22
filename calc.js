@@ -580,6 +580,11 @@ export function recovery(c, sum) {
     // life), being stunned (% of life over a second)
     // uniques: Onslaught (4 s) and a Power Charge on hit, a Power Charge on a critical hit; physical damage taken from hits
     // (attack ones, projectile attack ones) lower by a flat amount; a chance to avoid projectiles
+    // uniques' on hit: Intimidate, Withered (spells), fire Exposure, Daze (attacks), Blind on Chilled enemies, Aggravated
+    // Bleeding (attacks); the elemental resistances of enemies you Ignite or Chill, the fire resistance of those in your Presence
+    uHit: { intim: v(sum, 'chance_to_intimidate_on_hit_%'), wither: v(sum, 'spells_have_x%_chance_inflict_withered_on_hit'), fireExpo: v(sum, 'base_inflict_fire_exposure_on_hit_%_chance'),
+      daze: v(sum, 'local_weapon_daze_chance_%'), blindChilled: v(sum, 'blind_chilled_enemies_on_hit_%'), aggr: v(sum, 'local_aggravate_bleeding_on_hit_chance_%') },
+    igChillRes: v(sum, 'ignites_and_chill_apply_elemental_resistance_+'), presFireRes: v(sum, 'enemies_in_presence_have_fire_resistance_%'),
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
     flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
     recoverOn: { power: v(sum, 'recover_x%_of_maximum_mana_when_you_consume_a_power_charge'), endurance: v(sum, 'recover_%_life_per_endurance_charge_consumed'),
@@ -1471,7 +1476,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     bleedIncision: critX(['base_bleeding_effect_+%', ...dmgI], 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
-    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%'), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0,
+    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0,
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
     maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
     maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),

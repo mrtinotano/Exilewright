@@ -601,6 +601,8 @@ export function initScene(el, api) {
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
+    const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
+    if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (S.P.attack && r(UH.daze)) daze(d, DAZE.time); if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     // Titan's Crushing Impacts: your hits are Crushing Blows, a Heavy Stun on an enemy Primed for Stun (keywords.json CrushingBlow)
     if (own && D?.sum?.crushing_blow && !/minion/.test(S.src || '') && !SHOCKWAVE[S.name] && (d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
@@ -933,7 +935,7 @@ export function initScene(el, api) {
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
     if (el === 'physical' && sheet().hazArmour && time - (d.hazAt ?? -99) <= RECENT) st = { ...st, armour: st.armour * (1 + sheet().hazArmour / 100) };   // the tree's armour of the enemies your Hazards affected recently
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
-    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
+    const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - (ELEM.includes(el) && (d.st.ignite > 0 || d.st.chill > 0) ? sheet().igChillRes || 0 : 0) - (el === 'fire' && dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presFireRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
@@ -1025,7 +1027,7 @@ export function initScene(el, api) {
     // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction), Herald of Blood's explosion's
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
-    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
+    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (sheet().uHit?.aggr || 0) : 0) + (S.aggX || 0)
       + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
