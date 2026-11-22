@@ -928,7 +928,7 @@ export function initScene(el, api) {
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
   // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
   // note: as a factor of its own, as Intimidate's
-  const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0)) / 100 : 1; };
+  const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0) + (sheet().uDef?.yoke || 0) * ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(a => d.st[a] > 0).length) / 100 : 1; };   // Yoke of Suffering: per elemental ailment type on them
   function takes(d, el, r, isHit = true, ow, pen, inv) { return defence(d, el, r, isHit, ow, pen, inv) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
@@ -1296,6 +1296,7 @@ export function initScene(el, api) {
   }
   const onsl = () => time < me.wildUntil || time < me.onsUntil;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
+    const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
     if (/^minion/.test(S?.src) && S.g && api.info(S.g).gem?.types?.includes('Companion') && Math.random() * 100 < (sheet().companionOns || 0)) me.compOns = time + ONSLAUGHT.time;   // the tree's: your Companions' Onslaught on kill
     d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
@@ -4179,6 +4180,10 @@ export function initScene(el, api) {
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
+    { const U = sheet().uDef || {}, q = me.leech.life;   // uniques on casting a spell / attacking: life leeched, life sacrificed for energy shield (Runic Ward at half)
+      if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
+      const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
+      if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
@@ -4357,8 +4362,9 @@ export function initScene(el, api) {
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
-    const L = 3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0);   // the tree's more while Surrounded
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    const UD = sheet().uDef || {}, L = 3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
+    if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
@@ -4685,6 +4691,7 @@ export function initScene(el, api) {
   // most you take its share of your maximum life and energy shield as fire damage and lose its share of the Flame
   function earchGo(EA) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
   function payMana(n) {
+    const MH = sheet().uDef?.manaHurt; if (MH && n > 0) hurt(n * MH / 100, 0, 'physical');   // Scold's Bridle
     const EA = sheet().earch; if (EA?.mana && me.maxM > 0 && (me.spent = (me.spent || 0) + n) >= me.maxM && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) { me.spent = 0; earchGo(EA); }   // Elemental Archon after spending your maximum mana
     const F = sheet().flame; if (!F) { me.mana -= n; return; }
     me.flame = (me.flame || 0) + n * F.ratio / 100;
@@ -4898,6 +4905,10 @@ export function initScene(el, api) {
     if (me.jade) c = { ...c, physDR: (c.physDR || 0) + me.jade * c.jade.dr };   // Jade: its additional physical damage reduction a stack
     if (c.fireMaxIgnited && me.st.ignite > 0) { const F = c.res.fire, max = F.max + c.fireMaxIgnited; c = { ...c, res: { ...c.res, fire: { ...F, max, capped: Math.min(F.value, max) } } }; }   // the tree's maximum fire resistance while Ignited
     if (c.archonRes && meIs.Archon()) c = { ...c, res: { ...c.res, ...Object.fromEntries(ELEM.map(e => [e, { ...c.res[e], capped: Math.min(c.res[e].max, c.res[e].value + c.archonRes) }])) } };   // Archon buffs' elemental resistances
+    { const U = sheet().uDef || {}, low = lowLife();   // uniques: fire resistance and evasion on Low Life, more armour per 1% of your energy shield
+      if (low && U.fireLow) { const F = c.res.fire, value = F.value + U.fireLow; c = { ...c, res: { ...c.res, fire: { ...F, value, capped: Math.min(value, F.max) } } }; }
+      if (low && U.evaLow) c = { ...c, evasion: (c.evasion || 0) + U.evaLow * (c.evasionInc || 1) };
+      if (U.esArmour && me.maxE > 0) c = { ...c, armourX: (c.armourX || 1) * (1 + me.es / me.maxE * U.esArmour) }; }
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     // Future-Past: after its Hindsight (its duration) Hinekora's Foresight keeps the roll from avoiding hits; a hit while
@@ -4931,12 +4942,14 @@ export function initScene(el, api) {
     // energy shield is not low (as Low Life: below its share of the most), or its chance for 200%. note: several multiply
     const DW = OR.defendWith; if (DW) { const x = [[DW.crit, crit], [DW.projAttack, a.attack && a.shape === 'projectile'], [DW.far, dist(d.pos, pp) > 6], [DW.notLowES, me.maxE > 0 && me.es >= me.maxE * LOW], [DW.haveES, me.es > 0], [DW.double && 200, Math.random() * 100 < DW.double]]
       .reduce((m, [p, ok]) => p && ok ? m * p / 100 : m, 1); if (x !== 1) c = { ...c, armourX: (c.armourX || 1) * x }; }
+    { const U = OR.uDef || {}; if (U.beforeHit) me.life = Math.min(me.maxL, me.life + (me.maxL - me.life) * U.beforeHit / 100); }   // Defiance of Destiny
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     me.struck = [...(me.struck || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
+    const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (note: the other 5 s' less damage over time is not played)
     const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
     for (const el in a.hits) {
-      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm + (el === 'physical' ? flat : 0)));
+      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)));
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
@@ -5063,7 +5076,7 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
+    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }

@@ -597,6 +597,17 @@ export function recovery(c, sum) {
     uHit: { intim: v(sum, 'chance_to_intimidate_on_hit_%'), wither: v(sum, 'spells_have_x%_chance_inflict_withered_on_hit'), fireExpo: v(sum, 'base_inflict_fire_exposure_on_hit_%_chance'),
       daze: v(sum, 'local_weapon_daze_chance_%'), blindChilled: v(sum, 'blind_chilled_enemies_on_hit_%'), aggr: v(sum, 'local_aggravate_bleeding_on_hit_chance_%') },
     igChillRes: v(sum, 'ignites_and_chill_apply_elemental_resistance_+'), presFireRes: v(sum, 'enemies_in_presence_have_fire_resistance_%'),
+    // uniques the scene plays: physical damage taken from the mana you pay (Scold's Bridle); Dodge Roll distance (metres)
+    // without / after one recently, its speed and Guard from missing energy shield (Lioneye's Glare, Decree of Flight);
+    // energy shield recharge and Runic Ward on kill; missing life recovered before a hit (Defiance of Destiny); Keeper of
+    // the Arc's less damage from hits (every other 5 s); fire resistance and evasion on Low Life; more armour per 1% of your
+    // energy shield (The Mutable Star); on casting a spell life leeched or sacrificed for energy shield, on attacking for
+    // Runic Ward (Lifesprig, Demon Stitcher); Guard from a mana flask (Glowswarm); damage taken per elemental ailment type (Yoke of Suffering)
+    uDef: { manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
+      rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
+      beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
+      esArmour: v(sum, 'armour_+%_final_vs_hits_per_1%_current_energy_shield'), spellLeech: v(sum, 'life_leech_%_maximum_life_on_spell_cast'), spellES: v(sum, 'sacrifice_%_maximum_life_to_gain_as_es_on_spell_cast'),
+      attackWard: v(sum, 'sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack'), flaskGuard: v(sum, 'using_mana_flask_grants_%_recovery_amount_as_guard_for_4s'), yoke: v(sum, 'elemental_ailment_types_apply_damage_taken_+%') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
     flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
     recoverOn: { power: v(sum, 'recover_x%_of_maximum_mana_when_you_consume_a_power_charge'), endurance: v(sum, 'recover_%_life_per_endurance_charge_consumed'),
