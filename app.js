@@ -124,6 +124,8 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
   // Ingenuity: increased bonuses from the left / right ring (note: Ingenuity's own count too, as the jewellery above)
   for (const s of ['ring1', 'ring2']) { const RE = sum[`equipped_${s}_effect_of_bonuses_+%`]; if (RE && b.items?.[s]) for (const [x, v] of Object.entries(gearStats({ [s]: b.items[s] }))) sum[x] = (sum[x] || 0) + v * RE / 100; }
+  // The Adorned: increased effect of the allocated jewel sockets holding a corrupted magic / rare jewel (note: the whole of what the jewel grants)
+  for (const [slot, it] of Object.entries(b.items || {})) { const AD = it?.corrupted && slot.startsWith('jewel:') && b.nodes.some(n => 'jewel:' + n === slot) && sum[`local_unique_jewel_passive_jewel_socket_mod_effect_+%_with_corrupted_${it.rarity}_jewel_socketed`]; if (AD) for (const [k, v] of Object.entries(gearStats({ [slot]: it }))) sum[k] = (sum[k] || 0) + v * AD / 100; }
   // increased bonuses gained from the equipped Quiver (the whole of what it grants), Instruments of Power's less of a Focus's
   const Q = b.items?.offhand, QE = isQuiver(Q) ? sum['quiver_mod_effect_+%'] : isFocus(Q) ? sum['focus_mod_effect_+%'] : 0;
   if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;

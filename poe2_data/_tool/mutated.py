@@ -12,8 +12,8 @@ load = lambda t: json.load(open(os.path.join(ROOT, 'tables', 'English', t + '.js
 stats, mods = load('Stats'), load('Mods')
 original = {mods[i]['Id'] for i in load('Incursion2MutatedUniqueModsClient')[0]['Mods']}
 NUM = r'\(?[+-]?\d+(?:\.\d+)?(?:\s*[—–-]\s*[+-]?\d+(?:\.\d+)?)?\)?'
-norm = lambda s: re.sub(r'\s+', ' ', re.sub(r'[+-]?#', '#', re.sub(NUM, '#', s))).strip().lower()
-plain = lambda t: re.sub(r'\{\d+[^}]*\}', '#', re.sub(r'\[(?:[^\]|]*\|)?([^\]]*)\]', r'\1', t))
+norm = lambda s: re.sub(r'\s+', ' ', re.sub(r'[+-]?#', '#', re.sub(NUM, '#', re.sub(r'(?i)\bglobal\s+', '', s.replace('\\n', ' '))))).strip().lower()   # the site's "Global" is not in the game's text; the game's text has "\n"
+plain = lambda t: re.sub(r'\{\d*[^}]*\}', '#', re.sub(r'\[(?:[^\]|]*\|)?([^\]]*)\]', r'\1', t))
 nums = lambda s: [tuple(float(x) for x in re.findall(r'[+-]?\d+(?:\.\d+)?', g)) for g in re.findall(NUM, s)]
 
 rows = {}   # stat id -> the stat_texts rows that show it: (their stats, the row)
@@ -22,6 +22,7 @@ for r in json.load(open(os.path.join(ROOT, 'available', 'stat_texts.json'), enco
         rows.setdefault(s, []).extend((r['stats'], x) for x in r['rows'])
 mod_stats = lambda m: [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]
 mutant = [m for m in mods if m['Id'].startswith('UniqueMutatedVaal')]
+KEYSTONE = {p['Name'].lower(): {stats[i]['Id'] for i in p['Stats']} for p in load('PassiveSkills') if p.get('IsKeystone')}   # a keystone shows as its name
 SHOW = {'negate': -1, 'per_minute_to_per_second': 1 / 60, 'divide_by_one_hundred': .01, 'divide_by_ten': .1, 'milliseconds_to_seconds': .001, 'double': 2}
 
 
@@ -49,7 +50,7 @@ def within(a, b):   # every number of a among b's (the text's own numbers, as '2
 
 def match(text):
     t, n = norm(text), sorted(round(abs(x), 2) for g in nums(text) for x in g)
-    cands = [m for m in mutant if any(norm(plain(row['t'])) == t for s in mod_stats(m) for _, row in rows.get(s[0], ()))]
+    cands = [m for m in mutant if any(norm(plain(row['t'])) == t for s in mod_stats(m) for _, row in rows.get(s[0], ()))] or [m for m in mutant if any(s[0] in KEYSTONE.get(text.strip().lower(), ()) for s in mod_stats(m))]
     if len({json.dumps(mod_stats(c)) for c in cands}) > 1:   # same text, other numbers: the row with the page's
         fit = lambda ok: [m for m in cands if any(norm(plain(row['t'])) == t and ok(shown(m, ids, row)) for s in mod_stats(m) for ids, row in rows.get(s[0], ()))]
         cands = fit(lambda x: x == n) or fit(lambda x: within(x, n))

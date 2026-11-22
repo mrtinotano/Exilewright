@@ -20934,6 +20934,17 @@
     ]
    },
    {
+    "id": "UniqueMutatedVaalGlobalChanceToBlindOnHit",
+    "text": "(5—10)% Global chance to Blind Enemies on Hit",
+    "stats": [
+     [
+      "global_chance_to_blind_on_hit_%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
     "id": "UniqueMutatedVaalPoisonEffect",
     "text": "(10—16)% increased Magnitude of Poison you inflict",
     "stats": [
@@ -24307,6 +24318,17 @@
   "unmatched": [],
   "mutated": [
    {
+    "id": "UniqueMutatedVaalBurningEnemiesExplodeChance",
+    "text": "Burning Enemies you kill have a (5—10)% chance to Explode, dealing a tenth of their maximum Life as Fire Damage",
+    "stats": [
+     [
+      "explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%",
+      5,
+      10
+     ]
+    ]
+   },
+   {
     "id": "UniqueMutatedVaalIgniteChanceIncrease",
     "text": "25% increased Flammability Magnitude",
     "stats": [
@@ -25285,6 +25307,17 @@
       "local_energy_shield",
       60,
       100
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalDamageTakenGoesToLifeManaESPercent",
+    "text": "(5—10)% of Damage Taken Recouped as Life, Mana and Energy Shield",
+    "stats": [
+     [
+      "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+      5,
+      10
      ]
     ]
    }
@@ -26470,6 +26503,17 @@
       150
      ]
     ]
+   },
+   {
+    "id": "UniqueMutatedVaalGlancingBlows",
+    "text": "Glancing Blows",
+    "stats": [
+     [
+      "keystone_glancing_blows",
+      1,
+      1
+     ]
+    ]
    }
   ],
   "replaceable": [
@@ -27293,6 +27337,28 @@
   ],
   "unmatched": [],
   "mutated": [
+   {
+    "id": "UniqueMutatedVaalPhysicalDamagePercent",
+    "text": "(-30—30)% reduced Global Physical Damage",
+    "stats": [
+     [
+      "physical_damage_+%",
+      -30,
+      30
+     ]
+    ]
+   },
+   {
+    "id": "UniqueMutatedVaalCorruptedRareJewelModEffect",
+    "text": "(0—75)% increased Effect of Jewel Socket Passive Skills containing Corrupted Rare Jewels",
+    "stats": [
+     [
+      "local_unique_jewel_passive_jewel_socket_mod_effect_+%_with_corrupted_rare_jewel_socketed",
+      0,
+      75
+     ]
+    ]
+   },
    {
     "id": "UniqueMutatedVaalFireDamagePercentage1",
     "text": "(-30—30)% reduced Fire Damage",
