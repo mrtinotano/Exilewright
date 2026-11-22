@@ -421,10 +421,12 @@ export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corr
 export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
   [...BASE[it.base]?.grants || [], ...(it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
 // what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
-// bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand
-export function offhandFits(weapon, off, giant) {
+// bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand; staffFocus:
+// Instruments of Power, a Focus next to a Staff
+export function offhandFits(weapon, off, giant, staffFocus) {
   const w = BASE[weapon?.base], quiver = !!BASE[off?.base]?.tags.includes('quiver');
   if (!w) return true;
+  if (staffFocus && w.class === 'Staves' && isFocus(off)) return true;
   if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
   return !bothHands(weapon, giant);
 }
@@ -451,11 +453,11 @@ export function keep(b, it) {
 }
 // `it` in `slot` (taken out of the saved items if it was there); what was there, and a weapon or off hand that cannot be
 // held with it (a two-handed weapon and anything in the off hand; a quiver without a bow), go to the saved items
-export function wear(b, slot, it, giant) {
+export function wear(b, slot, it, giant, staffFocus) {
   const items = b.items ||= {}, k = JSON.stringify(it);
   b.stash = (b.stash || []).filter(x => JSON.stringify(x) !== k);
   keep(b, items[slot]); items[slot] = it;
-  if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant)) { const o = slot === 'weapon' ? 'offhand' : 'weapon'; keep(b, items[o]); delete items[o]; }
+  if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant, staffFocus)) { const o = slot === 'weapon' ? 'offhand' : 'weapon'; keep(b, items[o]); delete items[o]; }
 }
 export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
 export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
@@ -666,7 +668,7 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 // jewelSockets(): [{id, label}] of the allocated jewel sockets in the tree
 // snapOf(items): calc.js snapshot() of the build if it wore `items` (what each candidate would change)
 // trade: { can(slot), money() -> [[currency, name]], go(slot, max, currency) }: the search for one like the item worn or better
-export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, trade) {
+export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, trade, staffFocus) {
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -802,7 +804,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
     if (!names[sel]) sel = 'weapon';
     // a weapon that takes both hands shows in the off hand too, dimmed, as in the game (picking it there picks the weapon)
-    const both = !items.offhand && bothHands(items.weapon, giant?.());
+    const both = !items.offhand && bothHands(items.weapon, giant?.()) && !(staffFocus?.() && classOf(items.weapon) === 'Staves');   // Instruments of Power: its Focus slot stays open
     const cell = (slot, area) => {
       const ghost = both && slot === 'offhand', at = ghost ? 'weapon' : slot, it = items[at], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
       return `<div class="cell ${base ? rarityOf(it) : ''}${ghost ? ' ghost' : ''}${slot === sel ? ' sel' : ''}" data-pick="${at}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
@@ -826,7 +828,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
     if (t.dataset.act === 'filter') { el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value); fillGains(); }
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
-  const put = (slot, it) => wear(getBuild(), slot, it, giant?.());
+  const put = (slot, it) => wear(getBuild(), slot, it, giant?.(), staffFocus?.());
   // a pasted item goes in the selected slot if it fits there, else the first free slot it fits
   function paste(text) {
     const r = parseItem(text);
