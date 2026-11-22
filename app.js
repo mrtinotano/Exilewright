@@ -392,7 +392,7 @@ const openShare = async exporting => {
     <textarea rows="3" data-in placeholder="${t('Paste a Path of Building code or a link (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry)')}"></textarea>
     <div class="row"><button data-a="import">${t('Import as a new build')}</button><button data-a="file">${t('JSON file')}</button><select data-pob hidden></select></div>
     <div class="msg" data-inmsg></div>
-    <p class="note">${t("Your character can only come in through Path of Building 2: the official Path of Exile site gives an account's characters only to programs registered with Grinding Gear Games. Import it there (Import/Export Build, Import from website) and save it: it shows up in the list above, or copy its code and paste it here.")}
+    <p class="note">${t("Why Path of Building 2: your Path of Exile account can only be connected to official programs authorised by Grinding Gear Games, and GGG is not accepting requests from new programs to use that feature at the moment, so this app cannot read your characters by itself. Path of Building 2 is authorised: import your character there (Import/Export Build, Import from website) and save it: it shows up in the list above, or copy its code and paste it here.")}
       <a href="https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2/releases/latest" target="_blank" rel="noopener">${t('Download Path of Building 2')}</a></p>
     <p class="note">${t('To bring your gear here, hover an item in the game, press Ctrl+C and paste it in Equipment. Copy (⧉) on an item gives its text for Path of Building and trade sites.')}</p>`}</div>`;
   const out = d.querySelector('[data-out]'), inmsg = d.querySelector('[data-inmsg]');
