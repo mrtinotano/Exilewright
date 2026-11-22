@@ -516,7 +516,7 @@ export function recovery(c, sum) {
     takenTree: { mark: v(sum, 'marked_enemy_damage_taken_+%'), electro: v(sum, 'electrocuted_enemy_damage_taken_+%'), frozenCold: v(sum, 'freeze_applies_cold_damage_taken_+%'),
       incision: v(sum, 'incision_you_inflict_applies_%_increased_physical_damage_taken') },
     ancBoost: { dmg: v(sum, 'ancestral_boosted_attack_damage_+%'), area: v(sum, 'ancestral_boosted_area_of_effect_+%') },
-    minionMove: v(sum, 'minion_movement_speed_+%'), companionMove: v(sum, 'companion_movement_speed_%'),
+    minionMove: v(sum, 'minion_movement_speed_+%'), companionMove: v(sum, 'companion_movement_speed_%'), companionOns: v(sum, 'companion_onslaught_on_kill_%'),
     blindEffect: v(sum, 'blind_effect_+%'), blindCrit: v(sum, 'enemies_you_blind_have_critical_strike_chance_+%'),   // and the critical hit chance of enemies you Blind
     // Martial Artist's Mountain's Teachings (Way of the Mountain)
     mountain: sum.stone_skin_maximum_stacks ? { chance: v(sum, 'chance_%_to_gain_one_stone_skin_stack_on_immobilising'), max: sum.stone_skin_maximum_stacks, dur: v(sum, 'stone_skin_duration_ms') / 1000,
@@ -1349,6 +1349,7 @@ export function skill(g, b, treeGear) {
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
   const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc), wAdd) : null;
   out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
+  if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });

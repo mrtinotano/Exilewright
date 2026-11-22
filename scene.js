@@ -1278,6 +1278,7 @@ export function initScene(el, api) {
   const onsl = () => time < me.wildUntil || time < me.onsUntil;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
+    if (/^minion/.test(S?.src) && S.g && api.info(S.g).gem?.types?.includes('Companion') && Math.random() * 100 < (sheet().companionOns || 0)) me.compOns = time + ONSLAUGHT.time;   // the tree's: your Companions' Onslaught on kill
     d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
@@ -2047,10 +2048,11 @@ export function initScene(el, api) {
         if (IB && L > 0 && (e.burnT = (e.burnT ?? 0) - dt) <= 0) { e.burnT = .5; for (const d of inside(e.pos, S.dmg.stats.infernal_familiar_minion_burn_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IB / 100 }); }
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
-        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0)) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        const ON = e.companion && time < (me.compOns ?? -9);   // Companions' Onslaught (the tree's on kill)
+        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0)) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100); sw = 1;
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1); sw = 1;
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
