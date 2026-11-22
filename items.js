@@ -78,7 +78,8 @@ function local(item) {
     r.physical = [Math.round((w.min + (s.local_minimum_added_physical_damage || 0)) * phys), Math.round((w.max + (s.local_maximum_added_physical_damage || 0)) * phys)];
     for (const e of ['fire', 'cold', 'lightning']) if (s[`local_minimum_added_${e}_damage`]) r[e] = [s[`local_minimum_added_${e}_damage`], s[`local_maximum_added_${e}_damage`]];
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
-    r.crit = w.crit + (s.local_critical_strike_chance || 0) / 100;
+    r.crit = s.local_weapon_base_crit_chance_permyriad_override != null ? s.local_weapon_base_crit_chance_permyriad_override / 100 : w.crit + (s.local_critical_strike_chance || 0) / 100;   // Quecholli: its own chance
+    r.noCritBonus = !!s.local_no_critical_strike_multiplier;
     r.range = w.range; r.critBonus = s['local_critical_strike_multiplier_+'] || 0;   // its own +% to Critical Damage Bonus
     r.accuracy = s.local_accuracy_rating || 0;   // its own accuracy, for attacks with it
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
