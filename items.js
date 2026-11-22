@@ -318,7 +318,12 @@ export function parseItem(text) {
   // name and tier), which also gives the range of each roll right after its number: "34(33-38)% increased Spirit", and
   // a note after a dash where there is one: "Used when you become Frozen — Unscalable Value". Path of Building opens a
   // rune's line with "{enchant}{rune}": closed by "(rune)" here, as the game's text has it
-  const body = raw.slice(ri + 1 + head.length).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => !rest ? rest : /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : /\{(fractured|crafted)\}/.test(tags) ? `${rest} (${tags.match(/\{(fractured|crafted)\}/)[1]})` : rest)
+  // Path of Building's unrolled line: "{range:0.5}(5-10)% of Damage..." is its min + range x (max - min), rounded (its
+  // ItemTools applyRange; 0.5 where no range is given). A roll followed by its range ("34(33-38)%", the game's) is not it
+  const ranged = l => { const R = +(l.match(/\{range:([\d.]+)\}/)?.[1] ?? .5);
+    const rs = (x, d) => Math.sign(x) * Math.round(Math.abs(x) * d) / d;   // rounded away from 0 at a half, as its roundSymmetric
+    return l.replace(/\((-?\d+\.?\d*)-(-?\d+\.?\d*)\)/g, (m, lo, hi, at, all) => /\d$/.test(all.slice(0, at)) ? m : String(rs(+lo + R * (hi - lo), /\./.test(lo + hi) ? 100 : 1))); };
+  const body = raw.slice(ri + 1 + head.length).map(ranged).map(l => l.replace(/^((?:\{[^}]*\})+)(.*)$/, (m, tags, rest) => !rest ? rest : /\{(rune|enchant)\}/.test(tags) ? rest + ' (rune)' : /\{(fractured|crafted)\}/.test(tags) ? `${rest} (${tags.match(/\{(fractured|crafted)\}/)[1]})` : rest)
     .replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').trim()).filter(Boolean);
   let impl = [], expl = [];
   const tagged = new Map();   // rune and enchantment lines -> as the text has them
@@ -938,3 +943,6 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
 console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15
   && affixLines('Helmets').some(o => o.desecrated && o.en), 'desecrated: trade listing and gear search');
+// self-check: Path of Building's unrolled lines, at their range
+{ const r = parseItem('Rarity: RARE\nNew Item\nFeathered Raiment\nImplicits: 1\n{tags:resource}{range:0.5}(5-10)% of Damage is taken from Mana before Life\n{range:0.2}+(10-20) to maximum Life');
+  console.assert(r?.item.implicits[0]?.[0] === 8 && r.item.mods[0]?.values[0] === 12 && !r.missed.length, 'parseItem: {range:} lines', r); }

@@ -4136,7 +4136,7 @@ export function initScene(el, api) {
     if (RS) for (let k = Math.min(rs.skill_raging_spirits_max_per_action, Math.max(1, Math.floor(S.A * 10 / rs.skill_raging_spirit_per_x_radius))); k > 0; k--) {
       limit(o => o.kind === RS.name, rs.base_number_of_raging_spirits_allowed + sheet().tempMinion); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
     }
-    if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
+    if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && o.shatter && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
     // Trickster's Shard: a spell you cast leaves a Fractured Mimic where you cast it, for its duration; at their limit they
     // all cast their spells, with their less damage, and are gone
     const TS = !auto && S.P.spell && S.dmg?.trig?.find(T => T.stats?.support_tricksters_shard_maximum_active_mimics);
