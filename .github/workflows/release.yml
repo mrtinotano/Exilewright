@@ -70,6 +70,5 @@ jobs:
           NOTES: ${{ inputs.notes }}
         run: |
           $v = [regex]::Match((Get-Content serve.py -Raw), "(?m)^VERSION = '([\d.]+)'").Groups[1].Value
-          Set-Content notes.md $env:NOTES -Encoding utf8
-          gh release create "v$v" dist/Exilewright-setup.exe dist/Exilewright-portable.zip --title "Exilewright $v" --notes-file notes.md --target $env:GITHUB_SHA
+          gh release create "v$v" dist/Exilewright-setup.exe dist/Exilewright-portable.zip --title "Exilewright $v" --notes $env:NOTES --target $env:GITHUB_SHA
           gh release list --limit 100 --json tagName --jq '.[].tagName' | Where-Object { $_ -ne "v$v" } | ForEach-Object { gh release delete $_ --yes --cleanup-tag }
