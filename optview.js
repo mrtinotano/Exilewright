@@ -7,6 +7,7 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
+import { usedBy } from './calc.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
@@ -295,7 +296,7 @@ export function initOpt(el, ctx) {
     const g = gemOf(b), sum = ctx.sumOf(b), why = whyNot(S.key, b, sum, g), list = skills(b), top = el.scrollTop;
     el.innerHTML = `<div class="opt"><section class="opthead"><div class="optrow">
         <label>${t('Objective')} <select data-s="key">${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), k === S.key)).join('')}</select></label>
-        <label>${t('Skill')} ${list.length ? `<select data-gem>${list.map((x, i) => opt(i, tn(GEM[x.name]), x === g)).join('')}</select>` : `<span class="note">${t('Add a skill to the build first')}</span>`}</label>
+        <label>${t('Skill')} ${list.length ? `<select data-gem>${list.map((x, i) => { const M = usedBy(b, b.gems.indexOf(x)); return opt(i, M ? t('{0} (in {1})', tn(GEM[x.name]), tn(GEM[M.name]) || M.name) : tn(GEM[x.name]), x === g); }).join('')}</select>` : `<span class="note">${t('Add a skill to the build first')}</span>`}</label>
         <div class="optnow">${why ? (list.length ? `<span class="note">${esc(t(why))}</span>` : '') : `${t('Now')}: <b>${show(S.key, b, g, sum)}</b>`}</div></div>
       ${NOTES[S.key] ? `<p class="note">${t(NOTES[S.key])}</p>` : ''}</section>
       ${treeCard(b, g, why)}${supCard(b, g, sum)}${gearCard(b, g)}</div>`;
