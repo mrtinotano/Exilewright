@@ -51,7 +51,7 @@ const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
 const TAILWIND = { move: 1, speed: 2, evasion: 10, deflect: 1, max: 10 };   // KeywordPopups Tailwind, per stack: increased movement speed, skill speed and evasion, damage of deflected hits prevented
 const EARCHON = { more: 25, ail: 100 }, HIGH_FLAME = .65;   // KeywordPopups ElementalArchon: 25% more elemental spell damage, 100% more freeze buildup, flammability and shock chance; HighInfernalFlame: 65% or more
-const ONSLAUGHT = { speed: 20, move: 10 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed
+const ONSLAUGHT = { speed: 20, move: 10, time: 4 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed, 4 s unless specified
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
@@ -251,7 +251,7 @@ export function initScene(el, api) {
   const blast = S => Math.round((S.stage || 0) * S.dmg.stats.flameblast_maximum_stages);
   const stageR = S => S.stage == null ? S.A : S.dmg?.stats?.flameblast_maximum_stages ? S.A + blast(S) * S.dmg.stats['vaal_flameblast_radius_+_per_stage'] / 10
     : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
-  const meleeR = S => sh(S).reach ?? SIM.meleeRange;   // the weapon's reach (calc.js shape), else the scene's
+  const meleeR = S => (sh(S).reach ?? SIM.meleeRange) + (time - (me.projHit ?? -99) <= 8 ? sheet().meleeProj || 0 : 0);   // the weapon's reach (calc.js shape), else the scene's; the tree's more after a projectile attack hit in the past 8 s
   // to the dummy's edge; a strike with a dash range of its own (Killing Palm, Ice Strike...) dashes to an enemy farther than melee
   const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : Math.max(meleeR(S), sh(S).dash || 0)) + SIM.body;
   const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
@@ -291,7 +291,7 @@ export function initScene(el, api) {
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
   const clean = d => { d.impales = []; d.slows = []; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
-    const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
+    const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
@@ -921,7 +921,7 @@ export function initScene(el, api) {
     const W = el === 'chaos' && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
-    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1);
+    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
   function withers(d, s, pct = WITHER.per) { const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct: pct * (1 + (sheet().witherMag || 0) / 100) });   /* the tree's increased Withered magnitude */ if (w.length > WITHER.max) w.shift(); }
@@ -1274,7 +1274,9 @@ export function initScene(el, api) {
     const v = place(d.pos.x + rnd(-1, 1), d.pos.z + rnd(-1, 1), d.mon, d.level); if (!v) return;
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
+  const onsl = () => time < me.wildUntil || time < me.onsUntil;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
+    if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
     d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + 1); me.volAt = time; }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
@@ -3993,6 +3995,7 @@ export function initScene(el, api) {
       hudT = 0;
     }
     const KA = !auto && P.melee && time < me.kaom?.until && me.kaom;
+    if (!auto && P.projectile && meIs.HitMeleeRecently() && Math.random() * 100 < (sheet().forkMelee || 0)) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), forks: (sh(S).forks || 0) + 1 } } };   // the tree's Fork after a melee hit. ponytail: rolled per use, not per projectile
     if (!auto && P.attack && P.projectile && (walk || move) && Math.random() * 100 < sheet().moveProj) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), projectiles: (sh(S).projectiles || 1) + 2 } } };   // the tree's two more projectiles while moving
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
@@ -4147,6 +4150,7 @@ export function initScene(el, api) {
     // Spell Echo: the spell echoes its number of times at the same target after it, the echo with its increased area
     // note: the delay of an echo is not in its data, the scene's quarter second
     const SE = S.dmg?.sum?.support_spell_echo_number_of_echo_cascades;
+    if (SE) me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time];   // the spells Echoed recently
     if (SE) for (let k = 1; k <= SE; k++) later(.25 * k, () => run({ ...S, A: S.A * Math.sqrt(1 + S.dmg.sum['echoed_spell_area_of_effect_+%'] / 100) }));
     // Spell Cascade: the spell also lands on either side of its target along a random axis, its number on each side, in its smaller area
     const SC = S.dmg?.sum?.support_spell_cascade_number_of_cascades_per_side;
@@ -4155,7 +4159,7 @@ export function initScene(el, api) {
     // one its chance to Echo once (as Spell Echo's)
     const NA = !auto && S.P.spell && S.dmg?.sum, NT = NA && S.g && api.info(S.g).gem?.types || [];
     if (NT.includes('Unleashable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_spell_%_chance_to_reoccur_an_additional_time'] || 0)) { S.rep = (S.rep || 0) + 1; S.repBy ||= S.label; S.repX ||= 1; }
-    if (NT.includes('Cascadable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_skill_echo_chance_%'] || 0)) later(.25, () => run({ ...S, rep: 0 }));
+    if (NT.includes('Cascadable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_skill_echo_chance_%'] || 0)) { me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time]; later(.25, () => run({ ...S, rep: 0 })); }
     if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
@@ -4206,7 +4210,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (time < me.wildUntil ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
+      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4284,7 +4288,7 @@ export function initScene(el, api) {
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * 3.6, z: pp.z + dz * 3.6 }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * (3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0)), z: pp.z + dz * (3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0)) }, k: 0, dur: .3, h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
@@ -4406,7 +4410,7 @@ export function initScene(el, api) {
   }
   const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
   let spdC = { at: -9, v: 0 };
-  const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (time < me.wildUntil ? ONSLAUGHT.move : 0)
+  const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (onsl() ? ONSLAUGHT.move : 0)
     + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0)) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE)
   function drawHud() {
     const gems = api.build().gems, names = gems.map(g => g.name);
@@ -4520,6 +4524,7 @@ export function initScene(el, api) {
       return;
     }
     if (st.pin > 0 && st.pin <= dt && d.unpin) { inflict(d, 'maim', d.unpin.S, 1, null, { dur: d.unpin.s }); d.unpin = null; }
+    if (st.ignite > 0) d.ignSec = (d.ignSec || 0) + dt;   // the seconds it was ever Ignited
     for (const k in st) if (st[k] > 0) st[k] -= dt;
     for (const k in d.lock) d.lock[k] -= dt;
     for (const k in d.imm) d.imm[k] -= dt;
@@ -5034,7 +5039,7 @@ export function initScene(el, api) {
   }
   // your resistances with those of the charms in use
   const meIs = { Archon: () => archonOn() || time < (me.earch || 0), CompanionInPresence: () => inPresence(o => o.companion), Still: () => !walk && !move, Bleeding: () => me.st.bleed > 0, Ignited: () => me.st.ignite > 0,
-    Surrounded: () => inside(pp, SURROUNDED.r).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
+    Surrounded: () => inside(pp, SURROUNDED.r * Math.sqrt(1 + (sheet().surrArea || 0) / 100)).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
     DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => me.life <= me.maxL * LOW,
@@ -5062,7 +5067,7 @@ export function initScene(el, api) {
     const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * sum('L') / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + sum('m') / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
-  const speedWhile = b => 1 + (sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100;
+  const speedWhile = b => 1 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
