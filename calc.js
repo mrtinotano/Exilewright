@@ -568,6 +568,9 @@ export function recovery(c, sum) {
     skillLife: v(sum, 'lose_x_life_when_you_use_skill'), rageCritTaken: v(sum, 'gain_x_rage_when_taken_crit'),   // Crown of Thorns; Bristleboar
     esOnManaFlask: !!sum.start_energy_shield_recharge_when_you_use_a_mana_flask, lowCap: !!sum.cannot_recover_above_low_life_except_flasks,   // Bitterbloom; Cat O' Nine Tails
     luckySurr: !!sum.attack_damage_is_lucky_if_surrounded,   // Empire's Grasp
+    critShocked: v(sum, 'critical_bonus_+%_final_while_shocked'), critChilled: v(sum, 'enemy_hit_critical_strike_chance_+%_against_self_while_chilled'),   // Berek's Respite; Berek's Grip
+    chillTaken: !!sum.enemies_chilled_by_hits_take_damage_increased_by_chill_effect, witherForever: !!sum.wither_never_expires,   // Asphyxia's Wrath; Cospri's Will
+    thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
     esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%'),
@@ -666,7 +669,7 @@ export function recovery(c, sum) {
     ccAt: v(sum, 'crowd_control_effects_are_triggered_at_%_poise_threshold_instead'),   // Sine Aequo
     // uniques on blocking: a Poison as though dealing that base chaos damage (Lycosidae), damage blocked recouped as mana
     // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
-    uBlock: { poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
+    uBlock: { cull: !!sum.culling_strike_enemies_on_block, poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
       blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
@@ -1549,7 +1552,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const keys = [...new Set([...Object.keys(st), ...Object.keys(sum), ...Object.keys(finals)])];
   // more damage when consuming a state (Glacial Cascade, Biting Frost), against one (Siege Cascade vs immobilised), per
   // charge spent (Spiral Volley): [state, %, unique-only / non-unique-only / any]
-  const pinAll = F('base_all_damage_can_pin') || all('base_all_damage_can_pin') > 0 || tags.includes('projectile') && all('all_projectile_damage_can_pin') > 0 || keys.some(k => /pins_as_though_dealt_damage/.test(k));
+  const pinAll = F('base_all_damage_can_pin') || all('base_all_damage_can_pin') > 0 || tags.includes('attack') && all('local_all_damage_can_pin') > 0 || tags.includes('projectile') && all('all_projectile_damage_can_pin') > 0 || keys.some(k => /pins_as_though_dealt_damage/.test(k));
   const consume = {}, vs = [], STATE_OF = { fully_broken_armour: 'armour', heavy_stunned: 'stun', frozen: 'freeze', bleeding: 'bleed', poisoned: 'poison',
     ignited: 'ignite', shocked: 'shock', chilled: 'chill', electrocuted: 'electrocute', pinned: 'pin', immobilised: 'immobilised', cursed: 'curse', marked: 'mark' };
   for (const k of keys) {
@@ -1604,7 +1607,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
     bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FBl * (sum.keystone_crimson_assault ? 1.5 : 1),
-    bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!sum.keystone_crimson_assault,   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated
+    bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!(sum.keystone_crimson_assault || sum.aggravate_inflicted_bleeding),   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated (Apron of Emiran: Aggravated)
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
     freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: 1 + all('pin_duration_+%') / 100,
@@ -1628,9 +1631,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     alwaysHit: F('global_always_hit'),
     // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them
     impale: { chance: all('impale_on_hit_%_chance') + all(tags.includes('attack') ? 'attacks_impale_on_hit_%_chance' : 'spells_impale_on_hit_%_chance'),
-      mag: scale(['impale_magnitude_+%', ...tags.includes('spell') ? ['spell_impale_magnitude_+%'] : []], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale'), crit: F('critical_hits_always_apply_impale') },   // Dreadfist: critical hits always Impale
+      mag: scale(['impale_magnitude_+%', ...tags.includes('spell') ? ['spell_impale_magnitude_+%'] : []], 'active_skill_impale_magnitude_+%_final'), n: 1 + all('number_of_additional_impaled_debuffs_to_apply'), keep: F('cannot_consume_impale'), crit: F('critical_hits_always_apply_impale'), critKeep: F('critical_hits_cannot_consume_impale') },   // Dreadfist: critical hits always Impale
     // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
-    electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
+    electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') + all('local_all_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     electrocuteIf: scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/),   // on an enemy any lightning can electrocute (Enervating Nova)
     pin: pinAll || all('base_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) * (1 + (all('hit_damage_pin_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%')) / 100) : 0, pinPhys: !pinAll,   // physical alone: a unique's
     chillDamage: more(/chill_as_though_damage_\+%_final$/),
