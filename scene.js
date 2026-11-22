@@ -1511,7 +1511,7 @@ export function initScene(el, api) {
     for (let k = 0; k < n; k++) {
       const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
       boom(q, S.A, S, { soft: true, noPay: k > 0 });
-      limit(o => o.plant && o.name === S.name, st.number_of_poisonbloom_arrow_bloom_allowed);   // Toxic Growth: up to its most pustules
+      limit(o => o.plant && o.name === S.name, st.number_of_poisonbloom_arrow_bloom_allowed, S);   // Toxic Growth: up to its most pustules
       const m = new THREE.Mesh(PUSTULE, new THREE.MeshStandardMaterial({ color: 0x5f8a2a, emissive: 0x1d3008, roughness: .6 })); m.position.set(q.x, .25, q.z);
       // Overgrown, a Pustule grows as though dealing its poison per minute: stored, it detonates faster and harder (as poisoned)
       planted(thing(m, sh(S).detonate || SIM.lifetime, { name: S.name, plant: S, c: q, R: S.A, stored: 0,
@@ -1632,11 +1632,13 @@ export function initScene(el, api) {
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
   // up to a limit: the oldest of the objects f picks gives way
-  const limit = (f, max) => { const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
+  // S: the skill, for the tree's more of it (Orb skills', Elemental skills')
+  const limit = (f, max, S) => { if (max && S) max += (S.kind === 'orb' ? sheet().orbLimit || 0 : 0) + (S.els?.some(e => ELEM.includes(e)) ? sheet().elLimit || 0 : 0);
+    const mine = objs.filter(o => f(o) && !o.dead); while (max && mine.length >= max) mine.shift().dead = true; };
   const SPEAR = new THREE.CylinderGeometry(.03, .03, 1.3, 5), SPEAR_M = new THREE.MeshStandardMaterial({ color: 0x8a8070, metalness: .6, roughness: .5 });
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
   function earth(S, c, max, spike) {
-    limit(o => o.earth && o.name === S.name, max);
+    limit(o => o.earth && o.name === S.name, max, S);
     const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
     m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
     pop(c, .6, 'dust');
@@ -1692,7 +1694,7 @@ export function initScene(el, api) {
       const e = near(at.pos, sh(S).chainRange || SIM.chainRange, e => !seen.has(e) && lit(e)); if (!e) break;
       seen.add(e); fx.bolt(chest(at), chest(e), 'lightning', .18); hit(e, S); wave(e); at = e;
     }
-    limit(o => o.rod && o.name === S.name, st.number_of_lightning_rods_allowed); rod(S, { x: at.pos.x, z: at.pos.z });
+    limit(o => o.rod && o.name === S.name, st.number_of_lightning_rods_allowed, S); rod(S, { x: at.pos.x, z: at.pos.z });
   }
   // Lightning Spear: where it hits it bursts, its bolts (its secondary part's projectiles) striking as many other enemies
   // in its area; with a Frenzy Charge spent it first splits into its more copies, each hitting another enemy there and
@@ -1716,7 +1718,7 @@ export function initScene(el, api) {
   // when slammed, less within its first 0.5 s when enemies break it
   function shieldWall(S, a, b, c, dur) {
     const st = S.dmg.stats, r = (st.active_skill_base_secondary_area_of_effect_radius || 10) / 10, len = dist(a, b), n = Math.max(1, Math.round(len / (2 * r))), g = holder(c), born = time;
-    limit(o => o.earth && o.name === S.name, st.base_number_of_shield_walls_allowed);
+    limit(o => o.earth && o.name === S.name, st.base_number_of_shield_walls_allowed, S);
     const segs = Array.from({ length: n }, (_, i) => {
       const k = (i + .5) / n, p = { x: a.x + (b.x - a.x) * k, z: a.z + (b.z - a.z) * k };
       const m = new THREE.Mesh(new THREE.BoxGeometry(len / n * .95, 1.3, .45), new THREE.MeshStandardMaterial({ color: 0x6b5a48, roughness: .95, flatShading: true }));
@@ -2209,7 +2211,7 @@ export function initScene(el, api) {
     const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
     if (o.dur) {
       const mine = fissures.filter(f => f.S.name === S.name);
-      if (mine.length >= o.max) { const old = mine[0]; old.decal.t = old.decal.dur; fissures.splice(fissures.indexOf(old), 1); }
+      if (mine.length >= o.max + (sheet().fissureLimit || 0)) { const old = mine[0]; old.decal.t = old.decal.dur; fissures.splice(fissures.indexOf(old), 1); }
       fissures.push({ a: { x: from.x, z: from.z }, b, S, r, mult, decal, end: time + o.dur, next: 0 });
     }
     for (let k = 1; k <= len; k++) later(k * .06, () => {
@@ -2336,7 +2338,7 @@ export function initScene(el, api) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
       // one at a time (Frost Bomb: its limit); Frost Bomb's exposure grows each pulse (its compounding magnitude) up to its cap
       const st = S.dmg?.stats || {}, cmp = st.active_skill_all_elemental_exposure_compounding_magnitude, eff = S.dmg?.ail?.expo.effect ?? 1;
-      limit(o => o.orbOf === S.name, st.base_maximum_number_of_frost_bombs || st.orb_of_storms_base_maximum_number_of_orbs || st.solar_orb_base_maximum_number_of_orbs || 1);   // Frost Bomb, Orb of Storms, Solar Orb: their most
+      limit(o => o.orbOf === S.name, st.base_maximum_number_of_frost_bombs || st.orb_of_storms_base_maximum_number_of_orbs || st.solar_orb_base_maximum_number_of_orbs || 1, S);   // Frost Bomb, Orb of Storms, Solar Orb: their most
       const m = fx.orb(S.el, .3), range = fx.decal(c, R, 'outline', S.el, { a: .35, rot: 0 }); m.position.set(c.x, 1.3, c.z);
       fx.ring(c, .2, 1.4, S.el, .4);
       let tk = .4;
@@ -2373,11 +2375,11 @@ export function initScene(el, api) {
       const fire = S.els.includes('fire'); let tk = 0;
       if (P.earthen) { fx.strip(a, b, 1.2, S.el, dur, { a: .6 }); return shieldWall(S, a, b, c, dur); }
       // its own limit (Flame Wall's 3); a wall with damage over time burns those in it (its damage per second), else hits
-      limit(o => o.wall && o.name === S.name, S.dmg?.stats?.number_of_allowed_firewalls);
+      limit(o => o.wall && o.name === S.name, S.dmg?.stats?.number_of_allowed_firewalls, S);
       // Voltaic Barrier: its own limit, its hits every its interval (not the scene's lesser ones), and it energises the
       // projectiles fired through it (discharge)
       const VS = S.dmg?.stats?.voltaic_barrier_damage_interval_ms, volt = VS && partOf(S, 'VoltaicBarrierTriggeredChainLightningPlayer');
-      if (VS) limit(o => o.wall && o.name === S.name, S.dmg.stats.voltaic_barrier_active_actions_limit);
+      if (VS) limit(o => o.wall && o.name === S.name, S.dmg.stats.voltaic_barrier_active_actions_limit, S);
       const strip = fx.strip(a, b, 1.2, S.el, dur, { a: .6 }), burns = Object.keys(S.dmg?.dot || {}).length > 0;
       thing(holder(c), dur, { wall: true, fire, volt, a, b, name: S.name, label: S.label, S,
         tick(dt, e) {
@@ -2594,7 +2596,7 @@ export function initScene(el, api) {
       const BC = S.dmg?.stats?.ring_of_bone_maximum_number_of_rings;
       if (BC) {
         const r = radOf(S), n = Math.max(3, Math.round(Math.PI * R / r)), g = holder(c), mat = new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: .7, flatShading: true });
-        limit(o => o.cage && o.name === S.name, BC);
+        limit(o => o.cage && o.name === S.name, BC, S);
         const spikes = Array.from({ length: n }, (_, k) => {
           const a = k * TAU / n, m = new THREE.Mesh(EARTH.spike, mat); m.position.set(Math.sin(a) * R, .45, Math.cos(a) * R); m.scale.set(.5, .6, .5); m.castShadow = true; g.add(m);
           return { m, p: { x: c.x + Math.sin(a) * R, z: c.z + Math.cos(a) * R } };
@@ -2713,7 +2715,7 @@ export function initScene(el, api) {
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
         facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); slash(S, dx / l, dz / l);
-        if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); }
+        if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
       const shocked0 = first.st.shock > 0;
@@ -2787,7 +2789,7 @@ export function initScene(el, api) {
       const max = Object.entries(st).find(([k]) => /_max(?:imum)?_number_of_storms$/.test(k))?.[1] || 2, every = (st.fire_storm_fireball_delay_ms ?? st.lightning_storm_hit_frequency_ms ?? 170) / 1000,
         vary = (st.lightning_storm_hit_frequency_variance_ms || 0) / 1000, fall = (st.firestorm_fall_time_ms ?? 160) / 1000,
         again = (st.rain_hit_delay_ms ?? st.lightning_storm_hit_prevention_duration_ms ?? 0) / 1000, hitAt = new Map();
-      limit(o => o.stormOf === S.name, max + (su['support_storm_skill_limit_+'] || 0));
+      limit(o => o.stormOf === S.name, max + (su['support_storm_skill_limit_+'] || 0), S);
       // Firestorm's consumed Infusions: Fire, a larger area and more frequent bolts; Cold and Lightning, their own bolts too
       const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = (G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0)) * shrink, R = G0.R * shrink;
       const extra = (S.infs || []).filter(e => e !== 'fire').map(e => infPart(S, e)).filter(Boolean);
@@ -2833,7 +2835,7 @@ export function initScene(el, api) {
         for (let k = 0; k < n; k++) {
           const a = a0 + rnd(-Math.PI / 2, Math.PI / 2), r = Math.sqrt(rnd(.04, 1)) * R, p = { x: from.x + Math.sin(a) * r, z: from.z + Math.cos(a) * r };
           const m = new THREE.Mesh(SPEAR, SPEAR_M); m.position.y = .55; m.rotation.set(rnd(-.25, .25), 0, rnd(-.25, .25));
-          later(r / R * .25, () => { limit(o => o.hazard && o.name === S.name, SF); pop(p, .3, 'dust'); hazardAt(X, p, durOf(S), { reach: .25, mesh: m, early: st['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'],
+          later(r / R * .25, () => { limit(o => o.hazard && o.name === S.name, SF, S); pop(p, .3, 'dust'); hazardAt(X, p, durOf(S), { reach: .25, mesh: m, early: st['hazard_damage_+%_final_for_first_500_ms_when_not_killed_by_self'],
             then: q => { for (const d of inside(q, X.A)) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + st['spearfield_maim_slows_an_additional_%'] }); } }); });
         }
         return;
@@ -2844,8 +2846,8 @@ export function initScene(el, api) {
       const zs = S.dmg?.stats || {}, gr = zs['active_skill_ground_effect_area_of_effect_+%_final_per_second'];
       if (P.ground) { ground(P.ground, c, R, dur, S, gr && { per: gr, max: zs['active_skill_ground_effect_area_of_effect_+%_final_per_second_max'] }).corpse = c.life; area(c, R, S, { mult: .5 }); return; }
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
-      if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed);
-      limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals ?? S.dmg?.stats?.number_of_poison_cloud_allowed);   // Profane Ritual, Decompose: up to their most
+      if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed, S);
+      limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals ?? S.dmg?.stats?.number_of_poison_cloud_allowed, S);   // Profane Ritual, Decompose: up to their most
       const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
           if (e.plant) presence(e);
@@ -2997,7 +2999,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, c = S.at, step = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * (st['volcano_gain_stage_every_%_of_cast_time'] || 100) / 100;
       const n = Math.min(st.volcano_maximum_number_of_stages || 1, 1 + Math.floor((S.held || 0) / step)), X = partOf(S, 'VolcanoProjectilePlayer'), XS = partOf(S, 'VolcanoSlamPlayer');
       const one = sh(X || S).projectiles || 1, spread = S.G?.radius2 || 3;
-      limit(o => o.volcano && o.name === S.name, st.volcano_base_number_of_geysers_allowed || 1);
+      limit(o => o.volcano && o.name === S.name, st.volcano_base_number_of_geysers_allowed || 1, S);
       const spray = (k, Y) => { for (let j = 0; j < k; j++) { const a = rnd(TAU), r = Math.sqrt(rnd()) * spread, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
         lob(fx.orb('fire', .14), V(c.x, 1.2, c.z), V(q.x, .1, q.z), .5, 2.4, () => boom(q, Y.A, { ...Y, mult: S.mult }, { soft: true }), { trail: 'fire' }); } };
       fx.text({ x: c.x, y: 2.4, z: c.z }, t('Stage {0}', n), css('fire'));
@@ -3105,7 +3107,7 @@ export function initScene(el, api) {
   K.runes = S => {
     const st = S.dmg?.stats || {}, n = st.rune_hazard_number_of_runes_to_create || 1, half = (st.rune_hazard_cone_angle || 60) / 2 * Math.PI / 180, a0 = Math.atan2(S.dx, S.dz);
     for (let k = 0; k < n; k++) {
-      limit(o => o.hazard && o.name === S.name, st.rune_hazard_base_number_of_runes_allowed);
+      limit(o => o.hazard && o.name === S.name, st.rune_hazard_base_number_of_runes_allowed, S);
       const a = a0 + rnd(-half, half), r = rnd(1, SIM.castRange * .6), p = { x: pp.x + Math.sin(a) * r, z: pp.z + Math.cos(a) * r };
       hazardAt(S, p, durOf(S), { arm: st.rune_hazard_arming_time_ms / 1000, delay: st.rune_hazard_detonate_time_ms / 1000, reach: S.G?.radius2, c: 'lightning' });
     }
@@ -3199,7 +3201,7 @@ export function initScene(el, api) {
     const st = S.dmg.stats, n = st.grim_pillars_number_of_pillars_to_create || 1, X = partOf(S, 'GrimPillarsExplodePlayer');
     const r = n > 1 ? S.A : 0, c = n > 1 ? pp : around(S.at, 0), hr = n > 1 ? st.active_skill_base_secondary_area_of_effect_radius / 10 : S.A;
     for (let k = 0; k < n; k++) {
-      limit(o => o.ice && o.name === S.name, st.base_number_of_grim_pillars_allowed ?? st.base_number_of_frozen_locus_allowed);
+      limit(o => o.ice && o.name === S.name, st.base_number_of_grim_pillars_allowed ?? st.base_number_of_frozen_locus_allowed, S);
       const a = k * TAU / n, p = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
       crystal(S, p, durOf(S), X || S); for (const d of inside(p, hr)) hit(d, S);
     }
@@ -3284,7 +3286,7 @@ export function initScene(el, api) {
   // note: that it starts at its first stage is not in the data
   K.sigil = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = S.A, g = holder(c), ring = fx.decal(c, R, 'outline', 'gold', { a: .4, rot: 0 }), glow = fx.decal(c, R, 'patch', 'gold', { a: .12, k: 1 });
-    limit(o => o.sigil && o.name === S.name, st.base_number_of_sigil_of_power_allowed);
+    limit(o => o.sigil && o.name === S.name, st.base_number_of_sigil_of_power_allowed, S);
     const AE = st['sacred_ground_armour_evasion_energy_shield_+%_final_per_stage'] || 0;
     const give = n => ({ 'armour_evasion_+%_final': n * AE, 'energy_shield_+%_final': n * AE, life_regeneration_per_minute: n * (st.sacred_ground_life_regeneration_for_allies_per_minute_per_stage || 0),
       'circle_of_power_spell_damage_+%_final': n * (st['circle_of_power_spell_damage_+%_final_per_stage'] || 0) });   // Sigil of Power: its more spell damage per stage (base)
@@ -3405,7 +3407,7 @@ export function initScene(el, api) {
     if (!n || (me.seeds = (me.seeds || 0) + n) < need) return;
     me.seeds -= need;
     const X = partOf(S, 'Crystal'), xs = X?.dmg.stats; if (!X) return;
-    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) { limit(o => o.ice && o.name === S.name, xs.midnight_star_max_ice_crystals); crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(X), X, xs.frost_wall_maximum_life); }
+    for (let k = 0; k < st.unique_nattblom_crystals_per_trigger; k++) { limit(o => o.ice && o.name === S.name, xs.midnight_star_max_ice_crystals, S); crystal(S, around(d.pos, st.unique_nattblom_crystal_radius / 10), durOf(X), X, xs.frost_wall_maximum_life); }
   }
   // Mirror of Refraction: while it is on, a mirror appears in your Presence every its interval, up to its most, for its
   // duration. A spell projectile that hits one shatters it, copying the projectile in a nova of its number around it;
@@ -3524,7 +3526,7 @@ export function initScene(el, api) {
   K.vines = S => {
     const st = S.dmg?.stats || {}, c = { ...S.at }, R = S.A, r = radOf(S), every = (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime) * st['awakened_forest_spawn_vines_per_X%_cast_time'] / 100;
     const was = objs.find(o => o.forest && o.name === S.name && !o.dead && dist(o.c, c) <= R); if (was) { was.s = 0; return; }   // sustained: the same area goes on
-    limit(o => o.forest && o.name === S.name, st.base_number_of_awakened_forests_allowed);
+    limit(o => o.forest && o.name === S.name, st.base_number_of_awakened_forests_allowed, S);
     const ring = fx.decal(c, R, 'outline', 'poison', { a: .35, rot: 0 }); let k = 0;
     planted(thing(holder(c), durOf(S), { name: S.name, forest: true, plant: S, c, R, off: () => ring.remove(), tick(dt, e) {
       presence(e);
@@ -3577,7 +3579,7 @@ export function initScene(el, api) {
   K.shards = S => {
     const X = partOf(S, 'IceShardsShardPlayer'), xs = X?.dmg.stats, c = around(S.at, .5); if (!X) return;
     fx.streak(hand(), V(c.x, .1, c.z), 'cold', .1, .04, 1); boom(c, .5, S, { soft: true });
-    limit(o => o.hazard && o.name === S.name, xs.permafrost_shard_limit);
+    limit(o => o.hazard && o.name === S.name, xs.permafrost_shard_limit, S);
     hazardAt({ ...X, mult: S.mult }, c, SIM.lifetime, { arm: xs.permafrost_shard_arming_time_ms / 1000, reach: xs.permafrost_shard_detection_base_area_of_effect_radius / 10, c: 'cold',
       more: t => 1 + xs['permafrost_shard_damage_+%_final_after_1_second'] / 100 * Math.min(1, t / (xs.permafrost_shard_bonus_damage_delay_ms / 1000)) });
   };
@@ -3602,7 +3604,7 @@ export function initScene(el, api) {
   // its second duration). note: the projectile's own path hits are not simulated, only its landing
   K.lance = S => {
     const I = S.spent && partOf(S, 'StormLanceInfusedPlayer'), X = I ? { ...I, mult: S.mult } : S, st = X.dmg.stats, c = { ...S.at }, R = radOf(S);
-    limit(o => o.lanceOf === S.name, S.dmg.stats.base_number_of_overcharged_spears_allowed);
+    limit(o => o.lanceOf === S.name, S.dmg.stats.base_number_of_overcharged_spears_allowed, S);
     lob(fx.arrow('lightning'), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
       boom(c, S.A, X); const m = fx.orb('lightning', .14); m.position.set(c.x, 1.2, c.z);
       let tk = 0;
@@ -3679,6 +3681,7 @@ export function initScene(el, api) {
   // (PoB2 MinionRevivalTimeBase), so the scene's minions come back only this way or by using their skill again
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
+    const VM = sheet().volMinion; if (VM) { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + VM); me.volAt = time; }   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
   }
@@ -3686,6 +3689,7 @@ export function initScene(el, api) {
   function reviveFallen(n) {
     let used = 0, k = 0;
     me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n - used) return !!X; used += f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
+    me.life = Math.min(me.maxL, me.life + me.maxL * k * (sheet().reviveLife || 0) / 100);   // the tree's life per minion Revived
     return { used, k };
   }
   function grim(S) {
@@ -3722,7 +3726,7 @@ export function initScene(el, api) {
   // runs slower
   K.entangle = S => {
     const st = S.dmg.stats, X = partOf(S, 'EntangleVinePlayer'), xs = X.dmg.stats, ang = Math.atan2(S.dx, S.dz), a = { x: pp.x, z: pp.z }, b = { x: a.x + Math.sin(ang) * S.A, z: a.z + Math.cos(ang) * S.A }, dur = durOf(S);
-    limit(o => o.entangle && o.name === S.name, st.base_number_of_entangle_roots_allowed);
+    limit(o => o.entangle && o.name === S.name, st.base_number_of_entangle_roots_allowed, S);
     fissure(S, a, ang, S.A, radOf(S), 1, { dur, max: st.base_number_of_entangle_roots_allowed });
     let k = 0, vines = [];
     planted(thing(holder(a), dur, { name: S.name, entangle: true, plant: S, c: { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 }, R: S.A / 2, tick(dt, e) {
