@@ -480,6 +480,8 @@ export function initScene(el, api) {
       // critical damage bonus for each re-roll
       const IC = !crit && pc > 0 && D.sum?.['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
       if (IC) { let n = 1; while (n < 99 && !(Math.random() * 100 < pc)) n++; crit = true; W.critBonus *= Math.max(0, 1 + IC * n / 100); }
+      // Trephina: always a critical hit against a Heavy Stunned enemy; Nebuloch: an attack consumes an Endurance Charge to crit
+      if (!crit && D.attack && !S.src) { if (D.sum?.local_always_crit_heavy_stunned_enemies && d.st.stun > 0) crit = true; else if (D.sum?.attack_consume_endurance_charge_to_always_crit && charges.endurance > 0) { charges.endurance--; chargesSpent(1, 'endurance'); crit = true; } }
       if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
       if (crit && D.sum?.critical_strikes_ignore_positive_elemental_resistances) for (const e of ELEM) W.pen[e] = Infinity;   // Invoker: a critical hit ignores non-negative elemental resistances
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
@@ -491,7 +493,8 @@ export function initScene(el, api) {
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
       const mine = !/minion/.test(S.src || ''), LK = mine && (Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0) || D.attack && sheet().luckySurr && meIs.Surrounded()), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
-      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (LK || LS || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
+      const MM = D.attack && D.sum?.local_damage_roll_always_min_or_max;   // Skysliver: the least or the most of each type
+      for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (MM ? Math.round(Math.random()) : LK || LS || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       // gained as extra damage of another type against an enemy in a state: of the hit's damage after its modifiers, not
       // scaled again by the other type's (as Unholy Might below)
       for (const [from, to, p] of W.gain) if (raw[from]) raw[to] = (raw[to] || 0) + raw[from] * p / 100;
@@ -990,7 +993,7 @@ export function initScene(el, api) {
     const can = a => PN && a !== 'electrocute' || SU[`all_damage_can_${a}`] || S.P.attack && SU[`local_all_damage_can_${a}`] || a === 'ignite' && SU.you_and_allies_in_presence_all_damage_can_ignite
       || a === 'electrocute' && S.P.attack && SU.all_attack_damage_can_electrocute
       || a === 'chill' && (SU.all_damage_to_bleeding_enemies_contributes_to_chill && has(d, 'bleed') || SU.all_damage_to_poisoned_enemies_contributes_to_chill && has(d, 'poison'));
-    const adds = a => [...Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), ...a === 'ignite' && S.dmg.blackflame ? ['chaos'] : []], xa = (a, e) => can(a) ? allD : [...new Set([e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
+    const adds = a => [...Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), ...a === 'ignite' && S.dmg.blackflame ? ['chaos'] : []], TD = SU.unique_fire_damage_shocks && { ignite: 'cold', shock: 'fire', freeze: 'lightning', chill: '-' }, xa = (a, e) => can(a) ? allD : [...new Set([TD?.[a] ?? e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
     // Frostflame Nova on an Ignited enemy: the Ignite's duration starts over, its Freeze buildup is more per 1% of the
     // enemy's ailment threshold the Ignite deals a second, and no other Ignite takes until that one ends
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
@@ -1182,7 +1185,7 @@ export function initScene(el, api) {
   const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + (gst(S)['culling_strike_threshold_+%'] || 0) / 100) / 100;
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
-    return !d.dead && (S.P.culls || S.P.attack && gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
+    return !d.dead && (S.P.culls || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
   };
   // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
@@ -1336,7 +1339,7 @@ export function initScene(el, api) {
     flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + pow(d) * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < f.killCharge)); });   // and its own chance of a charge (Nascent Hope)
     charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + pow(d) * CHARM_GAIN * f.gain * bk('charm') + (Math.random() * 100 < f.killCharge)); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
-    const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
+    const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0 || st.chill > 0 && sheet().chillShatter, M = d.mark, f = d.fig;
     // Crushing Fear: an enemy it kills is crushed into its shockwave (its part, its secondary radius), more damage and area
     // per the enemy's power (note: the stats say per power of a culled enemy; here of any it kills)
     const CF = S && !S.src && partOf(S, 'CrushingFearNovaPlayer');
@@ -5182,6 +5185,7 @@ export function initScene(el, api) {
     const RG = regenNow(c), rec = k => { const own = RG[k] + rate(k); return [own + rate(k, true), own]; };
     let dot = 0;
     for (const a in me.burn) if (me.st[a] > 0) dot += playerTakes(w, me.burn[a].el, me.burn[a].dps, false);
+    if (charges.endurance && w.enduChaos) dot += playerTakes(w, 'chaos', charges.endurance * w.enduChaos, false);   // Nebuloch: chaos damage a second per Endurance Charge
     if (!(me.safe > 0)) for (const h of hazards) if (dist(h, pp) <= h.r) for (const el in h.dot) dot += playerTakes(w, el, h.dot[el], false);
     const bz = R?.berserk, raging = bz && tog[bz.name] && me.rage > 0 && time - me.raged <= R.delay;
     return {
