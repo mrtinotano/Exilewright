@@ -966,7 +966,7 @@ export function initScene(el, api) {
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
-      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
+      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect * (S.shockX || 1) };   // S.shockX: Vivid Stampede's more per leap inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock);
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
       const SCn = S.dmg.sum?.['support_%_chance_to_shock_nearby_enemy_on_shock'];
@@ -4004,6 +4004,7 @@ export function initScene(el, api) {
     }
     const KA = !auto && P.melee && time < me.kaom?.until && me.kaom;
     if (!auto && P.projectile && meIs.HitMeleeRecently() && Math.random() * 100 < (sheet().forkMelee || 0)) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), forks: (sh(S).forks || 0) + 1 } } };   // the tree's Fork after a melee hit. ponytail: rolled per use, not per projectile
+    if (!auto && P.attack && me.wisps > 0) stampede(S);   // Vivid Stampede: an attack expends all Vivid Wisps
     if (!auto && P.attack && P.projectile && (walk || move) && Math.random() * 100 < sheet().moveProj) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), projectiles: (sh(S).projectiles || 1) + 2 } } };   // the tree's two more projectiles while moving
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
@@ -4293,6 +4294,23 @@ export function initScene(el, api) {
   });
   const rollHeld = () => keys[settings().keys.roll] || padWas[1];
   // the roll: where W A S D or the stick move you, else toward the cursor, as the game's
+  // Vivid Stampede: a Stag for each Wisp expended leaps forward (toward the nearest enemy within Sacred Unity's angle),
+  // its shockwave each time it lands, its number of them, with The Mórrigan's Guidance's more damage and Shock magnitude
+  // per leap; past its last it leaves Shocked Ground for its duration. Its cooldown between uses.
+  // note: the granted skill's level is not in the data: 20, as Primal Bounty's; its spacing read as the gap between
+  // shockwaves (each leap its diameter plus that), the Stags fanned out
+  function stampede(S) {
+    const VS = sheet().vivid, D = VS && time >= (me.vividAt ?? -9) && granted('Vivid Stampede', 20); if (!D) return;
+    const st = D.stats, X = { ...asTrig(S, { ...D, id: 'Vivid Stampede' }), src: 'vivid' }, n = me.wisps, legs = st.vivid_stag_cascade_number_of_damaging_areas || 1, step = 2 * X.A + (st.vivid_stag_spacing || 0) / 10;
+    me.wisps = 0; me.vividAt = time + (st._cooldown_ms || 0) / 1000; say(X.label + (n > 1 ? ` ×${n}` : ''), 'lightning');
+    const half = (VS.home || 0) * Math.PI / 360, off = d => Math.abs(Math.atan2(Math.sin(Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z) - facing), Math.cos(Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z) - facing)));
+    const aim = half && near(pp, legs * step, d => off(d) <= half), a0 = aim ? Math.atan2(aim.pos.x - pp.x, aim.pos.z - pp.z) : facing, o = { x: pp.x, z: pp.z };
+    for (let j = 0; j < n; j++) { const a = a0 + (j - (n - 1) / 2) * .3;
+      for (let k = 0; k < legs; k++) later(.1 + k * .15, () => { const c = { x: o.x + Math.sin(a) * step * (k + 1), z: o.z + Math.cos(a) * step * (k + 1) };
+        fx.ring(c, .2, X.A, 'lightning', .3); area(c, X.A, { ...X, mult: X.mult * (1 + VS.more * k / 100), shockX: 1 + VS.shock * k / 100 });
+        if (k === legs - 1) ground('shocked', c, X.A, (st.base_skill_effect_duration || 0) / 1000, { ...X, src: 'ground' }); }); }
+    if (VS.onEnd) later(.1 + legs * .15, () => { me.wisps = Math.min(VS.max, (me.wisps || 0) + VS.onEnd); });   // The Mórrigan's Guidance
+  }
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
   function roll() {
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
@@ -5286,6 +5304,8 @@ export function initScene(el, api) {
     for (const S of gloryOf()) if (/Banner/.test(S.name) && S.dmg?.sum?.banners_gain_X_glory_per_second) gloryAdd(S, S.dmg.sum.banners_gain_X_glory_per_second * dt);   /* Tactician: Banners gain Glory every second */
     for (const n in me.glory) if (time - (me.gloryAt[n] ?? -99) > GLORY_IDLE) me.glory[n] = Math.max(0, me.glory[n] - GLORY_LOSS * dt);
     me.safe = Math.max(0, me.safe - dt);
+    const VS = sheet().vivid; if (VS) { me.vmov = (me.vmov || 0) + Math.hypot(pp.x - (me.vp?.x ?? pp.x), pp.z - (me.vp?.z ?? pp.z)); me.vp = { x: pp.x, z: pp.z };   // a Vivid Wisp per its metres moved
+      if (me.vmov >= VS.per) { me.wisps = Math.min(VS.max, (me.wisps || 0) + Math.floor(me.vmov / VS.per)); me.vmov %= VS.per; } }
     if (me.fallen.length && time >= me.reviveAt) { me.reviveAt = Infinity; reviveFallen(Infinity); }
     const RU = sheet().rareGlory; if (RU) { me.rg = (me.rg || 0) + dt * dummies.filter(d => !d.dead && ['rare', 'unique'].includes(d.stat.rarity) && dist(d.pos, pp) <= sheet().overgrow.r).length / RU; if (me.rg >= 1) { for (const S of gloryOf()) gloryAdd(S, Math.floor(me.rg)); me.rg %= 1; } }   // Glory per rare or unique monster in your Presence
     const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)

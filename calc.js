@@ -420,6 +420,10 @@ export function character(b, sum) {
     flaskGuard: v(sum, 'gain_%_of_expected_recovery_over_1_second_as_guard_on_life_flask_use'), blockDaze: v(sum, 'daze_enemies_on_block_with_shield_raised_chance_%'), invokeMax: v(sum, 'invocation_skill_maximum_energy_+%'),
     invokeHalf: v(sum, 'invocation_spell_chance_to_cost_half_energy_%'), trigRefund: v(sum, 'trigger_skills_refund_half_energy_spent_chance_%'),
     resummon: { base: (CHAR.global_resummon_time_ms || 0) / 1000, speed: 1 + v(sum, 'minion_resummon_speed_+%') / 100 },   // Reviving Minions: their delay (character stats), faster with the tree
+    // Spirit Walker's Vivid Stampede: a Vivid Wisp every so many metres moved (its tenths), up to its most; The Mórrigan's
+    // Guidance's more damage and Shock magnitude per leap and Wisps when it ends; Sacred Unity's leap toward enemies within its angle
+    vivid: sum.vivid_stag_maximum_stag_wisps_allowed ? { max: sum.vivid_stag_maximum_stag_wisps_allowed, per: v(sum, 'vivid_stag_metres_travled_per_wisp_gain') / 10, more: v(sum, 'vivid_stag_damage_%_final_per_cascade'),
+      shock: v(sum, 'vivid_stag_shock_effect_%_final_per_cascade'), onEnd: v(sum, 'ascendancy_vivid_stag_gain_wisps_on_end'), home: v(sum, 'ascendancy_vivid_stag_home_in_on_enemies_within_X_angle_in_front') } : null,
     stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'), tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
     splash: sum.melee_splash ? 100 : mwTags.includes('mace') ? v(sum, 'your_mace_strike_melee_splash_chance_%') : 0, volMinion: v(sum, 'gain_X_volatility_on_persistent_minion_death'), reviveLife: v(sum, 'you_gain_%_life_when_one_of_your_minions_is_revived'),
