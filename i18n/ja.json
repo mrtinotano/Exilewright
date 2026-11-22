@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0}には弓かスピアが必要です",
  "{0} cannot be used while mounted": "{0}は騎乗中に使用できません",
  "Archon of Undeath": "不死のアルコン",
- "Puppet Master": "パペットマスター"
+ "Puppet Master": "パペットマスター",
+ "Search in the Optimizer": "オプティマイザーで探す",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "これらの修正値・価格・チェックでオプティマイザーを開き、その他の設定で検索します。"
 }

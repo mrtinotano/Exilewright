@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0}: нужен лук или копьё",
  "{0} cannot be used while mounted": "{0} нельзя использовать верхом",
  "Archon of Undeath": "Архонт бессмертия",
- "Puppet Master": "Кукловод"
+ "Puppet Master": "Кукловод",
+ "Search in the Optimizer": "Искать в оптимизаторе",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Открывает оптимизатор с этими модификаторами, ценой и отметками, чтобы искать с его другими настройками."
 }

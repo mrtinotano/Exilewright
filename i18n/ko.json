@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0}: 활이나 창이 필요합니다",
  "{0} cannot be used while mounted": "{0}: 탑승 중에는 사용할 수 없습니다",
  "Archon of Undeath": "불사의 집정관",
- "Puppet Master": "인형사"
+ "Puppet Master": "인형사",
+ "Search in the Optimizer": "최적화에서 검색",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "이 속성, 가격, 체크 항목으로 최적화를 열어 다른 옵션과 함께 검색합니다."
 }

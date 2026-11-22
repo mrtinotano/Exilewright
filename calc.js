@@ -1604,5 +1604,6 @@ export function snapshot(b, sum) {
     fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs,
     lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
     reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves,   // the Equipment card's requirements
+    satisfy: [sum.dexterity_can_satisfy_strength_and_intelligence_requirements_of_melee_weapons_and_skills && 'dex', sum.strength_can_satisfy_dexterity_and_intelligence_requirements_of_melee_weapons_and_skills && 'str'].filter(Boolean),   // Jarngreipr: of melee weapons
     dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };
 }

@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0} ต้องใช้ธนูหรือหอก",
  "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้",
  "Archon of Undeath": "อาร์คอนอันเดด",
- "Puppet Master": "ผู้เชิดหุ่น"
+ "Puppet Master": "ผู้เชิดหุ่น",
+ "Search in the Optimizer": "ค้นหาในตัวปรับแต่ง",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "เปิดตัวปรับแต่งพร้อมม็อด ราคา และตัวเลือกที่ติ๊กไว้นี้ เพื่อค้นหาด้วยตัวเลือกอื่นของมัน"
 }

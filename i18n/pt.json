@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0} precisa de um arco ou uma lança",
  "{0} cannot be used while mounted": "{0} não pode ser usado montado",
  "Archon of Undeath": "Arconte da Morte-viva",
- "Puppet Master": "Mestre das Marionetes"
+ "Puppet Master": "Mestre das Marionetes",
+ "Search in the Optimizer": "Buscar no Otimizador",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Abre o Otimizador com estes modificadores, preço e opções marcadas, para buscar com as demais opções dele."
 }

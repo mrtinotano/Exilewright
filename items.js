@@ -421,6 +421,7 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
+export const isMelee = it => { const T = BASE[it?.base]?.tags || []; return T.includes('weapon') && !T.includes('ranged'); };
 export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's property labels in each language, by the trade site's filter
 export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
 // the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
@@ -664,9 +665,11 @@ const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shie
 const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
 // why the character cannot wear a listed item yet (l.req, from the site): the levels to go, and each attribute short of
 // it with the tree's increased / reduced requirements (s: the character's snapshot without the item worn there; null: not asked)
+// an attribute the character has for an item's requirement: Jarngreipr's other attribute meets it on melee weapons
+const haveFor = (s, k, it) => Math.max(s?.[k] || 0, ...isMelee(it) ? (s?.satisfy || []).map(a => s[a] || 0) : []);
 export function unmet(l, lvl, s) {
   const r = l.req || {}, out = r.lvl > lvl ? [t('Not usable yet: reach level {0} ({1} levels to go).', r.lvl, r.lvl - lvl)] : [];
-  for (const k of s ? Object.keys(ATTR) : []) { const need = Math.floor((r[k] || 0) * Math.max(0, 1 + (s.reqPct || 0) / 100)), have = s[k] || 0;
+  for (const k of s ? Object.keys(ATTR) : []) { const need = Math.floor((r[k] || 0) * Math.max(0, 1 + (s.reqPct || 0) / 100)), have = haveFor(s, k, l.item);
     if (need > have) out.push(t('Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.', need - have, t(ATTR[k]), need, have)); }
   return out;
 }
@@ -735,8 +738,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // character's without it (its own attributes do not count), with the tree's increased / reduced ones and its gloves' "ignore"
     const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
     const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
-    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * Math.max(0, 1 + (rp + (without?.reqPct || 0)) / 100))]).filter(([k, x]) => (without?.[k] || 0) < x);
-    const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), without?.[k] || 0)).join(' · '))}</div>` : '';
+    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * Math.max(0, 1 + (rp + (without?.reqPct || 0)) / 100))]).filter(([k, x]) => haveFor(without, k, it) < x);
+    const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
@@ -749,7 +752,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);
           return `<label><input type="checkbox" data-act="likeline" data-k="${esc(k)}"${buy.skip.has(k) ? '' : ' checked'}> ${esc(l.text)}</label>`; }).join('')}</div><div class="likerow"><label>${t('Price up to')} <input type="number" min="0" data-act="likemax" value="${esc(buy.max)}" placeholder="—"></label>
         <select data-act="likecur" title="${esc(t('Currency of the price'))}">${trade.money().map(([c, n]) => `<option value="${esc(c)}"${c === buy.cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
-        </div><div class="likego"><div class="likechk"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likelvl"${buy.lvl ? ' checked' : ''}> ${t('Usable at its level')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likeattr"${buy.attr ? ' checked' : ''}> ${t('Usable with its attributes')}</label></div><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
+        </div><div class="likego"><div class="likechk"><label><input type="checkbox" data-act="likebase"${buy.base ? ' checked' : ''}> ${t('Only this base')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likelvl"${buy.lvl ? ' checked' : ''}> ${t('Usable at its level')}</label><label title="${esc(t('Leaves out what the character cannot wear yet.'))}"><input type="checkbox" data-act="likeattr"${buy.attr ? ' checked' : ''}> ${t('Usable with its attributes')}</label></div><button data-act="like" data-slot="${slot}"${better?.slot === slot && !better.res ? ' disabled' : ''}>${t('Find a better one on the trade site')}</button><button data-act="toopt" data-slot="${slot}" title="${esc(t('Opens the Optimizer with these modifiers, price and checks, to search with its other choices.'))}">${t('Search in the Optimizer')}</button></div>${better?.slot === slot ? betterHtml(slot) : ''}</div>` : ''}</section>`;
   }
 
   let sel = 'weapon', msg = '';
@@ -884,6 +887,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (pick) { sel = pick.dataset.pick; render(); return; }
     const opt = t.closest('[data-base]');
     if (opt) { equip(opt.closest('.picklist').dataset.slot, opt.dataset.base); return; }
+    if (t.dataset.act === 'toopt') { trade.toOpt(t.dataset.slot, { skip: [...buy.skip], max: buy.max, cur: buy.cur, lvl: buy.lvl, attr: buy.attr }); return; }
     if (t.dataset.act === 'like') {
       const me = better = { slot: t.dataset.slot, text: '…' };   // the search's own text comes with its first step
       render();

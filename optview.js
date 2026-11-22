@@ -160,7 +160,7 @@ export function initOpt(el, ctx) {
   // what the character could wear in `slot` (use: { lvl, attr }, the checks ticked): its level, and its attributes as the
   // most the item may ask (the tree's increased / reduced requirements counted)
   const reqFor = (b, slot, use) => { const lvl = levelFor(b), s = use.attr && without(b, slot), k = 1 + (s?.reqPct || 0) / 100;
-    return { ...use.lvl && lvl && { lvl }, ...s && k > 0 && Object.fromEntries(['str', 'dex', 'int'].map(a => [a, Math.floor((s[a] || 0) / k)])) }; };
+    return { ...use.lvl && lvl && { lvl }, ...s && k > 0 && { ...Object.fromEntries(['str', 'dex', 'int'].map(a => [a, Math.floor((s[a] || 0) / k)])), ...s.satisfy?.length && { sat: Math.max(...s.satisfy.map(a => Math.floor((s[a] || 0) / k))) } } }; };
   const useNow = () => ({ lvl: S.reqLvl, attr: S.reqAttr });
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
@@ -340,6 +340,13 @@ export function initOpt(el, ctx) {
       // a rare keeps its name, as one read from the game's text does
       ctx.change(b => wear(b, sel.slot, { ...structuredClone(item), ...l.name && !item.unique && { name: l.name } }, ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
     }
+  };
+  // from the Equipment tab: its search for the item worn in `slot` (its lines not left out, the price, the checks) as
+  // the Chosen modifiers here, with this tab's other choices
+  render.from = (slot, { skip, max, cur, lvl, attr }) => {
+    const it = ctx.build().items?.[slot]; if (!it) return;
+    Object.assign(S, { slot, how: 'like', max, currency: cur, reqLvl: lvl, reqAttr: attr }); S.cls[slot] = classOf(it);
+    S.like[slot] = wornLines(it).filter(l => !skip.includes(String(lk(l)))); keep();
   };
   render.money = () => CURRENCY.map(c => [c, moneyName(c)]);
   render.price = priceHtml;

@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0} necesita un arco o una lanza",
  "{0} cannot be used while mounted": "{0} no se puede usar montado",
  "Archon of Undeath": "Arconte de la no muerte",
- "Puppet Master": "Titiritero"
+ "Puppet Master": "Titiritero",
+ "Search in the Optimizer": "Buscar en el Optimizador",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Abre el Optimizador con estos modificadores, precio y casillas, para buscar con sus demás opciones."
 }

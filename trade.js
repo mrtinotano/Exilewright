@@ -6,7 +6,7 @@
 // the items with the most of each of the best modifiers (or the best damage / defence of the item) and reads those;
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
-import { affixLines, tradeItem, priceLines, classOf, TRADE_LABELS, isCorrupted } from './items.js';
+import { affixLines, tradeItem, priceLines, classOf, isMelee, TRADE_LABELS, isCorrupted } from './items.js';
 import { englishOf } from './stats.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
@@ -167,7 +167,8 @@ const linesOf = (it, key) => (it[key] || []).map(m => typeof m === 'string' ? { 
 // -> { id, name, base, rarity, mods: [text], extra: [runes and enchants, never counted], price: { amount, currency }, seller,
 //      item (for the build, null when the app does not have its base), slots, missed: [lines not counted], req: { lvl, str, dex, int } it asks }
 const REQ = { 62: 'lvl', 63: 'str', 64: 'dex', 65: 'int' };   // the site's requirement types
-export const fits = (req, l) => Object.entries(req || {}).every(([k, n]) => (l.req?.[k] || 0) <= n);
+// req.sat: the attribute that also meets the others' requirements of melee weapons (Jarngreipr)
+export const fits = (req, l) => ['lvl', 'str', 'dex', 'int'].every(k => req?.[k] == null || (l.req?.[k] || 0) <= Math.max(req[k], k !== 'lvl' && isMelee(l.item) && req.sat || 0));
 console.assert(fits({ str: 50, lvl: 40 }, { req: { lvl: 30 } }) && !fits({ str: 50 }, { req: { str: 60 } }), 'fits');
 export function readListing(r) {
   const it = r.item || {}, lines = Object.keys(KINDS).flatMap(k => linesOf(it, k)), name = plain(it.name || ''), base = plain(it.baseType || it.typeLine || '');

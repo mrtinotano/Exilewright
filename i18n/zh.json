@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0} 需要弓或長矛",
  "{0} cannot be used while mounted": "{0} 騎乘時無法使用",
  "Archon of Undeath": "亡靈統治者",
- "Puppet Master": "魁儡大師"
+ "Puppet Master": "魁儡大師",
+ "Search in the Optimizer": "在最佳化工具中搜尋",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "以這些詞綴、價格與勾選開啟最佳化工具，用它的其他選項搜尋。"
 }

@@ -928,5 +928,7 @@
  "{0} needs a Bow or a Spear": "{0} benötigt einen Bogen oder einen Speer",
  "{0} cannot be used while mounted": "{0} kann nicht aufgesessen verwendet werden",
  "Archon of Undeath": "Untoter Archon",
- "Puppet Master": "Strippenzieher"
+ "Puppet Master": "Strippenzieher",
+ "Search in the Optimizer": "Im Optimierer suchen",
+ "Opens the Optimizer with these modifiers, price and checks, to search with its other choices.": "Öffnet den Optimierer mit diesen Modifikatoren, diesem Preis und diesen Häkchen, um mit seinen weiteren Optionen zu suchen."
 }
