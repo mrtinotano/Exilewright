@@ -1301,7 +1301,7 @@ export function initScene(el, api) {
     // note: their radius is not in the data (a herald's here); Zealous Inquisition's doubled chance against Undead and Demons is left out
     const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed ? [.25, 'chaos'] : R() < XB.any ? [1, 'physical']
       : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
-    if (XK) later(.05, () => { pop(p, SIM.heraldR, { chaos: 'chaos', fire: 'fire' }[XK[1]] || 'blood'); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
+    if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'physical' ? 'blood' : XK[1]); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
     // Cannibalism, on a persistent buff that is up: life recovered on kill
     for (const g of api.build().gems) if (tog[g.name]) me.life = Math.min(me.maxL, me.life + me.maxL * (api.damage?.(g)?.lifeOnKill || 0) / 100);
     // the tree's recovery on kill (calc.js killRecover)
