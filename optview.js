@@ -7,7 +7,7 @@ import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, modsOf, unmet } from './items.js';
+import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
@@ -199,7 +199,7 @@ export function initOpt(el, ctx) {
   const wornLines = it => priceLines(it).filter(l => l.varies && l.text).map(({ hash, en, text, value }) => ({ hash, en, text, value: Math.round(value * 100) / 100 }));
   async function runLike() {
     const b = ctx.build(), g = gemOf(b), sel = gearSel(b), id = gearKey(b, sel) + '|like', league = leagueNow(), price = priceNow(), req = reqFor(b, sel.slot, useNow()), state = STATUS[S.state] ? S.state : 'securable';
-    const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => wornLines(worn).some(w => w.hash === l.hash && w.en === l.en));
+    const worn = b.items?.[sel.slot], same = worn?.unique && classOf(worn) === sel.cls && likeOf(sel.slot).every(l => [...wornLines(worn), ...uniqueLines(worn.unique)].some(w => w.hash === l.hash && w.en === l.en));   // the worn unique's lines (its Vaal ones too): that unique
     const me = busy = { text: t('Searching the trade site ({0} of {1})…', 1, 1) };
     render();
     try {
@@ -244,9 +244,12 @@ export function initOpt(el, ctx) {
   // the modifiers picked for the slot: each with the least it must have, a list to add more, and the worn item's to start from
   const lk = o => o.hash ?? 'd:' + o.en;   // a line's key: its stat, or a desecrated one's wording
   const hashed = s => s.replace(/\d+(?:[.,]\d+)?/g, '#');   // a line without its numbers: the number is the box's
+  // what can be picked: the worn unique's own lines first (its Vaal ones too), then what the kind of item rolls; one a stat
+  const pickable = (b, sel) => { const w = b.items?.[sel.slot], seen = new Set();
+    return [...w?.unique && classOf(w) === sel.cls ? uniqueLines(w.unique) : [], ...affixLines(sel.cls)].filter(o => !seen.has(String(lk(o))) && seen.add(String(lk(o)))); };
   function likeHtml(b, sel) {
     const list = likeOf(sel.slot), worn = b.items?.[sel.slot], have = new Set(list.map(lk));
-    const more = affixLines(sel.cls).filter(o => !have.has(lk(o)));
+    const more = pickable(b, sel).filter(o => !have.has(lk(o)));
     return `<div class="likes">${list.map((l, i) => `<div class="likerow"><span>${esc(hashed(l.text))}</span>
         <label>${t('at least')} <input type="number" step="any" value="${l.value || ''}" placeholder="—" data-like="${i}"></label><button data-do="unlike" data-i="${i}" title="${t('Remove')}">✕</button></div>`).join('')
       || `<p class="note">${t('Pick the modifiers the item must have, each with the least of it.')}</p>`}</div>
@@ -324,7 +327,7 @@ export function initOpt(el, ctx) {
     if (what === 'like') return runLike();
     const gs = gearSel(b), ls = gs.slot;
     if (what === 'likeOpen') { likeOpen = !likeOpen; render(); el.querySelector('[data-likefind]')?.focus(); return; }
-    if (what === 'addlike') { const o = affixLines(gs.cls).find(o => String(lk(o)) === btn.dataset.k); likeOpen = false; if (o) { likeOf(ls).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); keep(); } return render(); }
+    if (what === 'addlike') { const o = pickable(b, gs).find(o => String(lk(o)) === btn.dataset.k); likeOpen = false; if (o) { likeOf(ls).push({ hash: o.hash, en: o.en, text: o.text, value: 0 }); keep(); } return render(); }
     if (what === 'unlike') { likeOf(ls).splice(+btn.dataset.i, 1); keep(); return render(); }
     if (what === 'clearLike') { S.like[ls] = []; keep(); return render(); }
     if (what === 'fromWorn') { S.like[ls] = wornLines(b.items[ls]); keep(); return render(); }

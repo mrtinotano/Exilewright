@@ -557,6 +557,19 @@ export function affixLines(cls, first) {
   const shape = w => w.replace(/[+-]?\d+(\.\d+)?/g, '#').toLowerCase(), normal = new Set([...out.values()].filter(o => o.hash).map(o => shape(o.words)));
   return [...out.values()].filter(o => o.hash || !normal.has(shape(o.en)));
 }
+// The lines a unique can have (its modifiers and the Vaal ones an Architect's Orb gives it: mutated.py), for the
+// Optimizer's Chosen modifiers: the site's stat of each, a Vaal one's from any modifier with the same stats (it has no
+// trade entry of its own); none found: its English wording (`en`, found by words on the site). -> [{ hash | en, text }]
+let BYSTATS;
+export function uniqueLines(name) {
+  const u = UNIQ[name]; if (!u) return [];
+  BYSTATS ||= new Map(Object.entries(TRADE).filter(([k, v]) => v.length === 2 && AFFIX[k]).map(([k, v]) => [AFFIX[k].stats.map(([id]) => id).join(), v[1][0]]));
+  return [...u.mods, ...u.mutated || []].flatMap(m => {   // a stat with no wording of the game's shows as its id: left out
+    const on = Object.fromEntries(m.stats.map(([id, , hi]) => [id, hi])), text = statLines(on).join(' / '), en = statLinesEn(on);
+    const hash = TRADE[m.id]?.length === 2 ? TRADE[m.id][1][0] : BYSTATS.get(m.stats.map(([id]) => id).join());
+    return !text || /^[a-z0-9_%+]+:/.test(text) ? [] : hash != null ? [{ hash, text }] : en.length === 1 ? [{ hash: null, en: en[0], text }] : [];
+  });
+}
 // An item as the trade site lists it -> { item, slots, missed: [lines not counted] } like parseItem, null when the app
 // does not have its base. Each line comes with the site's stat and the modifiers it adds up (English name, level and
 // range of each): lines: [{ text, hash, kind: 'implicit' | 'explicit' | ..., mods: [{ name, level, mags: [[min, max]] }] }]
