@@ -5134,8 +5134,8 @@ export function initScene(el, api) {
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
     me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
-    if (n && sheet().esOnManaFlask) me.esEarly = 1e9;
-    if (f.k === 'life' && sheet().flaskUnbleed) me.st.bleed = 0;   // Zerphi's Genesis: a life flask removes Bleeding   // Bitterbloom: a mana flask starts energy shield recharge
+    if (n && sheet().esOnManaFlask) me.esEarly = 1e9;   // Bitterbloom: a mana flask starts energy shield recharge
+    if (f.k === 'life' && sheet().flaskUnbleed) me.st.bleed = 0;   // Zerphi's Genesis: a life flask removes Bleeding
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     if (f.instant || f.instantLow && (f.k === 'life' ? lowLife() : lowMana())) { flaskHeal(me.drink[n], f.amount * LL); me.drink[n].s = 0; }   // Belly of the Beast; Birthright Buckle on Low Life / Low Mana
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
@@ -5478,8 +5478,8 @@ export function initScene(el, api) {
     if (S.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
-    const RG = regenNow(c), RL = c.lowCap ? L * LOW : L, PU = c.regenPulse;   // Igniferis: no regeneration, its life every 4 s instead
-    if (PU && RG.life > 0 && time - (me.pulseAt ?? -9) >= 4) { me.pulseAt = time; me.life = Math.min(RL, me.life + RG.life * 60 / PU); }   // Cat O' Nine Tails: recovery other than flasks only up to Low Life
+    const RG = regenNow(c), RL = c.lowCap ? L * LOW : L, PU = c.regenPulse;   // Cat O' Nine Tails: recovery other than flasks only up to Low Life
+    if (PU && RG.life > 0 && time - (me.pulseAt ?? -9) >= 4) { me.pulseAt = time; me.life = Math.min(RL, me.life + RG.life * 60 / PU); }   // Igniferis: no regeneration, its life every 4 s instead
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
     const LG = RG.life > 0 && !c.vaal && !PU ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, RL - me.life));
     if (c.lifeToEs) me.es = Math.min(E, me.es + LG); else { me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI); }   // Ligurium Talisman: all of it to energy shield
@@ -5492,8 +5492,8 @@ export function initScene(el, api) {
     if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved
     if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
-    for (const [r, top] of [['life', RL], ...c.manaRegenOnly ? [] : [['mana', c.mana || 0]]]) {
-      const q = me.leech[r]; if (!(q.left > 0)) continue;
+    for (const [r, top] of [['life', RL], ['mana', c.mana || 0]]) {
+      const q = me.leech[r]; if (!(q.left > 0) || r === 'mana' && c.manaRegenOnly) continue;   // Indigon: no mana leech
       // Couture of Crimson: life leech Overflows; Soul Tether: what goes over maximum life to energy shield
       const cap = r === 'life' && c.leechOver ? top * OVERFLOW : top, toES = r === 'life' && c.leechToEs && me.es < E;
       if (me[r] >= cap && !q.keep && !toES) { q.left = 0; continue; }
