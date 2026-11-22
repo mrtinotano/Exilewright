@@ -79,7 +79,7 @@ function local(item) {
     for (const e of ['fire', 'cold', 'lightning']) if (s[`local_minimum_added_${e}_damage`]) r[e] = [s[`local_minimum_added_${e}_damage`], s[`local_maximum_added_${e}_damage`]];
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
     r.crit = w.crit + (s.local_critical_strike_chance || 0) / 100;
-    r.range = w.range;
+    r.range = w.range; r.critBonus = s['local_critical_strike_multiplier_+'] || 0;   // its own +% to Critical Damage Bonus
     r.accuracy = s.local_accuracy_rating || 0;   // its own accuracy, for attacks with it
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
@@ -96,6 +96,7 @@ function local(item) {
 // an equipped piece's own armour or evasion (Titan's Stone Skin, Amazon's Stalking Panther)
 export const pieceDef = (items = {}, slot, k) => items[slot] && BASE[items[slot].base]?.armour ? local(items[slot])[k] || 0 : 0;
 // main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
+export const statsOf = it => it && BASE[it.base] ? rolled(it) : {};   // every stat of an equipped item, with its rolled values
 export const weaponStats = (items = {}) => items.weapon && BASE[items.weapon.base]?.weapon ? local(items.weapon) : null;
 
 // global stats the gear gives the character (stat id -> value)

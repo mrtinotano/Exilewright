@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
+import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
 import { enemy, attackOf, attacksOf, ENEMIES, deflection, K as MON_K } from './enemies.js';
@@ -323,7 +323,8 @@ export function character(b, sum) {
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
-    block: v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0),   // Renly's Training: the shield's base chance (note: a shield's own is not in the data)
+    block: (v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0) + (classOf(b.items?.offhand) === 'Foci' ? v(sum, 'additional_block_chance_%_while_holding_focus') : 0))
+      * (1 + Math.floor(armourItems(b.items).armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours') / 100),   // Stone of Lazhwar; Ironbound's increased per 100 armour of your armour items; Renly's Training: the shield's base chance (note: a shield's own is not in the data)
     takenAs: takenAs(sum), physDR: v(sum, 'base_additional_physical_damage_reduction_%'),   // The Hollow Mask
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
     // share of evasion that also grants elemental damage reduction (as armour does)
@@ -459,6 +460,17 @@ export function character(b, sum) {
   // energy shield equal to a share of Strength (Geofri's Sanctuary)
   c.es += Math.round((c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_maximum_energy_shield') / 100 + (c.mana || 0) * v(sum, 'mana_%_to_gain_as_energy_shield') / 100);
   const MA = Math.round((c.mana || 0) * v(sum, 'mana_%_to_gain_as_armour') / 100); if (MA) { c.armour += MA; c.armourPct = armourReduction(c.armour, lvl); }
+  // Flesh Crucible's less life, mana, defences and Spirit
+  const VS = k => 1 + v(sum, `vivisection_${k}_+%_final`) / 100;
+  if (c.life != null) c.life = Math.round(c.life * VS('maximum_life')); if (c.mana != null) c.mana = Math.round(c.mana * VS('maximum_mana')); c.spirit = Math.round(c.spirit * VS('spirit'));
+  if (VS('armour_evasion_energy_shield') !== 1) { for (const k of ['armour', 'evasion', 'es']) c[k] = Math.round(c[k] * VS('armour_evasion_energy_shield')); c.armourPct = armourReduction(c.armour, lvl); c.evadePct = evadeChance(c.evasion, lvl); }
+  // resistances per equipped item with a modifier to another one (Safrin's Resolve, Eshtera's Path, Zaida's Longevity).
+  // note: a modifier to all elemental resistances is not counted as one to each
+  for (const [k, of, to] of [['cold_and_lightning_resist_+_per_equipped_item_with_a_fire_resistance_mod', 'fire', ['cold', 'lightning']], ['fire_and_cold_resist_+_per_equipped_item_with_a_lightning_resistance_mod', 'lightning', ['fire', 'cold']], ['fire_and_lightning_resist_+_per_equipped_item_with_a_cold_resistance_mod', 'cold', ['fire', 'lightning']]]) {
+    if (!sum[k]) continue;
+    const n = Object.values(b.items || {}).filter(it => Object.keys(statsOf(it)).some(id => id.includes(of) && /_resistance_%$/.test(id) && !id.includes('maximum'))).length;
+    for (const e of to) { const r = c.res[e]; r.value += n * sum[k]; r.capped = Math.min(r.value, r.max); }
+  }
   // uniques' more Global Evasion Rating and Energy Shield
   const HW = pct('hand_wraps_evasion_rating_and_energy_shield_+%_final'); if (HW !== 1) { c.evasion = Math.round(c.evasion * HW); c.evadePct = evadeChance(c.evasion, lvl); c.es = Math.round(c.es * HW); }
   const GS = sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']; if (GS) c.es = Math.round(at.str * GS / 100);
@@ -1004,6 +1016,10 @@ export function skill(g, b, treeGear) {
   const w = palm ? { physical: [...HP[lv - 1]], attacks_per_second: 1000 / cb.WeaponSpeed * (1 + Math.floor(pw.evasion / 75) / 100),
     crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100 + Math.floor(pw.energy_shield / 10) * .1, range: cb.MaxAttackDistance }
     : attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
+  // unarmed (no weapon in the main hand): the uniques' unarmed critical chance, strike range, more damage per Strength
+  // and fire damage gained per Intelligence (Northpaw, Thunderfist, Facebreaker)
+  const unarmed = attack && !!w && !b.items?.weapon, FB = unarmed && (sum['unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength'] || sum['non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence']) && character(b, sum).attrs;
+  const perX = (a, k) => FB && sum[k] ? Math.floor((FB[a] || 0) / sum[k]) : 0;
   // Dance with Death: 25% more skill speed with the off hand empty and a one-handed martial weapon in the main hand
   const dwd = sum.keystone_dance_with_death && !b?.items?.offhand && w && weaponTags(w).includes('onehand') && !/^(Wands|Sceptres)$/.test(classOf(b.items.weapon)) ? 1.25 : 1;
   // Amazon: physical damage added to attacks with the weapon, a share of the weapon's own accuracy
@@ -1093,9 +1109,11 @@ export function skill(g, b, treeGear) {
   const POOL = [['physical', 'life', 'attack_added_physical_damage_%_of_maximum_life', 'attack_added_physical_damage_%_of_maximum_life'], ['lightning', 'mana', '', 'attack_maximum_added_lightning_damage_%_of_maximum_mana'],
     ['cold', 'mana', 'local_attacks_have_added_min_cold_damage_equal_to_%_of_maximum_mana', 'local_attacks_have_added_max_cold_damage_equal_to_%_of_maximum_mana']];
   const pool = attack && POOL.some(r => sum[r[3]]) && character(b, sum);
+  const IB = attack && w && !unarmed && sum['main_hand_attacks_with_this_weapon_maximum_added_physical_damage_per_1%_block_chance'] && (character(b, sum).block || 0);   // Ironbound: per 1% block chance
   for (const t of DMG) {
     let lo = 0, hi = 0;
     for (const [k, of, mn, mx] of pool ? POOL.filter(r => r[0] === t) : []) { const p = (pool[of] || 0) / 100; lo += p * v(sum, mn); hi += p * v(sum, mx); }
+    if (t === 'physical' && IB) { lo += IB * v(sum, 'main_hand_attacks_with_this_weapon_minimum_added_physical_damage_per_1%_block_chance'); hi += IB * v(sum, 'main_hand_attacks_with_this_weapon_maximum_added_physical_damage_per_1%_block_chance'); }
     if (attack && (w || nonWeapon || shield)) {   // a non-weapon attack needs no weapon in hand
       const r = shield ? [(st[`off_hand_weapon_minimum_${t}_damage`] || 0) + shieldAdd(t, 0), (st[`off_hand_weapon_maximum_${t}_damage`] || 0) + shieldAdd(t, 1)]
         : nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
@@ -1141,6 +1159,7 @@ export function skill(g, b, treeGear) {
   const gain = (src, t, k = `non_skill_base_${src}_damage_%_to_gain_as_${t}`) => v(sum, k) + (end ? v(sum, k + end) : 0) + v(st, `active_skill_base_${src}_damage_%_to_gain_as_${t}`)
     + (src === 'all' && t !== 'physical' && t !== 'chaos' ? v(sum, 'non_skill_base_all_damage_%_to_gain_as_random_element') / 3 : 0)   // Shaman: a random element, a third each on average
     + (src !== 'all' ? 0 : t === 'physical' ? (spell && out.lifeCost > 0 ? v(sum, 'spells_gain_%_physical_damage_if_they_cost_life') : 0)   // Atziri's Rule: spells that cost life
+      : t === 'fire' && unarmed && sum['non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence'] ? perX('int', 'non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence')
       : t === 'chaos' ? Math.floor((out.lifeCost || 0) / 3) * v(sum, 'non_skill_all_damage_%_to_gain_as_chaos_per_3_life_cost')   // The Burden of Shadows
       : t === 'fire' && sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] ? (character(b, sum).block || 0) * sum['non_skill_all_damage_%_to_gain_as_fire_+_per_1%_attack_block_chance'] : 0);   // Chernobog's Pillar
   for (const t of DMG) {
@@ -1161,7 +1180,7 @@ export function skill(g, b, treeGear) {
   const trigSpell = spell && (gt.includes('Triggered') || meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
   for (const t of DMG) {
     const [lo, hi] = base[t];
@@ -1220,11 +1239,11 @@ export function skill(g, b, treeGear) {
     if (out.speed) out.speed = Math.min(out.speed, 1000 / out.cooldown);
   }
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
-  const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
+  const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit + (unarmed && tags.includes('melee') ? v(sum, 'base_melee_critical_strike_chance_while_unarmed_%') : 0) : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
-    out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
+    out.critBonus = (100 + (attack && w?.critBonus || 0) + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
@@ -1343,7 +1362,7 @@ export function skill(g, b, treeGear) {
     extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0, split: both('projectile_number_to_split'),
     // reach, in the game's tenths of a metre: a melee attack's is its weapon's range plus "+0.2 metres to Melee Strike
     // Range" (melee_range_+); a dashing strike's its own (base_melee_dash_range), a blink's its distance
-    reach: tags.includes('melee') && w ? (w.range + both('melee_range_+')) / 10 : null, dash: st.base_melee_dash_range ? st.base_melee_dash_range / 10 : null,
+    reach: tags.includes('melee') && w ? (w.range + both('melee_range_+') + (unarmed ? v(sum, 'melee_range_+_while_unarmed') : 0)) / 10 : null, dash: st.base_melee_dash_range ? st.base_melee_dash_range / 10 : null,
     travel: (st.blink_travel_distance || st.black_powder_blitz_travel_distance || 0) / 10 || null,
     wall: st.wall_maximum_length ? st.wall_maximum_length / 10 * (1 + both('wall_maximum_length_+%') / 100) : null };   // "Wall length is {0} metres"; Ahn's Citadel's increased
   // Leech (keywords.json Life / Mana Leech): a share of the hit's damage, in % (the stats are permyriad), recovered over one
