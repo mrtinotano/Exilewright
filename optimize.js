@@ -65,11 +65,11 @@ const plus = (to, stats) => { for (const id in stats) to[id] = (to[id] || 0) + s
 //   tree: passive_tree.json; root: the class start; base: the summed stats of b (app.js sumOf); f(sum) -> number.
 //   tick({ spent, left, value }) may return a promise (lets the page breathe); stop() true ends the search.
 // Returns { nodes (new ids, in order), attrs ({id: str|dex|int}), from, to (objective before / after), steps }.
-export async function optimizeTree({ tree, b, base, root, f, points, pref = 'str', tick, stop }) {
+export async function optimizeTree({ tree, b, base, root, extra = [], f, points, pref = 'str', tick, stop }) {
   const N = tree.nodes, roots = new Set(tree.class_roots.map(String));
   const ok = id => { const n = N[id]; return n && !n.ascendancy && n.type !== 'keystone' && (!roots.has(id) || id === root); };
   const counted = new Set(b['set' + (b.wset || 1)] || []);   // passives of the weapon set in use are in `base` already
-  const have = new Set(b.nodes.length ? b.nodes : [root]);
+  const have = new Set(b.nodes.length ? [...b.nodes, ...extra] : [root]);   // extra: the starts Split Personality opens
   const statsOf = (id, a) => counted.has(id) ? NONE : N[id].type === 'attribute' ? plain[b.attrs?.[id] || a] : N[id].stats;
   const plain = Object.fromEntries(Object.entries(ATTR).map(([k, id]) => [k, tree.attribute_options[id]]));
   const sig = new Map(), sigOf = id => sig.get(id) ?? (sig.set(id, JSON.stringify(N[id].stats)), sig.get(id));
