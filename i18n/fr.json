@@ -922,5 +922,9 @@
  "Usable with its attributes": "Utilisable avec ses attributs",
  "Leaves out what the character cannot wear yet.": "Écarte ce que le personnage ne peut pas encore porter.",
  "Not usable yet: reach level {0} ({1} levels to go).": "Pas encore utilisable : atteignez le niveau {0} (encore {1} niveaux).",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Inutilisable : il manque {0} en {1} (requiert {2} ; vous avez {3} sans l'objet porté). Réattribuez des points de l'arbre passif."
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Inutilisable : il manque {0} en {1} (requiert {2} ; vous avez {3} sans l'objet porté). Réattribuez des points de l'arbre passif.",
+ "{0}: mounted": "{0} : monté",
+ "{0}: dismounted": "{0} : à pied",
+ "{0} needs a Bow or a Spear": "{0} nécessite un arc ou une lance",
+ "{0} cannot be used while mounted": "{0} ne peut pas être utilisé monté"
 }

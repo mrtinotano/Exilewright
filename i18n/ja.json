@@ -922,5 +922,9 @@
  "Usable with its attributes": "能力値で装備可能",
  "Leaves out what the character cannot wear yet.": "キャラクターがまだ装備できないものを除外します。",
  "Not usable yet: reach level {0} ({1} levels to go).": "まだ使用できません: レベル{0}に到達してください (あと{1}レベル)。",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "使用できません: {1}が{0}不足しています (要求{2}、装備中のアイテムなしで{3})。パッシブツリーを振り直してください。"
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "使用できません: {1}が{0}不足しています (要求{2}、装備中のアイテムなしで{3})。パッシブツリーを振り直してください。",
+ "{0}: mounted": "{0}: 騎乗中",
+ "{0}: dismounted": "{0}: 降りた",
+ "{0} needs a Bow or a Spear": "{0}には弓かスピアが必要です",
+ "{0} cannot be used while mounted": "{0}は騎乗中に使用できません"
 }

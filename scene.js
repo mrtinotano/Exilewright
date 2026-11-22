@@ -197,7 +197,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast'].includes(g.name) ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection): on, and used
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast', 'Rhoa Mount'].includes(g.name) ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection), Rhoa Mount (mounting): on, and used
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -1732,7 +1732,7 @@ export function initScene(el, api) {
   }
   // the Shield Wall segment between enemy d and you, the nearest
   const wallIn = d => { let best = null, k = dist(d.pos, pp);
-    for (const o of objs) if (o.segs && !o.dead) for (const q of o.segs) if (q.life > 0 && dist(d.pos, q.p) < k && (o.decoy || segDist(q.p, d.pos, pp) < q.r + SIM.body)) { best = q; k = dist(d.pos, q.p); }
+    for (const o of objs) if (o.segs && !o.dead && !(o.rhoa && me.mounted)) for (const q of o.segs) if (q.life > 0 && dist(d.pos, q.p) < k && (o.decoy || segDist(q.p, d.pos, pp) < q.r + SIM.body)) { best = q; k = dist(d.pos, q.p); }
     return best; };
   // Lingering Illusion: while it is on, a roll leaves a copy of you where it began, for its duration, with its share of
   // your maximum life; enemies nearer to it than to you attack it, and one they destroy drops its Remnant (a power charge)
@@ -2036,10 +2036,11 @@ export function initScene(el, api) {
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
-    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
+    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
+        if (e.rhoa && me.mounted) { e.pos.x = pp.x; e.pos.z = pp.z; f.group.rotation.y = facing; return; }   // ridden: under you, no attacks
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
         const AR = sheet().allyRegen, q0 = e.segs?.[0]; if (AR && q0?.life > 0 && dist(e.pos, pp) <= sheet().overgrow.r) q0.life = Math.min(q0.max, q0.life + me.maxL * AR / 6000 * dt);   // the tree's, in your Presence
         // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
@@ -2476,6 +2477,7 @@ export function initScene(el, api) {
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
       if (tog[k] && k === 'Plague Bearer') return plague(S);   // Plague Bearer: used, it unleashes
       if (tog[k] && k === 'Grim Feast') return grim(S);   // Grim Feast: used, Grim Resurrection
+      if (tog[k] && k === 'Rhoa Mount') return mount(S);   // Rhoa Mount: used again, you mount or dismount it
       if (tog[k] && k === 'Savage Fury' && me.wild > 0) return frenzy(S);   // Savage Fury: used with Fury, its frenzy
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
       const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
@@ -2485,7 +2487,7 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + (st['energy_generated_+%'] || 0) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + (sheet().invokeMax || 0) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < 2; i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' ? 1 : 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
@@ -3842,6 +3844,7 @@ export function initScene(el, api) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
+    if (!auto && me.mounted && S.name !== 'Rhoa Mount' && !mountable(S)) { toast(t('{0} cannot be used while mounted', S.label)); return false; }
     // Forge Hammer: used again while its hammer is lodged, it recalls it (its Recall part, its more attack speed) and its
     // cooldown starts over
     const lodged = !auto && S.dmg?.stats?.forge_hammer_maximum_hammers && objs.find(o => o.earth && o.name === S.name && !o.dead);
@@ -4314,6 +4317,15 @@ export function initScene(el, api) {
         if (k === legs - 1) ground('shocked', c, X.A, (st.base_skill_effect_duration || 0) / 1000, { ...X, src: 'ground' }); }); }
     if (VS.onEnd) later(.1 + legs * .15, () => { me.wisps = Math.min(VS.max, (me.wisps || 0) + VS.onEnd); });   // The Mórrigan's Guidance
   }
+  // Rhoa Mount (its description): used again you mount the Rhoa (after its cast time) while wielding a Bow or Spear, or
+  // dismount; mounted, only Bow, thrown Spear and Mark skills are usable and the Rhoa neither attacks nor is hit.
+  // note: the Heavy Stun buildup from being Hit while mounted and the Rhoa's own movement speed are not in the data: none, yours
+  const mountable = S => { const T = api.info(S.g).gem?.tags || []; return T.includes('bow') || T.includes('mark') || T.includes('spear') && T.includes('projectile'); };
+  function mount(S) {
+    if (me.mounted) { me.mounted = false; say(t('{0}: dismounted', S.label), 'dust'); return; }
+    if (!sheet().mountOk) { toast(t('{0} needs a Bow or a Spear', S.label)); return; }
+    castAt = time; later(S.dmg?.speed ? 1 / S.dmg.speed : 1, () => { if (tog[S.name] && sheet().mountOk) { me.mounted = true; say(t('{0}: mounted', S.label), 'gold'); } });
+  }
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
   function roll() {
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
@@ -4433,7 +4445,10 @@ export function initScene(el, api) {
   // you move at that speed while you use it, the penalty raised by the tree's (all, fire, cold skills; Deadeye's more)
   // and its supports' more penalty (Mobility, Deliberation); any other stops you (null)
   const PERFORM = 'movement_speed_+%_final_while_performing_action';
-  function actMove(S) {
+  // Rhoa Mount: mounted, any skill lets you move, its penalty lowered by the gem's (and the tree's) reduced penalty
+  const actMove = S => { const a = actMove0(S), R = me.mounted && onS('Rhoa Mount')?.dmg, k = 'rhoa_movement_speed_penalty_+%_final_while_performing_action';
+    return R ? 1 - (1 - (a ?? 0)) * Math.max(0, 1 + ((R.stats?.[k] || 0) + (R.sum?.[k] || 0)) / 100) : a; };
+  function actMove0(S) {
     const st = S?.dmg?.stats || {}, f = S?.dmg?.finals || {}, P = st[PERFORM]; if (P == null) return null;
     const A = sheet().actMove || {}, more = ['support_mobility_movement_speed_penalty_+%_final_while_performing_action', 'support_deliberation_movement_speed_penalty_+%_final_while_performing_action']
       .reduce((m, k) => m * (1 + ((st[k] || 0) + (f[k] || 0)) / 100), 1 + (A.more || 0) / 100);
@@ -5233,6 +5248,7 @@ export function initScene(el, api) {
       * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (c.lifeReserved) me.life = Math.min(me.life, me.maxL * (1 - c.lifeReserved / 100));   // the reserved life cannot be filled
+    if (me.mounted && (!c.mountOk || !tog['Rhoa Mount'])) me.mounted = false;   // no Bow or Spear, or Rhoa Mount off: on foot
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
     if (me.ward < W && !(time < me.reprieve?.until)) me.ward = Math.min(W, me.ward + W * WARD_REGEN / 100 * dt);   // none while Runic Reprieve is on; overflowed ward stays

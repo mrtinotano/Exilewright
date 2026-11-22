@@ -922,5 +922,9 @@
  "Usable with its attributes": "ใช้ได้ตามค่าสถานะ",
  "Leaves out what the character cannot wear yet.": "ตัดสิ่งที่ตัวละครยังสวมใส่ไม่ได้ออก",
  "Not usable yet: reach level {0} ({1} levels to go).": "ยังใช้ไม่ได้: ต้องถึงเลเวล {0} (อีก {1} เลเวล)",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "ใช้ไม่ได้: ขาด {1} อีก {0} (ต้องการ {2}; คุณมี {3} เมื่อไม่สวมไอเทมเดิม) รีสเปคแผนผังพาสซีฟ"
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "ใช้ไม่ได้: ขาด {1} อีก {0} (ต้องการ {2}; คุณมี {3} เมื่อไม่สวมไอเทมเดิม) รีสเปคแผนผังพาสซีฟ",
+ "{0}: mounted": "{0}: ขี่อยู่",
+ "{0}: dismounted": "{0}: ลงจากพาหนะ",
+ "{0} needs a Bow or a Spear": "{0} ต้องใช้ธนูหรือหอก",
+ "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้"
 }

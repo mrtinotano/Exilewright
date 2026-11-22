@@ -922,5 +922,9 @@
  "Usable with its attributes": "Доступно по характеристикам",
  "Leaves out what the character cannot wear yet.": "Исключает то, что персонаж ещё не может надеть.",
  "Not usable yet: reach level {0} ({1} levels to go).": "Пока нельзя использовать: достигните уровня {0} (осталось {1} ур.).",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Нельзя использовать: не хватает {0} ({1}; требуется {2}, у вас {3} без надетого предмета). Перераспределите очки дерева пассивных умений."
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "Нельзя использовать: не хватает {0} ({1}; требуется {2}, у вас {3} без надетого предмета). Перераспределите очки дерева пассивных умений.",
+ "{0}: mounted": "{0}: верхом",
+ "{0}: dismounted": "{0}: пешим",
+ "{0} needs a Bow or a Spear": "{0}: нужен лук или копьё",
+ "{0} cannot be used while mounted": "{0} нельзя использовать верхом"
 }

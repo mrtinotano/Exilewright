@@ -922,5 +922,9 @@
  "Usable with its attributes": "屬性可用",
  "Leaves out what the character cannot wear yet.": "排除角色尚無法裝備的物品。",
  "Not usable yet: reach level {0} ({1} levels to go).": "尚無法使用：需達到等級 {0}（還差 {1} 級）。",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "無法使用：{1}不足 {0}（需求 {2}；不含身上這件時你有 {3}）。請重新分配天賦樹點數。"
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "無法使用：{1}不足 {0}（需求 {2}；不含身上這件時你有 {3}）。請重新分配天賦樹點數。",
+ "{0}: mounted": "{0}：騎乘中",
+ "{0}: dismounted": "{0}：已下騎",
+ "{0} needs a Bow or a Spear": "{0} 需要弓或長矛",
+ "{0} cannot be used while mounted": "{0} 騎乘時無法使用"
 }

@@ -922,5 +922,9 @@
  "Usable with its attributes": "능력치로 사용 가능",
  "Leaves out what the character cannot wear yet.": "캐릭터가 아직 착용할 수 없는 것을 제외합니다.",
  "Not usable yet: reach level {0} ({1} levels to go).": "아직 사용할 수 없음: 레벨 {0} 달성 필요 ({1}레벨 남음).",
- "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "사용할 수 없음: {1} {0} 부족 (요구 {2}, 착용 중인 아이템 없이 {3}). 패시브 트리를 재분배하세요."
+ "Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.": "사용할 수 없음: {1} {0} 부족 (요구 {2}, 착용 중인 아이템 없이 {3}). 패시브 트리를 재분배하세요.",
+ "{0}: mounted": "{0}: 탑승",
+ "{0}: dismounted": "{0}: 하차",
+ "{0} needs a Bow or a Spear": "{0}: 활이나 창이 필요합니다",
+ "{0} cannot be used while mounted": "{0}: 탑승 중에는 사용할 수 없습니다"
 }
