@@ -378,7 +378,9 @@ export function initScene(el, api) {
     if (sheet().conduit === 'all' || sheet().conduit === 'endurance' && type === 'endurance') return;
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
-    charges[type]++; if (type === 'power' && charges.power >= maxC('power') && sheet().redflare) { charges.power = 0; me.powerLost = time; return suffer('shock', 4, { mag: GC.BaseShockMagnitude }); }   // Redflare Conduit: at the most, all lost and Shocked 4 s if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
+    charges[type]++;
+    if (type === 'power' && charges.power >= maxC('power') && sheet().redflare) { charges.power = 0; me.powerLost = time; return suffer('shock', 4, { mag: GC.BaseShockMagnitude }); }   // Redflare Conduit: at the most, all lost and Shocked 4 s
+    if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
     if (Math.random() * 100 < (sheet().chargeFill?.[type] || 0)) charges[type] = maxC(type);   // the chance of all of them
     fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
