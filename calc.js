@@ -291,13 +291,17 @@ export function character(b, sum) {
     chaos: v(sum, 'base_armour_%_applies_to_chaos_damage', 'body_armour_grants_base_armour_applies_to_chaos_damage') };
   // deflection: its % of armour and of evasion as deflection rating, its increases, and how much less a deflected hit deals
   const deflect = { arm: v(sum, 'base_deflection_rating_%_of_armour'), eva: v(sum, 'base_deflection_rating_%_of_evasion_rating'), inc: pct('deflection_rating_+%'),
-    less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected') };
+    less: (CHAR['damage_%_deflected'] || 0) + v(sum, 'base_damage_%_deflected'), lessCrit: v(sum, 'base_damage_%_deflected_vs_crit') };   // and more of a deflected critical hit
   const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%');
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
   const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
+    // stun / ailment threshold from the gear: the lowest of the helmet's (boots') evasion and armour, a share of the armour
+    // items' armour. note: the passives' value (2) is not in their text: taken as "on"
+    stunGear: (sum['stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour'] ? Math.min(P('helmet', 'armour'), P('helmet', 'evasion')) : 0) + armourItems(b.items).armour * v(sum, 'add_%_base_armour_on_equipment_to_stun_threshold') / 100,
+    ailGear: sum['ailment_threshold_+_from_lowest_of_base_boots_evasion_rating_and_armour'] ? Math.min(P('boots', 'armour'), P('boots', 'evasion')) : 0,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + Math.floor(at.dex / 4) * v(sum, 'X_life_per_4_dexterity') + fromAttr('life') * (sum.keystone_giants_blood ? .5 : 1)) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('oracle_maximum_mana_+%_final')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
@@ -527,9 +531,10 @@ export function recovery(c, sum) {
 const ELEM_AIL = ['ignite', 'chill', 'shock', 'freeze'];
 export function ailmentDefence(c, sum) {
   const at = c.attrs || {}, pct = (...ids) => 1 + v(sum, ...ids) / 100;
-  const stun = c.life == null ? null : (c.life + v(sum, 'stun_threshold_+') + (at.str || 0) * v(sum, 'stun_threshold_+_per_strength') + (at.dex || 0) * v(sum, 'stun_threshold_+_per_dexterity')
+  const esStun = v(sum, 'stun_threshold_based_on_%_energy_shield_instead_of_life');   // Asceticism: a share of energy shield instead of life
+  const stun = c.life == null ? null : ((esStun ? (c.es || 0) * esStun / 100 : c.life) + (c.stunGear || 0) + v(sum, 'stun_threshold_+') + (at.str || 0) * v(sum, 'stun_threshold_+_per_strength') + (at.dex || 0) * v(sum, 'stun_threshold_+_per_dexterity')
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
-  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
+  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (c.ailGear || 0) + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
   const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield', 'gain_%_maximum_energy_shield_as_freeze_threshold_+') / 100) * pct('freeze_threshold_+%');
   // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
