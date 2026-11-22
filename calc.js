@@ -430,6 +430,7 @@ export function character(b, sum) {
     allyRegen: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_your_maximum_life_%'),   // Allies in your Presence regenerate life per minute equal to its % of your maximum life
     stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'),
     // Archon of Undeath: the tree's chances to gain it; Puppet Master: the tree's (Surpassing) chance of a stack, its more stacks, their duration and effect
+    debilShield: v(sum, 'debilitate_enemies_within_X_metres_while_active_blocking'),   // Debilitate in front of you while your Shield is raised (metres)
     undeath: { cmd: v(sum, 'chance_%_to_gain_archon_of_undeath_on_using_command_skill'), offer: v(sum, 'chance_%_to_gain_archon_of_undeath_when_you_create_an_offering') },
     puppet: { ch: v(sum, 'surpassing_chance_%_to_gain_1_puppeteer_stack_on_using_command_skill'), max: v(sum, 'max_puppet_master_stacks_+'), dur: pct('puppet_master_duration_+%'), eff: pct('puppet_master_effect_+%') }, tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
