@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}：騎乘中",
  "{0}: dismounted": "{0}：已下騎",
  "{0} needs a Bow or a Spear": "{0} 需要弓或長矛",
- "{0} cannot be used while mounted": "{0} 騎乘時無法使用"
+ "{0} cannot be used while mounted": "{0} 騎乘時無法使用",
+ "Archon of Undeath": "亡靈統治者",
+ "Puppet Master": "魁儡大師"
 }

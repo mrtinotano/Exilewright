@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}: 騎乗中",
  "{0}: dismounted": "{0}: 降りた",
  "{0} needs a Bow or a Spear": "{0}には弓かスピアが必要です",
- "{0} cannot be used while mounted": "{0}は騎乗中に使用できません"
+ "{0} cannot be used while mounted": "{0}は騎乗中に使用できません",
+ "Archon of Undeath": "不死のアルコン",
+ "Puppet Master": "パペットマスター"
 }

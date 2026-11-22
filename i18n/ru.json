@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}: верхом",
  "{0}: dismounted": "{0}: пешим",
  "{0} needs a Bow or a Spear": "{0}: нужен лук или копьё",
- "{0} cannot be used while mounted": "{0} нельзя использовать верхом"
+ "{0} cannot be used while mounted": "{0} нельзя использовать верхом",
+ "Archon of Undeath": "Архонт бессмертия",
+ "Puppet Master": "Кукловод"
 }

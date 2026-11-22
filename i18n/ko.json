@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}: 탑승",
  "{0}: dismounted": "{0}: 하차",
  "{0} needs a Bow or a Spear": "{0}: 활이나 창이 필요합니다",
- "{0} cannot be used while mounted": "{0}: 탑승 중에는 사용할 수 없습니다"
+ "{0} cannot be used while mounted": "{0}: 탑승 중에는 사용할 수 없습니다",
+ "Archon of Undeath": "불사의 집정관",
+ "Puppet Master": "인형사"
 }

@@ -50,6 +50,7 @@ const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower move
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
 const TAILWIND = { move: 1, speed: 2, evasion: 10, deflect: 1, max: 10 };   // KeywordPopups Tailwind, per stack: increased movement speed, skill speed and evasion, damage of deflected hits prevented
+const UARCHON = { more: 25, cd: 200, limit: 100 }, PUPPET = { cmdSpeed: 10, cmdMove: 10, cmdDmg: 10, move: 2, speed: 3, time: 8, max: 5 };   // KeywordPopups UndeadArchon (more minion damage, command cooldown recovery, temporary minion limit) and PuppetMaster (per stack)
 const EARCHON = { more: 25, ail: 100 }, HIGH_FLAME = .65;   // KeywordPopups ElementalArchon: 25% more elemental spell damage, 100% more freeze buildup, flammability and shock chance; HighInfernalFlame: 65% or more
 const ONSLAUGHT = { speed: 20, move: 10, time: 4 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed, 4 s unless specified
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
@@ -168,6 +169,16 @@ export function initScene(el, api) {
   const profs = new Map(), cache = new Map();
   // Nature's Archon (calc.js character() overgrow: its time; its stats from the game, api.archon) and a plant gem with them
   const archonOn = () => time - archonAt < sheet().overgrow.archonTime, archonG = new WeakMap();
+  // Archon of Undeath (an Archon: its time, recovery and effect as Nature's): gained, it Revives your fallen persistent
+  // minions. note: all of them, the game's Undead only; Puppet Master: its stacks now (their effect as a count)
+  const isCmd = S => !!api.info(S.g || {})?.gem?.types?.includes('CommandsMinions'), uarch = () => time < (me.uarch ?? -9);
+  const pup = () => (me.pup = (me.pup || []).filter(at => at > time)).length * sheet().puppet.eff;
+  const tmpN = n => (n + sheet().tempMinion) * (uarch() ? 1 + UARCHON.limit / 100 : 1);   // Archon of Undeath: more temporary minion limit
+  function undeathGo() {
+    const G = sheet().overgrow; if (uarch() || time < (me.uarchOff ?? -9)) return;
+    me.uarch = time + G.archonTime; me.uarchOff = me.uarch + G.archonDelay; buffs.push({ label: t('Archon of Undeath'), c: css('chaos'), s: G.archonTime });
+    say(t('{0} active', t('Archon of Undeath')), 'chaos'); if (me.fallen?.length) reviveFallen(Infinity);
+  }
   const withArchon = g => { const e = sheet().overgrow.archonEffect; if (archonG.get(g)?.e !== e) archonG.set(g, { e, g: { ...g, add: Object.fromEntries(Object.entries(api.archon || {}).map(([k, x]) => [k, Math.floor(x * e)])) } }); return archonG.get(g).g; };   // with its increased effect on you
   const prof = (g, inf) => { let P = profs.get(g.name); if (!P) profs.set(g.name, P = profile(inf.gem || { name: g.name }, inf.data || {})); return P; };
   function base(i) {
@@ -310,7 +321,7 @@ export function initScene(el, api) {
     grounds.forEach(g => g.decal.remove()); grounds = [];
     hazards.forEach(h => h.decal.remove()); hazards = [];
     frags.forEach(f => f.dec.remove()); frags = [];
-    timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0;
+    timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0; me.pup = []; me.uarch = me.uarchOff = -9;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; clog = []; byS = {}; lastHit = null; dummies.forEach(restore); heal(); hudT = 0;
   }
@@ -486,6 +497,7 @@ export function initScene(el, api) {
       const tot = Object.values(raw).reduce((t, x) => t + x, 0);   // both gain from the hit before either
       if (!S.src && time < me.volPower?.until) raw.chaos = (raw.chaos || 0) + tot * me.volPower.n * VOLATILITY.power / 100;   // Volatile Power
       const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
+      const MX = /^minion/.test(S.src || '') || isCmd(S) ? (uarch() ? 1 + UARCHON.more * sheet().overgrow.archonEffect / 100 : 1) * (isCmd(S) ? 1 + PUPPET.cmdDmg * pup() / 100 : 1) : 1; if (MX !== 1) for (const e in raw) raw[e] *= MX;   // Archon of Undeath, Puppet Master. note: its increased command damage as more here
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
       if (!S.src && openWeak(d)) for (const e in raw) raw[e] *= 1 + sheet().weakness.more / 100;   // Predatory Instinct
@@ -2050,10 +2062,10 @@ export function initScene(el, api) {
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         const ON = e.companion && time < (me.compOns ?? -9);   // Companions' Onslaught (the tree's on kill)
-        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0)) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1); sw = 1;
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100); sw = 1;
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -2943,7 +2955,7 @@ export function initScene(el, api) {
       const st = S.dmg?.stats || {}, VM = st.verisium_comet_number_of_minions_to_create;
       if (VM) later(delay, () => {
         const n = VM + (S.infs?.includes('verisium') ? partOf(S, 'SkyfallInfusedPlayer')?.dmg.stats.verisium_comet_number_of_minions_to_create || 0 : 0);
-        for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_verisium_octopus_minions_allowed + sheet().tempMinion); minion(S, around(c, R), durOf(S), { kind: S.name }); }
+        for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, tmpN(st.base_number_of_verisium_octopus_minions_allowed)); minion(S, around(c, R), durOf(S), { kind: S.name }); }
       });
       if (S.els.includes('lightning') && !S.els.includes('fire')) return later(delay, () => { fx.bolt(V(c.x + 1, 17, c.z - 1), V(c.x, 0, c.z), S.el, .28, .13, .6); boom(c, R, S); });
       const fly = Math.min(.4, delay);
@@ -3387,7 +3399,7 @@ export function initScene(el, api) {
   K.wardbound = S => {
     const st = S.dmg.stats, n = Math.min(Math.floor(((st._cost?.Ward || 0) + me.ward) / st.wardbound_minions_summon_minion_for_every_X_runic_ward_spent), st.base_number_of_wardbound_minions_allowed);
     spendWard(me.ward);
-    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, st.base_number_of_wardbound_minions_allowed + sheet().tempMinion); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
+    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, tmpN(st.base_number_of_wardbound_minions_allowed)); minion(S, around(pp, 2), durOf(S), { kind: S.name, attacks: st.wardbound_minion_maximum_number_of_casts }); }
   };
   // Queen's Procession: while it is on and you sprint, the swarm hits everything in its area every its interval, its more
   // damage per Swarm's Advance; a use that hits grants one (up to its most) and hits you for its self damage. note: losing
@@ -3566,7 +3578,7 @@ export function initScene(el, api) {
     K.sweep({ ...S, from: c, R: S.A, cone: st.bone_cone_angle });
     for (const d of corpses(c, S.A).filter(d => inCone(c, a0, half, d.pos))) {
       const p = { x: d.pos.x, z: d.pos.z }; eat(d, S.el);
-      limit(o => o.kind === S.name, st.base_number_of_skeletal_constructs_allowed + sheet().tempMinion); minion(S, p, durOf(S), { kind: S.name });
+      limit(o => o.kind === S.name, tmpN(st.base_number_of_skeletal_constructs_allowed)); minion(S, p, durOf(S), { kind: S.name });
     }
   };
   // Toxic Domain: its Toxic Bloom around you for its duration; in it you regenerate its life and your skills cost more
@@ -3671,6 +3683,7 @@ export function initScene(el, api) {
     if (!m) return toast(t('{0} needs a Minion', S.label));
     const c = { x: m.pos.x, z: m.pos.z }, ring = fx.decal(c, S.A, 'outline', 'blood', { a: .4, rot: 0 }); m.dead = true;
     limit(o => o[tag], max);
+    if (Math.random() * 100 < sheet().undeath.offer) undeathGo();   // the tree's chance of Archon of Undeath
     const OH = sheet().offerHeal; if (OH) me.life = Math.min(me.maxL, me.life + me.maxL * OH / 100);   // the tree's life recovered when you create an Offering
     fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: S.dmg.stats, R: S.A, off: () => ring.remove() }); say(t('{0} active', S.label), 'blood');
   }
@@ -4089,7 +4102,7 @@ export function initScene(el, api) {
       if (U.lifePerCooldown && C) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerCooldown * C / 1000 / 100);   // Second Wind III
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
-    if (C && !BY && !RG) ready.push(time + C / 1000);
+    if (C && !BY && !RG) ready.push(time + C / 1000 / (uarch() && isCmd(S) ? 1 + UARCHON.cd * sheet().overgrow.archonEffect / 100 : 1));   // Archon of Undeath: more command cooldown recovery
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
     // Unbound Avatar: usable at its Unbound Fury, which it consumes to make you Unbound for its duration: its more elemental
     // damage, elemental ailment chance and freeze / electrocute buildup
@@ -4137,7 +4150,7 @@ export function initScene(el, api) {
     // most per use and its limit, for its duration
     const RS = !auto && S.P.spell && S.els.includes('fire') && onS('Raging Spirits'), rs = RS && RS.dmg.stats;
     if (RS) for (let k = Math.min(rs.skill_raging_spirits_max_per_action, Math.max(1, Math.floor(S.A * 10 / rs.skill_raging_spirit_per_x_radius))); k > 0; k--) {
-      limit(o => o.kind === RS.name, rs.base_number_of_raging_spirits_allowed + sheet().tempMinion); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
+      limit(o => o.kind === RS.name, tmpN(rs.base_number_of_raging_spirits_allowed)); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
     }
     if (!auto && (P.slams || S.kind === 'warcry' || S.name === 'Shield Charge')) for (const o of [...objs]) if (o.segs && o.shatter && !o.dead) o.shatter(P.slams ? 'slam' : 'warcry');
     // Trickster's Shard: a spell you cast leaves a Fractured Mimic where you cast it, for its duration; at their limit they
@@ -4148,8 +4161,14 @@ export function initScene(el, api) {
       M.push({ S: { ...S, mult: S.mult * less }, run, until: time + (TS.shape?.duration || TS.stats.base_skill_effect_duration / 1000) }); fx.ring(S.from, .2, .8, S.el, .5);
       if (M.length >= TS.stats.support_tricksters_shard_maximum_active_mimics) { say(api.info({ name: TS.id }).label, S.el); for (const m of M.splice(0)) m.run(m.S); }
     }
+    // a Command skill: the tree's chance of Archon of Undeath and of Puppet Master stacks (a Surpassing chance: one per 100%,
+    // then the rest's chance), each lasting on its own; at their most a new one replaces the oldest
+    if (!auto && isCmd(S)) {
+      if (Math.random() * 100 < sheet().undeath.cmd) undeathGo();
+      const P = sheet().puppet; for (let n = Math.floor(P.ch / 100) + (Math.random() * 100 < P.ch % 100 ? 1 : 0); n > 0; n--) { pup(); if (me.pup.length >= PUPPET.max + P.max) me.pup.shift(); me.pup.push(time + PUPPET.time * P.dur); }
+    }
     // a Command skill (keywords.json Minion Commands): the tree's chance to Revive a random fallen persistent minion
-    if (!auto && me.fallen.length && api.info(S.g)?.gem?.types?.includes('CommandsMinions') && Math.random() * 100 < sheet().reviveCmd) { me.fallen.unshift(...me.fallen.splice(Math.floor(Math.random() * me.fallen.length), 1)); reviveFallen(me.fallen[0].life); }
+    if (!auto && me.fallen.length && isCmd(S) && Math.random() * 100 < sheet().reviveCmd) { me.fallen.unshift(...me.fallen.splice(Math.floor(Math.random() * me.fallen.length), 1)); reviveFallen(me.fallen[0].life); }
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
@@ -4225,7 +4244,7 @@ export function initScene(el, api) {
     if (b.kind === 'totem' && b.dmg?.placeTime) return b.dmg.placeTime;
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
-      / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1)
+      / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Puppet Master. note: as more here */
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
       / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
@@ -4447,7 +4466,8 @@ export function initScene(el, api) {
   const PERFORM = 'movement_speed_+%_final_while_performing_action';
   // Rhoa Mount: mounted, any skill lets you move, its penalty lowered by the gem's (and the tree's) reduced penalty
   const actMove = S => { const a = actMove0(S), R = me.mounted && onS('Rhoa Mount')?.dmg, k = 'rhoa_movement_speed_penalty_+%_final_while_performing_action';
-    return R ? 1 - (1 - (a ?? 0)) * Math.max(0, 1 + ((R.stats?.[k] || 0) + (R.sum?.[k] || 0)) / 100) : a; };
+    const pen = (R ? Math.max(0, 1 + ((R.stats?.[k] || 0) + (R.sum?.[k] || 0)) / 100) : 1) * (isCmd(S) ? Math.max(0, 1 - PUPPET.cmdMove * pup() / 100) : 1);   // Puppet Master: less command penalty
+    return pen !== 1 ? 1 - (1 - (a ?? 0)) * pen : a; };
   function actMove0(S) {
     const st = S?.dmg?.stats || {}, f = S?.dmg?.finals || {}, P = st[PERFORM]; if (P == null) return null;
     const A = sheet().actMove || {}, more = ['support_mobility_movement_speed_penalty_+%_final_while_performing_action', 'support_deliberation_movement_speed_penalty_+%_final_while_performing_action']
@@ -4529,6 +4549,7 @@ export function initScene(el, api) {
     if (sheet().owl) { const I = api.info({ name: 'Primal Bounty' }); b.push(one(I.icon, css('gold'), I.label, me.owls || 0)); }   // its Owl Feathers
     for (const E of empower) b.push(one(icon(E.name), css(E.el || 'gold'), E.label, E.uses > 1 ? E.uses : '', E.s));
     for (const B of buffs) b.push(one(B.img || icon(B.name), B.c, B.label, '', B.s));
+    if (pup()) b.push(one(null, css('chaos'), t('Puppet Master'), me.pup.length, Math.max(...me.pup) - time));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
     if (me.locust) b.push(one(icon("Queen's Procession"), css('physical'), t("Swarm's Advance"), me.locust));
@@ -5088,7 +5109,7 @@ export function initScene(el, api) {
     };
   }
   // your resistances with those of the charms in use
-  const meIs = { Archon: () => archonOn() || time < (me.earch || 0), CompanionInPresence: () => inPresence(o => o.companion), Still: () => !walk && !move, Bleeding: () => me.st.bleed > 0, Ignited: () => me.st.ignite > 0,
+  const meIs = { Archon: () => archonOn() || time < (me.earch || 0) || uarch(), CompanionInPresence: () => inPresence(o => o.companion), Still: () => !walk && !move, Bleeding: () => me.st.bleed > 0, Ignited: () => me.st.ignite > 0,
     Surrounded: () => inside(pp, SURROUNDED.r * Math.sqrt(1 + (sheet().surrArea || 0) / 100)).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
@@ -5294,7 +5315,7 @@ export function initScene(el, api) {
     // duration, up to its most (the oldest gives way). note: the cooldown rate that speeds it up is not in the scene
     const RS = onS('Ravenous Swarm'), rs = RS?.dmg.stats;
     if (rs && near(pp, RS.A) && time - (me.swarmAt ?? -99) >= rs.base_cooldown_modifiable_repeat_interval_ms / 1000) {
-      me.swarmAt = time; limit(o => o.kind === RS.name, rs.ravenous_swarm_maximum_swarm_count + sheet().tempMinion); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
+      me.swarmAt = time; limit(o => o.kind === RS.name, tmpN(rs.ravenous_swarm_maximum_swarm_count)); minion(RS, around(pp, 1), durOf(RS), { kind: RS.name });
     }
     const SW = onS('Sorcery Ward')?.dmg.stats, GD = onS('Ghost Dance')?.dmg.stats;
     if (!SW) me.aegis = 0; else if (time - (me.aegisAt ?? -99) >= SW.aegis_recharge_delay_ms / 1000) me.aegis = ((c.armour || 0) + (c.evasion || 0)) * SW['aegis_unique_shield_max_value_from_%_armour_evasion'] / 100;

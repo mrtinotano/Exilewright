@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}: aufgesessen",
  "{0}: dismounted": "{0}: abgesessen",
  "{0} needs a Bow or a Spear": "{0} benötigt einen Bogen oder einen Speer",
- "{0} cannot be used while mounted": "{0} kann nicht aufgesessen verwendet werden"
+ "{0} cannot be used while mounted": "{0} kann nicht aufgesessen verwendet werden",
+ "Archon of Undeath": "Untoter Archon",
+ "Puppet Master": "Strippenzieher"
 }

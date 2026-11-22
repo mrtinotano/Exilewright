@@ -926,5 +926,7 @@
  "{0}: mounted": "{0}: ขี่อยู่",
  "{0}: dismounted": "{0}: ลงจากพาหนะ",
  "{0} needs a Bow or a Spear": "{0} ต้องใช้ธนูหรือหอก",
- "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้"
+ "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้",
+ "Archon of Undeath": "อาร์คอนอันเดด",
+ "Puppet Master": "ผู้เชิดหุ่น"
 }

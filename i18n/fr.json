@@ -926,5 +926,7 @@
  "{0}: mounted": "{0} : monté",
  "{0}: dismounted": "{0} : à pied",
  "{0} needs a Bow or a Spear": "{0} nécessite un arc ou une lance",
- "{0} cannot be used while mounted": "{0} ne peut pas être utilisé monté"
+ "{0} cannot be used while mounted": "{0} ne peut pas être utilisé monté",
+ "Archon of Undeath": "Archonte de la Non-mort",
+ "Puppet Master": "Marionnettiste"
 }
