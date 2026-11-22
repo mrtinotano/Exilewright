@@ -202,6 +202,9 @@ export function totem(g, sum = {}) {
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
     regen: v(s, 'totems_regenerate_%_life_per_minute') / 60,   // % of its life a second
     elemental: st['totem_elemental_resistance_%'] || 0, chaos: st['totem_chaos_resistance_%'] || 0,
+    // what each type of a hit on it loses: its resistances (up to the monsters' maximum, more with the tree's) and its additional physical damage reduction
+    res: { physical: v(s, 'totem_additional_physical_damage_reduction_%'), chaos: Math.min(MON_K.monster_max_resistance ?? 75, st['totem_chaos_resistance_%'] || 0),
+      ...Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, Math.min((MON_K.monster_max_resistance ?? 75) + v(s, 'totem_maximum_all_elemental_resistances_%'), (st['totem_elemental_resistance_%'] || 0) + v(s, 'totem_elemental_resistance_%'))])) },
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
     limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
       + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0)) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
@@ -1313,7 +1316,7 @@ export function skill(g, b, treeGear) {
     ...(c['support_mana_flare_%_of_current_mana_consumed'] || c['support_burning_runes_base_fire_damage_equal_to_%_maximum_mana'] ? unit('fire') : {}), ...(c['triggered_by_support_electrocute_lineage_%'] ? unit('lightning') : {}),
     ...(c['support_battershout_physical_damage_equal_to_%_of_broken_armour'] || c['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage'] || c['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] ? unit('physical') : {}),
     ...(c['corpse_explosion_monster_life_%'] || c.corpse_explosion_monster_life_permillage_fire ? unit('fire') : {}), ...(c['base_physical_damage_equal_to_%_of_totem_life'] ? unit('physical') : {}), ...(c['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'] ? unit('cold') : {}) });
-  const TO = totem(g, treeGear); out.totemLife = TO?.life; out.totemRegen = TO?.regen;   // Tawhoa's Tending's explosion; its regeneration
+  const TO = totem(g, treeGear); out.totemLife = TO?.life; out.totemRegen = TO?.regen; out.totemRes = TO?.res;   // Tawhoa's Tending's explosion; its regeneration
   // the parts an earthen object deals when it shatters (Earthshatter's spike, Forge Hammer's fissures) or a plant when it
   // bursts (Toxic Growth's Pustules), as the skill
   if (d.parts && !g.part) out.parts = Object.fromEntries(Object.keys(d.parts).map(p => [p, skill({ ...g, part: p }, b, treeGear)]));

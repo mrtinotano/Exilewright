@@ -2542,7 +2542,7 @@ export function initScene(el, api) {
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
       const TL = S.dmg?.totemLife;
-      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
+      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
     },
     travel(S) {
