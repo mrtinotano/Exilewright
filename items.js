@@ -421,7 +421,8 @@ const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok 
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;
-export const isMelee = it => { const T = BASE[it?.base]?.tags || []; return T.includes('weapon') && !T.includes('ranged'); };
+const martial = it => !!BASE[it?.base]?.tags?.includes('weapon');   // keywords MartialWeapon: the weapons tagged so (no wands, staves, sceptres)
+export const isMelee = it => martial(it) && !BASE[it.base].tags.includes('ranged');
 export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's property labels in each language, by the trade site's filter
 export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
 // the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
@@ -665,11 +666,15 @@ const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shie
 const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
 // why the character cannot wear a listed item yet (l.req, from the site): the levels to go, and each attribute short of
 // it with the tree's increased / reduced requirements (s: the character's snapshot without the item worn there; null: not asked)
-// an attribute the character has for an item's requirement: Jarngreipr's other attribute meets it on melee weapons
-const haveFor = (s, k, it) => Math.max(s?.[k] || 0, ...isMelee(it) ? (s?.satisfy || []).map(a => s[a] || 0) : []);
+// an item's requirement of attribute k (x, its own increased / reduced in: pct) for the character (s: its snapshot): the
+// tree's increased / reduced, Giant's Blood's triple on martial weapons, none with "Equipment has no Attribute
+// Requirements", no Strength on melee weapons where it is ignored; and what it has for it (Jarngreipr: the other
+// attribute meets it on melee weapons)
+export const needOf = (s, k, x, it, pct = 0) => s?.reqFree || k === 'str' && s?.noStrMelee && isMelee(it) ? 0 : Math.floor(x * Math.max(0, 1 + (pct + (s?.reqPct || 0)) / 100) * (s?.giant && martial(it) ? 3 : 1));
+export const haveFor = (s, k, it) => Math.max(s?.[k] || 0, ...isMelee(it) ? (s?.satisfy || []).map(a => s[a] || 0) : []);
 export function unmet(l, lvl, s) {
   const r = l.req || {}, out = r.lvl > lvl ? [t('Not usable yet: reach level {0} ({1} levels to go).', r.lvl, r.lvl - lvl)] : [];
-  for (const k of s ? Object.keys(ATTR) : []) { const need = Math.floor((r[k] || 0) * Math.max(0, 1 + (s.reqPct || 0) / 100)), have = haveFor(s, k, l.item);
+  for (const k of s ? Object.keys(ATTR) : []) { const need = needOf(s, k, r[k] || 0, l.item), have = haveFor(s, k, l.item);
     if (need > have) out.push(t('Not usable: {0} more {1} needed ({2}; you have {3} without the item worn). Respec the passive tree for it.', need - have, t(ATTR[k]), need, have)); }
   return out;
 }
@@ -738,7 +743,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // character's without it (its own attributes do not count), with the tree's increased / reduced ones and its gloves' "ignore"
     const without = snapOf(rest), rp = mods.reduce((t, m) => t + AFFIX[m.id].stats.reduce((x, [id], k) => x + (id === 'local_attribute_requirements_+%' ? m.values[k] : 0), 0), 0);
     const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
-    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, Math.floor(x * Math.max(0, 1 + (rp + (without?.reqPct || 0)) / 100))]).filter(([k, x]) => haveFor(without, k, it) < x);
+    const short = free ? [] : Object.entries(base.req || {}).map(([k, x]) => [k, needOf(without, k, x, it, rp)]).filter(([k, x]) => haveFor(without, k, it) < x);
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')

@@ -157,10 +157,9 @@ export function initOpt(el, ctx) {
   // the character without the item worn in `slot` (its attributes, the tree's increased / reduced requirements); null:
   // no character yet, or gloves whose requirements the tree ignores
   const without = (b, slot) => { const { [slot]: _, ...rest } = b.items || {}, s = b.level > 1 ? ctx.snap({ ...b, items: rest }) : null; return s?.glovesFree && slot === 'gloves' ? null : s; };
-  // what the character could wear in `slot` (use: { lvl, attr }, the checks ticked): its level, and its attributes as the
-  // most the item may ask (the tree's increased / reduced requirements counted)
-  const reqFor = (b, slot, use) => { const lvl = levelFor(b), s = use.attr && without(b, slot), k = 1 + (s?.reqPct || 0) / 100;
-    return { ...use.lvl && lvl && { lvl }, ...s && k > 0 && { ...Object.fromEntries(['str', 'dex', 'int'].map(a => [a, Math.floor((s[a] || 0) / k)])), ...s.satisfy?.length && { sat: Math.max(...s.satisfy.map(a => Math.floor((s[a] || 0) / k))) } } }; };
+  // what the character could wear in `slot` (use: { lvl, attr }, the checks ticked): its level, and its snapshot without
+  // the item for the attributes (trade.js fits)
+  const reqFor = (b, slot, use) => { const lvl = levelFor(b), s = use.attr && without(b, slot); return { ...use.lvl && lvl && { lvl }, ...s && { s } }; };
   const useNow = () => ({ lvl: S.reqLvl, attr: S.reqAttr });
   const leagueList = () => net?.leagues?.length ? net.leagues : ['Standard', 'Hardcore'];
   const leagueNow = () => leagueList().includes(S.league) ? S.league : leagueList()[0];
