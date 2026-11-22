@@ -373,14 +373,12 @@ export function initScene(el, api) {
   // Resonance: each kind of charge gained as the next one; Conduit: allies in your Presence get it instead (theirs are
   // not played: you get none), only Endurance with the Mercenary notable
   const RESONANCE = { frenzy: 'power', endurance: 'frenzy', power: 'endurance' };
-  // Redflare Conduit: reaching the most power charges loses them all and Shocks you for 4 seconds
-  function redflare() { charges.power = 0; me.powerLost = time; suffer('shock', 4, { mag: GC.BaseShockMagnitude }); }
   function gainCharge(type, by) {
     if (sheet().resonance) type = RESONANCE[type] || type;
     if (sheet().conduit === 'all' || sheet().conduit === 'endurance' && type === 'endurance') return;
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
-    charges[type]++; if (type === 'power' && charges.power >= maxC('power') && sheet().redflare) return redflare(); if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
+    charges[type]++; if (type === 'power' && charges.power >= maxC('power') && sheet().redflare) { charges.power = 0; me.powerLost = time; return suffer('shock', 4, { mag: GC.BaseShockMagnitude }); }   // Redflare Conduit: at the most, all lost and Shocked 4 s if (charges[type] < maxC(type) && Math.random() * 100 < (sheet().chargeMore?.[type] || 0)) charges[type]++;   // the chance of one more
     if (Math.random() * 100 < (sheet().chargeFill?.[type] || 0)) charges[type] = maxC(type);   // the chance of all of them
     fx.glow({ x: pp.x, y: 1.5, z: pp.z }, 1.8, CHC[type], .45);
     say(t('+1 {0} charge ({1})', t(CHARGE[type]), by), CHC[type]);
@@ -5641,8 +5639,8 @@ export function initScene(el, api) {
       for (const d of dummies) if (!d.dead && dist(d.pos, g) <= g.r + SIM.body) inflict(d, a, g.S, 1, g.S?.raw);   // raw: a ground with a damage of its own (Burning Inscription)
     }
     vitals(dt); tickHazards(dt);
-    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) { charges[c] = 0; if (c === 'power') me.powerLost = time; }
-    if (sheet().redflare && time - (me.powerLost ?? -99) > RECENT && time - (me.redflareAt ?? -9) >= 1) { me.redflareAt = time; gainCharge('power', 'Redflare Conduit'); }   // a power charge every second if none lost Recently   // with the build's charge duration
+    for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) { charges[c] = 0; if (c === 'power') me.powerLost = time; }   // with the build's charge duration
+    if (sheet().redflare && time - (me.powerLost ?? -99) > RECENT && time - (me.redflareAt ?? -9) >= 1) { me.redflareAt = time; gainCharge('power', 'Redflare Conduit'); }   // a power charge every second if none lost Recently (Redflare Conduit)
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); if (d.agony && time >= d.agony.until) agonyEnds(d); }
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);
