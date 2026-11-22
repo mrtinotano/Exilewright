@@ -166,13 +166,17 @@ function inc(sum, suffix, tags) {
 function geo(g) {
   const d = SK.skills[g.name] || {}, gm = gems.find(x => x.name === g.name), tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
   for (const [k, n] of Object.entries(g.add || {})) T[k] = (T[k] || 0) + n;   // a buff the scene has on (g.add)
+  const LR = T['light_radius_additive_modifiers_apply_to_area_%_value'];   // Cornathaum: increased Light Radius as area of effect at its share
+  if (LR) T['base_skill_area_of_effect_+%'] = (T['base_skill_area_of_effect_+%'] || 0) + (T['light_radius_+%'] || 0) * LR / 100;
+  const FX = T['unarmed_attack_area_of_effect_+1%_per_X_intelligence'], b0 = B();   // Facebreaker: unarmed attacks' area per X Intelligence
+  if (FX && !b0.items?.weapon && tags.includes('attack')) T['attack_area_of_effect_+%'] = (T['attack_area_of_effect_+%'] || 0) + Math.floor((character(b0, T).attrs?.int || 0) / FX);
   const { sum, finals } = withSupports(g, T);  // supports' area / speed count
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
   const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
   const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
   const moreSpeed = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
   const rad = b => b ? Math.floor(b * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0;
-  const speed = d.projectile_speed && d.projectile_speed * (1 + inc(sum, 'projectile_speed_+%', tags) / 100) * moreSpeed / 10;
+  const speed = d.projectile_speed && d.projectile_speed * (1 + (inc(sum, 'projectile_speed_+%', tags) + (tags.includes('bow') ? sum['base_arrow_speed_+%'] || 0 : 0)) / 100) * moreSpeed / 10;
   return {
     radiusFromData: base != null,
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:

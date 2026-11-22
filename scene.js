@@ -890,7 +890,7 @@ export function initScene(el, api) {
     // Martial Artist's Mountain's Teachings: its Surpassing chance per enemy Power on Immobilising (freeze, heavy stun,
     // electrocute, pin), up to its most, for its duration
     const MT = !S.src && ['freeze', 'stun', 'electrocute', 'pin'].includes(a) && sheet().mountain;
-    if (MT) { const n = MT.chance * (POWER[d.stat.rarity] || 1) / 100, got = Math.floor(n) + (Math.random() < n % 1 ? 1 : 0);
+    if (MT) { const n = MT.chance * pow(d) / 100, got = Math.floor(n) + (Math.random() < n % 1 ? 1 : 0);
       if (got) { me.mount = Math.min(MT.max, (time < me.mountUntil ? me.mount : 0) + got); me.mountUntil = time + MT.dur; } }
     const CF = ['freeze', 'electrocute', 'pin'].includes(a) && onS('Combat Frenzy');
     if (CF && time - (me.cfAt ?? -99) >= CF.dmg.stats.skill_combat_frenzy_x_ms_cooldown / 1000) { me.cfAt = time; gainCharge('frenzy', CF.label); }
@@ -1151,7 +1151,7 @@ export function initScene(el, api) {
       if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
         const j = trigOf(T);
         if (j < 0) continue;
-        if (T.per) { gainEnergy(T, T.per[type] / 100 * (POWER[d?.stat.rarity] || 1), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * pow(d), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
         else { if (++T.energy < T.need) continue; T.energy = 0; }
         if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
@@ -1276,7 +1276,7 @@ export function initScene(el, api) {
     if (slain ? time - (me.harbAt ?? -9) < st.skill_grants_spawn_harbinger_of_madness_orb_on_melee_kill_once_per_timer_ms / 1000
       : !(S.dmg?.attack && POWER[d.stat.rarity] >= POWER.rare && Math.random() * 100 < st['unique_chance_to_spawn_harbinger_of_madness_orb_on_hitting_rare_or_unique_enemy_with_melee_attacks_%'])) return;
     if (slain) me.harbAt = time;
-    const k = 1 + st['harbinger_of_madness_damage_+%_final_per_power_of_source_enemy'] * POWER[d.stat.rarity || 'normal'] / 100, add = slain ? d.max * st['harbinger_of_madness_additional_damage_from_%_source_enemy_life'] / 100 : 0;
+    const k = 1 + st['harbinger_of_madness_damage_+%_final_per_power_of_source_enemy'] * pow(d) / 100, add = slain ? d.max * st['harbinger_of_madness_additional_damage_from_%_source_enemy_life'] / 100 : 0;
     const X = { ...H, mult: 1, dmg: { ...H.dmg, hits: { physical: [st.secondary_minimum_base_physical_damage * k + add, st.secondary_maximum_base_physical_damage * k + add] } } };
     const from = { x: d.pos.x, z: d.pos.z }, e = near(from, 12, e => e !== d), to = e ? { x: e.pos.x, z: e.pos.z } : around(from, 3);
     lob(fx.orb('chaos', .2), V(from.x, 1, from.z), V(to.x, .4, to.z), .5, .5, () => boom(to, X.A, X), { trail: 'chaos' });
@@ -1317,15 +1317,15 @@ export function initScene(el, api) {
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
-    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < f.killCharge)); });   // and its own chance of a charge (Nascent Hope)
-    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain * bk('charm') + (Math.random() * 100 < f.killCharge)); });
+    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + pow(d) * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < f.killCharge)); });   // and its own chance of a charge (Nascent Hope)
+    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + pow(d) * CHARM_GAIN * f.gain * bk('charm') + (Math.random() * 100 < f.killCharge)); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     // Crushing Fear: an enemy it kills is crushed into its shockwave (its part, its secondary radius), more damage and area
     // per the enemy's power (note: the stats say per power of a culled enemy; here of any it kills)
     const CF = S && !S.src && partOf(S, 'CrushingFearNovaPlayer');
     if (CF) {
-      const cs = CF.dmg.stats, pw = POWER[r] || 1, A = radOf(CF) * Math.sqrt(1 + cs['crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy'] * pw / 100);
+      const cs = CF.dmg.stats, pw = pow(d), A = radOf(CF) * Math.sqrt(1 + cs['crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy'] * pw / 100);
       later(.1, () => { pop(p, A, 'chaos'); boom(p, A, { ...CF, gm: (CF.gm ?? 1) * (1 + cs['crushing_fear_damage_+%_final_per_power_of_culled_enemy'] * pw / 100) }); });
     }
     if (st.shock > 0) gainBuff(S, 'shockKill');
@@ -1639,7 +1639,7 @@ export function initScene(el, api) {
   const SIPHON = { freeze: ['cold', 'freezing'], ignite: ['fire', 'igniting'], shock: ['lightning', 'shocking'] };
   function siphon(a, d) {
     const g = tog['Siphon Elements'] && gemBy('Siphon Elements'), st = g && api.damage?.(g)?.stats, [el, v] = SIPHON[a] || []; if (!st || !el) return;
-    if (Math.random() * 100 < (st[`infusion_remnants_%_chance_to_spawn_${el}_infusion_on_${v}_an_enemy`] || 0) * (a === 'freeze' ? POWER[d.stat.rarity] || 1 : 1))
+    if (Math.random() * 100 < (st[`infusion_remnants_%_chance_to_spawn_${el}_infusion_on_${v}_an_enemy`] || 0) * (a === 'freeze' ? pow(d) : 1))
       infRemnant(el, d.pos, { range: st['remnant_pickup_range_+%'] });
   }
   const bombed = (M, p) => { boom(p, M.R, M.S); if (M.S.P.leaves) infRemnant(M.S.P.leaves, p); };   // Living Bomb's seed
@@ -2158,7 +2158,7 @@ export function initScene(el, api) {
   // (note: what its defences take off is not in the data); else any hit bursts it
   const avgHit = by => Object.values(by.dmg?.hits || {}).reduce((t, [a, b]) => t + (a + b) / 2, 0) * (by.mult ?? 1);
   // an Ice Crystal's life: its skill's (Frost Wall, Grim Pillars, Frozen Locus), increased and more (Icicle, Glacier)
-  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + (S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) / 100)
+  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
     * Object.entries(S.dmg?.finals || {}).reduce((m, [k, x]) => k.endsWith('ice_crystal_maximum_life_+%_final') ? m * (1 + x / 100) : m, 1);
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
@@ -2469,7 +2469,7 @@ export function initScene(el, api) {
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); }   // Dazing Cry
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + (POWER[d.stat.rarity] || 1), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
@@ -2835,7 +2835,7 @@ export function initScene(el, api) {
       // note: "in front of you" the data does not size: within cast range, on the side of the target
       const IX = st.firestorm_improved_bolts_per_chill_consumed != null && partOf(S, 'IcestormEmpoweredPlayer'); let imp = 0;
       if (IX) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= SIM.castRange && (d.pos.x - pp.x) * (c.x - pp.x) + (d.pos.z - pp.z) * (c.z - pp.z) > 0) {
-        if (d.st.freeze > 0) { clear(d, 'freeze'); imp += (st.firestorm_improved_bolts_per_monster_power_of_freeze_consumed || 0) * (POWER[d.stat.rarity] || 1); }
+        if (d.st.freeze > 0) { clear(d, 'freeze'); imp += (st.firestorm_improved_bolts_per_monster_power_of_freeze_consumed || 0) * pow(d); }
         if (d.st.chill > 0) { clear(d, 'chill'); imp += st.firestorm_improved_bolts_per_chill_consumed; }
       }
       let tk = 0;
@@ -3437,7 +3437,7 @@ export function initScene(el, api) {
   function zenith(d) {
     const S = onS('Midnight Zenith'); if (!S) return;
     const st = S.dmg.stats, need = st.midnight_star_attempt_to_consume_x_ice_seeds_to_create_an_ice_crystal_each_time_you_gain_ice_seeds;
-    const n = (/rare|unique/.test(d.stat.rarity) ? st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy : 0) + (d.dead ? POWER[d.stat.rarity] || 1 : 0);
+    const n = (/rare|unique/.test(d.stat.rarity) ? st.midnight_star_gain_x_ice_seeds_when_you_critically_hit_a_rare_or_unique_enemy : 0) + (d.dead ? pow(d) : 0);
     if (!n || (me.seeds = (me.seeds || 0) + n) < need) return;
     me.seeds -= need;
     const X = partOf(S, 'Crystal'), xs = X?.dmg.stats; if (!X) return;
@@ -4240,7 +4240,7 @@ export function initScene(el, api) {
       // its % of the enemy's Power, or a hundredth of its number whatever the enemy (Spear of Solaris' Ignite and Shock)
       const st = gst(S), mp = st[`active_skill_generates_mp_%_glory_per_${ev}`] || 0, flat = st[`active_skill_hundred_times_generates_glory_per_${ev}`] || 0;
       const seen = d.gloryAt ||= {}; if (!mp && !flat || time - (seen[S.name] ?? -9) < GLORY_EVERY) continue;
-      seen[S.name] = time; gloryAdd(S, (mp * (POWER[d.stat.rarity] || 1) + flat) / 100);
+      seen[S.name] = time; gloryAdd(S, (mp * pow(d) + flat) / 100);
     }
   }
   // the Ward or life spent: Skyfall's % of the Ward, Zerphi's Infamy's of the life spent on other skills
@@ -4702,6 +4702,7 @@ export function initScene(el, api) {
   function payMana(n) {
     const MH = sheet().uDef?.manaHurt; if (MH && n > 0) hurt(n * MH / 100, 0, 'physical');   // Scold's Bridle
     const EA = sheet().earch; if (EA?.mana && me.maxM > 0 && (me.spent = (me.spent || 0) + n) >= me.maxM && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) { me.spent = 0; earchGo(EA); }   // Elemental Archon after spending your maximum mana
+    me.spentM = (me.spentM || 0) + n;   // the mana spent (Melting Maelstrom)
     const F = sheet().flame; if (!F) { me.mana -= n; return; }
     me.flame = (me.flame || 0) + n * F.ratio / 100;
     if (me.maxM > 0 && me.flame >= me.maxM) { if (sheet().earch?.full) me.earch = Math.min(me.earch || 0, time); me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
@@ -4984,13 +4985,15 @@ export function initScene(el, api) {
     // Mountain's Teachings: its less damage taken from a hit dealing at most its share of your maximum life after mitigation
     // (KeywordPopups MountainsTeachings); the hit loses one
     const MO = time < me.mountUntil && me.mount > 0 && sheet().mountain; if (MO && --me.mount <= 0) me.mountUntil = 0;
+    { const FW = dfl && sheet().uDef?.wardenDefl, o = FW && objs.find(o => o.companion && !o.dead && o.segs?.[0].life > 0); if (o) { const k = FW / 100; o.segs[0].hurt(total * k); total *= 1 - k; chaos *= 1 - k; } }   // Forgotten Warden: its share of a deflected hit from your Companion's life first
     const RT = tempered(d), DH = sheet().delayHit, k = (1 + (DH?.less || 0) / 100) * (MO && total <= me.maxL * MO.upTo / 100 ? 1 + MO.taken / 100 : 1); hurt(total * RT * k, chaos * RT * k, top, crit, d, true);
     if (DH?.later) later(4, () => !(me.safe > 0) && hurt(total * RT * DH.later / 100, chaos * RT * DH.later / 100, top, false, d, true));
     // Recoup: its shares of what the hit dealt you (of the physical damage your armour prevented), over its time
     const RC = sheet().recoup, el = ELEM.reduce((t, e) => t + (dealt[e] || 0), 0);
     const add = (k, n) => n > 0 && me.recoup.push({ k, left: n, rate: n / RC.time });
+    { const BG = me.cu.reduce((t, u) => t + (u?.c.bangle || 0), 0), p = Math.max(0, (raw.chaos || 0) - (dealt.chaos || 0)) * BG / 100; if (p > 0) for (const k of ['life', 'mana']) me.recoup.push({ k, left: p, rate: p / (RC?.time || 8) }); }   // Forsaken Bangle: the chaos damage prevented, during its effect
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
-      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * (POWER[d.stat.rarity] || 1) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
+      + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * pow(d) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
@@ -5079,12 +5082,13 @@ export function initScene(el, api) {
   // half the monster's power for a normal one, all of it for a magic one, twice it for rare and unique ones, the power being
   // the rarity's 1 / 2 / 5 times the monster's own, and 20 for a unique (note: a monster's own power is not in the tables:
   // the glossary's average, 1, is used). Dying and refilling fill them, as a checkpoint or a well does.
+  const pow = d => pow(d) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1);   // a monster's Power (Redblade Banner: more in your Presence)
   const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
   const flaskHeal = (f, n, B = sheet().brew, dry = sheet().tides?.dry) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
-    if (f.k === 'mana' || B) me.mana = gain(me.mana, me.maxM, n);
+    if (f.k === 'mana' || B) me.mana = (f.over ? overflow : gain)(me.mana, me.maxM, n);   // Uhtred's Chalice: over maximum mana during its effect
     if (f.k === 'mana' && !B || dry) return;   // Sanguine Tides: flasks recover no life
     if (!sheet().vaal) me.life = gain(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life
   };
@@ -5097,7 +5101,7 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
+    me.drink[n] = { k: f.k, es: f.es, over: f.over, rate: f.amount * LL / f.time, s: f.time, m0: me.spentM || 0, nt: 3 }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
   }
@@ -5436,6 +5440,8 @@ export function initScene(el, api) {
     if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (note: its damage over time bypassing energy shield is not played)
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
     if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
+    if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved
+    if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;
@@ -5457,7 +5463,11 @@ export function initScene(el, api) {
     me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
-      flaskHeal(D, got); if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) me.drink[n] = null;   // a life flask's effect ends when your life is full (Enduring Elixirs' text), unless Enduring Elixirs
+      flaskHeal(D, got); const F = flasks()[n] || {};
+      if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
+      if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
+      if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m
+      if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) hurt(me.mana * F.endChaos / 100, me.mana * F.endChaos / 100, 'chaos'); }   // when its effect ends: Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you   // a life flask's effect ends when your life is full (Enduring Elixirs' text), unless Enduring Elixirs
     });
     for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
