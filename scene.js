@@ -570,8 +570,7 @@ export function initScene(el, api) {
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
       if (LX) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
         for (let k = 0; k < LX; k++) { const e = L[k % L.length]; later(.1 * (k + 1), () => { if (!e.dead) { fx.bolt(V(e.pos.x, 12, e.pos.z), V(e.pos.x, 0, e.pos.z), S.el, .2, .06, .5); hit(e, { ...S, src: 'conduit' }); } }); } }
-      if (!/minion|totem/.test(S.src || '')) leech(D, dealt, total, d);
-      if (dealt.physical && !/minion|totem/.test(S.src || '') && sheet().bloodHit) d.blood = (d.blood || 0) + dealt.physical * sheet().bloodHit / 100;   // Atziri's Acuity: its share of your hits' physical damage as Blood Loss
+      if (!/minion|totem/.test(S.src || '')) { leech(D, dealt, total, d); const BH = sheet().bloodHit; if (BH && dealt.physical) d.blood = (d.blood || 0) + dealt.physical * BH / 100; }   // Atziri's Acuity: its share of your hits' physical damage as Blood Loss
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
     if (M?.gain && d.mark === M && crit && own) {
@@ -598,8 +597,9 @@ export function initScene(el, api) {
       if (n > 0) { me.rageHit = time; gainRage(n); if (Math.random() * 100 < (sheet().rage?.fill || 0)) me.rage = rageMax(); }   // the tree's chance to gain all of it
     }
     if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
-    if (!S.src && real && S.dmg?.attack && sheet().olro) me.olro = [...(me.olro || []).filter(u => u.until > time), { v: pow(d), until: time + 20 }];   // Olrovasara: the enemy's Power for 20 s
-    if (!S.src && real && S.dmg?.attack && Math.random() * 100 < (sheet().molten || 0)) { const j = api.build().gems.findIndex(g => g.name === 'Molten Shower'); if (j >= 0) later(.05, () => use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' })); }   // Brutus' Lead Sprinkler: hits trigger its Molten Shower
+    if (!S.src && real && S.dmg?.attack) { const O = sheet();
+      if (O.olro) me.olro = [...(me.olro || []).filter(u => u.until > time), { v: pow(d), until: time + 20 }];   // Olrovasara: the enemy's Power for 20 s
+      if (Math.random() * 100 < (O.molten || 0)) { const j = api.build().gems.findIndex(g => g.name === 'Molten Shower'); if (j >= 0) later(.05, () => use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' })); } }   // Brutus' Lead Sprinkler: hits trigger its Molten Shower
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
@@ -1134,9 +1134,9 @@ export function initScene(el, api) {
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the
   // whole of them, increased and more together, against its base cast time
-  const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]);
+  const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]);   // what was spent Recently: Primal Hunger
     const DP = sheet().prowess; if (DP) for (me.dpRage = (me.dpRage || 0) + n; me.dpRage >= DP; me.dpRage -= DP) me.dp = [...prowess(), time + 10].slice(-3); };   // Amor Mandragora: Druidic Prowess per X Rage spent (KeywordPopups' text: 10 s each, up to 3)
-  const prowess = () => (me.dp || []).filter(u => u > time);   // Druidic Prowess: 10% increased skill speed and 3 Rage on spell hits a stack (its keyword's text)   // what was spent Recently: Primal Hunger
+  const prowess = () => (me.dp || []).filter(u => u > time);   // Druidic Prowess: 10% increased skill speed and 3 Rage on spell hits a stack (its keyword's text)
   function gainEnergy(T, n, j) {
     if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
     const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
@@ -5203,7 +5203,7 @@ export function initScene(el, api) {
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l), mana: (c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
   const echoed = () => me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time];   // the spells Echoed recently
-  const speedWhile = b => 1 + 10 * prowess().length / 100 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
+  const speedWhile = b => 1 + prowess().length / 10 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), BR = banner('resist_all_elements_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
