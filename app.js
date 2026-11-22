@@ -121,20 +121,18 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
   if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
-  // increased bonuses gained from the equipped Quiver: the whole of what it grants
-  const QE = sum['quiver_mod_effect_+%'], Q = b.items?.offhand;
-  if (QE && isQuiver(Q)) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
-  const FE = sum['focus_mod_effect_+%'];   // Instruments of Power: the equipped Focus's modifiers, less effect
-  if (FE && isFocus(Q)) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * FE / 100;
+  // increased bonuses gained from the equipped Quiver (the whole of what it grants), Instruments of Power's less of a Focus's
+  const Q = b.items?.offhand, QE = isQuiver(Q) ? sum['quiver_mod_effect_+%'] : isFocus(Q) ? sum['focus_mod_effect_+%'] : 0;
+  if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
   // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
   // radius of the socket (tree units). note: attribute passives counted as small ones (they are no notables)
   for (const [slot, it] of Object.entries(b.items || {})) {
     const J = slot.startsWith('jewel:') && b.nodes.some(n => 'jewel:' + n === slot) && N[slot.slice(6)], R = J && radiusOf(it);
     if (!R) continue;
-    const n = { small: 0, notable: 0 };
+    const n = { small: 0, notable: 0 }, rr = R.r * (it.unique ? 1 : 1 + (sum['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100);   // Baryanic Leylines: a larger radius for a non-unique jewel
     for (const id of new Set([...b.nodes, ...setOf(b, b.wset || 1)])) { const x = N[id];
       const k = x && (x.type === 'notable' ? 'notable' : x.type === 'small' || x.type === 'attribute' ? 'small' : null);
-      if (k && !x.ascendancy && Math.hypot(x.x - J.x, x.y - J.y) <= R.r * (it.unique ? 1 : 1 + (sum['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100)) n[k]++; }   // Baryanic Leylines: a larger radius for a non-unique jewel
+      if (k && !x.ascendancy && Math.hypot(x.x - J.x, x.y - J.y) <= rr) n[k]++; }
     for (const k of ['small', 'notable']) for (const [s, v] of Object.entries(R[k])) sum[s] = (sum[s] || 0) + v * n[k];
   }
   // Smith of Kitava: what the passives say the body armour grants, while one is worn; their hidden armour
