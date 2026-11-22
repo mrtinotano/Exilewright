@@ -1001,11 +1001,11 @@ export function initScene(el, api) {
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0 : 0) + (S.aggX || 0)
-      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
-    if (xa('poison', 'physical') + x('chaos') && roll(A.poison * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
+    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
