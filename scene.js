@@ -1317,8 +1317,8 @@ export function initScene(el, api) {
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
-    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask')); });
-    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain * bk('charm')); });
+    flasks().forEach((f, n) => { if (f) me.fl[n] = Math.min(f.max, flaskLeft(n) + POWER[r] * FLASK_GAIN[r] * f.gain * bk(n ? 'mana_flask' : 'life_flask') + (Math.random() * 100 < (f.killCharge || 0) ? 1 : 0)); });   // and its own chance of a charge (Nascent Hope)
+    charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + POWER[r] * CHARM_GAIN * f.gain * bk('charm') + (Math.random() * 100 < (f.killCharge || 0) ? 1 : 0)); });
     if (r === 'rare' || r === 'unique') charmUse('killing_rare_or_unique_enemy');
     const st = d.st, p = { x: d.pos.x, z: d.pos.z }, frozen = st.freeze > 0, M = d.mark, f = d.fig;
     // Crushing Fear: an enemy it kills is crushed into its shockwave (its part, its secondary radius), more damage and area
@@ -4966,8 +4966,10 @@ export function initScene(el, api) {
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
     const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (note: the other 5 s' less damage over time is not played)
     const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
-    for (const el in a.hits) {
-      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)));
+    const EG = sheet().enemyChaos && dist(d.pos, pp) <= sheet().overgrow.r ? sheet().enemyChaos / 100 : 0;   // Evergrasping Ring: enemies in your Presence gain extra chaos
+    const AH = EG ? { ...a.hits, chaos: [0, 1].map(k => (a.hits.chaos?.[k] || 0) + Object.values(a.hits).reduce((t, h) => t + h[k], 0) * EG) } : a.hits;
+    for (const el in AH) {
+      const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)));
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one

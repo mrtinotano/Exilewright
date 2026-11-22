@@ -122,6 +122,8 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
   if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
+  // Ingenuity: increased bonuses from the left / right ring (note: Ingenuity's own count too, as the jewellery above)
+  for (const [s, k] of [['ring1', 'equipped_ring1_effect_of_bonuses_+%'], ['ring2', 'equipped_ring2_effect_of_bonuses_+%']]) { const RE = sum[k]; if (RE && b.items?.[s]) for (const [x, v] of Object.entries(gearStats({ [s]: b.items[s] }))) sum[x] = (sum[x] || 0) + v * RE / 100; }
   // increased bonuses gained from the equipped Quiver (the whole of what it grants), Instruments of Power's less of a Focus's
   const Q = b.items?.offhand, QE = isQuiver(Q) ? sum['quiver_mod_effect_+%'] : isFocus(Q) ? sum['focus_mod_effect_+%'] : 0;
   if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;

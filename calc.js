@@ -630,7 +630,7 @@ export function recovery(c, sum) {
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
     coil: sum['coil_of_undoing_curse_magnitude_+%_final'] || sum['spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'] ? { zero: v(sum, 'coil_of_undoing_curse_magnitude_+%_final'), chaos: v(sum, 'spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'), phys: v(sum, 'spells_gain_%_of_damage_as_extra_phys_per_curse_on_target') } : null,
-    perfectWin: v(sum, 'perfect_timing_window_ms_+%'), griefIgnite: v(sum, 'ignite_as_though_dealing_X_damage_in_your_presence'),
+    enemyChaos: v(sum, 'enemies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos'), perfectWin: v(sum, 'perfect_timing_window_ms_+%'), griefIgnite: v(sum, 'ignite_as_though_dealing_X_damage_in_your_presence'),
     heatshiver: v(sum, 'non_skill_cold_damage_%_to_gain_as_fire_per_1%_chill_effect_on_enemy'),
     uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
