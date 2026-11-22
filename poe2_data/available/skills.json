@@ -3194,6 +3194,119 @@
  "player_base_speed": 37,
  "support_capacity_per_attribute": 5,
  "max_support_sockets": 5,
+ "lesser_shrines": [
+  {
+   "id": "AccelerationLesser",
+   "duration": 20,
+   "name": "Acceleration Shrine",
+   "name_es": "Santuario de aceleración",
+   "name_pt": "Altar da Aceleração",
+   "name_fr": "Autel d'Accélération ",
+   "name_de": "Schrein der Beschleunigung",
+   "name_ru": "Алтарь скорости",
+   "name_ja": "加速のシュライン",
+   "name_ko": "가속의 성소",
+   "name_th": "แท่นบูชาเร่งความเร็ว",
+   "name_zh": "迅速神殿",
+   "stats": {
+    "action_speed_-%": -10,
+    "base_projectile_speed_+%": 30
+   }
+  },
+  {
+   "id": "BrutalLesser",
+   "duration": 20,
+   "name": "Brutal Shrine",
+   "name_es": "Santuario brutal",
+   "name_pt": "Altar Brutal",
+   "name_fr": "Autel de Brutalité ",
+   "name_de": "Schrein der Grausamkeit",
+   "name_ru": "Алтарь свирепости",
+   "name_ja": "残忍なシュライン",
+   "name_ko": "난폭의 성소",
+   "name_th": "แท่นบูชาโหดเหี้ยม",
+   "name_zh": "狂擊神殿",
+   "stats": {
+    "damage_+%": 20,
+    "global_knockback": 1,
+    "base_stun_duration_+%": 20
+   }
+  },
+  {
+   "id": "RegenLesser",
+   "duration": 20,
+   "name": "Replenishing Shrine",
+   "name_es": "Santuario de recarga",
+   "name_pt": "Altar Revigorante",
+   "name_fr": "Autel de Régénération ",
+   "name_de": "Schrein der Erneuerung",
+   "name_ru": "Алтарь восполнения",
+   "name_ja": "補充のシュライン",
+   "name_ko": "회복의 성소",
+   "name_th": "แท่นบูชาเติมพลัง",
+   "name_zh": "回復神殿",
+   "stats": {
+    "mana_regeneration_rate_per_minute_%": 200,
+    "life_regeneration_rate_per_minute_%": 200
+   }
+  },
+  {
+   "id": "MassiveLesser",
+   "duration": 20,
+   "name": "Massive Shrine",
+   "name_es": "Santuario masivo",
+   "name_pt": "Altar Maciço",
+   "name_fr": "Autel du Titan ",
+   "name_de": "Gewaltiger Schrein",
+   "name_ru": "Алтарь величия",
+   "name_ja": "壮大なシュライン",
+   "name_ko": "거대화의 성소",
+   "name_th": "แท่นบูชายักษ์",
+   "name_zh": "威猛神殿",
+   "stats": {
+    "base_actor_scale_+%": 10,
+    "base_skill_area_of_effect_+%": 20,
+    "maximum_life_+%": 20
+   }
+  },
+  {
+   "id": "ResistanceLesser",
+   "duration": 20,
+   "name": "Resistance Shrine",
+   "name_es": "Santuario de resistencia",
+   "name_pt": "Altar da Resistência",
+   "name_fr": "Autel de Résistance ",
+   "name_de": "Schrein des Widerstands",
+   "name_ru": "Алтарь выдержки",
+   "name_ja": "耐性のシュライン",
+   "name_ko": "저항의 성소",
+   "name_th": "แท่นบูชาความต้านทาน",
+   "name_zh": "抗性神殿",
+   "stats": {
+    "base_resist_all_elements_%": 25,
+    "additional_maximum_all_resistances_%": 2
+   }
+  },
+  {
+   "id": "DefenceLesser",
+   "duration": 20,
+   "name": "Impenetrable Shrine",
+   "name_es": "Santuario impenetrable",
+   "name_pt": "Altar Impenetrável",
+   "name_fr": "Autel d'Impénétrabilité ",
+   "name_de": "Schrein der Undurchdringlichkeit",
+   "name_ru": "Алтарь неуязвимости",
+   "name_ja": "強固なシュライン",
+   "name_ko": "중갑의 성소",
+   "name_th": "แท่นบูชาป้องกัน",
+   "name_zh": "無畏神殿",
+   "stats": {
+    "physical_damage_reduction_rating_+%": 50,
+    "evasion_rating_+%": 50,
+    "maximum_energy_shield_+%": 50
+   }
+  }
+ ],
  "skills": {
   "Molten Crash": {
    "quality": {

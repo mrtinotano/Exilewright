@@ -12,7 +12,7 @@
 // Click to move (or W A S D, chosen in Settings: settings.js), the skill bar on the game's keys for each, Space roll, 1 / 2 flasks,
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
-import { t, fmt, cap } from './i18n.js';
+import { t, tn, fmt, cap } from './i18n.js';
 import { K as GAME, enemy, monSkill, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
@@ -162,7 +162,8 @@ export function initScene(el, api) {
   const hand = () => player.hand(V());
   // the character of the build (calc.js): defences, accuracy and recovery
   let shC = { at: -9, v: {} };
-  const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.() || {} }; return shC.v; };
+  const shrineOn = () => me?.shrineBuff?.until > time ? me.shrineBuff.stats : null;   // The Hammer of Faith's lesser Shrine buff, while it lasts
+  const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.(shrineOn()) || {} }; return shC.v; };
   const short = n => n < 99999.5 ? fmt(Math.round(n)) : n < 999950 ? fmt(n / 1e3, 1) + 'k' : fmt(n / 1e6, 2) + 'M';
   const NUMC = el => el === 'physical' ? '#f2ead8' : css(el);
 
@@ -189,7 +190,8 @@ export function initScene(el, api) {
     // Sands of Time (KeywordPopups Chronobuff): 60% increased skill speed scaling down to 1% over 10 seconds and back up, the
     // area of effect the other way round, from 1% to 60%
     const a0 = g1.add || {}, ST = sheet().sands && 1 + 59 * Math.abs(time % 20 - 10) / 10, add = { ...a0, ...(BA && { 'attack_speed_+%': BA }), ...(ST && { 'skill_speed_+%': (a0['skill_speed_+%'] || 0) + ST, 'base_skill_area_of_effect_+%': (a0['base_skill_area_of_effect_+%'] || 0) + 61 - ST }) };
-    const g2 = BA || ST ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
+    const SB = shrineOn(); if (SB) for (const [k, n] of Object.entries(SB)) add[k] = (add[k] || 0) + n;   // and the Shrine buff's
+    const g2 = BA || ST || SB ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
     let els = P.els.length ? [...P.els] : P.attack ? ['physical'] : [], ail = [...P.applies], col = P.el;
     // gas and oil only burn once something sets them alight
@@ -5059,7 +5061,7 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => me.st.chill > 0 && sheet().ailments.eff.slow !== 0 ? 1 - me.mag.chill / 100 : 1,   // Pathfinder: unaffected by slows
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 ? 1 - me.mag.chill / 100 : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100),   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a)) return;
@@ -5418,6 +5420,9 @@ export function initScene(el, api) {
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
     daemons();
+    // The Hammer of Faith: every its interval a random lesser (non-damaging) Shrine's buff for that Shrine's duration (skills.json lesser_shrines)
+    const HF = sheet().shrineEvery, LS = SK.lesser_shrines || [];
+    if (HF && LS.length && time - (me.shrineAt ?? -99) >= HF) { me.shrineAt = time; const r = LS[Math.floor(Math.random() * LS.length)]; me.shrineBuff = { stats: r.stats, until: time + r.duration }; setBuff({ label: tn(r), c: css('gold'), s: r.duration }); shC.at = -99; }
     // uniques: enemies in your Presence Blinded (Sandstorm Visage), Intimidated (Perfidy), Hindered (Amor Mandragora), while they are in it
     const PS = sheet().presence || {};
     if (PS.blind || PS.intim || PS.hinder) for (const d of dummies) if (d.inPres) {

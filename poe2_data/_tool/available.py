@@ -494,6 +494,12 @@ archon_nature = next({sid(k): x for k, x in zip(buff_defs[r['BuffDefinition']]['
 # an Archon's time and the recovery before another, as the game's Archon keyword says them ("lasts 10 seconds", "lasts 20 seconds")
 archon_time = [int(x) for x in re.findall(r'lasts (\d+) seconds', next(r['Definition'] for r in load('KeywordPopups') if r['Id'] == 'Archon'))]
 assert len(archon_time) == 2, archon_time
+# the lesser (non-damaging) Shrines' buffs, which The Hammer of Faith grants at random: their name (BuffDefinitions, in
+# every language), how long they last (Shrines) and their stats (BuffTemplates' values in the order of the definition's)
+_tmpl = load('BuffTemplates')
+lesser_shrines = [{'id': r['Id'], 'duration': r['Duration'], 'name': buff_defs[t['BuffDefinition']]['Name'], **tr(load_langs('BuffDefinitions'), t['BuffDefinition']),
+                   'stats': {sid(k): x for k, x in zip(buff_defs[t['BuffDefinition']]['Stats'], t['Buff_StatValues']) if x and sid(k) != 'has_shrine_effect'}}
+                  for r in load('Shrines') if r['IsLesserShrine'] for t in [_tmpl[r['Player_ShrineBuffsKey']]]]
 save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
                      'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
                      # the Elemental Infusions you have: their buff's icon and name (BuffDefinitions), in every language
@@ -502,7 +508,7 @@ save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # t
                      # the icons of the ailments on you; frozen and electrocuted have none in BuffVisuals: the game's StatusFrozen /
                      # StatusElectrocuted art (no table names them; the PoE2 Wiki's status icons are the same)
                      'ailment_icons': {**{a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('maim', 'maim'))},
-                                       'freeze': 'Art/2DArt/BuffIcons/StatusFrozen.dds', 'electrocute': 'Art/2DArt/BuffIcons/StatusElectrocuted.dds'}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'archon_nature': archon_nature, 'archon_time': archon_time, 'archon_nature_icon': _buff_icon['archon_nature'], 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'skills': skills})
+                                       'freeze': 'Art/2DArt/BuffIcons/StatusFrozen.dds', 'electrocute': 'Art/2DArt/BuffIcons/StatusElectrocuted.dds'}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'archon_nature': archon_nature, 'archon_time': archon_time, 'archon_nature_icon': _buff_icon['archon_nature'], 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'lesser_shrines': lesser_shrines, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.
 # stat_texts.json is English, stat_texts.<code>.json each translated language (English rows where the game has none)
