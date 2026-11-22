@@ -629,7 +629,7 @@ const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => lo === hi ? 
   `<input type="number" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" value="${vals?.[k] ?? hi}" data-path="${path}" data-k="${k}" title="${id}: ${lo}–${hi}">`).join('');
 // a modifier's numbers as the item has them: one rolled before a patch can be off its tier's range now
 const filled = (stats, vals) => stats.map(([, , hi], k) => vals?.[k] ?? hi);
-const fixVals = (stats, vals) => stats.map(([, lo, hi], k) => Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi)));
+function fixVals(stats, vals) { return stats.map(([, lo, hi], k) => Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi))); }   // hoisted: parseItem can run before this line is reached (an import cycle)
 const text = (stats, vals) => statLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
 const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => AFFIX[m.id].affix === a).length;
   return it.unique ? 'unique' : !mods.length ? 'normal' : c('prefix') <= 1 && c('suffix') <= 1 ? 'magic' : 'rare'; };

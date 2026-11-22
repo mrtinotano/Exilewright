@@ -483,7 +483,7 @@ export function initScene(el, api) {
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
       // Pain Attunement: 30% less critical damage bonus on full life, 30% more on low life
-      const PAIN = sheet().pain && S.src !== 'minionHit' ? me.life <= me.maxL * LOW ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1;
+      const PAIN = sheet().pain && S.src !== 'minionHit' ? lowLife() ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1;
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
@@ -590,6 +590,7 @@ export function initScene(el, api) {
       const G = sheet().rage?.gain, n = (G?.hit || 0) + (P.attack ? G?.attack || 0 : 0) + (P.melee ? (G?.melee || 0) + (H ? H.rage + H.ragePct * rageMax() / 100 : 0) : 0);
       if (n > 0) { me.rageHit = time; gainRage(n); if (Math.random() * 100 < (sheet().rage?.fill || 0)) me.rage = rageMax(); }   // the tree's chance to gain all of it
     }
+    if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
@@ -637,6 +638,9 @@ export function initScene(el, api) {
   // Rage, how far it is, how long you stood still or channelled, what you hit recently. A condition the scene does not
   // have (combo, blind...) is not met. Each counts its points (stacks, quarter seconds...) up to the support's own most
   const LOW = (GAME.low_pct ?? 35) / 100;
+  // Low Life / Low Mana at the uniques' shares instead, or by the other pool (Serpent's Lesson)
+  const TH = () => sheet().thresh || {}, lowLife = () => me.life <= me.maxL * (TH().lowLife / 100 || LOW) || TH().lifeByMana > 0 && me.mana <= me.maxM * TH().lifeByMana / 100;
+  const lowMana = () => me.mana <= me.maxM * (TH().lowMana / 100 || LOW) || TH().manaByLife > 0 && me.life <= me.maxL * TH().manaByLife / 100;
   // "Recently refers to the past 4 seconds" (keywords.json); the crossbow bolts reloaded and the skills used lately
   const RECENT = 4, reloads = [], used = [], reloaded = secs => reloads.reduce((t, r) => t + (time - r.t <= secs ? r.n : 0), 0);
   const inPresence = ok => objs.some(o => !o.dead && ok(o) && dist(o.pos, pp) <= sheet().overgrow.r);   // a minion of yours within your Presence
@@ -2449,7 +2453,7 @@ export function initScene(el, api) {
       fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
-      for (const o of [...objs]) if (o.earth && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
+      for (const o of [...objs]) if (o.earth && o.shatter && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); }   // Dazing Cry
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
@@ -4733,6 +4737,8 @@ export function initScene(el, api) {
   function thornsOf() {
     const T = sheet().thorns || { hits: {} }, N = buffs.find(b => b.thorns), hits = { ...T.hits }, SP = plating(), n = SP && plates();
     if (N) hits.cold = N.thorns.map(x => x * (T.thornsX || 1));
+    if (T.life?.[1]) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.life[k] / 100 * (T.thornsX || 1));   // a share of maximum life (mana) as physical (cold) thorns
+    if (T.manaCold) hits.cold = [0, 1].map(k => (hits.cold?.[k] || 0) + me.maxM * T.manaCold / 100 * (T.thornsX || 1));
     if (T.lifeShift && shifted()) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.lifeShift / 100 * (T.thornsX || 1));   // the tree's physical thorns from your life while Shapeshifted
     if (n) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + n * SP[k ? 'scavenged_plating_thorns_maximum_physical_damage' : 'scavenged_plating_thorns_minimum_physical_damage'] * (T.thornsX || 1));
     // Crackling Barrier: while you channel the skill it supports, its share of your maximum mana as lightning thorns
@@ -4850,7 +4856,7 @@ export function initScene(el, api) {
   // retaliates with its sweep, the enemy Parried for its duration (its more attack damage taken); a raised Shield blocks
   // every one, and released within its retaliation time after one it bashes the enemies close to you
   // note: how long a readied Parry waits for a hit is not in the data; PARRY_WAIT s here
-  const blocked = d => { me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block')); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
+  const blocked = d => { me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here
@@ -4905,6 +4911,7 @@ export function initScene(el, api) {
     if (RR) blocked(d);
     const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (d.mark ? 1 + (c.markedAcc || 0) / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
     if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (a.shape === 'projectile' && Math.random() * 100 < (c.avoidProj || 0)) return fx.text(above(), t('Avoided'), GREY, .32), record('avoid', d.mon.name, t('Avoided'), 0, GREY);   // The Sunken Vessel
     const BL = !RR && Math.random() * 100 < blockChance(c, a);   // Turtle Charm: a blocked hit still deals its share
     if (BL) { blocked(d); if (!c.blockTaken) return; }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
@@ -4925,8 +4932,9 @@ export function initScene(el, api) {
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     me.struck = [...(me.struck || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
+    const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
     for (const el in a.hits) {
-      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm);
+      const [lo, hi] = a.hits[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + (UL ? Math.min(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * cm + (el === 'physical' ? flat : 0)));
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
@@ -5052,7 +5060,7 @@ export function initScene(el, api) {
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) me.fl[n] -= f.per;   // the tree's chance to not consume charges
-    const LL = f.k === 'life' && me.life <= me.maxL * LOW ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
+    const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
     me.drink[n] = { k: f.k, es: f.es, rate: f.amount * LL / f.time, s: f.time }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask'));
     if (f.k === 'life' && sheet().flaskGuard) guardFor(me.drink[n].rate * sheet().flaskGuard / 100, 4);   // the tree's Guard of its recovery a second, for 4 s
     fx.ring(pp, .3, 1.2, f.k === 'life' ? 'blood' : 'arcane', .4); hudT = 0;
@@ -5115,8 +5123,8 @@ export function initScene(el, api) {
     Surrounded: () => inside(pp, SURROUNDED.r * Math.sqrt(1 + (sheet().surrArea || 0) / 100)).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
-    DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => me.life <= me.maxL * LOW,
-    FullMana: () => me.mana >= me.maxM, NotLowMana: () => me.mana > me.maxM * LOW, LowMana: () => me.mana <= me.maxM * LOW, Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
+    DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: () => lowLife(),
+    FullMana: () => me.mana >= me.maxM * (TH().fullMana || 100) / 100, NotLowMana: () => !lowMana(), LowMana: () => lowMana(), Chilled: () => me.st.chill > 0, FlaskEffect: () => me.drink.some(Boolean),
     ManaFlaskEffect: () => !!me.drink[1], ManaFlaskRecently: () => time - (me.drankAt?.[1] ?? -99) <= RECENT,
     LifeFlaskEffect: () => !!me.drink[0], LifeFlaskPast10: () => time - (me.drankAt?.[0] ?? -99) <= 10, Shocked: () => me.st.shock > 0,
     DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
@@ -5387,6 +5395,8 @@ export function initScene(el, api) {
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
     const LG = RG.life > 0 && !c.vaal ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, L - me.life));
     me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI);
+    if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
+    if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', L], ['mana', c.mana || 0]]) {
       const q = me.leech[r]; if (!(q.left > 0)) continue;

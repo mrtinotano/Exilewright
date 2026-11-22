@@ -246,6 +246,9 @@ function takenAs(sum) {
     for (const w of m[2] === 'damage_from_hits' ? ['hit'] : ['hit', 'dot']) { const o = (out[w][m[1]] ||= {}); o[m[3]] = (o[m[3]] || 0) + x; } }
   const R = v(sum, 'physical_damage_from_hits_%_taken_as_random_element'), P = R && (out.hit.physical ||= {});   // a random element: a third each on average
   if (R) for (const e of ['fire', 'cold', 'lightning']) P[e] = (P[e] || 0) + R / 3;
+  // uniques' (of hits): elemental as chaos (Apep's Supremacy), physical as lightning (Lightning Coil), fire as physical (The Rat Cage)
+  for (const [f, t, k] of [...['fire', 'cold', 'lightning'].map(e => [e, 'chaos', 'elemental_damage_taken_%_as_chaos']), ['physical', 'lightning', 'physical_damage_taken_%_as_lightning'], ['fire', 'physical', 'base_fire_hit_damage_taken_%_as_physical']])
+    if (sum[k]) { const o = (out.hit[f] ||= {}); o[t] = (o[t] || 0) + sum[k]; }
   return out;
 }
 export function character(b, sum) {
@@ -268,7 +271,7 @@ export function character(b, sum) {
       + (k === 'chaos' || sum[`${k}_resist_unaffected_by_area_penalties`] ? 0 : penalty);
     if (k === 'chaos' && sum.chaos_damage_resistance_is_doubled) val *= 2;   // Acolyte of Chayula
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
-    const max = CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
+    const max = sum['override_maximum_damage_resistance_%'] ? sum['override_maximum_damage_resistance_%'] : CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
       + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0)   // Gemling: red / green / blue supports
       + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0);
@@ -452,6 +455,14 @@ export function character(b, sum) {
   if (c.life != null) { if (c.mana != null) c.mana += per(c.life, sum['ascendancy_beidats_gaze_mana_+_per_X_maximum_life']); c.es += per(c.life, sum['ascendancy_beidats_hand_energy_shield_+_per_X_maximum_life']); c.spirit += per(c.life, sum['ascendancy_beidats_will_spirit_+_per_X_maximum_life']); }
   // Fleshcrafting, Enhanced Barrier: that share of maximum life converted to maximum energy shield
   const LC = c.life != null && Math.min(100, v(sum, 'maximum_life_%_to_convert_to_maximum_energy_shield')); if (LC) { const k = Math.round(c.life * LC / 100); c.life -= k; c.es += k; }
+  // uniques: life or mana as extra energy shield (Atziri's Disdain, The Everlasting Gaze), mana as armour (Waveshaper),
+  // energy shield equal to a share of Strength (Geofri's Sanctuary)
+  c.es += Math.round((c.life || 0) * v(sum, 'maximum_life_%_to_gain_as_maximum_energy_shield') / 100 + (c.mana || 0) * v(sum, 'mana_%_to_gain_as_energy_shield') / 100);
+  const MA = Math.round((c.mana || 0) * v(sum, 'mana_%_to_gain_as_armour') / 100); if (MA) { c.armour += MA; c.armourPct = armourReduction(c.armour, lvl); }
+  if (sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength']) c.es = Math.round(at.str * sum['unique_body_armour_maximum_energy_shield_override_is_%_of_strength'] / 100);
+  // thorns from your maximum life (Cat O' Nine Tails: physical) and mana (Icetomb: cold), the scene's of its current maximum
+  c.thorns.life = ['gain_minimum_physical_thorns_damage_equal_to_x%_of_maximum_life', 'gain_maximum_physical_thorns_damage_equal_to_x%_of_maximum_life'].map(k => v(sum, k));
+  c.thorns.manaCold = v(sum, 'added_thorns_cold_base_damage_%_of_maximum_mana');
   // the critical damage bonus of hits against you, as a share: the Oracle's and the Smith's less; Gemling's Gem Studded none
   // while red supports are the most socketed in your skills
   c.selfCrit = sum.no_self_critical_strike_multiplier_if_red_support_count_highest && SN.str && SN.str >= SN.dex && SN.str >= SN.int ? 0 : Math.max(0, 1 - v(sum, 'base_self_critical_strike_multiplier_-%', 'body_armour_grants_x_base_self_critical_strike_multiplier_-%') / 100);
@@ -545,7 +556,11 @@ export function recovery(c, sum) {
     unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? umag : 0,
     allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
-    eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace'), buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
+    eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace', 'mana_degeneration_per_minute_%'),
+    lifeDegen: v(sum, 'life_degeneration_%_per_minute_not_in_grace'), esDegen: v(sum, 'energy_shield_lost_per_minute_%'),   // uniques' loss of a share of maximum life / energy shield a second
+    // Low Life, Low Mana and Full Mana at other shares (Coward's Legacy, Idle Hands), and on Low Life by your mana / Low Mana by your life (Serpent's Lesson)
+    thresh: { lowLife: v(sum, 'low_life_threshold_%_override'), lowMana: v(sum, 'low_mana_threshold_%_override'), fullMana: v(sum, 'full_mana_threshold_%_override'),
+      lifeByMana: v(sum, 'unique_you_count_as_on_low_life_while_at_%_of_maximum_mana_or_below'), manaByLife: v(sum, 'unique_you_count_as_on_low_mana_while_at_%_of_maximum_health_or_below') }, buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),   // chance for hits' damage against you to be Unlucky (Oracle: always)
@@ -561,8 +576,12 @@ export function recovery(c, sum) {
     // what an event recovers: consuming a power charge (% of maximum mana) or an endurance charge (% of life), a block
     // (flat life), using your mana flask (% of life) or a charm (% of mana), heavily stunning a rare or unique enemy (% of
     // life), being stunned (% of life over a second)
+    // uniques: Onslaught (4 s) and a Power Charge on hit, a Power Charge on a critical hit; physical damage taken from hits
+    // (attack ones, projectile attack ones) lower by a flat amount; a chance to avoid projectiles
+    onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
+    flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
     recoverOn: { power: v(sum, 'recover_x%_of_maximum_mana_when_you_consume_a_power_charge'), endurance: v(sum, 'recover_%_life_per_endurance_charge_consumed'),
-      block: v(sum, 'recover_X_life_on_block'), manaFlask: v(sum, 'recover_%_maximum_life_on_mana_flask_use'), charm: v(sum, 'recover_%_maximum_mana_on_charm_use'),
+      block: v(sum, 'recover_X_life_on_block'), blockPct: v(sum, 'recover_%_of_maximum_life_on_block'), manaFlask: v(sum, 'recover_%_maximum_life_on_mana_flask_use'), charm: v(sum, 'recover_%_maximum_mana_on_charm_use'),
       stunRare: v(sum, 'recover_%_life_on_heavy_stunning_rare_or_unique_enemy'), stunned: v(sum, 'regenerate_%_life_over_1_second_when_stunned') },
     // Recoup (keywords.json): shares of the damage a hit dealt you recovered over 8 seconds, faster with recoup speed
     recoup: { phys: v(sum, 'physical_damage_taken_recouped_as_life_%'), el: v(sum, 'elemental_damage_taken_%_recouped_as_life'), deflect: v(sum, 'deflected_hit_damage_taken_%_recouped_as_life'),
@@ -1057,8 +1076,13 @@ export function skill(g, b, treeGear) {
   // "Attack damage of this skill is 20% of Default Attack Damage" (Volcanic Eruption): PoB2's baseMultiplier too
   const mult = attack ? (st._base_multiplier ?? (st['active_skill_has_%_standard_scaling_attack_damage'] ?? 100) * 100) / 10000 : 1;
   const base = {};
+  // uniques' attack damage added from your maximum life (Bursting Decay) or mana (Mind of the Council, Twisted Empyrean)
+  const POOL = [['physical', 'life', 'attack_added_physical_damage_%_of_maximum_life', 'attack_added_physical_damage_%_of_maximum_life'], ['lightning', 'mana', null, 'attack_maximum_added_lightning_damage_%_of_maximum_mana'],
+    ['cold', 'mana', 'local_attacks_have_added_min_cold_damage_equal_to_%_of_maximum_mana', 'local_attacks_have_added_max_cold_damage_equal_to_%_of_maximum_mana']];
+  const pool = attack && POOL.some(r => sum[r[3]]) && character(b, sum);
   for (const t of DMG) {
     let lo = 0, hi = 0;
+    for (const [k, of, mn, mx] of pool ? POOL.filter(r => r[0] === t) : []) { lo += (pool[of] || 0) * v(sum, mn || '') / 100; hi += (pool[of] || 0) * v(sum, mx) / 100; }
     if (attack && (w || nonWeapon || shield)) {   // a non-weapon attack needs no weapon in hand
       const r = shield ? [(st[`off_hand_weapon_minimum_${t}_damage`] || 0) + shieldAdd(t, 0), (st[`off_hand_weapon_maximum_${t}_damage`] || 0) + shieldAdd(t, 1)]
         : nonWeapon ? [st[`main_hand_weapon_minimum_${t}_damage`] || 0, st[`main_hand_weapon_maximum_${t}_damage`] || 0] : t === 'physical' ? w.physical : w[t];
@@ -1076,6 +1100,18 @@ export function skill(g, b, treeGear) {
   }
   const kept = 1 - Math.min(1, DMG.slice(1).reduce((s, t) => s + (st[`active_skill_base_physical_damage_%_to_convert_to_${t}`] || 0), 0) / 100);
   base.physical = base.physical.map(x => x * kept);
+  // the gear's conversions (Blueflame Bracers' fire to cold, Painter's Servant's elemental, Original Sin's elemental to
+  // chaos, Twisted Empyrean's mace fire, Fury of the King's bear physical, Kaltenhalt's parry), after the skill's: each
+  // type's damage is converted once (note: a type converted on to another, Valako's Vice, is not chained), scaled down past 100%
+  const ELE = ['fire', 'cold', 'lightning'], cvOf = (f, t) => f === t ? 0 : v(sum, `non_skill_base_${f}_damage_%_to_convert_to_${t}`) + (ELE.includes(f) ? v(sum, `non_skill_base_elemental_damage_%_to_convert_to_${t}`) : 0)
+    + (f === 'fire' && t === 'cold' && tags.includes('mace') ? v(sum, 'unique_mace_fire_damage_with_mace_skills_%_to_convert_to_cold') : 0)
+    + (f === 'physical' && t === 'fire' && tags.includes('bear') ? v(sum, 'non_skill_physical_damage_%_to_convert_to_fire_with_bear_skills') : 0)
+    + (f === 'physical' && t === 'cold' && tags.includes('parry') ? v(sum, 'parry_physical_damage_%_to_convert_to_cold') : 0);
+  const cvFrom = { ...base };
+  for (const f of DMG) {
+    const tot = DMG.reduce((s, t) => s + cvOf(f, t), 0), k = tot && Math.min(1, 100 / tot) / 100;
+    if (tot) for (const t of DMG) base[t] = base[t].map((x, i) => x + cvFrom[f][i] * (t === f ? -tot * k : cvOf(f, t) * k));
+  }
   // Avatar of Fire: 75% of every other type converted to fire, and no non-fire damage dealt; Blackflame Covenant: a fire
   // spell's fire converted to chaos, which counts for its Ignite (a chaos one)
   const avatar = !!sum.keystone_avatar_of_fire, blackflame = !!sum.keystone_fire_spells_become_chaos_spells && spell && own.includes('fire');
@@ -1171,6 +1207,7 @@ export function skill(g, b, treeGear) {
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? w.crit : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
     out.critBonus = (100 + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
