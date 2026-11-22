@@ -895,7 +895,10 @@ export function initScene(el, api) {
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
-  function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d); }
+  // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
+  // note: as a factor of its own, as Intimidate's
+  const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0)) / 100 : 1; };
+  function takes(d, el, r, isHit = true, ow, pen) { return defence(d, el, r, isHit, ow, pen) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour);
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
@@ -2021,7 +2024,7 @@ export function initScene(el, api) {
         if (IB && L > 0 && (e.burnT = (e.burnT ?? 0) - dt) <= 0) { e.burnT = .5; for (const d of inside(e.pos, S.dmg.stats.infernal_familiar_minion_burn_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IB / 100 }); }
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
-        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * dt); e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0)) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100); sw = 1;
@@ -3962,7 +3965,9 @@ export function initScene(el, api) {
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
     S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
-    if (KA && P.slams || AE) { S.mult *= 1 + ANCESTRAL.slam / 100; S.A *= Math.sqrt(1 + ANCESTRAL.area / 100); }
+    // Ancestrally Boosted: its more damage and increased area, with the tree's increased ones (note: its damage as a factor)
+    const AB = sheet().ancBoost || {};
+    if (KA && P.slams || AE) { S.mult *= (1 + ANCESTRAL.slam / 100) * (1 + (AB.dmg || 0) / 100); S.A *= Math.sqrt(1 + (ANCESTRAL.area + (AB.area || 0)) / 100); }
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
     // Echoing Cry: usable once you have travelled its distance since its last use
     const MV = !auto && S.dmg?.sum?.skill_unusable_until_moved_X_distance;
