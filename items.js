@@ -751,6 +751,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
       const order = byGain(rows);   // most improved first
+      // its base's own modifiers (implicits) apart from the rest by a line, as the game shows them, under its name and base
+      const P = itemParts(l.item, false), div = x => `<div>${esc(x)}</div>`;
+      const mods = P ? P.impl.map(div).join('') + (P.impl.length && P.expl.length + l.missed.length ? '<div class="bsep"></div>' : '') + [...P.expl, ...l.missed].map(div).join('') : l.mods.map(div).join('');
       // what is socketed (runes, soul cores, idols) and enchanted, one stat a line with its socket, below the changes (which
       // leave it out: the listed item counted with yours): what yours has that this one lacks (lost, as a negative; "of your
       // <slot>"), what this one brings, and its empty sockets. note: the socket is the stat's place among the item's
@@ -762,7 +765,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, giant, tr
       const sock = alone.join('')
         + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button></div>
-        <span><b>${esc(l.name || l.base)}</b>${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${modsOf(l).map(x => `<div>${esc(x)}</div>`).join('')}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}</span></div>`; }).join('')
+        <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}</span></div>`; }).join('')
       || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
       ${res.need ? `<p class="note">${t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
