@@ -673,6 +673,7 @@ export function initScene(el, api) {
     const wasHeavy = d.st.stun > 0;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (real && !S.src && !wasHeavy && d.st.stun > 0 && sheet().cullHeavy && cull(d, S, true)) return true;   // the tree's: a hit that Heavy Stuns has Culling Strike
+    const OX = crit && !S.src && D?.sum?.daze_self_on_critical_hit_for_X_ms; if (OX) { if (!(time < me.dazed)) say(t('Daze'), 'gold'); me.dazed = time + OX / 1000; }   // Overextend: a critical hit Dazes you
     if (crit && d.st.ignite > 0 && Math.random() * 100 < (D?.sum?.['refresh_ignite_duration_on_critical_strike_chance_%'] || 0)) d.st.ignite = Math.max(d.st.ignite, d.full?.ignite ?? DUR.ignite);   // Eternal Flame III: a critical hit refreshes its Ignite
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
@@ -2259,7 +2260,7 @@ export function initScene(el, api) {
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
         if (life > 0 && (life -= avgHit(by)) > 0) return;
         e.dead = true;
-        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); boom(p, B.A, { ...B, self: e, src: 'crystal' });
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A, { ...B, dmg: BD, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
           if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
       },
@@ -5210,7 +5211,7 @@ export function initScene(el, api) {
     function stunNow() {
       const melee = d.atk.melee, hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
         * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
-        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
+        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1);   // Dazed: more stun buildup (keywords.json Daze)
       me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
       const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
