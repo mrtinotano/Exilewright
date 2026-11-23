@@ -124419,5 +124419,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Dexterity]\\n1% increased [Armour|Armour] per 2 Dexterity",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Intelligence]\\n1% increased [Evasion|Evasion Rating] per 2 Intelligence",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Strength]\\n1% increased [EnergyShield|Energy Shield] per 2 Strength",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "All Damage taken bypasses Energy Shield\\n50% of Elemental Damage taken as Chaos Damage\\n+5% to maximum Chaos Resistance",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Life Recovery from [Flask|Flasks] also applies to Energy Shield\\n30% less Life Recovery from [Flask|Flasks]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% more [Spell|Spell] Damage per [Charges|Power Charge]\\nGain [Charges|Power Charges] instead of [Charges|Frenzy Charges]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "When taking damage from [Hit|Hits], 20% of Life Loss is prevented, then 150% of Life Loss prevented this way is Lost over 4 seconds",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "You are Blind\\nBlind does not affect your Light Radius\\n25% more [Melee] [Critical|Critical Hit] Chance while Blinded",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "You deal 1% more Damage per 2 total [Power|Power] of your Undead Minions\\nUndead Minions have 25% less maximum Life",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Mana Recovery from Regeneration [Overflow|Overflows] maximum Mana\\n50% less Mana Regeneration Rate",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Nearby Allies and Enemies Share Charges with you\\nEnemies Hitting you have 10% chance to gain an Endurance, \\nFrenzy or Power Charge",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80% of Maximum Mana is Converted to twice that much [Armour]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Can't use Helmets\\nYour [Critical|Critical Hit] Chance is Lucky\\nYour Damage with [Critical|Critical Hits] is Lucky\\nEnemies' Damage with [Critical|Critical Hits] against you is Lucky",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regenerate 1 Life per second per 16 Life spent in the past 4 seconds\\n20% more Life Cost of Skills",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "50% of Cold and Lightning Damage taken as Fire Damage\\n50% less Cold Resistance\\n50% less Lightning Resistance",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projectiles] do one of the following at random:\\n• [Fork] an additional time\\n• [Chain] an additional time\\n• [Chain] from Terrain an additional time\\n• Cannot collide with targets",
+    "h": []
+   }
+  ]
  }
 ]

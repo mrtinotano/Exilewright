@@ -490,6 +490,8 @@
  "Find the best path": "Найти лучший путь",
  "{0} of {1} points placed…": "Распределено {0} из {1} очков…",
  "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "Этот самоцвет нельзя извлечь: пассивные умения, выбранные от стартовой точки класса, которую он открывает, останутся несвязанными.",
+ "Conquered by {0}": "Завоевано: {0}",
+ "{0} changes this passive by its seed, which the game data does not show: it counts as it is.": "{0} меняет это пассивное умение в зависимости от своего зерна, а данные игры этого не показывают: оно учитывается как есть.",
  "{0} (in {1})": "{0} (в {1})",
  "This can take several minutes.": "Это может занять несколько минут.",
  "No passive within reach raises this objective.": "Ни одно доступное пассивное умение не повышает эту цель.",

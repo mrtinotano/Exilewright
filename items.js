@@ -16,18 +16,21 @@ export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', 
 const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || BASE[it?.base]?.img); };
-// stats whose number is a passive of the tree (its hash: Megalomaniac's notables, From Nothing's keystone), set by the
-// tree (setTree): any value, picked by name
-export const HASHED = /_hash(_\d+)?$/;
-let TREE = {}, BY_NAME = new Map();
-export function setTree(nodes, label) {
-  TREE = { nodes, label };
-  for (const [id, n] of Object.entries(nodes)) if (!n.ascendancy) for (const k in n) if (k.startsWith('name') && n[k]) BY_NAME.set(n[k].toLowerCase(), id);
+// stats whose number is a name: a passive's hash (Megalomaniac's notables, From Nothing's keystone), a keystone's index
+// (Flesh Crucible: the tree's keystone_list, from 1), a skill's (Prism of Belief: gems.json specific). Any value, picked
+// by name; the names come from the app (setNames)
+const pickKind = id => /_hash(_\d+)?$/.test(id) ? (id.includes('keystone') ? 'keystone' : 'notable') : /vivisection_random_keystone_index$/.test(id) ? 'kindex'
+  : id === 'unique_jewel_specific_skill_level_+_skill' ? 'skill' : null;
+const CHOICES = {}, BY_NAME = {};   // kind -> [[value, name]] / {lower case name in any language: value}
+export function setNames(nodes, label, keystones, skills) {
+  const of = (kind, rows) => { CHOICES[kind] = rows.map(([v, x]) => [v, label(x)]).sort((a, b) => a[1].localeCompare(b[1]));
+    BY_NAME[kind] = {}; for (const [v, x] of rows) for (const k in x) if (k.startsWith('name') && x[k]) BY_NAME[kind][x[k].toLowerCase()] = v; };
+  for (const type of ['notable', 'keystone']) of(type, Object.entries(nodes).filter(([, n]) => n.type === type && !n.ascendancy).map(([h, n]) => [+h, n]));
+  of('kindex', keystones.map((h, i) => [i + 1, nodes[h]]));
+  of('skill', skills.map(g => [g.specific, g]));
 }
-const hashKind = id => id.includes('keystone') ? 'keystone' : 'notable';
-const hashPick = (id, v, path, k) => `<select data-path="${path}" data-k="${k}" data-act="hash"><option value="0">—</option>${Object.entries(TREE.nodes || {})
-  .filter(([, n]) => n.type === hashKind(id) && !n.ascendancy).map(([h, n]) => [h, TREE.label(n)]).sort((a, b) => a[1].localeCompare(b[1]))
-  .map(([h, name]) => `<option value="${h}"${+h === +v ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select>`;
+const namePick = (id, v, path, k) => `<select data-path="${path}" data-k="${k}"><option value="0">—</option>${(CHOICES[pickKind(id)] || [])
+  .map(([x, name]) => `<option value="${x}"${x === +v ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select>`;
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
 
 // first spawn tag the base has decides the weight (game rule); weight 0 = cannot roll
@@ -423,10 +426,15 @@ export function parseItem(text) {
     const mut = ex.found.find(f => u.mutated?.some(m => m.id === f.key)), from = mut && u.replaceable.find(id => !ex.found.some(f => f.key === id)), mi = item.mods.findIndex(m => m.id === from);
     if (mi >= 0) { item.mods[mi] = { id: mut.key, values: [] }; item.mutatedFrom = from; }
     ex.found.forEach(f => { const m = item.mods.find(m => m.id === f.key); if (m) m.values = f.values; });
-    // the passive a line names ("Allocates Heavy Buffer", "Passives in Radius of Zealot's Oath can be Allocated"): its hash
-    for (const m of item.mods) AFFIX[m.id].stats.forEach(([id], k) => { if (!HASHED.test(id)) return;
-      const re = nameLines(id), hit = expl.map(l => re.map(r => l.match(r)?.[1]).find(Boolean)).find(x => x && BY_NAME.has(x.toLowerCase()) && !item.mods.some(o => o.values?.includes(+BY_NAME.get(x.toLowerCase()))));
-      if (hit) m.values[k] = +BY_NAME.get(hit.toLowerCase()); });
+    // what a line names ("Allocates Heavy Buffer", "Passives in Radius of Zealot's Oath can be Allocated", "+3 to Level of
+    // all Raise Zombie Skills", a timeless jewel's "Remembrancing 4500 songworthy deeds by the line of Medved"): its value,
+    // and the numbers of that line (a name no other modifier of it took already)
+    for (const m of item.mods) { const ids = AFFIX[m.id].stats.map(([id]) => id), named = ids.find(id => pickKind(id) || id === 'local_unique_jewel_alternate_tree_seed'); if (!named) continue;
+      const read = (l, { re, stats, fixed }) => { const x = l.match(re); if (!x) return null;
+        const vals = stats.map((s, g) => pickKind(s) ? BY_NAME[pickKind(s)]?.[x[g + 1].toLowerCase()] : +x[g + 1]);
+        return vals.every(v => v != null && !Number.isNaN(v)) && !(pickKind(named) && item.mods.some(o => o !== m && o.values?.includes(vals[stats.indexOf(named)]))) ? { ...fixed, ...Object.fromEntries(stats.map((s, g) => [s, vals[g]])) } : null; };
+      const hit = expl.flatMap(l => nameLines(named).map(f => read(l, f))).find(Boolean);
+      if (hit) for (const [s, v] of Object.entries(hit)) if (ids.includes(s)) m.values[ids.indexOf(s)] = v; }
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
   } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }));   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
@@ -678,16 +686,16 @@ export function tradeItem({ name, base: baseName, lines, runes = [] }) {
 
 // ---------- UI (laid out like the in-game item tooltip)
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => HASHED.test(id) ? hashPick(id, vals?.[k], path, k) : lo === hi ? '' :
+const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => pickKind(id) ? namePick(id, vals?.[k], path, k) : lo === hi ? '' :
   `<input type="number" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" value="${vals?.[k] ?? hi}" data-path="${path}" data-k="${k}" title="${id}: ${lo}–${hi}">`).join('');
 // a modifier's numbers as the item has them: one rolled before a patch can be off its tier's range now
 const filled = (stats, vals) => stats.map(([, , hi], k) => vals?.[k] ?? hi);
-function fixVals(stats, vals) { return stats.map(([id, lo, hi], k) => HASHED.test(id) ? vals?.[k] ?? 0 : Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi))); }   // hoisted: parseItem can run before this line is reached (an import cycle)
+function fixVals(stats, vals) { return stats.map(([id, lo, hi], k) => pickKind(id) ? vals?.[k] ?? 0 : Math.min(Math.max(vals?.[k] ?? hi, Math.min(lo, hi)), Math.max(lo, hi))); }   // hoisted: parseItem can run before this line is reached (an import cycle)
 const text = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).map(esc).join('<br>');
 // a modifier's lines, its jewel radius as the game shows it ("Radius: Small"), not as a stat of its own
 function modLines(o) {
   const { local_jewel_effect_base_radius: r, ...rest } = o;
-  return r == null ? statLines(o) : [...statLines(rest), t('Radius: {0}', t((D.jewel_radii || {})[r] || String(r)))];
+  return (r == null ? statLines(o) : [...statLines(rest), t('Radius: {0}', t((D.jewel_radii || {})[r] || String(r)))]).filter(l => !/^[a-z0-9_%+\-]+: 0$/.test(l));   // a hidden stat at 0 (local_unique_jewel_break_timeless_jewel_calculators) says nothing
 }
 const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => AFFIX[m.id].affix === a).length;
   return it.unique ? 'unique' : !mods.length ? 'normal' : c('prefix') <= 1 && c('suffix') <= 1 ? 'magic' : 'rare'; };

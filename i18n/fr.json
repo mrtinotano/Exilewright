@@ -490,6 +490,8 @@
  "Find the best path": "Trouver le meilleur chemin",
  "{0} of {1} points placed…": "{0} points sur {1} placés…",
  "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "Ce joyau ne peut pas être retiré : les passifs alloués depuis le point de départ de classe qu'il ouvre ne seraient plus reliés.",
+ "Conquered by {0}": "Conquis par {0}",
+ "{0} changes this passive by its seed, which the game data does not show: it counts as it is.": "{0} change ce Talent passif selon sa graine, ce que les données du jeu ne montrent pas : il compte tel quel.",
  "{0} (in {1})": "{0} (dans {1})",
  "This can take several minutes.": "Cela peut prendre plusieurs minutes.",
  "No passive within reach raises this objective.": "Aucun talent passif à portée n'augmente cet objectif.",

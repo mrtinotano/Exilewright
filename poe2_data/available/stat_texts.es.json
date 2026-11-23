@@ -124409,5 +124409,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "No obtienes ninguna bonificación inherente de la [Dexterity|destreza]\\n[Armour|Armadura] aumentada un 1% por cada 2 de destreza",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "No obtienes ninguna bonificación inherente de la [Intelligence|inteligencia]\\n[Evasion|Evasión] aumentada un 1% por cada 2 de inteligencia",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "No obtienes ninguna bonificación inherente de la [Strength|fuerza]\\n[EnergyShield|Escudo de energía] aumentado un 1% por cada 2 de fuerza",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Todo el daño recibido atraviesa el escudo de energía\\nEl 50% del daño elemental se recibe como daño de caos\\n+5% a la resistencia al caos máxima",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La recuperación de vida de los [Flask|frascos] también se aplica al escudo de energía\\n30% menos de recuperación de vida con [Flask|frascos]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% más de daño de [Spell|hechizos] por cada [Charges|carga de poder]\\nGanas [Charges|cargas de poder] en lugar de [Charges|cargas de frenesí]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Al recibir daño de los [Hit|impactos], se previene el 20% de la pérdida de vida y luego se previene el 150% de la pérdida de vida prevenida se pierde en un lapso de 4 segundos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Estás cegado\\nEstar cegado no afecta a tu radio de iluminación\\n25% más de probabilidad de [Critical|impacto crítico] [Melee|cuerpo a cuerpo] mientras estés cegado",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Infliges un 1% más de daño por cada 2 de [Power|poder] total de tus esbirros no muertos\\nLos esbirros no muertos tienen un 25% menos de vida máxima",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La recuperación de maná de la regeneración [Overflow|rebosa] el maná máximo\\n50% menos de velocidad de regeneración de maná",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Los aliados y enemigos cercanos comparten sus cargas contigo\\nLos enemigos tienen un 10% de probabilidad de ganar una carga de \\naguante, frenesí o poder con sus impactos contra ti",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "El 80% de tu maná máximo se convierte en esa cantidad de [Armour|armadura] multiplicada por dos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "No puedes usar cascos\\nTu probabilidad de [Critical|impacto crítico] es afortunada\\nTu daño con [Critical|impactos críticos] es afortunado\\nEl daño que los enemigos te infligen a ti con [Critical|impactos críticos] es afortunado",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regeneras 1 de vida por segundo por cada 16 de vida gastada en los últimos 4 segundos\\n20% más de costo de vida de las habilidades",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "El 50% del daño de hielo y rayo se recibe como daño de fuego\\n50% menos de resistencia al hielo\\n50% menos de resistencia al rayo",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Los [Projectile|proyectiles] ejecutan una de las siguientes opciones al azar:\\n• Se [Fork|bifurcan] una vez adicional\\n• Se [Chain|encadenan] una vez adicional\\n• Se [Chain|encadenan] desde el terreno una vez adicional\\n• No pueden chocar contra objetivos",
+    "h": []
+   }
+  ]
  }
 ]

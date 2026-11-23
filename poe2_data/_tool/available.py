@@ -192,6 +192,12 @@ for i, g in enumerate(skill_gems):
         part = next((grants[x] for x in gem_effects[g['GemEffects'][0]]['AdditionalGrantedEffects'] if grants[x]['Id'].startswith('Support')), None)
         if 'meta' in tags and part:
             gems[-1]['holds'] = {'require': types(part['AllowedActiveSkillTypes']), 'exclude': types(part['ExcludedActiveSkillTypes'])}
+# Prism of Belief's "+# to Level of all <skill> Skills": the skill by unique_jewel_specific_skill_level_+_skill
+# (SkillGemsForUniqueStat.Index -> its skill gems)
+for x in load('SkillGemsForUniqueStat'):
+    for g in gems:
+        if g['skill_gems_index'] in x['SkillGems']:
+            g['specific'] = x['Index']
 save('gems.json', gems)
 # what the keywords of those descriptions mean (KeywordPopups: the game's help on hovering "[Ignite|ignited]"), the
 # ones they use: {id: {term, def, term_<code>, def_<code>}}
@@ -240,7 +246,20 @@ mastery_groups, mastery_art = load('PassiveSkillMasteryGroups'), load('PassiveSk
 for gid, n in nodes.items():
     if by_gid[gid]['MasteryGroup'] is not None:
         n['mastery_art'] = mastery_art[mastery_groups[by_gid[gid]['MasteryGroup']]['Art']]['Id']
-save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()}})
+# timeless jewels (local_unique_jewel_alternate_tree_version): what each conqueror changes in its radius
+# (AlternateTreeVersions: which kinds of passive it replaces or adds to, by the jewel's seed) and the keystone that takes
+# the place of each keystone in it (AlternatePassiveSkills, picked by local_unique_jewel_alternate_tree_keystone)
+alt_versions = [{'replaces': {'small': v['SmallNormalPassiveReplaced'], 'attribute': v['SmallAttributeReplaced'], 'notable': v['NotableReplacementSpawnWeight'] > 0},
+                 'adds': {'small': v['SmallNormalPassiveSkillAdditions'][1] > 0, 'attribute': v['SmallAttributePassiveSkillAdditions'][1] > 0, 'notable': v['NotableAdditions'][1] > 0}}
+                for v in load('AlternateTreeVersions')]
+alt_tr = load_langs('AlternatePassiveSkills')
+conquerors = [{'version': x['AlternateTreeVersion'], 'index': x['ConquerorIndex'], 'name': x['Name'], **tr(alt_tr, i),
+               'stats': {stats[st]['Id']: x[f'Stat{k + 1}'][0] for k, st in enumerate(x['Stats'])}}
+              for i, x in enumerate(load('AlternatePassiveSkills')) if 4 in x['PassiveType'] and x['ConquerorVersion'] == 0]
+save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
+                           'timeless': {'versions': alt_versions, 'keystones': conquerors},
+                           # Flesh Crucible's keystone (local_vivisection_random_keystone_index, from 1): PassiveKeystoneList's rows
+                           'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})
 
 # --- ascendancies / classes
 chars, chars_tr, asc_tr = load('Characters'), load_langs('Characters'), load_langs('Ascendancy')
@@ -542,6 +561,7 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
 skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
+used |= {s for k in conquerors for s in k['stats']}   # the keystones timeless jewels put in place of the tree's
 kept = [d for d in descs.values() if used & set(d['stats'])]
 # a skill's own .csd (it includes the general ones and overrides them): entries marked with the skills that use it
 for csd, names in sorted(skill_csd.items()):

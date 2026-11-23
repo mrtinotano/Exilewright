@@ -124382,5 +124382,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Dexterity|민첩]으로 인한 기본 보너스 받지 않음\\n민첩 2당 [Armour|방어도] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Intelligence|지능]으로 인한 기본 보너스 받지 않음\\n지능 2당 [Evasion|회피] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Strength|힘]으로 인한 기본 보너스 받지 않음\\n힘 2당 [EnergyShield|에너지 보호막] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 받는 피해가 에너지 보호막을 무시함\\n받는 원소 피해의 50%를 카오스 피해로 전환\\n카오스 저항 최대치 +5%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Flask|플라스크]의 생명력 회복이 에너지 보호막에도 적용\\n[Flask|플라스크]로 회복되는 생명력 30% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charges|권능 충전] 하나당 [Spell|주문] 피해 3% 증폭\\n[Charges|격분 충전] 대신 [Charges|권능 충전] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|명중] 피해를 받을 때 생명력 상실량의 20%가 예방되고, 이후 이 방식으로 예방된 생명력 상실량의 150%가 4초에 걸쳐 상실됨",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어 실명됨\\n실명은 플레이어의 시야 반경과 무관\\n실명 상태에서 [Melee|근접] [Critical|치명타 명중] 확률 25% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "언데드 소환수의 총 [Power|위세] 2당 주는 피해 1% 증폭\\n언데드 소환수의 최대 생명력 25% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "재생으로 인한 마나 회복이 마나 최대치 이상으로 [Overflow|넘침]\\n마나 재생 속도 50% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "주변 동료들과 적이 플레이어에게 충전을 공유\\n플레이어를 명중한 적이 10% 확률로\\n인내, 격분, 또는 권능 충전 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "최대 마나의 80%를 그 2배만큼의 [Armour|방어도]로 전환",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "투구 사용 불가\\n[Critical|치명타 명중] 확률에 행운 적용\\n[Critical|치명타 명중] 피해에 행운 적용\\n적이 주는 [Critical|치명타 명중] 피해에 행운 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "지난 4초 동안 사용한 생명력 16당 1초마다 생명력 1 재생\\n스킬의 생명력 비용 20% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "냉기 및 번개 피해의 50%를 화염 피해로 받음\\n냉기 저항 50% 감폭\\n번개 저항 50% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|투사체]가 다음 중 하나를 무작위로 수행:\\n• 1회 추가로 [Fork|갈라짐]\\n• 1회 추가 [Chain|연쇄]\\n• 지형으로 인해 1회 추가 [Chain|연쇄]\\n• 대상과 충돌하지 않음",
+    "h": []
+   }
+  ]
  }
 ]

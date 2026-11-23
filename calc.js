@@ -143,6 +143,7 @@ export function gemStats(g, sum = {}) {
   for (const [k, x] of Object.entries(sum)) if (k.endsWith(end) && k.slice(0, -end.length).split('_').every(fits)) level += x;
   // Uhtred's: only with exactly no / one / two other supports modifying it
   level += v(sum, 'supported_active_skill_gem_level_+_if_' + ['no_other_supports', 'one_other_support', 'two_other_supports'][(g.supports || []).filter(Boolean).length - 1]);
+  if (GEM[g.name]?.specific && GEM[g.name].specific === sum['unique_jewel_specific_skill_level_+_skill']) level += v(sum, 'unique_jewel_specific_skill_level_+_level');   // Prism of Belief
   const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+', 'supported_active_skill_gem_quality_%');
   const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
@@ -251,10 +252,15 @@ function takenAs(sum) {
     if (sum[k]) { const o = (out.hit[f] ||= {}); o[t] = (o[t] || 0) + sum[k]; }
   return out;
 }
+// the Kalguuran keystones (a timeless jewel's, Heroic Tragedy): no inherent bonus from one attribute, and 1% increased
+// Energy Shield / Armour / Evasion Rating per 2 of it
+const KALGUUR = { str: ['keystone_alternate_strength_bonus', 'maximum_energy_shield_+%'], dex: ['keystone_alternate_dexterity_bonus', 'physical_damage_reduction_rating_+%'],
+  int: ['keystone_alternate_intelligence_bonus', 'evasion_rating_+%'] };
 export function character(b, sum) {
   const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
+  for (const [a, [k, to]] of Object.entries(KALGUUR)) if (sum[k]) sum = { ...sum, [to]: (sum[to] || 0) + Math.floor((at[a] || 0) / 2) };
   if (sum['local_all_attributes_-_per_level']) for (const k of ['str', 'dex', 'int']) at[k] = Math.max(0, (at[k] || 0) - lvl * sum['local_all_attributes_-_per_level']);   // Greymake
-  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]], 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
+  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (sum[KALGUUR[['str', 'dex', 'int'][i]][0]] ? 0 : (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]]), 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
   // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');

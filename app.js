@@ -5,7 +5,7 @@ import { statLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
-import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setTree, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus } from './items.js';
+import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -22,7 +22,12 @@ const [tree, gems, ascs] = await Promise.all([load('passive_tree.json'), load('g
 const N = tree.nodes, NODE_BY_NAME = new Map(Object.entries(N).filter(([, n]) => !n.ascendancy).map(([id, n]) => [n.name, id]));
 const ROOTS = new Set(tree.class_roots.map(String));
 const label = tn;
-setTree(N, label); NAMES.passive = h => N[h] && label(N[h]);   // the passives jewels name by hash (Megalomaniac, From Nothing)
+// what jewels name by a number: a passive by its hash (Megalomaniac, From Nothing), a keystone by its index (Flesh
+// Crucible), a skill (Prism of Belief)
+setNames(N, label, tree.keystone_list || [], gems.filter(g => g.specific));
+NAMES.passive_hash = h => N[h] && label(N[h]);
+NAMES.passive_keystone_index = i => N[tree.keystone_list?.[i - 1]] && label(N[tree.keystone_list[i - 1]]);
+NAMES.specific_skill = i => { const g = gems.find(x => x.specific === i); return g && tn(g); };
 
 // ---------- builds (localStorage; export/import as JSON files)
 const KEY = 'poe2builds';
@@ -96,7 +101,8 @@ const statText = n => statLines(n.stats).join('\n') + (n.grants_skill ? '\n' + t
 // Attribute nodes: right click cycles Str/Dex/Int
 const ATTR = { str: ['strength', '#c44'], dex: ['dexterity', '#4a4'], int: ['intelligence', '#48c'] };
 const NEXT = { undefined: 'str', str: 'dex', dex: 'int', int: 'str' };
-function nodeStats(id, b = B()) {
+function nodeStats(id, b = B(), cq = conquest(b)) {
+  if (cq.get(id)?.ks) return cq.get(id).ks.stats;   // a keystone a timeless jewel turned into its conqueror's
   const n = N[id], a = (b.attrs || {})[id];
   return n.type === 'attribute' && a ? tree.attribute_options[ATTR[a][0]] : n.stats;  // game's hidden generic_attribute_* passives
 }
@@ -123,10 +129,11 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Titan's Hulking Form: increased effect of the small passives (attribute ones included)
   // with an anointed amulet's passive ("Allocates Cooked", items.js parseItem), unless the tree has it already
   const all = [...new Set([...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1), ...Object.values(b.items || {}).map(it => NODE_BY_NAME.get(it.anoint)).filter(Boolean), ...granted(b)])], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
-  for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b))) sum[s] = (sum[s] || 0) + v * k; }
+  const cq = conquest(b);
+  for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b, cq))) sum[s] = (sum[s] || 0) + v * k; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
-  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || b.nodes.some(n => 'jewel:' + n === slot)) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
+  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
   if (NT) for (const [k, v] of Object.entries(gearStats({ amulet: b.items.amulet }))) sum['minion:' + k] = (sum['minion:' + k] || 0) + v;
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
@@ -134,7 +141,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Ingenuity: increased bonuses from the left / right ring (note: Ingenuity's own count too, as the jewellery above)
   for (const s of ['ring1', 'ring2']) { const RE = sum[`equipped_${s}_effect_of_bonuses_+%`]; if (RE && b.items?.[s]) for (const [x, v] of Object.entries(gearStats({ [s]: b.items[s] }))) sum[x] = (sum[x] || 0) + v * RE / 100; }
   // The Adorned: increased effect of the allocated jewel sockets holding a corrupted magic / rare jewel (note: the whole of what the jewel grants)
-  for (const [slot, it] of Object.entries(b.items || {})) { const AD = it?.corrupted && slot.startsWith('jewel:') && b.nodes.some(n => 'jewel:' + n === slot) && sum[`local_unique_jewel_passive_jewel_socket_mod_effect_+%_with_corrupted_${it.rarity}_jewel_socketed`]; if (AD) for (const [k, v] of Object.entries(gearStats({ [slot]: it }))) sum[k] = (sum[k] || 0) + v * AD / 100; }
+  for (const [slot, it] of Object.entries(b.items || {})) { const AD = it?.corrupted && slot.startsWith('jewel:') && sockOn(b).has(slot.slice(6)) && sum[`local_unique_jewel_passive_jewel_socket_mod_effect_+%_with_corrupted_${it.rarity}_jewel_socketed`]; if (AD) for (const [k, v] of Object.entries(gearStats({ [slot]: it }))) sum[k] = (sum[k] || 0) + v * AD / 100; }
   // increased bonuses gained from the equipped Quiver (the whole of what it grants), Instruments of Power's less of a Focus's
   const Q = b.items?.offhand, QE = isQuiver(Q) ? sum['quiver_mod_effect_+%'] : isFocus(Q) ? sum['focus_mod_effect_+%'] : 0;
   if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
@@ -578,7 +585,7 @@ const splitRoots = (b, has = new Set(b.nodes)) => Object.entries(b.items || {}).
   : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]]).filter(Boolean));
 // the jewels in allocated sockets (has: the allocated passives): its socket, the item, its radius (items.js radiusOf) and
 // in(id): whether a passive is within that radius, or its ring, of the socket or of the keystone it names (From Nothing)
-function jewelsOf(b, has = new Set(b.nodes), scale = 1) {
+function jewelsOf(b, has = sockOn(b), scale = 1) {
   return Object.entries(b.items || {}).flatMap(([slot, it]) => {
     const id = slot.startsWith('jewel:') && slot.slice(6);
     if (!id || !N[id] || !has.has(id)) return [];
@@ -588,8 +595,32 @@ function jewelsOf(b, has = new Set(b.nodes), scale = 1) {
   });
 }
 const radKind = id => N[id] && !N[id].ascendancy && (N[id].type === 'notable' ? 'notable' : N[id].type === 'small' || N[id].type === 'attribute' ? 'small' : null);
-// the notables Megalomaniac allocates
-const granted = (b, has) => jewelsOf(b, has).flatMap(j => Object.entries(statsOf(j.it)).filter(([k, v]) => /^unique_jewel_grants_notable_hash_\d+$/.test(k) && N[v]).map(([, v]) => String(v)));
+// the passives jewels allocate: Megalomaniac's notables (by hash), Flesh Crucible's keystone (its index in keystone_list)
+const GRANTS = [[/^unique_jewel_grants_notable_hash_\d+$/, v => v], [/vivisection_random_keystone_index$/, v => tree.keystone_list?.[v - 1]]];
+const granted = (b, has) => jewelsOf(b, has).flatMap(j => Object.entries(statsOf(j.it)).map(([k, v]) => GRANTS.find(([re]) => re.test(k))?.[1](v)).filter(x => x && N[x]).map(String));
+// Voices' Sinister jewel sockets (sockets with no links, voices_jewel_slot1..5, allocated in that order): the allocated
+// passives with those Voices in the tree's own sockets allocate
+const VOICES = Object.keys(N).filter(id => /^voices_jewel_slot/.test(N[id].id)).sort((a, b) => N[a].id.localeCompare(N[b].id));
+function sockOn(b) {
+  const n = Object.entries(b.items || {}).reduce((t, [s, it]) => t + (s.startsWith('jewel:') && b.nodes.includes(s.slice(6)) ? statsOf(it).unique_jewel_grants_x_voices_jewel_sockets || 0 : 0), 0);
+  return new Set([...b.nodes, ...VOICES.slice(0, n)]);
+}
+// timeless jewels (Heroic Tragedy, Undying Hate) in allocated sockets: each keystone in their radius becomes their
+// conqueror's (passive_tree.json timeless: AlternatePassiveSkills, by local_unique_jewel_alternate_tree_keystone); the
+// passives their seed changes are only marked (which change and how is not in the game's client data)
+// -> Map id -> { ks, by (the jewel) } | { seed: true, by }
+const TL = tree.timeless || { versions: [], keystones: [] };
+function conquest(b) {
+  const out = new Map();
+  for (const j of jewelsOf(b)) {
+    const st = statsOf(j.it), ver = st.local_unique_jewel_alternate_tree_version, v = TL.versions[ver];
+    if (!v || !j.R) continue;
+    const ks = TL.keystones.find(k => k.version === ver && k.index === st.local_unique_jewel_alternate_tree_keystone), by = j.it;
+    for (const id of main) if (j.in(id)) { const ty = N[id].type;
+      if (ty === 'keystone') { if (ks) out.set(id, { ks, by }); } else if (v.replaces[ty] || v.adds[ty]) out.set(id, { seed: true, by }); }
+  }
+  return out;
+}
 // the passives that can be allocated without being connected (Controlled Metamorphosis' radius, From Nothing's keystone's)
 const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(j.in)));
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
@@ -787,7 +818,7 @@ function drawTree() {
   view.s ||= Math.min(W, H) / 26000;   // fit whole tree on first draw
   const s = view.s, b = B(), st = ascStart(b.asc);
   const set1 = new Set(setOf(b, 1)), set2 = new Set(setOf(b, 2));
-  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b), ...granted(b)]);   // and the starts Split Personality opens, the notables Megalomaniac allocates
+  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b), ...granted(b), ...sockOn(b)]), cq = conquest(b);   // and the starts Split Personality opens, what jewels allocate
   const setTint = id => b.nodes.includes(id) ? null : set1.has(id) && (mode !== 2 || !set2.has(id)) ? SET_COL[1] : set2.has(id) ? SET_COL[2] : null;
   const pre = new Set(hover ? preview(hover) : []);
   const vis = visible(), visSet = new Set(vis);
@@ -873,7 +904,8 @@ function drawTree() {
     ctx.font = `${n.type === 'keystone' ? 13 : 11}px Georgia, serif`;
     ctx.fillStyle = on.has(id) ? '#f2d58a' : '#a8987a';
     ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
-    ctx.strokeText(label(n), x, y + r * 1.25 + 2); ctx.fillText(label(n), x, y + r * 1.25 + 2);
+    const name = label(cq.get(id)?.ks || n);
+    ctx.strokeText(name, x, y + r * 1.25 + 2); ctx.fillText(name, x, y + r * 1.25 + 2);
   }
 }
 let raf = 0;
@@ -894,13 +926,15 @@ function showTip(id, mx, my) {
   const tip = $('tip'), n = N[id];
   tip.hidden = !id;
   if (!id) return;
-  const b = B(), jv = n.type === 'jewel' && itemView(b.items?.['jewel:' + id]);   // a socket: the jewel in it
-  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], jv ? [jv.name || jv.base, ...jv.mods] : []);
+  const b = B(), jv = n.type === 'jewel' && itemView(b.items?.['jewel:' + id]), cq = conquest(b).get(id);   // a socket: the jewel in it; a timeless jewel's conquest
+  const by = cq && itemView(cq.by)?.name;
+  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], jv ? [jv.name || jv.base, ...jv.mods] : [],
+    cq?.ks ? [t('Conquered by {0}', by)] : cq ? [t('{0} changes this passive by its seed, which the game data does not show: it counts as it is.', by)] : []);
   const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start;
   const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
   const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode);
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
-  tip.innerHTML = `<div class="th">${esc(label(n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
+  tip.innerHTML = `<div class="th">${esc(label(cq?.ks || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
     + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
@@ -1127,7 +1161,7 @@ const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s
   stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {}),
   free: j.R?.free ? main.filter(j.in) : [] }));
 const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
-  () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
+  () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
@@ -1135,7 +1169,7 @@ const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, s
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
-  sockets: () => B().nodes.filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
+  sockets: () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
 const renderSettings = initSettings($('settings'), lootEl);
 watchUpdates($('updNote'));
 const renderFilter = initFilter($('filter'));

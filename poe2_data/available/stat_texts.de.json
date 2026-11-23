@@ -124418,5 +124418,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Dexterity|Geschick]\\n1% erhöhte [Armour|Rüstung] pro 2 Geschick",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Intelligence|Intelligenz]\\n1% erhöhter [Evasion|Ausweichwert] pro 2 Intelligenz",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Strength|Stärke]\\n1% erhöhter [EnergyShield|Energieschild] pro 2 Stärke",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Sämtlicher erlittener Schaden umgeht den Energieschild\\nErleidet 50% des Elementarschadens als Chaosschaden\\n+5% zu maximalem Chaoswiderstand",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Lebenswiederherstellung von [Flask|Fläschchen] wirkt auch auf den Energieschild\\n30% weniger Lebenswiederherstellung von [Flask|Fläschchen]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% mehr [Spell|Zauber]schaden pro [Charges|Energie-Ladung]\\nIhr erhaltet [Charges|Energie-] statt [Charges|Raserei-Ladungen]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Beim Erleiden von Schaden von [Hit|Treffern] werden 20% des Lebensverlusts verhindert, wonach 150% des auf diese Weise verhinderten Lebensverlusts über 4 Sekunden verloren werden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr seid blind\\nBlindheit beeinflusst nicht Euren Lichtradius\\n25% mehr [Critical|kritische Trefferchance] mit [Melee|Nahkampf]angriffen, während Ihr geblendet seid",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr verursacht 1% mehr Schaden pro gesamtem [Power|Stärkegrad] Eurer untoten Kreaturen\\nUntote Kreaturen haben 25% weniger maximales Leben",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Manawiederherstellung durch Regeneration [Overflow|überfüllt] maximales Mana\\n50% weniger Manaregenerations-Rate",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verbündete und Gegner im Umkreis teilen Ladungen mit Euch\\nGegner, die Euch treffen, haben 10% Chance auf eine Widerstands-, Raserei- oder Energie-Ladung",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80% des maximalen Manas werden in doppelt so viel [Armour|Rüstung] umgewandelt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr könnt keinen Helm benutzen\\nEure [Critical|kritische Treffer]chance ist günstig\\nEuer Schaden mit [Critical|kritischen Treffern] ist günstig\\nDer gegnerische Schaden mit [Critical|kritischen Treffern] ist günstig",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regeneriert 1 Leben pro Sekunde pro 16 Leben, die in den letzten 4 Sekunden verbraucht wurden\\n20% mehr Lebenskosten von Fertigkeiten",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erleidet 50% des Kälte- und Blitzschadens als Feuerschaden\\n50% weniger Kältewiderstand\\n50% weniger Blitzwiderstand",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projektile] führen eine der folgenden Aktionen zufällig aus:\\n• [Fork|Gabelt] sich ein zusätzliches Mal auf\\n• [Chain|Verkettet] sich ein zusätzliches Mal\\n• [Chain|Verkettet] sich ein zusätzliches Mal vom Gelände aus\\n• Kann nicht mit Zielen kollidieren",
+    "h": []
+   }
+  ]
  }
 ]

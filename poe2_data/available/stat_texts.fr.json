@@ -124319,5 +124319,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La [Dexterity|Dextérité] n'octroie plus de bonus inhérent\\n1% d'Augmentation d'[Armour|Armure] tous les 2 de Dextérité",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "L'[Intelligence|Intelligence] n'octroie plus de bonus inhérent\\n1% d'Augmentation du Score d'[Evasion|Évasion] tous les 2 d'Intelligence",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La [Strength|Force] n'octroie plus de bonus inhérent\\n1% d'Augmentation de [EnergyShield|Bouclier d'énergie] tous les 2 de Force",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Tous les Dégâts ignorent votre Bouclier d'énergie\\n50% des Dégâts élémentaires sont subis sous forme de Dégâts de chaos\\n+5% à la Résistance au chaos maximale",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La Récupération de Vie des [Flask|Flacons] s'applique également au Bouclier d'énergie\\n30% de Perte de la Récupération de Vie des [Flask|Flacons]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% Davantage de Dégâts des [Spell|Sorts] par [Charges|Charge de pouvoir]\\nVous gagnez des [Charges|Charge de pouvoir] à la place des[Charges|Charge de frénésie]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Lorsque vous subissez des Dégâts au [Hit|Toucher], 20% de la perte de Vie est prévenue, puis 150% de la perte de Vie ainsi prévenue est perdue sur une période de 4 secondes",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous êtes Aveugle\\nL'Aveuglement n'affecte pas votre Rayonnement lumineux\\n25% Davantage de Chances de [Critical|Touche critique] en [Melee|Mêlée] tant que vous êtes Aveuglé",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous avez 1% Davantage de Dégâts tous les 2 de total de [Power|Puissance] de vos Créatures mort-vivantes\\nVos Créatures mort-vivantes ont 25% de Perte de Vie maximale",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "La Récupération de Mana découlant de la Régénération fait [Overflow|Déborder] le Mana maximal\\n50% de Perte de Taux de Régénération de Mana",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Les Alliés et Ennemis à proximité partagent leurs Charges avec vous\\nLes Ennemis ont 10% de chances de gagner une Charge d'endurance, frénésie ou pouvoir en vous Touchant",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80% du Mana maximal est Converti en deux fois ce montant d'[Armour|Armure]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous ne pouvez plus utiliser de Casque\\nVos Chances de [Critical|Touche critique] sont Favorables\\nLes Dégâts de vos [Critical|Touches critiques] sont Favorables\\nLes Dégâts des [Critical|Touches critiques] que les Ennemis vous infligent sont Favorables",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous Régénérez 1 de Vie par seconde tous les 16 de Vie dépensée au cours des 4 dernières secondes\\nLes Aptitudes ont 20% Davantage de Coût en Vie",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "50% des Dégâts de froid et de foudre sont subis sous forme de Dégâts de feu\\n50% de Perte de Résistance au froid\\n50% de Perte de Résistance à la foudre",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vos [Projectile|Projectiles] ont l'un des effets suivants au hasard :\\n• Se [Fork|Scindent] une fois supplémentaire\\n• [Chain|Ricochent] une fois supplémentaire\\n• [Chain|Ricochent] sur l'environnement une fois supplémentaire\\n• Ne peuvent entrer en collision avec les cibles",
+    "h": []
+   }
+  ]
  }
 ]

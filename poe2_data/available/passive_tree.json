@@ -152073,5 +152073,533 @@
    "group": 1622,
    "orbit": 0
   }
- }
+ },
+ "timeless": {
+  "versions": [
+   {
+    "replaces": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    },
+    "adds": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    }
+   },
+   {
+    "replaces": {
+     "small": true,
+     "attribute": true,
+     "notable": true
+    },
+    "adds": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    }
+   },
+   {
+    "replaces": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    },
+    "adds": {
+     "small": true,
+     "attribute": true,
+     "notable": true
+    }
+   },
+   {
+    "replaces": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    },
+    "adds": {
+     "small": true,
+     "attribute": true,
+     "notable": true
+    }
+   },
+   {
+    "replaces": {
+     "small": false,
+     "attribute": true,
+     "notable": true
+    },
+    "adds": {
+     "small": true,
+     "attribute": false,
+     "notable": true
+    }
+   },
+   {
+    "replaces": {
+     "small": true,
+     "attribute": true,
+     "notable": true
+    },
+    "adds": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    }
+   },
+   {
+    "replaces": {
+     "small": false,
+     "attribute": false,
+     "notable": true
+    },
+    "adds": {
+     "small": false,
+     "attribute": false,
+     "notable": false
+    }
+   },
+   {
+    "replaces": {
+     "small": true,
+     "attribute": false,
+     "notable": true
+    },
+    "adds": {
+     "small": false,
+     "attribute": true,
+     "notable": false
+    }
+   }
+  ],
+  "keystones": [
+   {
+    "version": 1,
+    "index": 1,
+    "name": "Divine Flesh",
+    "name_es": "Carne divina",
+    "name_pt": "Carne Divina",
+    "name_fr": "Chair divine",
+    "name_de": "Göttliches Fleisch",
+    "name_ru": "Божественная плоть",
+    "name_ja": "ディバインフレッシュ",
+    "name_ko": "신성한 육체",
+    "name_th": "Divine Flesh",
+    "name_zh": "神聖血肉",
+    "stats": {
+     "keystone_divine_flesh": 1
+    }
+   },
+   {
+    "version": 1,
+    "index": 2,
+    "name": "Eternal Youth",
+    "name_es": "Juventud eterna",
+    "name_pt": "Juventude Eterna",
+    "name_fr": "Jeunesse éternelle",
+    "name_de": "Ewige Jugend",
+    "name_ru": "Вечная молодость",
+    "name_ja": "エターナルユース",
+    "name_ko": "영원한 젊음",
+    "name_th": "Eternal Youth",
+    "name_zh": "青春永駐",
+    "stats": {
+     "keystone_eternal_youth": 1
+    }
+   },
+   {
+    "version": 1,
+    "index": 3,
+    "name": "Corrupted Soul",
+    "name_es": "Alma corrupta",
+    "name_pt": "Alma Corrompida",
+    "name_fr": "Âme corrompue",
+    "name_de": "Verderbte Seele",
+    "name_ru": "Осквернённая душа",
+    "name_ja": "コラプテッドソウル",
+    "name_ko": "타락한 영혼",
+    "name_th": "Corrupted Soul",
+    "name_zh": "腐化之魂",
+    "stats": {
+     "dummy_stat_display_nothing": 1
+    }
+   },
+   {
+    "version": 2,
+    "index": 1,
+    "name": "Strength of Blood",
+    "name_es": "Fuerza de sangre",
+    "name_pt": "Força do Sangue",
+    "name_fr": "Force du sang",
+    "name_de": "Stärke des Blutes",
+    "name_ru": "Сила крови",
+    "name_ja": "ストレングスオブブラッド",
+    "name_ko": "피의 힘",
+    "name_th": "Strength of Blood",
+    "name_zh": "血之力量",
+    "stats": {
+     "keystone_strength_of_blood": 1
+    }
+   },
+   {
+    "version": 2,
+    "index": 2,
+    "name": "Tempered by War",
+    "name_es": "Templado por la guerra",
+    "name_pt": "Refinado na Guerra",
+    "name_fr": "Forgé par la guerre",
+    "name_de": "Härte des Krieges",
+    "name_ru": "Закалённые войной",
+    "name_ja": "テンパードバイウォー",
+    "name_ko": "전쟁의 담금질",
+    "name_th": "Tempered by War",
+    "name_zh": "戰爭淬煉",
+    "stats": {
+     "keystone_tempered_by_war": 1
+    }
+   },
+   {
+    "version": 2,
+    "index": 3,
+    "name": "Glancing Blows",
+    "name_es": "Golpes laterales",
+    "name_pt": "Golpe de Raspão",
+    "name_fr": "Coups déviés",
+    "name_de": "Streifhieb",
+    "name_ru": "Скользящие удары",
+    "name_ja": "グランシングブロウズ",
+    "name_ko": "비껴내기",
+    "name_th": "Glancing Blows",
+    "name_zh": "側身之擊",
+    "stats": {
+     "keystone_glancing_blows": 1
+    }
+   },
+   {
+    "version": 3,
+    "index": 1,
+    "name": "Wind Dancer",
+    "name_es": "Bailarín del viento",
+    "name_pt": "Dançarino dos Ventos",
+    "name_fr": "Danseur du vent",
+    "name_de": "Windtänzer",
+    "name_ru": "Танцующий с ветром",
+    "name_ja": "ウィンドダンサー",
+    "name_ko": "바람의 무희",
+    "name_th": "Wind Dancer",
+    "name_zh": "風魔舞者",
+    "stats": {
+     "dummy_stat_display_nothing": 1
+    }
+   },
+   {
+    "version": 3,
+    "index": 2,
+    "name": "Dance with Death",
+    "name_es": "Baile con la muerte",
+    "name_pt": "Dança com a Morte",
+    "name_fr": "Danse avec la Mort",
+    "name_de": "Tanz mit dem Tod",
+    "name_ru": "Танец со смертью",
+    "name_ja": "ダンスウィズデス",
+    "name_ko": "죽음의 춤",
+    "name_th": "Dance with Death",
+    "name_zh": "與死共舞",
+    "stats": {
+     "keystone_sharp_and_brittle": 1
+    }
+   },
+   {
+    "version": 3,
+    "index": 3,
+    "name": "Second Sight",
+    "name_es": "Segunda visión",
+    "name_pt": "Visão Além da Visão",
+    "name_fr": "Seconde vue",
+    "name_de": "Instinkt",
+    "name_ru": "Ясновидение",
+    "name_ja": "セカンドサイト",
+    "name_ko": "꿰뚫어 보는 눈",
+    "name_th": "Second Sight",
+    "name_zh": "先見之明",
+    "stats": {
+     "keystone_blind_monk": 1
+    }
+   },
+   {
+    "version": 4,
+    "index": 1,
+    "name": "The Agnostic",
+    "name_es": "El Agnóstico",
+    "name_pt": "O Agnóstico",
+    "name_fr": "L'Agnostique",
+    "name_de": "Agnostiker",
+    "name_ru": "Агностик",
+    "name_ja": "アグノスティック",
+    "name_ko": "불가지론자",
+    "name_th": "The Agnostic",
+    "name_zh": "不可知論",
+    "stats": {
+     "unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es": 1
+    }
+   },
+   {
+    "version": 4,
+    "index": 2,
+    "name": "Inner Conviction",
+    "name_es": "Convicción interna",
+    "name_pt": "Convicção Interior",
+    "name_fr": "Conviction intérieure",
+    "name_de": "Innere Überzeugung",
+    "name_ru": "Внутренняя убеждённость",
+    "name_ja": "インナーコンヴィクション",
+    "name_ko": "내면의 신념",
+    "name_th": "Inner Conviction",
+    "name_zh": "內觀信念",
+    "stats": {
+     "keystone_quiet_might": 1
+    }
+   },
+   {
+    "version": 4,
+    "index": 3,
+    "name": "Power of Purpose",
+    "name_es": "El poder del propósito",
+    "name_pt": "Poder do Propósito",
+    "name_fr": "Fermeté inébranlable",
+    "name_de": "Macht der Bestimmung",
+    "name_ru": "Могучее намерение",
+    "name_ja": "パワーオブパーパス",
+    "name_ko": "의지력의 힘",
+    "name_th": "Power of Purpose",
+    "name_zh": "力量之意",
+    "stats": {
+     "keystone_mental_conditioning": 1
+    }
+   },
+   {
+    "version": 5,
+    "index": 1,
+    "name": "Supreme Decadence",
+    "name_es": "Decadencia suprema",
+    "name_pt": "Decadência Suprema",
+    "name_fr": "Décadence suprême",
+    "name_de": "Überlegene Dekadenz",
+    "name_ru": "Величайшая безнравственность",
+    "name_ja": "スプリームデカダンス",
+    "name_ko": "타락의 정점",
+    "name_th": "Supreme Decadence",
+    "name_zh": "至高．頹廢",
+    "stats": {
+     "keystone_emperors_heart": 1
+    }
+   },
+   {
+    "version": 5,
+    "index": 2,
+    "name": "Supreme Grandstanding",
+    "name_es": "Grandiosidad suprema",
+    "name_pt": "Soberba Suprema",
+    "name_fr": "Tribune suprême",
+    "name_de": "Überlegene Selbstdarstellung",
+    "name_ru": "Величайшее тщеславие",
+    "name_ja": "スプリームグランドスタンディング",
+    "name_ko": "과시의 정점",
+    "name_th": "Supreme Grandstanding",
+    "name_zh": "至高．譁眾",
+    "stats": {
+     "keystone_magnetic_charge": 1
+    }
+   },
+   {
+    "version": 5,
+    "index": 3,
+    "name": "Supreme Ego",
+    "name_es": "Ego supremo",
+    "name_pt": "Ego Supremo",
+    "name_fr": "Égo suprême",
+    "name_de": "Überlegener Stolz",
+    "name_ru": "Величайшее эго",
+    "name_ja": "スプリームエゴ",
+    "name_ko": "자만의 정점",
+    "name_th": "Supreme Ego",
+    "name_zh": "至高．自我",
+    "stats": {
+     "dummy_stat_display_nothing": 1
+    }
+   },
+   {
+    "version": 6,
+    "index": 1,
+    "name": "Black Scythe Training",
+    "name_es": "Entrenamiento con la guadaña negra",
+    "name_pt": "Treinamento de Foice Negra",
+    "name_fr": "Entraînement de la Faux noire",
+    "name_de": "Training der Schwarzen Sense",
+    "name_ru": "Подготовка Чёрной косы",
+    "name_ja": "ブラックサイストレー二ング",
+    "name_ko": "검은 낫의 교육",
+    "name_th": "Black Scythe Training",
+    "name_zh": "黑暗血鐮訓練",
+    "stats": {
+     "keystone_alternate_strength_bonus": 1
+    }
+   },
+   {
+    "version": 6,
+    "index": 2,
+    "name": "Circular Teachings",
+    "name_es": "Enseñanzas circulares",
+    "name_pt": "Ensinamentos Circulares",
+    "name_fr": "Enseignements circulaires",
+    "name_de": "Kreisförmige Lehren",
+    "name_ru": "Учения круга",
+    "name_ja": "サーキュラーティーチング",
+    "name_ko": "원의 가르침",
+    "name_th": "Circular Teachings",
+    "name_zh": "循環教義",
+    "stats": {
+     "keystone_alternate_dexterity_bonus": 1
+    }
+   },
+   {
+    "version": 6,
+    "index": 3,
+    "name": "Knightly Tenets",
+    "name_es": "Principios caballerescos",
+    "name_pt": "Princípios da Cavalaria",
+    "name_fr": "Principes chevaleresques",
+    "name_de": "Ritterliche Grundsätze",
+    "name_ru": "Рыцарский догмат",
+    "name_ja": "ナイトリーテネット",
+    "name_ko": "기사의 신조",
+    "name_th": "Knightly Tenets",
+    "name_zh": "騎士信條",
+    "stats": {
+     "keystone_alternate_intelligence_bonus": 1
+    }
+   },
+   {
+    "version": 7,
+    "index": 1,
+    "name": "Sacrifice of Flesh",
+    "name_es": "Sacrificio de la carne",
+    "name_pt": "Sacrifício da Carne",
+    "name_fr": "Sacrifice de la Chair",
+    "name_de": "Opfer des Fleisches",
+    "name_ru": "Жертва плоти",
+    "name_ja": "肉の生贄",
+    "name_ko": "육체의 희생",
+    "name_th": "Sacrifice of Flesh",
+    "name_zh": "血肉獻祭",
+    "stats": {
+     "keystone_amanamus_defiance": 1
+    }
+   },
+   {
+    "version": 7,
+    "index": 2,
+    "name": "Sacrifice of Loyalty",
+    "name_es": "Sacrificio de lealtad",
+    "name_pt": "Sacrifício da Lealdade",
+    "name_fr": "Sacrifice de la Loyauté",
+    "name_de": "Opfer der Loyalität",
+    "name_ru": "Жертва верности",
+    "name_ja": "忠誠の生贄",
+    "name_ko": "충성의 희생",
+    "name_th": "Sacrifice of Loyalty",
+    "name_zh": "忠誠獻祭",
+    "stats": {
+     "keystone_kulemaks_sovereignty": 1
+    }
+   },
+   {
+    "version": 7,
+    "index": 3,
+    "name": "Sacrifice of Mind",
+    "name_es": "Sacrificio de la mente",
+    "name_pt": "Sacrifício da Mente",
+    "name_fr": "Sacrifice de l'Esprit",
+    "name_de": "Opfer des Geistes",
+    "name_ru": "Жертва разума",
+    "name_ja": "精神の生贄",
+    "name_ko": "정신의 희생",
+    "name_th": "Sacrifice of Mind",
+    "name_zh": "心靈獻祭",
+    "stats": {
+     "keystone_kurgals_ambition": 1
+    }
+   },
+   {
+    "version": 7,
+    "index": 4,
+    "name": "Sacrifice of Blood",
+    "name_es": "Sacrificio de sangre",
+    "name_pt": "Sacrifício do Sangue",
+    "name_fr": "Sacrifice du Sang",
+    "name_de": "Opfer des Blutes",
+    "name_ru": "Жертва крови",
+    "name_ja": "血の生贄",
+    "name_ko": "피의 희생",
+    "name_th": "Sacrifice of Blood",
+    "name_zh": "鮮血獻祭",
+    "stats": {
+     "keystone_tecrods_brutality": 1
+    }
+   },
+   {
+    "version": 7,
+    "index": 5,
+    "name": "Sacrifice of Sight",
+    "name_es": "Sacrificio de la vista",
+    "name_pt": "Sacrifício da Visão",
+    "name_fr": "Sacrifice de la Vision",
+    "name_de": "Opfer des Augenlichts",
+    "name_ru": "Жертва зрения",
+    "name_ja": "視界の生贄",
+    "name_ko": "시야의 희생",
+    "name_th": "Sacrifice of Sight",
+    "name_zh": "遠目獻祭",
+    "stats": {
+     "keystone_ulamans_vision": 1
+    }
+   }
+  ]
+ },
+ "keystone_list": [
+  "45202",
+  "32349",
+  "14540",
+  "18684",
+  "51749",
+  "44017",
+  "55048",
+  "56349",
+  "57513",
+  "45918",
+  "47759",
+  "39935",
+  "33979",
+  "25520",
+  "33404",
+  "37484",
+  "14226",
+  "34497",
+  "25100",
+  "33369",
+  "28492",
+  "19288",
+  "46742",
+  "56605",
+  "41861",
+  "9085",
+  "64601",
+  "42680",
+  "11230",
+  "49547",
+  "61942",
+  "49363",
+  "52"
+ ]
 }

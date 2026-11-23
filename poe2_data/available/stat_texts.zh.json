@@ -124432,5 +124432,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Dexterity|敏捷]的固有加成\\n每2點敏捷增加1%[Armour|護甲值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Intelligence|智慧]的固有加成\\n每2點智慧增加1%[Evasion|閃避值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Strength|力量]的固有加成\\n每2點力量增加1%[EnergyShield|能量護盾]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受的所有傷害穿透能量護盾\\n承受的50%元素傷害視為混沌傷害\\n+5%最大混沌抗性",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Flask|藥劑]的生命恢復同時套用至能量護盾\\n30%更少[Flask|藥劑]生命恢復量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每顆[Charges|暴擊球]3%更多[Spell|法術]傷害\\n獲得[Charges|暴擊球]而不是[Charges|狂怒球]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當承受[Hit|擊中傷害]時，損失生命值的20%將會被避免，並在4秒內損失減免數值的150%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你被致盲\\n致盲不會影響你的照亮範圍\\n被致盲時有25%更多[Melee|近戰][Critical|暴擊]率",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你的不死召喚物每有2[Power|強度]總值，你造成1%更多傷害\\n不死召喚物具有25%更少最大生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "來自回復的魔力恢復會[Overflow|溢出]最大魔力\\n50%更少魔力回復率",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "附近友方和敵人與你共享能量球\\n擊中你的敵人有10%機率獲得1顆耐力、\\n狂怒或暴擊球",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80%的最大魔力轉化為2倍的[Armour|護甲]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "不能使用頭盔\\n你的[Critical|暴擊]率帶有幸運\\n你[Critical|暴擊]的傷害帶有幸運\\n敵人的[Critical|暴擊]傷害對你帶有幸運",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "過去4秒內每消耗16生命即每秒回復1生命\\n20%更多技能生命消耗",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受的50%冰冷和閃電傷害視為火焰傷害\\n50%更少冰冷抗性\\n50%更少閃電抗性",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]將會隨機進行下列其中一個行為：\\n•額外[Fork|分裂]一次\\n•額外[Chain|連鎖]一次\\n•從地形額外[Chain|連鎖]一次\\n•無法與地形碰撞",
+    "h": []
+   }
+  ]
  }
 ]

@@ -490,6 +490,8 @@
  "Find the best path": "ค้นหาเส้นทางที่ดีที่สุด",
  "{0} of {1} points placed…": "วางแล้ว {0} จาก {1} แต้ม…",
  "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "ไม่สามารถถอดอัญมณีนี้ได้: พาสซีฟที่จัดสรรจากจุดเริ่มต้นของคลาสที่อัญมณีนี้เปิดจะไม่เชื่อมต่อกัน",
+ "Conquered by {0}": "ถูกพิชิตโดย {0}",
+ "{0} changes this passive by its seed, which the game data does not show: it counts as it is.": "{0} เปลี่ยนพาสซีฟนี้ตามค่าซีดของมัน ซึ่งข้อมูลของเกมไม่ได้แสดงไว้ จึงนับตามเดิม",
  "{0} (in {1})": "{0} (ใน {1})",
  "This can take several minutes.": "อาจใช้เวลาหลายนาที",
  "No passive within reach raises this objective.": "ไม่มีพาสซีฟในระยะที่เพิ่มเป้าหมายนี้",

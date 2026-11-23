@@ -490,6 +490,8 @@
  "Find the best path": "尋找最佳路徑",
  "{0} of {1} points placed…": "已配置 {0} / {1} 點…",
  "This jewel cannot be taken out: passives allocated from the class start it opens would be left unconnected.": "无法取下此珠宝：从它开启的职业起点分配的天赋将不再相连。",
+ "Conquered by {0}": "臣服於{0}",
+ "{0} changes this passive by its seed, which the game data does not show: it counts as it is.": "{0}會依其種子改變此天賦，但遊戲資料未顯示如何改變：以原本的效果計算。",
  "{0} (in {1})": "{0}（在{1}中）",
  "This can take several minutes.": "这可能需要几分钟。",
  "No passive within reach raises this objective.": "可達範圍內沒有能提升此目標的天賦。",

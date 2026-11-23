@@ -124402,5 +124402,229 @@
   "skill": [
    "Flame Breath"
   ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Não recebe bônus inerente de [Dexterity|Destreza]\\n1% de [Armour|armadura] aumentada por 2 de Destreza",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Não recebe bônus inerente de [Intelligence|Inteligência]\\n1% de [Evasion|Evasão] aumentada por 2 de Inteligência",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Não recebe bônus inerente de [Strength|Força]\\n1% de [EnergyShield|escudo de energia] aumentado por 2 de Força",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Todo o dano sofrido ignora o escudo de energia\\n50% do dano elemental sofrido como dano de caos\\n+5% de resistência a dano de caos máxima",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vida recuperada de [Flask|frascos] também se aplica ao escudo de energia\\n-30% de vida recuperada de [Flask|frascos]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ㅤ+3% de dano [Spell|mágico] por [Charges|carga de poder]\\nGanha [Charges|cargas de poder] em vez de [Charges|cargas de frenesi]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ao sofrer dano de [Hit|ataques], 20% da vida perdida é evitada. Depois, 150% dessa perda evitada é drenada durante 4 segundos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Você está com Cegueira\\nCegueira não afeta seu campo de visão\\n+25% de chance de [Critical|golpe crítico] [Melee|corpo a corpo] nessa condição",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Você causa +1% de dano por 2 [Power|Poderes] totais dos seus lacaios mortos-vivos\\nLacaios mortos-vivos têm -25% de vida máxima",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Mana recuperado com regeneração [Overflow|ultrapassa o limite] de mana máximo\\n-50% de regeneração de mana",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Aliados e inimigos próximos compartilham cargas com você\\nInimigos têm 10% de chance de ganhar 1 carga de\\nfrenesi, poder ou tolerância ao atingir você",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Converte 80% do mana máximo em o dobro desse valor em [Armour|armadura]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Não pode usar elmos\\nSua chance de [Critical|golpe crítico] é Sortuda\\nSeu dano com [Critical|golpes críticos] é Sortudo\\nO dano com [Critical|golpes críticos] dos inimigos contra você é Sortudo",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regenera 1 de vida por segundo por 16 de vida gastos nos últimos 4 segundos\\nHabilidades custam 20% mais vida",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "50% do dano de frio e elétrico sofrido como dano de fogo\\n-50% de resistência a dano de frio\\n-50% de resistência a dano elétrico",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projéteis] fazem uma dessas coisas aleatoriamente:\\n• [Fork|Ramificam-se] mais uma vez\\n• [Chain|Propagam-se] mais uma vez\\n• [Chain|Propagam-se] do terreno mais uma vez\\n• Não podem colidir com os alvos",
+    "h": []
+   }
+  ]
  }
 ]
