@@ -740,8 +740,8 @@ export function initScene(el, api) {
     for (const r of ['life', 'mana']) {
       const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (ofL(r, x).reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k * (r === 'mana' && SH.manaLeechCrit && meIs.CritRecently() ? 1 + SH.manaLeechCrit / 100 : 1);   // more life leeched while Shapeshifted
       if (!(n > 0) || r === 'mana' && sheet().noManaLeech) continue;   // Lochtonial Caress: no mana leech
-      const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);
-      if (r === 'life' && SH.compLeech) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + n); }   // the tree's: your Companions leech the same. note: at once here   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
+      const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
+      if (r === 'life' && SH.compLeech) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + n); }   // the tree's: your Companions leech the same. note: at once here
     }
   }
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
