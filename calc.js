@@ -1031,16 +1031,26 @@ export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0}
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
 // Damage types are added per type by the caller, and what is the minions' is not the character's.
+const REKEY = new Map();   // a stat's id as inc() reads it, worked out once: it is asked for every stat of the build at every sum
+function rekey(k) {
+  let r = REKEY.get(k);
+  if (r === undefined) {
+    r = k;
+    // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word
+    const w = r.match(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/); if (w) r = `${w[2]}_${w[1]}`;
+    // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
+    const vs = r.match(/^(.*damage)_(vs|against)_(\w+)_\+%$/); if (vs) r = `${vs[1]}_+%_${vs[2]}_${vs[3]}`;
+    REKEY.set(k, r);
+  }
+  return r;
+}
 function inc(sum, suffix, tags) {
   let t = 0;
-  for (let [k, val] of Object.entries(sum)) {
-    // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word
-    const w = k.match(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/); if (w) k = `${w[2]}_${w[1]}`;
-    // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
-    const vs = k.match(/^(.*damage)_(vs|against)_(\w+)_\+%$/); if (vs) k = `${vs[1]}_+%_${vs[2]}_${vs[3]}`;
+  for (const key in sum) {
+    const k = rekey(key);
     if (!k.endsWith(suffix)) continue;
     const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '').replace(/^base_(?=.)/, '').replace(/(one|two)_handed/, '$1hand').replace(/^channelled$/, 'channelling');
-    if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += val;
+    if (pre === '' || pre === 'base' || pre === 'global' || pre.split('_').every(w => tags.includes(w) && !DMG.includes(w) && w !== 'minion' && w !== 'companion')) t += sum[key];
   }
   return t;
 }
