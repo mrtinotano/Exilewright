@@ -76,8 +76,6 @@ def frame(c, t):
     q = [W[j] if not up else mul(inv(W[up]), W[j]) for j, _, _, up in JOINTS]
     return q, tuple(x / LEG for x in sub(P[idx['hips']], P0[idx['hips']])), P
 if not want:
-    print('rest: palm side of the left hand', [round(x, 2) for x in rot(Q0[idx['hand.l']], (0, 0, -1))], 'slot up', [round(x, 2) for x in rot(Q0[idx['handslot.l']], (0, 1, 0))],
-          'arm', [round(x, 2) for x in unit(sub(P0[idx['lowerarm.l']], P0[idx['upperarm.l']]))], 'toes', [round(x, 2) for x in P0[idx['toes.l']]], 'leg', round(LEG, 3), 'hips', [round(x, 3) for x in P0[idx['hips']]])
     for a in G['animations']:
         c, dur = clip(a['name'])
         if dur < .2: continue
@@ -105,6 +103,7 @@ assert out['fps'] == 30 and out['joints'] == names
 FADE = 5   # the frames a clip takes to become the one joined to it
 sm = lambda k: k * k * (3 - 2 * k)
 HALF = math.sqrt(.5)
+ang = lambda A, B: max(2 * math.degrees(math.acos(min(1, abs(sum(x * y for x, y in zip(u, v)))))) for u, v in zip(A, B))   # the most a joint turns between two frames, degrees
 def world(q, j):   # a joint's turn in the world, from the turns the file keeps
     k = names.index(j); up = JOINTS[k][3]; return mul(world(q, up), q[k]) if up else q[k]
 def frames(spec):   # 'Clip' or 'Clip@first-last': every frame of it (each joint's turn, where the hips are) and the two it is cut at
@@ -117,11 +116,11 @@ def frames(spec):   # 'Clip' or 'Clip@first-last': every frame of it (each joint
 for spec in want:   # A+B: A to its cut, then B from its own, where it stands as A does there
     parts = [frames(x) for x in spec.split('+')]; F = parts[0][1][parts[0][2]:parts[0][3] + 1]; name = '+'.join(x[0] for x in parts)
     for (_, A, _, a1), (_, B, b0, b1) in zip(parts, parts[1:]):
-        print('  seam: the joints differ by up to %.0f degrees' % max(2 * math.degrees(math.acos(min(1, abs(sum(x * y for x, y in zip(u, v)))))) for u, v in zip(A[a1][0], B[b0][0])))
+        print('  seam: the joints differ by up to %.0f degrees' % ang(A[a1][0], B[b0][0]))
         F += [([lerp(x, y, sm(i / (FADE + 1)), True) for x, y in zip(A[a1 + i][0], B[b0 + i][0])], lerp(A[a1 + i][1], B[b0 + i][1], sm(i / (FADE + 1)))) for i in range(1, FADE + 1)] + B[b0 + FADE + 1:b1 + 1]
     if 'Bow' in name:
         h = world(F[0][0], 'haL'); assert abs(rot(h, (0, -1, 0))[0]) < .05 and abs(rot(h, (0, 0, 1))[0]) < .05, 'the bow is not in the plane of the shot'
-        print('  ends as it starts within %.0f degrees' % max(2 * math.degrees(math.acos(min(1, abs(sum(x * y for x, y in zip(u, v)))))) for u, v in zip(F[0][0], F[-1][0])))
+        print('  ends as it starts within %.0f degrees' % ang(F[0][0], F[-1][0]))
     out['clips'][name] = {'q': [x for q, _ in F for j in q for x in r3(j)], 'p': [x for _, p in F for x in r3(p)]}
 open(dst, 'w', newline='\n').write(json.dumps(out, separators=(',', ':')) + '\n')
 print(dst, {k: len(v['p']) // 3 for k, v in out['clips'].items()})
