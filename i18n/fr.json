@@ -956,5 +956,13 @@
  "{0} listed left out: they only make the build worse.": "{0} en vente laissés de côté : ils ne font qu'affaiblir le build.",
  "{0} of {1} combinations tried…": "{0} combinaisons sur {1} essayées…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "Vos modifications ne sont pas enregistrées : le stockage de cette fenêtre est plein ou lui est fermé. Exportez le build pour ne pas les perdre.",
- "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright n'a pas pu démarrer. Fermez-le et rouvrez-le ; si cela se reproduit, installez la dernière version."
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright n'a pas pu démarrer. Fermez-le et rouvrez-le ; si cela se reproduit, installez la dernière version.",
+ "Map modifiers": "Modificateurs de la carte",
+ "Paste a waystone here: Ctrl+C on it in the game": "Collez une pierre de téléportation ici : Ctrl+C dessus en jeu",
+ "Waystone": "Pierre de téléportation",
+ "Remove the map": "Retirer la carte",
+ "Not simulated": "Non simulé",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Les modificateurs de la carte s'appliquent à tous les ennemis et à votre personnage dans le simulateur. Ses récompenses et ses zones de sol ne sont pas simulées.",
+ "That is not a waystone.": "Ce n'est pas une pierre de téléportation.",
+ "Charges stolen": "Charges volées"
 }

@@ -280,6 +280,21 @@ function matchLines(lines, cands, family = () => null) {
   }
   return { found, missed };
 }
+// a waystone's text (Ctrl+C on it in the game), read as an item's -> { tier, mods: { id: [the values of its stats] },
+// missed: [the modifier lines that are none a waystone rolls] }, null when it is no waystone. MAP: enemies.js's (its
+// tiers' names in every language, each kind of modifier with its rolls at the tier's tag)
+export function parseWaystone(text, MAP) {
+  const lines = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean), low = lines.map(l => l.toLowerCase());
+  const tier = MAP.tiers.findIndex(x => Object.entries(x).some(([k, v]) => k.startsWith('name') && low.some(l => l.includes(v.toLowerCase())))) + 1;
+  if (!tier) return null;
+  const tag = MAP.tiers[tier - 1].tag, cands = MAP.mods.flatMap(m => shapes(m.id, m.stats.map((s, k) => [s, ...m.rolls[tag][k]])));
+  // under the names: no labels, states or sentences (how it is used), and the detailed text's "{ Prefix Modifier ... }"
+  // lines and the range after each roll ("22(20-24)%") taken out
+  const body = lines.slice(lines.findIndex(l => /^-{4,}$/.test(l)) + 1).map(l => l.replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').replace(TAG, '').trim())
+    .filter(l => l && !/^\{.*\}$/.test(l) && !META.test(l) && !corruptLine(l) && !/^\(.*\)$/.test(l) && !/[.。]$/.test(l));
+  const { found, missed } = matchLines(body, cands);
+  return { tier, mods: Object.fromEntries(found.map(f => [f.key, f.raw])), missed };
+}
 // rows of stats as a game table has them ([[stat id, value], ...] each: the quest rewards, calc.js) -> a reader of
 // lines of text worded like those stats: { stats: what the lines give, missed: the lines that are none of them }.
 // A line with another number than the table's is not that stat. The game words a stat that is the character's as
@@ -338,6 +353,10 @@ const itemLevel = text => +(text.match(/^Item Level: (\d+)/m)?.[1] || text.repla
   .find(b => b.length === 1 && /^[^:：]+[:：]\s*\d+$/.test(b[0]))?.[0].match(/(\d+)$/)[1] || 0) || null;
 // text copied from the game (Ctrl+C on an item) or from Path of Building
 // -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
+console.assert((w => w?.tier === 15 && w.mods.Fire?.[0] === 22 && w.mods.Cd?.[0] === -25 && w.mods.Crit?.join() === '280,28' && w.missed.join() === 'Area contains an additional Shrine')(parseWaystone(
+  `Item Class: Waystones\nRarity: Rare\nGrim Passage\nWaystone (Tier 15)\n--------\nWaystone Tier: 15\nWaystone Drop Chance: +105% (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Infernal" (Tier: 1) }\nMonsters deal 22(15-24)% of Damage as Extra Fire\nPlayers have 25% less Cooldown Recovery Rate\nMonsters have 280% increased Critical Hit Chance\nMonsters have +28% Critical Damage Bonus\nArea contains an additional Shrine\n--------\nCan be used in a Map Device, allowing you to enter a Map. Waystones can only be used once.\n--------\nCorrupted`,
+  { tiers: Array.from({ length: 16 }, (_, i) => ({ name: `Waystone (Tier ${i + 1})`, tag: 'high' })), mods: [{ id: 'Fire', stats: ['map_monsters_%_all_damage_to_gain_as_fire'], rolls: { high: [[15, 19]] } },
+    { id: 'Cd', stats: ['map_player_cooldown_speed_+%_final'], rolls: { high: [[-30, -25]] } }, { id: 'Crit', stats: ['map_monsters_critical_strike_chance_+%', 'map_monsters_critical_strike_multiplier_+'], rolls: { high: [[200, 240], [21, 25]] } }] })), 'parseWaystone');
 export function parseItem(text) {
   const raw = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
   let ri = raw.findIndex(l => /^Rarity:/i.test(l));

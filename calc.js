@@ -574,11 +574,13 @@ export function recovery(c, sum) {
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
   const esD = k => (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', k) / 100);   // the start of the recharge under a condition, against always
   const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
+  const recMore = 1 + v(sum, 'map_player_life_and_es_recovery_speed_+%_final') / 100;   // a map's less Recovery Rate of Life and Energy Shield (the simulator's)
   const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1) * (sum.keystone_kurgals_ambition ? .5 : 1);   // Mind Over Matter, Kurgal's Ambition: 50% less
   return {
+    recMore,
     // Titanrot Cataphract: none; Mask of the Stitched Demon: per maximum energy shield
     lifeRegen: sum.no_life_regeneration ? 0 : lifePctRegen && c.life == null ? null
-      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.es || 0) * v(sum, 'life_regeneration_per_minute_per_maximum_energy_shield') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc,
+      : (v(sum, 'base_life_regeneration_rate_per_minute') + (c.es || 0) * v(sum, 'life_regeneration_per_minute_per_maximum_energy_shield') + (c.life || 0) * lifePctRegen / 100) / 60 * lifeInc * recMore,
     // enemies' elemental resistances: ignored by your critical hits (Beacon of Azis; Choir of the Storm: lightning), none in
     // your Presence (The Coming Calamity), resisted by their lowest (Leopold's Applause; in your Presence: Sacred Flame)
     critIgnoreRes: sum.critical_strikes_ignore_elemental_resistances ? ['fire', 'cold', 'lightning'] : sum.critical_strikes_ignore_lightning_resistance ? ['lightning'] : null,
@@ -630,7 +632,7 @@ export function recovery(c, sum) {
     thornsCrit: !!sum.deal_thorns_damage_on_melee_crit, igniteHurt: v(sum, 'fire_damage_taken_when_enemy_ignited'),   // Dreadfist; Fireflower
     esRate, esDelay: Math.max(0, (sum.energy_shield_recharge_delay_override_ms || CHAR.energy_shield_delay_ms) - v(sum, 'energy_shield_recharge_starts_X_ms_sooner')) / 1000 / (1 + v(sum, 'energy_shield_delay_-%') / 100),   // Disciple of Varashta: sooner
     // energy shield recharge, none with Zealot's Oath, Scarred Faith or Eternal Youth (life recharges instead, at the same rate of its maximum)
-    esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * pct('energy_shield_recharge_rate_+%', ...(sum.additive_modifiers_to_mana_regeneration_also_apply_to_energy_shield_recharge_rate ? ['mana_regeneration_rate_+%'] : [])),
+    esRecharge: sum.keystone_zealots_oath || sum.keystone_alternate_es_recovery || sum.keystone_eternal_youth ? 0 : c.es * esRate * recMore * pct('energy_shield_recharge_rate_+%', ...(sum.additive_modifiers_to_mana_regeneration_also_apply_to_energy_shield_recharge_rate ? ['mana_regeneration_rate_+%'] : [])),
     // energy shield recharge starting sooner when not on full life: a factor on the delay, with its other increases
     esDelayHurt: esD('energy_shield_delay_-%_when_not_on_full_life'),
     esDelayStun: esD('energy_shield_delay_-%_if_stunned_recently'), esDelayArchon: esD('energy_shield_delay_-%_while_affected_by_archon'),
@@ -646,7 +648,7 @@ export function recovery(c, sum) {
     presWither: v(sum, 'inflict_withered_for_x_seconds_on_unwithered_enemies_when_they_enter_your_presence'), parryNoCrit: !!sum.parry_cannot_be_critically_hit_during_parry,
     parryNext: { ranged: v(sum, 'parry_successfully_parrying_melee_attack_gives_damage_+%_to_your_next_ranged_attack'), melee: v(sum, 'parry_successfully_parrying_projectile_gives_damage_+%_to_your_next_melee_attack') },
     totemCast: v(sum, 'totems_spells_cast_speed_+%_per_active_totem'),
-    lifeRecharge: sum.keystone_eternal_youth || sum.base_life_recharges_like_energy_shield ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
+    lifeRecharge: sum.keystone_eternal_youth || sum.base_life_recharges_like_energy_shield ? (c.life || 0) * esRate * recMore * pct('energy_shield_recharge_rate_+%') : 0,
     // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
     zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
     manaRegen: sum.no_mana_regeneration ? 0 : c.mana == null || manaLife && c.life == null ? null
@@ -1879,3 +1881,5 @@ export function snapshot(b, sum) {
 // "You cannot evade": the evasion stays, its chance does not (after another change to the evasion too)
 if (MON.length) { const b = { asc: 'Warrior', level: 80, nodes: [], gems: [] }, sum = { base_evasion_rating: 5000, 'vivisection_armour_evasion_energy_shield_+%_final': -10 }, a = character(b, sum), z = character(b, { ...sum, base_cannot_evade: 1 });
   console.assert(a.evadePct > 0 && a.evadeMax == null && z.evasion === a.evasion && z.evadePct === 0 && z.evadeMax === 0, 'cannot evade'); }
+{ const c = { life: 1000, es: 400 }, sum = { 'life_regeneration_rate_per_minute_%': 60 }, a = recovery(c, sum), b = recovery(c, { ...sum, 'map_player_life_and_es_recovery_speed_+%_final': -40 });
+  console.assert(a.lifeRegen === 10 && Math.abs(b.lifeRegen - 6) < 1e-9 && Math.abs(b.esRecharge - a.esRecharge * .6) < 1e-9 && b.recMore === .6, "a map's less recovery rate"); }

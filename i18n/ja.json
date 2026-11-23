@@ -956,5 +956,13 @@
  "{0} listed left out: they only make the build worse.": "出品中の{0}件は除外しました：ビルドが弱くなるだけです。",
  "{0} of {1} combinations tried…": "{0}/{1}通りの組み合わせを試行済み…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "変更が保存されていません。このウィンドウのストレージが満杯か、利用できません。失わないようにビルドをエクスポートしてください。",
- "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewrightを起動できませんでした。閉じてからもう一度開いてください。再発する場合は最新バージョンをインストールしてください。"
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewrightを起動できませんでした。閉じてからもう一度開いてください。再発する場合は最新バージョンをインストールしてください。",
+ "Map modifiers": "マップのモッド",
+ "Paste a waystone here: Ctrl+C on it in the game": "ここにウェイストーンを貼り付け: ゲーム内で Ctrl+C",
+ "Waystone": "ウェイストーン",
+ "Remove the map": "マップを外す",
+ "Not simulated": "シミュレートされません",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "マップのモッドは、シミュレーター内のすべての敵とあなたのキャラクターに適用されます。報酬と地面のパッチはシミュレートされません。",
+ "That is not a waystone.": "これはウェイストーンではありません。",
+ "Charges stolen": "チャージを奪われた"
 }

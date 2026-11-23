@@ -956,5 +956,13 @@
  "{0} listed left out: they only make the build worse.": "{0} в продаже пропущены: они только ухудшают билд.",
  "{0} of {1} combinations tried…": "Проверено {0} из {1} сочетаний…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "Изменения не сохраняются: хранилище этого окна заполнено или закрыто для него. Экспортируйте билд, чтобы не потерять их.",
- "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright не удалось запустить. Закройте его и откройте снова; если это повторится, установите последнюю версию."
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright не удалось запустить. Закройте его и откройте снова; если это повторится, установите последнюю версию.",
+ "Map modifiers": "Свойства карты",
+ "Paste a waystone here: Ctrl+C on it in the game": "Вставьте путевой камень сюда: Ctrl+C на нём в игре",
+ "Waystone": "Путевой камень",
+ "Remove the map": "Убрать карту",
+ "Not simulated": "Не симулируется",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Свойства карты действуют в симуляторе на всех врагов и на вашего персонажа. Её награды и участки земли не симулируются.",
+ "That is not a waystone.": "Это не путевой камень.",
+ "Charges stolen": "Заряды украдены"
 }

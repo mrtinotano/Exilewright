@@ -50,14 +50,37 @@ export const addStats = list => list.reduce((s, x) => { for (const k in x) s[k] 
 // its own stats (an aura on its enemies is not: foeAuras, its radius in metres and the stats it gives you)
 export const modStats = ids => addStats((ids || []).map(id => MOD_BY.get(id)).filter(x => x && !x.aura?.foe).map(x => x.stats));
 const foeAuras = ids => (ids || []).map(id => MOD_BY.get(id)).filter(x => x?.aura?.foe).map(x => ({ r: x.aura.r / 10, stats: x.stats }));
+// ---------- the map: a waystone's modifiers (monsters.json map: every kind that rolls on a waystone, its rolls at each
+// tier's tag, and each tier's name, area level and tag). A map is { tier, mods: { id: [the values of its stats] } }.
+// The area gives its monsters' stats to every monster in it (map_monsters_<stat>: the monster's own <stat>, read where a
+// monster modifier's are), and its players' to the character (mapPlayer). note: its patches of ground are not simulated
+export const MAP = MON.map || { tiers: [], mods: [] };
+const MAP_BY = new Map(MAP.mods.map(x => [x.id, x]));
+export const mapStats = map => addStats(Object.entries(map?.mods || {}).map(([id, vals]) => Object.fromEntries((MAP_BY.get(id)?.stats || []).map((s, k) => [s, +vals?.[k] || 0]))));
+// the names the simulator reads a monster's stat by, where it is not the map's own
+// note: "Elemental Ailment Application" is read by its id (elemental_ailment_chance) as the chance to ignite and to shock;
+// the tables do not say whether freeze buildup follows it
+const MAP_AS = { ...Object.fromEntries(TYPES.slice(1).map(el => [`%_all_damage_to_gain_as_${el}`, [`non_skill_base_all_damage_%_to_gain_as_${el}`]])),
+  'attack_cast_and_movement_speed_+%': ['attack_and_cast_speed_+%', 'base_movement_velocity_+%'], additional_elemental_resistance: ['base_resist_all_elements_%'],
+  'chance_to_poison_on_hit_%': ['base_chance_to_poison_on_hit_%'], 'chance_to_inflict_bleeding_%': ['local_chance_to_bleed_on_hit_%'], 'elemental_ailment_chance_+%': ['ignite_chance_+%', 'shock_chance_+%'] };
+let AREA = {};   // the stats every monster has from the map that is on
+export function setMap(map) {
+  AREA = {};
+  for (const [k, v] of Object.entries(mapStats(map))) { const m = k.match(/^map_monsters?_(.+)$/); if (m) for (const id of MAP_AS[m[1]] || [m[1]]) AREA[id] = (AREA[id] || 0) + v; }
+}
+// the players' part, as the character's own stats (calc.js): its maximum resistances and flask charges gained; its less
+// recovery rate of life and energy shield and less cooldown recovery keep the map's names
+export const mapPlayer = map => { const s = mapStats(map); return { 'additional_maximum_all_resistances_%': s['map_additional_player_maximum_resistances_%'] || 0, 'flask_charges_gained_+%': s['map_player_charges_gained_+%'] || 0,
+  'map_player_life_and_es_recovery_speed_+%_final': s['map_player_life_and_es_recovery_speed_+%_final'] || 0, 'map_player_cooldown_speed_+%_final': s['map_player_cooldown_speed_+%_final'] || 0 }; };
 // A player's minion (ally) is that monster with the allies' damage per level (DefaultMonsterStats MinionDamage)
 export function enemyStats(m, level, rarity, ally = false, mods = []) {
   const rar = rarityOf(m, rarity), R = MON.rarity?.[rar] || {}, more = k => 1 + (R[k] || 0) / 100;
-  const has = ['magic', 'rare'].includes(rar), X = has ? modStats(mods) : {}, x = k => X[k] || 0;   // only magic and rare monsters have modifiers
+  // only magic and rare monsters have modifiers of their own (rare, below); the map's are on every monster that is not yours
+  const has = ['magic', 'rare'].includes(rar), own = has ? modStats(mods) : {}, X = ally ? own : addStats([own, AREA]), x = k => X[k] || 0;
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
   let dmg = Math.floor(row(ally ? 'ally_damage' : 'damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
-  const cap = K.monster_max_resistance ?? 75, life = Math.round((pool - part) * more('life'));
+  const cap = K.monster_max_resistance ?? 75, life = Math.round((pool - part) * more('life') * (1 + x('life_+%') / 100));   // a map's more Monster Life
   return {
     level, life, es: Math.round(part * more('es') + life * x('base_maximum_life_%_to_gain_as_total_energy_shield') / 100),
     armour: Math.round(row('armour', level) * (m.armour || 0)), evasion: Math.round(row('evasion', level) * (m.evasion || 0)),
@@ -68,12 +91,14 @@ export function enemyStats(m, level, rarity, ally = false, mods = []) {
     attackTime: m.attack_time, crit: m.crit * (1 + x('critical_strike_chance_+%') / 100), more: more('damage'),
     // what its hits have to reach to inflict ailments and to fill its stun and freeze bars (DefaultMonsterStats), and how much
     // less its rarity lets slows, curses and exposure work on it
-    ail: Math.floor(row('ailment', level)), poise: Math.floor(row('poise', level) * more('poise') * (1 + x('stun_threshold_+%') / 100)),
+    // (poise: its stun bar; ailPoise: its freeze, electrocute and pin bars, which follow its ailment threshold)
+    ail: Math.floor(row('ailment', level) * (1 + x('ailment_threshold_+%') / 100)), poise: Math.floor(row('poise', level) * more('poise') * (1 + x('stun_threshold_+%') / 100)),
+    ailPoise: Math.floor(row('poise', level) * more('poise') * (1 + x('ailment_threshold_+%') / 100)),
     // how much less you leech from hitting it (DefaultMonsterStats LeechResistance, permyriad; its own column for rares and uniques)
     leechRes: 1 - (1 - row(['rare', 'unique'].includes(rar) ? 'leech_rare' : 'leech', level) / 1e4) * (1 - x('life_leeched_from_-permyriad') / 1e4),
-    slowEffect: more('slow') * (1 + x('monster_slow_potency_+%_final') / 100), curseEffect: x('hexproof') ? 0 : more('curse'), expoEffect: more('exposure'), rarity: rar,
+    slowEffect: more('slow') * (1 + x('monster_slow_potency_+%_final') / 100), curseEffect: x('hexproof') ? 0 : more('curse') * (1 + x('curse_effect_on_self_+%_final') / 100), expoEffect: more('exposure'), rarity: rar,
     // its modifiers': movement and action speed, life regenerated per minute, and all their stats (Headhunter's)
-    move: (1 + x('base_movement_velocity_+%') / 100) * (1 - x('action_speed_-%') / 100), regen: x('life_regeneration_rate_per_minute_%'), mods: X, foe: has ? foeAuras(mods) : [],
+    move: (1 + x('base_movement_velocity_+%') / 100) * (1 - x('action_speed_-%') / 100), regen: x('life_regeneration_rate_per_minute_%'), mods: X, rare: own, foe: has ? foeAuras(mods) : [],
   };
 }
 
@@ -102,10 +127,10 @@ export function attackOf(m, level, key, rarity, ally = false, mods = []) {
   // "effectiveness" values grow with the monster's level; literal values (interpolation 1) are used as they are
   const eff = (K.skill_effectiveness ?? 0) * (set.eff[0] ?? 1) * (1 + set.eff[1] * (L - 1)) * (1 + set.eff[2]) ** (L - 1);
   const val = (x, interp) => (interp === 3 ? x * eff : x) * st.more;   // the rarity's more damage on every value
-  const hits = {}, dot = {};
-  if (set.hit) for (const [el, [lo, hi, i]] of Object.entries(set.hit)) hits[el] = [val(lo, i), val(hi, i)];
+  const hits = {}, dot = {}, incd = x('damage_+%') / 100;   // a map's increased Monster Damage, added to its own increases
+  if (set.hit) for (const [el, [lo, hi, i]] of Object.entries(set.hit)) hits[el] = [val(lo, i), val(hi, i)].map(v => el === 'physical' ? v : v * (1 + incd));
   else if (attack) hits.physical = st.phys.map(x => x * (sk?.mult ?? 1));
-  if (hits.physical) hits.physical = hits.physical.map(v => v * (1 + x('physical_damage_+%') / 100));
+  if (hits.physical) hits.physical = hits.physical.map(v => v * (1 + x('physical_damage_+%') / 100 + incd));
   if (hits.physical && set.convert) {   // part of the physical damage dealt as another type
     const [lo, hi] = hits.physical; let left = 1;
     for (const [el, p] of Object.entries(set.convert)) { const k = Math.min(left, p / 100); left -= k; hits[el] = [(hits[el]?.[0] || 0) + lo * k, (hits[el]?.[1] || 0) + hi * k]; }
@@ -120,7 +145,7 @@ export function attackOf(m, level, key, rarity, ally = false, mods = []) {
   const C = set.const || {}, skillMore = (1 + (C['active_skill_damage_+%_final'] || 0) / 100) * (flags.includes('projectile') ? 1 + (C['active_skill_projectile_damage_+%_final'] || 0) / 100 : 1);
   const lv = el => (el === 'physical' || ally ? 1 : 1 + row(el === 'chaos' ? 'more_chaos' : 'more_elemental', L) / 100) * skillMore;
   for (const el of Object.keys(hits)) { hits[el] = hits[el].map(x => Math.round(x * lv(el))); if (!hits[el][1]) delete hits[el]; }
-  for (const [el, [x, i]] of Object.entries(set.dot || {})) { const d = val(x, i) / 60 * lv(el); if (d > 0) dot[el] = d; }   // the data is per minute
+  for (const [el, [x, i]] of Object.entries(set.dot || {})) { const d = val(x, i) / 60 * lv(el) * (1 + incd); if (d > 0) dot[el] = d; }   // the data is per minute
   const projectile = flags.includes('projectile') || !sk && !!m.ranged || String(key || '').startsWith('MeleeAtAnimationSpeed') && !!m.ranged;
   const area = !!set.area || flags.includes('area');
   const hasHit = Object.keys(hits).length > 0;
@@ -137,7 +162,7 @@ export function attackOf(m, level, key, rarity, ally = false, mods = []) {
     dotDur: set.const?.base_skill_effect_duration ? set.const.base_skill_effect_duration / 1000 : null,
     // stored uses (Balbala's Teleport Strike: 2) are spent one after another, each recharging over the cooldown
     period, interval: Math.max(period, (sk?.cooldown || 0) / uses), cooldown: sk?.cooldown || 0, uses,
-    crit: (sk?.crit ?? m.crit ?? 0) * (1 + x('critical_strike_chance_+%') / 100), critBonus: K.monster_crit_bonus ?? 30,
+    crit: (sk?.crit ?? m.crit ?? 0) * (1 + x('critical_strike_chance_+%') / 100), critBonus: (K.monster_crit_bonus ?? 30) + x('critical_strike_multiplier_+'), pen: x('penetrate_elemental_resistances_%'),   // a map's
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
     // the skill's ailment chances and freeze multipliers, with its modifiers' (Poison / Bleeding on Hit: always)
     area, unblockable: !!set.unblockable, ail: addStats([set.const || {}, st.mods, { 'local_chance_to_bleed_on_hit_%': x('global_bleed_on_hit') * 100, 'base_chance_to_poison_on_hit_%': x('global_poison_on_hit') * 100 }]),
@@ -171,9 +196,10 @@ export const deflection = c => ((c.armour * c.deflect.arm + (c.evasion || 0) * c
 // one damage type of a hit against the character c (calc.js character()); returns what gets through
 // c.takenAs: shares of a type's damage taken as another ("Physical damage from Hits taken as Fire"), each part
 // mitigated as its new type. note: armour then counts against each part, not the whole hit
-export function playerTakes(c, type, raw, isHit = true, conv = true) {
+// pen: the hit's penetration of your elemental resistances (a map's), as yours works on a monster (enemyTakes)
+export function playerTakes(c, type, raw, isHit = true, conv = true, pen = 0) {
   const to = conv && c.takenAs?.[isHit ? 'hit' : 'dot']?.[type];
-  if (to) { let left = raw, t = 0; for (const [e, p] of Object.entries(to)) { const x = raw * Math.min(p, 100) / 100; left -= x; t += playerTakes(c, e, x, isHit, false); } return t + (left > 0 ? playerTakes(c, type, left, isHit, false) : 0); }
+  if (to) { let left = raw, t = 0; for (const [e, p] of Object.entries(to)) { const x = raw * Math.min(p, 100) / 100; left -= x; t += playerTakes(c, e, x, isHit, false, pen); } return t + (left > 0 ? playerTakes(c, type, left, isHit, false, pen) : 0); }
   // c.physDR: additional physical damage reduction (Jade), within the same cap
   const cap = K.player_max_physical_reduction ?? 90;
   const A = (c.armour || 0) * (c.armourX || 1), pcap = Math.min(cap, c.physMax ?? cap);   // Tactician: armour at 200%, its cap
@@ -182,7 +208,8 @@ export function playerTakes(c, type, raw, isHit = true, conv = true) {
   // note: armour taken against the hit's damage before resistances
   const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 + (c.esNow ?? c.es ?? 0) * (c.esEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder), current energy shield's (Silks of Veneration)
   const AR = isHit && ER ? armourCut(ER, raw, pcap) : 0;
-  return raw * (1 - AR) * (1 - (c.resOff === type ? 0 : c.res?.[type]?.capped || 0) / 100);
+  const res = c.resOff === type ? 0 : c.res?.[type]?.capped || 0;
+  return raw * (1 - AR) * (1 - (isHit && pen && type !== 'chaos' && res > 0 ? Math.max(res - pen, 0) : res) / 100);
 }
 // one damage type of the character's hit against a monster with stats st
 // pen: the hit's penetration of that resistance, which lowers only a positive resistance and not below 0 (PoB2)
@@ -199,7 +226,7 @@ export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee',
 export function versusPlayer(atk, st, c) {
   const types = TYPES.filter(el => atk.hits[el]).map(el => {
     const [lo, hi] = atk.hits[el];
-    return { type: el, raw: [lo, hi], taken: [playerTakes(c, el, lo), playerTakes(c, el, hi)].map(x => Math.round(x * (1 - (c.avoidDmg?.[el] || 0) / 100))) };   // Perfidy: its chance to avoid the type
+    return { type: el, raw: [lo, hi], taken: [playerTakes(c, el, lo, true, true, atk.pen), playerTakes(c, el, hi, true, true, atk.pen)].map(x => Math.round(x * (1 - (c.avoidDmg?.[el] || 0) / 100))) };   // Perfidy: its chance to avoid the type
   });
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
   const hit = atk.hasHit ? hitChance(st.accuracy, c.evasion, c.evadeMax) : 0, block = atk.hasHit ? blockChance(c, atk) : 0;
@@ -225,10 +252,21 @@ export function versusEnemy(dmg, st, accuracy) {
   if (!types.length && !Object.keys(dmg.dot).length) return null;
   const raw = types.reduce((s, x) => s + avg(x.raw), 0), taken = types.reduce((s, x) => s + avg(x.taken), 0);
   const hit = dmg.attack ? playerHitChance(accuracy, st.evasion) : 100;
-  const crit = (dmg.crit || 0) / 100, critMult = 1 + (dmg.critBonus || 0) / 100;
+  const crit = (dmg.crit || 0) / 100, critMult = 1 + (dmg.critBonus || 0) * (1 - (st.mods['base_self_critical_strike_multiplier_-%'] || 0) / 100) / 100;   // less with a modifier's or a map's
   const perUse = taken * (1 + crit * (critMult - 1)) * hit / 100;
   const dotTaken = TYPES.reduce((s, el) => s + (dmg.dot[el] ? enemyTakes(st, el, dmg.dot[el], false) : 0), 0);
   const dps = dmg.speed ? perUse * dmg.speed + dotTaken : dotTaken || null;
   const pool = st.life + st.es;
   return { types, raw, taken, mitigated: raw ? (1 - taken / raw) * 100 : 0, hit, perUse, dotTaken, dps, hitsToKill: perUse > 0 ? Math.ceil(pool / perUse) : null, ttk: dps > 0 ? pool / dps : null };
+}
+// self-check: a map's stats reach every monster that is not yours, by the names a monster's own are read by
+{
+  const m = ENEMIES[0], map = { tier: 1, mods: { MapMonsterLifeIncrease: [20], MapMonsterDamageAsFire: [10], MapMonstersElementalPenetration: [8], MapPlayerMaximumResists: [-4] } };
+  const was = enemyStats(m, 70), c = { res: { fire: { capped: 75 } } };
+  setMap(map);
+  const st = enemyStats(m, 70), atk = attackOf(m, 70, 'basic');
+  console.assert(MAP.mods.length && st.life === Math.round(was.life * 1.2) && enemyStats(m, 70, null, true).life === was.life && atk.hits.fire?.[1] > 0 && atk.pen === 8
+    && Math.abs(playerTakes(c, 'fire', 100, true, true, atk.pen) - 33) < 1e-9 && playerTakes(c, 'fire', 100, false, true, atk.pen) === 25 && mapPlayer(map)['additional_maximum_all_resistances_%'] === -4, 'map modifiers');
+  setMap(null);
+  console.assert(enemyStats(m, 70).life === was.life, 'map off');
 }

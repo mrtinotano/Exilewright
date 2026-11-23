@@ -956,5 +956,13 @@
  "{0} listed left out: they only make the build worse.": "판매 중인 {0}개는 제외했습니다: 빌드가 나빠지기만 합니다.",
  "{0} of {1} combinations tried…": "{0}/{1} 조합 시험됨…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "변경 사항이 저장되지 않고 있습니다. 이 창의 저장소가 가득 찼거나 사용할 수 없습니다. 잃지 않도록 빌드를 내보내세요.",
- "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright를 시작하지 못했습니다. 닫았다가 다시 여세요. 다시 발생하면 최신 버전을 설치하세요."
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright를 시작하지 못했습니다. 닫았다가 다시 여세요. 다시 발생하면 최신 버전을 설치하세요.",
+ "Map modifiers": "지도 속성",
+ "Paste a waystone here: Ctrl+C on it in the game": "여기에 경로석 붙여넣기: 게임에서 Ctrl+C",
+ "Waystone": "경로석",
+ "Remove the map": "지도 제거",
+ "Not simulated": "시뮬레이션되지 않음",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "지도 속성은 시뮬레이터의 모든 적과 내 캐릭터에 적용됩니다. 보상과 지면 구역은 시뮬레이션되지 않습니다.",
+ "That is not a waystone.": "경로석이 아닙니다.",
+ "Charges stolen": "충전 빼앗김"
 }

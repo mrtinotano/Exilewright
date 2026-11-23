@@ -4,8 +4,8 @@ import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
-import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS } from './enemies.js';
-import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known } from './items.js';
+import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
+import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -276,10 +276,19 @@ const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.
 const gemInfo = g => { const d = SK.skills[g.name], gem = gems.find(x => x.name === g.name) || d?.triggered_by && { ...d, icon: gems.find(x => x.name === d.triggered_by)?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
-const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false, fight = false }) => ({ enemy, level, attack, rarity, still, fight }))(stored(SCENE_KEY));
+// and its map: { tier, mods: { id: [values] } } of a waystone's modifiers (enemies.js MAP), null when there is none
+const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false, fight = false, map = null }) => ({ enemy, level, attack, rarity, still, fight,
+  map: MAP.tiers[map?.tier - 1] && map.mods && typeof map.mods === 'object' ? { tier: map.tier, mods: Object.fromEntries(Object.entries(map.mods).filter(([id, v]) => Array.isArray(v) && MAP.mods.some(m => m.id === id))) } : null }))(stored(SCENE_KEY));
+// the map's modifiers on players, added to the build's stats in the simulator alone (the monsters' are enemies.js's)
+setMap(sceneCfg.map);
+let mapSelf = mapPlayer(sceneCfg.map);
+const simSum = () => { const s = { ...treeSum() }; for (const k in mapSelf) s[k] = (s[k] || 0) + mapSelf[k]; return s; };
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
 const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
+// the scene's: with the map's less Cooldown Recovery Rate of players (a more / less of its own, so the cooldown divided by it)
+const simCd = new WeakMap(), simDmg = g => { const s = skillDmg(g), k = mapSelf['map_player_cooldown_speed_+%_final']; if (!k || !s?.cooldown) return s;
+  let o = simCd.get(s); if (o?.k !== k) simCd.set(s, o = { k, s: { ...s, cooldown: s.cooldown / Math.max(.01, 1 + k / 100) } }); return o.s; };
 let scene3d;
 function renderSceneSkills() {
   const b = B(), sum = treeSum(), on = scene3d?.selected();
@@ -408,6 +417,9 @@ $('sceneSkills').onchange = e => {
   const d = e.target.dataset;
   if (d.en === 'still' || d.en === 'fight') { sceneCfg[d.en] = e.target.checked; saveScene(); }
   else if (d.enmod) { const L = (sceneCfg.mods || []).filter(x => x !== d.enmod); sceneCfg.mods = e.target.checked ? [...L, d.enmod] : L; saveScene(); syncEnemy(); renderEnemy(); }   // a magic or rare enemy's modifiers
+  else if (d.map === 'tier') pickTier(+e.target.value);
+  else if (d.mapmod) { const m = MAP.mods.find(x => x.id === d.mapmod), mods = { ...sceneCfg.map.mods }; if (e.target.checked) mods[m.id] = topRoll(m, sceneCfg.map.tier); else delete mods[m.id]; setSceneMap({ ...sceneCfg.map, mods }); }
+  else if (d.mapval) { const [id, k] = d.mapval.split(':'), vals = [...sceneCfg.map.mods[id]]; vals[k] = Math.round(+e.target.value) || 0; setSceneMap({ ...sceneCfg.map, mods: { ...sceneCfg.map.mods, [id]: vals } }); }
   else if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
     if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();
@@ -418,6 +430,7 @@ $('sceneSkills').onclick = e => {
   if (en === 'place') return scene3d.placing(!scene3d.placing());
   if (en === 'clear' || en === 'reset') { e.target.blur(); return scene3d[en](); }   // blur: Space rolls in the scene, it must not press the button again
   if (en === 'mylevel') { sceneCfg.level = 0; saveScene(); syncEnemy(); return renderEnemy(); }
+  if (e.target.dataset.map === 'clear') return setSceneMap(null);
   const c = !e.target.closest('input, select, label, summary') && e.target.closest('[data-card]');
   if (c) { scene3d.select(+c.dataset.card); markCard(+c.dataset.card); }
 };
@@ -1053,7 +1066,47 @@ enWrap.onchange = $('sceneSkills').onchange; enWrap.onclick = $('sceneSkills').o
 enWrap.querySelector('summary').onmouseup = e => e.target.blur();   // Space rolls in the scene, it must not fold the panel
 $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(PLACED.length))}</small></h3>
   <div class="en-pick"><input id="enFind" type="search" placeholder="${esc(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
-  <div id="enDetail"></div>`;
+  <div id="enMap"></div><div id="enDetail"></div>`;
+// ---------- the map of the scene: a waystone's modifiers (enemies.js MAP), pasted from the game or picked by hand. Its
+// monsters' are on every enemy, its players' on your character in the simulator; its tier sets the enemies' level (the area's)
+let mapNote = '';   // what the last paste left out, or that it was no waystone
+const rollOf = (m, tier) => m.rolls[MAP.tiers[tier - 1].tag];
+const topRoll = (m, tier) => rollOf(m, tier).map(([lo, hi]) => Math.abs(lo) > Math.abs(hi) ? lo : hi);   // the strongest roll of each stat
+const mapLines = (m, vals) => shownLines(Object.fromEntries(m.stats.map((s, k) => [s, vals[k]]))).join(' · ');
+const mapSimulated = m => m.stats.some(s => /^map_(monsters?|player|additional_player)_/.test(s));   // not its patches of ground
+function setSceneMap(map, note = '') {
+  sceneCfg.map = map; mapNote = note;
+  setMap(map); mapSelf = mapPlayer(map);
+  saveScene(); scene3d?.remap(); renderMap(); renderEnemy();
+}
+// a tier: its area level for the enemies, and each modifier's values brought within its rolls at that tier (own: a
+// pasted waystone's values, kept as the item has them)
+function pickTier(tier, mods = sceneCfg.map?.mods || {}, own = false, note = '') {
+  if (!MAP.tiers[tier - 1]) return setSceneMap(null);
+  sceneCfg.level = MAP.tiers[tier - 1].level; syncEnemy();
+  setSceneMap({ tier, mods: own ? mods : Object.fromEntries(Object.entries(mods).map(([id, vals]) =>
+    [id, rollOf(MAP.mods.find(x => x.id === id), tier).map(([lo, hi], k) => Math.max(Math.min(lo, hi), Math.min(Math.max(lo, hi), vals[k])))])) }, note);
+}
+function renderMap() {
+  const map = sceneCfg.map, n = Object.keys(map?.mods || {}).length, open = $('enMap').querySelector('details')?.open;
+  const row = m => { const on = map.mods[m.id], R = rollOf(m, map.tier);
+    return `<label><input type="checkbox" data-mapmod="${esc(m.id)}"${on ? ' checked' : ''}> ${esc(mapLines(m, on || topRoll(m, map.tier)))}${mapSimulated(m) ? '' : ` <small>(${t('Not simulated')})</small>`}</label>`
+      + (on ? R.map(([lo, hi], k) => lo === hi ? '' : `<input type="number" data-mapval="${esc(m.id)}:${k}" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" step="1" value="${+on[k] || 0}" title="${Math.min(lo, hi)} – ${Math.max(lo, hi)}">`).join('') : ''); };
+  $('enMap').innerHTML = `<details class="en-mods en-map"${open || open == null && map ? ' open' : ''}><summary>${t('Map modifiers')} <small>${n}</small></summary>
+    <textarea class="pasteItem" data-map="paste" rows="2" placeholder="${esc(t('Paste a waystone here: Ctrl+C on it in the game'))}"></textarea>
+    ${mapNote ? `<p class="note">${esc(mapNote)}</p>` : ''}
+    <div class="sk-set"><label><span>${t('Waystone')}</span><select data-map="tier"><option value="0">—</option>${MAP.tiers.map((x, i) => `<option value="${i + 1}"${map?.tier === i + 1 ? ' selected' : ''}>${esc(tn(x))} · ${t('Level')} ${x.level}</option>`).join('')}</select></label>
+      ${map ? `<button data-map="clear">${t('Remove the map')}</button>` : ''}</div>
+    ${map ? MAP.mods.map(row).join('') : ''}
+    <p class="note">${t('The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.')}</p></details>`;
+}
+enWrap.addEventListener('input', e => {
+  if (e.target.dataset.map !== 'paste' || !e.target.value.trim()) return;
+  const w = parseWaystone(e.target.value, MAP);
+  if (!w) { mapNote = t('That is not a waystone.'); return renderMap(); }
+  pickTier(w.tier, w.mods, true, w.missed.length ? `${t('Not simulated')}: ${w.missed.join(' · ')}` : '');
+});
+renderMap();
 const enFind = $('enFind'), enList = $('enList');
 let enAt = 0;   // row the arrow keys are on
 function listEnemies() {
@@ -1093,7 +1146,7 @@ function renderEnemy() {
   const box = $('enDetail'), m = enemy(sceneCfg.enemy);
   if (document.activeElement !== enFind) enFind.value = m?.name || '';
   if (!m) { box.innerHTML = `<p class="note">${t('Pick an enemy and click in the scene to place it. Its life, defences and damage are the game\'s at the level you set: test your damage on it and your defences against its attacks.')}</p>`; return; }
-  const b = B(), c = character(b, treeSum()), L = enemyLevel(), rar = rarityOf(m, sceneCfg.rarity), st = enemyStats(m, L, rar, false, sceneCfg.mods);
+  const b = B(), c = character(b, simSum()), L = enemyLevel(), rar = rarityOf(m, sceneCfg.rarity), st = enemyStats(m, L, rar, false, sceneCfg.mods);
   const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key, rar, false, sceneCfg.mods), vp = versusPlayer(atk, st, c);
   const on = new Set(sceneCfg.mods), modText = x => esc([x.name && tn(x), ...shownLines(x.stats)].filter(Boolean).join(' · '));
   const mods = !['magic', 'rare'].includes(rar) ? '' : `<details class="en-mods"${on.size ? ' open' : ''}><summary>${t('Modifiers')} <small>${on.size}</small></summary>
@@ -1114,7 +1167,7 @@ function renderEnemy() {
     atk.hasHit ? row(t('Mitigated'), pct(vp.mitigated)) : '',
     row(t('Damage per second'), `<b>${small(vp.dps)}</b>`),
     row(t('You survive'), vp.pool == null ? t('life unknown') : vp.ttd == null ? '∞' : `<b>${secs(vp.ttd)}</b>`)];
-  const g = b.gems[scene3d?.selected() ?? 0], dmg = g && skillDmg(g), ve = dmg && versusEnemy(dmg, st, c.accuracy);
+  const g = b.gems[scene3d?.selected() ?? 0], dmg = g && simDmg(g), ve = dmg && versusEnemy(dmg, st, c.accuracy);
   const yours = !g ? '' : `<h4>${t('{0} against it', esc(gemInfo(g).label))}</h4>` + (ve ? `<table class="en-t">${[...types(ve),
       ve.dotTaken > 0 ? row(t('Damage over time'), `<b>${small(ve.dotTaken)}</b> / s`) : '',
       dmg.attack ? row(t('Chance to hit'), pct(ve.hit)) : '',
@@ -1164,9 +1217,9 @@ function onLive(L) {
     if (el.dataset.v !== v) { el.dataset.v = v; el.innerHTML = v; el.className = 'sdps' + (k > 1.001 ? ' up' : k < .999 ? ' down' : ''); }
   });
 }
-scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, fight: () => sceneCfg.fight, onLive, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: skillDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum(), B()),
+scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => sceneCfg.still, fight: () => sceneCfg.fight, onLive, info: gemInfo, onSelect: markCard, onPlacing: () => renderEnemy(), damage: simDmg, usedBy: j => usedBy(B(), j), byHand: j => byHand(B(), j), reserve: g => reservation(g, treeSum(), B()),
   // x: a buff the scene has on (The Hammer of Faith's Shrine), its stats added to the tree's and gear's
-  sheet: x => { const sum = { ...treeSum() }; for (const [k, n] of Object.entries(x || {})) sum[k] = (sum[k] || 0) + n; const c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), sprint: { speed: (SK.character_stats?.['sprint_movement_speed_+%'] || 0) + (sum['sprint_movement_speed_+%'] || 0), min: SK.character_stats?.dodge_roll_sprint_minimum_time_ms, turn: SK.character_stats?.dodge_roll_sprint_turn_rate }, noFall: !!sum.cannot_be_heavy_stunned_while_sprinting, owl: sum.owl_feather_max_bonus_to_stack ? { stack: sum.owl_feather_max_bonus_to_stack, faster: sum['owl_feather_gain_frequency_+%'] || 0 } : null, jade: sum.buildup_jade_every_x_ms && { every: sum.buildup_jade_every_x_ms, max: sum.max_jade_stacks, dr: sum['additional_physical_damage_reduction_%_per_jade'] }, ailments: ailmentDefence(c, sum),
+  sheet: x => { const sum = simSum(); for (const [k, n] of Object.entries(x || {})) sum[k] = (sum[k] || 0) + n; const c = character(B(), sum); return { ...c, ...recovery(c, sum), rage: rageOf(B(), sum), sprint: { speed: (SK.character_stats?.['sprint_movement_speed_+%'] || 0) + (sum['sprint_movement_speed_+%'] || 0), min: SK.character_stats?.dodge_roll_sprint_minimum_time_ms, turn: SK.character_stats?.dodge_roll_sprint_turn_rate }, noFall: !!sum.cannot_be_heavy_stunned_while_sprinting, owl: sum.owl_feather_max_bonus_to_stack ? { stack: sum.owl_feather_max_bonus_to_stack, faster: sum['owl_feather_gain_frequency_+%'] || 0 } : null, jade: sum.buildup_jade_every_x_ms && { every: sum.buildup_jade_every_x_ms, max: sum.max_jade_stacks, dr: sum['additional_physical_damage_reduction_%_per_jade'] }, ailments: ailmentDefence(c, sum),
     flasks: ['flask1', 'flask2'].map(k => { const f = flaskOf(B().items?.[k], sum); return f && { ...f, img: gemImg(f.img) }; }),
     charms: sum.keystone_oasis ? [] : ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], { ...sum, 'charm_effect_+%': (sum['charm_effect_+%'] || 0) + (sum['charm_effect_+%_per_empty_charm_slot'] || 0) * c.emptyCharms }); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,

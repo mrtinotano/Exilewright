@@ -1150,7 +1150,7 @@ export function initScene(el, api) {
     if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
     if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
     const G = BAR[a], hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
-    d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, d.stat.poise * awe(d, a === 'stun' ? 'stun' : 'ailment')) * hard) * 100; d.calm = 0;
+    d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, (a === 'stun' ? d.stat.poise : d.stat.ailPoise) * awe(d, a === 'stun' ? 'stun' : 'ailment')) * hard) * 100; d.calm = 0;
     if (d.bar[a] < (['freeze', 'electrocute', 'pin'].includes(a) && sheet().ccAt || 100)) return;   // Sine Aequo: Immobilised at its share of the buildup
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
@@ -1402,7 +1402,7 @@ export function initScene(el, api) {
       if (ids.length) { (me.hh ||= []).push({ stats: modStats(ids), until: time + (S.dmg.sum.support_executioner_gain_two_rare_monster_mod_on_kill_ms || S.dmg.sum.support_executioner_gain_one_rare_monster_mod_on_kill_ms) / 1000 }); shC.at = -99; } }
     d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && d.st.shock > 0) me.es = Math.min(me.maxE, me.es + me.maxE * (S.dmg?.sum?.['support_recover_%_maximum_energy_shield_killing_shocked_enemies'] || 0) / 100);   /* Shock Siphon */ if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     // Headhunter: a rare monster you kill gives you its modifiers for the text's seconds
-    const HH = S && !S.src && sheet().headhunter; if (HH && d.stat.rarity === 'rare' && Object.keys(d.stat.mods).length) { (me.hh ||= []).push({ stats: d.stat.mods, until: time + HH }); shC.at = -99; setBuff({ label: `${t('Headhunter')}: ${d.mon.name}`, c: css('gold'), s: HH }); }
+    const HH = S && !S.src && sheet().headhunter; if (HH && d.stat.rarity === 'rare' && Object.keys(d.stat.rare).length) { (me.hh ||= []).push({ stats: d.stat.rare, until: time + HH }); shC.at = -99; setBuff({ label: `${t('Headhunter')}: ${d.mon.name}`, c: css('gold'), s: HH }); }
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -3966,7 +3966,7 @@ export function initScene(el, api) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap)), rare = d && POWER[d.stat.rarity] >= POWER.rare;
     if (rare) eat(d, 'blood'); else { me.life = Math.max(1, me.life - me.maxL * S.dmg.stats['head_hunt_%_life_to_remove_on_self_stab'] / 100); fx.emit(10, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 1.5, up: 1, life: .4, size: .14, c: 'blood' }); }
     const own = MON_MODS.filter(x => !x.aura?.foe), one = own[Math.floor(Math.random() * own.length)];
-    (me.hh ||= []).push({ stats: rare ? d.stat.mods : one?.stats || {}, until: time + durOf(S) }); shC.at = -99;
+    (me.hh ||= []).push({ stats: rare ? d.stat.rare : one?.stats || {}, until: time + durOf(S) }); shC.at = -99;
     setBuff({ label: S.label, name: S.name, c: css('blood'), s: durOf(S) });
   };
   // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
@@ -5201,7 +5201,7 @@ export function initScene(el, api) {
     const BR = () => Math.random() * 100 < blockChance(c, a), BL = !RR && !frozen() && !(me.st.stun > 0) && (BR() || c.luckyBlock && BR());   // not while Stunned or Frozen (keywords.json Block); Turtle Charm: a blocked hit still deals its share
     if (BL) {   // you still take the stun of a blocked hit (keywords.json Block): its damage as it would be after your defences
       blocked(d);
-      if (!c.blockTaken) { const est = Object.fromEntries(Object.entries(a.hits).map(([el, [lo, hi]]) => [el, playerTakes(c, el, lo + Math.random() * (hi - lo))])); return ailed(d, est, est, true); }
+      if (!c.blockTaken) { const est = Object.fromEntries(Object.entries(a.hits).map(([el, [lo, hi]]) => [el, playerTakes(c, el, lo + Math.random() * (hi - lo), true, true, a.pen)])); return ailed(d, est, est, true); }
     }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
@@ -5231,7 +5231,7 @@ export function initScene(el, api) {
     const AH = EG ? { ...a.hits, chaos: [0, 1].map(k => (a.hits.chaos?.[k] || 0) + Object.values(a.hits).reduce((t, h) => t + h[k], 0) * EG) } : a.hits;
     for (const el in AH) {
       if (Math.random() * 100 < (OR.avoidDmg?.[el] || 0)) continue;   // Perfidy: that type of the hit avoided
-      const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + rollOf(el) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0))) * TW;
+      const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + rollOf(el) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)), true, true, a.pen) * TW;
       if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
@@ -5263,6 +5263,8 @@ export function initScene(el, api) {
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee || sheet().thornsAny) retaliate(d); if (a.melee) arctic(d); windDance(); ailed(d, raw, dealt);
+    // a map's: its chance for the hit to steal your Power, Frenzy and Endurance charges (note: the monster does not gain them here)
+    if (Math.random() * 100 < (a.ail?.steal_charges || 0) && Object.values(charges).some(n => n > 0)) { for (const k in charges) charges[k] = 0; say(t('Charges stolen'), 'chaos'); hudT = 0; }
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
@@ -5470,7 +5472,7 @@ export function initScene(el, api) {
     // the tree's increased life and mana regeneration per minion in your Presence, up to 40% (its text)
     const MR = c.minionRegen ? Math.min(40, c.minionRegen * minionsNear()) : 0, R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), k === 'l' || k === 'm' ? MR : 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
     const FR = c.regrow ? Math.floor(me.regrow || 0) : 0;   // Dustbloom's Fragile Regrowth
-    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l), mana: (c.manaNoCrit && !meIs.CritRecently() ? 0 : c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
+    return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l) * (c.recMore ?? 1), mana: (c.manaNoCrit && !meIs.CritRecently() ? 0 : c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
   const echoed = () => me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time];   // the spells Echoed recently
   const speedWhile = b => 1 + prowess().length / 10 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
@@ -5771,12 +5773,12 @@ export function initScene(el, api) {
     if (c.diadem && time - (me.diademAt ?? -9) >= 3) { const d = corpseAt(pp, c.overgrow.r); if (d) { me.diademAt = time; eat(d, 'blood'); me.life = Math.min(L, me.life + L * c.diadem / 100); } }   // The Devouring Diadem (note: "nearby" is not in the game's data: your Presence here)
     // leech recovers at its rate and is removed when the pool is full (Life Leech III's life leech is not)
     for (const [r, top] of [['life', RL], ['mana', c.mana || 0]]) {
-      const q = me.leech[r]; if (!(q.left > 0) || r === 'mana' && c.manaRegenOnly) continue;   // Indigon: no mana leech
-      if (r === 'life' && c.leechEs || r === 'mana' && c.manaLeechEs) { const n = Math.min(q.left, q.rate * dt); if (me.es < E) me.es = Math.min(E, me.es + n); if (r === 'life') { q.left -= n; if (me.es >= E) q.left = 0; continue; } }   // Essentia Sanguis: life leech as energy shield leech, mana leech recovering it as well
+      const q = me.leech[r], rk = r === 'life' ? c.recMore ?? 1 : 1; if (!(q.left > 0) || r === 'mana' && c.manaRegenOnly) continue;   // Indigon: no mana leech   // rk: a map's less recovery rate of life (leech, recoup and flasks below: slower, the same in all)
+      if (r === 'life' && c.leechEs || r === 'mana' && c.manaLeechEs) { const n = Math.min(q.left, q.rate * rk * dt); if (me.es < E) me.es = Math.min(E, me.es + n); if (r === 'life') { q.left -= n; if (me.es >= E) q.left = 0; continue; } }   // Essentia Sanguis: life leech as energy shield leech, mana leech recovering it as well
       // Couture of Crimson: life leech Overflows; Soul Tether: what goes over maximum life to energy shield
       const cap = r === 'life' && c.leechOver ? top * OVERFLOW : top, toES = r === 'life' && c.leechToEs && me.es < E;
       if (me[r] >= cap && !q.keep && !toES) { q.left = 0; continue; }
-      const n = Math.min(q.left, q.rate * dt), room = Math.max(0, cap - me[r]); q.left -= n; me[r] = Math.min(cap, me[r] + n); if (toES && n > room) me.es = Math.min(E, me.es + n - room);
+      const n = Math.min(q.left, q.rate * rk * dt), room = Math.max(0, cap - me[r]); q.left -= n; me[r] = Math.min(cap, me[r] + n); if (toES && n > room) me.es = Math.min(E, me.es + n - room);
     }
     // Meditate: while you channel it your energy shield recharges at its more rate, without the delay, and can Overflow;
     // a hit ends it (hurt), as does a full Overflow
@@ -5793,9 +5795,9 @@ export function initScene(el, api) {
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     // Tecrod's Brutality: life a second for the life skills cost in its last seconds
     if (c.tecrod) { me.spent = (me.spent || []).filter(x => time - x.t <= c.tecrod.secs); const TR = me.spent.reduce((s, x) => s + x.n, 0) / c.tecrod.per; if (TR > 0 && !c.vaal) me.life = Math.min(RL, me.life + TR * dt); }
-    me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
+    me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * (R.k === 'mana' ? 1 : c.recMore ?? 1) * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
-      if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
+      if (!D) return; const got = D.rate * (D.k === 'life' ? c.recMore ?? 1 : 1) * Math.min(D.s, dt); D.s -= dt;   // a life flask recovers less a second for its time
       flaskHeal(D, got); const F = flasks()[n] || {};
       const AB = D.k === 'life' && onS("Alchemist's Boon")?.dmg.stats['recovery_from_flasks_applies_to_allies_in_presence_%'];   // Alchemist's Boon: its share to your minions in your Presence
       if (AB) for (const o of objs) { const s = o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got * AB / 100); }
@@ -5969,6 +5971,12 @@ export function initScene(el, api) {
       tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; tpl.rarity = rarity || null; tpl.mods = mods || []; hudT = 0;
       if (!tpl.mon) return setPlacing(false);
       for (const d of dummies) if (d.mon === tpl.mon) arm(d, tpl.level, tpl.attack);
+    },
+    // the map changed (enemies.js setMap): every enemy takes its stats again, the living ones at full life
+    remap() {
+      for (const d of dummies) { const mods = d.modKey ? d.modKey.split(',') : []; d.stat = enemyStats(d.mon, d.level, d.rarity, false, mods); d.atk = attackOf(d.mon, d.level, d.atk.key, d.rarity, false, mods);
+        d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es; d.sig = ''; if (!d.dead) { d.life = d.max; d.es = d.maxEs; } }
+      shC.at = -99; hudT = 0;
     },
     placing: on => on == null ? placing : setPlacing(on),
     clear: wipe,

@@ -939,6 +939,27 @@ for m in mods:
     for j in range(1, 7):
         if r and m.get(f'Stat{j}') is not None and stats[m[f'Stat{j}']]['Id'] in RARITY_STATS:
             rarity.setdefault(r[1].lower(), {})[RARITY_STATS[stats[m[f'Stat{j}']]['Id']]] = m[f'Stat{j}Value'][0]
+# --- a waystone's modifiers (enemies.js): the area's Mods (domain 6) that roll on the waystones' own tags
+# (map_key_low / medium / high / highest), one entry per kind with its rolls at each tag. Its stats are those the item's
+# text words (stat_descriptions.csd): the rewards, worded in the item's header (map_stat_descriptions.csd), and the stats
+# that only place and draw a patch of ground are left out. And each tier's waystone: its names, area level (MapTiers) and tag
+worded = {s for d in descs.values() for s in d['stats']}
+map_level = {r['Tier']: r['Level'] for r in load('MapTiers')}
+map_tiers, map_mods = {}, {}
+for i, b in enumerate(base_types):
+    r = re.fullmatch(r'Metadata/Items/Maps/MapKeyTier(\d+)', b['Id'])
+    if r:
+        map_tiers[int(r[1])] = {'name': b['Name'], **tr(bases_tr, i), 'level': map_level[int(r[1])],
+                                'tag': next(tags_tab[t]['Id'][8:] for t in b['Tags'] if tags_tab[t]['Id'].startswith('map_key_'))}
+for m in mods:
+    on = [tags_tab[t]['Id'][8:] for t, w in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values']) if w and tags_tab[t]['Id'].startswith('map_key_')]
+    if m['Domain'] != 6 or not on:
+        continue
+    rolls = [(sid(m[f'Stat{j}']), m[f'Stat{j}Value']) for j in range(1, 9) if m.get(f'Stat{j}') is not None and sid(m[f'Stat{j}']) in worded]
+    e = map_mods.setdefault(re.sub(r'\d+$', '', m['Id']), {'id': re.sub(r'\d+$', '', m['Id']), 'stats': [s for s, _ in rolls], 'rolls': {}})
+    assert e['stats'] == [s for s, _ in rolls] and rolls, ('a waystone modifier whose tiers word other stats', m['Id'])
+    for tag in on:
+        e['rolls'][tag] = [v for _, v in rolls]
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({
         # index = monster level - 1
@@ -989,6 +1010,7 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
                      if (t := m['BuffTemplate'] is not None and _tmpl[m['BuffTemplate']]) and t['AuraRadius'] else {})}
                  for i, m in enumerate(mods) if m['Domain'] == 3 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values']) and mod_stats([i])],
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
+        'map': {'tiers': [map_tiers[k] for k in sorted(map_tiers)], 'mods': list(map_mods.values())},
     }, f, ensure_ascii=False, separators=(',', ':'))
 print(f'monsters.json {len(monsters)} monsters ({sum(1 for m in monsters if m.get("boss"))} bosses), {len(mskills)} skills')
 
@@ -1013,6 +1035,8 @@ assert all(k in game for k in ('ShockChanceMultiplier', 'IgniteChanceMultiplier'
 assert skills['Shockwave Totem']['levels'][20]['_base_multiplier'] == 6600 and skills['Artillery Ballista']['levels'][20]['_base_multiplier'] == 4000, "a totem's own attack"
 assert skills['Glacial Cascade']['part']['active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final'] > 0 and 'never_freeze' in skills['Glacial Cascade']['flags'], 'other stat sets of a skill'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
+assert sorted(map_tiers) == list(range(1, 17)) and map_tiers[16] == {**map_tiers[16], 'level': 80, 'tag': 'highest'}, 'waystone tiers (BaseItemTypes MapKeyTier<n>, MapTiers)'
+assert all(set(e['rolls']) == {'low', 'medium', 'high', 'highest'} for e in map_mods.values()) and map_mods['MapMonsterDamageAsFire']['rolls']['high'] == [[15, 19]], 'waystone modifiers (Mods domain 6, map_key_ tags)'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'

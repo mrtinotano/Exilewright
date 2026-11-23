@@ -956,5 +956,13 @@
  "{0} listed left out: they only make the build worse.": "已略過 {0} 件上架物品：它們只會讓配置變差。",
  "{0} of {1} combinations tried…": "已嘗試 {0} / {1} 種組合…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "你的變更沒有被儲存：此視窗的儲存空間已滿或無法使用。請匯出配置以免遺失。",
- "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright 無法啟動。請關閉後重新開啟；若再次發生，請安裝最新版本。"
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright 無法啟動。請關閉後重新開啟；若再次發生，請安裝最新版本。",
+ "Map modifiers": "地圖詞綴",
+ "Paste a waystone here: Ctrl+C on it in the game": "在此貼上換界石：在遊戲中對其按 Ctrl+C",
+ "Waystone": "換界石",
+ "Remove the map": "移除地圖",
+ "Not simulated": "未模擬",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "地圖詞綴會套用於模擬器中的所有敵人和你的角色。其獎勵與地面區域不會模擬。",
+ "That is not a waystone.": "這不是換界石。",
+ "Charges stolen": "充能球被偷取"
 }
