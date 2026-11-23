@@ -19239,7 +19239,8 @@
     "movement_speed_while_performing_action_locked_duration_%": 50,
     "main_hand_base_weapon_attack_duration_ms": 714,
     "_attack_crit": 500,
-    "active_skill_attack_speed_+%_final": -15
+    "active_skill_attack_speed_+%_final": -15,
+    "active_skill_base_secondary_area_of_effect_radius": 15
    },
    "levels": {
     "1": {
@@ -94067,7 +94068,8 @@
     "detonating_arrow_all_damage_%_to_gain_as_fire_per_stage": 120,
     "channel_start_lock_cancelling_of_attack_time_%": 20,
     "channel_skill_end_animation_duration_multiplier_permyriad": 2344,
-    "active_skill_attack_speed_+%_final": -55
+    "active_skill_attack_speed_+%_final": -55,
+    "active_skill_base_secondary_area_of_effect_radius": 24
    },
    "levels": {
     "1": {
@@ -94311,7 +94313,48 @@
      }
     }
    },
-   "radius": null,
+   "radius": {
+    "1": 24,
+    "2": 24,
+    "3": 24,
+    "4": 24,
+    "5": 24,
+    "6": 24,
+    "7": 24,
+    "8": 24,
+    "9": 24,
+    "10": 24,
+    "11": 24,
+    "12": 24,
+    "13": 24,
+    "14": 24,
+    "15": 24,
+    "16": 24,
+    "17": 24,
+    "18": 24,
+    "19": 24,
+    "20": 24,
+    "21": 24,
+    "22": 24,
+    "23": 24,
+    "24": 24,
+    "25": 24,
+    "26": 24,
+    "27": 24,
+    "28": 24,
+    "29": 24,
+    "30": 24,
+    "31": 24,
+    "32": 24,
+    "33": 24,
+    "34": 24,
+    "35": 24,
+    "36": 24,
+    "37": 24,
+    "38": 24,
+    "39": 24,
+    "40": 24
+   },
    "projectile": true,
    "projectile_speed": null,
    "projectile_range": null,

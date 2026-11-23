@@ -104279,6 +104279,36 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
    "recovery_from_flasks_applies_to_allies_in_presence_%"
   ],
   "rows": [
@@ -107525,6 +107555,36 @@
   ],
   "skill": [
    "Detonate Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Detonating Arrow"
   ]
  },
  {
