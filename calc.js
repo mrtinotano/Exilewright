@@ -430,6 +430,7 @@ export function character(b, sum) {
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
+    brokenEl: [...sum.fully_broken_armour_and_sundered_armour_you_inflict_also_applies_to_fire_damage ? ['fire'] : [], ...sum.fully_broken_armour_and_sundered_armour_you_inflict_also_applies_to_cold_and_lightning_damage ? ['cold', 'lightning'] : []],   // The Molten One's Gift, Storm's Rebuke
     implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage,   // Warbringer's Imploding Impacts: Fully Broken Armour increases all hit damage taken
     cry: { debil: !!sum.warcries_debilitate_enemies_for_1_second, weak: v(sum, 'warcries_inflict_x_critical_weakness_on_enemies'), noIgnite: !!sum.remove_ignite_on_warcry, more: v(sum, 'warcry_empowers_next_x_melee_attacks'), min: sum.warcries_have_minimum_10_power ? 10 : 0 },   // the tree's warcries
     minionRegen: v(sum, 'life_and_mana_regeneration_rate_+%_for_each_minion_in_your_presence_capped'),
@@ -1699,11 +1700,29 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   // with critical hits: more of the ailments' magnitude, with their other increased ([increased, the critical ones])
   const critX = (incs, ...c) => { const i = incs.reduce((t, k) => t + all(k), 0), x = c.reduce((t, k) => t + all(k), 0); return x ? (1 + (i + x) / 100) / (1 + i / 100) : 1; };
   const dmgI = ['ailment_effect_+%', 'base_damaging_ailment_effect_+%'], nonI = ['ailment_effect_+%', 'non_damaging_ailment_effect_+%'];
+  // the increased of each ailment's magnitude and of its duration (the tree's: of Damaging Ailments, of Chill and Freeze)
+  const effI = { ignite: ['base_ignite_effect_+%', ...dmgI], poison: ['base_poison_effect_+%', ...dmgI], bleed: ['base_bleeding_effect_+%', ...dmgI], shock: ['shock_effect_+%', ...nonI], chill: ['chill_effect_+%', ...nonI] };
+  const elT = ['ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], dotT = 'damaging_ailment_duration_+%';
+  const durI = { shock: ['shock_duration_+%', ...elT], chill: ['chill_duration_+%', 'chill_and_freeze_duration_+%', ...elT], freeze: ['freeze_duration_+%', 'chill_and_freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'],
+    ignite: ['ignite_duration_+%', dotT, ...elT], bleed: ['base_bleed_duration_+%', dotT], poison: ['base_poison_duration_+%', dotT] };
+  // the tree's ailments against a state of the enemy, as more of what the skill has: [ailment, magnitude / duration, the
+  // enemy's state (scene.js condN), times]
+  const ailVs = [], rule = (a, what, on, incs, k) => { const x = critX(incs, k); if (x !== 1) ailVs.push([a, what, on, x]); };
+  for (const a in effI) rule(a, 'eff', 'Marked', effI[a], 'ailment_magnitude_+%_vs_marked_enemies');
+  rule('ignite', 'eff', 'Poisoned', effI.ignite, 'ignite_magnitude_+%_against_poisoned_enemies'); rule('bleed', 'eff', 'Pinned', effI.bleed, 'bleeding_magnitude_+%_against_pinned_enemies');
+  for (const a in durI) for (const [on, k] of [['Cursed', 'ailment_duration_+%_vs_cursed_enemy'], ['Exposed', 'ailment_duration_+%_vs_exposed'], ['Beast', 'ailment_duration_+%_vs_beasts']]) rule(a, 'dur', on, durI[a], k);
+  rule('poison', 'dur', 'Slowed', durI.poison, 'poison_duration_+%_against_slowed_enemies');
+  const immobI = all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%');
   const critAil = { ignite: critX(['base_ignite_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'), poison: critX(['base_poison_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_poison_effect_+%'),
     bleed: critX(['base_bleeding_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_bleeding_effect_+%'),
-    shock: critX(['shock_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes'), chill: critX(['chill_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes') };
+    shock: critX(['shock_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes', 'shock_effect_+%_with_critical_strikes'), chill: critX(['chill_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes') };
   return {
-    critAil: Object.values(critAil).some(x => x !== 1) ? critAil : null,
+    critAil: Object.values(critAil).some(x => x !== 1) ? critAil : null, ailVs,
+    // more chance to inflict them on enemies with Exposure, more Immobilisation buildup on Constructs, more Stun buildup with
+    // critical hits (Overwhelming Strike), Poison lasting longer per Poison inflicted Recently (up to 100%: its text)
+    ailExpo: (1 + (ailInc + all('ailment_chance_+%_vs_exposed')) / 100) / (1 + ailInc / 100), immobConstruct: (1 + (immobI + all('hit_damage_immobilisation_multiplier_+%_vs_constructs')) / 100) / (1 + immobI / 100),
+    stunCrit: 1 + all('passive_overwhelming_strike_hit_damage_stun_multiplier_+%_final_with_crits') / 100,
+    poisonRecent: all('poison_duration_+%_per_poison_applied_recently') ? { per: all('poison_duration_+%_per_poison_applied_recently'), inc: durI.poison.reduce((t, k) => t + all(k), 0) } : null,
     bleedIncision: critX(['base_bleeding_effect_+%', ...dmgI], 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
@@ -1733,12 +1752,12 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
     bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FBl * (sum.keystone_crimson_assault ? 1.5 : 1),
     bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!(sum.keystone_crimson_assault || sum.aggravate_inflicted_bleeding),   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated (Apron of Emiran: Aggravated)
-    shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
-    chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
-    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: (1 + all('pin_duration_+%') / 100) * (1 + all('support_pin_pin_duration_+%_final') / 100),
-    igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
-    bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FBl,   // and Bleeding's own faster
-    poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
+    shockTime: scale(durI.shock, 'shock_duration_+%_final'),
+    chillTime: scale(durI.chill, 'chill_duration_+%_final'),
+    freezeTime: scale(durI.freeze, 'freeze_duration_+%_final'), pinTime: (1 + all('pin_duration_+%') / 100) * (1 + all('support_pin_pin_duration_+%_final') / 100),
+    igniteTime: scale(durI.ignite, 'damaging_ailment_duration_+%_final') / FB,
+    bleedTime: scale(durI.bleed, 'damaging_ailment_duration_+%_final') / FBl,   // and Bleeding's own faster
+    poisonTime: scale(durI.poison, /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt
     breakFlat: all('apply_X_armour_break_on_hit'), breakPct: all('armour_break_physical_damage_%_dealt_as_armour_break'),
     breakMore: scale(['armour_break_amount_+%'], 'armour_break_amount_+%_final'),

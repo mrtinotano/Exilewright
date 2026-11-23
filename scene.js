@@ -701,13 +701,14 @@ export function initScene(el, api) {
   const RECENT = 4, reloads = [], used = [], reloaded = secs => reloads.reduce((t, r) => t + (time - r.t <= secs ? r.n : 0), 0);
   const minionsNear = () => objs.filter(o => o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;   // your minions within your Presence
   const inPresence = ok => objs.some(o => !o.dead && ok(o) && dist(o.pos, pp) <= sheet().overgrow.r);   // a minion of yours within your Presence
+  const vsAil = (A, a, w, d, S) => (A.ailVs || []).reduce((m, [x, y, on, k]) => x === a && y === w && condN({ actor: 'enemy', var: on }, d, S) ? m * k : m, 1);
   function condN(c, d, S) {
     const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
     const is = en ? { LowLife: lifeK(d) <= LOW, FullLife: d.life >= d.max, Frozen: st('freeze'), Bleeding: st('bleed'), Poisoned: st('poison'), Ignited: st('ignite'), Burning: st('ignite'),
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Stunned: st('stun') || d.lstun > time, Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Cursed: !!d.curse, Slowed: st('chill') || st('maim') || !!d.slows?.some(x => x.until > time && x.pct < 0), Beast: d.mon?.category === 'Beast', Construct: d.mon?.category === 'Construct', Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -1028,7 +1029,7 @@ export function initScene(el, api) {
     const W = (el === 'chaos' || el === 'fire' && sheet().witherFire) && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
-    return (got + over + crush) * (el === 'physical' ? 1 + (d.smelt || 0) / 100 : 1) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
+    return (got + over + crush) * (el === 'physical' ? 1 + (d.smelt || 0) / 100 : 1) * (isHit && (el === 'physical' || sheet().implode || sheet().brokenEl.includes(el)) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
   function withers(d, s, pct = WITHER.per) { if (sheet().witherForever || sheet().witherIgn && d.st.ignite > 0) s = 1e9; const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct: pct * (1 + (sheet().witherMag || 0) / 100) });   /* the tree's increased Withered magnitude */ if (w.length > WITHER.max) w.shift(); }
@@ -1064,39 +1065,42 @@ export function initScene(el, api) {
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
     if (FF != null) { d.st.ignite = Math.max(d.st.ignite, d.full?.ignite || DUR.ignite); d.noIgn = time + d.st.ignite; }
     const EAx = S.P.spell && !S.src && time < me.earch ? 1 + EARCHON.ail / 100 : 1;   // Elemental Archon: more Flammability, Shock chance and Freeze buildup
-    const AR = (['rare', 'unique'].includes(d.stat.rarity) ? A.ailRare || 1 : 1) * (!S.src && meIs.ShapeshiftedRecently() ? A.ailShift || 1 : 1), AC = (A.ailChance || 1) * AR;   // the tree's increased chance to inflict ailments (bleeding, poison; ignite and shock have it in theirs)
+    // the tree's ailments against a state of this enemy (calc.js ailVs): more magnitude ('eff') or duration ('dur')
+    const VS = (a, w) => vsAil(A, a, w, d, S), IC = d.mon?.category === 'Construct' ? A.immobConstruct || 1 : 1;
+    const AR = (['rare', 'unique'].includes(d.stat.rarity) ? A.ailRare || 1 : 1) * (!S.src && meIs.ShapeshiftedRecently() ? A.ailShift || 1 : 1) * (d.st.expo > 0 ? A.ailExpo || 1 : 1), AC = (A.ailChance || 1) * AR;   // the tree's increased chance to inflict ailments (bleeding, poison; ignite and shock have it in theirs)
     if (xa('ignite', 'fire') && (S.els.includes('fire') || can('ignite') || adds('ignite').length) && !N.ignite && !(d.noIgn > time)) {   // flammability: each hit adds some for a while, the total is the chance to ignite
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance * EAx * AR, s: GC.BaseFlammabilityDuration });
       // Frostfire: on a Frozen enemy its more ignite effect (more still on a unique), Consuming the Freeze
       const FF = d.st.freeze > 0 && SU['ignite_effect_+%_final_against_frozen_enemies'] ? (1 + SU['ignite_effect_+%_final_against_frozen_enemies'] / 100) * (d.stat.rarity === 'unique' ? 1 + (SU['support_frostfire_ignite_effect_+%_final_vs_frozen_unique_enemies'] || 0) / 100 : 1) : 1;
-      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { if (FF > 1) clear(d, 'freeze'); inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: FF * A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); if (SU.inflict_cold_exposure_on_ignite) expo(d, ['cold'], EXPO.res * E.effect); }   // Blessed Bonds: cold exposure on ignite   // Incendiary Shot's Heat
+      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { if (FF > 1) clear(d, 'freeze'); inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets * VS('ignite', 'dur'), eff: FF * A.igniteEffect * VS('ignite', 'eff') * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); if (SU.inflict_cold_exposure_on_ignite) expo(d, ['cold'], EXPO.res * E.effect); }   // Blessed Bonds: cold exposure on ignite   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
-      const so = { dur: DUR.shock * A.shockTime, mag: GC.BaseShockMagnitude * A.shockEffect * (S.shockX || 1) }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock); if (SU.inflict_fire_exposure_on_shock) expo(d, ['fire'], EXPO.res * E.effect);   // S.shockX: Vivid Stampede's more per leap
+      const so = { dur: DUR.shock * A.shockTime * VS('shock', 'dur'), mag: GC.BaseShockMagnitude * A.shockEffect * VS('shock', 'eff') * (S.shockX || 1) }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock); if (SU.inflict_fire_exposure_on_shock) expo(d, ['fire'], EXPO.res * E.effect);   // S.shockX: Vivid Stampede's more per leap
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
       const SCn = S.dmg.sum?.['support_%_chance_to_shock_nearby_enemy_on_shock'];
       if (SCn) for (const e of inside(d.pos, S.dmg.sum.shock_nearby_enemy_base_area_of_effect_radius / 10)) if (e !== d && roll(SCn)) inflict(e, 'shock', S, 1, raw, so);
     }
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
-      const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect);
-      if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });   // the most: Heavy Snows' override, else the game's
-      if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * rimeOn(d) * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100) * (S.freezeEmp || 1), S, A);
+      const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect * VS('chill', 'eff'));
+      if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime * VS('chill', 'dur'), mag });   // the most: Heavy Snows' override, else the game's
+      if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * IC * rimeOn(d) * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100) * (S.freezeEmp || 1), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (o.crit && SU.inflict_lightning_exposure_on_crit) expo(d, ['lightning'], EXPO.res * E.effect);   // Blessed Bonds: lightning exposure on a critical hit
     const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
-    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100) * (d.st.shock > 0 ? A.elShock || 1 : 1), S, A);
+    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * IC * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100) * (d.st.shock > 0 ? A.elShock || 1 : 1), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
-    if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
+    if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK * IC, S, A);
+    else if (o.crit && S.P.spell && SU.physical_spell_damage_can_pin_on_critical_hit && x('physical')) build(d, 'pin', x('physical') * GC.PinDamageScale * (A.immob || 1) * IC, S, A);   // Bone Chains
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
-    const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1) * (d.life <= d.max * LOW ? A.stunLow || 1 : 1) * (!S.src && meIs.Shapeshifted() ? A.stunShifted || 1 : 1) * (S.stunEmp || 1);   // the tree's stun buildup after Shapeshifting, within 2 m, on Low Life ones, while Shapeshifted; an Empowered attack's
+    const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1) * (d.life <= d.max * LOW ? A.stunLow || 1 : 1) * (!S.src && meIs.Shapeshifted() ? A.stunShifted || 1 : 1) * (o.crit ? A.stunCrit || 1 : 1) * (S.stunEmp || 1);   // the tree's stun buildup after Shapeshifting, within 2 m, on Low Life ones, while Shapeshifted; an Empowered attack's
     if (!N.stun) AL.stun || o.full && S.P.attack && SU.local_always_heavy_stun_on_full_life ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) :
       build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);   // Marohi Erqi: on full life
     // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
@@ -1112,7 +1116,7 @@ export function initScene(el, api) {
     if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * AC * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (A.incFx || 1) * (d.inc || 0) + (o.crit ? A.bleedCrit || 0 : 0))) {
       const cut = d.inc > 0; me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
       const ri = me.incs.reduce((t, u) => t + u.n, 0);
-      inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: (A.bleedBase ?? DUR.bleed) * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) * (cut ? A.bleedIncision || 1 : 1) * (d.st.poison > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_bleed_effect_+%_final_vs_poisoned'] || 0) / 100 : 1) });   // Concoct; the tree's against Incision; Admixture against the Poisoned
+      inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: (A.bleedBase ?? DUR.bleed) * A.bleedTime * VS('bleed', 'dur'), eff: A.bleedEffect * VS('bleed', 'eff') * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) * (cut ? A.bleedIncision || 1 : 1) * (d.st.poison > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_bleed_effect_+%_final_vs_poisoned'] || 0) / 100 : 1) });   // Concoct; the tree's against Incision; Admixture against the Poisoned
     }
     const IN = (A.incision || 0) + (roll(A.incChance?.[0]) ? 1 : 0) + (roll(A.incChance?.[1]) ? 10 : 0);
     if (IN) d.inc = Math.min(INCISION.max, (d.inc || 0) + IN);
@@ -1121,11 +1125,13 @@ export function initScene(el, api) {
     // of it: its damage doubled (AGGRAVATED), as a moving enemy's is (tickDummy)
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (sheet().uHit?.aggr || 0) : 0) + (S.aggX || 0)
       + (S.P.attack && sheet().aggOld && time - (d.bleedAt ?? time) > sheet().aggOld ? 100 : 0)   /* the tree's: bleeding older than its seconds (since it began) */
-      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
+      + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (d.st.pin > 0 && SU.aggravate_bleeding_when_inflicted_vs_pinned_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
-    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) });   // Admixture, Poison III against the Bleeding
+    // Escalating Toxins: Poison lasts longer per Poison you inflicted Recently, with its other increased duration
+    const PR = A.poisonRecent, PD = PR ? (1 + (PR.inc + Math.min(100, PR.per * (me.poisAt = (me.poisAt || []).filter(u => time - u <= RECENT)).length)) / 100) / (1 + PR.inc / 100) : 1;
+    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime * VS('poison', 'dur') * PD / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * VS('poison', 'eff') * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) });   // Admixture, Poison III against the Bleeding
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -1154,7 +1160,7 @@ export function initScene(el, api) {
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, (a === 'stun' ? d.stat.poise : d.stat.ailPoise) * awe(d, a === 'stun' ? 'stun' : 'ailment')) * hard) * 100; d.calm = 0;
     if (d.bar[a] < (['freeze', 'electrocute', 'pin'].includes(a) && sheet().ccAt || 100)) return;   // Sine Aequo: Immobilised at its share of the buildup
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
-    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
+    inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime * vsAil(A, 'freeze', 'dur', d, S) : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
     if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) gainPct('life', recOn('stunRare'));
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
