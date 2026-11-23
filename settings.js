@@ -77,7 +77,7 @@ export function watchUpdates(el) {
 
 export function initSettings(el, loot) {
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-  let msg = '', upd = '', list = null, win = {};   // upd: what the updates button found; list: the leagues of the trade site; win: the app's window (serve.py /settings)
+  let msg = '', upd = '', updErr = false, list = null, win = {};   // upd: what the updates button found; list: the leagues of the trade site; win: the app's window (serve.py /settings)
   leagues().then(l => { list = l; render(); }, () => { list = []; render(); });
   const winSet = body => fetch('settings', body && { method: 'POST', body: JSON.stringify(body) }).then(r => r.json()).then(v => { win = v; render(); }, () => {});
   winSet();
@@ -108,7 +108,7 @@ export function initSettings(el, loot) {
           ${win.startup ? check('on', 'Open with Windows') : ''}
           ${win.app ? check('tray', 'Only in the notification area (click its icon to open the window)') : ''}</div>` : ''}
         <div class="optrow"><label>${t('Language')} <select data-lang>${Object.entries(LANGS).map(([k, name]) => opt(k, name, k === lang)).join('')}</select></label></div>
-        ${win.app ? `<div class="optrow"><button data-do="update">${t('Check for updates')}</button>${upd ? ` <span class="optmsg">${esc(upd)}</span>` : ''}</div>` : ''}
+        ${win.app ? `<div class="optrow"><button data-do="update">${t('Check for updates')}</button>${upd ? ` <span class="${updErr ? 'opterr' : 'optmsg'}">${esc(upd)}</span>` : ''}</div>` : ''}
       </section>
       ${msg ? `<p class="opterr">${esc(msg)}</p>` : ''}
     </div>`;
@@ -137,8 +137,8 @@ export function initSettings(el, loot) {
     if (d.dataset.cap) { wait = wait === d.dataset.cap ? null : d.dataset.cap; msg = ''; }
     else if (d.dataset.do === 'defaults') { S.keys = { ...SCENE_KEYS }; save(); }
     else if (d.dataset.do === 'update') {   // a newer one shows in the top bar, with its button
-      upd = t('Checking…');
-      lookNow().then(u => { upd = !u || u.error ? t('The updates could not be checked ({0}).', u?.error || '?') : u.newer ? t('Update available: Exilewright {0}', u.latest) : t('Exilewright {0} is the latest version.', u.version); render(); });
+      upd = t('Checking…'); updErr = false;
+      lookNow().then(u => { updErr = !u || !!u.error; upd = updErr ? t('The updates could not be checked ({0}).', u?.error || '?') : u.newer ? t('Update available: Exilewright {0}', u.latest) : t('Exilewright {0} is the latest version.', u.version); render(); });
     }
     render();
   };
