@@ -963,7 +963,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
-  enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon', undead: 'Undead' };
+  rare_and_unique_enemies: 'RareOrUnique', enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon', undead: 'Undead' };
 // [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
 const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
@@ -1014,6 +1014,7 @@ const WHILE = { while_surrounded: 'Surrounded', while_moving: 'Moving', while_in
   if_youve_dealt_projectile_attack_hit_recently: 'HitProjectileRecently', if_youve_dealt_melee_hit_recently: 'HitMeleeRecently', if_consumed_frenzy_charge_recently: 'ConsumedFrenzyRecently',
   while_ignited: 'Ignited', if_enemy_chilled_recently: 'ChilledEnemyRecently', if_enemy_ignited_recently: 'IgnitedEnemyRecently', if_enemy_shocked_recently: 'ShockedEnemyRecently',
   if_you_have_consumed_a_corpse_recently: 'ConsumedCorpseRecently', when_no_remaining_life_flask_uses: 'NoLifeFlaskUses', if_been_heavy_stunned_recently: 'HeavyStunnedRecently',
+  during_flask_effect: 'FlaskEffect', while_using_charm: 'UsingCharm', for_4_seconds_on_crit: 'CritRecently', for_4_seconds_on_cast: 'CastRecently', if_minion_died_recently: 'MinionDiedRecently',
   if_triggered_skill_recently: 'TriggeredRecently', while_shapeshifted: 'Shapeshifted', if_youve_shapeshifted_to_animal_recently: 'ShapeshiftedRecently', if_youve_reverted_recently: 'RevertedRecently',
   ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`while_affected_by_herald_of_${h.toLowerCase()}`, `HeraldOf${h}`])) };
 // the tree's critical hit chance (crit) / damage bonus (critBonus) while you, or the enemy (e), are in a state
@@ -1021,7 +1022,8 @@ const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit
   ['critical_strike_chance_against_enemies_on_full_life_+%', 'crit', 'FullLife', 'e'], ['critical_strike_multiplier_+_if_have_not_dealt_critical_strike_recently', 'critBonus', 'NotCritRecently'],
   ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
   ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently'],
-  ['critical_hit_chance_+%_vs_humanoids', 'crit', 'Humanoid', 'e'], ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently']];
+  ['critical_hit_chance_+%_vs_humanoids', 'crit', 'Humanoid', 'e'], ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently'],
+  ['critical_strike_chance_+%_if_triggered_skill_recently', 'crit', 'TriggeredRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -1423,9 +1425,12 @@ export function skill(g, b, treeGear) {
     if (sum[k]) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val: sum[k], what: 'gain', from, to });
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
+  // the tree's "Every (10) Rage also grants increased Fire / Physical / Spell Damage"
+  for (const [k, div, ty, ok] of [['fire_damage_+%_per_rage', 1, 'fire', true], ['physical_damage_+%_per_10_rage', 10, 'physical', true], ['spell_damage_+%_per_rage', 1, null, tags.includes('spell')]])
+    if (ok && sum[k]) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div }], val: sum[k], what: 'damage', w: ty ? Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) : out.incW });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
   // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
-  for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against']) {
+  for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against', 'to']) {
     const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'ActorCondition', actor: 'enemy', var: cv }];
     if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
     // and its critical hit chance / damage bonus ("critical_strike_chance_+%_vs_shocked_enemies")
@@ -1446,7 +1451,7 @@ export function skill(g, b, treeGear) {
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
   const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
   by('%_attack_damage_per_glory_consumed_for_6_seconds_up_to_100', 'GloryConsumedPast6', 100, attack); by('combo_finisher_damage_+%_up_to_40%', 'ComboConsumed', 40);
-  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
+  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('damage_+%_per_warcry_used_recently', 'WarcriesRecently'); by('damage_+%_per_different_warcry_used_recently', 'DifferentWarcriesRecently'); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
   const GP = v(sum, 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds');
   if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
   for (const [s, cv] of Object.entries(WHILE)) {

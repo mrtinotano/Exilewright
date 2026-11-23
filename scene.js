@@ -717,7 +717,8 @@ export function initScene(el, api) {
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: minionsNear(),
       EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0),
       GloryConsumedPast6: ge.reduce((t, x) => t + x.n, 0), GlorySkillsUsedPast6: ge.length,
-      ComboConsumed: S.comboSpent || 0, HazardsTriggeredRecently: (me.hazTrig || []).filter(t => time - t <= RECENT).length };
+      ComboConsumed: S.comboSpent || 0, HazardsTriggeredRecently: (me.hazTrig || []).filter(t => time - t <= RECENT).length,
+      WarcriesRecently: used.filter(u => u.warcry && time - u.t <= RECENT).length, DifferentWarcriesRecently: new Set(used.filter(u => u.warcry && time - u.t <= RECENT).map(u => u.name)).size };
     let n;
     if (c.type === 'ActorCondition' || c.type === 'Condition') n = (v in is ? is[v] : !en && meIs[v]?.()) ? 1 : 0;
     else if (c.type === 'MultiplierThreshold') n = v === 'Rage' && S.enraged || v in count && count[v] >= (c.threshold || 0) ? 1 : 0;
@@ -2218,6 +2219,7 @@ export function initScene(el, api) {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
         if (e.keep && e.slain) fallen(S, e);
+        if (e.slain) me.minionDiedAt = time;   // the tree's "if one of your Minions has died Recently"
         // Deathmarch: on death it heals the allied minions within its radius for its % of its life (their ailments: minions have none here)
         const DM = e.slain && S.dmg?.sum?.['minion_on_death_heal_nearby_minions_for_%_of_life_and_remove_ailments'];
         if (DM) for (const o of objs) if (o !== e && o.minion && !o.dead && o.segs?.[0]?.max && dist(o.pos, e.pos) <= S.dmg.sum.minion_on_death_heal_radius / 10) o.segs[0].life = Math.min(o.segs[0].max, o.segs[0].life + L * DM / 100);
@@ -4385,7 +4387,7 @@ export function initScene(el, api) {
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
     if (!auto) { const T = S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime; me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
@@ -5447,7 +5449,7 @@ export function initScene(el, api) {
     ...Object.fromEntries([['chill', 'Chilled'], ['ignite', 'Ignited'], ['shock', 'Shocked']].map(([a, n]) => [n + 'EnemyRecently', () => time - (me.inflAt?.[a] ?? -99) <= RECENT])),
     ...Object.fromEntries(['Ice', 'Ash', 'Thunder', 'Plague', 'Blood'].map(h => [`HeraldOf${h}`, () => !!tog[`Herald of ${h}`]])), MarkRecently: () => used.some(u => u.mark && time - u.t <= RECENT), AllyInPresence: () => inPresence(o => o.minion), ArcaneSurge: () => surge() > 0,
     RareOrUniqueInPresence: () => inside(pp, sheet().overgrow.r).some(d => ['rare', 'unique'].includes(d.stat.rarity)),
-    AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
+    AttackedRecently: () => used.some(u => u.attack && time - u.t <= RECENT), CastRecently: () => used.some(u => u.spell && time - u.t <= RECENT), MinionDiedRecently: () => time - (me.minionDiedAt ?? -99) <= RECENT, NotAttackedRecently: () => !used.some(u => u.attack && u.t < time && time - u.t <= RECENT) };
   // the tree's attack / cast speed while you are in a state (calc.js SPEED_WHILE). note: the game adds it to the skill's
   // increased speed, a factor of its own here
   // the tree's life and mana regeneration per second while you are in a state (calc.js REGEN_WHILE)
