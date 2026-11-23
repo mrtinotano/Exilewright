@@ -1076,7 +1076,7 @@ export function initScene(el, api) {
     if (IN) d.inc = Math.min(INCISION.max, (d.inc || 0) + IN);
     // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction), Herald of Blood's explosion's
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
-    // of it: its damage doubled (AGGRAVATED). note: a moving enemy's own extra bleeding damage is not simulated
+    // of it: its damage doubled (AGGRAVATED), as a moving enemy's is (tickDummy)
     const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (sheet().uHit?.aggr || 0) : 0) + (S.aggX || 0)
       + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
@@ -4695,7 +4695,9 @@ export function initScene(el, api) {
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
-      for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(d.burn[a], a !== 'ignite');
+      // bleeding deals its extra damage while the enemy moves, as aggravated (keywords.json Bleeding): moved since the last tick
+      const mov = d.lastAt && dist(d.pos, d.lastAt) > .05; d.lastAt = { x: d.pos.x, z: d.pos.z };
+      for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(a === 'bleed' && mov ? { ...d.burn[a], agg: true } : d.burn[a], a !== 'ignite');
       if (d.burn2?.until > time) add(d.burn2.v, true);   // a second poison (Overwhelming Toxicity)
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
@@ -4771,7 +4773,7 @@ export function initScene(el, api) {
     me.flame = (me.flame || 0) + n * F.ratio / 100;
     if (me.maxM > 0 && me.flame >= me.maxM) { if (sheet().earch?.full) me.earch = Math.min(me.earch || 0, time); me.flame -= me.maxM * F.lose / 100; hurt((me.maxL + me.maxE) * F.hit / 100, 0, 'fire', false, null); }
   }
-  function hurt(n, chaos, el, crit, d, hit = false) {
+  function hurt(n, chaos, el, crit, d, hit = false, noEs = false) {
     if (!(n > 0)) return;
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
@@ -4791,8 +4793,9 @@ export function initScene(el, api) {
     const DK = sheet().darkness; if (DK) { me.dark = (me.dark || []).filter(u => u.until > time); const k = Math.min(n, DK - me.dark.reduce((t, u) => t + u.v, 0)); if (k > 0) { me.dark.push({ v: k, until: time + sheet().darkFor }); chaos *= 1 - k / n; n -= k; } }
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const BY = hit && me.es < me.maxE / 2 ? (sheet().uDef?.bypass || 0) / 100 : 0;   // The Unleashed: that share of the hit bypasses energy shield below half of it
-    const other = (n - chaos) * (1 - BY), es0 = me.es; let e = Math.min(me.es, other), left = other - e + (n - chaos) * BY; me.es -= e;
-    e = Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
+    const DB = noEs ? 0 : 1;   // bypassing energy shield (bleeding, The Black Doubt's damage over time)
+    const other = (n - chaos) * (1 - BY), es0 = me.es; let e = Math.min(me.es, other * DB), left = other - e + (n - chaos) * BY; me.es -= e;
+    e = Math.min(me.es, chaos * 2 * DB); me.es -= e; left += chaos - e / 2;
     // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
     const BK = d && es0 > me.es && onS('Barkskin');
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
@@ -5053,7 +5056,7 @@ export function initScene(el, api) {
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
     const DR = OR.dmgRolls || {}, rollOf = el => { const n = (DR[el] || 0) + (lowLife() ? DR.low || 0 : 0); return UL || n < 0 ? Math.min(Math.random(), Math.random()) : n > 0 ? Math.max(Math.random(), Math.random()) : Math.random(); };   // Lucky: the higher of two rolls
     const TW = (OR.takenWhile || []).reduce((m, w) => meIs[w.cv]() ? m * (1 + w.val / 100) : m, 1);   // more / less damage taken in a state (before this hit counts)
-    const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (note: the other 5 s' less damage over time is not played)
+    const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (heart(): over time the other 5 s)
     const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
     const SE = sheet(), EG = SE.enemyChaos && dist(d.pos, pp) <= SE.overgrow.r ? SE.enemyChaos / 100 : 0;   // Evergrasping Ring: enemies in your Presence gain extra chaos
     const AH = EG ? { ...a.hits, chaos: [0, 1].map(k => (a.hits.chaos?.[k] || 0) + Object.values(a.hits).reduce((t, h) => t + h[k], 0) * EG) } : a.hits;
@@ -5439,10 +5442,10 @@ export function initScene(el, api) {
     if (TRF && time - (me.riftAt ?? -99) >= TRF.temporal_rift_snapshot_interval / 1000) {
       me.riftAt = time; me.rifts.push({ x: pp.x, z: pp.z, life: me.life, mana: me.mana, es: me.es }); if (me.rifts.length > TRF.temporal_rift_maximum_snapshots) me.rifts.shift();
     }
-    // Time of Need: while on, every its interval it heals its life and removes your elemental ailments
-    // note: its interval is "modifiable", the cooldown recovery rate of the build is not applied to it here
-    const TN = onS('Time of Need')?.dmg?.stats;
-    if (TN && time - (me.needAt ??= time) >= TN.base_cooldown_modifiable_repeat_interval_ms / 1000) {
+    // Time of Need: while on, every its interval (a "modifiable" one: shorter by your cooldown recovery rate) it heals its
+    // life and removes your elemental ailments
+    const TND = onS('Time of Need')?.dmg, TN = TND?.stats;
+    if (TN && time - (me.needAt ??= time) >= TN.base_cooldown_modifiable_repeat_interval_ms / 1000 / Math.max(.01, 1 + ((TND.sum?.['cooldown_speed_+%'] || 0) + (TN['base_cooldown_speed_+%'] || 0)) / 100)) {
       me.needAt = time; me.life = Math.min(me.maxL, me.life + TN.skill_time_of_need_gain_x_life);
       for (const a of EL_AIL) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; }
       fx.ring(pp, 1.5, .2, 'gold', .5); hudT = 0;
@@ -5540,15 +5543,18 @@ export function initScene(el, api) {
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
     if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + sheet().stunDecay / 100 : 1));   // the tree's Heavy Stun buildup emptying faster
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick
-      me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0;
+      me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0, bled = 0, bEl = 'physical';
+      // bleeding: its extra damage while you move, and it bypasses energy shield (keywords.json Bleeding)
       for (const a in me.burn) if (me.st[a] > 0) {
-        const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5;
+        const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5 * (a === 'bleed' && time - (me.movedAt ?? -9) < .5 ? AGGRAVATED : 1);
+        if (a === 'bleed') { bled += got; bEl = B.el; continue; }
         n += got; if (B.el === 'chaos') chaos += got; if (got > best) { best = got; worst = B.el; }
       }
+      if (bled > 0) hurt(bled * heart(), 0, bEl, false, me.by, false, true);
       // Grinning Immolation: ignited after dealing a critical hit, its % of your maximum life and energy shield as fire a second
       const GI = c.grin && meIs.CritRecently() ? playerTakes(withCharms(c), 'fire', (me.maxL + me.maxE) * c.grin / 100, false) * .5 : 0;
       if (GI) { n += GI; if (GI > best) worst = 'fire'; }
-      if (n > 0) { const k = heart(); hurt(n * k, chaos * k, worst, false, me.by); }
+      if (n > 0) { const k = heart(); hurt(n * k, chaos * k, worst, false, me.by, false, !!c.uDef?.doubt); }
     }
     const p = { x: pp.x, y: .9, z: pp.z }, S = me.st;
     if (S.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
@@ -5566,7 +5572,7 @@ export function initScene(el, api) {
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
     const LG = RG.life > 0 && !c.vaal && !PU ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, RL - me.life));
     if (c.lifeToEs) me.es = Math.min(E, me.es + LG); else { me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI); }   // Ligurium Talisman: all of it to energy shield
-    if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (note: its damage over time bypassing energy shield is not played)
+    if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (its damage over time bypassing energy shield: hurt())
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
     if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
     if (c.furyGround && (walk || move) && time - (me.furyAt ?? -9) >= .5) { me.furyAt = time; ground('burning', { x: pp.x, z: pp.z }, .8, 8, { el: 'fire', els: ['fire'], ail: ['ignite'], src: 'ground', label: 'Birth of Fury', raw: { fire: L * c.furyGround / 100 } }); }   // Birth of Fury: Ignited Ground while moving, 8 s (note: its radius is not in the data)
@@ -5633,14 +5639,16 @@ export function initScene(el, api) {
       if (me.safe > 0 || dist(h, pp) > h.r) continue;
       const c = withCharms(sheet()); let n = 0, chaos = 0;
       for (const el in h.dot) { const got = playerTakes(c, el, h.dot[el], false) * .5; n += got; if (el === 'chaos') chaos += got; }
-      const k = heart(); hurt(n * k, chaos * k, h.el, false, h.d);
+      const k = heart(); hurt(n * k, chaos * k, h.el, false, h.d, false, !!c.uDef?.doubt);
     }
   }
   // Heartstopper: 50% less damage over time for a second after it starts, 50% more after (its start: none in the tick before)
+  // Keeper of the Arc: less damage over time taken every other 5 s, the ones without its less damage from hits
   function heart() {
-    if (!sheet().heart) return 1;
+    const KA = sheet().uDef?.alt && Math.floor(time / 5) % 2 === 1 ? 1 + sheet().uDef.alt / 100 : 1;
+    if (!sheet().heart) return KA;
     if (!(time - (me.dotLast ?? -99) <= .6)) me.dotStart = time;
-    me.dotLast = time; return time - me.dotStart <= 1 ? .5 : 1.5;
+    me.dotLast = time; return KA * (time - me.dotStart <= 1 ? .5 : 1.5);
   }
   function step(dt) {
     // movement: a roll or a dash, else W A S D or the stick (not while a skill is being used: note: the game's own lock is
