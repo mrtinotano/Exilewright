@@ -66,8 +66,24 @@ addEventListener('keydown', e => {   // Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z); a text b
   const k = e.key.toLowerCase();
   if (k === 'z' || k === 'y') { e.preventDefault(); step(k === 'z' && !e.shiftKey); }
 });
+// A build is data from outside (a file, a shared code, Path of Building, what an older version saved) and its numbers
+// and names end up in the page's markup: nothing in it keeps the characters that start markup, but its name and its
+// notes, which are only ever shown as text; what the page walks through is a list, and its class one the game has.
+function clean(b) {
+  const strip = o => { for (const k of Object.keys(o)) { const v = o[k]; if (/[<"]/.test(k)) delete o[k]; else if (typeof v === 'string') o[k] = v.replace(/[<"]/g, ''); else if (v && typeof v === 'object') strip(v); } };
+  const { name, notes } = b;
+  strip(b); b.name = String(name ?? ''); b.notes = String(notes ?? '');
+  for (const k of ['gems', 'nodes', 'ascNodes']) if (!Array.isArray(b[k])) b[k] = [];
+  b.gems = b.gems.filter(g => g && typeof g.name === 'string');
+  if (b.items && typeof b.items !== 'object') delete b.items;
+  if (!ascs.some(a => a.name === b.asc || a.class === b.asc)) b.asc = ascs[0].class;
+  return b;
+}
+{ const b = clean({ name: 'a<"b', asc: '"><img>', gems: [{ name: 'Fi"<re', level: '1"><img onerror=x>' }, 5], nodes: 3, '<k': 1, items: { 'he"lm': {}, body: { base: '<b>' } } });
+  console.assert(b.name === 'a<"b' && b.notes === '' && b.asc === ascs[0].class && JSON.stringify(b.gems) === '[{"name":"Fire","level":"1>img onerror=x>"}]'
+    && !b.nodes.length && !('<k' in b) && JSON.stringify(b.items) === '{"body":{"base":"b>"}}', 'clean'); }
 function select(id) {
-  cur = id; rev++; localStorage.setItem(KEY + ':last', id); if (B()) linkMetas(B()); shown = JSON.stringify(B() ?? null); undoBtns();
+  cur = id; rev++; localStorage.setItem(KEY + ':last', id); if (B()) linkMetas(clean(B())); shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }
@@ -459,7 +475,7 @@ const openShare = async exporting => {
       try {
         const url = await upload(s.id, code);
         await navigator.clipboard.writeText(url).catch(() => {});
-        out.innerHTML = `${t('Link copied:')} <a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`;
+        out.innerHTML = `${t('Link copied:')} ${/^https?:\/\//.test(url) ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>` : esc(url)}`;   // a link only to a web page
       } catch (err) {   // no serve.py, or the site refused: hand the code over by hand
         await navigator.clipboard.writeText(code).catch(() => {});
         out.innerHTML = `${esc(t('{0} could not be reached from here ({1}). The code is copied: paste it on', s.name, err.message))} <a href="${s.home}" target="_blank" rel="noopener">${s.home}</a>`;
@@ -939,7 +955,7 @@ function nodeAt(mx, my) {
   }
   return best;
 }
-const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);   // for text and for a quoted attribute
 const KIND = { keystone: 'Keystone', notable: 'Notable', jewel: 'Jewel socket', attribute: 'Attribute', small: 'Passive' };
 function showTip(id, mx, my) {
   const tip = $('tip'), n = N[id];
@@ -1011,21 +1027,20 @@ const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg)
 const BAR_KEY = SCENE_KEY + ':bar', sceneBars = (() => { try { return JSON.parse(localStorage.getItem(BAR_KEY) || '{}'); } catch { return {}; } })();
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
 const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity, sceneCfg.mods);
-const attr = x => esc(x).replace(/"/g, '&quot;');
 const enWrap = Object.assign(document.createElement('details'), { className: 's-enwrap' });
 enWrap.innerHTML = `<summary>${t('Enemies')}</summary><div id="sceneEnemy"></div>`;
 $('scene').append(enWrap);
 enWrap.onchange = $('sceneSkills').onchange; enWrap.onclick = $('sceneSkills').onclick;
 enWrap.querySelector('summary').onmouseup = e => e.target.blur();   // Space rolls in the scene, it must not fold the panel
 $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(PLACED.length))}</small></h3>
-  <div class="en-pick"><input id="enFind" type="search" placeholder="${attr(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
+  <div class="en-pick"><input id="enFind" type="search" placeholder="${esc(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
   <div id="enDetail"></div>`;
 const enFind = $('enFind'), enList = $('enList');
 let enAt = 0;   // row the arrow keys are on
 function listEnemies() {
   const { total, list } = findEnemies(enFind.value, 60);
   enAt = Math.max(0, Math.min(enAt, list.length - 1));
-  enList.innerHTML = list.map((m, i) => `<div class="en-row${i === enAt ? ' at' : ''}${m.id === sceneCfg.enemy ? ' on' : ''}" data-id="${attr(m.id)}">
+  enList.innerHTML = list.map((m, i) => `<div class="en-row${i === enAt ? ' at' : ''}${m.id === sceneCfg.enemy ? ' on' : ''}" data-id="${esc(m.id)}">
       <span>${esc(m.name)}${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}</span>
       <small>${[m.boss && `<b>${t('Boss')}</b>`, m.category && t(m.category), m.areas?.[0] && esc(m.areas[0])].filter(Boolean).join(' · ')}</small></div>`).join('')
     + (total > list.length ? `<p class="note">${t('{0} more: type to narrow the list', fmt(total - list.length))}</p>` : total ? '' : `<p class="note">${t('No enemy matches')}</p>`);
@@ -1063,7 +1078,7 @@ function renderEnemy() {
   const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key, rar, false, sceneCfg.mods), vp = versusPlayer(atk, st, c);
   const on = new Set(sceneCfg.mods), modText = x => esc([x.name && tn(x), ...shownLines(x.stats)].filter(Boolean).join(' · '));
   const mods = !['magic', 'rare'].includes(rar) ? '' : `<details class="en-mods"${on.size ? ' open' : ''}><summary>${t('Modifiers')} <small>${on.size}</small></summary>
-    ${MON_MODS.filter(x => shownLines(x.stats).length).map(x => `<label><input type="checkbox" data-enmod="${attr(x.id)}"${on.has(x.id) ? ' checked' : ''}> ${modText(x)}</label>`).join('')}</details>`;
+    ${MON_MODS.filter(x => shownLines(x.stats).length).map(x => `<label><input type="checkbox" data-enmod="${esc(x.id)}"${on.has(x.id) ? ' checked' : ''}> ${modText(x)}</label>`).join('')}</details>`;
   const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
   const el = (type, text) => `<span class="dm ${type}">${text}</span>`;
   const rng = r => r[0] === r[1] ? fmt(r[0]) : `${fmt(r[0])}–${fmt(r[1])}`;
@@ -1091,11 +1106,11 @@ function renderEnemy() {
     : `<p class="note">${t(dmg.reason || 'This skill does not deal direct damage')}. ${t('In the scene each of its hits takes 1/8 of the enemy\'s life, marked with ~.')}</p>`);
   const placing = !!scene3d?.placing();
   box.innerHTML = `<div class="en-head"><b>${esc(m.name)}</b>${m.variant ? ` <small>${esc(m.variant)}</small>` : ''}<span>${[m.boss && t('Boss'), m.category && t(m.category)].filter(Boolean).join(' · ')}</span></div>
-    ${m.areas?.length ? `<p class="note en-areas" title="${attr(m.areas.join('\n'))}">${esc(m.areas.slice(0, 3).join(' · '))}${m.areas.length > 3 ? ' …' : ''}</p>` : ''}
-    <div class="sk-set"><label><span>${t('Level')} ${sceneCfg.level ? `<a data-en="mylevel" title="${attr(t('Use the level of your build ({0})', b.level))}">↺</a>` : `<small>${t('yours')}</small>`}</span>
+    ${m.areas?.length ? `<p class="note en-areas" title="${esc(m.areas.join('\n'))}">${esc(m.areas.slice(0, 3).join(' · '))}${m.areas.length > 3 ? ' …' : ''}</p>` : ''}
+    <div class="sk-set"><label><span>${t('Level')} ${sceneCfg.level ? `<a data-en="mylevel" title="${esc(t('Use the level of your build ({0})', b.level))}">↺</a>` : `<small>${t('yours')}</small>`}</span>
         <input type="number" min="1" max="100" step="1" data-en="level" value="${L}"></label>
       <label><span>${t('Rarity')}</span><select data-en="rarity">${RARITIES.map(r => `<option value="${r}" ${r === rar ? 'selected' : ''}>${t(r[0].toUpperCase() + r.slice(1))}</option>`).join('')}</select></label>
-      <label><span>${t('Attack')}</span><select data-en="attack">${list.map(a => `<option value="${attr(a.key)}" ${a.key === key ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>
+      <label><span>${t('Attack')}</span><select data-en="attack">${list.map(a => `<option value="${esc(a.key)}" ${a.key === key ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>
     ${mods}${atk.description ? `<p class="note">${esc(atk.description)}</p>` : ''}
     <table class="en-t">${stats.join('')}</table>
     <h4>${t('{0} against you', esc(atk.name))} <small>${t('hit → after your defences')}</small></h4>
