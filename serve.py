@@ -57,7 +57,7 @@ in a native window: WebView2 embedded, no browser around it. Its data (the build
 or to "profile" next to the executable in the portable version; closing the window stops everything. It always uses
 port 8767, as the saved builds belong to the page's address.
 
-Usage: python3 serve.py [port] [overlay] [app]   (default port 8765)
+Usage: python3 serve.py [port] [overlay] [app] [open]   (default port 8765; open: the page in the browser too)
 """
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -92,9 +92,20 @@ DOWNLOAD = [  # link pattern -> raw build code url
     (r'rentry\.co/(?:paste/)?(\w+)', 'https://rentry.co/paste/{}/raw'),
 ]
 UA = {'User-Agent': 'Exilewright (local build planner)'}
+
+
+def documents():
+    """the user's Documents folder as Windows has it, which may be moved to OneDrive"""
+    if sys.platform == 'win32':
+        buf = ctypes.create_unicode_buffer(260)
+        if ctypes.windll.shell32.SHGetFolderPathW(None, 5, None, 0, buf) == 0:   # 5: CSIDL_PERSONAL (Documents)
+            return buf.value
+    return os.path.expanduser('~/Documents')
+
+
 # note: where Path of Building 2 keeps its builds on Windows by default, and only the ones not in a folder of
 # their own; its "buildPath" setting if someone keeps them elsewhere
-POB = os.path.join(os.path.expanduser('~'), 'Documents', 'Path of Building (PoE2)', 'Builds')
+POB = os.path.join(documents(), 'Path of Building (PoE2)', 'Builds')
 
 
 def call(url, body=None):
@@ -109,7 +120,7 @@ def call(url, body=None):
 TRADE = 'https://www.pathofexile.com/api/trade2/'
 PASS = ('Retry-After', 'X-Rate-Limit-Policy', 'X-Rate-Limit-Rules', 'X-Rate-Limit-Ip', 'X-Rate-Limit-Ip-State',
         'X-Rate-Limit-Account', 'X-Rate-Limit-Account-State')
-trade_data = {}
+trade_data = {}   # the site's lists (leagues, stats...): what -> (when it was asked, the answer), asked again after a day
 
 
 def trade(path, body=None):
@@ -355,7 +366,7 @@ def overlay():
     pad, last = [False], [None, None]
 
     def poll():
-        nonlocal held
+        nonlocal held, gone
         if win and float(root.attributes('-alpha')):
             # shown: a click anywhere else closes it, and so does any key the game could take (it moves the character,
             # opens a menu...). Not with Ctrl, Alt or Win down: that is copying the next item, a picture of the screen
@@ -424,14 +435,18 @@ def tongue():
         return ''
 
 
-def tell(text):
-    """a line of this server's own in the window over the game, in the app's words for it (i18n/<code>.json)"""
+def words(text):
+    """a text of this server's own in the app's words for it (i18n/<code>.json)"""
     try:
         with open(os.path.join(HERE, 'i18n', TONGUE + '.json'), encoding='utf-8') as f:
-            text = json.load(f).get(text) or text
+            return json.load(f).get(text) or text
     except (OSError, ValueError):
-        pass
-    OVER[0]({'kind': '', 'title': 'Exilewright', 'name': '', 'lines': [[(text, '')]]})
+        return text
+
+
+def tell(text):
+    """a line of this server's own in the window over the game"""
+    OVER[0]({'kind': '', 'title': 'Exilewright', 'name': '', 'lines': [[(words(text), '')]]})
 
 
 def watch_clipboard():
@@ -528,8 +543,6 @@ def watch_keys():
 VERSION = '0.66'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
-if FROZEN and sys.stderr is None:   # no console in the executable: the server's log goes nowhere
-    sys.stdout = sys.stderr = open(os.devnull, 'w')
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
 SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder: the most a POST may bring
@@ -579,6 +592,10 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store')
         super().end_headers()
 
+    if FROZEN:   # the executable's log is a file: not every request the page makes, only the ones that go wrong
+        def log_request(self, *_):
+            pass
+
     def reply(self, code, text):
         data = text.encode() if isinstance(text, str) else text
         self.send_response(code)
@@ -602,12 +619,12 @@ class Handler(SimpleHTTPRequestHandler):
         what = u.path[len('/trade/'):]
         try:
             if what in ('data/stats', 'data/filters', 'data/leagues', 'data/static') and body is None:
-                if what not in trade_data:
+                if what not in trade_data or time.monotonic() - trade_data[what][0] > 86400:
                     code, data, headers = trade(what)
                     if code != 200:
                         return self.reply_json(code, data, headers)
-                    trade_data[what] = data
-                return self.reply_json(200, trade_data[what])
+                    trade_data[what] = time.monotonic(), data
+                return self.reply_json(200, trade_data[what][1])
             if what == 'fetch' and body is None:
                 ids = one('ids').split(',')
                 if not (0 < len(ids) <= 10 and all(re.fullmatch(r'[0-9a-f]{64}', i) for i in ids) and re.fullmatch(r'[\w-]+', one('query'))):
@@ -871,14 +888,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def game_folder():
-    """Documents/My Games/Path of Exile 2, where the game looks for .filter files (Documents as Windows has it, which may
-    be moved to OneDrive)"""
-    docs = os.path.expanduser('~/Documents')
-    if sys.platform == 'win32':
-        buf = ctypes.create_unicode_buffer(260)
-        if ctypes.windll.shell32.SHGetFolderPathW(None, 5, None, 0, buf) == 0:   # 5: CSIDL_PERSONAL (Documents)
-            docs = buf.value
-    return os.path.join(docs, 'My Games', 'Path of Exile 2')
+    """Documents/My Games/Path of Exile 2, where the game looks for .filter files"""
+    return os.path.join(documents(), 'My Games', 'Path of Exile 2')
 
 
 class Server(ThreadingHTTPServer):
@@ -895,6 +906,14 @@ def profile():
     if os.path.exists(os.path.join(here, 'portable')) or not FROZEN:
         return os.path.join(here, 'profile')
     return os.path.join(os.environ.get('LOCALAPPDATA', here), 'Exilewright')
+
+
+if FROZEN and sys.stderr is None:   # no console in the executable: what goes wrong (a request, a thread that stops) is
+    try:                             # written to log.txt in the profile, this run's only
+        os.makedirs(profile(), exist_ok=True)
+        sys.stdout = sys.stderr = open(os.path.join(profile(), 'log.txt'), 'w', encoding='utf-8', buffering=1)
+    except OSError:
+        sys.stdout = sys.stderr = open(os.devnull, 'w')
 
 
 def app(url):
@@ -1007,6 +1026,17 @@ except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise
     server = None
+    try:   # unless who has the port is not the app (another program, or Windows keeps it): the window would open empty
+        ours = b'Exilewright' in urlopen(f'http://127.0.0.1:{port}/', timeout=5).read()
+    except Exception:
+        ours = False
+    if not ours:
+        sorry = words('Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).').replace('{0}', str(port))
+        if sys.platform == 'win32':
+            ctypes.windll.user32.MessageBoxW(None, sorry, 'Exilewright', 0x10)
+        sys.exit(sorry)
+if 'open' in ARGS:   # start.cmd: the page in the browser, now that the server listens
+    webbrowser.open(f'http://127.0.0.1:{port}/')
 if CLIP and server and 'nowatch' not in ARGS:   # nowatch: a copy only for looking at the page, leaving the game's keys to the app
     threading.Thread(target=watch_game, daemon=True).start()
 if 'app' in ARGS:

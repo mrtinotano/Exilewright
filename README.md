@@ -22,17 +22,17 @@ It opens in a window of its own (WebView2, part of Windows), maximized the first
 closing the window closes it. Windows may warn that the app is not recognised, because it is not signed: "More info"
 → "Run anyway".
 
-When it opens, and whenever its window comes back to the front (at most every 10 minutes), it looks for a newer
+When it opens, and whenever its window comes back to the front (at most every half minute), it looks for a newer
 release: the top bar then says so, with a button that downloads and installs it in the installed app (it closes and
 opens again on its own) or opens the release page in the portable one.
 
 ## Run from source (developers)
-`python serve.py` (or double-click `start.cmd`) serves the planner at http://127.0.0.1:8765 for a browser;
+`python serve.py` serves the planner at http://127.0.0.1:8765 for a browser (`start.cmd`, or `python serve.py open`, opens it there too);
 `python serve.py app` opens it in its own window (needs `pip install pywebview`). Builds made in the browser stay in
 the browser: bring them over with Export and Import (copy the code, import it).
 
-`build_app.py` makes the release files: `dist/Exilewright/Exilewright.exe`, the portable zip and, with Inno Setup 6,
-the installer (`installer.iss`). It needs PyInstaller and pywebview (see the top of `build_app.py`). The version is
+`build_app.py` makes the release files: `dist/Exilewright/Exilewright.exe`, the portable zip and the installer
+(`installer.iss`, which needs Inno Setup 6). It needs PyInstaller and pywebview (see the top of `build_app.py`). The version is
 `VERSION` in `serve.py`: the window title, the update check and the installer take it from there.
 
 **Import** and **Export** (top bar) take in and give out Path of Building 2 codes and links (pobb.in, poe.ninja,
@@ -76,7 +76,8 @@ the game (one you found and identified, one in the inventory or the stash, one a
 The game puts the item's text in the clipboard, `serve.py` passes it to the page (`/clipboard`), and the page puts the
 item on the build in every slot it fits and calculates the build with and without it: the build's passives and skills
 decide what counts. Without a skill in the build only defences and the weapon's own damage are judged.
-- *Over the game*: the verdict shows in a small window next to the pointer for a few seconds, and that is the only
+- *Over the game*: the verdict shows in a small window next to the pointer until you click anywhere else or press a
+  key the game uses (a notice with nothing to compare goes after a few seconds), and that is the only
   place it shows: the planner only has to stay open. It needs the game in windowed
   full screen (nothing draws over exclusive full screen). From source it needs a Python with tkinter; outside
   Windows start the server with `python3 serve.py overlay`.
@@ -195,7 +196,8 @@ builds are signed. Committer, reviewer and approver of every signing request: [m
 
 ## Privacy
 Exilewright has no accounts, telemetry or analytics, and keeps your builds and settings on your computer
-(`%LOCALAPPDATA%\Exilewright`, or next to the program in the portable version). It checks GitHub for a newer version of
+(`%LOCALAPPDATA%\Exilewright`, or next to the program in the portable version; `log.txt` there holds what went wrong
+the last time it ran, and never leaves your computer). It checks GitHub for a newer version of
 itself, downloading it only when you choose to update.
 Anything else goes out only when you ask for it: a build imported or shared through the site whose link or button you
 use (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry), and the official trade site when you price an item or

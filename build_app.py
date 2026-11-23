@@ -2,7 +2,7 @@
 .venv-build/Scripts/pip install pyinstaller pywebview, then .venv-build/Scripts/python build_app.py):
   dist/Exilewright/Exilewright.exe     the program (its folder is what the installer installs)
   dist/Exilewright-portable.zip         the same folder with a "portable" file: it keeps its data next to the exe
-  dist/Exilewright-setup.exe            the installer, when Inno Setup 6 is installed (installer.iss)
+  dist/Exilewright-setup.exe            the installer (installer.iss): it needs Inno Setup 6, and ends in an error without it
 "build_app.py app" builds only the program and "build_app.py package" only the zip and installer from it, so the
 release workflow can sign the program in between (.github/workflows/release.yml)."""
 import glob
@@ -16,7 +16,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 stage = sys.argv[1] if len(sys.argv) > 1 else 'all'
 if stage in ('all', 'app'):
     import PyInstaller.__main__
-    data = ['index.html', 'mannequin.glb', 'moves.json', 'three', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
+    data = ['index.html', 'LICENSE', 'mannequin.glb', 'moves.json', 'three', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
     PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
                               *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
     if stage == 'app':
@@ -32,4 +32,4 @@ if iscc:
     version = re.search(r"^VERSION = '([\d.]+)'", open('serve.py', encoding='utf-8').read(), re.M)[1]
     subprocess.run([iscc, '/Q', f'/DAppVersion={version}', 'installer.iss'], check=True)
 else:
-    print('No Inno Setup 6: no installer (the portable zip is there)')
+    sys.exit('No Inno Setup 6: no installer (the portable zip is there)')   # an error: a release needs it

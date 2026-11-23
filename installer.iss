@@ -32,6 +32,10 @@ Name: "zh"; MessagesFile: "installer\ChineseTraditional.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
+; the files of the version installed before: what this one no longer has would stay there
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\_internal"
+
 [Files]
 Source: "dist\Exilewright\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
