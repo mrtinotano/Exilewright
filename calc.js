@@ -420,7 +420,7 @@ export function character(b, sum) {
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
-    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true), 0),   /* and Atziri's Communion's */   // Infernalist's Beidat's Gaze: its share of life reserved
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
     presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
