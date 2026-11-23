@@ -497,7 +497,7 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc * (o.pierced && sheet().critPierce ? 1 + sheet().critPierce * o.pierced / 100 : 1);   // Drillneck: more crit chance per pierce
+      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc * (!S.src && time < me.volPower?.until ? 1 + (sheet().volCrit || 0) * me.volPower.n / 100 : 1) * (o.pierced && sheet().critPierce ? 1 + sheet().critPierce * o.pierced / 100 : 1);   // Drillneck: more crit chance per pierce
       if (S.P.spell && !S.src && sheet().spellCritPer) { me.spellCrits = (me.spellCrits || []).filter(at => time - at <= RECENT); W.critBonus *= Math.max(0, 1 + sheet().spellCritPer * me.spellCrits.length / 100); if (crit) me.spellCrits.push(time); }   // Seed of Cataclysm: less bonus per spell crit recently
       // Oracle's Forced Outcome, Inevitable Critical Hits (KeywordPopups): a hit that could crit re-rolls until it does, its less
       // critical damage bonus for each re-roll
@@ -578,7 +578,7 @@ export function initScene(el, api) {
       if (LF && flaskLeft(0) >= LF.max) { const n = Math.floor(LF.max * SG.use / 100); me.fl[0] -= n; me.tides = { pct: n * SG.per, until: time + SG.dur }; }
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -745,6 +745,9 @@ export function initScene(el, api) {
       const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
       if (r === 'life' && SH.compLeech) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + n); }   // the tree's: your Companions leech the same. note: at once here
     }
+    // Mark of Siphoning: the enemy it marks has you leech its share of the physical attack damage it takes from your hits
+    const MS = D.attack && dealt.physical && d.mark?.S?.dmg?.sum;
+    if (MS) for (const r of ['life', 'mana']) { const n = dealt.physical * (MS[`marked_enemies_leech_physical_attack_damage_taken_as_${r}_to_you_permyriad`] || 0) / 10000 * k; if (n > 0) leechIn(r, n); }
   }
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
   // after the enemy's resistances. Without that hit (grounds, minions, missing damage) they use the scene value, drawn with "~".
@@ -1159,8 +1162,8 @@ export function initScene(el, api) {
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
   function markOn(d, S) {
-    // Living Bomb, Untether: up to their most seeds at a time, the oldest gives way
-    const LB = S.dmg?.stats?.living_bomb_base_number_of_bombs_allowed;
+    // Living Bomb, Untether: up to their most seeds at a time, the oldest gives way (and the Marks that have a limit of marked targets)
+    const LB = S.dmg?.stats?.living_bomb_base_number_of_bombs_allowed ?? S.dmg?.stats?.number_of_marks_allowed_per_type;
     if (LB) { const on = dummies.filter(e => e !== d && e.mark?.name === S.name).sort((a, b) => a.mark.at - b.mark.at); while (on.length >= LB) on.shift().mark = null; }
     d.mark = { at: time, s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
     fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
@@ -2254,6 +2257,7 @@ export function initScene(el, api) {
   const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
     * Object.entries(S.dmg?.finals || {}).reduce((m, [k, x]) => k.endsWith('ice_crystal_maximum_life_+%_final') ? m * (1 + x / 100) : m, 1);
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
+    const full = life;
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
     m.position.set(p.x, .75, p.z); m.rotation.set(rnd(-.15, .15), rnd(TAU), rnd(-.15, .15)); m.scale.setScalar(.01); m.castShadow = true;
     fx.emit(8, { p: { x: p.x, y: .2, z: p.z }, r: .3, v: 1, up: 2, life: .5, size: .16, c: 'ice' });
@@ -2263,6 +2267,8 @@ export function initScene(el, api) {
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
         if (life > 0 && (life -= avgHit(by)) > 0) return;
         e.dead = true;
+        const VG = by.dmg?.sum?.['support_crystalshatter_buff_damage_%_gained_as_extra_cold_per_2000_crystal_life'];   // Verglas: the destroying skill's cold gain, per 2000 of the crystal's life
+        if (VG) (me.verglas ||= {})[by.name] = { pct: VG * Math.floor(full / 2000), until: time + by.dmg.sum.support_crystalshatter_buff_duration / 1000 };
         later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A, { ...B, dmg: BD, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
           if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
@@ -3811,7 +3817,7 @@ export function initScene(el, api) {
   // Grim Remnant. Used again (Grim Resurrection), the life you hold Revives the dead minions, oldest first, up to that
   // much total life of theirs; it is all consumed. note: the game's own Revive after a delay is not in the data
   // (PoB2 MinionRevivalTimeBase), so the scene's minions come back only this way or by using their skill again
-  const gainVol = n => { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
+  const gainVol = n => { me.vol = Math.min(sheet().volMax || VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
     const EH = me.maxM * (S.dmg?.sum?.['recoup_mana_%_on_minion_death'] || 0) / 100, RT = sheet().recoup?.time || 8; if (EH > 0) me.recoup.push({ k: 'mana', left: EH, rate: EH / RT });   // Essence Harvest: its % of your maximum mana Recouped
