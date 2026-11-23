@@ -407,6 +407,8 @@ export function character(b, sum) {
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
     implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage,   // Warbringer's Imploding Impacts: Fully Broken Armour increases all hit damage taken
+    cry: { debil: !!sum.warcries_debilitate_enemies_for_1_second, weak: v(sum, 'warcries_inflict_x_critical_weakness_on_enemies'), noIgnite: !!sum.remove_ignite_on_warcry, more: v(sum, 'warcry_empowers_next_x_melee_attacks'), min: sum.warcries_have_minimum_10_power ? 10 : 0 },   // the tree's warcries
+    minionRegen: v(sum, 'life_and_mana_regeneration_rate_+%_for_each_minion_in_your_presence_capped'),
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     chargeGen: [v(sum, 'generate_x_charges_for_life_flasks_per_minute'), v(sum, 'generate_x_charges_for_mana_flasks_per_minute'), v(sum, 'generate_x_charges_for_charms_per_minute')],   // life / mana flask and charm charges a minute
     watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
@@ -1424,7 +1426,7 @@ export function skill(g, b, treeGear) {
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
   const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
   by('%_attack_damage_per_glory_consumed_for_6_seconds_up_to_100', 'GloryConsumedPast6', 100, attack); by('combo_finisher_damage_+%_up_to_40%', 'ComboConsumed', 40);
-  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50);
+  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
   const GP = v(sum, 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds');
   if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
   for (const [s, cv] of Object.entries(WHILE)) {

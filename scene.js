@@ -687,6 +687,7 @@ export function initScene(el, api) {
   const lowMana = () => me.mana <= me.maxM * (TH().lowMana / 100 || LOW) || TH().manaByLife > 0 && me.life <= me.maxL * TH().manaByLife / 100;
   // "Recently refers to the past 4 seconds" (keywords.json); the crossbow bolts reloaded and the skills used lately
   const RECENT = 4, reloads = [], used = [], reloaded = secs => reloads.reduce((t, r) => t + (time - r.t <= secs ? r.n : 0), 0);
+  const minionsNear = () => objs.filter(o => o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;   // your minions within your Presence
   const inPresence = ok => objs.some(o => !o.dead && ok(o) && dist(o.pos, pp) <= sheet().overgrow.r);   // a minion of yours within your Presence
   function condN(c, d, S) {
     const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
@@ -703,7 +704,7 @@ export function initScene(el, api) {
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
-      DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: objs.filter(o => o.minion && !o.dead).length,
+      DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: minionsNear(),
       EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0),
       GloryConsumedPast6: ge.reduce((t, x) => t + x.n, 0), GlorySkillsUsedPast6: ge.length,
       ComboConsumed: S.comboSpent || 0, HazardsTriggeredRecently: (me.hazTrig || []).filter(t => time - t <= RECENT).length };
@@ -2522,6 +2523,7 @@ export function initScene(el, api) {
       markOn(d, S); say(t('{0} marks the target', S.label), 'mark');
     },
     warcry(S) {
+      const CY = sheet().cry || {}; if (CY.noIgnite) { me.st.ignite = 0; delete me.burn.ignite; }   // the tree's: a warcry removes your Ignite
       const CH = !S.echoK && sheet().cryHeal; if (CH) { me.life = Math.min(me.maxL, me.life + me.maxL * CH / 100); me.mana = Math.min(me.maxM, me.mana + me.maxM * CH / 100); }   // Urgent Call
       if (S.name === 'Lunar Blessing') return lunar(S);
       // Echoing Cry: it Echoes its times after its delay, its area larger each time (its description: "grows larger")
@@ -2536,10 +2538,10 @@ export function initScene(el, api) {
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
       for (const o of [...objs]) if (o.earth && o.shatter && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
-      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); }   // Dazing Cry
+      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
@@ -5318,7 +5320,8 @@ export function initScene(el, api) {
   // the tree's life and mana regeneration per second while you are in a state (calc.js REGEN_WHILE)
   const blindLess = () => BLIND.less * (1 + (sheet().blindEffect || 0) / 100);   // your Blind on enemies, with its increased effect
   const regenNow = c => {
-    const R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
+    // the tree's increased life and mana regeneration per minion in your Presence, up to 40% (its text)
+    const MR = c.minionRegen ? Math.min(40, c.minionRegen * minionsNear()) : 0, R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), k === 'l' || k === 'm' ? MR : 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
     const FR = c.regrow ? Math.floor(me.regrow || 0) : 0;   // Dustbloom's Fragile Regrowth
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l), mana: (c.manaNoCrit && !meIs.CritRecently() ? 0 : c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
