@@ -588,7 +588,7 @@ export function initScene(el, api) {
       const IP = A?.impale, ph = raw.physical || 0;
       if (D.attack && d.impales.length && !IP?.keep && !(crit && IP?.critKeep)) raw.physical = ph + d.impales.splice(d.impales.indexOf(Math.max(...d.impales)), 1)[0];
       if (ph && (Math.random() * 100 < IP?.chance || crit && IP?.crit)) { d.impales.push(...Array(IP.n).fill(ph * IMPALE.pct / 100 * IP.mag)); d.impales.splice(0, d.impales.length - IMPALE.max); }
-      const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0);   // the tree's chance for Thorns to ignore armour
+      const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0) || Math.random() * 100 < (D.sum?.['hits_ignore_enemy_monster_physical_damage_reduction_%_chance'] || 0);   // the tree's chance for Thorns to ignore armour; Brutality III's for hits
       const INV = Math.random() * 100 < (D.sum?.['treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance'] || 0);   // the tree's chance to treat elemental resistances as inverted
       const ZR = crit && !S.src ? sheet().critIgnoreRes : null;   // Beacon of Azis, Choir of the Storm: your critical hits ignore those resistances
       for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR); total += got; if (got > best) { best = got; top = el; } }
@@ -673,6 +673,7 @@ export function initScene(el, api) {
     const wasHeavy = d.st.stun > 0;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
     if (real && !S.src && !wasHeavy && d.st.stun > 0 && sheet().cullHeavy && cull(d, S, true)) return true;   // the tree's: a hit that Heavy Stuns has Culling Strike
+    if (crit && d.st.ignite > 0 && Math.random() * 100 < (D?.sum?.['refresh_ignite_duration_on_critical_strike_chance_%'] || 0)) d.st.ignite = Math.max(d.st.ignite, d.full?.ignite ?? DUR.ignite);   // Eternal Flame III: a critical hit refreshes its Ignite
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
     return true;
@@ -904,11 +905,14 @@ export function initScene(el, api) {
       // the weaker kept with its own time (burn2). ponytail: a third or more counts as the second
       if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
+      const CB = a === 'poison' && !v.sim && d.stat.armour > 0 && !(d.st.armour > 0) && S.dmg?.sum?.['armour_break_for_%_of_poison_damage_over_poison_duration'];   // Corrosion: Armour Break of its % of the poison's damage. note: at once here, not over its duration
+      if (CB) { d.cut = (d.cut || 0) + v.dps * (o?.dur ?? DUR.poison) * CB / 100; if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, { dur: BROKEN.time }); } }
       if (a === 'ignite' && !S.src && !v.sim && sheet().igniteSelf) suffer('ignite', o?.dur ?? DUR.ignite, { dot: { dps: v.raw * (o?.eff || 1), el: v.el } });   // the tree's: your ignites reflected to you
     }
     if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
+    if (a === 'ignite' && !S.src && !(time < me.earch) && time >= (me.earch ?? -99) + SK.archon_time[1] && Math.random() * 100 < (S.dmg?.sum?.['gain_archon_elemental_when_you_ignite_enemy_chance_%'] || 0)) earchGo(sheet().earch || { time: SK.archon_time[0] });   // Arbiter's Ignition: Elemental Archon
     if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
     if (a === 'ignite' && !S.src && sheet().igniteHurt) hurt(playerTakes(sheet(), 'fire', sheet().igniteHurt, true));   // Fireflower: fire damage taken when you ignite
     const fresh = !(d.st[a] > 0), left = d.st[a] || 0; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
@@ -1099,6 +1103,7 @@ export function initScene(el, api) {
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
     const brk = N.armour ? 0 : (A.breakFlat + (S.breakAdd || 0) + x('physical') * (A.breakPct + (S.breakPct || 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
       + (d.crushed > time ? x('physical') * (S.dmg.sum?.['crushed_target_%_physical_damage_taken_as_armour_break'] || 0) / 100 : 0)
+      + x('physical') * (d.mark?.S?.dmg?.sum?.['marked_target_%_physical_damage_taken_as_armour_break'] || 0) / 100   // Mark for Death: hits on the enemy its Mark is on
       + (S.P.spell && o.crit ? x('physical') * (S.dmg.sum?.['armour_break_equal_to_%_physical_damage_dealt_on_critical_strike_with_spells'] || 0) / 100 : 0)
       + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
@@ -1404,7 +1409,8 @@ export function initScene(el, api) {
     // the tree's recovery on kill (calc.js killRecover)
     const KR = S && sheet().killRecover;   // none while the sheet is not there yet
     // Killjoy: on-kill effects twice; Snakebite: its % of maximum life per poison on the enemy; Indigon: no mana
-    if (KR) for (let k = sheet().killTwice ? 2 : 1; k > 0; k--) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * (KR.poisoned + sheet().poisonKill * (d.burn2?.until > time ? 2 : 1)) / 100 : 0)); if (!sheet().manaRegenOnly) me.mana = Math.max(0, Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100 + KR.manaFlat)); }   // Blessed Bonds' flat mana (Bluetongue's a loss)
+    const TW = sheet().killTwice || has(d, 'bleed') && Math.random() * 100 < (S?.dmg?.sum?.['on_kill_effect_occur_twice_chance_%_vs_bleeding_enemies'] || 0);   // Tear: on a Bleeding enemy
+    if (KR) for (let k = TW ? 2 : 1; k > 0; k--) { me.life = Math.min(me.maxL, Math.random() * 100 < KR.full ? me.maxL : me.life + KR.life + me.maxL * KR.lifePct / 100 + (has(d, 'poison') ? me.maxL * (KR.poisoned + sheet().poisonKill * (d.burn2?.until > time ? 2 : 1)) / 100 : 0)); if (!sheet().manaRegenOnly) me.mana = Math.max(0, Math.min(me.maxM, me.mana + me.maxM * KR.mana / 100 + KR.manaFlat)); }   // Blessed Bonds' flat mana (Bluetongue's a loss)
     if (S && sheet().onsKill) me.onsUntil = Math.max(me.onsUntil || 0, time + sheet().onsKill);   // Death Rush: Onslaught on kill
     // heralds: an enemy that dies with the ailment of their element explodes
     for (const k in tog) {
@@ -2104,8 +2110,8 @@ export function initScene(el, api) {
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
-            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult(), pierced }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
-            else if (forked < (D.forks || 0)) {
+            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || d.st.ignite > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_pierce_ignited_enemy_%'] || 0) || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0)) { hit(d, cur, { mult: mult(), pierced }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
+            else if (forked < (D.forks || 0) || !forked && d.st.freeze > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_from_frozen_enemy_%'] || 0)) {   // Flamepierce (above), Freezefork: on Ignited / Frozen enemies
               hit(d, cur, { mult: mult(), pierced }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
               for (const s of fk) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
@@ -3793,6 +3799,7 @@ export function initScene(el, api) {
   const gainVol = n => { me.vol = Math.min(VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
+    const EH = me.maxM * (S.dmg?.sum?.['recoup_mana_%_on_minion_death'] || 0) / 100, RT = sheet().recoup?.time || 8; if (EH > 0) me.recoup.push({ k: 'mana', left: EH, rate: EH / RT });   // Essence Harvest: its % of your maximum mana Recouped
     const RS = sheet().resummon; if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / RS.speed;   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
@@ -4194,7 +4201,7 @@ export function initScene(el, api) {
     }
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
-    if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { spendRage(S.dmg.enrage); S.enraged = true; }
+    if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { if (!(Math.random() * 100 < (S.dmg.sum?.['rage_skip_consume_chance_%'] || 0))) spendRage(S.dmg.enrage); S.enraged = true; }   // Rageforged II: its chance to keep the Rage
     // charges the supports consume on use (calc.js onUse): one each, all of them for Rally; Perpetual Charge may keep
     // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
     const U = !auto && S.dmg?.onUse; nextCdX = 1;
