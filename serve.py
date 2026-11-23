@@ -532,7 +532,7 @@ if FROZEN and sys.stderr is None:   # no console in the executable: the server's
     sys.stdout = sys.stderr = open(os.devnull, 'w')
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
-SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder
+SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder: the most a POST may bring
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down', 'price'}   # kinds of verdict with a comparison to read: they stay until they are closed
 TINT = {'up': '#8fe89a', 'mix': '#f0cc66', 'down': '#ee8888', 'on': '#8fc7ff'}
@@ -570,6 +570,11 @@ def at_startup(on=None):
 
 
 class Handler(SimpleHTTPRequestHandler):
+    # the types of the page's files, whatever Windows' registry says of them: a .js it calls text/plain is no module to
+    # the browser, and the page does not start
+    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json',
+                      '.glb': 'model/gltf-binary', '.webp': 'image/webp', '.wav': 'audio/wav', '.ico': 'image/x-icon'}
+
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store')
         super().end_headers()
@@ -622,13 +627,12 @@ class Handler(SimpleHTTPRequestHandler):
 
     def mine(self):
         """the request is from the page this server serves: not from a foreign page that points a name of its own at
-        127.0.0.1, nor from another site's page open in the same browser"""
+        127.0.0.1, nor from another site's page open in the same browser. Asked of every request (do_GET, do_POST): the
+        clipboard, the user's builds and files, the trade site in the user's name are for that page only"""
         host = self.headers.get('Host', '')
         return host.rsplit(':', 1)[0] in ('127.0.0.1', 'localhost') and self.headers.get('Origin') in (None, 'http://' + host)
 
     def do_pob(self, u):
-        if not self.mine():   # the user's own builds: for the page this server serves only
-            return self.reply(403, 'local only')
         try:
             names = sorted((f for f in os.listdir(POB) if f.lower().endswith('.xml')), key=lambda f: -os.path.getmtime(os.path.join(POB, f)))
         except OSError:   # no Path of Building 2 here
@@ -643,8 +647,6 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_clipboard(self, u):
         global TONGUE
-        if not self.mine():   # the clipboard can hold anything: only item text ever leaves, and only to that page
-            return self.reply(403, 'local only')
         if not CLIP:
             return self.reply(501, 'no way to read the clipboard on this system')
         code = parse_qs(u.query).get('lang', [''])[0]
@@ -678,7 +680,7 @@ class Handler(SimpleHTTPRequestHandler):
         global ASKED
         if body is None:
             return self.reply_json(200, json.dumps({'overlay': bool(OVER)}).encode())
-        if not OVER or not self.mine():
+        if not OVER:
             return self.reply(403, 'no window to show it in')
         try:
             v = json.loads(body) if len(body) < 16000 else None
@@ -696,8 +698,6 @@ class Handler(SimpleHTTPRequestHandler):
         self.reply(200, 'ok')
 
     def do_filter(self, body):
-        if not self.mine():
-            return self.reply(403, 'local only')
         try:
             x = json.loads(body)
             name, text = x['name'], x['text']
@@ -716,8 +716,6 @@ class Handler(SimpleHTTPRequestHandler):
     def do_sound(self, u, body=None):
         """a sound of the user's own for the Filter tab (CustomAlertSound): POST copies it into the game's folder, where
         the game looks for it; GET plays it back from there"""
-        if not self.mine():
-            return self.reply(403, 'local only')
         name = parse_qs(u.query).get('name', [''])[0]
         kind = {'.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg'}.get(os.path.splitext(name)[1].lower())
         if not kind or not re.fullmatch(r'[^<>:"/\\|?*]{1,80}', name) or not name.isprintable() or name.strip(' .') != name:
@@ -745,8 +743,6 @@ class Handler(SimpleHTTPRequestHandler):
         """a build saved as a file: for the game's build planner (kind "game": a .build in its BuildPlanner folder, where
         the game reads them) or as JSON (kind "json": the Downloads folder). The app's window cannot download files the
         way a browser does"""
-        if not self.mine():
-            return self.reply(403, 'local only')
         try:
             x = json.loads(body)
             ext, name, text = {'game': '.build', 'json': '.json'}[x['kind']], x['name'], x['text']
@@ -763,8 +759,6 @@ class Handler(SimpleHTTPRequestHandler):
         self.reply(200, path)
 
     def do_update(self, post=False):
-        if post and not self.mine():
-            return self.reply(403, 'local only')
         try:
             # github.com's own link to the latest release, which goes on to its tag's page: not the API (60 asks an hour),
             # so it can be asked whenever the window comes to the front
@@ -794,8 +788,6 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_settings(self, body=None):
         global KEYS
-        if not self.mine():
-            return self.reply(403, 'local only')
         try:
             v = json.loads(body) if body and len(body) < 1000 else {}
         except ValueError:
@@ -808,7 +800,14 @@ class Handler(SimpleHTTPRequestHandler):
         on = at_startup(bool(v['on']) if 'on' in v else None)
         self.reply_json(200, json.dumps({'app': bool(TRAY), 'tray': bool(TRAY and TRAY[1]()), 'startup': on is not None, 'on': bool(on)}).encode())
 
+    def body(self):
+        """what a POST brings: None when it does not say how long it is, or is longer than anything the page sends"""
+        n = self.headers.get('Content-Length', '')
+        return self.rfile.read(int(n)) if n.isdigit() and int(n) <= SOUND_MAX else None
+
     def do_GET(self):
+        if not self.mine():
+            return self.reply(403, 'local only')
         u = urlparse(self.path)
         if u.path.startswith('/trade/'):
             return self.do_trade(u)
@@ -839,25 +838,29 @@ class Handler(SimpleHTTPRequestHandler):
         self.reply(400, 'unknown site')
 
     def do_POST(self):
-        u = urlparse(self.path)
+        u, body = urlparse(self.path), self.mine() and self.body()
+        if body is False:
+            return self.reply(403, 'local only')
+        if body is None:
+            return self.reply(413, 'too big')
         if u.path.startswith('/trade/'):
-            return self.do_trade(u, self.rfile.read(int(self.headers.get('Content-Length', 0))))
+            return self.do_trade(u, body)
         if u.path == '/overlay':
-            return self.do_overlay(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+            return self.do_overlay(body)
         if u.path == '/update':
             return self.do_update(post=True)
         if u.path == '/settings':
-            return self.do_settings(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+            return self.do_settings(body)
         if u.path == '/filter':
-            return self.do_filter(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+            return self.do_filter(body)
         if u.path == '/filtersound':
-            return self.do_sound(u, self.rfile.read(min(int(self.headers.get('Content-Length', 0)), SOUND_MAX + 1)))
+            return self.do_sound(u, body)
         if u.path == '/save':
-            return self.do_save(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+            return self.do_save(body)
         site = UPLOAD.get(parse_qs(u.query).get('site', [''])[0])
         if u.path != '/share/upload' or not site:
             return self.reply(404, 'not found')
-        code = self.rfile.read(int(self.headers.get('Content-Length', 0))).decode().strip()
+        code = body.decode().strip()
         if not re.fullmatch(r'[\w=-]+', code):
             return self.reply(400, 'not a build code')
         post, field, prefix = site
