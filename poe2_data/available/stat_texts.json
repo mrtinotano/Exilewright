@@ -53609,6 +53609,27 @@
  },
  {
   "stats": [
+   "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1|1"
+    ],
+    "t": "Non-Instant skills with Cooldowns have {0:+d} Cooldown Use if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Non-Instant skills with Cooldowns have {0:+d} Cooldown Uses if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "added_thorns_cold_base_damage_%_of_maximum_mana"
   ],
   "rows": [
@@ -53732,6 +53753,20 @@
      "#"
     ],
     "t": "{0:+d}% to all [MaximumResistances|Maximum Elemental Resistances] if you have at\\nleast 5 Red, Green and Blue [SupportGem|Support Gems] Socketed",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% to all maximum Resistances if you have at least 100 Tribute",
     "h": []
    }
   ]
@@ -55132,6 +55167,20 @@
  },
  {
   "stats": [
+   "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% of [Armour|Armour] also applies to [ElementalDamage|Elemental Damage] if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_+%_if_consumed_endurance_charge_recently"
   ],
   "rows": [
@@ -55969,6 +56018,23 @@
      "#"
     ],
     "t": "[Attack|Attacks] have {0:+d}% to [Critical|Critical Hit Chance]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Attacks] have {0:+d}% to [Critical|Critical Hit Chance] against [ParriedDebuff|Parried] enemies if you have at least 100 Tribute",
     "h": [
      "divide_by_one_hundred",
      "1"
@@ -57111,6 +57177,30 @@
     ],
     "t": "[Attack|Attacks] have 25% chance to inflict Bleeding when Hitting [Curse|Cursed] Enemies",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "aura_effect_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Aura] [BuffMagnitude|Magnitudes] if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Aura] [BuffMagnitude|Magnitudes] if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -58685,6 +58775,27 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Block|Block] chance if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Block|Block] chance if you have at least 100 Tribute",
+    "h": []
    }
   ]
  },
@@ -62781,6 +62892,30 @@
  },
  {
   "stats": [
+   "curse_duration_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Curse] Duration if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Curse] Duration if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_on_block_enfeeble_chance_%"
   ],
   "rows": [
@@ -62934,6 +63069,30 @@
      "#|-1"
     ],
     "t": "{0}% reduced Damage for each type of [ElementalAilments|Elemental Ailment] on Enemy",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Damage with [Hit|Hits] against [Rarity|Rare and Unique] Enemies if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Damage with [Hit|Hits] against [Rarity|Rare and Unique] Enemies if you have at least 100 Tribute",
     "h": [
      "negate",
      "1"
@@ -63520,6 +63679,30 @@
     ],
     "t": "{0}% of Damage from [Hit|Hits] is taken from your nearest [Totem|Totem's] Life before you",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Damage taken from [Volatility|Volatility] if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Damage taken from [Volatility|Volatility] if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -69069,6 +69252,23 @@
  },
  {
   "stats": [
+   "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charm|Charms] gain {0} charges per Second if you have at least 200 Tribute",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "generate_x_charges_for_life_flasks_per_minute"
   ],
   "rows": [
@@ -69177,6 +69377,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "glory_generation_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% increased [Glory] generation if you have at least 100 Tribute",
+    "h": []
    }
   ]
  },
@@ -73288,6 +73502,20 @@
  },
  {
   "stats": [
+   "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ignore all [ArmourPenalties|Movement Penalties] from [EquipArmour|Armour] if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "ignore_attribute_requirements_for_gloves"
   ],
   "rows": [
@@ -74666,6 +74894,23 @@
  },
  {
   "stats": [
+   "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% of [Thorns|Thorns] Damage [LifeLeech|Leeched as Life] if you have at least 100 Tribute",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_leech_%_maximum_life_on_spell_cast"
   ],
   "rows": [
@@ -74675,6 +74920,30 @@
     ],
     "t": "[LifeLeech|Leeches] {0}% of maximum Life when you Cast a [Spell|Spell]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_leech_rate_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LifeLeech|Leech] Life {0}% faster if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LifeLeech|Leech] Life {0}% slower if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -88991,6 +89260,20 @@
  },
  {
   "stats": [
+   "maximum_endurance_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} to Maximum Endurance Charges if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89096,6 +89379,20 @@
  },
  {
   "stats": [
+   "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} to Maximum Frenzy Charges if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_guard_is_based_on_energy_shield"
   ],
   "rows": [
@@ -89133,6 +89430,30 @@
     ],
     "t": "{0}% increased Maximum Life if you have at least 10 Red [SupportGem|Support Gems] Socketed",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased maximum Life if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced maximum Life if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -89271,6 +89592,30 @@
  },
  {
   "stats": [
+   "maximum_mana_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Maximum Mana if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Maximum Mana if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_physical_damage_reduction_is_50%"
   ],
   "rows": [
@@ -89279,6 +89624,20 @@
      "1|#"
     ],
     "t": "Maximum [Physical|Physical Damage] Reduction is 50%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_power_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} to Maximum Power Charges if you have at least 100 Tribute",
     "h": []
    }
   ]
@@ -90289,6 +90648,30 @@
      "#|-1"
     ],
     "t": "[Minion|Minions] [Reviving|Revive] {0}% slower if all your [Minion|Minions] are [Companion|Companions]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_resummon_speed_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Minions] [Reviving|Revive] {0}% faster if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Minions] [Reviving|Revive] {0}% slower if you have at least 100 Tribute",
     "h": [
      "negate",
      "1"
@@ -91993,6 +92376,27 @@
  },
  {
   "stats": [
+   "num_charm_slots_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0:+d} [Charm] Slot if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "{0:+d} [Charm] Slots if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "number_of_additional_banners_allowed"
   ],
   "rows": [
@@ -92036,6 +92440,20 @@
      "1|#"
     ],
     "t": "You can apply {0} additional [Curse|Curses] while at maximum Power Charges",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Targets can be affected by {0:+d} of your [Poison|Poisons] at the same time if you have at least 100 Tribute",
     "h": []
    }
   ]
@@ -93077,6 +93495,20 @@
      "#"
     ],
     "t": "{0}% of Physical Damage prevented [Recoup|Recouped] as Life",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% of Physical Damage prevented [Recoup|Recouped] as Life if you have at least 100 Tribute",
     "h": []
    }
   ]
@@ -94736,6 +95168,30 @@
     "t": "Regenerate Mana equal to {0}% of maximum Life per second",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_pickup_range_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Remnant|Remnants] can be collected from {0}% further away if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Remnant|Remnants] must be collected from {0}% closer if you have at least 100 Tribute",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -96744,6 +97200,30 @@
  },
  {
   "stats": [
+   "spirit_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Spirit] if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Spirit] if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+_if_at_least_200_dexterity"
   ],
   "rows": [
@@ -97988,6 +98468,30 @@
     ],
     "t": "{0} to {1} [Physical|Physical] [Thorns|Thorns] damage",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% chance for [Thorns] to [RetaliateAgainstAll|Retaliate] against Non-Melee [Hit|Hits] if you have at least 200 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% chance for [Thorns] to [RetaliateAgainstAll|Retaliate] against Non-Melee [Hit|Hits] if you have at least 200 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -100025,6 +100529,27 @@
  },
  {
   "stats": [
+   "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Warcry|Warcries] [Empowered|Empower] an additional [Attack] if you have at least 100 Tribute",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Warcry|Warcries] [Empowered|Empower] {0} additional [Attack|Attacks] if you have at least 100 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_monster_power_+%"
   ],
   "rows": [
@@ -101368,6 +101893,20 @@
  },
  {
   "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Dexterity]\\n1% increased [Armour|Armour] per 2 Dexterity",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_alternate_es_recovery"
   ],
   "rows": [
@@ -101376,6 +101915,34 @@
      "#"
     ],
     "t": "5% of [Physical] Damage prevented [Recoup|Recouped] as [EnergyShield|Energy Shield] per enemy [Power]\\n[EnergyShield|Energy Shield] does not [ESRecharge|Recharge]\\nYou cannot Recover [EnergyShield|Energy Shield] from Regeneration\\nYou cannot Recover [EnergyShield|Energy Shield] to above [Armour]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Intelligence]\\n1% increased [Evasion|Evasion Rating] per 2 Intelligence",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain no inherent bonus from [Strength]\\n1% increased [EnergyShield|Energy Shield] per 2 Strength",
     "h": []
    }
   ]
@@ -101536,6 +102103,20 @@
  },
  {
   "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "All Damage taken bypasses Energy Shield\\n50% of Elemental Damage taken as Chaos Damage\\n+5% to maximum Chaos Resistance",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_druidic_rage"
   ],
   "rows": [
@@ -101572,6 +102153,20 @@
      "#"
     ],
     "t": "Create [Lightning] [ElementalInfusion|Infusion] [Remnant|Remnants] instead of [Fire]\\nCreate [Cold] [ElementalInfusion|Infusion] [Remnant|Remnants] instead of [Lightning]\\nCreate [Fire] [ElementalInfusion|Infusion] [Remnant|Remnants] instead of [Cold]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Life Recovery from [Flask|Flasks] also applies to Energy Shield\\n30% less Life Recovery from [Flask|Flasks]",
     "h": []
    }
   ]
@@ -101782,6 +102377,20 @@
      "#"
     ],
     "t": "30% less [CriticalDamageBonus|Critical Damage Bonus] when on Full Life\\n30% more Critical Damage Bonus when on [LowLife|Low Life]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% more [Spell|Spell] Damage per [Charges|Power Charge]\\nGain [Charges|Power Charges] instead of [Charges|Frenzy Charges]",
     "h": []
    }
   ]
@@ -103330,6 +103939,146 @@
      "1|#"
     ],
     "t": "[Companion|Companions] gain added [Attack] damage equal to {0}% of your main hand Weapon's damage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "When taking damage from [Hit|Hits], 20% of Life Loss is prevented, then 150% of Life Loss prevented this way is Lost over 4 seconds",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "You are Blind\\nBlind does not affect your Light Radius\\n25% more [Melee] [Critical|Critical Hit] Chance while Blinded",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "You deal 1% more Damage per 2 total [Power|Power] of your Undead Minions\\nUndead Minions have 25% less maximum Life",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Mana Recovery from Regeneration [Overflow|Overflows] maximum Mana\\n50% less Mana Regeneration Rate",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Nearby Allies and Enemies Share Charges with you\\nEnemies Hitting you have 10% chance to gain an Endurance, \\nFrenzy or Power Charge",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80% of Maximum Mana is Converted to twice that much [Armour]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Can't use Helmets\\nYour [Critical|Critical Hit] Chance is Lucky\\nYour Damage with [Critical|Critical Hits] is Lucky\\nEnemies' Damage with [Critical|Critical Hits] against you is Lucky",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regenerate 1 Life per second per 16 Life spent in the past 4 seconds\\n20% more Life Cost of Skills",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "50% of Cold and Lightning Damage taken as Fire Damage\\n50% less Cold Resistance\\n50% less Lightning Resistance",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projectiles] do one of the following at random:\\n• [Fork] an additional time\\n• [Chain] an additional time\\n• [Chain] from Terrain an additional time\\n• Cannot collide with targets",
     "h": []
    }
   ]
@@ -124418,230 +125167,6 @@
   ],
   "skill": [
    "Flame Breath"
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_dexterity_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Gain no inherent bonus from [Dexterity]\\n1% increased [Armour|Armour] per 2 Dexterity",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_intelligence_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Gain no inherent bonus from [Intelligence]\\n1% increased [Evasion|Evasion Rating] per 2 Intelligence",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_strength_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Gain no inherent bonus from [Strength]\\n1% increased [EnergyShield|Energy Shield] per 2 Strength",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_divine_flesh"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "All Damage taken bypasses Energy Shield\\n50% of Elemental Damage taken as Chaos Damage\\n+5% to maximum Chaos Resistance",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_emperors_heart"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Life Recovery from [Flask|Flasks] also applies to Energy Shield\\n30% less Life Recovery from [Flask|Flasks]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_quiet_might"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "3% more [Spell|Spell] Damage per [Charges|Power Charge]\\nGain [Charges|Power Charges] instead of [Charges|Frenzy Charges]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_amanamus_defiance"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "When taking damage from [Hit|Hits], 20% of Life Loss is prevented, then 150% of Life Loss prevented this way is Lost over 4 seconds",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_blind_monk"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "You are Blind\\nBlind does not affect your Light Radius\\n25% more [Melee] [Critical|Critical Hit] Chance while Blinded",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kulemaks_sovereignty"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "You deal 1% more Damage per 2 total [Power|Power] of your Undead Minions\\nUndead Minions have 25% less maximum Life",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kurgals_ambition"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Mana Recovery from Regeneration [Overflow|Overflows] maximum Mana\\n50% less Mana Regeneration Rate",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_magnetic_charge"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Nearby Allies and Enemies Share Charges with you\\nEnemies Hitting you have 10% chance to gain an Endurance, \\nFrenzy or Power Charge",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_mental_conditioning"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "80% of Maximum Mana is Converted to twice that much [Armour]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_sharp_and_brittle"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Can't use Helmets\\nYour [Critical|Critical Hit] Chance is Lucky\\nYour Damage with [Critical|Critical Hits] is Lucky\\nEnemies' Damage with [Critical|Critical Hits] against you is Lucky",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tecrods_brutality"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Regenerate 1 Life per second per 16 Life spent in the past 4 seconds\\n20% more Life Cost of Skills",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tempered_by_war"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "50% of Cold and Lightning Damage taken as Fire Damage\\n50% less Cold Resistance\\n50% less Lightning Resistance",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_ulamans_vision"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Projectile|Projectiles] do one of the following at random:\\n• [Fork] an additional time\\n• [Chain] an additional time\\n• [Chain] from Terrain an additional time\\n• Cannot collide with targets",
-    "h": []
-   }
   ]
  }
 ]

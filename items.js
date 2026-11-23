@@ -17,18 +17,28 @@ const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels 
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || BASE[it?.base]?.img); };
 // stats whose number is a name: a passive's hash (Megalomaniac's notables, From Nothing's keystone), a keystone's index
-// (Flesh Crucible: the tree's keystone_list, from 1), a skill's (Prism of Belief: gems.json specific). Any value, picked
-// by name; the names come from the app (setNames)
-const pickKind = id => /_hash(_\d+)?$/.test(id) ? (id.includes('keystone') ? 'keystone' : 'notable') : /vivisection_random_keystone_index$/.test(id) ? 'kindex'
+// (Flesh Crucible: the tree's keystone_list, from 1), a skill's (Prism of Belief: gems.json specific), the notable an
+// Undying Hate's modifier makes a conquered one become (passive_tree.json timeless.overrides). Any value, picked by name;
+// the names come from the app (setNames)
+const pickKind = id => /conquored_notable_to_passive_hash_\d+$/.test(id) ? 'override' : /_hash(_\d+)?$/.test(id) ? (id.includes('keystone') ? 'keystone' : 'notable') : /vivisection_random_keystone_index$/.test(id) ? 'kindex'
   : id === 'unique_jewel_specific_skill_level_+_skill' ? 'skill' : null;
 const CHOICES = {}, BY_NAME = {};   // kind -> [[value, name]] / {lower case name in any language: value}
-export function setNames(nodes, label, keystones, skills) {
+export function setNames(nodes, label, keystones, skills, overrides = {}) {
   const of = (kind, rows) => { CHOICES[kind] = rows.map(([v, x]) => [v, label(x)]).sort((a, b) => a[1].localeCompare(b[1]));
     BY_NAME[kind] = {}; for (const [v, x] of rows) for (const k in x) if (k.startsWith('name') && x[k]) BY_NAME[kind][x[k].toLowerCase()] = v; };
   for (const type of ['notable', 'keystone']) of(type, Object.entries(nodes).filter(([, n]) => n.type === type && !n.ascendancy).map(([h, n]) => [+h, n]));
   of('kindex', keystones.map((h, i) => [i + 1, nodes[h]]));
   of('skill', skills.map(g => [g.specific, g]));
+  of('override', Object.entries(overrides).map(([h, x]) => [+h, x]));
 }
+// a unique as it is when first equipped (every roll at its best), its name in the page's language, the jewel uniques
+export const newItem = name => make(name);
+export const uniqueName = name => tn(UNIQ[name]) || name;
+// an item with every name of a kind not picked yet (0) given this value (Prism of Belief's skill)
+export const pickIn = (it, kind, v) => { for (const m of it.mods || []) AFFIX[m.id]?.stats.forEach(([id], k) => { if (pickKind(id) === kind && !m.values[k]) m.values[k] = v; }); return it; };
+export const JEWEL_UNIQUES = UNIQUES.filter(u => BASE[u.base]?.class === 'Jewels').map(u => u.name);
+// what desecrating a timeless jewel can add (Undying Hate: HistoricAbyssJewel*), for a unique whose modifier is Abyss'
+const historicFor = u => !!u?.mods.some(m => /Abyss/.test(m.id));
 const namePick = (id, v, path, k) => `<select data-path="${path}" data-k="${k}"><option value="0">—</option>${(CHOICES[pickKind(id)] || [])
   .map(([x, name]) => `<option value="${x}"${x === +v ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select>`;
 const MAX_AFFIX = 3; // rare item: up to 3 prefixes and 3 suffixes
@@ -426,6 +436,12 @@ export function parseItem(text) {
     const mut = ex.found.find(f => u.mutated?.some(m => m.id === f.key)), from = mut && u.replaceable.find(id => !ex.found.some(f => f.key === id)), mi = item.mods.findIndex(m => m.id === from);
     if (mi >= 0) { item.mods[mi] = { id: mut.key, values: [] }; item.mutatedFrom = from; }
     ex.found.forEach(f => { const m = item.mods.find(m => m.id === f.key); if (m) m.values = f.values; });
+    // what desecrating it added (Undying Hate): the lines worded as one, and those naming the notable a conquered one
+    // becomes (one modifier each, its name read below)
+    if (historicFor(u)) { const H = D.affixes.filter(a => a.historic), hm = matchLines(ex.missed, H.flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+      for (const f of hm.found) item.mods.push({ id: f.key, values: f.raw });
+      const over = H.filter(a => pickKind(a.stats[0][0]) === 'override');
+      hm.missed.filter(l => nameLines(over[0]?.stats[0][0] || '').some(({ re }) => re.test(l))).slice(0, over.length).forEach((l, i) => item.mods.push({ id: over[i].id, values: [0] })); }
     // what a line names ("Allocates Heavy Buffer", "Passives in Radius of Zealot's Oath can be Allocated", "+3 to Level of
     // all Raise Zombie Skills", a timeless jewel's "Remembrancing 4500 songworthy deeds by the line of Medved"): its value,
     // and the numbers of that line (a name no other modifier of it took already)
@@ -798,7 +814,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     delete rest[slot];
     const families = new Set(mods.map(m => AFFIX[m.id].family)), desecrated = mods.some(m => AFFIX[m.id].desecrated);
     // one desecrated modifier per item (the game: "This item already has a Desecrated Modifier.")
-    const options = uniq ? [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
+    const options = uniq ? historicFor(uniq) ? D.affixes.filter(a => a.historic && !families.has(a.family)) : [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
     const props = [
       l.physical && prop('Physical Damage', l.physical.join('–')),
@@ -816,7 +832,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const short = free ? [] : Object.entries(reqOf(it)).filter(([, x]) => x).map(([k, x]) => [k, needOf(without, k, x, it, rp)]).filter(([k, x]) => haveFor(without, k, it) < x);
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
-    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
+    const expl = mods.map((m, i) => { const a = AFFIX[m.id]; return `<div class="mod">${radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? a.historic ? `<button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>` : '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
       // an Architect's Orb's Vaal modifier (poe2db's per unique: mutated.py) in place of one of its replaceable ones
       + (uniq?.mutated?.length ? `<div class="mod"><select data-slot="${slot}" data-act="mutate" title="${esc(t("Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier"))}"><option value="">${t('No Vaal modifier')}</option>${uniq.replaceable.flatMap(from => uniq.mutated.map(m => {
           const say = x => statLines(Object.fromEntries(AFFIX[x].stats.map(([id, , hi]) => [id, hi]))).join(' / ');
@@ -825,7 +841,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
         <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
-        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
+        ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${uniq ? '+ ' + t('Desecrated') : t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(without, now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
         <div class="likelines"><small>${t('Modifiers it must have, at least as high as yours')}</small>${priceLines(it).filter(l => l.varies && l.text).map(l => { const k = String(l.hash ?? 'd:' + l.en);

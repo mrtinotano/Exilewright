@@ -394,7 +394,9 @@ export function character(b, sum) {
       reload: { fire: v(sum, 'gain_X_instilling_fire_on_reload'), cold: v(sum, 'gain_X_instilling_cold_on_reload') } },
     expression: v(sum, 'trigger_wild_strike_on_attack_crit') > 0,   // the Invoker's Elemental Expression on melee critical hits
     grin: v(sum, 'infernalist_burn_life_and_es_%_per_second_if_crit_recently'),   // Infernalist's Grinning Immolation: ignited after your critical hits
-    wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
+    wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),
+    // Amanamu's Defiance (keystone_amanamus_defiance): 20% of the life hits take prevented, 150% of it lost over 4 seconds (its text's numbers)
+    amanamu: sum.keystone_amanamus_defiance ? { prevent: 20, lose: 150 } : null,   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
@@ -556,7 +558,7 @@ export function recovery(c, sum) {
   const esRate = CHAR['energy_shield_recharge_rate_per_minute_%'] / 100 / 60;   // 750/min = 12.5%/s
   const esD = k => (1 + v(sum, 'energy_shield_delay_-%') / 100) / (1 + v(sum, 'energy_shield_delay_-%', k) / 100);   // the start of the recharge under a condition, against always
   const umag = 1 + Math.floor((c.mana || 0) / 100) * v(sum, 'unholy_might_granted_magnitude_+%_per_100_maximum_mana') / 100;   // Lich: the Unholy Might you have and grant
-  const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1);   // Mind Over Matter: 50% less
+  const lifeInc = pct('life_regeneration_rate_+%', 'life_recovery_rate_+%'), manaInc = pct('mana_regeneration_rate_+%', 'mana_recovery_rate_+%') * (sum.keystone_mana_shield ? .5 : 1) * (sum.keystone_kurgals_ambition ? .5 : 1);   // Mind Over Matter, Kurgal's Ambition: 50% less
   return {
     // Titanrot Cataphract: none; Mask of the Stitched Demon: per maximum energy shield
     lifeRegen: sum.no_life_regeneration ? 0 : lifePctRegen && c.life == null ? null
@@ -1188,7 +1190,7 @@ export function skill(g, b, treeGear) {
     const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%') + (own.includes('spell') ? v(sum, 'spells_cost_life_instead_of_mana_%') : 0)) / 100;   // Blood Magic: all of it
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
-      const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + (v(sum, 'base_cost_+%') + v(sum, 'base_life_cost_+%')) / 100, more2 = 1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100;
+      const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + (v(sum, 'base_cost_+%') + v(sum, 'base_life_cost_+%')) / 100, more2 = (1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100) * (sum.keystone_tecrods_brutality ? 1.2 : 1);   // Tecrod's Brutality: 20% more
       const eff2 = 1 + (effAll + v(sum, 'base_life_cost_efficiency_+%')) / 100;
       out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost / eff2) : Math.max(0, Math.round(step(step(step(life, inc2), more2), moreCost) / eff2));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));

@@ -1,14 +1,14 @@
 // The Optimizer tab: asks optimize.js for the passive tree path and the support gems that raise one number of the
 // build the most, and trade.js for gear listed on the official trade site that does. Everything shown is what the
 // planner's own calculation says, so it is a guide, not a promise. app.js owns the build: it only changes through ctx.
-//   ctx: { build(), id(), rev(), sumOf(b), snap(b), tree, N, rootOf(b), total (tree points), setNodes(b, nodes),
+//   ctx: { build(), id(), rev(), sumOf(b), snap(b), tree, N, rootOf(b), total (tree points), setNodes(b, nodes), sockets(b) (its allocated jewel sockets),
 //          change(fn(b)) (edits the build, saves, redraws), showOnTree(ids), ask(text, ...options) }
 import { t, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet } from './items.js';
+import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickIn, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
@@ -61,6 +61,38 @@ export function initOpt(el, ctx) {
   const pct = (a, z) => !(a > 0) || z == null ? '' : `<i class="${z > a * (1 + 1e-9) ? 'up' : z < a * (1 - 1e-9) ? 'down' : ''}">${z >= a ? '+' : ''}${fmt((z / a - 1) * 100, 1)}%</i>`;
   const gemName = name => esc(tn(GEM[name]) || name);
 
+  // ---------- the special jewels the tree search may use: every unique jewel by its name, and Time-Lost jewels (rare ones
+  // with a radius). S.jx: those it may not (true). Left out, the build is searched as if they were not in their sockets
+  // and they are not suggested for the empty ones
+  const JX = [...JEWEL_UNIQUES, 'timelost'];
+  const jxOf = it => it?.unique || (radiusOf(it) ? 'timelost' : null);
+  const jxName = k => k === 'timelost' ? t('Time-Lost jewels') : uniqueName(k);
+  const allowed = k => !k || !S.jx?.[k];
+  const withJewels = b => Object.values(S.jx || {}).some(Boolean) ? { ...b, items: Object.fromEntries(Object.entries(b.items || {}).filter(([s, it]) => !s.startsWith('jewel:') || allowed(jxOf(it)))) } : b;
+  const jxBox = () => `<details class="optjx"${S.jxOpen ? ' open' : ''}><summary>${t('Special jewels the search may use')} (${JX.filter(allowed).length}/${JX.length})</summary>
+    <p class="note">${t('Unticked: the search leaves those jewels out (as if their sockets were empty) and does not suggest them for the empty sockets.')}</p>
+    <div class="optrow"><button data-do="jxAll">${t('Tick all')}</button><button data-do="jxNone">${t('Untick all')}</button></div>
+    <div class="optjxl">${JX.map(k => `<label class="chk"><input type="checkbox" data-jx="${esc(k)}"${allowed(k) ? ' checked' : ''}> ${esc(jxName(k))}</label>`).join('')}</div></details>`;
+  // the unique jewels allowed and not in the build, each in the empty socket of build z where it raises objective `key`
+  // the most, as first equipped (best rolls; Prism of Belief for skill g). One whose effect needs a choice of yours
+  // (Megalomaniac, From Nothing...) adds nothing until picked, so it is not among them. Best first
+  function jewelsToBuy(z, key, g) {
+    const has = new Set(Object.values(z.items || {}).map(it => it?.unique)), empty = ctx.sockets(z).filter(id => !z.items?.['jewel:' + id]);
+    const now = rate(key, z, g), out = [];
+    if (!empty.length || !(now > 0)) return out;
+    for (const name of JEWEL_UNIQUES) {
+      if (has.has(name) || !allowed(name)) continue;
+      const it = pickIn(newItem(name), 'skill', GEM[g?.name]?.specific || 0);
+      let best = null;
+      for (const id of radiusOf(it) ? empty : empty.slice(0, 1)) {   // without a radius any socket is the same
+        const v = rate(key, { ...z, items: { ...z.items, ['jewel:' + id]: it } }, g);
+        if (v > now * (1 + 1e-9) && (!best || v > best.v)) best = { name, it, id, v };
+      }
+      if (best) out.push(best);
+    }
+    return out.sort((x, y) => y.v - x.v).slice(0, 6);
+  }
+
   // ---------- passive tree
   const freshOf = b => ({ ...b, nodes: [], set1: [], set2: [], attrs: {} });
   const usedOf = b => Math.max(0, b.nodes.length - 1);
@@ -76,7 +108,7 @@ export function initOpt(el, ctx) {
   }
   const runText = () => t('{0} of {1} points placed…', run.spent, run.of);
   async function runTree() {
-    const b = ctx.build(), g = gemOf(b), fresh = S.mode === 'new', rev = ctx.rev(), key = S.key, b0 = fresh ? freshOf(b) : b, pts = pointsFor(b);
+    const b = ctx.build(), g = gemOf(b), fresh = S.mode === 'new', rev = ctx.rev(), key = S.key, b0 = withJewels(fresh ? freshOf(b) : b), pts = pointsFor(b);
     const bL = { ...b0, level: Math.min(100, 1 + usedOf(b0) + pts) };
     const me = run = { stop: false, spent: 0, of: pts };
     T = null; render();
@@ -88,9 +120,12 @@ export function initOpt(el, ctx) {
     await new Promise(r => setTimeout(r, 30));   // the progress line gets on screen first
     const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), extra: ctx.splitRoots(b0), jewels: ctx.jewels(b0), f: s => score(key, bL, s, g), points: pts,
       pref: S.pref || g && colour(GEM[g.name]) || 'str', stop: () => me.stop || ctx.rev() !== rev,
-      tick: p => { me.spent = p.spent; veil.querySelector('span').textContent = line(); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).finally(() => veil.remove());
+      tick: p => { me.spent = p.spent; veil.querySelector('span').textContent = line(); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).catch(e => { veil.remove(); throw e; });
+    let buy = [];
+    if (ctx.rev() === rev && !me.stop) { veil.querySelector('span').textContent = t('Trying jewels for the empty sockets'); await new Promise(r => setTimeout(r, 30)); buy = jewelsToBuy(withPath(b, r, fresh), key, g); }
+    veil.remove();
     if (run === me) run = null;
-    if (ctx.rev() === rev) T = { rev, r, fresh, key, after: withPath(b, r, fresh) };
+    if (ctx.rev() === rev) T = { rev, r, fresh, key, after: withPath(b, r, fresh), buy };
     render();
   }
   function treeCard(b, g, why) {
@@ -104,10 +139,14 @@ export function initOpt(el, ctx) {
         <div class="note">${t('{0} points placed, level {1}.', T.r.nodes.length, z.level)}${T.r.stopped ? ' ' + t('The search was stopped before the end.') : ''}${T.fresh ? ' ' + t('Applying it replaces the current tree and its weapon set points.') : ''}</div>
         ${notables.length ? `<div class="optlist"><span class="note">${t('Notables')}:</span> ${notables.map(esc).join(' · ')}</div>` : ''}
         ${impactHtml(t('What the path changes'), diff(ctx.snap(b), ctx.snap(z)))}
-        <div class="optrow"><button class="optgo" data-do="applyTree">${t('Apply to the build')}</button>${T.fresh ? '' : `<button data-do="showTree">${t('Show on the tree')}</button>`}</div></div>`;
+        <div class="optrow"><button class="optgo" data-do="applyTree">${t('Apply to the build')}</button>${T.fresh ? '' : `<button data-do="showTree">${t('Show on the tree')}</button>`}</div>
+        ${T.buy?.length ? `<div class="optbuy"><div class="note">${t('Jewels for the empty sockets: unique jewels that would raise it further with the path taken, each in its best socket, as first equipped (best rolls). Those whose effect is a choice of yours (Megalomaniac, From Nothing...) are not tried.')}</div>
+          ${T.buy.map((x, i) => `<div class="optrow"><span class="optgem"><img src="${itemImg(x.it)}" alt=""><b>${esc(uniqueName(x.name))}</b></span> ${show(T.key, { ...z, items: { ...z.items, ['jewel:' + x.id]: x.it } }, g)} ${pct(rate(T.key, z, g), x.v)}
+            <button data-do="buyJewel" data-i="${i}">${t('Put it in the socket')}</button><button data-do="showSock" data-i="${i}">${t('Show on the tree')}</button></div>`).join('')}</div>` : ''}</div>`;
     } else if (msg.tree) res = `<p class="optmsg">${esc(msg.tree)}</p>`;
     return `<section><h3>${t('Passive tree')}</h3>
       <p class="note">${t('Spends the points on the passives that raise the objective the most, one step at a time: good paths, not a proven best one. Keystones and effects the planner does not calculate are never a reason to walk somewhere.')}</p>
+      ${jxBox()}
       <div class="optrow"><label>${t('Points to spend')} <input type="number" min="1" max="${ctx.total}" value="${pointsFor(b)}" data-n="points"></label>
         <label>${t('Starting from')} <select data-s="mode">${opt('add', t('The current tree'), S.mode !== 'new')}${opt('new', t('The class start (a new tree)'), S.mode === 'new')}</select></label>
         <label title="${esc(t('Attribute passives on the way become the attribute that helps the objective; when none does, this one.'))}">${t('Attribute passives')}
@@ -307,6 +346,7 @@ export function initOpt(el, ctx) {
     const q = x.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
     for (const o of el.querySelectorAll('.likeopts button')) o.hidden = !q.every(w => o.textContent.toLowerCase().includes(w));
   };
+  el.addEventListener('toggle', e => { if (e.target.classList?.contains('optjx')) { S.jxOpen = e.target.open; keep(); } }, true);   // the special jewels' list stays as left
   el.onchange = e => {
     const x = e.target, d = x.dataset;
     let other = false;   // the tree search in progress is for something else now
@@ -314,6 +354,7 @@ export function initOpt(el, ctx) {
     if (d.s) { S[d.s] = x.value; if (d.s === 'mode') delete typed.points; if (d.s === 'key' || d.s === 'mode' || d.s === 'pref') { T = null; other = true; } if (d.s === 'key') { U = null; delete S.gear; } }
     else if (d.n) { if (x.value === '') delete typed[d.n]; else typed[d.n] = +x.value; if (d.n === 'lvl' && x.value === '') typed.lvl = 0; if (d.n === 'sockets') U = null; if (d.n === 'points') { T = null; other = true; } }
     else if (d.c) { S[d.c] = x.checked; U = null; }
+    else if (d.jx) { S.jx = { ...S.jx, [d.jx]: !x.checked }; S.jxOpen = true; T = null; other = true; }
     else if ('gem' in d) { S.gem[ctx.id()] = +x.value; delete typed.sockets; T = U = null; other = true; }
     else if ('cls' in d) S.cls[gearSel(ctx.build()).slot] = x.value;
     else if (d.like != null) { const l = likeOf(gearSel(ctx.build()).slot)[+d.like]; if (l) l.value = +x.value || 0; }
@@ -338,6 +379,13 @@ export function initOpt(el, ctx) {
     if (what === 'clearLike') { S.like[ls] = []; keep(); return render(); }
     if (what === 'fromWorn') { S.like[ls] = wornLines(b.items[ls]); keep(); return render(); }
     if (what === 'showTree' && T) return ctx.showOnTree(T.r.nodes);
+    if (what === 'jxAll' || what === 'jxNone') { S.jx = what === 'jxAll' ? {} : Object.fromEntries(JX.map(k => [k, true])); S.jxOpen = true; T = null; if (run) run.stop = true; keep(); return render(); }
+    if (what === 'showSock' && T?.buy?.[+btn.dataset.i]) return ctx.showOnTree([T.buy[+btn.dataset.i].id]);
+    if (what === 'buyJewel' && T?.buy?.[+btn.dataset.i]) {   // in an empty socket of the path: it stays there until the path is applied
+      const x = T.buy[+btn.dataset.i];
+      msg.tree = t('{0} put in a jewel socket.', uniqueName(x.name));
+      return ctx.change(b => { (b.items ||= {})['jewel:' + x.id] = structuredClone(x.it); });
+    }
     if (what === 'applyTree' && T) {
       const { r, fresh } = T, had = usedOf(b) + (b.set1?.length || 0) + (b.set2?.length || 0);
       if (fresh && had && await ctx.ask(t('Replace the current tree? {0} allocated points will be removed.', had), t('Replace')) !== 0) return;

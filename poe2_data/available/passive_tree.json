@@ -152110,6 +152110,14 @@
      "small": true,
      "attribute": true,
      "notable": true
+    },
+    "plus": {
+     "attribute": {
+      "base_strength": 2
+     },
+     "small": {
+      "base_strength": 4
+     }
     }
    },
    {
@@ -152122,6 +152130,14 @@
      "small": true,
      "attribute": true,
      "notable": true
+    },
+    "plus": {
+     "attribute": {
+      "base_dexterity": 2
+     },
+     "small": {
+      "base_dexterity": 4
+     }
     }
    },
    {
@@ -152134,6 +152150,19 @@
      "small": true,
      "attribute": false,
      "notable": true
+    },
+    "becomes": {
+     "attribute": {
+      "base_devotion": 10
+     }
+    },
+    "plus": {
+     "small": {
+      "base_devotion": 5
+     },
+     "notable": {
+      "base_devotion": 5
+     }
     }
    },
    {
@@ -152146,6 +152175,10 @@
      "small": false,
      "attribute": false,
      "notable": false
+    },
+    "becomes": {
+     "attribute": {},
+     "small": {}
     }
    },
    {
@@ -152170,6 +152203,90 @@
      "small": false,
      "attribute": true,
      "notable": false
+    },
+    "plus": {
+     "attribute": {
+      "base_tribute": 3
+     }
+    },
+    "becomes": {
+     "small": {
+      "base_tribute": 5
+     }
+    },
+    "extra": {
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_tribute": [
+      "attribute",
+      "base_tribute"
+     ],
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_strength": [
+      "attribute",
+      "base_strength"
+     ],
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_dexterity": [
+      "attribute",
+      "base_dexterity"
+     ],
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_intelligence": [
+      "attribute",
+      "base_intelligence"
+     ],
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_all_attributes": [
+      "attribute",
+      "base_all_attributes"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_evasion_rating_+%": [
+      "small",
+      "evasion_rating_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_armour_rating_+%": [
+      "small",
+      "physical_damage_reduction_rating_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_energy_shield_+%": [
+      "small",
+      "maximum_energy_shield_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_mana_regen_rate_+%": [
+      "small",
+      "mana_regeneration_rate_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_life_regen_rate_+%": [
+      "small",
+      "life_regeneration_rate_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_spell_damage_+%": [
+      "small",
+      "spell_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_attack_damage_+%": [
+      "small",
+      "attack_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_elemental_damage_+%": [
+      "small",
+      "elemental_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_physical_damage_+%": [
+      "small",
+      "physical_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_chaos_damage_+%": [
+      "small",
+      "chaos_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_minions_deal_increased_damage_+%": [
+      "small",
+      "minion_damage_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_stun_threshold_+%": [
+      "small",
+      "stun_threshold_+%"
+     ],
+     "local_historic_abyss_jewel_conquered_small_passives_grant_ailment_threshold_+%": [
+      "small",
+      "ailment_threshold_+%"
+     ]
     }
    }
   ],
@@ -152565,7 +152682,386 @@
      "keystone_ulamans_vision": 1
     }
    }
-  ]
+  ],
+  "overrides": {
+   "32578": {
+    "name": "Ephemeral Contact",
+    "name_es": "Contacto efímero",
+    "name_pt": "Contato Efêmero",
+    "name_fr": "Contact éphémère",
+    "name_de": "Vergänglicher Kontakt",
+    "name_ru": "Прикосновение к эфемерному",
+    "name_ja": "儚い契約",
+    "name_ko": "덧없는 접촉",
+    "name_th": "Ephemeral Contact",
+    "name_zh": "短暫接觸",
+    "stats": {
+     "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "50654": {
+    "name": "Ancient Reserve",
+    "name_es": "Reserva antigua",
+    "name_pt": "Reserva Antiga",
+    "name_fr": "Réserve antique",
+    "name_de": "Uralte Reserve",
+    "name_ru": "Древние резервы",
+    "name_ja": "古代の備蓄",
+    "name_ko": "고대 저수지",
+    "name_th": "Ancient Reserve",
+    "name_zh": "遠古儲備",
+    "stats": {
+     "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute": 1
+    }
+   },
+   "45061": {
+    "name": "Unburdened Shadow",
+    "name_es": "Sombra liviana",
+    "name_pt": "Sombra Livre",
+    "name_fr": "Ombre soulagée",
+    "name_de": "Unbeschwerter Schatten",
+    "name_ru": "Необременённая тень",
+    "name_ja": "解放された影",
+    "name_ko": "굴레를 벗은 그림자",
+    "name_th": "Unburdened Shadow",
+    "name_zh": "無拘暗影",
+    "stats": {
+     "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "15375": {
+    "name": "Unbuckling Resilience",
+    "name_es": "Resiliencia desprendida",
+    "name_pt": "Resiliência Inabalável",
+    "name_fr": "Résilience débridée",
+    "name_de": "Unnachgiebige Widerstandsfähigkeit",
+    "name_ru": "Неослабевающая крепость",
+    "name_ja": "緩む抵抗力",
+    "name_ko": "휘청이지 않는 탄력성",
+    "name_th": "Unbuckling Resilience",
+    "name_zh": "鬆動韌性",
+    "stats": {
+     "maximum_endurance_charges_+_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "24389": {
+    "name": "Uncompromising Efficacy",
+    "name_es": "Eficacia absoluta",
+    "name_pt": "Eficácia Intransigente",
+    "name_fr": "Efficacité intransigeante",
+    "name_de": "Gnadenlose Wirkungskraft",
+    "name_ru": "Бескомпромиссная эффективность",
+    "name_ja": "妥協なき効果",
+    "name_ko": "타협하지 않는 효력",
+    "name_th": "Uncompromising Efficacy",
+    "name_zh": "堅定效能",
+    "stats": {
+     "maximum_power_charges_+_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "14833": {
+    "name": "Unfettered Hysteria",
+    "name_es": "Histeria ilimitada",
+    "name_pt": "Histeria Desenfreada",
+    "name_fr": "Hystérie déchaînée",
+    "name_de": "Ungehemmte Hysterie",
+    "name_ru": "Безудержная истерия",
+    "name_ja": "解き放たれた狂乱",
+    "name_ko": "제약 없는 발작",
+    "name_th": "Unfettered Hysteria",
+    "name_zh": "自由狂躁",
+    "stats": {
+     "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "11615": {
+    "name": "Enduring Threats",
+    "name_es": "Amenazas persistentes",
+    "name_pt": "Ameaças Persistentes",
+    "name_fr": "Menaces tenaces",
+    "name_de": "Beständige Gefahren",
+    "name_ru": "Постоянные угрозы",
+    "name_ja": "持続する脅威",
+    "name_ko": "인내의 위협",
+    "name_th": "Enduring Threats",
+    "name_zh": "恆久威脅",
+    "stats": {
+     "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "9390": {
+    "name": "Calloused Marrow",
+    "name_es": "Médula callosa",
+    "name_pt": "Tutano Endurecido",
+    "name_fr": "Moelle calleuse",
+    "name_de": "Verhärtetes Mark",
+    "name_ru": "Огрубевший костный мозг",
+    "name_ja": "硬化した骨髄",
+    "name_ko": "못 박인 골수",
+    "name_th": "Calloused Marrow",
+    "name_zh": "硬結骨髓",
+    "stats": {
+     "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute": -40
+    }
+   },
+   "26534": {
+    "name": "Vainglorious",
+    "name_es": "Vanaglorioso",
+    "name_pt": "Vaidade",
+    "name_fr": "Glorification",
+    "name_de": "Prahlerisch",
+    "name_ru": "Тщеславность",
+    "name_ja": "虚栄心",
+    "name_ko": "허영심",
+    "name_th": "Vainglorious",
+    "name_zh": "自負",
+    "stats": {
+     "glory_generation_+%_if_you_have_at_least_100_tribute": 40
+    }
+   },
+   "63475": {
+    "name": "Twisted Steel",
+    "name_es": "Acero retorcido",
+    "name_pt": "Aço Retorcido",
+    "name_fr": "Acier déformé",
+    "name_de": "Bizarrer Stahl",
+    "name_ru": "Искажённая сталь",
+    "name_ja": "捻じれた鋼",
+    "name_ko": "뒤틀린 강철",
+    "name_th": "Twisted Steel",
+    "name_zh": "扭曲堅鋼",
+    "stats": {
+     "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute": 40
+    }
+   },
+   "57206": {
+    "name": "Grand Tribute",
+    "name_es": "Gran tributo",
+    "name_pt": "Grande Tributo",
+    "name_fr": "Grand tribut",
+    "name_de": "Großer Tribut",
+    "name_ru": "Великое подношение",
+    "name_ja": "壮大な捧げもの",
+    "name_ko": "거창한 공물",
+    "name_th": "Grand Tribute",
+    "name_zh": "宏偉貢禮",
+    "stats": {
+     "remnant_pickup_range_+%_if_you_have_at_least_100_tribute": 80
+    }
+   },
+   "55477": {
+    "name": "Toll of Agony",
+    "name_es": "El precio de la agonía",
+    "name_pt": "Tributo da Agonia",
+    "name_fr": "Le Prix de l'agonie",
+    "name_de": "Gebühr der Qual",
+    "name_ru": "Бремя агонии",
+    "name_ja": "苦悶の代価",
+    "name_ko": "고통의 대가",
+    "name_th": "Toll of Agony",
+    "name_zh": "苦痛代價",
+    "stats": {
+     "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute": 500,
+     "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute": 25
+    }
+   },
+   "4617": {
+    "name": "Deep Venom",
+    "name_es": "Veneno profundo",
+    "name_pt": "Peçonha Penetrante",
+    "name_fr": "Venin intense",
+    "name_de": "Tiefgehendes Gift",
+    "name_ru": "Глубинный яд",
+    "name_ja": "深まる毒",
+    "name_ko": "깊은 독액",
+    "name_th": "Deep Venom",
+    "name_zh": "深沉劇毒",
+    "stats": {
+     "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute": 1
+    }
+   },
+   "11642": {
+    "name": "Unrighteous Rally",
+    "name_es": "Manifestación injusta",
+    "name_pt": "Inspiração da Injustiça",
+    "name_fr": "Ralliement impie",
+    "name_de": "Unredliche Zusammenkunft",
+    "name_ru": "Нечестивый сбор",
+    "name_ja": "邪悪な終結",
+    "name_ko": "부당한 집결",
+    "name_th": "Unrighteous Rally",
+    "name_zh": "不義集結",
+    "stats": {
+     "minion_resummon_speed_+%_if_you_have_at_least_100_tribute": 20
+    }
+   },
+   "38544": {
+    "name": "Terse Curses",
+    "name_es": "Maldiciones tersas",
+    "name_pt": "Maldições Lacônicas",
+    "name_fr": "Malédictions brèves",
+    "name_de": "Lapidare Flüche",
+    "name_ru": "Отрывистые проклятия",
+    "name_ja": "そっけない呪い",
+    "name_ko": "간결한 저주",
+    "name_th": "Terse Curses",
+    "name_zh": "扼要詛咒",
+    "stats": {
+     "curse_duration_+%_if_you_have_at_least_100_tribute": 50
+    }
+   },
+   "58943": {
+    "name": "Heightened Shadows",
+    "name_es": "Sombras resaltadas",
+    "name_pt": "Sombras Intensificadas",
+    "name_fr": "Ombres intensifiées",
+    "name_de": "Vermehrte Schatten",
+    "name_ru": "Высящиеся тени",
+    "name_ja": "高まる影",
+    "name_ko": "고조된 그림자",
+    "name_th": "Heightened Shadows",
+    "name_zh": "高聳暗影",
+    "stats": {
+     "aura_effect_+%_if_you_have_at_least_100_tribute": 15
+    }
+   },
+   "55791": {
+    "name": "Stratified Wards",
+    "name_es": "Barreras estratificadas",
+    "name_pt": "Salvaguardas Estratificadas",
+    "name_fr": "Protections stratifiées",
+    "name_de": "Mehrschichtiger Schutz",
+    "name_ru": "Многослойные барьеры",
+    "name_ja": "層状の結界",
+    "name_ko": "계층화된 수호",
+    "name_th": "Stratified Wards",
+    "name_zh": "分層守護",
+    "stats": {
+     "num_charm_slots_+_if_you_have_at_least_100_tribute": 1,
+     "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute": 60
+    }
+   },
+   "58078": {
+    "name": "Unsavored Feast",
+    "name_es": "Banquete insípido",
+    "name_pt": "Banquete Desagradável",
+    "name_fr": "Goinfrage",
+    "name_de": "Verschmähtes Mahl",
+    "name_ru": "Безобразный пир",
+    "name_ja": "味あわれぬ宴",
+    "name_ko": "음미하지 못할 연회",
+    "name_th": "Unsavored Feast",
+    "name_zh": "作嘔盛宴",
+    "stats": {
+     "life_leech_rate_+%_if_you_have_at_least_100_tribute": 35
+    }
+   },
+   "20452": {
+    "name": "Certain Hand",
+    "name_es": "Mano segura",
+    "name_pt": "Mão Certeira",
+    "name_fr": "Main certaine",
+    "name_de": "Sichere Hand",
+    "name_ru": "Твёрдая рука",
+    "name_ja": "確実な手",
+    "name_ko": "어떤 손",
+    "name_th": "Certain Hand",
+    "name_zh": "無疑之手",
+    "stats": {
+     "block_chance_+%_if_you_have_at_least_100_tribute": 20
+    }
+   },
+   "25341": {
+    "name": "Diabolical Opportunity",
+    "name_es": "Oportunidad diabólica",
+    "name_pt": "Oportunidade Diabólica",
+    "name_fr": "Opportunité diabolique",
+    "name_de": "Diabolische Gelegenheit",
+    "name_ru": "Дьявольский шанс",
+    "name_ja": "悪魔的好機",
+    "name_ko": "극악무도한 기회",
+    "name_th": "Diabolical Opportunity",
+    "name_zh": "惡魔機會",
+    "stats": {
+     "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute": 250
+    }
+   },
+   "46501": {
+    "name": "Spiritkeeper",
+    "name_es": "Guardián del espíritu",
+    "name_pt": "Proteção Espiritual",
+    "name_fr": "Gardien de l'Esprit",
+    "name_de": "Geisterhüter",
+    "name_ru": "Хранитель духа",
+    "name_ja": "魂の守り手",
+    "name_ko": "혼백수호자",
+    "name_th": "Spiritkeeper",
+    "name_zh": "魂靈守護者",
+    "stats": {
+     "spirit_+%_if_you_have_at_least_100_tribute": 8
+    }
+   },
+   "63656": {
+    "name": "Grim Grit",
+    "name_es": "Determinación férrea",
+    "name_pt": "Determinação Sinistra",
+    "name_fr": "Ténacité sinistre",
+    "name_de": "Grimmiger Schneid",
+    "name_ru": "Мрачная выдержка",
+    "name_ja": "不気味な根性",
+    "name_ko": "근엄한 근성",
+    "name_th": "Grim Grit",
+    "name_zh": "冷酷毅力",
+    "stats": {
+     "maximum_life_+%_if_you_have_at_least_100_tribute": 5
+    }
+   },
+   "34953": {
+    "name": "Lavish Soul",
+    "name_es": "Alma generosa",
+    "name_pt": "Alma Generosa",
+    "name_fr": "Âme somptueuse",
+    "name_de": "Verschwenderische Seele",
+    "name_ru": "Богатая душа",
+    "name_ja": "豊かな魂",
+    "name_ko": "아낌없는 영혼",
+    "name_th": "Lavish Soul",
+    "name_zh": "慷慨靈魂",
+    "stats": {
+     "maximum_mana_+%_if_you_have_at_least_100_tribute": 5
+    }
+   },
+   "64435": {
+    "name": "Kingslayer",
+    "name_es": "Matarreyes",
+    "name_pt": "Regicida",
+    "name_fr": "Tueur de Rois",
+    "name_de": "Königsmörder",
+    "name_ru": "Цареубийца",
+    "name_ja": "キングスレイヤー",
+    "name_ko": "왕 처형자",
+    "name_th": "Kingslayer",
+    "name_zh": "弒君者",
+    "stats": {
+     "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute": 50
+    }
+   },
+   "12628": {
+    "name": "Twice Bled",
+    "name_es": "Dos veces sangrado",
+    "name_pt": "Sangria Dupla",
+    "name_fr": "Double saignée",
+    "name_de": "Zweifach-Blutend",
+    "name_ru": "Дважды обагрённый",
+    "name_ja": "二度の出血",
+    "name_ko": "두 번의 출혈",
+    "name_th": "Twice Bled",
+    "name_zh": "二度出血",
+    "stats": {
+     "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute": 20
+    }
+   }
+  }
  },
  "keystone_list": [
   "45202",

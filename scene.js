@@ -4786,6 +4786,8 @@ export function initScene(el, api) {
     if ((sheet().manaFirst && me.mana > me.life || sheet().mom) && me.mana > 0) { const m = Math.min(me.mana, left); me.mana -= m; left -= m; }
     // Blood Mage's Grasping Wounds: its share of the life a hit takes is lost over 4 seconds instead
     const GW = hit && sheet().wounds; if (GW && left > 0) { me.wounds.push({ rate: left * GW / 400, until: time + 4 }); left *= 1 - GW / 100; }
+    // Amanamu's Defiance (Undying Hate's keystone): its share of the life a hit takes is prevented, then that times its loss is lost over 4 seconds
+    const AD = hit && sheet().amanamu; if (AD && left > 0) { const p = left * AD.prevent / 100; me.wounds.push({ rate: p * AD.lose / 400, until: time + 4 }); left -= p; }
     if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }

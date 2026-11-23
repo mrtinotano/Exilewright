@@ -53609,6 +53609,27 @@
  },
  {
   "stats": [
+   "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1|1"
+    ],
+    "t": "Nicht sofortige Fertigkeiten mit Abklingzeiten haben {0:+d} Abklingzeit-Nutzung, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Nicht sofortige Fertigkeiten mit Abklingzeiten haben {0:+d} Abklingzeit-Nutzungen, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "added_thorns_cold_base_damage_%_of_maximum_mana"
   ],
   "rows": [
@@ -53732,6 +53753,20 @@
      "#"
     ],
     "t": "{0:+d}% zu allen [MaximumResistances|maximalen Elementarwiderständen], wenn Ihr mindestens 5 rote, grüne und blaue [SupportGem|Unterstützungsgemmen] eingefasst habt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% zu allen maximalen Widerständen, wenn Ihr über mindestens 100 Tribut verfügt",
     "h": []
    }
   ]
@@ -55132,6 +55167,20 @@
  },
  {
   "stats": [
+   "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% der [Armour|Rüstung] werden auch auf [ElementalDamage|Elementarschaden] angewendet, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_+%_if_consumed_endurance_charge_recently"
   ],
   "rows": [
@@ -55969,6 +56018,23 @@
      "#"
     ],
     "t": "[Attack|Angriffe] haben {0:+d}% zu [Critical|kritischer Trefferchance]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Angriffe] haben {0:+d}% zu [Critical|kritischer Trefferchance] gegen [ParriedDebuff|parierte] Gegner, wenn Ihr über mindestens 100 Tribut verfügt",
     "h": [
      "divide_by_one_hundred",
      "1"
@@ -57111,6 +57177,30 @@
     ],
     "t": "[Attack|Angriffe] haben 25% Chance, Bluten zu verursachen, wenn sie [Curse|verfluchte] Gegner treffen",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "aura_effect_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte [Aura|Aura]-[BuffMagnitude|Magnituden], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte [Aura|Aura]-[BuffMagnitude|Magnituden], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -58685,6 +58775,27 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte [Block|Block]chance, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte [Block|Block]chance, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
    }
   ]
  },
@@ -62781,6 +62892,30 @@
  },
  {
   "stats": [
+   "curse_duration_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% verlängerte [Curse|Fluch]dauer, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verkürzte [Curse|Fluch]dauer, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_on_block_enfeeble_chance_%"
   ],
   "rows": [
@@ -62934,6 +63069,30 @@
      "#|-1"
     ],
     "t": "{0}% verringerter Schaden für jeden Typ von [ElementalAilments|elementarer Beeinträchtigung] auf dem Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhter Schaden mit [Hit|Treffern] gegen [Rarity|seltene und einzigartige] Gegner, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerter Schaden mit [Hit|Treffern] gegen [Rarity|seltene und einzigartige] Gegner, wenn Ihr über mindestens 100 Tribut verfügt",
     "h": [
      "negate",
      "1"
@@ -63520,6 +63679,30 @@
     ],
     "t": "{0}% des [Hit|Treffer]schadens werden zuerst vom Leben Eures nächsten [Totem|Totems] abgezogen",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhter erlittener Schaden von [Volatility|Instabilität], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerter erlittener Schaden von [Volatility|Instabilität], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -69069,6 +69252,23 @@
  },
  {
   "stats": [
+   "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charm|Phiolen] erhalten {0} Füllungen pro Sekunde, wenn Ihr über mindestens 200 Tribut verfügt",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "generate_x_charges_for_life_flasks_per_minute"
   ],
   "rows": [
@@ -69177,6 +69377,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "glory_generation_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% erhöhte [Glory|Ruhm]-Generierung, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
    }
   ]
  },
@@ -73288,6 +73502,20 @@
  },
  {
   "stats": [
+   "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ignoriert sämtliche [ArmourPenalties|Malus auf die Bewegungsgeschwindigkeit] von [EquipArmour|Rüstung], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "ignore_attribute_requirements_for_gloves"
   ],
   "rows": [
@@ -74666,6 +74894,23 @@
  },
  {
   "stats": [
+   "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% des [Thorns|Dornen]schadens werden als [LifeLeech|Leben geraubt], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_leech_%_maximum_life_on_spell_cast"
   ],
   "rows": [
@@ -74675,6 +74920,30 @@
     ],
     "t": "[LifeLeech|Raubt] {0}% des maximalen Lebens, wenn Ihr einen [Spell|Zauber] wirkt",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_leech_rate_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LifeLeech|Raubt] Leben {0}% schneller, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LifeLeech|Raubt] Leben {0}% langsamer, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -88991,6 +89260,20 @@
  },
  {
   "stats": [
+   "maximum_endurance_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} zu maximaler Anzahl von Widerstands-Ladungen, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89096,6 +89379,20 @@
  },
  {
   "stats": [
+   "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} zu maximaler Anzahl von Raserei-Ladungen, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_guard_is_based_on_energy_shield"
   ],
   "rows": [
@@ -89133,6 +89430,30 @@
     ],
     "t": "{0}% erhöhtes maximales Leben, wenn Ihr mindestens 10 rote [SupportGem|Unterstützungsgemmen] eingefasst habt",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhtes maximales Leben, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringertes maximales Leben, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -89271,6 +89592,30 @@
  },
  {
   "stats": [
+   "maximum_mana_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhtes maximales Mana, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringertes maximales Mana, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_physical_damage_reduction_is_50%"
   ],
   "rows": [
@@ -89279,6 +89624,20 @@
      "1|#"
     ],
     "t": "Maximale [Physical|physische Schadens]minderung beträgt 50%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_power_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{:+d} zu maximaler Anzahl von Energie-Ladungen, wenn Ihr über mindestens 100 Tribut verfügt",
     "h": []
    }
   ]
@@ -90289,6 +90648,30 @@
      "#|-1"
     ],
     "t": "[Minion|Kreaturen] werden {0}% langsamer [Reviving|wiederbelebt], wenn all Eure [Minion|Kreaturen] [Companion|Gefährten] sind",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_resummon_speed_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Kreaturen] werden {0}% schneller [Reviving|wiederbelebt], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Kreaturen] werden {0}% langsamer [Reviving|wiederbelebt], wenn Ihr über mindestens 100 Tribut verfügt",
     "h": [
      "negate",
      "1"
@@ -91993,6 +92376,27 @@
  },
  {
   "stats": [
+   "num_charm_slots_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0:+d} [Charm|Phiolen]-Platz, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "{0:+d} [Charm|Phiolen]-Plätze, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "number_of_additional_banners_allowed"
   ],
   "rows": [
@@ -92036,6 +92440,20 @@
      "1|#"
     ],
     "t": "Ihr könnt {0} zusätzliche [Curse|Flüche] anwenden, während Ihr maximale Energie-Ladungen habt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ziele können von {0:+d} Eurer [Poison|Gifte] gleichzeitig betroffen sein, wenn Ihr über mindestens 100 Tribut verfügt",
     "h": []
    }
   ]
@@ -93077,6 +93495,20 @@
      "#"
     ],
     "t": "{0}% des verhinderten physischen Schadens werden als Leben [Recoup|wiedergewonnen]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% des verhinderten physischen Schadens werden als Leben [Recoup|wiedergewonnen], wenn Ihr über mindestens 100 Tribut verfügt",
     "h": []
    }
   ]
@@ -94736,6 +95168,30 @@
     "t": "Regeneriert Mana in Höhe von {0}% des maximalen Lebens pro Sekunde",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_pickup_range_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Remnant|Überreste] können aus {0}% weiterer Entfernung aufgesammelt werden, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Remnant|Überreste] müssen aus {0}% näherer Entfernung aufgesammelt werden, wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -96744,6 +97200,30 @@
  },
  {
   "stats": [
+   "spirit_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhter [Spirit|Wille], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerter [Spirit|Wille], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+_if_at_least_200_dexterity"
   ],
   "rows": [
@@ -97988,6 +98468,30 @@
     ],
     "t": "{0} bis {1} [Physical|physischer] [Thorns|Dornen]schaden",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance, dass [Thorns|Dornen] einen [RetaliateAgainstAll|Gegenschlag gegen] [Hit|Treffer] (Nahkampf ausgenommen) ausführen, wenn Ihr über mindestens 200 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% Chance, dass [Thorns|Dornen] einen [RetaliateAgainstAll|Gegenschlag gegen] [Hit|Treffer] (Nahkampf ausgenommen) ausführen, wenn Ihr über mindestens 200 Tribut verfügt",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -100025,6 +100529,27 @@
  },
  {
   "stats": [
+   "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Warcry|Kriegsschreie] [Empowered|ermächtigen] einen zusätzlichen [Attack|Angriff], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Warcry|Kriegsschreie] [Empowered|ermächtigen] {0} zusätzliche [Attack|Angriffe], wenn Ihr über mindestens 100 Tribut verfügt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_monster_power_+%"
   ],
   "rows": [
@@ -101368,6 +101893,20 @@
  },
  {
   "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Dexterity|Geschick]\\n1% erhöhte [Armour|Rüstung] pro 2 Geschick",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_alternate_es_recovery"
   ],
   "rows": [
@@ -101376,6 +101915,34 @@
      "#"
     ],
     "t": "5% des verhinderten [Physical|physischen] Schadens werden pro [Power|Stärkegrad] als [EnergyShield|Energieschild] [Recoup|wiedergewonnen]\\n[EnergyShield|Energieschild] wird nicht [ESRecharge|wiederaufgeladen]\\nIhr könnt keinen [EnergyShield|Energieschild] durch Regeneration wiederherstellen\\nIhr könnt keinen [EnergyShield|Energieschild] über den [Armour|Rüstungswert] hinaus wiederherstellen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Intelligence|Intelligenz]\\n1% erhöhter [Evasion|Ausweichwert] pro 2 Intelligenz",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erhaltet keine inhärenten Boni von [Strength|Stärke]\\n1% erhöhter [EnergyShield|Energieschild] pro 2 Stärke",
     "h": []
    }
   ]
@@ -101536,6 +102103,20 @@
  },
  {
   "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Sämtlicher erlittener Schaden umgeht den Energieschild\\nErleidet 50% des Elementarschadens als Chaosschaden\\n+5% zu maximalem Chaoswiderstand",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_druidic_rage"
   ],
   "rows": [
@@ -101572,6 +102153,20 @@
      "#"
     ],
     "t": "Erzeugt [Lightning|Blitz][ElementalInfusion|infusionierte] [Remnant|Überreste] statt [Fire|Feuer]\\nErzeugt [Cold|Kälte][ElementalInfusion|infusionierte] [Remnant|Überreste] statt [Lightning|Blitz]\\nErzeugt [Fire|Feuer][ElementalInfusion|infusionierte] [Remnant|Überreste] statt [Cold|Kälte]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Lebenswiederherstellung von [Flask|Fläschchen] wirkt auch auf den Energieschild\\n30% weniger Lebenswiederherstellung von [Flask|Fläschchen]",
     "h": []
    }
   ]
@@ -101782,6 +102377,20 @@
      "#"
     ],
     "t": "30% weniger [CriticalDamageBonus|Bonus für kritische Treffer] bei vollem Leben\\n30% mehr Bonus für kritische Treffer bei [LowLife|niedrigem Leben]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "3% mehr [Spell|Zauber]schaden pro [Charges|Energie-Ladung]\\nIhr erhaltet [Charges|Energie-] statt [Charges|Raserei-Ladungen]",
     "h": []
    }
   ]
@@ -103330,6 +103939,146 @@
      "1|#"
     ],
     "t": "[Companion|Gefährten] verursachen zusätzlichen [Attack|Angriffs]schaden in Höhe von {0}% des Schadens Eurer Haupthandwaffe",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Beim Erleiden von Schaden von [Hit|Treffern] werden 20% des Lebensverlusts verhindert, wonach 150% des auf diese Weise verhinderten Lebensverlusts über 4 Sekunden verloren werden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr seid blind\\nBlindheit beeinflusst nicht Euren Lichtradius\\n25% mehr [Critical|kritische Trefferchance] mit [Melee|Nahkampf]angriffen, während Ihr geblendet seid",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr verursacht 1% mehr Schaden pro gesamtem [Power|Stärkegrad] Eurer untoten Kreaturen\\nUntote Kreaturen haben 25% weniger maximales Leben",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Manawiederherstellung durch Regeneration [Overflow|überfüllt] maximales Mana\\n50% weniger Manaregenerations-Rate",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verbündete und Gegner im Umkreis teilen Ladungen mit Euch\\nGegner, die Euch treffen, haben 10% Chance auf eine Widerstands-, Raserei- oder Energie-Ladung",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80% des maximalen Manas werden in doppelt so viel [Armour|Rüstung] umgewandelt",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ihr könnt keinen Helm benutzen\\nEure [Critical|kritische Treffer]chance ist günstig\\nEuer Schaden mit [Critical|kritischen Treffern] ist günstig\\nDer gegnerische Schaden mit [Critical|kritischen Treffern] ist günstig",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regeneriert 1 Leben pro Sekunde pro 16 Leben, die in den letzten 4 Sekunden verbraucht wurden\\n20% mehr Lebenskosten von Fertigkeiten",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erleidet 50% des Kälte- und Blitzschadens als Feuerschaden\\n50% weniger Kältewiderstand\\n50% weniger Blitzwiderstand",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projektile] führen eine der folgenden Aktionen zufällig aus:\\n• [Fork|Gabelt] sich ein zusätzliches Mal auf\\n• [Chain|Verkettet] sich ein zusätzliches Mal\\n• [Chain|Verkettet] sich ein zusätzliches Mal vom Gelände aus\\n• Kann nicht mit Zielen kollidieren",
     "h": []
    }
   ]
@@ -124417,230 +125166,6 @@
   ],
   "skill": [
    "Flame Breath"
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_dexterity_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Erhaltet keine inhärenten Boni von [Dexterity|Geschick]\\n1% erhöhte [Armour|Rüstung] pro 2 Geschick",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_intelligence_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Erhaltet keine inhärenten Boni von [Intelligence|Intelligenz]\\n1% erhöhter [Evasion|Ausweichwert] pro 2 Intelligenz",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_strength_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Erhaltet keine inhärenten Boni von [Strength|Stärke]\\n1% erhöhter [EnergyShield|Energieschild] pro 2 Stärke",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_divine_flesh"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sämtlicher erlittener Schaden umgeht den Energieschild\\nErleidet 50% des Elementarschadens als Chaosschaden\\n+5% zu maximalem Chaoswiderstand",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_emperors_heart"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Lebenswiederherstellung von [Flask|Fläschchen] wirkt auch auf den Energieschild\\n30% weniger Lebenswiederherstellung von [Flask|Fläschchen]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_quiet_might"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "3% mehr [Spell|Zauber]schaden pro [Charges|Energie-Ladung]\\nIhr erhaltet [Charges|Energie-] statt [Charges|Raserei-Ladungen]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_amanamus_defiance"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Beim Erleiden von Schaden von [Hit|Treffern] werden 20% des Lebensverlusts verhindert, wonach 150% des auf diese Weise verhinderten Lebensverlusts über 4 Sekunden verloren werden",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_blind_monk"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Ihr seid blind\\nBlindheit beeinflusst nicht Euren Lichtradius\\n25% mehr [Critical|kritische Trefferchance] mit [Melee|Nahkampf]angriffen, während Ihr geblendet seid",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kulemaks_sovereignty"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Ihr verursacht 1% mehr Schaden pro gesamtem [Power|Stärkegrad] Eurer untoten Kreaturen\\nUntote Kreaturen haben 25% weniger maximales Leben",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kurgals_ambition"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Manawiederherstellung durch Regeneration [Overflow|überfüllt] maximales Mana\\n50% weniger Manaregenerations-Rate",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_magnetic_charge"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Verbündete und Gegner im Umkreis teilen Ladungen mit Euch\\nGegner, die Euch treffen, haben 10% Chance auf eine Widerstands-, Raserei- oder Energie-Ladung",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_mental_conditioning"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "80% des maximalen Manas werden in doppelt so viel [Armour|Rüstung] umgewandelt",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_sharp_and_brittle"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Ihr könnt keinen Helm benutzen\\nEure [Critical|kritische Treffer]chance ist günstig\\nEuer Schaden mit [Critical|kritischen Treffern] ist günstig\\nDer gegnerische Schaden mit [Critical|kritischen Treffern] ist günstig",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tecrods_brutality"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Regeneriert 1 Leben pro Sekunde pro 16 Leben, die in den letzten 4 Sekunden verbraucht wurden\\n20% mehr Lebenskosten von Fertigkeiten",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tempered_by_war"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Erleidet 50% des Kälte- und Blitzschadens als Feuerschaden\\n50% weniger Kältewiderstand\\n50% weniger Blitzwiderstand",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_ulamans_vision"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Projectile|Projektile] führen eine der folgenden Aktionen zufällig aus:\\n• [Fork|Gabelt] sich ein zusätzliches Mal auf\\n• [Chain|Verkettet] sich ein zusätzliches Mal\\n• [Chain|Verkettet] sich ein zusätzliches Mal vom Gelände aus\\n• Kann nicht mit Zielen kollidieren",
-    "h": []
-   }
   ]
  }
 ]

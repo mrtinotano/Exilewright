@@ -53614,6 +53614,27 @@
  },
  {
   "stats": [
+   "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1|1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 재사용 대기시간이 있는 비-즉시 시전 스킬의 재사용 횟수 {0:+d}회",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 재사용 대기시간이 있는 비-즉시 시전 스킬의 재사용 횟수 {0:+d}회",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "added_thorns_cold_base_damage_%_of_maximum_mana"
   ],
   "rows": [
@@ -53737,6 +53758,20 @@
      "#"
     ],
     "t": "빨간색, 초록색, 파란색 [SupportGem|보조 젬]을 5개 이상 장착한 경우 모든 [MaximumResistances|원소 저항 최대치] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 모든 저항 최대치 {0:+d}%",
     "h": []
    }
   ]
@@ -55137,6 +55172,20 @@
  },
  {
   "stats": [
+   "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Armour|방어도]의 {0:+d}%가 [ElementalDamage|원소 피해]에도 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_+%_if_consumed_endurance_charge_recently"
   ],
   "rows": [
@@ -55974,6 +56023,23 @@
      "#"
     ],
     "t": "[Attack|공격]의 [Critical|치명타 명중 확률] {0:+d}%",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [ParriedDebuff|흘려보낸] 적에 대한 [Attack|공격]의 [Critical|치명타 명중 확률] {0:+d}%",
     "h": [
      "divide_by_one_hundred",
      "1"
@@ -57116,6 +57182,30 @@
     ],
     "t": "[Attack|공격]이 [Curse|저주]받은 적 명중 시 25%의 확률로 출혈 유발",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "aura_effect_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Aura|오라] [BuffMagnitude|강도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Aura|오라] [BuffMagnitude|강도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -58690,6 +58780,27 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Block|막기] 확률 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Block|막기] 확률 {0}% 감소",
+    "h": []
    }
   ]
  },
@@ -62786,6 +62897,30 @@
  },
  {
   "stats": [
+   "curse_duration_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Curse|저주] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Curse|저주] 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_on_block_enfeeble_chance_%"
   ],
   "rows": [
@@ -62939,6 +63074,30 @@
      "#|-1"
     ],
     "t": "적에게 걸린 [ElementalAilments|원소 상태 이상] 유형 하나당 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Rarity|희귀 및 고유] 적에 대한 [Hit|명중] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Rarity|희귀 및 고유] 적에 대한 [Hit|명중] 피해 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -63525,6 +63684,30 @@
     ],
     "t": "[Hit|피격] 시 받는 피해의 {0}%를 자신보다 자신의 가장 가까운 [Totem|토템]의 생명력에 먼저 적용",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Volatility|일촉즉발]로 받는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Volatility|일촉즉발]로 받는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -69064,6 +69247,23 @@
  },
  {
   "stats": [
+   "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 200 이상인 경우 1초마다 [Charm|호신부] {0} 충전",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "generate_x_charges_for_life_flasks_per_minute"
   ],
   "rows": [
@@ -69172,6 +69372,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "glory_generation_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Glory|영광] 생성 {0}% 증가",
+    "h": []
    }
   ]
  },
@@ -73276,6 +73490,20 @@
  },
  {
   "stats": [
+   "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [EquipArmour|방어구]의 모든 [ArmourPenalties|이동 페널티] 무시",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "ignore_attribute_requirements_for_gloves"
   ],
   "rows": [
@@ -74654,6 +74882,23 @@
  },
  {
   "stats": [
+   "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Thorns|가시] 피해의 {0}%를 [LifeLeech|생명력으로 흡수]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_leech_%_maximum_life_on_spell_cast"
   ],
   "rows": [
@@ -74663,6 +74908,30 @@
     ],
     "t": "[Spell|주문] 시전 시 최대 생명력의 {0}% [LifeLeech|흡수]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_leech_rate_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 생명력 [LifeLeech|흡수] 속도 {0}% 가속",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 생명력 [LifeLeech|흡수] 속도 {0}% 감속",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -88979,6 +89248,20 @@
  },
  {
   "stats": [
+   "maximum_endurance_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 인내 충전 최대치 {:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89084,6 +89367,20 @@
  },
  {
   "stats": [
+   "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 격분 충전 최대치 {:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_guard_is_based_on_energy_shield"
   ],
   "rows": [
@@ -89121,6 +89418,30 @@
     ],
     "t": "빨간색 [SupportGem|보조 젬]을 10개 이상 장착한 경우 생명력 최대치 {0}% 증가",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 생명력 최대치 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 생명력 최대치 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -89259,6 +89580,30 @@
  },
  {
   "stats": [
+   "maximum_mana_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 마나 최대치 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 마나 최대치 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_physical_damage_reduction_is_50%"
   ],
   "rows": [
@@ -89267,6 +89612,20 @@
      "1|#"
     ],
     "t": "최대 [Physical|물리 피해] 감소 50%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_power_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 권능 충전 최대치 {:+d}",
     "h": []
    }
   ]
@@ -90277,6 +90636,30 @@
      "#|-1"
     ],
     "t": "모든 [Minion|소환수]가 [Companion|반려수]인 경우 [Minion|소환수] [Reviving|부활] 속도 {0}% 감속",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_resummon_speed_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Minion|소환수]의 [Reviving|부활] 속도 {0}% 가속",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Minion|소환수]의 [Reviving|부활] 속도 {0}% 감속",
     "h": [
      "negate",
      "1"
@@ -91981,6 +92364,27 @@
  },
  {
   "stats": [
+   "num_charm_slots_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Charm|호신부] 슬롯 {0:+d}개",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Charm|호신부] 슬롯 {0:+d}개",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "number_of_additional_banners_allowed"
   ],
   "rows": [
@@ -92024,6 +92428,20 @@
      "1|#"
     ],
     "t": "최대 권능 충전 상태에서 [Curse|저주] {0}개 추가 적용 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 대상이 동시에 영향을 받을 수 있는 플레이어의 [Poison|중독] 효과 개수 {0:+d}",
     "h": []
    }
   ]
@@ -93065,6 +93483,20 @@
      "#"
     ],
     "t": "방지한 물리 피해의 {0}%를 생명력으로 [Recoup|회생]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 방지한 물리 피해의 {0}%를 생명력으로 [Recoup|회생]",
     "h": []
    }
   ]
@@ -94724,6 +95156,30 @@
     "t": "1초마다 최대 생명력의 {0}%와 동일한 마나 재생",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_pickup_range_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Remnant|잔류물]을 {0}% 더 먼 곳에서 획득할 수 있음",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Remnant|잔류물]을 {0}% 더 가까운 곳에서 획득해야 함",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -96732,6 +97188,30 @@
  },
  {
   "stats": [
+   "spirit_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Spirit|정신력] 최대치 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Spirit|정신력] 최대치 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+_if_at_least_200_dexterity"
   ],
   "rows": [
@@ -97976,6 +98456,30 @@
     ],
     "t": "{0}~{1} [Physical|물리] [Thorns|가시] 피해",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수가 200 이상인 경우 [Thorns|가시]가 비-근접 [Hit|명중]에 대해 {0}% 확률로 [RetaliateAgainstAll|보복]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수가 200 이상인 경우 [Thorns|가시]가 비-근접 [Hit|명중]에 대해 {0}% 확률로 [RetaliateAgainstAll|보복]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -100017,6 +100521,27 @@
  },
  {
   "stats": [
+   "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Warcry|함성]이 추가 [Attack|공격] 1회 [Empowered|강화]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수가 100 이상인 경우 [Warcry|함성]이 추가 [Attack|공격] {0}회 [Empowered|강화]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_monster_power_+%"
   ],
   "rows": [
@@ -101360,6 +101885,20 @@
  },
  {
   "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Dexterity|민첩]으로 인한 기본 보너스 받지 않음\\n민첩 2당 [Armour|방어도] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_alternate_es_recovery"
   ],
   "rows": [
@@ -101368,6 +101907,34 @@
      "#"
     ],
     "t": "적의 [Power|위세] 1당 방지한 [Physical|물리] 피해의 5%를 [EnergyShield|에너지 보호막]으로 [Recoup|회생]\\n[EnergyShield|에너지 보호막]이 [ESRecharge|재충전]되지 않음\\n재생으로 [EnergyShield|에너지 보호막] 회복 불가\\n[EnergyShield|에너지 보호막]을 [Armour|방어도] 위로 회복 불가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Intelligence|지능]으로 인한 기본 보너스 받지 않음\\n지능 2당 [Evasion|회피] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Strength|힘]으로 인한 기본 보너스 받지 않음\\n힘 2당 [EnergyShield|에너지 보호막] 1% 증가",
     "h": []
    }
   ]
@@ -101528,6 +102095,20 @@
  },
  {
   "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 받는 피해가 에너지 보호막을 무시함\\n받는 원소 피해의 50%를 카오스 피해로 전환\\n카오스 저항 최대치 +5%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_druidic_rage"
   ],
   "rows": [
@@ -101564,6 +102145,20 @@
      "#"
     ],
     "t": "[Fire|화염] 대신 [Lightning|번개] [ElementalInfusion|주입] [Remnant|잔류물] 생성\\n[Lightning|번개] 대신 [Cold|냉기] [ElementalInfusion|주입] [Remnant|잔류물] 생성\\n[Cold|냉기] 대신 [Fire|화염] [ElementalInfusion|주입] [Remnant|잔류물] 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Flask|플라스크]의 생명력 회복이 에너지 보호막에도 적용\\n[Flask|플라스크]로 회복되는 생명력 30% 감폭",
     "h": []
    }
   ]
@@ -101774,6 +102369,20 @@
      "#"
     ],
     "t": "생명력이 최대일 때 [CriticalDamageBonus|치명타 피해 보너스] 30% 감폭\\n[LowLife|낮은 생명력] 상태일 때 치명타 피해 보너스 30% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charges|권능 충전] 하나당 [Spell|주문] 피해 3% 증폭\\n[Charges|격분 충전] 대신 [Charges|권능 충전] 획득",
     "h": []
    }
   ]
@@ -103322,6 +103931,146 @@
      "1|#"
     ],
     "t": "[Companion|반려수]가 플레이어의 주 무기 피해의 {0}%와 동일한 추가 [Attack|공격] 피해를 줌",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|명중] 피해를 받을 때 생명력 상실량의 20%가 예방되고, 이후 이 방식으로 예방된 생명력 상실량의 150%가 4초에 걸쳐 상실됨",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어 실명됨\\n실명은 플레이어의 시야 반경과 무관\\n실명 상태에서 [Melee|근접] [Critical|치명타 명중] 확률 25% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "언데드 소환수의 총 [Power|위세] 2당 주는 피해 1% 증폭\\n언데드 소환수의 최대 생명력 25% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "재생으로 인한 마나 회복이 마나 최대치 이상으로 [Overflow|넘침]\\n마나 재생 속도 50% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "주변 동료들과 적이 플레이어에게 충전을 공유\\n플레이어를 명중한 적이 10% 확률로\\n인내, 격분, 또는 권능 충전 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "최대 마나의 80%를 그 2배만큼의 [Armour|방어도]로 전환",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "투구 사용 불가\\n[Critical|치명타 명중] 확률에 행운 적용\\n[Critical|치명타 명중] 피해에 행운 적용\\n적이 주는 [Critical|치명타 명중] 피해에 행운 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "지난 4초 동안 사용한 생명력 16당 1초마다 생명력 1 재생\\n스킬의 생명력 비용 20% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "냉기 및 번개 피해의 50%를 화염 피해로 받음\\n냉기 저항 50% 감폭\\n번개 저항 50% 감폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|투사체]가 다음 중 하나를 무작위로 수행:\\n• 1회 추가로 [Fork|갈라짐]\\n• 1회 추가 [Chain|연쇄]\\n• 지형으로 인해 1회 추가 [Chain|연쇄]\\n• 대상과 충돌하지 않음",
     "h": []
    }
   ]
@@ -124381,230 +125130,6 @@
   ],
   "skill": [
    "Flame Breath"
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_dexterity_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Dexterity|민첩]으로 인한 기본 보너스 받지 않음\\n민첩 2당 [Armour|방어도] 1% 증가",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_intelligence_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Intelligence|지능]으로 인한 기본 보너스 받지 않음\\n지능 2당 [Evasion|회피] 1% 증가",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_strength_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Strength|힘]으로 인한 기본 보너스 받지 않음\\n힘 2당 [EnergyShield|에너지 보호막] 1% 증가",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_divine_flesh"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "모든 받는 피해가 에너지 보호막을 무시함\\n받는 원소 피해의 50%를 카오스 피해로 전환\\n카오스 저항 최대치 +5%",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_emperors_heart"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Flask|플라스크]의 생명력 회복이 에너지 보호막에도 적용\\n[Flask|플라스크]로 회복되는 생명력 30% 감폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_quiet_might"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Charges|권능 충전] 하나당 [Spell|주문] 피해 3% 증폭\\n[Charges|격분 충전] 대신 [Charges|권능 충전] 획득",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_amanamus_defiance"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Hit|명중] 피해를 받을 때 생명력 상실량의 20%가 예방되고, 이후 이 방식으로 예방된 생명력 상실량의 150%가 4초에 걸쳐 상실됨",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_blind_monk"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "플레이어 실명됨\\n실명은 플레이어의 시야 반경과 무관\\n실명 상태에서 [Melee|근접] [Critical|치명타 명중] 확률 25% 증폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kulemaks_sovereignty"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "언데드 소환수의 총 [Power|위세] 2당 주는 피해 1% 증폭\\n언데드 소환수의 최대 생명력 25% 감폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kurgals_ambition"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "재생으로 인한 마나 회복이 마나 최대치 이상으로 [Overflow|넘침]\\n마나 재생 속도 50% 감폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_magnetic_charge"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "주변 동료들과 적이 플레이어에게 충전을 공유\\n플레이어를 명중한 적이 10% 확률로\\n인내, 격분, 또는 권능 충전 획득",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_mental_conditioning"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "최대 마나의 80%를 그 2배만큼의 [Armour|방어도]로 전환",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_sharp_and_brittle"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "투구 사용 불가\\n[Critical|치명타 명중] 확률에 행운 적용\\n[Critical|치명타 명중] 피해에 행운 적용\\n적이 주는 [Critical|치명타 명중] 피해에 행운 적용",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tecrods_brutality"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "지난 4초 동안 사용한 생명력 16당 1초마다 생명력 1 재생\\n스킬의 생명력 비용 20% 증폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tempered_by_war"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "냉기 및 번개 피해의 50%를 화염 피해로 받음\\n냉기 저항 50% 감폭\\n번개 저항 50% 감폭",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_ulamans_vision"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Projectile|투사체]가 다음 중 하나를 무작위로 수행:\\n• 1회 추가로 [Fork|갈라짐]\\n• 1회 추가 [Chain|연쇄]\\n• 지형으로 인해 1회 추가 [Chain|연쇄]\\n• 대상과 충돌하지 않음",
-    "h": []
-   }
   ]
  }
 ]

@@ -53609,6 +53609,27 @@
  },
  {
   "stats": [
+   "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1|1"
+    ],
+    "t": "若你擁有至少100點貢禮，具有冷卻的非順發技能將獲得{0:+d}冷卻使用次數",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你擁有至少100點貢禮，具有冷卻的非順發技能將獲得{0:+d}冷卻使用次數",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "added_thorns_cold_base_damage_%_of_maximum_mana"
   ],
   "rows": [
@@ -53732,6 +53753,20 @@
      "#"
     ],
     "t": "若你的插槽內已鑲嵌至少5顆紅色、綠色和藍色[SupportGem|輔助寶石]，則增加{0:+d}%[MaximumResistances|最大元素抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，{0:+d}%全部最大元素抗性",
     "h": []
    }
   ]
@@ -55132,6 +55167,20 @@
  },
  {
   "stats": [
+   "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，{0:+d}%[Armour|護甲值]也會套用至[ElementalDamage|元素傷害]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_+%_if_consumed_endurance_charge_recently"
   ],
   "rows": [
@@ -55969,6 +56018,23 @@
      "#"
     ],
     "t": "{0:+d}%[Attack|攻擊]的[Critical|暴擊]機率",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，對[ParriedDebuff|受招架]敵人的[Attack|攻擊]有{0:+d}%[Critical|暴擊率]",
     "h": [
      "divide_by_one_hundred",
      "1"
@@ -57111,6 +57177,30 @@
     ],
     "t": "[Attack|攻擊]有25%機率在擊中[Curse|受詛咒]敵人時造成流血",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "aura_effect_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%[Aura|光環][BuffMagnitude|幅度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%[Aura|光環][BuffMagnitude|幅度]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -58685,6 +58775,27 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%[Block|格擋]機率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%[Block|格擋]機率",
+    "h": []
    }
   ]
  },
@@ -62781,6 +62892,30 @@
  },
  {
   "stats": [
+   "curse_duration_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%[Curse|詛咒]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%[Curse|詛咒]持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_on_block_enfeeble_chance_%"
   ],
   "rows": [
@@ -62934,6 +63069,30 @@
      "#|-1"
     ],
     "t": "每對敵人施加一種[ElementalAilments|元素異常狀態]，減少{0}%傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%對[Rarity|稀有和傳奇]敵人的[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%對[Rarity|稀有和傳奇]敵人的[Hit|擊中]傷害",
     "h": [
      "negate",
      "1"
@@ -63520,6 +63679,30 @@
     ],
     "t": "[Hit|擊中]傷害在扣除你的生命前，其{0}%傷害先從距離你最近的[Totem|圖騰]扣除生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%來自[Volatility|易爆]的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%來自[Volatility|易爆]的傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -69069,6 +69252,23 @@
  },
  {
   "stats": [
+   "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少200貢禮，[Charm|護符]每秒獲得{0}充能",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "generate_x_charges_for_life_flasks_per_minute"
   ],
   "rows": [
@@ -69177,6 +69377,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "glory_generation_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%生成的[Glory|榮耀]",
+    "h": []
    }
   ]
  },
@@ -73285,6 +73499,20 @@
  },
  {
   "stats": [
+   "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，無視所有[EquipArmour|護甲]上的[ArmourPenalties|移動速度懲罰]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "ignore_attribute_requirements_for_gloves"
   ],
   "rows": [
@@ -74663,6 +74891,23 @@
  },
  {
   "stats": [
+   "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，[Thorns|荊棘]傷害的{0}%轉化為[LifeLeech|生命偷取]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_leech_%_maximum_life_on_spell_cast"
   ],
   "rows": [
@@ -74672,6 +74917,30 @@
     ],
     "t": "當你施放一個[Spell|法術]時，[LifeLeech|偷取]{0}%最大生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_leech_rate_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，生命[LifeLeech|偷取]速度加快{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，生命[LifeLeech|偷取]速度減緩{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -88988,6 +89257,20 @@
  },
  {
   "stats": [
+   "maximum_endurance_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，{:+d}最大耐力球數量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89093,6 +89376,20 @@
  },
  {
   "stats": [
+   "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，{:+d}最大狂怒球數量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_guard_is_based_on_energy_shield"
   ],
   "rows": [
@@ -89130,6 +89427,30 @@
     ],
     "t": "若你插槽中的有至少10顆紅色[SupportGem|輔助寶石]，增加{0}%最大生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%最大生命",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -89268,6 +89589,30 @@
  },
  {
   "stats": [
+   "maximum_mana_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%最大魔力",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%最大魔力",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_physical_damage_reduction_is_50%"
   ],
   "rows": [
@@ -89276,6 +89621,20 @@
      "1|#"
     ],
     "t": "最大[Physical|物理傷害]減免為50%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_power_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，{:+d}最大暴擊球數量",
     "h": []
    }
   ]
@@ -90286,6 +90645,30 @@
      "#|-1"
     ],
     "t": "若你所有的[Minion|召喚物]皆為[Companion|盟友]，則[Minion|召喚物][Reviving|復活]速度減緩{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_resummon_speed_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，[Minion|召喚物][Reviving|復甦]速度加快{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，[Minion|召喚物][Reviving|復甦]速度減緩{0}%",
     "h": [
      "negate",
      "1"
@@ -91990,6 +92373,27 @@
  },
  {
   "stats": [
+   "num_charm_slots_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "若你有至少100貢禮，{0:+d}[Charm|護符]欄位",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "若你有至少100貢禮，{0:+d}[Charm|護符]欄位",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "number_of_additional_banners_allowed"
   ],
   "rows": [
@@ -92033,6 +92437,20 @@
      "1|#"
     ],
     "t": "最大暴擊球狀態下，你可以額外施加{0}個[Curse|詛咒]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，目標可同時受到你的{0:+d}個[Poison|中毒]影響",
     "h": []
    }
   ]
@@ -93074,6 +93492,20 @@
      "#"
     ],
     "t": "抵禦物理傷害時，其{0}%[Recoup|補償]為生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，抵禦的{0}%物理傷害[Recoup|補償]為生命",
     "h": []
    }
   ]
@@ -94733,6 +95165,30 @@
     "t": "每秒回復等同於{0}%最大生命的魔力",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_pickup_range_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%[Remnant|痕跡]獲取距離",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%[Remnant|痕跡]獲取距離",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -96741,6 +97197,30 @@
  },
  {
   "stats": [
+   "spirit_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你有至少100貢禮，增加{0}%[Spirit|精魂]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你有至少100貢禮，減少{0}%[Spirit|精魂]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+_if_at_least_200_dexterity"
   ],
   "rows": [
@@ -97985,6 +98465,30 @@
     ],
     "t": "{0}至{1}點[Physical|物理][Thorns|荊棘]傷害",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你至少有200貢禮，有{0}%機率對所有來自非近戰[Hit|擊中]傷害造成[Thorns|荊棘][RetaliateAgainstAll|反擊]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你至少有200貢禮，有{0}%機率對所有來自非近戰[Hit|擊中]傷害造成[Thorns|荊棘][RetaliateAgainstAll|反擊]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -100032,6 +100536,27 @@
  },
  {
   "stats": [
+   "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "若你有至少100貢禮，[Warcry|戰吼][Empowered|強化]額外1次[Attack|攻擊]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你有至少100貢禮，[Warcry|戰吼][Empowered|強化]額外{0}次[Attack|攻擊]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_monster_power_+%"
   ],
   "rows": [
@@ -101375,6 +101900,20 @@
  },
  {
   "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Dexterity|敏捷]的固有加成\\n每2點敏捷增加1%[Armour|護甲值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_alternate_es_recovery"
   ],
   "rows": [
@@ -101383,6 +101922,34 @@
      "#"
     ],
     "t": "每1敵人[Power|強度]使5%減免的[Physical|物理]傷害[Recoup|補償]為[EnergyShield|能量護盾]\\n[EnergyShield|能量護盾]不會[ESRecharge|充能]\\n你無法透過自然回復獲得[EnergyShield|能量護盾]\\n你的[EnergyShield|能量護盾]不能恢復超過護甲",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Intelligence|智慧]的固有加成\\n每2點智慧增加1%[Evasion|閃避值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "無法獲得[Strength|力量]的固有加成\\n每2點力量增加1%[EnergyShield|能量護盾]",
     "h": []
    }
   ]
@@ -101543,6 +102110,20 @@
  },
  {
   "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受的所有傷害穿透能量護盾\\n承受的50%元素傷害視為混沌傷害\\n+5%最大混沌抗性",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_druidic_rage"
   ],
   "rows": [
@@ -101579,6 +102160,20 @@
      "#"
     ],
     "t": "創造[Lightning|閃電][ElementalInfusion|灌注][Remnant|痕跡]而不是[Fire|火焰]\\n創造[Cold|冰冷][ElementalInfusion|灌注][Remnant|痕跡]而不是[Lightning|閃電]\\n創造[Fire|火焰][ElementalInfusion|灌注][Remnant|痕跡]而不是[Cold|冰冷]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Flask|藥劑]的生命恢復同時套用至能量護盾\\n30%更少[Flask|藥劑]生命恢復量",
     "h": []
    }
   ]
@@ -101789,6 +102384,20 @@
      "#"
     ],
     "t": "滿血時有30%更少[CriticalDamageBonus|暴擊傷害加成]\\n[LowLife|貧血狀態]時有30%更多暴擊傷害加成",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每顆[Charges|暴擊球]3%更多[Spell|法術]傷害\\n獲得[Charges|暴擊球]而不是[Charges|狂怒球]",
     "h": []
    }
   ]
@@ -103347,6 +103956,146 @@
      "1|#"
     ],
     "t": "[Companion|盟友]造成等同於{0}%你主手武器傷害的額外[Attack|攻擊]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當承受[Hit|擊中傷害]時，損失生命值的20%將會被避免，並在4秒內損失減免數值的150%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你被致盲\\n致盲不會影響你的照亮範圍\\n被致盲時有25%更多[Melee|近戰][Critical|暴擊]率",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你的不死召喚物每有2[Power|強度]總值，你造成1%更多傷害\\n不死召喚物具有25%更少最大生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "來自回復的魔力恢復會[Overflow|溢出]最大魔力\\n50%更少魔力回復率",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "附近友方和敵人與你共享能量球\\n擊中你的敵人有10%機率獲得1顆耐力、\\n狂怒或暴擊球",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "80%的最大魔力轉化為2倍的[Armour|護甲]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "不能使用頭盔\\n你的[Critical|暴擊]率帶有幸運\\n你[Critical|暴擊]的傷害帶有幸運\\n敵人的[Critical|暴擊]傷害對你帶有幸運",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "過去4秒內每消耗16生命即每秒回復1生命\\n20%更多技能生命消耗",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受的50%冰冷和閃電傷害視為火焰傷害\\n50%更少冰冷抗性\\n50%更少閃電抗性",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]將會隨機進行下列其中一個行為：\\n•額外[Fork|分裂]一次\\n•額外[Chain|連鎖]一次\\n•從地形額外[Chain|連鎖]一次\\n•無法與地形碰撞",
     "h": []
    }
   ]
@@ -124431,230 +125180,6 @@
   ],
   "skill": [
    "Flame Breath"
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_dexterity_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "無法獲得[Dexterity|敏捷]的固有加成\\n每2點敏捷增加1%[Armour|護甲值]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_intelligence_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "無法獲得[Intelligence|智慧]的固有加成\\n每2點智慧增加1%[Evasion|閃避值]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_strength_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "無法獲得[Strength|力量]的固有加成\\n每2點力量增加1%[EnergyShield|能量護盾]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_divine_flesh"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "承受的所有傷害穿透能量護盾\\n承受的50%元素傷害視為混沌傷害\\n+5%最大混沌抗性",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_emperors_heart"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Flask|藥劑]的生命恢復同時套用至能量護盾\\n30%更少[Flask|藥劑]生命恢復量",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_quiet_might"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "每顆[Charges|暴擊球]3%更多[Spell|法術]傷害\\n獲得[Charges|暴擊球]而不是[Charges|狂怒球]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_amanamus_defiance"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "當承受[Hit|擊中傷害]時，損失生命值的20%將會被避免，並在4秒內損失減免數值的150%",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_blind_monk"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "你被致盲\\n致盲不會影響你的照亮範圍\\n被致盲時有25%更多[Melee|近戰][Critical|暴擊]率",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kulemaks_sovereignty"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "你的不死召喚物每有2[Power|強度]總值，你造成1%更多傷害\\n不死召喚物具有25%更少最大生命",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kurgals_ambition"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "來自回復的魔力恢復會[Overflow|溢出]最大魔力\\n50%更少魔力回復率",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_magnetic_charge"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "附近友方和敵人與你共享能量球\\n擊中你的敵人有10%機率獲得1顆耐力、\\n狂怒或暴擊球",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_mental_conditioning"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "80%的最大魔力轉化為2倍的[Armour|護甲]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_sharp_and_brittle"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "不能使用頭盔\\n你的[Critical|暴擊]率帶有幸運\\n你[Critical|暴擊]的傷害帶有幸運\\n敵人的[Critical|暴擊]傷害對你帶有幸運",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tecrods_brutality"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "過去4秒內每消耗16生命即每秒回復1生命\\n20%更多技能生命消耗",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tempered_by_war"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "承受的50%冰冷和閃電傷害視為火焰傷害\\n50%更少冰冷抗性\\n50%更少閃電抗性",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_ulamans_vision"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Projectile|投射物]將會隨機進行下列其中一個行為：\\n•額外[Fork|分裂]一次\\n•額外[Chain|連鎖]一次\\n•從地形額外[Chain|連鎖]一次\\n•無法與地形碰撞",
-    "h": []
-   }
   ]
  }
 ]

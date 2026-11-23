@@ -3762,6 +3762,16 @@
    ]
   ]
  ],
+ "jewel_radii": {
+  "800": "Very Small",
+  "1000": "Small",
+  "1075": "Medium Small",
+  "1150": "Medium",
+  "1225": "Medium Large",
+  "1300": "Large",
+  "1500": "Very Large",
+  "2400": "Massive"
+ },
  "jewel_rings": [
   [
    650,
@@ -3796,16 +3806,6 @@
    2100
   ]
  ],
- "jewel_radii": {
-  "800": "Very Small",
-  "1000": "Small",
-  "1075": "Medium Small",
-  "1150": "Medium",
-  "1225": "Medium Large",
-  "1300": "Large",
-  "1500": "Very Large",
-  "2400": "Massive"
- },
  "radius_grant": {
   "en": {
    "small": "Small Passive Skills in Radius also grant {0}",
@@ -163347,6 +163347,665 @@
      0
     ]
    ]
+  },
+  {
+   "id": "HistoricAbyssJewelAttributesGrantExtraTribute",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5733,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_tribute",
+     2,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_1",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_1"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelAttributesGrantExtraStrength",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5734,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_strength",
+     4,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_1",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_1",
+    "attribute"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelAttributesGrantExtraDexterity",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5735,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_dexterity",
+     4,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_1",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_1",
+    "attribute"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelAttributesGrantExtraIntelligence",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5736,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_intelligence",
+     4,
+     8
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_1",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_1",
+    "attribute"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelAttributesGrantExtraAllAttributes",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5737,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_attribute_passives_grant_all_attributes",
+     2,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_1",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_1",
+    "attribute"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantEvasionRatingIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5738,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_evasion_rating_+%",
+     2,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "defences",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "evasion"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantArmourIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5739,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_armour_rating_+%",
+     2,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "defences",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "armour"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantEnergyShieldIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5740,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_energy_shield_+%",
+     2,
+     4
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "defences",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "energy_shield"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantManaRegenerationRateIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5741,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_mana_regen_rate_+%",
+     2,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "mana"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantLifeRegenerationRateIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5742,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_life_regen_rate_+%",
+     2,
+     3
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "resource",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "life"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantSpellDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5743,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_spell_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "caster_damage",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "caster"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantAttackDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5744,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_attack_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "attack"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantElementalDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5745,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_elemental_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "elemental_damage",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "elemental",
+    "fire",
+    "cold",
+    "lightning"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantPhysicalDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5746,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_physical_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "physical_damage",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "physical"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantChaosDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5747,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_chaos_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "chaos_damage",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "chaos"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantMinionDamageIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5748,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_minions_deal_increased_damage_+%",
+     3,
+     5
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "minion_damage",
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "damage",
+    "minion"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantStunThresholdIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5749,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_stun_threshold_+%",
+     3,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_2"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelSmallGrantElementalAilmentThresholdIncrease",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5750,
+   "stats": [
+    [
+     "local_historic_abyss_jewel_conquered_small_passives_grant_ailment_threshold_+%",
+     3,
+     6
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_2",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_2",
+    "elemental",
+    "fire",
+    "cold",
+    "lightning",
+    "ailment"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelNotableOverride1",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5753,
+   "stats": [
+    [
+     "local_historic_jewel_override_1_conquored_notable_to_passive_hash_1",
+     0,
+     0
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_3",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_3"
+   ],
+   "desecrated": true,
+   "historic": true
+  },
+  {
+   "id": "HistoricAbyssJewelNotableOverride2",
+   "name": "",
+   "affix": "suffix",
+   "level": 1,
+   "domain": 28,
+   "family": 5754,
+   "stats": [
+    [
+     "local_historic_jewel_override_1_conquored_notable_to_passive_hash_2",
+     0,
+     0
+    ]
+   ],
+   "spawn": [
+    [
+     "historic_abyss_jewel_4",
+     1
+    ],
+    [
+     "default",
+     0
+    ]
+   ],
+   "tags": [
+    "unveiled_mod",
+    "historic_abyss_jewel_4"
+   ],
+   "desecrated": true,
+   "historic": true
   },
   {
    "id": "AbyssModRadiusJewelPrefixDamageTakenRecoupLife",

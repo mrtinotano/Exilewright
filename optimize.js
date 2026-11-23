@@ -66,7 +66,8 @@ const plus = (to, stats) => { for (const id in stats) to[id] = (to[id] || 0) + s
 // a link to the tree (Controlled Metamorphosis, From Nothing) once its socket is allocated.
 //   tree: passive_tree.json; root: the class start; base: the summed stats of b (app.js sumOf); f(sum) -> number.
 //   jewels: the build's socketed jewels, allocated or not (app.js jewelsOf): id (its socket), R (items.js radiusOf),
-//   in(id) (within its radius), stats (what it grants with its socket allocated), free (the passives it frees)
+//   in(id) (within its radius), stats (what it grants with its socket allocated), free (the passives it frees),
+//   swap (Map id -> the stats a timeless jewel adds to that passive, below 0 what it takes away)
 //   tick({ spent, left, value }) may return a promise (lets the page breathe); stop() true ends the search.
 // Returns { nodes (new ids, in order), attrs ({id: str|dex|int}), from, to (objective before / after), steps }.
 export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [], f, points, pref = 'str', tick, stop }) {
@@ -81,8 +82,9 @@ export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [
   const statsOf = (id, a) => {
     const own = counted.has(id) ? NONE : N[id].type === 'attribute' ? plain[b.attrs?.[id] || a] : N[id].stats, k = kind(id), add = [];
     if (k && own !== NONE) for (const j of jewels) if (j.R && have.has(j.id) && j.in(id)) add.push(j.R[k]);
+    if (own !== NONE) for (const j of jewels) if (have.has(j.id) && j.swap?.has(id)) add.push(j.swap.get(id));
     const j = bySocket.get(id);
-    if (j && !have.has(id)) { add.push(j.stats); if (j.R) for (const x of have) { const kx = kind(x); if (kx && j.in(x)) add.push(j.R[kx]); } }
+    if (j && !have.has(id)) { add.push(j.stats); if (j.R) for (const x of have) { const kx = kind(x); if (kx && j.in(x)) add.push(j.R[kx]); if (j.swap?.has(x)) add.push(j.swap.get(x)); } }
     return add.length ? add.reduce(plus, plus({}, own)) : own;
   };
   const plain = Object.fromEntries(Object.entries(ATTR).map(([k, id]) => [k, tree.attribute_options[id]]));

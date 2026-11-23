@@ -53610,6 +53610,27 @@
  },
  {
   "stats": [
+   "added_cooldown_count_if_not_instant_and_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1|1"
+    ],
+    "t": "トリビュートが最低100ある場合クールダウンを持つ即時でないスキルのクールダウン使用回数 {0:+d}回",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合クールダウンを持つ即時でないスキルのクールダウン使用回数 {0:+d}回",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "added_thorns_cold_base_damage_%_of_maximum_mana"
   ],
   "rows": [
@@ -53733,6 +53754,20 @@
      "#"
     ],
     "t": "赤、緑および青の[SupportGem|サポートジェム]を最低5個ずつソケットしていれば全ての[MaximumResistances|元素耐性の最大値] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合全ての耐性の最大値 {0:+d}%",
     "h": []
    }
   ]
@@ -55133,6 +55168,20 @@
  },
  {
   "stats": [
+   "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合[Armour|アーマー]の{0:+d}%が[ElementalDamage|元素ダメージ]にも適用される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_+%_if_consumed_endurance_charge_recently"
   ],
   "rows": [
@@ -55970,6 +56019,23 @@
      "#"
     ],
     "t": "[Attack|アタック]の[Critical|クリティカルヒット率] {0:+d}%",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_additional_critical_strike_chance_permyriad_vs_parried_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合[Attack|アタック]は[ParriedDebuff|パリィのデバフ]状態の敵に対する[Critical|クリティカルヒット率] {0:+d}%",
     "h": [
      "divide_by_one_hundred",
      "1"
@@ -57112,6 +57178,30 @@
     ],
     "t": "[Curse|呪い]状態の敵をヒットした時に[Attack|アタック]は25%の確率で出血を付与する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "aura_effect_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Aura|オーラ]の[BuffMagnitude|強度]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Aura|オーラ]の[BuffMagnitude|強度]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -58686,6 +58776,27 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合[Block|ブロック]率が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合[Block|ブロック]率が{0}%減少する",
+    "h": []
    }
   ]
  },
@@ -62782,6 +62893,30 @@
  },
  {
   "stats": [
+   "curse_duration_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Curse|呪い]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Curse|呪い]の持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_on_block_enfeeble_chance_%"
   ],
   "rows": [
@@ -62935,6 +63070,30 @@
      "#|-1"
     ],
     "t": "敵に付与した[ElementalAilments|元素系状態異常]1種類ごとにダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_+%_to_rare_and_unique_enemies_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Rarity|レアおよびユニーク]の敵に対する[Hit|ヒット]ダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Rarity|レアおよびユニーク]の敵に対する[Hit|ヒット]ダメージが{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -63521,6 +63680,30 @@
     ],
     "t": "[Hit|ヒット]によるダメージの{0}%をプレイヤーより先に最寄りの[Totem|トーテム]のライフで受ける",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_+%_from_volatility_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Volatility|ボラティリティ]から受けるダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Volatility|ボラティリティ]から受けるダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -69070,6 +69253,23 @@
  },
  {
   "stats": [
+   "generate_x_charges_for_charms_per_minute_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低200ある場合、[Charm|チャーム]は毎秒{0}のチャージを獲得する",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "generate_x_charges_for_life_flasks_per_minute"
   ],
   "rows": [
@@ -69178,6 +69378,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "glory_generation_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Glory|グローリー]生成量が{0}%増加する",
+    "h": []
    }
   ]
  },
@@ -73289,6 +73503,20 @@
  },
  {
   "stats": [
+   "ignore_armour_movement_penalties_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、[EquipArmour|防具]からの全ての[ArmourPenalties|移動スピードペナルティ]を無視する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "ignore_attribute_requirements_for_gloves"
   ],
   "rows": [
@@ -74667,6 +74895,23 @@
  },
  {
   "stats": [
+   "life_leech_from_all_thorns_damage_permyriad_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Thorns|棘]ダメージの{0}%を[LifeLeech|ライフとしてリーチ]する",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_leech_%_maximum_life_on_spell_cast"
   ],
   "rows": [
@@ -74676,6 +74921,30 @@
     ],
     "t": "プレイヤーが[Spell|スペル]をキャストした時に最大ライフの{0}%を[LifeLeech|ライフリーチ]する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_leech_rate_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、ライフの[LifeLeech|リーチ]が{0}%速くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、ライフの[LifeLeech|リーチ]が{0}%遅くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -88992,6 +89261,20 @@
  },
  {
   "stats": [
+   "maximum_endurance_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、エンデュランスチャージの最大数 {:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89097,6 +89380,20 @@
  },
  {
   "stats": [
+   "maximum_frenzy_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、フレンジーチャージの最大数 {:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_guard_is_based_on_energy_shield"
   ],
   "rows": [
@@ -89134,6 +89431,30 @@
     ],
     "t": "最低10個の赤[SupportGem|サポートジェム]をソケットしていれば最大ライフが{0}%増加する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、最大ライフが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、最大ライフが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -89272,6 +89593,30 @@
  },
  {
   "stats": [
+   "maximum_mana_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、最大マナが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、最大マナが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_physical_damage_reduction_is_50%"
   ],
   "rows": [
@@ -89280,6 +89625,20 @@
      "1|#"
     ],
     "t": "[Physical|物理ダメージ]軽減率の最大値は50%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_power_charges_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、パワーチャージの最大数 {:+d}",
     "h": []
    }
   ]
@@ -90290,6 +90649,30 @@
      "#|-1"
     ],
     "t": "プレイヤーの[Minion|ミニオン]が[Companion|コンパニオン]だけである場合[Minion|ミニオン]の[Reviving|復活]速度が{0}%遅くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_resummon_speed_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Minion|ミニオン]の[Reviving|復活]が{0}%速くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Minion|ミニオン]の[Reviving|復活]が{0}%遅くなる",
     "h": [
      "negate",
      "1"
@@ -91994,6 +92377,27 @@
  },
  {
   "stats": [
+   "num_charm_slots_+_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Charm|チャーム]スロット {0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Charm|チャーム]スロット {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "number_of_additional_banners_allowed"
   ],
   "rows": [
@@ -92037,6 +92441,20 @@
      "1|#"
     ],
     "t": "パワーチャージが最大数の時にプレイヤーは[Curse|呪い]を追加で{0}個付与できる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "number_of_additional_poison_stacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、一度に対象に付与できる[Poison|毒]のスタック数 {0:+d}",
     "h": []
    }
   ]
@@ -93078,6 +93496,20 @@
      "#"
     ],
     "t": "防いだ物理ダメージの{0}%をライフとして[Recoup|回収]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合、防いだ物理ダメージの{0}%をライフとして[Recoup|回収]する",
     "h": []
    }
   ]
@@ -94737,6 +95169,30 @@
     "t": "毎秒最大ライフの{0}%と同量のマナを自動回復する",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_pickup_range_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合、[Remnant|レムナント]を{0}%遠くからでも拾えるようになる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合、[Remnant|レムナント]を{0}%近くで拾わねばならなくなる",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -96745,6 +97201,30 @@
  },
  {
   "stats": [
+   "spirit_+%_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低100ある場合[Spirit|スピリット]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低100ある場合[Spirit|スピリット]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+_if_at_least_200_dexterity"
   ],
   "rows": [
@@ -97989,6 +98469,30 @@
     ],
     "t": "{0}から{1}の[Physical|物理][Thorns|棘]ダメージ",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_proc_chance_%_against_non_melee_hits_if_you_have_at_least_200_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが最低200ある場合、近接以外の[Hit|ヒット]に対して{0}%の確率で[Thorns|棘]で[RetaliateAgainstAll|報復]する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが最低200ある場合、近接以外の[Hit|ヒット]に対して{0}%の確率で[Thorns|棘]で[RetaliateAgainstAll|報復]する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -100026,6 +100530,27 @@
  },
  {
   "stats": [
+   "warcry_empowers_next_x_melee_attacks_if_you_have_at_least_100_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "トリビュートが最低100ある場合[Warcry|ウォークライ]は[Attack|アタック]を追加で1回[Empowered|強化]する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュートが最低100ある場合[Warcry|ウォークライ]は[Attack|アタック]を追加で{0}回[Empowered|強化]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_monster_power_+%"
   ],
   "rows": [
@@ -101369,6 +101894,20 @@
  },
  {
   "stats": [
+   "keystone_alternate_dexterity_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Dexterity|器用さ]から固有ボーナスを獲得できなくなる\\n器用さ2ごとに[Armour|アーマー]が1%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_alternate_es_recovery"
   ],
   "rows": [
@@ -101377,6 +101916,34 @@
      "#"
     ],
     "t": "敵の[Power|パワー]ごとに防いだ[Physical|物理]ダメージの5%を[EnergyShield|エナジーシールド]として[Recoup|回収]する\\n[EnergyShield|エナジーシールド]は[ESRecharge|リチャージ]しなくなる\\n自動回復により[EnergyShield|エナジーシールド]を回復できなくなる\\n[EnergyShield|エナジーシールド]を[Armour|アーマー]を超えて回復できなくなる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_intelligence_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Intelligence|知性]から固有ボーナスを獲得できなくなる\\n知性2ごとに[Evasion|回避力]が1%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_alternate_strength_bonus"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Strength|筋力]から固有ボーナスを獲得できなくなる\\n筋力2ごとに[EnergyShield|エナジーシールド]が1%増加する",
     "h": []
    }
   ]
@@ -101537,6 +102104,20 @@
  },
  {
   "stats": [
+   "keystone_divine_flesh"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "受ける全てのダメージはエナジーシールドをバイパスする\\n元素ダメージの50%を混沌ダメージとして受ける\\n混沌耐性の最大値 +5%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "keystone_druidic_rage"
   ],
   "rows": [
@@ -101573,6 +102154,20 @@
      "#"
     ],
     "t": "[Fire|ファイヤー]の代わりに[Lightning|ライトニング][ElementalInfusion|インフュージョン][Remnant|レムナント]を生成する\\n[Lightning|ライトニング]の代わりに[Cold|コールド][ElementalInfusion|インフュージョン][Remnant|レムナント]を生成する\\n[Cold|コールド]の代わりに[Fire|ファイヤー][ElementalInfusion|インフュージョン][Remnant|レムナント]を生成する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_emperors_heart"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Flask|フラスコ]によるライフ回復はエナジーシールドにも適用される\\n[Flask|フラスコ]によるライフ回復が30%低下する",
     "h": []
    }
   ]
@@ -101783,6 +102378,20 @@
      "#"
     ],
     "t": "フルライフ状態の時に[CriticalDamageBonus|クリティカルダメージボーナス]が30%低下する\\n[LowLife|低ライフ]状態の時にクリティカルダメージボーナスが30%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_quiet_might"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charges|パワーチャージ]1個ごとに[Spell|スペル]ダメージが3%上昇する\\n[Charges|フレンジーチャージ]の代わりに[Charges|パワーチャージ]を獲得する",
     "h": []
    }
   ]
@@ -103331,6 +103940,146 @@
      "1|#"
     ],
     "t": "[Companion|コンパニオン]はプレイヤーのメインハンド武器ダメージの{0}%と同量の追加[Attack|アタック]ダメージを与える",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_amanamus_defiance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|ヒット]からダメージを受けた時に、ライフ喪失の20%を防ぎ、この方法で防いだライフ喪失の150%を4秒かけて失う",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_blind_monk"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーは盲目になる\\n盲目はプレイヤーの光半径に影響しない\\n盲目中は[Melee|近接][Critical|クリティカルヒット]率が25%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kulemaks_sovereignty"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アンデッドミニオンの合計[Power|パワー]2ごとにプレイヤーのダメージが1%上昇する\\nアンデッドミニオンの最大ライフが25%低下する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_kurgals_ambition"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "自動回復によるマナ回復は最大マナを[Overflow|オーバーフロー]できるようになる\\nマナ自動回復レートが50%低下する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_magnetic_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "近くの味方と敵はプレイヤーとチャージを共有する\\n敵がプレイヤーにヒットを与えると10%の確率でエンデュランスチャージ、フレンジーチャージまたはパワーチャージを1個獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_mental_conditioning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最大マナの80%がその二倍の数値の[Armour|アーマー]に変換される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_sharp_and_brittle"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "兜を使用できない\\nプレイヤーの[Critical|クリティカルヒット]率が幸運になる\\n[Critical|クリティカルヒット]のダメージが幸運になる\\n敵のプレイヤーへの[Critical|クリティカルヒット]のダメージが幸運になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tecrods_brutality"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "過去4秒間に使用したライフ16ごとに毎秒1のライフを自動回復する\\nスキルのライフコストが20%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_tempered_by_war"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "冷気および雷ダメージの50%を火ダメージとして受ける\\n冷気耐性が50%低下する\\n雷耐性が50%低下する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "keystone_ulamans_vision"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]は以下の効果のうちの一つをランダムで行う:\\n• 追加で1回[Fork|分岐]する\\n• 追加で1回[Chain|連鎖]する\\n• 地形と追加で1回[Chain|連鎖]する\\n• 対象に当たることがなくなる",
     "h": []
    }
   ]
@@ -124410,230 +125159,6 @@
   ],
   "skill": [
    "Flame Breath"
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_dexterity_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Dexterity|器用さ]から固有ボーナスを獲得できなくなる\\n器用さ2ごとに[Armour|アーマー]が1%増加する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_intelligence_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Intelligence|知性]から固有ボーナスを獲得できなくなる\\n知性2ごとに[Evasion|回避力]が1%増加する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_alternate_strength_bonus"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Strength|筋力]から固有ボーナスを獲得できなくなる\\n筋力2ごとに[EnergyShield|エナジーシールド]が1%増加する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_divine_flesh"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "受ける全てのダメージはエナジーシールドをバイパスする\\n元素ダメージの50%を混沌ダメージとして受ける\\n混沌耐性の最大値 +5%",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_emperors_heart"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Flask|フラスコ]によるライフ回復はエナジーシールドにも適用される\\n[Flask|フラスコ]によるライフ回復が30%低下する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_quiet_might"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Charges|パワーチャージ]1個ごとに[Spell|スペル]ダメージが3%上昇する\\n[Charges|フレンジーチャージ]の代わりに[Charges|パワーチャージ]を獲得する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_amanamus_defiance"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Hit|ヒット]からダメージを受けた時に、ライフ喪失の20%を防ぎ、この方法で防いだライフ喪失の150%を4秒かけて失う",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_blind_monk"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "プレイヤーは盲目になる\\n盲目はプレイヤーの光半径に影響しない\\n盲目中は[Melee|近接][Critical|クリティカルヒット]率が25%上昇する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kulemaks_sovereignty"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "アンデッドミニオンの合計[Power|パワー]2ごとにプレイヤーのダメージが1%上昇する\\nアンデッドミニオンの最大ライフが25%低下する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_kurgals_ambition"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "自動回復によるマナ回復は最大マナを[Overflow|オーバーフロー]できるようになる\\nマナ自動回復レートが50%低下する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_magnetic_charge"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "近くの味方と敵はプレイヤーとチャージを共有する\\n敵がプレイヤーにヒットを与えると10%の確率でエンデュランスチャージ、フレンジーチャージまたはパワーチャージを1個獲得する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_mental_conditioning"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "最大マナの80%がその二倍の数値の[Armour|アーマー]に変換される",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_sharp_and_brittle"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "兜を使用できない\\nプレイヤーの[Critical|クリティカルヒット]率が幸運になる\\n[Critical|クリティカルヒット]のダメージが幸運になる\\n敵のプレイヤーへの[Critical|クリティカルヒット]のダメージが幸運になる",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tecrods_brutality"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "過去4秒間に使用したライフ16ごとに毎秒1のライフを自動回復する\\nスキルのライフコストが20%上昇する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_tempered_by_war"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "冷気および雷ダメージの50%を火ダメージとして受ける\\n冷気耐性が50%低下する\\n雷耐性が50%低下する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "keystone_ulamans_vision"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Projectile|投射物]は以下の効果のうちの一つをランダムで行う:\\n• 追加で1回[Fork|分岐]する\\n• 追加で1回[Chain|連鎖]する\\n• 地形と追加で1回[Chain|連鎖]する\\n• 対象に当たることがなくなる",
-    "h": []
-   }
   ]
  }
 ]

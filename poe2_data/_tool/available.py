@@ -256,8 +256,34 @@ alt_tr = load_langs('AlternatePassiveSkills')
 conquerors = [{'version': x['AlternateTreeVersion'], 'index': x['ConquerorIndex'], 'name': x['Name'], **tr(alt_tr, i),
                'stats': {stats[st]['Id']: x[f'Stat{k + 1}'][0] for k, st in enumerate(x['Stats'])}}
               for i, x in enumerate(load('AlternatePassiveSkills')) if 4 in x['PassiveType'] and x['ConquerorVersion'] == 0]
+# what a conqueror does in its radius whatever the seed: a kind of passive (PassiveType 1 attribute, 2 small, 3 notable)
+# replaced by the only passive it can become (Abyss: small passives -> Tribute), what every passive of a kind gets added
+# (Abyss: attribute passives +3 Tribute), and what the jewel's own modifiers add to a kind
+# (AlternateTreeExtraAdditionsFromJewelStats: "Conquered Small Passive Skills also grant ...")
+PTYPE = {1: 'attribute', 2: 'small', 3: 'notable'}
+def alt_fixed(x, n):
+    rolls = [x[f'Stat{k + 1}'] for k in range(min(n, len(x['Stats'])))]
+    return {stats[st]['Id']: r[0] for st, r in zip(x['Stats'], rolls)} if all(r[0] == r[1] for r in rolls) and x.get('Random', [0, 0]) == [0, 0] else None
+alt_skills, alt_adds = load('AlternatePassiveSkills'), load('AlternatePassiveAdditions')
+for vi, (v, out) in enumerate(zip(load('AlternateTreeVersions'), alt_versions)):
+    rep_ = {1: v['SmallAttributeReplaced'], 2: v['SmallNormalPassiveReplaced'], 3: v['NotableReplacementSpawnWeight'] >= 100}
+    cnt = {1: v['SmallAttributePassiveSkillAdditions'], 2: v['SmallNormalPassiveSkillAdditions'], 3: v['NotableAdditions']}
+    for ty, kind in PTYPE.items():
+        c = [x for x in alt_skills if x['AlternateTreeVersion'] == vi and ty in x['PassiveType'] and x['SpawnWeight'] > 0]
+        if rep_[ty] and len(c) == 1 and (st := alt_fixed(c[0], 6)) is not None: out.setdefault('becomes', {})[kind] = st
+        a = [x for x in alt_adds if x['AlternateTreeVersion'] == vi and ty in x['PassiveType'] and x['SpawnWeight'] > 0]
+        if cnt[ty][0] == cnt[ty][1] > 0 and len(a) == 1 and (st := alt_fixed(a[0], 3)) is not None: out.setdefault('plus', {})[kind] = {k: x * cnt[ty][0] for k, x in st.items()}
+    ex = {stats[r['Id']]['Id']: [PTYPE[r['NodeType']], stats[r['Stat']]['Id']] for r in load('AlternateTreeExtraAdditionsFromJewelStats') if r['JewelType'] == vi}
+    if ex: out['extra'] = ex
+# the notables an Undying Hate's modifier makes one of its conquered notables become ("One Conquered Notable Passive
+# Skill becomes Ephemeral Contact": local_historic_jewel_override_*, a passive's hash)
+alt_over = {}
+for r in load('AlternateTreeExtraPassiveOverridesFromJewelStats'):
+    p = passives[r['PassiveSkill']]
+    alt_over[str(p['PassiveSkillGraphId'])] = {'name': p['Name'], **tr(passives_tr, p['PassiveSkillGraphId']),
+        'stats': {stats[st]['Id']: p[f'Stat{k + 1}Value'] for k, st in enumerate(p['Stats'])}}
 save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
-                           'timeless': {'versions': alt_versions, 'keystones': conquerors},
+                           'timeless': {'versions': alt_versions, 'keystones': conquerors, 'overrides': alt_over},
                            # Flesh Crucible's keystone (local_vivisection_random_keystone_index, from 1): PassiveKeystoneList's rows
                            'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})
 
@@ -561,7 +587,7 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
 skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
-used |= {s for k in conquerors for s in k['stats']}   # the keystones timeless jewels put in place of the tree's
+used |= {s for k in [*conquerors, *alt_over.values()] for s in k['stats']}   # the keystones timeless jewels put in place of the tree's, the notables Undying Hate's modifiers name
 kept = [d for d in descs.values() if used & set(d['stats'])]
 # a skill's own .csd (it includes the general ones and overrides them): entries marked with the skills that use it
 for csd, names in sorted(skill_csd.items()):
@@ -706,13 +732,16 @@ save('items.json', {
                  'spawn': [[tags_tab[t]['Id'], v] for t, v in zip(m['SpawnWeight_Tags'], m['SpawnWeight_Values'])],
                  **({'tags': [tags_tab[t]['Id'] for t in m['ImplicitTags']]} if m['ImplicitTags'] else {}),
                  **({'desecrated': True} if m['Domain'] == 28 else {}),
+                **({'historic': True} if m['Id'].startswith('HistoricAbyssJewel') else {}),
                  # a radius jewel's modifier is given by the passives in its radius (Mods.RadiusJewelType: 1 small ones,
                  # 2 notable ones; "Small Passive Skills in Radius also grant ...")
                  **({'radius': {1: 'small', 2: 'notable'}[m['RadiusJewelType']]} if m.get('RadiusJewelType') in (1, 2) else {})}
                 # desecrated modifiers (Abyss: "Ulaman's", "of Kurgal"...) are AbyssMod* of domain 28, for any item their tags fit
                 for i, m in enumerate(mods) if (m['Domain'] in (1, 2, 11) or m['Domain'] == 28 and m['Id'].startswith('AbyssMod'))
                 # an essence's modifiers ("Essences", "of the Essence") never roll (no spawn weight): only read on an item
-                and m['GenerationType'] in (1, 2) and (any(m['SpawnWeight_Values']) or m['Domain'] == 1 and m['Name'] in ('Essences', 'of the Essence'))],
+                and m['GenerationType'] in (1, 2) and (any(m['SpawnWeight_Values']) or m['Domain'] == 1 and m['Name'] in ('Essences', 'of the Essence'))
+                # what desecrating an Undying Hate adds (HistoricAbyssJewel*: its conquered passives' bonuses, a notable they become)
+                or m['Id'].startswith('HistoricAbyssJewel') and any(m['SpawnWeight_Values'])],
 })
 
 # --- the loot filter creator (filter.js): every item class and base the trade list has, with the names each language
