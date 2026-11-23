@@ -113,7 +113,7 @@ export function initScene(el, api) {
   }).catch(e => console.warn('scene: post-processing unavailable', e));
 
   // ---------- state
-  const tpl = { mon: null, level: 1, attack: null, rarity: null };   // the enemy the next click places
+  const tpl = { mon: null, level: 1, attack: null, rarity: null, mods: [] };   // the enemy the next click places
   let divine = [];   // Fragments of Divinity lying in your Presence: { p, until, dec }
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
     st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
@@ -165,7 +165,12 @@ export function initScene(el, api) {
   const hand = () => player.hand(V());
   // the character of the build (calc.js): defences, accuracy and recovery
   let shC = { at: -9, v: {} };
-  const shrineOn = () => me?.shrineBuff?.until > time ? me.shrineBuff.stats : null;   // The Hammer of Faith's lesser Shrine buff, while it lasts
+  // The Hammer of Faith's lesser Shrine buff and the modifiers Headhunter took from rare monsters, while they last
+  const shrineOn = () => {
+    if (me?.hh) me.hh = me.hh.filter(h => h.until > time);
+    const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats)].filter(Boolean);
+    return L.length ? L.reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {}) : null;
+  };
   const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.(shrineOn()) || {} }; return shC.v; };
   const short = n => n < 99999.5 ? fmt(Math.round(n)) : n < 999950 ? fmt(n / 1e3, 1) + 'k' : fmt(n / 1e6, 2) + 'M';
   const NUMC = el => el === 'physical' ? '#f2ead8' : css(el);
@@ -289,8 +294,8 @@ export function initScene(el, api) {
   const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);
   const MAXE = 60;
   function arm(d, level, key) {
-    const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== tpl.rarity;
-    d.level = level; d.rarity = tpl.rarity; d.stat = enemyStats(m, level, tpl.rarity); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key, tpl.rarity);
+    const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== tpl.rarity || d.modKey !== tpl.mods.join();
+    d.level = level; d.rarity = tpl.rarity; d.modKey = tpl.mods.join(); d.stat = enemyStats(m, level, tpl.rarity, false, tpl.mods); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key, tpl.rarity, false, tpl.mods);
     d.col = Object.entries(d.atk.hasHit ? d.atk.hits : d.atk.dot).map(([el, x]) => [el, x[1] ?? x]).sort((x, y) => y[1] - x[1])[0]?.[0] || 'physical';
     d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es;
     if (fresh) { d.life = d.max; d.es = d.maxEs; }
@@ -1346,6 +1351,8 @@ export function initScene(el, api) {
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
     if (/^minion/.test(S?.src) && S.g && api.info(S.g).gem?.types?.includes('Companion') && Math.random() * 100 < (sheet().companionOns || 0)) me.compOns = time + ONSLAUGHT.time;   // the tree's: your Companions' Onslaught on kill
     d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    // Headhunter: a rare monster you kill gives you its modifiers for the text's seconds
+    const HH = S && !S.src && sheet().headhunter; if (HH && d.stat.rarity === 'rare' && Object.keys(d.stat.mods).length) { (me.hh ||= []).push({ stats: d.stat.mods, until: time + HH }); shC.at = -99; setBuff({ label: `${t('Headhunter')}: ${d.mon.name}`, c: css('gold'), s: HH }); }
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
     // Killing Palm, Cull the Weak: an enemy they kill grants their charges by its rarity
     const kr = { unique: 'unique', rare: 'rare' }[d.stat.rarity] || 'normal_and_magic';
@@ -5368,7 +5375,8 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
-    if (d.curse && sheet().whisper) d.life = Math.min(d.life, d.max * (1 - sheet().whisper / 100));   // Whispers of the Flesh: a Cursed enemy's life reserved. note: enemies do not regenerate here, so its less life regeneration does nothing
+    if (d.stat.regen && d.life < d.max) d.life = Math.min(d.max, d.life + d.max * d.stat.regen / 6000 * dt);   // a modifier's life regeneration (per minute)
+    if (d.curse && sheet().whisper) d.life = Math.min(d.life, d.max * (1 - sheet().whisper / 100));   // Whispers of the Flesh: a Cursed enemy's life reserved. note: its less life regeneration is not applied
     if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
@@ -5383,7 +5391,7 @@ export function initScene(el, api) {
     d.wait -= dt * (SR ? 1 + SR['bleeding_monsters_attack_speed_+%'] / 100 : 1);
     if (d.wind) { if ((d.wind.s -= dt) <= 0) { const w = d.wind; d.wind = null; w.land(); } return; }
     if (me.safe > 0) return;
-    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10 * maim * (SR ? 1 + SR['bleeding_monsters_movement_velocity_+%'] / 100 : 1);
+    const far = dist(d.pos, pp), R = reachOf(d), v = (d.mon.speed || 0) / 10 * d.stat.move * maim * (SR ? 1 + SR['bleeding_monsters_movement_velocity_+%'] / 100 : 1);
     if (far <= (d.mon.aggro || 0) / 10) d.aggro = true;
     const q = d.aggro && wallIn(d);   // a Shield Wall in the way: it walks to it and attacks it
     if (q) {
@@ -5743,9 +5751,9 @@ export function initScene(el, api) {
     // the key of the bar a skill of the build is on (html), '' when on none
     keyOf: i => { const k = barNow().indexOf(i); return k >= 0 ? keyLabel(k) : ''; },
     reset,
-    // the enemy the next click places: { id → monster of enemies.js, level, attack, rarity }. The ones of that monster already in the scene follow it.
-    enemy(mon, level, attack, rarity) {
-      tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; tpl.rarity = rarity || null; hudT = 0;
+    // the enemy the next click places: { id → monster of enemies.js, level, attack, rarity, modifiers }. The ones of that monster already in the scene follow it.
+    enemy(mon, level, attack, rarity, mods) {
+      tpl.mon = mon || null; tpl.level = clamp(Math.round(+level) || 1, 1, 100); tpl.attack = attack || null; tpl.rarity = rarity || null; tpl.mods = mods || []; hudT = 0;
       if (!tpl.mon) return setPlacing(false);
       for (const d of dummies) if (d.mon === tpl.mon) arm(d, tpl.level, tpl.attack);
     },

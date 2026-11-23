@@ -974,6 +974,11 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
             'player_poise_decay_delay_ms': char_stats.get('poise_decay_delay_ms'), 'player_poise_decay_per_second': char_stats.get('poise_decay_%_per_second'),
         },
         'monsters': monsters, 'rarity': rarity,
+        # the modifiers a magic or rare monster can roll (Mods, monster domain, with a spawn weight): name ('TBD' left
+        # out), prefix/suffix and stats; Rarity has no monster mod count, so the app lets you pick them
+        'mods': [{'id': m['Id'], **({'name': m['Name'], **tr(mods_tr, i)} if m['Name'] and m['Name'] != 'TBD' else {}),
+                  'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix', 'stats': mod_stats([i])}
+                 for i, m in enumerate(mods) if m['Domain'] == 3 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values']) and mod_stats([i])],
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
     }, f, ensure_ascii=False, separators=(',', ':'))
 print(f'monsters.json {len(monsters)} monsters ({sum(1 for m in monsters if m.get("boss"))} bosses), {len(mskills)} skills')

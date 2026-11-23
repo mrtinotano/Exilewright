@@ -1,10 +1,10 @@
 import { t, tn, fmt, lang } from './i18n.js';
 import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
-import { statLines, NAMES } from './stats.js';
+import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
-import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf } from './enemies.js';
+import { ENEMIES, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS } from './enemies.js';
 import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
@@ -372,6 +372,7 @@ $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if
 $('sceneSkills').onchange = e => {
   const d = e.target.dataset;
   if (d.en === 'still' || d.en === 'fight') { sceneCfg[d.en] = e.target.checked; saveScene(); }
+  else if (d.enmod) { const s = new Set(sceneCfg.mods); s[e.target.checked ? 'add' : 'delete'](d.enmod); sceneCfg.mods = [...s]; saveScene(); syncEnemy(); renderEnemy(); }   // a magic or rare enemy's modifiers
   else if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
     if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();
@@ -643,6 +644,7 @@ const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).fl
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
   // (its socket may hang from that start itself, as in the game: the tree can then leave the class start); sockets that
   // end up loose close their start, until nothing more goes
+  if (!nodes.length) return nodes;   // an empty tree (a new build)
   for (let alive = new Set(nodes); ;) {
     const keep = new Set([nodes[0], ...(b ? [...splitRoots(b, alive), ...[...freeNodes(b, alive)].filter(n => alive.has(n))] : [])]), q = [...keep];
     while (q.length) for (const w of N[q.shift()].links.map(String)) if (alive.has(w) && !keep.has(w)) { keep.add(w); q.push(w); }
@@ -1008,7 +1010,7 @@ const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg)
 // the simulator's skill bar of each build: { slots: [gem name or null x8], seen: [gem names it has placed] }
 const BAR_KEY = SCENE_KEY + ':bar', sceneBars = (() => { try { return JSON.parse(localStorage.getItem(BAR_KEY) || '{}'); } catch { return {}; } })();
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
-const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity);
+const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity, sceneCfg.mods);
 const attr = x => esc(x).replace(/"/g, '&quot;');
 const enWrap = Object.assign(document.createElement('details'), { className: 's-enwrap' });
 enWrap.innerHTML = `<summary>${t('Enemies')}</summary><div id="sceneEnemy"></div>`;
@@ -1057,8 +1059,11 @@ function renderEnemy() {
   const box = $('enDetail'), m = enemy(sceneCfg.enemy);
   if (document.activeElement !== enFind) enFind.value = m?.name || '';
   if (!m) { box.innerHTML = `<p class="note">${t('Pick an enemy and click in the scene to place it. Its life, defences and damage are the game\'s at the level you set: test your damage on it and your defences against its attacks.')}</p>`; return; }
-  const b = B(), c = character(b, treeSum()), L = enemyLevel(), rar = rarityOf(m, sceneCfg.rarity), st = enemyStats(m, L, rar);
-  const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key, rar), vp = versusPlayer(atk, st, c);
+  const b = B(), c = character(b, treeSum()), L = enemyLevel(), rar = rarityOf(m, sceneCfg.rarity), st = enemyStats(m, L, rar, false, sceneCfg.mods);
+  const list = attacksOf(m), key = list.some(a => a.key === sceneCfg.attack) ? sceneCfg.attack : list[0].key, atk = attackOf(m, L, key, rar, false, sceneCfg.mods), vp = versusPlayer(atk, st, c);
+  const on = new Set(sceneCfg.mods), modText = x => esc([x.name && tn(x), ...shownLines(x.stats)].filter(Boolean).join(' · '));
+  const mods = !['magic', 'rare'].includes(rar) ? '' : `<details class="en-mods"${on.size ? ' open' : ''}><summary>${t('Modifiers')} <small>${on.size}</small></summary>
+    ${MON_MODS.filter(x => shownLines(x.stats).length).map(x => `<label><input type="checkbox" data-enmod="${attr(x.id)}"${on.has(x.id) ? ' checked' : ''}> ${modText(x)}</label>`).join('')}</details>`;
   const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
   const el = (type, text) => `<span class="dm ${type}">${text}</span>`;
   const rng = r => r[0] === r[1] ? fmt(r[0]) : `${fmt(r[0])}–${fmt(r[1])}`;
@@ -1091,7 +1096,7 @@ function renderEnemy() {
         <input type="number" min="1" max="100" step="1" data-en="level" value="${L}"></label>
       <label><span>${t('Rarity')}</span><select data-en="rarity">${RARITIES.map(r => `<option value="${r}" ${r === rar ? 'selected' : ''}>${t(r[0].toUpperCase() + r.slice(1))}</option>`).join('')}</select></label>
       <label><span>${t('Attack')}</span><select data-en="attack">${list.map(a => `<option value="${attr(a.key)}" ${a.key === key ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>
-    ${atk.description ? `<p class="note">${esc(atk.description)}</p>` : ''}
+    ${mods}${atk.description ? `<p class="note">${esc(atk.description)}</p>` : ''}
     <table class="en-t">${stats.join('')}</table>
     <h4>${t('{0} against you', esc(atk.name))} <small>${t('hit → after your defences')}</small></h4>
     <table class="en-t">${theirs.join('')}</table>
