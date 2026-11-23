@@ -48,6 +48,8 @@ const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 
 const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
 const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 };   // note: keywords.json Volatility
 const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos
+const PERFECTION = { time: 10, max: 4, more: 5 };   // keywords.json PerfectionBuff: 10 s, up to 4 stacks, 5% more damage each
+const TASALIO = { more: 10, max: 5, win: 30 };   // Tasalio's Rhythm (its text): 10% more damage and a 30% shorter Perfect Timing window per stack, up to 5
 const JAGGED = { slow: 20 };   // keywords.json Jagged Ground: slows enemies in its area by 20%
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
@@ -2379,7 +2381,7 @@ export function initScene(el, api) {
     projectile(S) {
       const X = S.infs?.length && !S.P.explodes && infPart(S, S.infs[0]);   // Spark: many sparks in a circle (its part's number)
       if (X && X.dmg.stats.base_number_of_projectiles) S = { ...X, circle: true };
-      { const SS = S.P.spell && !S.src && S.dmg?.sum, N = SS && (SS.spell_projectile_skills_fire_X_additional_projectiles_in_a_circle || (Math.random() * 100 < (SS['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova'] || 0) ? 8 : 0)); if (N) S = { ...S, circle: true, addProj: (S.addProj || 0) + N }; }   // Sire of Shards, Seed of Cataclysm: spells' additional projectiles in a circle
+      { const SS = S.P.spell && !S.src && S.dmg?.sum, WS = SS?.['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova_per_wildshard_stack'], N = SS && (SS.spell_projectile_skills_fire_X_additional_projectiles_in_a_circle || (Math.random() * 100 < (SS['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova'] || 0) + (WS ? WS * (me.wildshard || 0) : 0) ? 8 : 0)); if (N) { S = { ...S, circle: true, addProj: (S.addProj || 0) + N }; if (WS) me.wildshard = 0; } }   // Sire of Shards, Seed of Cataclysm: spells' additional projectiles in a circle; Sione's Temper: its chance per Wildshard, all lost on the circle
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       fx.glow(h, .9, S.el, .2);
@@ -4069,6 +4071,9 @@ export function initScene(el, api) {
       S.fireGain = DN * (st['detonating_arrow_all_damage_%_to_gain_as_fire_per_stage'] || 0); S.detonate = DA && DN >= DA ? S.G?.radius2 || 0 : 0;
       if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { if (!S.dmg?.parts?.SnipeExplosionPlayer) { S.mult *= 1.5; S.aoe = true; } fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
+      if (time < me.perf?.until) S.mult *= 1 + PERFECTION.more * me.perf.n / 100;   // Perfection: all your skills
+      if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
+      if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
@@ -4414,7 +4419,13 @@ export function initScene(el, api) {
     const RS = me.raised; me.raised = null;   // Raise Shield: its Shield Bash when released soon after a block
     if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z } });
     const P = c && base(c.i)?.P; if (!P) return;
-    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect: P.perfect && Math.abs(c.s - 1) < .2 * (1 + (sheet().perfectWin || 0) / 100), held: c.s })) cd = useTime(base(c.i));   // Assailum: a longer Perfect Timing window
+    // Assailum, Tasalio's Rhythm: a longer Perfect Timing window; each stack of the Rhythm a shorter one. note: its 30% shorter as less
+    const SU = base(c.i).dmg?.sum || {}, TR = SU.gain_X_tasalios_perfection_on_perfect_timing, win = .2 * (1 + ((sheet().perfectWin || 0) + (SU['perfect_timing_window_ms_+%'] || 0)) / 100) * (TR ? (1 - TASALIO.win / 100) ** (me.tasalio || 0) : 1);
+    const perfect = P.perfect && Math.abs(c.s - 1) < win;
+    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect, held: c.s })) cd = useTime(base(c.i));
+    // Perfection, Tasalio's Rhythm: a stack on Perfect Timing, all lost on failing one
+    if (P.perfect && perfect) { const PF = SU.gain_X_perfection_on_successful_perfect_timing; if (PF) me.perf = { n: Math.min(PERFECTION.max, (time < me.perf?.until ? me.perf.n : 0) + PF), until: time + PERFECTION.time }; if (TR) me.tasalio = Math.min(TASALIO.max, (me.tasalio || 0) + TR); }
+    else if (P.perfect) { me.perf = null; me.tasalio = 0; }
   }
   // keep: selecting with the number keys does not stop placing enemies
   function select(i, tell = true, keep = false) { if (!api.build().gems[i]) return; sel = i; hudT = 0; if (placing && !keep) setPlacing(false); if (tell) api.onSelect?.(i); }
@@ -5068,7 +5079,10 @@ export function initScene(el, api) {
     blocked(d); return true;
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
+  // Kalisa's Crescendo: an enemy in the final share of its curse's duration is Pacified and deals no damage (keywords.json Pacify)
+  const pacified = d => { const C = d.curse, P = C?.S?.dmg?.sum?.['curse_pacify_for_final_%_of_duration']; return P && C.s <= C.full * P / 100; };
   function struck(d) {
+    if (pacified(d)) return;
     const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.tail) c = { ...c, evasion: (c.evasion || 0) * (1 + me.tail * TAILWIND.evasion / 100 / (c.evasionInc || 1)), deflect: c.deflect && { ...c.deflect, less: 100 - (100 - c.deflect.less) * (1 - me.tail * TAILWIND.deflect / 100) } };   // Tailwind (its increased evasion added to yours)
