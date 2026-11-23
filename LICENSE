@@ -28,6 +28,10 @@ This license covers the code of Exilewright only. Not covered:
   Exilewright is a fan-made tool, not affiliated with or endorsed by
   Grinding Gear Games.
 
+- mannequin.glb is the mannequin, with three of its animations, of the
+  Universal Animation Library by Quaternius (https://quaternius.com),
+  CC0 1.0 (public domain).
+
 - The class and ascendancy portraits in poe2_data/available/img/portraits/ are
   the "<Name> portrait.png" files of the Path of Exile 2 Wiki
   (https://www.poe2wiki.net), CC BY-NC-SA 3.0; the art is (c) Grinding Gear Games.

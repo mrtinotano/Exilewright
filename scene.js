@@ -15,7 +15,8 @@ import * as THREE from 'three';
 import { t, tn, fmt, cap } from './i18n.js';
 import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
-import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
+import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem } from './scenefx.js';
+import { makeHumanoid, clipOf } from './humanoid.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
 import { SK } from './skilldata.js';
@@ -103,7 +104,7 @@ export function initScene(el, api) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
   const dom = renderer.domElement; el.prepend(dom);
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(42, 1, .1, 400);
-  const fx = createFx(scene), arena = buildArena(scene, fx), player = makePlayer(fx), pp = player.group.position;
+  const fx = createFx(scene), arena = buildArena(scene, fx), player = makeHumanoid(fx), pp = player.group.position;
   scene.add(player.group);
   const size = { w: 0, h: 0 };
   let composer = null;
@@ -121,7 +122,7 @@ export function initScene(el, api) {
   let divine = [];   // Fragments of Divinity lying in your Presence: { p, until, dec }
   const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
     st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
-  const camS = { yaw: 0, pitch: .93, dist: 21 }, camT = V(), cursor = V(0, 0, 6);
+  const camS = { yaw: 0, pitch: .93, dist: 16 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
   const stats = { kills: 0, dealt: 0, taken: 0, deaths: 0 }, charges = { frenzy: 0, power: 0, endurance: 0 }, chargeAt = {}, tog = {};
   let sel = 0, time = 0, shake = 0, facing = 0, castAt = -9, cd = 0, rollCd = 0, orbit = false, placing = false, walk = false, goal = null;   // goal: where a click on the ground sends you
@@ -338,7 +339,7 @@ export function initScene(el, api) {
   const rageFull = () => { const H = sheet().hate; if (H?.cd && time - (me.hateAt ?? -99) >= H.cd) { me.hateAt = time; gainCharge(['frenzy', 'power', 'endurance'][Math.floor(Math.random() * 3)], t('Rage')); } if (H?.ward && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * H.ward / 100); };
   function gainRage(n) { const M = rageMax(); if (!(n > 0) || !M) return; if (me.rage < M && me.rage + n >= M) rageFull(); const over = Math.max(0, me.rage + n - Math.max(M, me.rage)); me.rage = Math.min(M, me.rage + n); me.raged = time; if (over) for (const S of gloryOf()) if (S.name === 'Walking Calamity') gloryAdd(S, over); if (me.rage >= M && sheet().loseRage) me.rage = 0; }   // Hateforge: all of it lost at the top
   // your death, by an enemy or by your own life loss: everything restored
-  function died(by) { stats.deaths++; say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
+  function died(by) { stats.deaths++; player.fall(); say(t('{0} killed you', by), 'blood'); toast(t('You died: life and energy shield restored')); fx.ring(pp, .3, 2.6, 'blood', .5); heal(); me.safe = 2; }
   function reset() {
     objs = objs.filter(o => o.keep || (o.remove(), false));
     grounds.forEach(g => g.decal.remove()); grounds = [];
@@ -4135,7 +4136,8 @@ export function initScene(el, api) {
         if (me.drink[0] && SU['support_uhtreds_chalice_damage_+%_final_during_life_flask']) S.mult *= 1 + SU['support_uhtreds_chalice_damage_+%_final_during_life_flask'] / 100; }
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
-      facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;
+      facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); goal = null; walk = false;
+      if (!auto) { player.act(clipOf(P, S.kind, player.family()), S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime); player.setColor(S.el); }   // what you use yourself is what the figure plays
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
@@ -4419,7 +4421,7 @@ export function initScene(el, api) {
     const NA = !auto && S.P.spell && S.dmg?.sum, NT = NA && S.g && api.info(S.g).gem?.types || [];
     if (NT.includes('Unleashable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_spell_%_chance_to_reoccur_an_additional_time'] || 0)) { S.rep = (S.rep || 0) + 1; S.repBy ||= S.label; S.repX ||= 1; }
     if (NT.includes('Cascadable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_skill_echo_chance_%'] || 0)) { echoed(); later(.25, () => run({ ...S, rep: 0 })); }
-    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.cast(1); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
+    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.act(clipOf(P, S.kind, player.family()), .16); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
@@ -4457,7 +4459,7 @@ export function initScene(el, api) {
   }
   function fire(i) {
     const b = base(i);
-    if (b && use(i)) cd = b.P.channel && !b.P.stages ? SIM.channelTick : useTime(b); else { cd = .3; held = null; }
+    if (b && use(i)) { cd = b.P.channel && !b.P.stages ? SIM.channelTick : useTime(b); player.pace(cd); } else { cd = .3; held = null; }
   }
   // seconds between uses: the attack / cast speed of the build when calc.js knows it, else the scene default
   let nextCdX = 1;   // Ferocity: more skill speed for the use that consumed a frenzy charge
@@ -4483,7 +4485,7 @@ export function initScene(el, api) {
     held = null;
     if (b.P.stages && b.P.channel) { charge = { i, s: 0 }; held = { i, key }; return; }   // charge while held, release to fire
     if (b.P.toggle || b.kind === 'field') { use(i); return; }
-    if (ONCE.has(b.kind)) { if (cd <= 0 && use(i)) cd = useTime(b); return; }
+    if (ONCE.has(b.kind)) { if (cd <= 0 && use(i)) { cd = useTime(b); player.pace(cd); } return; }
     held = { i, key };
     if (cd <= 0) fire(i);
   }
@@ -4495,7 +4497,7 @@ export function initScene(el, api) {
     // Assailum, Tasalio's Rhythm: a longer Perfect Timing window; each stack of the Rhythm a shorter one. note: its 30% shorter as less
     const SU = base(c.i).dmg?.sum || {}, TR = SU.gain_X_tasalios_perfection_on_perfect_timing, win = .2 * (1 + ((sheet().perfectWin || 0) + (SU['perfect_timing_window_ms_+%'] || 0)) / 100) * (TR ? (1 - TASALIO.win / 100) ** (me.tasalio || 0) : 1);
     const perfect = P.perfect && Math.abs(c.s - 1) < win;
-    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect, held: c.s })) cd = useTime(base(c.i));
+    if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect, held: c.s })) { cd = useTime(base(c.i)); player.pace(cd); }
     // Perfection, Tasalio's Rhythm: a stack on Perfect Timing, all lost on failing one
     if (P.perfect && perfect) { const PF = SU.gain_X_perfection_on_successful_perfect_timing; if (PF) me.perf = { n: Math.min(PERFECTION.max, (time < me.perf?.until ? me.perf.n : 0) + PF), until: time + PERFECTION.time }; if (TR) me.tasalio = Math.min(TASALIO.max, (me.tasalio || 0) + TR); }
     else if (P.perfect) { me.perf = null; me.tasalio = 0; }
@@ -4924,6 +4926,7 @@ export function initScene(el, api) {
   }
   function hurt(n, chaos, el, crit, d, hit = false, noEs = false) {
     if (!(n > 0)) return;
+    if (hit) player.flinch(Math.min(1, .3 + 4 * n / (me.maxL || 1)));
     if (time < me.helb?.until) me.helb.n += n;   // Helbrym's Composure stores the damage taken
     // Unyielding (attacks), Unbending (spells): a share of the damage taken while you use it Recouped, per 250 ms of its use time
     if (time < me.use?.until) { const A = me.use.S, U = A.dmg?.sum || {}, RT = sheet().recoup?.time || 8;
@@ -5874,7 +5877,7 @@ export function initScene(el, api) {
       const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * (acting() ? me.act ?? 1 : 1) * dt);
       if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
-    const far = Math.hypot(pp.x, pp.z); if (far > 60) { pp.x *= 60 / far; pp.z *= 60 / far; }
+    const far = Math.hypot(pp.x, pp.z); if (far > ROOM) { pp.x *= ROOM / far; pp.z *= ROOM / far; }   // the room's wall
     const step = Math.hypot(pp.x - (me.lastX ?? pp.x), pp.z - (me.lastZ ?? pp.z)); me.lastX = pp.x; me.lastZ = pp.z;
     if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.trav += step; me.movedAt = time; }
     const KA = me.kaom; if (KA && time < KA.until && (KA.walked += step) >= KA.every) { KA.walked = 0; fx.ring(pp, .2, KA.S.A, 'fire', .35); boom({ x: pp.x, z: pp.z }, KA.S.A, KA.S, { soft: true }); }
@@ -5934,10 +5937,11 @@ export function initScene(el, api) {
     fissures = fissures.filter(f => f.end > time);
     for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt * (1 + (sheet().buffTime || 0) / 100)) <= 0) buffs.splice(i, 1);   // the tree's Buff Expiry Rate
 
-    player.update(dt, moving && !move, spd(), !!charge || !!held && time - castAt < .3);
+    player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
+      roll: move?.roll ? move.k : null, leap: move && !move.roll && move.h ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
-    if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); }
+    if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); player.setLook(api.look?.()); }   // the build's weapon in the figure's hands
   }
   const clock = new THREE.Clock(); let lastErr = '';
   renderer.setAnimationLoop(() => {

@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS } from './enemies.js';
-import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus } from './items.js';
+import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
@@ -1137,6 +1137,7 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
     charms: sum.keystone_oasis ? [] : ['charm1', 'charm2', 'charm3'].map(k => { const f = charmOf(B().items?.[k], { ...sum, 'charm_effect_+%': (sum['charm_effect_+%'] || 0) + (sum['charm_effect_+%_per_empty_charm_slot'] || 0) * c.emptyCharms }); return f && { ...f, img: gemImg(f.img), icon: gemImg(f.icon) }; }) }; },
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
   swapSet: () => { swapSet(B(), B().wset === 2 ? 1 : 2); save(); renderSide(); return B().wset; },
+  look: () => ({ weapon: baseOf(B().items?.weapon)?.class, offhand: baseOf(B().items?.offhand)?.class }),   // what the figure holds
   bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
 // Split Personality can't be taken out while passives hang from the start it opens (as in the game): that item change is
 // undone (seenItems: the build's gear as the panel last showed it)

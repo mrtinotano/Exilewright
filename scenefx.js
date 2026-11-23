@@ -1,4 +1,5 @@
-// Visual toolkit of the 3D scene: generated textures, a particle pool, one-shot effects, the arena and the figures.
+// Visual toolkit of the 3D scene: generated textures, a particle pool, one-shot effects, the arena and the figures
+// of the enemies and the summons (the player's is humanoid.js).
 // Purely cosmetic: no game data and no simulation rules live here (those are in skillfx.js / scene.js).
 import * as THREE from 'three';
 
@@ -77,25 +78,6 @@ function textures() {
       g.fillStyle = e; g.fillRect(0, 0, w, w);
     }),
     line: tex(64, 16, (g, w, h) => { g.fillStyle = '#fff'; for (let x = 0; x < w; x += 16) g.fillRect(x, h / 2 - 2, 10, 4); }),
-    stone: tex(1024, 1024, (g, w, h) => {
-      g.fillStyle = '#16140f'; g.fillRect(0, 0, w, h);
-      const rows = 7, rh = h / rows;
-      for (let r = 0; r < rows; r++) {
-        let x = -rnd(120);
-        while (x < w) {
-          const sw = rnd(110, 230), v = rnd(52, 84) | 0;
-          for (const ox of [0, -w]) {
-            const gr = g.createLinearGradient(x + ox, r * rh, x + ox + sw, r * rh + rh);
-            gr.addColorStop(0, `rgb(${v + 8},${v + 5},${v})`); gr.addColorStop(1, `rgb(${v - 10},${v - 11},${v - 12})`);
-            g.fillStyle = gr; g.beginPath(); g.roundRect(x + ox + 4, r * rh + 4, sw - 8, rh - 8, 9); g.fill();
-          }
-          x += sw;
-        }
-      }
-      for (let i = 0; i < 16000; i++) { g.fillStyle = Math.random() < .55 ? `rgba(0,0,0,${rnd(.12)})` : `rgba(255,236,210,${rnd(.05)})`; g.fillRect(rnd(w), rnd(h), rnd(1, 4), rnd(1, 4)); }
-      g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 2;
-      for (let i = 0; i < 26; i++) { let x = rnd(w), y = rnd(h), a = rnd(TAU); g.beginPath(); g.moveTo(x, y); for (let s = 0; s < 6; s++) { a += rnd(-.7, .7); x += Math.cos(a) * 22; y += Math.sin(a) * 22; g.lineTo(x, y); } g.stroke(); }
-    }, 26),
   };
 }
 
@@ -358,119 +340,63 @@ export function createFx(scene) {
   return fx;
 }
 
-// ---------- arena: stone floor, pillars, braziers, moonlight
+// ---------- the test room: a prototype level like a game engine's blank one: a grid floor measured in metres (dark, so
+// that the effects read as they do in the game), a low wall around where you can walk and blocks beyond it. Its size
+// and blocks are the app's own drawing; only the floor's metres are a measure.
+export const ROOM = 30;   // m from its centre to the wall
 const std = (color, roughness = .9, metalness = 0, o = {}) => new THREE.MeshStandardMaterial({ color, roughness, metalness, ...o });
 export function buildArena(scene, fx) {
-  scene.background = new THREE.Color(0x06070b);
-  scene.fog = new THREE.FogExp2(0x06070b, .017);
-  scene.add(new THREE.HemisphereLight(0x8aa0cc, 0x1c1610, .75));
-  const moon = new THREE.DirectionalLight(0xc0d0ff, 1.5);
-  moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048); moon.shadow.bias = -.0005; moon.shadow.normalBias = .03;
-  Object.assign(moon.shadow.camera, { left: -24, right: 24, top: 24, bottom: -24, near: 1, far: 90 });
-  scene.add(moon, moon.target);
+  const SKY = 0x4d5b6e;
+  scene.background = new THREE.Color(SKY);
+  scene.fog = new THREE.Fog(SKY, 60, 190);
+  scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x3a3d42, 1.1));
+  const sun = new THREE.DirectionalLight(0xfff2dc, 2.6);
+  sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03;
+  Object.assign(sun.shadow.camera, { left: -24, right: 24, top: 24, bottom: -24, near: 1, far: 90 });
+  scene.add(sun, sun.target);
 
-  const bump = fx.T.stone.clone(); bump.colorSpace = THREE.NoColorSpace; bump.needsUpdate = true;
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260).rotateX(-Math.PI / 2), std(0xffffff, .93, 0, { map: fx.T.stone, bumpMap: bump, bumpScale: 1.6 }));
+  // a tile of 5 m: a line every metre, a heavier one around it
+  const grid = (base, line) => tex(1024, 1024, (g, w) => {
+    g.fillStyle = base; g.fillRect(0, 0, w, w); g.strokeStyle = line;
+    for (let i = 0; i <= 5; i++) { const x = i * w / 5; g.globalAlpha = i % 5 ? .3 : .75; g.lineWidth = i % 5 ? 3 : 8; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, w); g.moveTo(0, x); g.lineTo(w, x); g.stroke(); }
+  }, 1);
+  const floorTex = grid('#2c2f35', '#8a93a0'); floorTex.repeat.set(80, 80); floorTex.anisotropy = 8;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400).rotateX(-Math.PI / 2), std(0xffffff, .92, 0, { map: floorTex }));
   ground.receiveShadow = true; scene.add(ground);
-  fx.decal({ x: 0, z: 0 }, 30, 'outline', 0x8a6a30, { a: .3, k: 1, rot: 0 });
-
-  const stone = std(0x6a665f, .95), dark = std(0x35322e, .95), iron = std(0x2a2826, .5, .8);
-  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
-  const shaft = new THREE.CylinderGeometry(.75, .85, 1, 10), plinth = new THREE.BoxGeometry(2.2, .6, 2.2), cap = new THREE.BoxGeometry(2, .4, 2);
-  for (let i = 0; i < 14; i++) {
-    const a = i / 14 * TAU + .22, x = Math.cos(a) * 32, z = Math.sin(a) * 32, h = i % 3 === 1 ? rnd(1.6, 3.2) : 6.5;
-    add(plinth, stone, x, .3, z).rotation.y = a;
-    add(shaft, stone, x, .6 + h / 2, z).scale.y = h;
-    if (h > 6) add(cap, stone, x, .8 + h, z).rotation.y = a;
-    else add(new THREE.DodecahedronGeometry(rnd(.5, .9)), dark, x + rnd(-2, 2), .3, z + rnd(-2, 2)).rotation.set(rnd(3), rnd(3), rnd(3));
-  }
-  for (let i = 0; i < 26; i++) {
-    const a = rnd(TAU), r = rnd(36, 70), s = rnd(.6, 2.6);
-    add(new THREE.DodecahedronGeometry(s, 0), dark, Math.cos(a) * r, s * .3, Math.sin(a) * r).rotation.set(rnd(3), rnd(3), rnd(3));
-  }
-  const braziers = [0, 1, 2, 3].map(i => {
-    const a = i / 4 * TAU + Math.PI / 4, x = Math.cos(a) * 15, z = Math.sin(a) * 15;
-    add(new THREE.CylinderGeometry(.12, .3, 1.5, 8), iron, x, .75, z);
-    add(new THREE.CylinderGeometry(.6, .28, .4, 12, 1, true), iron, x, 1.65, z).material.side = THREE.DoubleSide;
-    const coals = new THREE.Mesh(new THREE.CircleGeometry(.52, 12).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: fx.color('fire', 2.4) }));
-    coals.position.set(x, 1.78, z); scene.add(coals);
-    const l = new THREE.PointLight(0xff8a3c, 60, 26, 2); l.position.set(x, 2.5, z); scene.add(l);
-    return { p: { x, y: 1.8, z }, l, s: rnd(10) };
+  // the measure painted on the floor: the centre, and the metres of every heavy line along both axes
+  const W = ROOM + 1, marks = tex(2048, 2048, (g, w) => {
+    const m = w / (2 * W), c = w / 2;
+    g.strokeStyle = g.fillStyle = '#fff'; g.font = '600 22px Segoe UI, Arial, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'top';
+    for (let r = 5; r <= ROOM; r += 5) for (const [x, y] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) g.fillText(r + ' m', c + x * r * m + 6, c + y * r * m + 5);
+    g.lineWidth = 3; g.beginPath(); g.arc(c, c, m, 0, TAU); g.stroke();
   });
+  const inlay = new THREE.Mesh(new THREE.PlaneGeometry(2 * W, 2 * W).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: marks, transparent: true, opacity: .5, depthWrite: false }));
+  inlay.position.y = .012; inlay.renderOrder = 1; scene.add(inlay);
 
-  let time = 0;
+  // the wall around the room, low enough to see over, and prototype blocks beyond it
+  const blockTex = grid('#4f6a8c', '#c5d3e6'), blue = std(0xffffff, .85, 0, { map: blockTex }), orange = std(0xc9742f, .8);
+  const add = (geo, mat, x, y, z, ry = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+  const N = 24, wall = new THREE.BoxGeometry(2 * W * Math.tan(Math.PI / N) + .1, 1.2, .8), cube = new THREE.BoxGeometry(2, 2, 2), slab = new THREE.BoxGeometry(6, 1, 3);
+  for (let i = 0; i < N; i++) { const a = i / N * TAU; add(wall, blue, Math.sin(a) * (W + .4), .6, Math.cos(a) * (W + .4), a); }
+  for (let i = 0; i < 8; i++) {
+    const a = i / 8 * TAU + .3, r = 39 + (i % 3) * 3, x = Math.sin(a) * r, z = Math.cos(a) * r;
+    if (i % 2) { for (let k = 0; k < 3; k++) add(slab, blue, x, .5 + k, z, a).translateZ(k * 1.2); }   // steps
+    else { add(cube, blue, x, 1, z, a); add(cube, i % 4 ? blue : orange, x, 3, z, a + .5); add(cube, blue, x + Math.cos(a) * 2.2, 1, z - Math.sin(a) * 2.2, a); }
+  }
+
   return {
     ground,
-    update(dt, pp) {
-      time += dt;
-      moon.position.set(pp.x - 16, 30, pp.z + 12); moon.target.position.set(pp.x, 0, pp.z);
-      for (const b of braziers) {
-        b.l.intensity = 55 + Math.sin(time * 11 + b.s) * 9 + Math.sin(time * 23 + b.s * 2) * 6;
-        if (Math.random() < dt * 45) fx.emit(1, { p: b.p, r: .35, v: .3, up: 2.2, life: .8, size: .5, grow: .1, c: 'fire', c2: 'ember', k: 1.8 });
-        if (Math.random() < dt * 6) fx.emit(1, { p: b.p, r: .3, v: .5, up: 3, life: 1.8, size: .07, c: 'ember', k: 3, drag: .3 });
-      }
-      if (Math.random() < dt * 14) fx.emit(1, { p: { x: pp.x + rnd(-16, 16), y: rnd(.3, 4), z: pp.z + rnd(-16, 16) }, v: .25, up: .12, life: 4, size: .06, c: 0x9ab0d8, k: 1.2 });
-    },
+    update(dt, pp) { sun.position.set(pp.x - 14, 32, pp.z + 10); sun.target.position.set(pp.x, 0, pp.z); },
   };
 }
 
 // ---------- figures
 const shadow = o => { o.traverse(m => { if (m.isMesh) m.castShadow = true; }); return o; };
-let PM;   // shared materials of the player, the dummies and the summons
+let PM;   // shared materials of the dummies and the summons
 const mats = () => PM ||= {
   leather: std(0x4c3828, .85), cloth: std(0x6e211d, .9, 0, { side: THREE.DoubleSide }), dark: std(0x26211e, .9, 0, { side: THREE.DoubleSide }), metal: std(0x9c968a, .4, .8), skin: std(0xc49a7c, .7),
   wood: std(0x5c4026, .85), darkwood: std(0x3a2a1a, .9), rope: std(0x8a7448, 1), bone: std(0xd8d0b8, .7), red: std(0x8a1f18, .8),
 };
-
-export function makePlayer(fx) {
-  const M = mats(), g = new THREE.Group(), body = new THREE.Group(); g.add(body);
-  const mesh = (geo, m, x, y, z, parent = body) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); parent.add(o); return o; };
-  const leg = s => {
-    const p = new THREE.Group(); p.position.set(s * .11, .92, 0); body.add(p);
-    mesh(new THREE.CylinderGeometry(.085, .07, .5, 8), M.dark, 0, -.25, 0, p); mesh(new THREE.CylinderGeometry(.07, .06, .42, 8), M.leather, 0, -.68, 0, p);
-    mesh(new THREE.BoxGeometry(.12, .08, .25), M.leather, 0, -.88, .04, p); return p;
-  };
-  const legL = leg(1), legR = leg(-1);
-  mesh(new THREE.CylinderGeometry(.2, .31, .5, 10, 1, true), M.cloth, 0, .84, 0);
-  mesh(new THREE.CylinderGeometry(.25, .19, .56, 10), M.leather, 0, 1.22, 0);
-  mesh(new THREE.CylinderGeometry(.215, .215, .07, 10), M.metal, 0, .98, 0);
-  mesh(new THREE.SphereGeometry(.125, 10, 8), M.metal, .29, 1.47, 0); mesh(new THREE.SphereGeometry(.125, 10, 8), M.metal, -.29, 1.47, 0);
-  mesh(new THREE.SphereGeometry(.135, 12, 10), M.skin, 0, 1.66, .01);
-  mesh(new THREE.ConeGeometry(.2, .36, 10), M.dark, 0, 1.77, -.04).rotation.x = -.28;
-  mesh(new THREE.CylinderGeometry(.19, .24, .13, 10, 1, true), M.dark, 0, 1.54, -.02);
-  const cape = new THREE.Group(); cape.position.set(0, 1.5, -.2); body.add(cape);
-  mesh(new THREE.PlaneGeometry(.54, 1, 1, 3), M.cloth, 0, -.5, 0, cape);
-  const arm = s => {
-    const p = new THREE.Group(); p.position.set(s * .29, 1.42, 0); body.add(p);
-    mesh(new THREE.CylinderGeometry(.06, .05, .56, 8), M.leather, 0, -.28, 0, p); mesh(new THREE.SphereGeometry(.06, 8, 6), M.skin, 0, -.58, 0, p); return p;
-  };
-  const armL = arm(1), armR = arm(-1);
-  const staff = new THREE.Group(); staff.position.set(0, -.58, 0); armR.add(staff);
-  mesh(new THREE.CylinderGeometry(.022, .03, 1.75, 6), M.wood, 0, .3, 0, staff);
-  mesh(new THREE.TorusGeometry(.07, .018, 6, 12), M.metal, 0, 1.12, 0, staff);
-  const tip = fx.orb('arcane', .07); tip.position.set(0, 1.22, 0); staff.add(tip);
-  shadow(g);
-  let walk = 0, cast = 0, time = 0;
-  const tipPos = new THREE.Vector3();
-  return {
-    group: g,
-    hand(v = tipPos) { tip.getWorldPosition(v); return v; },
-    setColor(c) { tip.userData.core.material.color.copy(fx.color(c, 3.2)); tip.userData.glow.material.color.copy(fx.color(c, 1.6)); },
-    cast(k = 1) { cast = Math.max(cast, k); },
-    update(dt, moving, speed, hold) {
-      time += dt; if (moving) walk += dt * (2.2 + speed * 2);
-      const sw = moving ? Math.sin(walk) * .75 : 0;
-      legL.rotation.x = sw; legR.rotation.x = -sw; armL.rotation.x = -sw * .7;
-      body.position.y = moving ? Math.abs(Math.cos(walk)) * .045 : Math.sin(time * 1.8) * .008;
-      cast = hold ? Math.min(1, cast + dt * 6) : Math.max(0, cast - dt * 3);
-      const c = ease(cast);
-      armR.rotation.x = sw * .4 * (1 - c) - 1.2 * c; armR.rotation.z = .1 * c; staff.rotation.x = c * 2;
-      body.rotation.x = c * .1 + (moving ? .08 : 0);
-      cape.rotation.x = .1 + (moving ? .45 + Math.sin(walk * 2) * .07 : Math.sin(time * 1.3) * .03);
-      tip.userData.glow.scale.setScalar(.5 + c * .9 + Math.sin(time * 5) * .04);
-    },
-  };
-}
 
 // Figure of a placed enemy: a training dummy dressed by the monster's category (the game models are not available).
 // Own material for the sackcloth (tinted by the states), a plate with life and energy shield, and the markers

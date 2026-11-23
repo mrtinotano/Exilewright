@@ -22,6 +22,7 @@ npm for the app) served by one Python file, `serve.py`. Read `README.md` first f
 | `loot.js`, `settings.js` | equipment comparison and price check over the game, settings |
 | `filter.js` | loot filter creator |
 | `scene.js`, `scenefx.js`, `skillfx.js`, `enemies.js` | 3D simulator |
+| `humanoid.js`, `mannequin.glb` | the simulator's player figure: its poses, and the mannequin with its run, roll and fall (Quaternius' Universal Animation Library, CC0) |
 | `share.js` | Path of Building 2 codes and links |
 | `i18n.js`, `i18n/*.json` | UI translations |
 | `serve.py` | local server, trade site proxy, clipboard, overlay window, the app window |
