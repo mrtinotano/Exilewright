@@ -1034,14 +1034,9 @@ export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0}
 const REKEY = new Map();   // a stat's id as inc() reads it, worked out once: it is asked for every stat of the build at every sum
 function rekey(k) {
   let r = REKEY.get(k);
-  if (r === undefined) {
-    r = k;
-    // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word
-    const w = r.match(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/); if (w) r = `${w[2]}_${w[1]}`;
-    // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
-    const vs = r.match(/^(.*damage)_(vs|against)_(\w+)_\+%$/); if (vs) r = `${vs[1]}_+%_${vs[2]}_${vs[3]}`;
-    REKEY.set(k, r);
-  }
+  // "damage_+%_with_two_handed_weapons" / "..._with_bow_skills": the qualifier is one more prefix word;
+  // "damage_vs_enemies_on_low_life_+%", "attack_damage_vs_bleeding_enemies_+%": the same as "..._damage_+%_vs_..."
+  if (r === undefined) REKEY.set(k, r = k.replace(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/, '$2_$1').replace(/^(.*damage)_(vs|against)_(\w+)_\+%$/, '$1_+%_$2_$3'));
   return r;
 }
 function inc(sum, suffix, tags) {
