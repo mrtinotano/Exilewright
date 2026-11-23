@@ -704,11 +704,12 @@ export function initScene(el, api) {
   const vsAil = (A, a, w, d, S) => (A.ailVs || []).reduce((m, [x, y, on, k]) => x === a && y === w && condN({ actor: 'enemy', var: on }, d, S) ? m * k : m, 1);
   function condN(c, d, S) {
     const v = c.var, en = c.actor === 'enemy', st = k => has(d, k), lifeK = x => x.life / Math.max(1, x.max);
+    const hind = en && !!d.slows?.some(x => x.until > time && x.pct < 0);
     const is = en ? { LowLife: lifeK(d) <= LOW, FullLife: d.life >= d.max, Frozen: st('freeze'), Bleeding: st('bleed'), Poisoned: st('poison'), Ignited: st('ignite'), Burning: st('ignite'),
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
-      Stunned: st('stun') || d.lstun > time, Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Cursed: !!d.curse, Slowed: st('chill') || st('maim') || !!d.slows?.some(x => x.until > time && x.pct < 0), Beast: d.mon?.category === 'Beast', Construct: d.mon?.category === 'Construct', Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
+      Stunned: st('stun') || d.lstun > time, Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: hind,
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Cursed: !!d.curse, Slowed: st('chill') || st('maim') || hind, Beast: d.mon?.category === 'Beast', Construct: d.mon?.category === 'Construct', Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -1131,7 +1132,7 @@ export function initScene(el, api) {
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
     // Escalating Toxins: Poison lasts longer per Poison you inflicted Recently, with its other increased duration
     const PR = A.poisonRecent, PD = PR ? (1 + (PR.inc + Math.min(100, PR.per * (me.poisAt = (me.poisAt || []).filter(u => time - u <= RECENT)).length)) / 100) / (1 + PR.inc / 100) : 1;
-    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime * VS('poison', 'dur') * PD / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * VS('poison', 'eff') * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) });   // Admixture, Poison III against the Bleeding
+    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime * VS('poison', 'dur') * PD / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * VS('poison', 'eff') * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) }), me.poisAt?.push(time);   // Admixture, Poison III against the Bleeding
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);

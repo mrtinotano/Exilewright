@@ -1713,9 +1713,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   for (const a in durI) for (const [on, k] of [['Cursed', 'ailment_duration_+%_vs_cursed_enemy'], ['Exposed', 'ailment_duration_+%_vs_exposed'], ['Beast', 'ailment_duration_+%_vs_beasts']]) rule(a, 'dur', on, durI[a], k);
   rule('poison', 'dur', 'Slowed', durI.poison, 'poison_duration_+%_against_slowed_enemies');
   const immobI = all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%');
-  const critAil = { ignite: critX(['base_ignite_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%'), poison: critX(['base_poison_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_poison_effect_+%'),
-    bleed: critX(['base_bleeding_effect_+%', ...dmgI], 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_bleeding_effect_+%'),
-    shock: critX(['shock_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes', 'shock_effect_+%_with_critical_strikes'), chill: critX(['chill_effect_+%', ...nonI], 'non_damaging_ailment_effect_+%_with_critical_strikes') };
+  const critAil = { ignite: critX(effI.ignite, 'critical_hit_damaging_ailment_effect_+%'), poison: critX(effI.poison, 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_poison_effect_+%'),
+    bleed: critX(effI.bleed, 'critical_hit_damaging_ailment_effect_+%', 'critical_hit_bleeding_effect_+%'),
+    shock: critX(effI.shock, 'non_damaging_ailment_effect_+%_with_critical_strikes', 'shock_effect_+%_with_critical_strikes'), chill: critX(effI.chill, 'non_damaging_ailment_effect_+%_with_critical_strikes') };
   return {
     critAil: Object.values(critAil).some(x => x !== 1) ? critAil : null, ailVs,
     // more chance to inflict them on enemies with Exposure, more Immobilisation buildup on Constructs, more Stun buildup with
@@ -1723,7 +1723,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     ailExpo: (1 + (ailInc + all('ailment_chance_+%_vs_exposed')) / 100) / (1 + ailInc / 100), immobConstruct: (1 + (immobI + all('hit_damage_immobilisation_multiplier_+%_vs_constructs')) / 100) / (1 + immobI / 100),
     stunCrit: 1 + all('passive_overwhelming_strike_hit_damage_stun_multiplier_+%_final_with_crits') / 100,
     poisonRecent: all('poison_duration_+%_per_poison_applied_recently') ? { per: all('poison_duration_+%_per_poison_applied_recently'), inc: durI.poison.reduce((t, k) => t + all(k), 0) } : null,
-    bleedIncision: critX(['base_bleeding_effect_+%', ...dmgI], 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
+    bleedIncision: critX(effI.bleed, 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
     incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0,
@@ -1748,9 +1748,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     elShock: (1 + (all('hit_damage_electrocute_multiplier_+%') + all('hit_damage_electrocute_multiplier_+%_vs_shocked_enemies')) / 100) / (1 + all('hit_damage_electrocute_multiplier_+%') / 100),
     ailShift: (1 + (ailInc + all('elemental_ailment_chance_+%_if_youve_shapeshifted_to_animal_recently')) / 100) / (1 + ailInc / 100),
     // "increased Magnitude of Ailments you inflict" counts for each, of Damaging Ailments for ignite, poison and bleeding, of Non-Damaging ones for shock and chill
-    shockEffect: scale(['shock_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(['chill_effect_+%', 'ailment_effect_+%', 'non_damaging_ailment_effect_+%'], 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
-    igniteEffect: scale(['base_ignite_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(['base_poison_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
-    bleedEffect: scale(['base_bleeding_effect_+%', 'ailment_effect_+%', 'base_damaging_ailment_effect_+%'], /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FBl * (sum.keystone_crimson_assault ? 1.5 : 1),
+    shockEffect: scale(effI.shock, 'shock_effect_+%_final') * (1 + all('stormweaver_shock_effect_+%_final') / 100), chillEffect: scale(effI.chill, 'chill_effect_+%_final') * (1 + all('stormweaver_chill_effect_+%_final') / 100),   // Stormweaver: less
+    igniteEffect: scale(effI.ignite, /(?:ignite|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FB, poisonEffect: scale(effI.poison, /(?:poison|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FA,   // Shattering Spite: all three
+    bleedEffect: scale(effI.bleed, /(?:bleeding|(?<!non_)damaging_ailment)_effect_\+%_final$/) * FBl * (sum.keystone_crimson_assault ? 1.5 : 1),
     bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!(sum.keystone_crimson_assault || sum.aggravate_inflicted_bleeding),   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated (Apron of Emiran: Aggravated)
     shockTime: scale(durI.shock, 'shock_duration_+%_final'),
     chillTime: scale(durI.chill, 'chill_duration_+%_final'),
