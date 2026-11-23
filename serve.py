@@ -593,8 +593,9 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     if FROZEN:   # the executable's log is a file: not every request the page makes, only the ones that go wrong
-        def log_request(self, *_):
-            pass
+        def log_request(self, code='-', size='-'):
+            if isinstance(code, int) and code >= 400:
+                super().log_request(code, size)
 
     def reply(self, code, text):
         data = text.encode() if isinstance(text, str) else text
