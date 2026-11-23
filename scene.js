@@ -4032,7 +4032,8 @@ export function initScene(el, api) {
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
   function costOf(S, held) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
-    const UE = me.drink[1] && S.dmg?.sum?.['base_mana_cost_efficiency_+%_during_mana_flask'], ue = S.dmg?.manaEff || 1;   // Uhtred's Rite: its mana cost efficiency during a mana flask
+    // mana cost efficiency during a mana flask (Uhtred's Rite; attacks': Lavianga's Brew) and on Low Mana (Mental Toughness)
+    const CS = S.dmg?.sum || {}, UE = (me.drink[1] ? (CS['base_mana_cost_efficiency_+%_during_mana_flask'] || 0) + (S.P?.attack ? CS['attack_mana_cost_efficiency_+%_during_mana_flask'] || 0 : 0) : 0) + (lowMana() ? CS['base_mana_cost_efficiency_+%_while_on_low_mana'] || 0 : 0), ue = S.dmg?.manaEff || 1;
     const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (UE ? ue / (ue + UE / 100) : 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
     const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
     return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
@@ -5488,7 +5489,7 @@ export function initScene(el, api) {
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l) * (c.recMore ?? 1), mana: (c.manaNoCrit && !meIs.CritRecently() ? 0 : c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };
   const echoed = () => me.echoed = [...(me.echoed || []).filter(at => time - at <= RECENT), time];   // the spells Echoed recently
-  const speedWhile = b => 1 + prowess().length / 10 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
+  const speedWhile = b => 1 + prowess().length / 10 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell || !sheet().speedClose ? 0 : sheet().speedClose * inside(pp, 2).length) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
     const BW = (c.blockWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0); if (BW) c = { ...c, block: (c.block || 0) * (1 + BW / 100 / (c.blockInc || 1)) };   // the tree's increased block chance while in a state

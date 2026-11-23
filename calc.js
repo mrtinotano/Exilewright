@@ -353,7 +353,7 @@ export function character(b, sum) {
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
-    speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
+    speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })), speedClose: v(sum, 'attack_speed_+%_per_enemy_in_close_range'),   // Viciousness: per enemy within 2 m (Close Range, as the damage's)
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
     // block: the shield's own chance (Renly's Training: its value instead) and what adds to it (Stone of Lazhwar with a
     // focus), increased by the tree's and by Ironbound's per 100 armour of your armour items; rounded as Path of Building 2
@@ -996,7 +996,7 @@ const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['
   ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
   ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['evasion_rating_+%_when_on_low_life', 'e', 'LowLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted']];
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
-// counted "per Enemy in Close Range" (the game data has no distance for it), against Bloodlusting
+// counted against Bloodlusting
 // enemies, Parry's own speed after a Parry
 const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'ParriedRecently'], ['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
   ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
@@ -1053,7 +1053,8 @@ const ACC_WHEN = [['accuracy_rating_+%_while_surrounded', 'Surrounded'], ['accur
 // the tree's increased block chance while you are in a state
 const BLOCK_WHILE = [['block_chance_+%_while_surrounded', 'Surrounded'], ['block_chance_+%_if_blocked_with_active_block_recently', 'RaisedBlockRecently']];
 // the tree's increased area while you are in a state (the scene's, at each use)
-const AREA_WHILE = [['area_of_effect_+%_while_totem_active', 'TotemActive'], ['area_of_effect_+%_while_you_have_arcane_surge', 'ArcaneSurge'], ['area_of_effect_+%_if_have_stunned_an_enemy_recently', 'StunnedEnemyRecently']];
+const AREA_WHILE = [['area_of_effect_+%_while_totem_active', 'TotemActive'], ['area_of_effect_+%_while_you_have_arcane_surge', 'ArcaneSurge'], ['area_of_effect_+%_if_have_stunned_an_enemy_recently', 'StunnedEnemyRecently'],
+  ['area_of_effect_+%_if_enemy_stunned_with_two_handed_melee_weapon_recently', 'StunnedEnemyRecently', true]];   // Shockwaves: while you hold one (the third)
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -1372,7 +1373,7 @@ export function skill(g, b, treeGear) {
   const borrowed = (attack && sum.additive_spell_damage_modifiers_apply_to_attack_damage ? inc(sum, 'damage_+%', [...dmgTags, 'spell']) - inc(sum, 'damage_+%', dmgTags) : 0)
     + (sum.minion_damage_increases_and_reductions_also_affects_you ? v(sum, 'minion_damage_+%') : 0);
   const compInc = sum.companion_damage_increases_and_reductions_also_affects_you ? v(sum, 'companion_damage_+%') : 0;   // the tree's: your Companion's increased damage yours too
-  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + inc(typed[t], 'damage_+%', dmgTags) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + (tags.includes('bow') && sum.arrow_speed_additive_modifiers_also_apply_to_bow_damage ? v(sum, 'base_projectile_speed_+%') : 0) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + inc(typed[t], 'damage_+%', dmgTags) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items?.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
@@ -1509,7 +1510,8 @@ export function skill(g, b, treeGear) {
   const CR = inc(sum, 'damage_+%_at_close_range', [...dmgTags, 'hit']); if (CR) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'Within2m' }], val: CR, what: 'damage', w: out.incW });   // the tree's at Close Range (2 m, as the stun buildup's)
   // the tree's crit chance against an enemy with no elemental ailment
   const NE = v(sum, 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments'); if (NE) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments', neg: true }], val: NE, what: 'crit', w: critW });
-  out.areaWhile = AREA_WHILE.filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] }));
+  if (attack && sum['elemental_damage_with_attack_skills_+%_while_using_flask']) out.when.push({ cond: [{ type: 'Condition', var: 'FlaskEffect' }], val: sum['elemental_damage_with_attack_skills_+%_while_using_flask'], what: 'damage', w: Object.fromEntries(SRC.elemental.map(t => [t, out.incW[t]])) });   // Crystal Elixir
+  out.areaWhile = AREA_WHILE.filter(([k, , two]) => sum[k] && (!two || w && weaponTags(w).includes('twohand') && !w.tags.includes('ranged'))).map(([k, cv]) => ({ cv, val: sum[k] }));
   out.areaIgnited = attack ? v(sum, 'attack_area_of_effect_+%_per_enemy_ignited_last_8_seconds') : 0;   // its text: up to 40%
   for (const [k, what, cv, en, need] of CRIT_WHILE) if (sum[k] && (!need || tags.includes(need))) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
@@ -1547,7 +1549,7 @@ export function skill(g, b, treeGear) {
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null, both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0) + ['banner', 'hazard', 'grenade'].reduce((t, x) => t + (own.includes(x) ? v(sum, `${x}_duration_+%`, `${x}_skill_duration_+%`) : 0), 0)
-    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
+    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('shapeshift') ? v(sum, 'skill_effect_duration_+%_when_using_shapeshift_skills') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: (both('number_of_chains') + (attack ? v(sum, 'attacks_num_of_additional_chains') : 0) + (own.includes('lightning') ? v(sum, 'lightning_skill_additional_chains') : 0)) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') + (own.includes('grenade') ? v(sum, 'grenade_skill_number_of_additional_projectiles') : 0) : null,   // Cluster Bombs
