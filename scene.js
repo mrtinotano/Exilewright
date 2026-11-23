@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, tn, fmt, cap } from './i18n.js';
-import { K as GAME, enemy, monSkill, addStats, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemy, monSkill, addStats, MON_MODS, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
@@ -3874,10 +3874,13 @@ export function initScene(el, api) {
   };
   function agonyEnds(d) { const A = d.agony; d.agony = null; if (A.n > 0) { fx.ring(d.pos, .2, 1.2, 'chaos', .4); damage(d, A.n, { ...A.S, src: 'agony' }, false, true); } }
   // Ritual Sacrifice: a Rare (or Unique) monster's corpse at the cursor is consumed, else you stab yourself for its share
-  // of your life; either way its buff, for its duration. note: the monster modifiers it grants are not in the scene
+  // of your life; either way its buff, for its duration: the monster's modifiers, or a single random monster modifier
+  // (as Headhunter's, shrineOn)
   K.sacrifice = S => {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap)), rare = d && POWER[d.stat.rarity] >= POWER.rare;
     if (rare) eat(d, 'blood'); else { me.life = Math.max(1, me.life - me.maxL * S.dmg.stats['head_hunt_%_life_to_remove_on_self_stab'] / 100); fx.emit(10, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 1.5, up: 1, life: .4, size: .14, c: 'blood' }); }
+    const own = MON_MODS.filter(x => !x.aura?.foe), one = own[Math.floor(Math.random() * own.length)];
+    (me.hh ||= []).push({ stats: rare ? d.stat.mods : one?.stats || {}, until: time + durOf(S) }); shC.at = -99;
     setBuff({ label: S.label, name: S.name, c: css('blood'), s: durOf(S) });
   };
   // Iron Ward: while on, it stores its share of the physical damage your armour mitigates, up to its most; used, a nova of
