@@ -630,8 +630,13 @@ export function recovery(c, sum) {
     // increases, armour applied to elemental damage, more maximum Rage
     shift: (k => k.some(x => sum[x]) ? { esDelay: esD('energy_shield_delay_-%_while_shapeshifted'),
       esRecharge: pct('energy_shield_recharge_rate_+%', 'energy_shield_recharge_rate_+%_while_shapeshifted') / pct('energy_shield_recharge_rate_+%'), acc: v(sum, 'accuracy_rating_+%_while_shapeshifted'),
-      leech: v(sum, 'life_leech_amount_+%_while_shapeshifted'), armourEl: v(sum, 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted'), rage: v(sum, 'maximum_rage_+_while_shapeshifted') } : null)(
-      ['energy_shield_delay_-%_while_shapeshifted', 'energy_shield_recharge_rate_+%_while_shapeshifted', 'accuracy_rating_+%_while_shapeshifted', 'life_leech_amount_+%_while_shapeshifted', 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted', 'maximum_rage_+_while_shapeshifted']),
+      leech: v(sum, 'life_leech_amount_+%_while_shapeshifted'), armourEl: v(sum, 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted'), rage: v(sum, 'maximum_rage_+_while_shapeshifted'),
+      maxRes: { fire: v(sum, 'maximum_fire_damage_resistance_+%_while_shapeshifted'), cold: v(sum, 'maximum_cold_damage_resistance_+%_while_shapeshifted'), lightning: v(sum, 'maximum_lightning_damage_resistance_+%_while_shapeshifted') } } : null)(
+      ['energy_shield_delay_-%_while_shapeshifted', 'energy_shield_recharge_rate_+%_while_shapeshifted', 'accuracy_rating_+%_while_shapeshifted', 'life_leech_amount_+%_while_shapeshifted', 'x%_of_armour_applies_to_elemental_damage_while_shapeshifted', 'maximum_rage_+_while_shapeshifted', ...['fire', 'cold', 'lightning'].map(e => `maximum_${e}_damage_resistance_+%_while_shapeshifted`)]),
+    shiftMore: { surge: v(sum, 'gain_arcane_surge_on_reverting_if_you_were_shapeshifted_x_seconds'), intim: v(sum, 'enemies_you_heavy_stun_while_shapeshifted_are_intimidated_for_x_seconds') },   // the tree's on reverting / heavy stunning while Shapeshifted
+    presWither: v(sum, 'inflict_withered_for_x_seconds_on_unwithered_enemies_when_they_enter_your_presence'), parryNoCrit: !!sum.parry_cannot_be_critically_hit_during_parry,
+    parryNext: { ranged: v(sum, 'parry_successfully_parrying_melee_attack_gives_damage_+%_to_your_next_ranged_attack'), melee: v(sum, 'parry_successfully_parrying_projectile_gives_damage_+%_to_your_next_melee_attack') },
+    totemCast: v(sum, 'totems_spells_cast_speed_+%_per_active_totem'),
     lifeRecharge: sum.keystone_eternal_youth || sum.base_life_recharges_like_energy_shield ? (c.life || 0) * esRate * pct('energy_shield_recharge_rate_+%') : 0,
     // keystones the scene plays: Zealot's Oath (excess life regeneration to energy shield), Vaal Pact, Mind Over Matter, Scarred Faith
     zealot: !!sum.keystone_zealots_oath, vaal: !!sum.keystone_vaal_pact, mom: !!sum.keystone_mana_shield, scarred: !!sum.keystone_alternate_es_recovery,
@@ -952,7 +957,7 @@ const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_e
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
   enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon', undead: 'Undead' };
 // [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
-const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
+const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
   ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
   ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
@@ -963,7 +968,7 @@ const DEF_WHILE = [['armour_+%_if_consumed_endurance_charge_recently', 'a', 'Con
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
 // counted "per Enemy in Close Range" (the game data has no distance for it), against Bloodlusting
 // enemies, Parry's own speed after a Parry
-const SPEED_WHILE = [['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
+const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'ParriedRecently'], ['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
   ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['attack_speed_+%_if_have_crit_recently', 'a', 'CritRecently'], ['cast_speed_+%_if_have_crit_recently', 'c', 'CritRecently'],
   ['attack_speed_+%_if_rare_or_unique_enemy_nearby', 'a', 'RareOrUniqueInPresence'], ['attack_speed_+%_if_you_have_not_attacked_recently', 'a', 'NotAttackedRecently'],
@@ -1422,6 +1427,7 @@ export function skill(g, b, treeGear) {
   const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
   if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
   if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
+  const XP = v(sum, 'critical_hit_damage_+%_against_enemies_exited_your_presence_recently'); if (XP) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'ExitedPresenceRecently' }], val: XP, what: 'critBonus', w: cbW });
   // the tree's per recent use: elemental penetration per Glory skill used in the last 6 s; increased damage per Glory consumed
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
   const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };

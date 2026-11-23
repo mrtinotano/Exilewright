@@ -695,7 +695,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', Humanoid: d.mon?.category === 'Humanoid' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -908,6 +908,7 @@ export function initScene(el, api) {
     if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
+    if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
     if (a === 'ignite' && !S.src && sheet().igniteHurt) hurt(playerTakes(sheet(), 'fire', sheet().igniteHurt, true));   // Fireflower: fire damage taken when you ignite
     const fresh = !(d.st[a] > 0), left = d.st[a] || 0; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time;
     // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
@@ -2631,7 +2632,7 @@ export function initScene(el, api) {
           const sg = e.segs?.[0]; if (sg && S.dmg.totemRegen) sg.life = Math.min(sg.max, sg.life + sg.max * S.dmg.totemRegen / 100 * dt);   // the tree's totem life regeneration
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
-          wait = every;
+          wait = every / (F.P?.spell && sheet().totemCast ? 1 + sheet().totemCast * objs.filter(o => o.totemOf && !o.dead).length / 100 : 1);   // the tree's totem cast speed per summoned totem
           const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
           const gw = su.support_greatwood_number_of_active_totems_in_base_radius_to_track ? Math.min(su.support_greatwood_maximum_number_of_active_totems_in_radius_for_effects, objs.filter(o => o.totemOf && o !== e && !o.dead && dist(o.pos, e.pos) <= su.support_greatwood_number_of_active_totems_in_base_radius_to_track / 10).length) : 0;
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
@@ -3329,7 +3330,8 @@ export function initScene(el, api) {
     for (const k of ['%_armour_to_apply_to_elemental_damage', 'deflection_rating_%_of_evasion_rating']) if (su['support_tempered_valour_' + k]) give[k] = su['support_tempered_valour_' + k];
     if (S.dmg?.sum?.['base_banner_resist_all_elements_%_to_apply']) give['resist_all_elements_%'] = S.dmg.sum['base_banner_resist_all_elements_%_to_apply'] * AE;   // the tree's resistances from Banners
     const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
-    if (!S.dmg?.sum?.unlimited_banners_allowed) for (const o of objs) if (o.banner && o.name === S.name) o.dead = true;   /* Tactician: any number */
+    const BN = 1 + (S.dmg?.sum?.number_of_additional_banners_allowed || 0), BO = objs.filter(o => o.banner && o.name === S.name && !o.dead);   // the tree's +N placed Banners
+    if (!S.dmg?.sum?.unlimited_banners_allowed) BO.slice(0, Math.max(0, BO.length - BN + 1)).forEach(o => o.dead = true);   /* Tactician: any number */
     const c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', 'gold', { a: .35, rot: 0 });
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
     const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
@@ -4129,6 +4131,7 @@ export function initScene(el, api) {
     if (!auto && P.attack && P.projectile && (walk || move) && Math.random() * 100 < sheet().moveProj) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), projectiles: (sh(S).projectiles || 1) + 2 } } };   // the tree's two more projectiles while moving
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
+    const PX = !auto && P.attack && me.parryNext?.[P.melee ? 'melee' : 'ranged']; if (PX) { S.mult *= 1 + PX / 100; me.parryNext = null; }   // a parry's increased damage to this attack (note: as a factor of its own)
     S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
     // Ancestrally Boosted: its more damage and increased area, with the tree's increased ones (note: its damage as a factor)
     const AB = sheet().ancBoost || {};
@@ -4273,7 +4276,7 @@ export function initScene(el, api) {
     // a Command skill (keywords.json Minion Commands): the tree's chance to Revive a random fallen persistent minion
     if (!auto && me.fallen.length && isCmd(S) && Math.random() * 100 < sheet().reviveCmd) { me.fallen.unshift(...me.fallen.splice(Math.floor(Math.random() * me.fallen.length), 1)); reviveFallen(me.fallen[0].life); }
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
-    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
+    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { const SV = sheet().shiftMore?.surge; if (SV && time - (me.shiftAt ?? time) >= SV) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000); me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     { const U = sheet().uDef || {}, q = me.leech.life;   // uniques on casting a spell / attacking: life leeched, life sacrificed for energy shield (Runic Ward at half)
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
@@ -5019,6 +5022,7 @@ export function initScene(el, api) {
     if (P) {
       const st = P.dmg.stats, far = (a.shape === 'projectile' ? st.base_maximum_active_block_distance_for_projectiles : st.base_maximum_active_block_distance_for_non_projectiles) / 10 * (1 + (sheet().parryRange || 0) / 100), l = dist(d.pos, pp) || 1;
       if (l > far + SIM.body * d.sc) return false;
+      const PN = sheet().parryNext; if (PN) me.parryNext = a.shape === 'projectile' ? PN.melee && { melee: PN.melee } : a.melee && PN.ranged ? { ranged: PN.ranged } : me.parryNext;   // the tree's: your next attack of the other kind
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
     } else { R.blocked = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
@@ -5069,7 +5073,7 @@ export function initScene(el, api) {
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => !(OR.noCrit?.pin && d.st.pin > 0 || OR.noCrit?.mark && d.mark) && Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1) * (1 + (OR.critTaken || 0) / 100), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
+    const OR = sheet(), roll = () => !(OR.noCrit?.pin && d.st.pin > 0 || OR.noCrit?.mark && d.mark || OR.parryNoCrit && time < (me.parry?.until ?? -9)) && Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1) * (1 + (OR.critTaken || 0) / 100), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
     if (crit) gainRage(OR.rageCritTaken);   // Bristleboar: Rage when critically hit
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     // "Defend with X% of Armour" against this hit: a critical one, a projectile attack, from further than 6 m, while your
@@ -5306,7 +5310,7 @@ export function initScene(el, api) {
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
-    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
+    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, Parrying: () => time < (me.parry?.until ?? -9), ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
     ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.stunAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
     NoLifeFlaskUses: () => !!flasks()[0] && flaskLeft(0) < flasks()[0].per,
     Shapeshifted: () => !!me.form || !!me.demon, ShapeshiftedRecently: () => time - (me.shiftAt ?? -99) <= RECENT, RevertedRecently: () => time - (me.revertAt ?? -99) <= RECENT,
@@ -5333,6 +5337,7 @@ export function initScene(el, api) {
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
     const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
     if ((RA || RE) && c.armourEl) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: c.deflect && { ...c.deflect, eva: c.deflect.eva + RE } };
+    const SR = shifted()?.maxRes; if (SR && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, SR[e] ? { ...r, max: r.max + SR[e], capped: Math.min(r.max + SR[e], r.value) } : r])) };   // the tree's while Shapeshifted
     if (AE || MR || BR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: (MR || BR) && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, value: r.value + BR, capped: Math.min(r.max + MR, r.value + BR) }])) : c.res };
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
@@ -5498,7 +5503,7 @@ export function initScene(el, api) {
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
-    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); d.inPres = inP; }
+    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());
     if (sheet().ordained && time - (me.fragAt ?? -9) >= DIVINE.every) { me.fragAt = time; const p = around(pp, sheet().overgrow.r); divine.push({ p, until: time + DIVINE.time, dec: fx.decal(p, .35, 'rune', 'lightning', { a: .8, spin: 1 }) }); }
