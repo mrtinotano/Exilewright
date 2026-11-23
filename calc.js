@@ -582,7 +582,7 @@ export function recovery(c, sum) {
     skillLife: v(sum, 'lose_x_life_when_you_use_skill'), rageCritTaken: v(sum, 'gain_x_rage_when_taken_crit'),   // Crown of Thorns; Bristleboar
     esOnManaFlask: !!sum.start_energy_shield_recharge_when_you_use_a_mana_flask, lowCap: !!sum.cannot_recover_above_low_life_except_flasks,   // Bitterbloom; Cat O' Nine Tails
     luckySurr: !!sum.attack_damage_is_lucky_if_surrounded,   // Empire's Grasp
-    critShocked: v(sum, 'critical_bonus_+%_final_while_shocked'), critChilled: v(sum, 'enemy_hit_critical_strike_chance_+%_against_self_while_chilled'),   // Berek's Respite; Berek's Grip
+    critShocked: v(sum, 'critical_bonus_+%_final_while_shocked'), critChilled: v(sum, 'enemy_hit_critical_strike_chance_+%_against_self_while_chilled'), critTaken: v(sum, 'base_enemy_critical_strike_chance_+%_against_self'),   // Berek's Respite; Berek's Grip
     chillTaken: !!sum.enemies_chilled_by_hits_take_damage_increased_by_chill_effect, witherForever: !!sum.wither_never_expires,   // Asphyxia's Wrath; Cospri's Will
     frozenTaken: v(sum, 'frozen_monsters_take_increased_damage'), noEleAil: !!sum.cannot_inflict_elemental_ailments,   // Taryn's Shiver; Plaguefinger
     blindPoison: !!sum.blind_on_poison_inflicted, flaskUnbleed: !!sum.remove_bleed_on_life_flask_use,   // Murkshaft; Zerphi's Genesis
@@ -607,7 +607,8 @@ export function recovery(c, sum) {
     foeRegen: { bleed: !!sum.bleeding_enemies_cannot_regenerate_life, broken: !!sum.broken_armour_enemies_cannot_regenerate_life, pres: v(sum, 'enemies_in_presence_life_regeneration_+%'), cursed: v(sum, 'enemies_cursed_by_you_have_life_regeneration_rate_+%') },
     luckyLow: !!sum.damage_with_hits_is_lucky_vs_enemies_on_low_life, luckyHeavy: !!sum.damage_with_hits_is_lucky_vs_heavy_stunned_enemies, frozenNoRes: !!sum.hits_ignore_elemental_resistances_vs_frozen_enemies,
     noEvade: { heavy: !!sum.hits_cannot_be_evaded_vs_heavy_stunned_enemies, pin: !!sum.pinned_enemies_cannot_evade_your_attacks }, noCrit: { pin: !!sum.pinned_enemies_cannot_crit, mark: !!sum.marked_enemies_cannot_deal_critical_strikes },
-    oneDmgAil: !!sum.cannot_have_more_than_1_damaging_ailment,
+    oneDmgAil: !!sum.cannot_have_more_than_1_damaging_ailment, igniteSelf: !!sum.ignites_reflected_to_self, armBreakTaken: v(sum, 'armour_break_taken_+%'),
+    groundTaken: { fire: v(sum, 'enemies_in_chilled_ground_take_+%_fire_damage'), cold: v(sum, 'enemies_in_ignited_ground_take_+%_cold_damage') },
     cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
     chillAll: !!sum.base_all_damage_taken_can_chill, chillReversed: !!sum.chill_effect_is_reversed, sprintNoSlow: !!sum.slows_have_no_potency_on_you_while_sprinting, spellNoPierce: !!sum.projectiles_from_spells_cannot_pierce, energyFullMana: v(sum, 'energy_generated_+%_on_full_mana'),   // Sierran Inheritance, Ab Aeterno, Snakepit, Idle Hands
     critPierce: v(sum, 'projectiles_crit_chance_+%_for_each_time_they_have_pierced'), spellCritPer: v(sum, 'spell_crit_bonus_+%_per_spell_crit_recently'), noImmob: !!sum.cannot_immobilise_enemies, lioneye: v(sum, 'unique_bow_attacks_repeat_x_times_when_no_enemies_in_your_presence'), thornsLeech: v(sum, 'base_life_leech_from_all_thorns_damage_permyriad'),   // Drillneck, Seed of Cataclysm, The Prisoner's Manacles, Lioneye's Glare, Belly of the Beast
@@ -762,7 +763,7 @@ export function ailmentDefence(c, sum) {
   }
   dur.stun = pct('stun_duration_on_self_+%') / pct('base_stun_recovery_+%');   // as Path of Building 2: longer stuns, divided by stun recovery
   dur.electrocute = Math.max(0, 1 - v(sum, 'base_self_electrocute_duration_-%', 'self_electrocute_duration_-%') / 100) * pct('combined_electrocute_duration_on_self_+%_final');
-  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
+  const eff = { chill: pct('chilled_effect_on_self_+%', 'chill_effectiveness_on_self_+%', 'shocked_chilled_effect_on_self_+%'), shock: pct('shocked_effect_on_self_+%', 'shocked_chilled_effect_on_self_+%'), ignite: pct('ignite_effect_on_self_+%'), bleed: pct('base_bleeding_magnitude_+%_on_self'), electrocute: pct('hit_damage_electrocute_multiplier_+%_on_self'), slow: sum.slows_have_no_potency_on_you ? 0 : pct('base_slow_potency_+%') };   // Pathfinder: unaffected by slows
   // the increased stun threshold that counts only in a state, with the always-on one it adds to (the scene's)
   const stunIf = { inc: v(sum, 'stun_threshold_+%'), notRecent: v(sum, 'stun_threshold_+%_when_not_stunned_recently'), channel: v(sum, 'stun_threshold_+%_while_channelling'), full: v(sum, 'stun_threshold_+%_when_on_full_life'), parry: v(sum, 'parry_stun_threshold_+%_during_parry'), perHit: v(sum, 'stun_threshold_+%_for_each_time_hit_recently_up_to_100%') };
   return { stun, ail, freeze, electrocute, avoid, dur, eff, stunIf };

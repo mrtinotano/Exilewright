@@ -747,7 +747,7 @@ export function initScene(el, api) {
   const AIL_DOT = { ignite: ['fire', ['fire']], bleed: ['physical', ['physical']], poison: ['chaos', ['physical', 'chaos']] };
   function ailDps(d, a, raw, S) {   // Blackflame Covenant: a fire spell's Ignite deals chaos
     const [el0, from] = AIL_DOT[a], el = a === 'ignite' && (S?.dmg?.blackflame || !S?.src && sheet().igniteChaos) ? 'chaos' : a === 'bleed' && !S?.src && sheet().bleedFire ? 'fire' : el0,   /* Blackflame; Blistering Bond */ base = raw ? from.reduce((s, e) => s + (raw[e] || 0), 0) : 0, per = GAME[a + '_per_minute'];
-    return base > 0 && per ? { dps: defence(d, el, base * per / 6000, false), sim: false, el } : { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el };
+    return base > 0 && per ? { dps: defence(d, el, base * per / 6000, false), raw: base * per / 6000, sim: false, el } : { dps: (d.max + d.maxEs) * SIM.dot / 8, sim: true, el };
   }
   // o (from afflict): the game's duration, magnitude (shock, chill) and effect (damaging ailments) of this one;
   // without it (minions, grounds, skills without damage data) freeze and armour break take the scene's hit counts
@@ -902,6 +902,7 @@ export function initScene(el, api) {
       // the weaker kept with its own time (burn2). ponytail: a third or more counts as the second
       if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
+      if (a === 'ignite' && !S.src && !v.sim && sheet().igniteSelf) suffer('ignite', o?.dur ?? DUR.ignite, { dot: { dps: v.raw * (o?.eff || 1), el: v.el } });   // the tree's: your ignites reflected to you
     }
     if (a === 'maim') o = { ...o, mag: (o?.mag ?? MAIM.move) * slowK(S) };   // the skill's increased Slow Magnitude of the debuffs it inflicts
     if (o?.mag && critHit === S && S.dmg.ail?.critAil?.[a]) o = { ...o, mag: o.mag * S.dmg.ail.critAil[a] };   // a shock / chill from a critical hit
@@ -976,7 +977,9 @@ export function initScene(el, api) {
   // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
   // note: as a factor of its own, as Intimidate's
   const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0) + (sheet().uDef?.yoke || 0) * ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(a => d.st[a] > 0).length) / 100 : 1; };   // Yoke of Suffering: per elemental ailment type on them
-  function takes(d, el, r, isHit = true, ow, pen, inv, zero) { return defence(d, el, r, isHit, ow, pen, inv, zero) * (d.st.chill > 0 && sheet().chillTaken ? 1 + (d.mag.chill || 0) / 100 : 1) * (d.st.freeze > 0 ? 1 + (sheet().frozenTaken || 0) / 100 : 1) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
+  // the tree's: enemies on Chilled Ground take more fire damage, on Ignited Ground more cold
+  const groundX = (d, el) => { const GT = sheet().groundTaken?.[el], k = el === 'fire' ? 'chilled' : 'burning'; return GT && grounds.some(g => !g.dead && g.type === k && dist(g, d.pos) <= g.r) ? 1 + GT / 100 : 1; };
+  function takes(d, el, r, isHit = true, ow, pen, inv, zero) { return defence(d, el, r, isHit, ow, pen, inv, zero) * groundX(d, el) * (d.st.chill > 0 && sheet().chillTaken ? 1 + (d.mag.chill || 0) / 100 : 1) * (d.st.freeze > 0 ? 1 + (sheet().frozenTaken || 0) / 100 : 1) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv, zero) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour), SE = sheet(), near = () => dist(d.pos, pp) <= SE.overgrow.r;
     // Leopold's Applause (in your Presence: Sacred Flame): elemental damage resisted by its lowest elemental resistance;
@@ -5064,7 +5067,7 @@ export function initScene(el, api) {
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => !(OR.noCrit?.pin && d.st.pin > 0 || OR.noCrit?.mark && d.mark) && Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
+    const OR = sheet(), roll = () => !(OR.noCrit?.pin && d.st.pin > 0 || OR.noCrit?.mark && d.mark) && Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1) * (1 + (OR.critTaken || 0) / 100), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
     if (crit) gainRage(OR.rageCritTaken);   // Bristleboar: Rage when critically hit
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     // "Defend with X% of Armour" against this hit: a critical one, a projectile attack, from further than 6 m, while your
@@ -5092,7 +5095,7 @@ export function initScene(el, api) {
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
     // a monster modifier's Armour Break: its share of the physical damage it deals; at all of your armour, Fully Broken
     const AB = a.ail?.['armour_break_physical_damage_%_dealt_as_armour_break'];
-    if (AB && dealt.physical > 0 && !(time < me.armBroken) && sheet().armour > 0 && (me.armCut = (me.armCut || 0) + dealt.physical * AB / 100) >= sheet().armour) { me.armCut = 0; me.armBroken = time + BROKEN.player; say(t('Broken Armour'), 'physical'); }
+    if (AB && dealt.physical > 0 && !(time < me.armBroken) && sheet().armour > 0 && (me.armCut = (me.armCut || 0) + dealt.physical * AB / 100 * (1 + (sheet().armBreakTaken || 0) / 100)) >= sheet().armour) { me.armCut = 0; me.armBroken = time + BROKEN.player; say(t('Broken Armour'), 'physical'); }
     const AE = AD && ELEM.filter(e => dealt[e] > 0).sort((x, y) => dealt[y] - dealt[x])[0];   // adapt to the hit's highest elemental type, the oldest Adaptations giving way
     if (AE) { for (let k = 0; k < AD.gain; k++) me.adapt.push({ el: AE, until: time + AD.dur }); me.adapt = me.adapt.slice(-AD.max); }
     if (dealt.lightning > 0) valako(dealt.lightning);
@@ -5192,7 +5195,7 @@ export function initScene(el, api) {
         me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
       }
     }
-    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical')) });
+    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical') * (D.eff.bleed ?? 1)) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
     const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);
     if (roll(maim) && can('maim')) suffer('maim', MAIM.time);
