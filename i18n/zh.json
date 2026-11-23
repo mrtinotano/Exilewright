@@ -931,7 +931,7 @@
  "Level {0} or more, {1}% quality or more": "等級 {0} 以上，品質 {1}% 以上",
  "Level {0} or more": "等級 {0} 以上",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "没有在售物品拥有全部 {1} 个词缀：以下物品至少拥有其中 {0} 个。",
- "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "在售的 {0} 件物品拥有全部 {1} 个词缀（排在前面）；其余至少拥有其中 {2} 个。",
+ "{0} listed have all {1} of the modifiers; the others have at least {2} of them.": "在售的 {0} 件物品拥有全部 {1} 个词缀；其余至少拥有其中 {2} 个。",
  "Requires {0} {1} (you have {2})": "需要 {0} {1}（你有 {2}）",
  "Empty (Socket {0})": "空（插槽 {0}）",
  "Socket {0}": "插槽 {0}",
@@ -952,5 +952,6 @@
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "策匠石：傳奇物品的一條詞綴被替換為瓦爾詞綴",
  "No Vaal modifier": "無瓦爾詞綴",
  "Modifiers": "詞綴",
- "Headhunter": "獵首"
+ "Headhunter": "獵首",
+ "{0} listed left out: they only make the build worse.": "已略過 {0} 件上架物品：它們只會讓配置變差。"
 }

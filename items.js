@@ -2,7 +2,7 @@
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, tn, lang, fmt, KW } from './i18n.js';
 import { statLines, statLinesEn, shownLines, nameLines } from './stats.js';
-import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './impact.js';
+import { diff, byGain, damage, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
@@ -863,7 +863,12 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
     const B = getBuild(), worn = B.items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {}, { [slot]: _, ...rest } = B.items || {};
     const lvl = B.level > 1 ? B.level : 101, s0 = B.level > 1 ? snapOf(rest) : null, s = s0?.glovesFree && slotType(slot) === 'gloves' ? null : s0;   // no character yet: nothing to check
-    return `<div class="stash">${res.found.map((l, i) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {}, rows = gain(slot, { ...l.item, extra: worn?.extra || {} }, 'buy' + i);
+    // what each changes on the build; those that only lose are left out (the search asks for the worn one's lines, not
+    // for more damage: one of another base, or with a line less, can be worse in everything), the most damage gained
+    // first (the rest as the search gave them)
+    const all = res.found.map((l, i) => ({ l, i, rows: gain(slot, { ...l.item, extra: worn?.extra || {} }, 'buy' + i) }));
+    const rated = all.filter(x => !x.rows.length || x.rows.some(r => r.d > 0)).sort((p, q) => damage(q.rows) - damage(p.rows)), worse = all.length - rated.length;
+    return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
         return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
@@ -883,8 +888,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
         + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button><a class="buysite" href="${esc(trade.item(res.league, l, res.body?.query?.status?.option))}" target="_blank" rel="noopener">${t('Trade')}</a></div>
         <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}</span></div>`; }).join('')
-      || `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`}</div>
-      ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
+      || (worse ? '' : `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`)}</div>
+      ${worse ? `<p class="note">${t('{0} listed left out: they only make the build worse.', worse)}</p>` : ''}
+      ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers; the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;
   }

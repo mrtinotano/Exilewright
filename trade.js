@@ -394,7 +394,9 @@ console.assert(JSON.stringify(explicitOnly(['explicit.stat_1', 'crafted.stat_1',
 // by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
 const DEAREST = { price: 'desc' };
 // Items better than `item`, from the Equipment tab: every line it has (asLines), of its kind of item (`base`: of its
-// base; a unique: that unique), up to the price, the first 10 down from the dearest. note: its implicits and runes are
+// base; a unique: that unique; neither: 10 of its base and then 10 of any, so that what its base alone finds is never
+// missing), up to the price, the first 10 down from the dearest. Which of them is better is for the build to say
+// (items.js orders them by what they change). note: its implicits and runes are
 // not asked: the data has no trade stat for them.
 // -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for) }
 // A rare has at most 6 modifiers, so asking for all of them is asking for a twin of it (2 gloves of a whole league had
@@ -405,17 +407,20 @@ console.assert(JSON.stringify(fewer(6)) === '[5,4]' && fewer(2).length === 0, 'f
 const lineKey = l => l.hash ?? 'd:' + l.en;
 export async function findBetter({ league, item, base, skip = [], price, req, state, tick }) {   // skip: lines left out (lineKey)
   const { stats, n, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
-  const body = { query: { status: { option: state }, ...(base || item.unique) && { type: item.base }, ...item.unique && { name: item.unique },
+  const body = { query: { status: { option: state }, type: item.base, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
   // those with every line first; fewer than 10 of them: the rest from those with one line less, then two (each search's
   // own listings read with it, cheapest first)
   const groups = [], seen = new Set();
   const url = 'search?league=' + encodeURIComponent(league);
-  let s = await call(url, body), need = 0;
-  const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, 10 - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
-  take(); const full = seen.size;
-  for (const k of fewer(n)) { if (seen.size >= 10) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
+  let s, need = 0, full = 0, cap = 0;
+  const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, cap - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
+  for (const own of base || item.unique ? [true] : [true, false]) {
+    if (!own) delete body.query.type;
+    body.query.stats = stats; cap = seen.size + 10; s = await call(url, body); const had = seen.size; take(); full += seen.size - had;
+    for (const k of fewer(n)) { if (seen.size >= cap) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
+  }
   const found = [];
   tick?.('Reading {0} items…', seen.size);
   for (const { ids, q } of groups) found.push(...((await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []).map(r => r && readListing(r)).filter(l => l?.item && fits(req, l)).reverse());

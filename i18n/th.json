@@ -931,7 +931,7 @@
  "Level {0} or more, {1}% quality or more": "เลเวล {0} ขึ้นไป คุณภาพ {1}% ขึ้นไป",
  "Level {0} or more": "เลเวล {0} ขึ้นไป",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "ไม่มีไอเทมที่วางขายมีม็อดทั้ง {1} อย่าง: รายการเหล่านี้มีอย่างน้อย {0} อย่าง",
- "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "{0} ชิ้นที่ขายอยู่มีม็อดครบทั้ง {1} อย่าง (ชิ้นแรก ๆ) ส่วนที่เหลือมีอย่างน้อย {2} อย่าง",
+ "{0} listed have all {1} of the modifiers; the others have at least {2} of them.": "{0} ชิ้นที่ขายอยู่มีม็อดครบทั้ง {1} อย่าง ส่วนที่เหลือมีอย่างน้อย {2} อย่าง",
  "Requires {0} {1} (you have {2})": "ต้องการ {1} {0} (คุณมี {2})",
  "Empty (Socket {0})": "ว่าง (ช่อง {0})",
  "Socket {0}": "ช่อง {0}",
@@ -952,5 +952,6 @@
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "ลูกแก้วสถาปนิก: ม็อดหนึ่งของไอเทมยูนีคถูกแทนที่ด้วยม็อดวาล",
  "No Vaal modifier": "ไม่มีม็อดวาล",
  "Modifiers": "ม็อด",
- "Headhunter": "Headhunter"
+ "Headhunter": "Headhunter",
+ "{0} listed left out: they only make the build worse.": "ข้าม {0} ชิ้นที่ขายอยู่: ทำให้บิลด์แย่ลงเท่านั้น"
 }

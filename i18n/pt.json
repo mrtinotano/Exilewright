@@ -931,7 +931,7 @@
  "Level {0} or more, {1}% quality or more": "Nível {0} ou mais, qualidade de {1}% ou mais",
  "Level {0} or more": "Nível {0} ou mais",
  "None listed has all {1} of the modifiers: these have at least {0} of them.": "Nenhum à venda tem todos os {1} modificadores: estes têm pelo menos {0} deles.",
- "{0} listed have all {1} of the modifiers (the first ones); the others have at least {2} of them.": "{0} à venda têm todos os {1} modificadores (os primeiros); os outros têm pelo menos {2} deles.",
+ "{0} listed have all {1} of the modifiers; the others have at least {2} of them.": "{0} à venda têm todos os {1} modificadores; os outros têm pelo menos {2} deles.",
  "Requires {0} {1} (you have {2})": "Requer {0} de {1} (você tem {2})",
  "Empty (Socket {0})": "Vazio (encaixe {0})",
  "Socket {0}": "engaste {0}",
@@ -952,5 +952,6 @@
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Orbe do Arquiteto: um dos modificadores do único substituído por um modificador vaal",
  "No Vaal modifier": "Sem modificador vaal",
  "Modifiers": "Modificadores",
- "Headhunter": "Caça-cabeças"
+ "Headhunter": "Caça-cabeças",
+ "{0} listed left out: they only make the build worse.": "{0} à venda ficam de fora: só pioram a build."
 }
