@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { KIND } from './skillfx.js';
 
-const D = Math.PI / 180, TAU = Math.PI * 2, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const D = Math.PI / 180, TAU = Math.PI * 2, WHITE = new THREE.Color(1, 1, 1), clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = k => { k = clamp(k, 0, 1); return k * k * (3 - 2 * k); };
 const std = (color, roughness = .85, metalness = 0, o = {}) => new THREE.MeshStandardMaterial({ color, roughness, metalness, ...o });
 
@@ -16,9 +16,8 @@ const std = (color, roughness = .85, metalness = 0, o = {}) => new THREE.MeshSta
 const J = ['pos', 'body', 'hips', 'spine', 'chest', 'head', 'shL', 'elL', 'haL', 'shR', 'elR', 'haR', 'hipL', 'knL', 'ftL', 'hipR', 'knR', 'ftR', 'x'];
 const JI = Object.fromEntries(J.map((n, i) => [n, i * 3])), N = J.length * 3, BOTH = { sh: 1, el: 1, ha: 1, hip: 1, kn: 1, ft: 1 };
 const span = (...names) => names.flatMap(n => [JI[n], JI[n] + 1, JI[n] + 2]);
-const LEFT = span('shL', 'elL', 'haL'), LEG = new Uint8Array(N);
-for (const i of span('pos', 'body', 'hips', 'hipL', 'knL', 'ftL', 'hipR', 'knR', 'ftR')) LEG[i] = 1;
-const LEGS = { hips: 1, hipL: 1, knL: 1, ftL: 1, hipR: 1, knR: 1, ftR: 1 };
+const LEFT = span('shL', 'elL', 'haL'), LEG = new Uint8Array(N), LEGS = new Set(['hips', 'hipL', 'knL', 'ftL', 'hipR', 'knR', 'ftR']);
+for (const i of span('pos', 'body', ...LEGS)) LEG[i] = 1;
 function pose(o, from) {
   const v = from ? Float32Array.from(from) : new Float32Array(N);
   for (const [k, x] of Object.entries(o)) for (const n of BOTH[k] ? [k + 'L', k + 'R'] : [k])
@@ -181,6 +180,7 @@ const HOLD = Object.fromEntries(Object.entries({
   dash: { ...LUNGE, pos: [0, -.16, .2], body: [22, 0, 0], spine: [8, 0, 0], chest: [6, 16, 0], head: [-24, -12, 0], shR: [-30, 20, 0], elR: 50, haR: [40, 0, 0], shL: [60, 0, 60], elL: 80 },
 }).map(([k, p]) => [k, pose({ ...STAND, ...p })]));
 const FREE_HAND = new Set(['castPoint', 'castNova', 'castLow', 'shout', 'punch', 'throw']);   // the second hand leaves the weapon
+const TRAIL = new Set(['swing', 'cleave', 'slam', 'thrust']), TRAIL_N = 12;   // the blows whose weapon leaves a trail, and how many steps of it are kept
 
 // The clip a skill plays, from its kind and tags and the family of the weapon in hand; null: a leap or a dash,
 // which shows the pose of its own movement.
@@ -257,6 +257,24 @@ export function makeHumanoid(fx) {
     const clip = n => { const c = animations.find(c => c.name === n), by = {}; for (const t of c.tracks) by[t.name] = t.createInterpolant(); return { dur: c.duration, q: bones.map(b => by[b.name + '.quaternion']), p: by['DEF-hips.position'] }; };
     rig = { list, rootQ: bones[0].quaternion.clone(), jog: clip('Jog_Fwd_Loop'), roll: clip('Roll'), death: clip('Death01'), clip: null, t: 0, prev: null, pt: 0, x: 1, grip: { L: 0, R: 0 } };
   }));
+  // the trail of a blow: a ribbon through where the outer half of the weapon has just been, fading towards its tail and its inner edge
+  const trail = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
+  const trailP = new Float32Array(TRAIL_N * 6), trailC = new Float32Array(TRAIL_N * 6), trailLit = new Float32Array(TRAIL_N);
+  trail.geometry.setAttribute('position', new THREE.BufferAttribute(trailP, 3)); trail.geometry.setAttribute('color', new THREE.BufferAttribute(trailC, 3));
+  trail.geometry.setIndex(Array.from({ length: TRAIL_N - 1 }, (_, i) => [2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 1, 2 * i + 3, 2 * i + 2]).flat());
+  trail.frustumCulled = false; trail.renderOrder = 6; trail.material.color.copy(fx.color('white', .9));
+  let trailAt = 0;
+  function sweep(dt, lit) {
+    if (!trail.parent) { if (!root.parent) return; root.parent.add(trail); }
+    if ((trailAt += dt) >= 1 / 90) {   // a step further
+      trailAt = 0; trailP.copyWithin(0, 6); trailLit.copyWithin(0, 1);
+    }
+    tip.getWorldPosition(v1); jt[tip.parent?.parent === jt.haL ? 'haL' : 'haR'].getWorldPosition(v2).lerp(v1, .55);
+    trailP.set([v2.x, v2.y, v2.z, v1.x, v1.y, v1.z], (TRAIL_N - 1) * 6); trailLit[TRAIL_N - 1] = lit;
+    for (let i = 0; i < TRAIL_N; i++) trailC.fill(trailLit[i] * (i / (TRAIL_N - 1)) ** 2, i * 6 + 3, i * 6 + 6);   // the outer edge alone is lit
+    trail.geometry.attributes.position.needsUpdate = trail.geometry.attributes.color.needsUpdate = true;
+  }
+
   // where a clip has a bone, or the hips, fading from the clip before it
   const turnAt = (i, out) => {
     const R = rig, c = R.clip.q[i];
@@ -272,7 +290,7 @@ export function makeHumanoid(fx) {
     JA.body.copy(jt.body.quaternion); jt.hips.position.copy(hip0);
     if (legs > .001) {
       for (let i = 0; i < L.length; i++) { const e = L[i]; turnAt(i, e.a); e.w.copy(e.a); if (e.up >= 0) e.w.premultiply(L[e.up].w); if (e.j) JA[e.j].copy(e.w).multiply(e.Ci); }
-      for (const j of ORDER) { const k = LEGS[j] ? legs : full; if (k > .001) jt[j].quaternion.slerp(q1.copy(JA[jt[j].parent.name]).invert().multiply(JA[j]), k); }
+      for (const j of ORDER) { const k = LEGS.has(j) ? legs : full; if (k > .001) jt[j].quaternion.slerp(q1.copy(JA[jt[j].parent.name]).invert().multiply(JA[j]), k); }
       v1.fromArray(clip.p.evaluate(t)); if (R.x < 1 && R.prev?.p) v1.copy(v2.fromArray(R.prev.p.evaluate(R.pt)).lerp(v1, R.x));
       jt.hips.position.lerp(v1.applyQuaternion(R.rootQ).sub(jt.body.position).applyQuaternion(q1.copy(jt.body.quaternion).invert()), legs);
     }
@@ -380,16 +398,16 @@ export function makeHumanoid(fx) {
   }
 
   let time = 0, phase = 0, runW = 0, fullW = 0, rollT = null, act = null, flinch = 0, down = 0, wasLeap = false, energy = 0, holdW = 0;
-  const tipPos = new THREE.Vector3(), w1 = new THREE.Vector3();
+  const w1 = new THREE.Vector3();
   setLook();
   return {
     group: root,
     setLook,
     family: () => fam,
-    hand(v = tipPos) { tip.getWorldPosition(v); return v; },
-    setColor(c) { if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
+    hand(v) { return tip.getWorldPosition(v); },
+    setColor(c) { trail.material.color.copy(fx.color(c, .9)).lerp(WHITE, .35); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
     // a use of a skill: its clip from its moment on, lasting the time to the next use
-    act(name, dur = .5) { if (CLIPS[name] || HOLD[name]) { act = { name, t: 0, dur: Math.max(.12, dur) }; energy = 1; } },
+    act(name, dur) { if (CLIPS[name] || HOLD[name]) { act = { name, t: 0, dur: Math.max(.12, dur) }; energy = 1; } },
     pace(dur) { if (act && act.t < .05) act.dur = Math.max(.12, dur); },
     flinch(k = 1) { flinch = Math.max(flinch, k); },
     fall() { down = 1e-4; act = null; },
@@ -412,7 +430,7 @@ export function makeHumanoid(fx) {
         mix(tgt, tgt, R, runW);
       }
       // what is being done, over it
-      let upper = 0, lower = 0, free = false;
+      let upper = 0, lower = 0, free = false, lit = 0;
       if (s.roll != null) { act = null; rollT ??= 0; }
       else if (s.leap != null) {
         const k = s.leap; if (k < .75) mix(tmp, HOLD.gather, HOLD.air, smooth(k / .25)); else sample(CLIPS.slam, .84 + (k - .75) / .25 * .16, tmp);
@@ -428,6 +446,7 @@ export function makeHumanoid(fx) {
           upper = 1 - smooth((act.t - .25) / .25); if (act.t > .5) act = null;
         } else {
           sample(C, Math.min(1, k), tmp);
+          if (TRAIL.has(act.name) && fam !== 'unarmed' && (k < .22 || k > .8)) lit = 1;   // down into the blow and through it
           upper = Math.max(holdW, 1 - smooth((k - .35) / .3));
           if (k >= 1 && !s.hold || k >= .7 && holdW < .02) act = null;
         }
@@ -441,7 +460,7 @@ export function makeHumanoid(fx) {
       // struck: a flinch that fades; killed: the fall, until something else is done
       if (down > 0) { down += dt; if (down > 1.7 || s.moving || act || upper > 0) down = 0; }
       if (flinch > 0) { flinch = Math.max(0, flinch - dt * 4); tgt[JI.chest] -= .3 * flinch; tgt[JI.head] -= .25 * flinch; tgt[JI.spine + 1] += .12 * flinch; }
-      const a = 1 - Math.exp(-dt * 26);
+      const a = 1 - Math.exp(-dt * (act && act.t < .1 ? 60 : 26));   // a blow lands at once
       for (let i = 0; i < N; i++) cur[i] += (tgt[i] - cur[i]) * a;
       apply(cur);
       // the roll goes on after its travel, unless something else is done by then
@@ -457,6 +476,7 @@ export function makeHumanoid(fx) {
         else { nock.position.z = -.2 - draw * .46; reach('R', nock.getWorldPosition(w1), smooth(draw * 5), POLE_R); }
       }
       if (string) { const p = string.geometry.attributes.position; p.setZ(1, -.2 - draw * .46); p.needsUpdate = true; }
+      sweep(dt, lit);
       if (rig) { for (const S of 'LR') rig.grip[S] += ((grips[S] && !(S === 'L' && free) ? 1 : .25) - rig.grip[S]) * Math.min(1, dt * 14); skin(fullW, Math.max(fullW, runW)); }
       energy = Math.max(0, energy - dt * 2.5);
       if (glow) glow.userData.glow.scale.setScalar(glow.userData.core.scale.x * (7 + energy * 9 + Math.sin(time * 5) * .5));
