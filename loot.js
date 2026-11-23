@@ -114,7 +114,8 @@ export function initLoot(el, ctx) {
     return { kind: v?.kind || 'none', title: `${icon} ${t(word)}` + (v ? ' · ' + slotName(v.slot) : ''), name: pair ? `${t('Equipped')}: ${nameOf(v.old)} → ${name}` : name, lines };
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
-  const say = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify(v) }).catch(() => {}); };
+  // always sent: the app's window over the game may come up after the page asked (serve.py answers 403 when there is none)
+  const say = v => { fetch('overlay', { method: 'POST', body: JSON.stringify(v) }).catch(() => {}); };
 
   const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); keep(); };
   // ---------- items coming in
@@ -157,7 +158,7 @@ export function initLoot(el, ctx) {
     show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
   };
   async function priceCheck(text) {
-    const show = v => { if (over) fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
+    const show = v => { fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
     text = text.replace(/\r/g, '').trim();
     // a gem or a waystone of its own (rare, magic): by the site's filters of them; else what stacks: on the Currency Exchange
     const G = gemOf(text), W = !G && wayOf(text), B = !G && !W && bulkOf(text);
@@ -205,7 +206,7 @@ export function initLoot(el, ctx) {
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
   function watch() {
     const src = new EventSource('clipboard?lang=' + lang);
-    src.onopen = () => { live = 'on'; showLive(); };
+    src.onopen = () => { live = 'on'; showLive(); hasOver(); };
     src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else if (x?.worn) wear(x.worn); else add(x); };
     src.onerror = () => { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); };
     // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
@@ -246,7 +247,7 @@ export function initLoot(el, ctx) {
     else return;
     keep(); render();
   };
-  fetch('overlay').then(r => r.ok ? r.json() : {}).then(j => { over = !!j.overlay; render(); }).catch(() => {});
-  watch();
+  function hasOver() { fetch('overlay').then(r => r.ok ? r.json() : {}).then(j => { if (over !== !!j.overlay) { over = !!j.overlay; render(); } }).catch(() => {}); }
+  hasOver(); watch();
   return render;
 }
