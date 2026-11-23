@@ -41,6 +41,7 @@ const DIVINE = { every: 4, time: 10 };   // The Ordained's Fragments of Divinity
 const BROKEN = { time: 12, taken: 20, player: 4 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits; a player's 4 s, without it
 const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
+const DMG_AIL = ['bleed', 'ignite', 'poison'];   // keywords.json DamagingAilments
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
@@ -452,7 +453,8 @@ export function initScene(el, api) {
       const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : falloff(d), acc = c.accuracy * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
-      if (acc > 0 && d.stat.evasion > 0 && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      const NE = c.noEvade, sure = NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
+      if (acc > 0 && d.stat.evasion > 0 && !sure && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
@@ -513,7 +515,7 @@ export function initScene(el, api) {
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN * (S.src !== 'minionHit' && me.st.shock > 0 ? 1 + (sheet().critShocked || 0) / 100 : 1) + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
-      const mine = !/minion/.test(S.src || ''), LK = mine && (Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0) || D.attack && sheet().luckySurr && meIs.Surrounded()), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
+      const mine = !/minion/.test(S.src || ''), LK = mine && (Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_%'] || 0) || D.attack && sheet().luckySurr && meIs.Surrounded() || sheet().luckyLow && d.life <= d.max * LOW || sheet().luckyHeavy && d.st.stun > 0), LL = mine && Math.random() * 100 < (D.sum?.['chance_for_extra_damage_roll_with_lightning_damage_%'] || 0), LS = mine && crit && S.P.spell && Math.random() * 100 < (D.sum?.['spell_critical_hit_chance_%_for_lucky_damage'] || 0);   // Seed of Cataclysm: spell damage with critical hits
       const MM = D.attack && D.sum?.local_damage_roll_always_min_or_max;   // Skysliver: the least or the most of each type
       for (const el in D.hits) { const [lo, hi] = D.hits[el]; raw[el] = (lo + (MM ? Math.round(Math.random()) : LK || LS || LL && el === 'lightning' ? Math.max(Math.random(), Math.random()) : Math.random()) * (hi - lo)) * m * g * (el === 'physical' ? gp : 1) * cm * (W.dmg[el] ?? 1); }
       // gained as extra damage of another type against an enemy in a state: of the hit's damage after its modifiers, not
@@ -668,7 +670,9 @@ export function initScene(el, api) {
     if (WT && Math.random() * 100 < WT * raw.chaos / Math.max(1, d.stat.ail)) withers(d, S.dmg.sum.support_withered_base_duration_ms / 1000);
     if (!S.src) { thornHit(S, d); const H = real ? Object.keys(raw) : S.els; if (D?.attack ?? P.attack) glory(d, 'attack_hit'); if (H.some(e => ELEM.includes(e))) glory(d, 'elemental_hit'); if (H.includes('chaos')) glory(d, 'chaos_hit'); }
     if (d.dead) return true;
+    const wasHeavy = d.st.stun > 0;
     if (real) afflict(d, S, raw, { crit, stunX, full }); else for (const a of S.ail) if (!A?.never?.[a]) inflict(d, a, S);
+    if (real && !S.src && !wasHeavy && d.st.stun > 0 && sheet().cullHeavy && cull(d, S, true)) return true;   // the tree's: a hit that Heavy Stuns has Culling Strike
     if (P.dotHit) dot(d, S);
     event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
     return true;
@@ -980,6 +984,7 @@ export function initScene(el, api) {
     if (el === 'lightning' && SE.lightResNear && near()) st = { ...st, res: { ...st.res, lightning: SE.res?.lightning?.capped || 0 } };   // Doryani's Prototype: equal to yours
     if (ELEM.includes(el) && (SE.lowestRes || SE.lowestResNear && near())) st = { ...st, res: { ...st.res, [el]: Math.min(...ELEM.map(e => st.res[e] || 0)) } };
     if (ELEM.includes(el) && (zero?.includes(el) || SE.noResNear && near())) st = { ...st, res: { ...st.res, [el]: 0 } };
+    if (isHit && ELEM.includes(el) && d.st.freeze > 0 && SE.frozenNoRes && st.res[el] > 0) st = { ...st, res: { ...st.res, [el]: 0 } };   // the tree's: hits ignore a Frozen enemy's non-negative elemental resistances
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
     if (el === 'physical' && sheet().hazArmour && time - (d.hazAt ?? -99) <= RECENT) st = { ...st, armour: st.armour * (1 + sheet().hazArmour / 100) };   // the tree's armour of the enemies your Hazards affected recently
     if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
@@ -1211,7 +1216,7 @@ export function initScene(el, api) {
   const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0)) / 100) / 100;
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
-    return !d.dead && (S.P.culls || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
+    return !d.dead && (S.P.culls || !S.src && (S.P.attack && sheet().cullBow || sheet().cullMark && d.mark) || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
   };
   // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
@@ -1224,8 +1229,8 @@ export function initScene(el, api) {
     if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
-  function cull(d, S) {
-    if (!cullable(d, S)) return false; const X = gst(S);
+  function cull(d, S, any = false) {
+    if (!(any ? !d.dead && underCull(d, S) : cullable(d, S))) return false; const X = gst(S);
     // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
@@ -5059,7 +5064,7 @@ export function initScene(el, api) {
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
-    const OR = sheet(), roll = () => Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
+    const OR = sheet(), roll = () => !(OR.noCrit?.pin && d.st.pin > 0 || OR.noCrit?.mark && d.mark) && Math.random() * 100 < a.crit * (d.st.blind > 0 ? 1 + (OR.blindCrit || 0) / 100 : 1) * (me.st.chill > 0 ? 1 + (OR.critChilled || 0) / 100 : 1), crit = roll() && (!OR.unluckyCrit || roll()), cm = (OR.bulwark && move?.roll ? .7 : 1) * (dfl ? 1 - (c.deflect.less + (crit ? c.deflect.lessCrit || 0 : 0)) / 100 : 1) * (crit ? 1 + a.critBonus * (c.selfCrit ?? 1) / 100 : 1) * (1 + curseFx(d, C => C?.damage) / 100) * (d.intim > time ? 1 - INTIM / 100 : 1) * (RR ? RR['rune_ward_block_%_damage_taken'] / 100 : 1) * (BL ? c.blockTaken / 100 : 1) * Math.max(0, 1 + (OR.witheredDeal || 0) * (d.wither || []).filter(u => u.until > time).length / 100) * (d.debil > time ? 1 - DEBIL.less / 100 : 1);   // and Intimidated ones; Withered ones per Wither on them; Debilitated ones
     if (crit) gainRage(OR.rageCritTaken);   // Bristleboar: Rage when critically hit
     const AD = OR.adapt; if (AD) me.adapt = (me.adapt || []).filter(u => u.until > time);
     // "Defend with X% of Armour" against this hit: a critical one, a projectile attack, from further than 6 m, while your
@@ -5121,7 +5126,7 @@ export function initScene(el, api) {
   const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100),   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
-    if (immune(a)) return;
+    if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
     if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } }   // "if you haven't been Stunned Recently"; Volatility when Stunned
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
@@ -5406,7 +5411,9 @@ export function initScene(el, api) {
   }
   function think(d, dt) {
     if (d.dead) return;
-    if (d.stat.regen && d.life < d.max) d.life = Math.min(d.max, d.life + d.max * d.stat.regen / 6000 * dt);   // a modifier's life regeneration (per minute)
+    // a modifier's life regeneration (per minute); the tree's: none while Bleeding or Fully Broken, its +% in your Presence or Cursed
+    const FR = sheet().foeRegen, RG = FR && (FR.bleed && d.st.bleed > 0 || FR.broken && d.st.armour > 0) ? 0 : d.stat.regen * (1 + ((dist(d.pos, pp) <= sheet().overgrow.r ? FR?.pres || 0 : 0) + (d.curse ? FR?.cursed || 0 : 0)) / 100);
+    if (RG > 0 && d.life < d.max) d.life = Math.min(d.max, d.life + d.max * RG / 6000 * dt);
     if (d.curse && sheet().whisper) d.life = Math.min(d.life, d.max * (1 - sheet().whisper / 100));   // Whispers of the Flesh: a Cursed enemy's life reserved. note: its less life regeneration is not applied
     if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
