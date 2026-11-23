@@ -1,8 +1,10 @@
 // The player's figure: the mannequin of Quaternius' Universal Animation Library (CC0, mannequin.glb; the game's models
 // are not something the app can read), the same whatever the build's class, holding the build's weapon, and the poses
-// it plays. Its run, its roll and its fall are the library's clips; every other pose is the app's own. Purely
-// cosmetic: scene.js decides when a skill takes effect; a clip only shows it. In every action clip k = 0 is the moment
-// of the use and k = 1 the wind-up right before the next one, so a held skill swings into each of its uses.
+// it plays. Its run, its roll and its fall are the library's clips; its blows, shots, throws and casts are the moves of
+// KayKit's Adventurers (CC0, moves.json), played over the app's own poses, which stand for what has no move (the
+// stances, the bow, what is held or charged). Purely cosmetic: scene.js decides when a skill takes effect; a clip only
+// shows it. In every action clip k = 0 is the moment of the use and k = 1 the wind-up right before the next one, so a
+// held skill swings into each of its uses.
 import * as THREE from 'three';
 import { KIND } from './skillfx.js';
 
@@ -181,6 +183,18 @@ const HOLD = Object.fromEntries(Object.entries({
 }).map(([k, p]) => [k, pose({ ...STAND, ...p })]));
 const FREE_HAND = new Set(['castPoint', 'castNova', 'castLow', 'shout', 'punch', 'throw']);   // the second hand leaves the weapon
 const TRAIL = new Set(['swing', 'cleave', 'slam', 'thrust']), TRAIL_N = 12;   // the blows whose weapon leaves a trail, and how many steps of it are kept
+// The pack's move each clip plays over its poses, and the second of it where a use starts: right before its blow.
+// Several: one use each, in turn. A weapon held in both hands has its own under the clip's name + 2. moves.json has
+// them as turns of the figure's own joints (ORDER), 30 a second, and where the hips are, in leg lengths.
+const MOVES = {
+  swing: [['1H_Melee_Attack_Slice_Diagonal', .36], ['1H_Melee_Attack_Slice_Horizontal', .19]], cleave: [['2H_Melee_Attack_Slice', .32]],
+  slam: [['1H_Melee_Attack_Chop', .55]], slam2: [['2H_Melee_Attack_Chop', .72]], thrust: [['1H_Melee_Attack_Stab', .36]],
+  punch: [['Unarmed_Melee_Attack_Punch_A', .4], ['Unarmed_Melee_Attack_Punch_B', .43]], fire: [['2H_Ranged_Shooting', .28]], throw: [['Throw', .68]],
+  castFwd: [['Spellcast_Shoot', .12]], castPoint: [['Spellcast_Raise', .3]], castSelf: [['Spellcast_Raise', .3]], castLow: [['Spellcast_Raise', .3]],
+  castNova: [['Spellcast_Long', .15]], shout: [['Cheer', .1]],
+};
+let moves = null;
+fetch('moves.json').then(r => r.json()).then(j => { moves = j; }).catch(() => {});   // without them: the poses alone
 
 // The clip a skill plays, from its kind and tags and the family of the weapon in hand; null: a leap or a dash,
 // which shows the pose of its own movement.
@@ -262,14 +276,15 @@ export function makeHumanoid(fx) {
   const trailP = new Float32Array(TRAIL_N * 6), trailC = new Float32Array(TRAIL_N * 6), trailLit = new Float32Array(TRAIL_N);
   trail.geometry.setAttribute('position', new THREE.BufferAttribute(trailP, 3)); trail.geometry.setAttribute('color', new THREE.BufferAttribute(trailC, 3));
   trail.geometry.setIndex(Array.from({ length: TRAIL_N - 1 }, (_, i) => [2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 1, 2 * i + 3, 2 * i + 2]).flat());
-  trail.frustumCulled = false; trail.renderOrder = 6; trail.material.color.copy(fx.color('white', .9));
+  trail.frustumCulled = false; trail.renderOrder = 6; trail.material.color.copy(fx.color('white', .5));
   let trailAt = 0;
-  function sweep(dt, lit) {
+  function sweep(dt, blow) {   // blow: a weapon is striking; it is lit while it is fast
     if (!trail.parent) { if (!root.parent) return; root.parent.add(trail); }
     if ((trailAt += dt) >= 1 / 90) {   // a step further
       trailAt = 0; trailP.copyWithin(0, 6); trailLit.copyWithin(0, 1);
     }
     tip.getWorldPosition(v1); jt[tip.parent?.parent === jt.haL ? 'haL' : 'haR'].getWorldPosition(v2).lerp(v1, .55);
+    const lit = blow ? clamp((v1.distanceTo(v3.fromArray(trailP, TRAIL_N * 6 - 3)) / dt - 4) / 4, 0, 1) : 0;
     trailP.set([v2.x, v2.y, v2.z, v1.x, v1.y, v1.z], (TRAIL_N - 1) * 6); trailLit[TRAIL_N - 1] = lit;
     for (let i = 0; i < TRAIL_N; i++) trailC.fill(trailLit[i] * (i / (TRAIL_N - 1)) ** 2, i * 6 + 3, i * 6 + 6);   // the outer edge alone is lit
     trail.geometry.attributes.position.needsUpdate = trail.geometry.attributes.color.needsUpdate = true;
@@ -287,13 +302,27 @@ export function makeHumanoid(fx) {
     const R = rig, L = R.list;
     if (clip !== R.clip) { R.prev = R.clip; R.pt = R.t; R.clip = clip; R.x = R.prev ? 0 : 1; }
     R.t = t; R.x = Math.min(1, R.x + dt * 9);
-    JA.body.copy(jt.body.quaternion); jt.hips.position.copy(hip0);
+    JA.body.copy(jt.body.quaternion);
     if (legs > .001) {
       for (let i = 0; i < L.length; i++) { const e = L[i]; turnAt(i, e.a); e.w.copy(e.a); if (e.up >= 0) e.w.premultiply(L[e.up].w); if (e.j) JA[e.j].copy(e.w).multiply(e.Ci); }
       for (const j of ORDER) { const k = LEGS.has(j) ? legs : full; if (k > .001) jt[j].quaternion.slerp(q1.copy(JA[jt[j].parent.name]).invert().multiply(JA[j]), k); }
       v1.fromArray(clip.p.evaluate(t)); if (R.x < 1 && R.prev?.p) v1.copy(v2.fromArray(R.prev.p.evaluate(R.pt)).lerp(v1, R.x));
       jt.hips.position.lerp(v1.applyQuaternion(R.rootQ).sub(jt.body.position).applyQuaternion(q1.copy(jt.body.quaternion).invert()), legs);
     }
+  }
+  // a move of the pack, t seconds into it, over the poses: each joint turned to where the move has it, by `upper`
+  // (the hips and the legs: by `lower`; an arm that guards: less)
+  function over(m, t, upper, lower) {
+    const last = m.p.length / 3 - 1, f = Math.min(t * moves.fps, last), i = Math.floor(f), k = f - i, to = Math.min(i + 1, last);
+    ORDER.forEach((j, n) => {
+      const w = LEGS.has(j) ? lower : SHIELD_ARM[fam] && j.endsWith('L') ? upper * .3 : upper;
+      if (w < .001) return;
+      q1.fromArray(m.q, (i * 16 + n) * 4).slerp(q2.fromArray(m.q, (to * 16 + n) * 4), k);
+      if (!n) q1.premultiply(q2.copy(jt.body.quaternion).invert());   // the hips: as the figure stands
+      jt[j].quaternion.slerp(q1, w);
+    });
+    v1.fromArray(m.p, i * 3).lerp(v2.fromArray(m.p, to * 3), k).multiplyScalar(-jt.knL.position.y - jt.ftL.position.y).add(hip0);
+    jt.hips.position.lerp(v1.sub(jt.body.position).applyQuaternion(q1.copy(jt.body.quaternion).invert()), lower);
   }
   // the bones after the joints; fingers and the rest of the bones as the file has them, or the clip, or closed on a grip
   function skin(full, legs) {
@@ -397,17 +426,19 @@ export function makeHumanoid(fx) {
     sh.quaternion.slerp(q1, k); el.rotation.x += (-bend - el.rotation.x) * k;
   }
 
-  let time = 0, phase = 0, runW = 0, fullW = 0, rollT = null, act = null, flinch = 0, down = 0, wasLeap = false, energy = 0, holdW = 0;
+  let time = 0, phase = 0, runW = 0, fullW = 0, rollT = null, act = null, flinch = 0, down = 0, wasLeap = false, energy = 0, holdW = 0, turn = 0;
   const w1 = new THREE.Vector3();
+  // a clip from its start, with the move it plays
+  const begin = (name, dur) => { const M = moves && (MOVES[name + (TWO_HANDS[fam] ? 2 : '')] || MOVES[name]), [m, from] = M ? M[turn++ % M.length] : []; act = { name, t: 0, dur: Math.max(.12, dur), m: moves?.clips[m], from }; };
   setLook();
   return {
     group: root,
     setLook,
     family: () => fam,
     hand(v) { return tip.getWorldPosition(v); },
-    setColor(c) { trail.material.color.copy(fx.color(c, .9)).lerp(WHITE, .35); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
+    setColor(c) { trail.material.color.copy(fx.color(c, .5)).lerp(WHITE, .3); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
     // a use of a skill: its clip from its moment on, lasting the time to the next use
-    act(name, dur) { if (CLIPS[name] || HOLD[name]) { act = { name, t: 0, dur: Math.max(.12, dur) }; energy = 1; } },
+    act(name, dur) { if (CLIPS[name] || HOLD[name]) { begin(name, dur); energy = 1; } },
     pace(dur) { if (act && act.t < .05) act.dur = Math.max(.12, dur); },
     flinch(k = 1) { flinch = Math.max(flinch, k); },
     fall() { down = 1e-4; act = null; },
@@ -430,7 +461,7 @@ export function makeHumanoid(fx) {
         mix(tgt, tgt, R, runW);
       }
       // what is being done, over it
-      let upper = 0, lower = 0, free = false, lit = 0;
+      let upper = 0, lower = 0, free = false, blow = false;
       if (s.roll != null) { act = null; rollT ??= 0; }
       else if (s.leap != null) {
         const k = s.leap; if (k < .75) mix(tmp, HOLD.gather, HOLD.air, smooth(k / .25)); else sample(CLIPS.slam, .84 + (k - .75) / .25 * .16, tmp);
@@ -446,13 +477,13 @@ export function makeHumanoid(fx) {
           upper = 1 - smooth((act.t - .25) / .25); if (act.t > .5) act = null;
         } else {
           sample(C, Math.min(1, k), tmp);
-          if (TRAIL.has(act.name) && fam !== 'unarmed' && (k < .22 || k > .8)) lit = 1;   // down into the blow and through it
+          blow = TRAIL.has(act.name) && fam !== 'unarmed';
           upper = Math.max(holdW, 1 - smooth((k - .35) / .3));
           if (k >= 1 && !s.hold || k >= .7 && holdW < .02) act = null;
         }
         lower = upper * (1 - runW); free = FREE_HAND.has(act?.name);
       }
-      if (wasLeap && s.leap == null) { wasLeap = false; act = { name: 'slam', t: 0, dur: .7 }; }   // landed: the blow, then up again
+      if (wasLeap && s.leap == null) { wasLeap = false; begin('slam', .7); }   // landed: the blow, then up again
       if (upper > 0) {
         if (SHIELD_ARM[fam] && lower < 1) mix(tmp, tmp, tgt, .7, LEFT);   // the shield arm keeps its guard
         for (let i = 0; i < N; i++) tgt[i] += (tmp[i] - tgt[i]) * (LEG[i] ? lower : upper);
@@ -462,12 +493,13 @@ export function makeHumanoid(fx) {
       if (flinch > 0) { flinch = Math.max(0, flinch - dt * 4); tgt[JI.chest] -= .3 * flinch; tgt[JI.head] -= .25 * flinch; tgt[JI.spine + 1] += .12 * flinch; }
       const a = 1 - Math.exp(-dt * (act && act.t < .1 ? 60 : 26));   // a blow lands at once
       for (let i = 0; i < N; i++) cur[i] += (tgt[i] - cur[i]) * a;
-      apply(cur);
+      apply(cur); jt.hips.position.copy(hip0);
       // the roll goes on after its travel, unless something else is done by then
       if (rollT != null && ((rollT += dt) >= ROLL_TIME || s.roll == null && (s.moving || upper > 0))) rollT = null;
       const full = down > 0 || rollT != null;
       fullW += ((full ? 1 : 0) - fullW) * Math.min(1, dt * 16);
       if (rig) drive(dt, down > 0 ? rig.death : rollT != null ? rig.roll : rig.jog, down > 0 ? Math.min(down * 1.3, 1.3) : rollT != null ? ROLL[0] + rollT / ROLL_TIME * (ROLL[1] - ROLL[0]) : ((phase / TAU + JOG0) % 1) * rig.jog.dur, fullW, Math.max(fullW, runW));
+      if (act?.m && upper > 0) { const D = (act.m.p.length / 3 - 1) / moves.fps, w = Math.min(1, act.t / .05); over(act.m, (act.from + act.t / act.dur * D) % D, upper * w, lower * w); }
       // the second hand on the weapon, the string hand on the bow
       const two = TWO_HANDS[fam] && !free && !full ? 1 : 0, draw = fam === 'bow' ? clamp(cur[JI.x], 0, 1) : 0;
       if (two || draw > .02) {
@@ -476,7 +508,7 @@ export function makeHumanoid(fx) {
         else { nock.position.z = -.2 - draw * .46; reach('R', nock.getWorldPosition(w1), smooth(draw * 5), POLE_R); }
       }
       if (string) { const p = string.geometry.attributes.position; p.setZ(1, -.2 - draw * .46); p.needsUpdate = true; }
-      sweep(dt, lit);
+      sweep(dt, blow);
       if (rig) { for (const S of 'LR') rig.grip[S] += ((grips[S] && !(S === 'L' && free) ? 1 : .25) - rig.grip[S]) * Math.min(1, dt * 14); skin(fullW, Math.max(fullW, runW)); }
       energy = Math.max(0, energy - dt * 2.5);
       if (glow) glow.userData.glow.scale.setScalar(glow.userData.core.scale.x * (7 + energy * 9 + Math.sin(time * 5) * .5));

@@ -16,7 +16,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 stage = sys.argv[1] if len(sys.argv) > 1 else 'all'
 if stage in ('all', 'app'):
     import PyInstaller.__main__
-    data = ['index.html', 'mannequin.glb', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
+    data = ['index.html', 'mannequin.glb', 'moves.json', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
     PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
                               *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
     if stage == 'app':
