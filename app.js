@@ -372,7 +372,7 @@ $('notesBtn').onclick = () => { $('notesBox').hidden = !$('notesBox').hidden; if
 $('sceneSkills').onchange = e => {
   const d = e.target.dataset;
   if (d.en === 'still' || d.en === 'fight') { sceneCfg[d.en] = e.target.checked; saveScene(); }
-  else if (d.enmod) { const s = new Set(sceneCfg.mods); s[e.target.checked ? 'add' : 'delete'](d.enmod); sceneCfg.mods = [...s]; saveScene(); syncEnemy(); renderEnemy(); }   // a magic or rare enemy's modifiers
+  else if (d.enmod) { const L = (sceneCfg.mods || []).filter(x => x !== d.enmod); sceneCfg.mods = e.target.checked ? [...L, d.enmod] : L; saveScene(); syncEnemy(); renderEnemy(); }   // a magic or rare enemy's modifiers
   else if (d.en === 'level' || d.en === 'attack' || d.en === 'rarity') {  // the enemy of the scene
     if (d.en === 'attack' || d.en === 'rarity') sceneCfg[d.en] = e.target.value; else { const v = Math.round(+e.target.value); sceneCfg.level = v >= 1 ? Math.min(100, v) : 0; }
     saveScene(); syncEnemy(); renderEnemy();

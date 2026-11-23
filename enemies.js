@@ -43,15 +43,16 @@ export const rarityOf = (m, r) => RARITIES.includes(r) ? r : m.boss ? 'unique' :
 // the modifiers a magic or rare monster can have (monsters.json mods), and the stats of some of them added up
 export const MON_MODS = MON.mods || [];
 const MOD_BY = new Map(MON_MODS.map(x => [x.id, x]));
-export const modStats = ids => (ids || []).reduce((s, id) => { for (const [k, v] of Object.entries(MOD_BY.get(id)?.stats || {})) s[k] = (s[k] || 0) + v; return s; }, {});
+export const addStats = list => list.reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {});   // stat objects added up
+export const modStats = ids => addStats((ids || []).map(id => MOD_BY.get(id)?.stats || {}));
 // A player's minion (ally) is that monster with the allies' damage per level (DefaultMonsterStats MinionDamage)
 export function enemyStats(m, level, rarity, ally = false, mods = []) {
-  const R = MON.rarity?.[rarityOf(m, rarity)] || {}, more = k => 1 + (R[k] || 0) / 100;
-  const X = ['magic', 'rare'].includes(rarityOf(m, rarity)) ? modStats(mods) : {}, x = k => X[k] || 0;   // only magic and rare monsters have modifiers
+  const rar = rarityOf(m, rarity), R = MON.rarity?.[rar] || {}, more = k => 1 + (R[k] || 0) / 100;
+  const X = ['magic', 'rare'].includes(rar) ? modStats(mods) : {}, x = k => X[k] || 0;   // only magic and rare monsters have modifiers
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
   let dmg = Math.floor(row(ally ? 'ally_damage' : 'damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
-  const cap = K.monster_max_resistance ?? 75, rar = rarityOf(m, rarity), life = Math.round((pool - part) * more('life'));
+  const cap = K.monster_max_resistance ?? 75, life = Math.round((pool - part) * more('life'));
   return {
     level, life, es: Math.round(part * more('es') + life * x('base_maximum_life_%_to_gain_as_total_energy_shield') / 100),
     armour: Math.round(row('armour', level) * (m.armour || 0)), evasion: Math.round(row('evasion', level) * (m.evasion || 0)),

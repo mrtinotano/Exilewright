@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, tn, fmt, cap } from './i18n.js';
-import { K as GAME, enemy, monSkill, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemy, monSkill, addStats, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, makePlayer, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
@@ -169,7 +169,7 @@ export function initScene(el, api) {
   const shrineOn = () => {
     if (me?.hh) me.hh = me.hh.filter(h => h.until > time);
     const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats)].filter(Boolean);
-    return L.length ? L.reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {}) : null;
+    return L.length ? addStats(L) : null;
   };
   const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.(shrineOn()) || {} }; return shC.v; };
   const short = n => n < 99999.5 ? fmt(Math.round(n)) : n < 999950 ? fmt(n / 1e3, 1) + 'k' : fmt(n / 1e6, 2) + 'M';
