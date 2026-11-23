@@ -319,7 +319,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.gm = null; d.blood = 0; d.dazed = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.gm = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -921,6 +921,7 @@ export function initScene(el, api) {
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     if (a === 'ignite' && !S.src && !(time < me.earch) && time >= (me.earch ?? -99) + SK.archon_time[1] && Math.random() * 100 < (S.dmg?.sum?.['gain_archon_elemental_when_you_ignite_enemy_chance_%'] || 0)) earchGo(sheet().earch || { time: SK.archon_time[0] });   // Arbiter's Ignition: Elemental Archon
     if (a === 'stun' && !S.src && sheet().ancStun && ['rare', 'unique'].includes(d.stat.rarity)) me.ancNext = time + sheet().ancStun;   // the tree's: the next attack within its seconds is Ancestrally Boosted
+    const US = a === 'armour' && S.dmg?.sum?.['support_demolisher_physical_damage_taken_+%_on_fully_armour_breaking_up_to_20%']; if (US) d.smelt = Math.min(20, (d.smelt || 0) + US);   // Uruk's Smelting: increased physical damage taken, for good, up to 20%
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
     if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
     if (a === 'ignite' && !S.src && sheet().igniteHurt) hurt(playerTakes(sheet(), 'fire', sheet().igniteHurt, true));   // Fireflower: fire damage taken when you ignite
@@ -1012,7 +1013,7 @@ export function initScene(el, api) {
     const W = (el === 'chaos' || el === 'fire' && sheet().witherFire) && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
     const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
-    return (got + over + crush) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
+    return (got + over + crush) * (el === 'physical' ? 1 + (d.smelt || 0) / 100 : 1) * (isHit && (el === 'physical' || sheet().implode) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
   function withers(d, s, pct = WITHER.per) { if (sheet().witherForever || sheet().witherIgn && d.st.ignite > 0) s = 1e9; const w = d.wither = (d.wither || []).filter(u => u.until > time); w.push({ until: time + s, pct: pct * (1 + (sheet().witherMag || 0) / 100) });   /* the tree's increased Withered magnitude */ if (w.length > WITHER.max) w.shift(); }
@@ -2261,7 +2262,7 @@ export function initScene(el, api) {
   // (note: what its defences take off is not in the data); else any hit bursts it
   const avgHit = by => Object.values(by.dmg?.hits || {}).reduce((t, [a, b]) => t + (a + b) / 2, 0) * (by.mult ?? 1);
   // an Ice Crystal's life: its skill's (Frost Wall, Grim Pillars, Frozen Locus), increased and more (Icicle, Glacier)
-  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
+  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + (S.dmg?.sum?.['support_glacier_ice_crystal_maximum_life_+%_final'] || 0) / 100) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
     * Object.entries(S.dmg?.finals || {}).reduce((m, [k, x]) => k.endsWith('ice_crystal_maximum_life_+%_final') ? m * (1 + x / 100) : m, 1);
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
@@ -2272,11 +2273,13 @@ export function initScene(el, api) {
     const e = thing(m, dur, { r: .4, name: S.name, ice: true,
       tick(dt, e) { const s = ease(Math.min(1, e.s * 5)); m.scale.set(s, s * h, s); },
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
-        if (life > 0 && (life -= avgHit(by)) > 0) return;
+        // a skill that Consumes Freeze shatters it at once: its more damage and area if Shattered (keywords.json IceCrystals)
+        const SH = (by.P?.consumes?.includes('freeze') || by.dmg?.ail?.consume?.freeze) && (B.dmg?.stats || {}), XA = SH ? Math.sqrt(1 + (SH['ice_crystal_shatter_detonation_area_of_effect_+%_final'] || 0) / 100) : 1, XM = SH ? 1 + (SH['ice_crystal_shatter_detonation_damage_+%_final'] || 0) / 100 : 1;
+        if (!SH && life > 0 && (life -= avgHit(by)) > 0) return;
         e.dead = true;
         const VG = by.dmg?.sum?.['support_crystalshatter_buff_damage_%_gained_as_extra_cold_per_2000_crystal_life'];   // Verglas: the destroying skill's cold gain, per 2000 of the crystal's life
         if (VG) (me.verglas ||= {})[by.name] = { pct: VG * Math.floor(full / 2000), until: time + by.dmg.sum.support_crystalshatter_buff_duration / 1000 };
-        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A, { ...B, dmg: BD, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A * XA, { ...B, dmg: BD, mult: (B.mult || 1) * XM, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
           if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
       },
@@ -4027,6 +4030,7 @@ export function initScene(el, api) {
     // Uhtred's Constellation: more damage per different skill with a cooldown used in the last 8 seconds
     const UC = S.dmg?.sum?.['support_uhtred_damage_+%_final_per_different_cooldown_skill_in_last_8_seconds'];
     if (UC) S.mult *= 1 + UC * new Set(used.filter(u => u.cd && time - u.t <= 8).map(u => u.name)).size / 100;
+    const VB = S.dmg?.sum?.['support_djinn_lineage_damage_+%_final_per_different_command_in_last_8_seconds']; if (VB) S.mult *= 1 + VB * new Set(used.filter(u => u.cmd && time - u.t <= 15).map(u => u.name)).size / 100;   // Varashta's Blessing: per different Command skill used in the last 15 s (its text)
     S.mantra = null; S.leapt = S.conduit = S.fulm = false;   // a Mantra of Destruction Empowerment, a Shocking Leap ground: for this use only
     if (!auto) {
       if (me.demon && !S.P.spell && S.kind !== 'demon') demonOff();
@@ -4328,7 +4332,7 @@ export function initScene(el, api) {
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', t: time }); while (used[0]?.t < time - 8) used.shift();   // the last 8 s (Uhtred's Constellation); placing a totem is not attacking
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
