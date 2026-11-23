@@ -36,8 +36,9 @@ This license covers the code of Exilewright only. Not covered:
   authors, under the MIT license in three/LICENSE.
 
 - moves.json holds fourteen animations of the KayKit Adventurers Character
-  Pack by Kay Lousberg (https://www.kaylousberg.com), CC0 1.0 (public domain),
-  turned into turns of the mannequin's joints.
+  Pack and four of the KayKit Character Animations pack (the bow's), both by
+  Kay Lousberg (https://www.kaylousberg.com), CC0 1.0 (public domain), turned
+  into turns of the mannequin's joints.
 
 - The class and ascendancy portraits in poe2_data/available/img/portraits/ are
   the "<Name> portrait.png" files of the Path of Exile 2 Wiki

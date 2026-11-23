@@ -1,8 +1,8 @@
 // The player's figure: the mannequin of Quaternius' Universal Animation Library (CC0, mannequin.glb; the game's models
 // are not something the app can read), the same whatever the build's class, holding the build's weapon, and the poses
 // it plays. Its run, its roll and its fall are the library's clips; its blows, shots, throws and casts are the moves of
-// KayKit's Adventurers (CC0, moves.json), played over the app's own poses, which stand for what has no move (the
-// stances, the bow, what is held or charged). Purely cosmetic: scene.js decides when a skill takes effect; a clip only
+// KayKit's Adventurers and Character Animations (CC0, moves.json), played over the app's own poses, which stand for
+// what has no move (the stances, what is held or charged without a bow). Purely cosmetic: scene.js decides when a skill takes effect; a clip only
 // shows it. In every action clip k = 0 is the moment of the use and k = 1 the wind-up right before the next one, so a
 // held skill swings into each of its uses.
 import * as THREE from 'three';
@@ -31,6 +31,8 @@ const LUNGE = { hipL: [38, 6, 0], knL: 48, ftL: 10, hipR: [-28, 6, 0], knR: 12, 
 const BRACE = { hipL: [16, 8, 0], knL: 20, hipR: [-8, 10, 0], knR: 28, ftR: -8, pos: [0, -.05, -.05] };            // weight back, ready to go
 const WIDE = { hipL: [6, 16, 0], hipR: [6, 16, 0], kn: 26, pos: [0, -.06, 0] };
 const ARCHER = { hipL: [14, 10, 0], hipR: [-12, 12, -30], knL: 10, knR: 14, ftR: -6, pos: [0, -.02, 0], spine: [0, -22, 0] };   // left foot towards the target
+const DRAWN = { ...ARCHER, chest: [0, -50, 0], head: [0, 68, 0], shL: [90, 72, 0], elL: 4, shR: [90, 84, 0], elR: 148, x: [1] };   // the bow at full draw
+const DRAWN_UP = { ...ARCHER, chest: [-14, -50, 0], head: [-24, 60, 0], shL: [132, 72, 0], elL: 4, shR: [118, 84, 0], elR: 148, x: [1] };   // and aimed at the sky
 
 // how each family of weapon is carried
 const STANCE = Object.fromEntries(Object.entries({
@@ -92,20 +94,20 @@ const CLIPS = {
     [.86, { ...BRACE, spine: [0, -10, 0], chest: [0, -32, 0], head: [0, 30, 0], shR: [-12, 16, 0], elR: 124, shL: [70, -8, 0], elL: 50 }],
     [1, { ...LUNGE, chest: [4, 0, 0], shR: [40, 6, 0], elR: 90, shL: [30, 4, 0], elL: 80 }],
   ]),
-  // bow: sideways to the target, the string let go at k = 0 and drawn again towards k = 1
+  // bow: sideways to the target, the string let go at k = 0 and drawn again towards k = 1, when the pack's move draws it
   shoot: A([
-    [0, { ...ARCHER, chest: [0, -50, 0], head: [0, 68, 0], shL: [90, 72, 0], elL: 4, shR: [90, 84, 0], elR: 146, x: [.15] }],
+    [0, { ...DRAWN, x: [0] }],
     [.14, { ...ARCHER, chest: [0, -52, 0], head: [0, 68, 0], shL: [90, 70, 0], elL: 4, shR: [88, 100, 0], elR: 112, x: [0] }],
     [.5, { ...ARCHER, chest: [0, -36, 0], head: [0, 52, 0], shL: [78, 58, 0], elL: 14, shR: [70, 20, 0], elR: 70, x: [0] }],
-    [.72, { ...ARCHER, chest: [0, -46, 0], head: [0, 64, 0], shL: [88, 70, 0], elL: 6, shR: [86, 30, 0], elR: 60, x: [.05] }],
-    [1, { ...ARCHER, chest: [0, -50, 0], head: [0, 68, 0], shL: [90, 72, 0], elL: 4, shR: [90, 84, 0], elR: 148, x: [1] }],
+    [.66, { ...ARCHER, chest: [0, -46, 0], head: [0, 64, 0], shL: [88, 70, 0], elL: 6, shR: [86, 30, 0], elR: 60, x: [.15] }],
+    [.87, DRAWN], [1, DRAWN],
   ]),
   // bow, loosed into the sky
   shootUp: A([
-    [0, { ...ARCHER, chest: [-14, -50, 0], head: [-24, 60, 0], shL: [132, 72, 0], elL: 4, shR: [118, 84, 0], elR: 146, x: [.15] }],
+    [0, { ...DRAWN_UP, x: [0] }],
     [.14, { ...ARCHER, chest: [-14, -52, 0], head: [-24, 60, 0], shL: [132, 70, 0], elL: 4, shR: [110, 100, 0], elR: 112, x: [0] }],
-    [.5, { ...ARCHER, chest: [0, -36, 0], head: [0, 52, 0], shL: [78, 58, 0], elL: 14, shR: [70, 20, 0], elR: 70, x: [0] }],
-    [1, { ...ARCHER, chest: [-14, -50, 0], head: [-24, 60, 0], shL: [132, 72, 0], elL: 4, shR: [118, 84, 0], elR: 148, x: [1] }],
+    [.57, { ...ARCHER, chest: [0, -36, 0], head: [0, 52, 0], shL: [78, 58, 0], elL: 14, shR: [70, 20, 0], elR: 70, x: [0] }],
+    [.88, DRAWN_UP], [1, DRAWN_UP],
   ]),
   // crossbow: shouldered, the recoil after the bolt leaves
   fire: A([
@@ -177,16 +179,20 @@ const HOLD = Object.fromEntries(Object.entries({
   press: { ...LUNGE, spine: [6, 10, 0], chest: [10, 22, 0], head: [0, -16, 0], shR: [74, 10, 0], elR: 30, haR: [50, 0, 0], shL: [20, 20, 0], elL: 60 },
   gather: { ...WIDE, pos: [0, -.12, 0], spine: [8, 0, 0], chest: [10, 0, 0], head: [8, 0, 0], shR: [50, 10, 0], elR: 100, shL: [50, 10, 0], elL: 100 },
   full: { ...STAND, pos: [0, .02, 0], spine: [-6, 0, 0], chest: [-8, 0, 0], head: [-16, 0, 0], shR: [150, 16, 0], elR: 40, shL: [150, 16, 0], elL: 40 },
-  drawn: { ...ARCHER, chest: [0, -50, 0], head: [0, 68, 0], shL: [90, 72, 0], elL: 4, shR: [90, 84, 0], elR: 148, x: [1] },
+  drawn: DRAWN,
   air: { pos: [0, 0, 0], body: [10, 0, 0], spine: [-6, 0, 0], chest: [-8, 0, 0], shR: [156, 6, 0], elR: 60, haR: [-20, 0, 0], shL: [150, 6, 0], elL: 60, hipL: [58, 6, 0], knL: 92, hipR: [8, 6, 0], knR: 70 },
   dash: { ...LUNGE, pos: [0, -.16, .2], body: [22, 0, 0], spine: [8, 0, 0], chest: [6, 16, 0], head: [-24, -12, 0], shR: [-30, 20, 0], elR: 50, haR: [40, 0, 0], shL: [60, 0, 60], elL: 80 },
 }).map(([k, p]) => [k, pose({ ...STAND, ...p })]));
 const FREE_HAND = new Set(['castPoint', 'castNova', 'castLow', 'shout', 'punch', 'throw']);   // the second hand leaves the weapon
 const TRAIL = new Set(['swing', 'cleave', 'slam', 'thrust']), TRAIL_N = 12;   // the blows whose weapon leaves a trail, and how many steps of it are kept
 // The pack's move each clip plays over its poses, and the second of it where a use starts: right before its blow.
-// Several: one use each, in turn. A weapon held in both hands has its own under the clip's name + 2. moves.json has
-// them as turns of the figure's own joints (ORDER), 30 a second, and where the hips are, in leg lengths.
+// Several: one use each, in turn. A weapon held in both hands has its own under the clip's name + 2. A held pose stays
+// on that second of its move. moves.json (made by moves.py) has them as turns of the figure's own joints (ORDER), 30 a
+// second, and where the hips are, in leg lengths. The bow's are two of the pack's joined: the release, then the draw
+// from where the bow is lowered; a bow that is charged plays the draw (DRAW: between these seconds) as far as its charge.
+const BOW = 'Ranged_Bow_Release+Ranged_Bow_Draw', DRAW = [.6, 1.17];
 const MOVES = {
+  shoot: [[BOW, 0]], shootUp: [['Ranged_Bow_Release_Up+Ranged_Bow_Draw_Up', 0]], drawn: [[BOW, 0]],
   swing: [['1H_Melee_Attack_Slice_Diagonal', .36], ['1H_Melee_Attack_Slice_Horizontal', .19]], cleave: [['2H_Melee_Attack_Slice', .32]],
   slam: [['1H_Melee_Attack_Chop', .55]], slam2: [['2H_Melee_Attack_Chop', .72]], thrust: [['1H_Melee_Attack_Stab', .36]],
   punch: [['Unarmed_Melee_Attack_Punch_A', .4], ['Unarmed_Melee_Attack_Punch_B', .43]], fire: [['2H_Ranged_Shooting', .28]], throw: [['Throw', .68]],
@@ -194,7 +200,7 @@ const MOVES = {
   castNova: [['Spellcast_Long', .15]], shout: [['Cheer', .1]],
 };
 let moves = null;
-fetch('moves.json').then(r => r.json()).then(j => { moves = j; }).catch(() => {});   // without them: the poses alone
+fetch('moves.json').then(r => r.json()).then(j => { moves = j; console.assert(Object.values(MOVES).flat().every(([m]) => j.clips[m]), 'moves.json lacks a move'); }).catch(() => {});   // without them: the poses alone
 
 // The clip a skill plays, from its kind and tags and the family of the weapon in hand; null: a leap or a dash,
 // which shows the pose of its own movement.
@@ -493,13 +499,15 @@ export function makeHumanoid(fx) {
       if (flinch > 0) { flinch = Math.max(0, flinch - dt * 4); tgt[JI.chest] -= .3 * flinch; tgt[JI.head] -= .25 * flinch; tgt[JI.spine + 1] += .12 * flinch; }
       const a = 1 - Math.exp(-dt * (act && act.t < .1 ? 60 : 26));   // a blow lands at once
       for (let i = 0; i < N; i++) cur[i] += (tgt[i] - cur[i]) * a;
+      if (!tgt[JI.x]) cur[JI.x] = 0;   // the string let go: at once, and the hand that held it with it
       apply(cur); jt.hips.position.copy(hip0);
       // the roll goes on after its travel, unless something else is done by then
       if (rollT != null && ((rollT += dt) >= ROLL_TIME || s.roll == null && (s.moving || upper > 0))) rollT = null;
       const full = down > 0 || rollT != null;
       fullW += ((full ? 1 : 0) - fullW) * Math.min(1, dt * 16);
       if (rig) drive(dt, down > 0 ? rig.death : rollT != null ? rig.roll : rig.jog, down > 0 ? Math.min(down * 1.3, 1.3) : rollT != null ? ROLL[0] + rollT / ROLL_TIME * (ROLL[1] - ROLL[0]) : ((phase / TAU + JOG0) % 1) * rig.jog.dur, fullW, Math.max(fullW, runW));
-      if (act?.m && upper > 0) { const D = (act.m.p.length / 3 - 1) / moves.fps, w = Math.min(1, act.t / .05); over(act.m, (act.from + act.t / act.dur * D) % D, upper * w, lower * w); }
+      if (act?.m && upper > 0) { const D = (act.m.p.length / 3 - 1) / moves.fps, w = Math.min(1, act.t / .05); over(act.m, (act.from + (CLIPS[act.name] ? act.t / act.dur * D : 0)) % D, upper * w, lower * w); }
+      if (fam === 'bow' && s.charge != null && moves) { const w = Math.min(1, s.charge * 8); over(moves.clips[BOW], DRAW[0] + (DRAW[1] - DRAW[0]) * s.charge, w, w * lower); }
       // the second hand on the weapon, the string hand on the bow
       const two = TWO_HANDS[fam] && !free && !full ? 1 : 0, draw = fam === 'bow' ? clamp(cur[JI.x], 0, 1) : 0;
       if (two || draw > .02) {
