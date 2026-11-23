@@ -584,7 +584,7 @@ export function recovery(c, sum) {
     presence: { blind: !!sum.enemies_in_presence_are_blinded, intim: !!sum.enemies_in_presence_are_intimidated, hinder: !!sum.base_enemies_in_your_presence_are_hindered },   // Sandstorm Visage, Perfidy, Amor Mandragora
     noResNear: !!sum.enemies_in_presence_have_no_elemental_resistances, lowestRes: !!sum.elemental_damage_resisted_by_lowest_elemental_resistance, lowestResNear: !!sum.enemies_in_presence_elemental_damage_resisted_by_lowest_elemental_resistance,
     leechOver: !!sum.life_leech_can_overcap_life, leechToEs: !!sum.life_leech_excess_goes_to_energy_shield,   // Couture of Crimson; Soul Tether (the scene plays them)
-    armourPerRage: v(sum, 'armour_+%_per_rage'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors
+    armourPerRage: v(sum, 'armour_+%_per_rage'), evasionPerRage: v(sum, 'evasion_rating_+%_per_rage'), defPerTotem: v(sum, 'armour_and_evasion_rating_+%_per_active_totem_in_presence'), movePerFrenzy: v(sum, 'movement_velocity_+%_per_frenzy_charge'),   // Horns of Bynden; Darkray Vectors
     lifeToEs: !!sum.regenerate_energy_shield_instead_of_life,   // Ligurium Talisman, Soul Tether: life regeneration applied to energy shield instead (the scene plays it)
     manaNoCrit: !!sum.no_mana_regeneration_if_not_crit_recently,   // Nightscale: none unless you crit recently (the scene checks it)
     lightResNear: !!sum.enemies_in_presence_lightning_resist_equal_to_yours, onsKill: v(sum, 'onslaught_buff_duration_on_kill_ms') / 1000,   // Doryani's Prototype; Death Rush
@@ -960,13 +960,13 @@ const DMG = ['physical', 'fire', 'cold', 'lightning', 'chaos'];
 // the enemy states of "damage against <state> enemies" stats, as the scene's conditions (scene.js condN) name them
 const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_enemies: 'Burning', chilled_enemies: 'Chilled', ignited_enemies: 'Ignited',
   shocked_enemies: 'Shocked', poisoned_enemies: 'Poisoned', bleeding_enemies: 'Bleeding', electrocuted_enemies: 'Electrocuted', pinned_enemies: 'Pinned',
-  immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
+  immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', stunned_enemies: 'Stunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
   enemies_affected_by_ailments: 'Ailing', enemies_affected_by_status_ailments: 'Ailing', blinded_enemies: 'Blinded', dazed_enemies: 'Dazed', hindered_enemies: 'Hindered',
   rare_and_unique_enemies: 'RareOrUnique', enemies_further_than_6m_distance: 'Further6m', enemies_within_2m_distance: 'Within2m', marked_enemies: 'Marked', exposed: 'Exposed', demons: 'Demon', undead: 'Undead' };
 // [stat, a(rmour) / e(vasion) / s (energy shield), the scene's condition]
 const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['armour_+%_if_consumed_endurance_charge_recently', 'a', 'ConsumedEnduranceRecently'], ['energy_shield_+%_if_consumed_power_charge_recently', 's', 'ConsumedPowerRecently'], ['evasion_rating_+%_if_consumed_frenzy_charge_recently', 'e', 'ConsumedFrenzyRecently'],
-  ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'],
+  ['global_armour_evasion_energy_shield_while_in_presence_of_companion_+%', 'aes', 'CompanionInPresence'], ['armour_+%_while_stationary', 'a', 'Still'], ['evasion_rating_+%_if_energy_shield_recharge_started_in_past_2_seconds', 'e', 'ESRechargePast2'],
   ['armour_+%_while_bleeding', 'a', 'Bleeding'], ['armour_+%_while_ignited', 'a', 'Ignited'], ['armour_+%_while_surrounded', 'a', 'Surrounded'], ['evasion_rating_+%_while_surrounded', 'e', 'Surrounded'],
   ['armour_evasion_+%_while_leeching', 'ae', 'Leeching'], ['evasion_+%_if_hit_recently', 'e', 'BeenHitRecently'], ['armour_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'], ['armour_and_evasion_on_low_life_+%', 'ae', 'LowLife'],
@@ -1024,6 +1024,8 @@ const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit
   ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently'],
   ['critical_hit_chance_+%_vs_humanoids', 'crit', 'Humanoid', 'e'], ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently'],
   ['critical_strike_chance_+%_if_triggered_skill_recently', 'crit', 'TriggeredRecently']];
+// the tree's increased area while you are in a state (the scene's, at each use)
+const AREA_WHILE = [['area_of_effect_+%_while_totem_active', 'TotemActive'], ['area_of_effect_+%_while_you_have_arcane_surge', 'ArcaneSurge'], ['area_of_effect_+%_if_have_stunned_an_enemy_recently', 'StunnedEnemyRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
 // Sum of "<prefix>_<suffix>" stats that apply to a skill with these tags (generic ones always). The prefix may be
 // several words: every one has to fit (attack_area_damage_+%: attacks with an area; one_handed_melee_attack_speed_+%).
@@ -1466,6 +1468,10 @@ export function skill(g, b, treeGear) {
   if (sum['titan_damage_+%_final_against_heavy_stunned_enemies']) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: sum['titan_damage_+%_final_against_heavy_stunned_enemies'], what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });   // Titan's Crushing Impacts: more
   { const MV = sum['passive_tree_mace_damage_+%_final_vs_heavy_stunned_enemies'], MW = MV && attack && weaponStats(b.items); if (MW && weaponTags(MW).includes('mace')) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: MV, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) }); }   // the tree's more mace damage against Heavy Stunned enemies
   if (sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently']) out.when.push({ cond: [{ type: 'Multiplier', var: 'EnduranceConsumedRecently' }], val: sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently'], what: 'damage', w: Object.fromEntries(SRC.fire.map(t => [t, out.incW[t]])) });   // increased fire damage per Endurance Charge consumed Recently
+  // the tree's crit chance against an enemy with no elemental ailment
+  const NE = v(sum, 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments'); if (NE) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments', neg: true }], val: NE, what: 'crit', w: critW });
+  out.areaWhile = AREA_WHILE.filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] }));
+  out.areaIgnited = attack ? v(sum, 'attack_area_of_effect_+%_per_enemy_ignited_last_8_seconds') : 0;   // its text: up to 40%
   for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
