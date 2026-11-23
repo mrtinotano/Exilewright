@@ -2239,9 +2239,10 @@ export function initScene(el, api) {
     pin.position.y = .9; pin.userData.own = true; g.add(pin);
     const tip = fx.orb(S.el, .07); tip.position.y = 1.8; g.add(tip);
     let last = -9;
-    const e = thing(g, S.P.dur || SIM.lifetime, { r: .3, rod: true, name: S.name,
+    const e = thing(g, S.P.dur || SIM.lifetime, { r: .3, rod: true, name: S.name, chained: 0,
       pulse(by) {
         if (time - last < .5 || by.src === 'rod') return; last = time;
+        if (++e.chained >= (S.dmg?.stats?.lightning_rod_number_of_chains_allowed || Infinity)) e.dead = true;   // gone after its most chains to it. note: every lightning that reaches it counts
         say(t('{0} pulses: struck by {1}', S.label, by.label), S.el);
         fx.bolt(V(c.x, 11, c.z), V(c.x, 1.8, c.z), S.el, .2, .06, .4); fx.ring(c, .3, R, S.el, .4, { k: 2.8 }); fx.flash(c, S.el, 30, .3, 9);
         fx.emit(30, { p: { x: c.x, y: .4, z: c.z }, v: R * 3, flat: true, life: .3, size: .16, c: S.el, c2: 'white', drag: 2, k: 3 });
@@ -4767,7 +4768,8 @@ export function initScene(el, api) {
     if (d.pustule) pustule(d, dt);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
-      const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
+      const VD = 1 + (sheet().volDot || 0) * (me.vol || 0) / 100;   // increased chaos damage over time per Volatility on you. note: as more here
+      const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d) * (v.el === 'chaos' ? VD : 1); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       // bleeding deals its extra damage while the enemy moves, as aggravated (keywords.json Bleeding): moved since the last tick
       const mov = d.lastAt && dist(d.pos, d.lastAt) > .05; d.lastAt = { x: d.pos.x, z: d.pos.z };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(a === 'bleed' && mov ? { ...d.burn[a], agg: true } : d.burn[a], a !== 'ignite');
