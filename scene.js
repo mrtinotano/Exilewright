@@ -300,9 +300,9 @@ export function initScene(el, api) {
   // sources the damage of the build does not describe (a totem or minion with its own damage hits as 'totemHit' / 'minionHit')
   const APPROX = new Set(['minion', 'totem', 'ground', 'mark', 'herald', 'none']);
   const MAXE = 60;
-  function arm(d, level, key) {
-    const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== tpl.rarity || d.modKey !== tpl.mods.join();
-    d.level = level; d.rarity = tpl.rarity; d.modKey = tpl.mods.join(); d.stat = enemyStats(m, level, tpl.rarity, false, tpl.mods); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key, tpl.rarity, false, tpl.mods);
+  function arm(d, level, key, rarity = tpl.rarity, mods = tpl.mods) {
+    const m = d.mon, list = attacksOf(m), fresh = d.level !== level || d.rarity !== rarity || d.modKey !== mods.join();
+    d.level = level; d.rarity = rarity; d.modKey = mods.join(); d.stat = enemyStats(m, level, rarity, false, mods); d.atk = attackOf(m, level, list.some(a => a.key === key) ? key : list[0].key, rarity, false, mods);
     d.col = Object.entries(d.atk.hasHit ? d.atk.hits : d.atk.dot).map(([el, x]) => [el, x[1] ?? x]).sort((x, y) => y[1] - x[1])[0]?.[0] || 'physical';
     d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es;
     if (fresh) { d.life = d.max; d.es = d.maxEs; }
@@ -5974,8 +5974,7 @@ export function initScene(el, api) {
     },
     // the map changed (enemies.js setMap): every enemy takes its stats again, the living ones at full life
     remap() {
-      for (const d of dummies) { const mods = d.modKey ? d.modKey.split(',') : []; d.stat = enemyStats(d.mon, d.level, d.rarity, false, mods); d.atk = attackOf(d.mon, d.level, d.atk.key, d.rarity, false, mods);
-        d.max = Math.max(1, d.stat.life); d.maxEs = d.stat.es; d.sig = ''; if (!d.dead) { d.life = d.max; d.es = d.maxEs; } }
+      for (const d of dummies) { arm(d, d.level, d.atk.key, d.rarity, d.modKey ? d.modKey.split(',') : []); if (!d.dead) { d.life = d.max; d.es = d.maxEs; } }
       shC.at = -99; hudT = 0;
     },
     placing: on => on == null ? placing : setPlacing(on),

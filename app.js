@@ -1085,13 +1085,13 @@ function pickTier(tier, mods = sceneCfg.map?.mods || {}, own = false, note = '')
   if (!MAP.tiers[tier - 1]) return setSceneMap(null);
   sceneCfg.level = MAP.tiers[tier - 1].level; syncEnemy();
   setSceneMap({ tier, mods: own ? mods : Object.fromEntries(Object.entries(mods).map(([id, vals]) =>
-    [id, rollOf(MAP.mods.find(x => x.id === id), tier).map(([lo, hi], k) => Math.max(Math.min(lo, hi), Math.min(Math.max(lo, hi), vals[k])))])) }, note);
+    [id, rollOf(MAP.mods.find(x => x.id === id), tier).map(([lo, hi], k) => Math.max(lo, Math.min(hi, vals[k])))])) }, note);
 }
 function renderMap() {
   const map = sceneCfg.map, n = Object.keys(map?.mods || {}).length, open = $('enMap').querySelector('details')?.open;
   const row = m => { const on = map.mods[m.id], R = rollOf(m, map.tier);
     return `<label><input type="checkbox" data-mapmod="${esc(m.id)}"${on ? ' checked' : ''}> ${esc(mapLines(m, on || topRoll(m, map.tier)))}${mapSimulated(m) ? '' : ` <small>(${t('Not simulated')})</small>`}</label>`
-      + (on ? R.map(([lo, hi], k) => lo === hi ? '' : `<input type="number" data-mapval="${esc(m.id)}:${k}" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" step="1" value="${+on[k] || 0}" title="${Math.min(lo, hi)} – ${Math.max(lo, hi)}">`).join('') : ''); };
+      + (on ? R.map(([lo, hi], k) => lo === hi ? '' : `<input type="number" data-mapval="${esc(m.id)}:${k}" min="${lo}" max="${hi}" step="1" value="${+on[k] || 0}" title="${lo} – ${hi}">`).join('') : ''); };
   $('enMap').innerHTML = `<details class="en-mods en-map"${open || open == null && map ? ' open' : ''}><summary>${t('Map modifiers')} <small>${n}</small></summary>
     <textarea class="pasteItem" data-map="paste" rows="2" placeholder="${esc(t('Paste a waystone here: Ctrl+C on it in the game'))}"></textarea>
     ${mapNote ? `<p class="note">${esc(mapNote)}</p>` : ''}

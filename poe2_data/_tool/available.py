@@ -956,7 +956,8 @@ for m in mods:
     if m['Domain'] != 6 or not on:
         continue
     rolls = [(sid(m[f'Stat{j}']), m[f'Stat{j}Value']) for j in range(1, 9) if m.get(f'Stat{j}') is not None and sid(m[f'Stat{j}']) in worded]
-    e = map_mods.setdefault(re.sub(r'\d+$', '', m['Id']), {'id': re.sub(r'\d+$', '', m['Id']), 'stats': [s for s, _ in rolls], 'rolls': {}})
+    kind = re.sub(r'\d+$', '', m['Id'])
+    e = map_mods.setdefault(kind, {'id': kind, 'stats': [s for s, _ in rolls], 'rolls': {}})
     assert e['stats'] == [s for s, _ in rolls] and rolls, ('a waystone modifier whose tiers word other stats', m['Id'])
     for tag in on:
         e['rolls'][tag] = [v for _, v in rolls]
@@ -1036,7 +1037,7 @@ assert skills['Shockwave Totem']['levels'][20]['_base_multiplier'] == 6600 and s
 assert skills['Glacial Cascade']['part']['active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final'] > 0 and 'never_freeze' in skills['Glacial Cascade']['flags'], 'other stat sets of a skill'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert sorted(map_tiers) == list(range(1, 17)) and map_tiers[16] == {**map_tiers[16], 'level': 80, 'tag': 'highest'}, 'waystone tiers (BaseItemTypes MapKeyTier<n>, MapTiers)'
-assert all(set(e['rolls']) == {'low', 'medium', 'high', 'highest'} for e in map_mods.values()) and map_mods['MapMonsterDamageAsFire']['rolls']['high'] == [[15, 19]], 'waystone modifiers (Mods domain 6, map_key_ tags)'
+assert all(set(e['rolls']) == {'low', 'medium', 'high', 'highest'} and all(lo <= hi for r in e['rolls'].values() for lo, hi in r) for e in map_mods.values()) and map_mods['MapMonsterDamageAsFire']['rolls']['high'] == [[15, 19]], 'waystone modifiers (Mods domain 6, map_key_ tags)'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'
