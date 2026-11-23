@@ -527,6 +527,11 @@ export function wear(b, slot, it, giant, staffFocus) {
   if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant, staffFocus)) { const o = slot === 'weapon' ? 'offhand' : 'weapon'; keep(b, items[o]); delete items[o]; }
 }
 export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
+// a piece as this version of the game's data has it: of a base it knows, less the modifiers it does not (a patch took
+// them away, or the build comes from elsewhere)
+export const known = it => !!BASE[it?.base] && (it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values)), true);
+{ const it = { base: D.bases[0].name, mods: [{ id: D.affixes[0].id, values: [1] }, { id: 'gone', values: [1] }, { id: D.affixes[0].id }] };
+  console.assert(known(it) && it.mods.length === 1 && !known({ base: 'gone' }) && !known(null), 'known'); }
 export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:

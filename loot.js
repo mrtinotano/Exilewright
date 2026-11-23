@@ -13,7 +13,7 @@ import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, 
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
 import { priceOf, priceUnid, priceBulk, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
-import { settings, wornRow } from './settings.js';
+import { settings, wornRow, stored } from './settings.js';
 
 const KEY = 'poe2loot';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -29,7 +29,7 @@ const MODS = 6;   // modifier lines of each list (gained, lost) shown over the g
 const rel = (a, z) => { const x = a || 0, y = z || 0; return x > 0 ? y / x - 1 : y > 0 ? 1 : 0; };
 
 export function initLoot(el, ctx) {
-  const S = { vs: 'worn', key: '', gem: {}, on: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+  const S = { vs: 'worn', key: '', gem: {}, on: {}, ...stored(KEY) };
   // what the character wears is the game's, one for every build (it used to be kept per build: the fullest one stays)
   if (S.worn) { S.on = Object.values(S.worn).reduce((a, g) => Object.keys(g).length > Object.keys(a).length ? g : a, S.on); delete S.worn; localStorage.setItem(KEY, JSON.stringify(S)); }
   if (S.key && !OBJECTIVES[S.key]) S.key = '';

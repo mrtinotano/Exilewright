@@ -16,11 +16,9 @@ const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];   // up, left, down, right (
 const SCENE_LABEL = { roll: 'Roll', lifeFlask: 'Life Flask', manaFlask: 'Mana Flask', corpse: 'Corpse at the cursor', charges: 'Fill charges', refill: 'Refill life and energy shield', reset: 'Reset the simulator', swap: 'Swap weapon set' };
 const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game uses alone. It works with the game in windowed full screen and the planner open.';
 const DEFAULTS = { input: 'click', priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
-const S = (() => {
-  let s = {};
-  try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
-  return { ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } };
-})();
+// what the app keeps in the browser under a key: an object, also when what is there cannot be read
+export const stored = key => { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch { return {}; } };
+const S = (s => ({ ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } }))(stored(KEY));
 export const slotKeys = () => SLOTS[S.input] || SLOTS.click;
 const taken = c => c === 'Escape' || slotKeys().includes(c) || S.input === 'wasd' && MOVE_KEYS.includes(c);
 const fix = () => { for (const k in S.keys) if (taken(S.keys[k])) S.keys[k] = SCENE_KEYS[k]; };   // a key the bar or movement takes goes back to its default

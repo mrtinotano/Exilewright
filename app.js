@@ -5,11 +5,11 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS } from './enemies.js';
-import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf } from './items.js';
+import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
-import { initSettings, watchUpdates } from './settings.js';
+import { initSettings, watchUpdates, stored } from './settings.js';
 import { initFilter } from './filter.js';
 import { SEARCH_SLOTS, siteQuery, listingQuery } from './trade.js';
 import { diff, impactHtml } from './impact.js';
@@ -31,7 +31,8 @@ NAMES.specific_skill = i => { const g = gems.find(x => x.specific === i); return
 
 // ---------- builds (localStorage; export/import as JSON files)
 const KEY = 'poe2builds';
-let builds = JSON.parse(localStorage.getItem(KEY) || '{}');
+let builds = stored(KEY);
+if (!Object.keys(builds).length && (localStorage.getItem(KEY) || '{}') !== '{}') localStorage.setItem(KEY + ':unread', localStorage.getItem(KEY));   // builds that cannot be read are kept aside, not written over by the first save
 let cur;
 // asc: the ascendancy, or the base class's name while none is chosen
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].class, gems: [], nodes: [], ascNodes: [], notes: '' });
@@ -69,19 +70,25 @@ addEventListener('keydown', e => {   // Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z); a text b
 // A build is data from outside (a file, a shared code, Path of Building, what an older version saved) and its numbers
 // and names end up in the page's markup: nothing in it keeps the characters that start markup, but its name and its
 // notes, which are only ever shown as text; what the page walks through is a list, and its class one the game has.
+// So are its passives, gems, pieces and their modifiers: what this version's data lacks (a patch took it away) is left out.
+const GEM_NAMES = new Set(gems.map(g => g.name));
 function clean(b) {
   const strip = o => { for (const k of Object.keys(o)) { const v = o[k]; if (/[<"]/.test(k)) delete o[k]; else if (typeof v === 'string') o[k] = v.replace(/[<"]/g, ''); else if (v && typeof v === 'object') strip(v); } };
   const { name, notes } = b;
   strip(b); b.name = String(name ?? ''); b.notes = String(notes ?? '');
-  for (const k of ['gems', 'nodes', 'ascNodes']) if (!Array.isArray(b[k])) b[k] = [];
-  b.gems = b.gems.filter(g => g && typeof g.name === 'string');
-  if (b.items && typeof b.items !== 'object') delete b.items;
+  for (const k of ['nodes', 'ascNodes', 'set1', 'set2']) b[k] = Array.isArray(b[k]) ? b[k].filter(id => N[id]) : [];
+  b.gems = Array.isArray(b.gems) ? b.gems.filter(g => GEM_NAMES.has(g?.name)) : [];
+  for (const g of b.gems) g.supports = Array.isArray(g.supports) ? g.supports.map(n => GEM_NAMES.has(n) ? n : null) : [];
+  for (const k of ['items', 'swap']) if (b[k] && typeof b[k] === 'object') { for (const s of Object.keys(b[k])) if (!known(b[k][s])) delete b[k][s]; } else delete b[k];
+  if (b.stash) b.stash = Array.isArray(b.stash) ? b.stash.filter(known) : [];
   if (!ascs.some(a => a.name === b.asc || a.class === b.asc)) b.asc = ascs[0].class;
   return b;
 }
-{ const b = clean({ name: 'a<"b', asc: '"><img>', gems: [{ name: 'Fi"<re', level: '1"><img onerror=x>' }, 5], nodes: 3, '<k': 1, items: { 'he"lm': {}, body: { base: '<b>' } } });
-  console.assert(b.name === 'a<"b' && b.notes === '' && b.asc === ascs[0].class && JSON.stringify(b.gems) === '[{"name":"Fire","level":"1>img onerror=x>"}]'
-    && !b.nodes.length && !('<k' in b) && JSON.stringify(b.items) === '{"body":{"base":"b>"}}', 'clean'); }
+{ const g = gems[0].name, n = Object.keys(N)[0];
+  const b = clean({ name: 'a<"b', asc: '"><img>', gems: [{ name: g, level: '1"><img onerror=x>', supports: [g, 'gone'] }, { name: 'gone' }, 5], nodes: [n, 'gone'], ascNodes: 3, '<k': 1,
+    items: { 'he"lm': {}, body: { base: '<b>' } }, stash: [{ base: 'gone' }], swap: 5 });
+  console.assert(b.name === 'a<"b' && b.notes === '' && b.asc === ascs[0].class && JSON.stringify(b.gems) === JSON.stringify([{ name: g, level: '1>img onerror=x>', supports: [g, null] }])
+    && b.nodes + '' === n && !b.ascNodes.length && !('<k' in b) && JSON.stringify(b.items) === '{}' && !b.stash.length && !('swap' in b), 'clean'); }
 function select(id) {
   cur = id; rev++; localStorage.setItem(KEY + ':last', id); if (B()) linkMetas(clean(B())); shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
@@ -257,7 +264,7 @@ const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.
 const gemInfo = g => { const d = SK.skills[g.name], gem = gems.find(x => x.name === g.name) || d?.triggered_by && { ...d, icon: gems.find(x => x.name === d.triggered_by)?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
-const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false, fight = false }) => ({ enemy, level, attack, rarity, still, fight }))(JSON.parse(localStorage.getItem(SCENE_KEY) || '{}'));
+const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, still = false, fight = false }) => ({ enemy, level, attack, rarity, still, fight }))(stored(SCENE_KEY));
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
 const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
@@ -1024,7 +1031,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
 // ---------- enemy of the 3D scene: searchable list of the game's monsters, its level and attack, and what the numbers say (enemies.js)
 const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg));
 // the simulator's skill bar of each build: { slots: [gem name or null x8], seen: [gem names it has placed] }
-const BAR_KEY = SCENE_KEY + ':bar', sceneBars = (() => { try { return JSON.parse(localStorage.getItem(BAR_KEY) || '{}'); } catch { return {}; } })();
+const BAR_KEY = SCENE_KEY + ':bar', sceneBars = stored(BAR_KEY);
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
 const syncEnemy = () => scene3d?.enemy(enemy(sceneCfg.enemy), enemyLevel(), sceneCfg.attack, sceneCfg.rarity, sceneCfg.mods);
 const enWrap = Object.assign(document.createElement('details'), { className: 's-enwrap' });

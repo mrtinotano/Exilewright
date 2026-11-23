@@ -10,6 +10,7 @@ import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
+import { stored } from './settings.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
 const KEY = 'poe2opt';
@@ -26,7 +27,7 @@ const chk = (k, on, text, tip = '') => `<label class="chk" title="${esc(tip)}"><
 
 export function initOpt(el, ctx) {
   const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: '', how: 'best', like: {}, reqLvl: true, reqAttr: true,
-    ...JSON.parse(localStorage.getItem(KEY) || '{}') };
+    ...stored(KEY) };
   if (!OBJECTIVES[S.key]) S.key = 'dps';
   const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
   let at = null;                 // the build on screen
