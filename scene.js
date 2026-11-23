@@ -1765,9 +1765,10 @@ export function initScene(el, api) {
   // Shockchain Arrow: its hit on an enemy with a lightning ailment releases its shockwave (its explosion part) there and
   // consumes the Shock, then chains its more times on to such enemies near, each releasing a shockwave; after the last it
   // lodges there as a Lightning Rod (up to its most). Its homing: shoot()
+  const litUp = e => has(e, 'shock') || has(e, 'electrocute');   // an enemy with a lightning ailment
   function shockchain(S, d) {
     const X = partOf(S, 'ShockchainArrowExplosionPlayer'); if (!X) return;
-    const st = S.dmg.stats, lit = e => has(e, 'shock') || has(e, 'electrocute'), seen = new Set([d]), wave = e => { boom({ x: e.pos.x, z: e.pos.z }, X.A, X); clear(e, 'shock'); };
+    const st = S.dmg.stats, lit = litUp, seen = new Set([d]), wave = e => { boom({ x: e.pos.x, z: e.pos.z }, X.A, X); clear(e, 'shock'); };
     let at = d, n = lit(d) ? st.shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy : 0;
     if (n) wave(d);
     for (; n > 0; n--) {
@@ -2017,7 +2018,7 @@ export function initScene(el, api) {
     // Shockchain Arrow homes in on enemies with a lightning ailment: a fresh arrow flies at the nearest such one ahead within
     // its range. ponytail: aimed when fired, the game's turn rate is in none of the data; steer per frame if it ever is
     const HM = !o.forked && !o.back && S.dmg?.stats?.shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy
-      && near(from, o.range || S.G.range || SIM.projRange, e => (has(e, 'shock') || has(e, 'electrocute')) && inCone(from, Math.atan2(dz, dx), Math.PI / 2, e.pos));
+      && near(from, o.range || S.G.range || SIM.projRange, e => litUp(e) && inCone(from, Math.atan2(dz, dx), Math.PI / 2, e.pos));
     if (HM) { const l = dist(HM.pos, from) || 1; dx = (HM.pos.x - from.x) / l; dz = (HM.pos.z - from.z) / l; }
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
@@ -2046,7 +2047,7 @@ export function initScene(el, api) {
     const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
-      if (cur.detonate) { boom(p, cur.detonate, { ...cur, detonate: 0 }); }   // Detonating Arrow at maximum stages
+      if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
       const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
       if ((P.chains || S.addChains || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
         chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0), seen, mult());
@@ -4019,8 +4020,8 @@ export function initScene(el, api) {
       S.chaosX = eaten.length && 1 + ((PF['support_chaos_damage_+%_final_if_corpse_consumed_on_use'] || 0) + eaten.length * (PF['support_chaos_damage_+%_final_per_corpse_consumed_on_use'] || 0)) / 100;
       // Detonating Arrow: its share of damage as extra fire per stage; at maximum stages the arrow explodes at the end of its
       // flight (its explosion part: the arrow's damage as area damage in its secondary radius)
-      const DA = st.detonating_arrow_max_number_of_stages; S.fireGain = DA && S.stage != null ? Math.round(S.stage * DA) * st['detonating_arrow_all_damage_%_to_gain_as_fire_per_stage'] : 0;
-      S.detonate = DA && S.stage != null && Math.round(S.stage * DA) >= DA ? S.G?.radius2 || 0 : 0;
+      const DA = st.detonating_arrow_max_number_of_stages, DN = DA && S.stage != null ? Math.round(S.stage * DA) : 0;
+      S.fireGain = DN * (st['detonating_arrow_all_damage_%_to_gain_as_fire_per_stage'] || 0); S.detonate = DA && DN >= DA ? S.G?.radius2 || 0 : 0;
       if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { if (!S.dmg?.parts?.SnipeExplosionPlayer) { S.mult *= 1.5; S.aoe = true; } fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;

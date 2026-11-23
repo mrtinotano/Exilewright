@@ -430,7 +430,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     R2 = 'active_skill_base_secondary_area_of_effect_radius'
     for i in more_sets:
         r = ss_tab[i]['Id'] not in parts and dict(zip(map(sid, ss_tab[i]['ConstantStats']), ss_tab[i]['ConstantStatsValues'])).get(R2)
-        if r and R2 not in const: const[R2] = r
+        if r: const.setdefault(R2, r)
     if part_levels:
         one = next(iter(part_levels.values()))
         for k in set.intersection(*map(set, part_levels.values())):
