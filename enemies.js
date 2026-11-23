@@ -50,8 +50,8 @@ export const addStats = list => list.reduce((s, x) => { for (const k in x) s[k] 
 // its own stats (an aura on its enemies is not: foeAuras, its radius in metres and the stats it gives you)
 export const modStats = ids => addStats((ids || []).map(id => MOD_BY.get(id)).filter(x => x && !x.aura?.foe).map(x => x.stats));
 const foeAuras = ids => (ids || []).map(id => MOD_BY.get(id)).filter(x => x?.aura?.foe).map(x => ({ r: x.aura.r / 10, stats: x.stats }));
-// ---------- the map: a waystone's modifiers (monsters.json map: every kind that rolls on a waystone, its rolls at each
-// tier's tag, and each tier's name, area level and tag). A map is { tier, mods: { id: [the values of its stats] } }.
+// ---------- the map: a waystone's modifiers (monsters.json map: every kind that rolls on a waystone, its rolls at the tag
+// of each tier it rolls on, and each tier's name, area level and tag). A map is { tier, mods: { id: [the values of its stats] } }.
 // The area gives its monsters' stats to every monster in it (map_monsters_<stat>: the monster's own <stat>, read where a
 // monster modifier's are), and its players' to the character (mapPlayer). Its ground is mapGround's
 export const MAP = MON.map || { tiers: [], mods: [] };
@@ -62,7 +62,10 @@ export const mapStats = map => addStats(Object.entries(map?.mods || {}).map(([id
 // the tables do not say whether freeze buildup follows it
 const MAP_AS = { ...Object.fromEntries(TYPES.slice(1).map(el => [`%_all_damage_to_gain_as_${el}`, [`non_skill_base_all_damage_%_to_gain_as_${el}`]])),
   'attack_cast_and_movement_speed_+%': ['attack_and_cast_speed_+%', 'base_movement_velocity_+%'], additional_elemental_resistance: ['base_resist_all_elements_%'],
-  'chance_to_poison_on_hit_%': ['base_chance_to_poison_on_hit_%'], 'chance_to_inflict_bleeding_%': ['local_chance_to_bleed_on_hit_%'], 'elemental_ailment_chance_+%': ['ignite_chance_+%', 'shock_chance_+%'] };
+  'chance_to_poison_on_hit_%': ['base_chance_to_poison_on_hit_%'], 'chance_to_inflict_bleeding_%': ['local_chance_to_bleed_on_hit_%'], 'elemental_ailment_chance_+%': ['ignite_chance_+%', 'shock_chance_+%'],
+  // Armoured, Evasive and the life gained as energy shield: the stats a rare monster's own 'of Endurance', 'of the Blur' and 'of Buffering' have
+  'additional_strength_ratio_%_for_armour': ['monster_additional_strength_ratio_%_for_armour'], 'additional_dexterity_ratio_%_for_evasion': ['monster_additional_dexterity_ratio_%_for_evasion'],
+  'maximum_life_%_to_add_to_maximum_energy_shield': ['base_maximum_life_%_to_gain_as_total_energy_shield'] };
 // the ground a map has patches of, by the stat that words it: its kind as the scene names its own, the stat's value v
 // (Ignited Ground: the fire damage it deals per 10 seconds; Chilled Ground: its magnitude) and its radius in metres
 const GROUND_OF = { map_base_ground_fire_damage_to_deal_per_10_seconds: 'burning', map_ground_ice_base_magnitude: 'chilled', map_ground_lightning: 'shocked' };
@@ -88,7 +91,9 @@ export function enemyStats(m, level, rarity, ally = false, mods = []) {
   const cap = K.monster_max_resistance ?? 75, life = Math.round((pool - part) * more('life') * (1 + x('life_+%') / 100));   // a map's more Monster Life
   return {
     level, life, es: Math.round(part * more('es') + life * x('base_maximum_life_%_to_gain_as_total_energy_shield') / 100),
-    armour: Math.round(row('armour', level) * (m.armour || 0)), evasion: Math.round(row('evasion', level) * (m.evasion || 0)),
+    // note: a modifier's "additional strength / dexterity ratio % for armour / evasion" is read by its name: added to the monster's own ratio (MonsterTypes Armour, Evasion)
+    armour: Math.round(row('armour', level) * ((m.armour || 0) + x('monster_additional_strength_ratio_%_for_armour') / 100)),
+    evasion: Math.round(row('evasion', level) * ((m.evasion || 0) + x('monster_additional_dexterity_ratio_%_for_evasion') / 100)),
     accuracy: Math.round(row('accuracy', level) * (1 + x('accuracy_rating_+%') / 100)),
     res: Object.fromEntries(TYPES.slice(1).map((el, i) => [el, Math.min(cap + x(`base_maximum_${el}_damage_resistance_%`),
       (m.res?.[i] || 0) + x(`base_${el}_damage_resistance_%`) + (el === 'chaos' ? 0 : x('base_resist_all_elements_%')))])),
@@ -266,11 +271,12 @@ export function versusEnemy(dmg, st, accuracy) {
 }
 // self-check: a map's stats reach every monster that is not yours, by the names a monster's own are read by
 {
-  const m = ENEMIES[0], map = { tier: 1, mods: { MapMonsterLifeIncrease: [20], MapMonsterDamageAsFire: [10], MapMonstersElementalPenetration: [8], MapPlayerMaximumResists: [-4], MapSpreadChilledGround: [30] } };
+  const m = ENEMIES[0], map = { tier: 1, mods: { MapMonsterLifeIncrease: [20], MapMonsterDamageAsFire: [10], MapMonstersElementalPenetration: [8], MapPlayerMaximumResists: [-4], MapSpreadChilledGround: [30], MapMonsterArmoured: [50], MapMonsterEvasive: [40], MapMonsterEnergyShield: [20] } };
   const was = enemyStats(m, 70), c = { res: { fire: { capped: 75 } } };
   setMap(map);
   const st = enemyStats(m, 70), atk = attackOf(m, 70, 'basic');
-  console.assert(MAP.mods.length && st.life === Math.round(was.life * 1.2) && enemyStats(m, 70, null, true).life === was.life && atk.hits.fire?.[1] > 0 && atk.pen === 8
+  console.assert(MAP.mods.length && st.life === Math.round(was.life * 1.2) && Math.abs(st.armour - was.armour - row('armour', 70) * .5) <= 1 && Math.abs(st.evasion - was.evasion - row('evasion', 70) * .4) <= 1
+    && Math.abs(st.es - was.es - st.life * .2) <= 1 && enemyStats(m, 70, null, true).life === was.life && atk.hits.fire?.[1] > 0 && atk.pen === 8
     && Math.abs(playerTakes(c, 'fire', 100, true, true, atk.pen) - 33) < 1e-9 && playerTakes(c, 'fire', 100, false, true, atk.pen) === 25 && mapPlayer(map)['additional_maximum_all_resistances_%'] === -4
     && JSON.stringify(mapGround()) === '[{"type":"chilled","v":30,"r":2.6}]', 'map modifiers');
   setMap(null);

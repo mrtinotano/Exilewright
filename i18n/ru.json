@@ -949,7 +949,6 @@
  "Remove the map": "Убрать карту",
  "Not simulated": "Не симулируется",
  "That is not a waystone.": "Это не путевой камень.",
- "Charges stolen": "Заряды украдены",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Свойства карты действуют в симуляторе на всех врагов и на вашего персонажа. Каждый вид земли на карте — один участок в комнате; её награды не симулируются.",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright не может запуститься: порт {0} этого компьютера занят (его использует другая программа или он зарезервирован Windows)."
 }

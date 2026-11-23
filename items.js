@@ -258,41 +258,43 @@ function shapes(key, stats) {   // the mod as text at its top and bottom roll (t
   }
   return [...out.values()];
 }
-function matchLines(lines, cands, family = () => null) {
-  const by = new Map(), found = [], missed = [], used = new Set();
+// apart: the lines of one modifier may have others between them (a waystone's text lists them by stat, not by modifier)
+function matchLines(lines, cands, family = () => null, apart = false) {
+  const by = new Map(), found = [], missed = [], used = new Set(), sk = lines.map(skel), gone = new Set();
   // a modifier of several lines is looked up by any of them: the game may print them in another order than ours
   for (const c of cands) for (const l of new Set(c.lines)) (by.get(l) || by.set(l, []).get(l)).push(c);
-  for (let i = 0; i < lines.length;) {
+  for (let i = 0; i < lines.length; i++) {
+    if (gone.has(i)) continue;
     let best = null;
-    for (const c of by.get(skel(lines[i])) || []) {
-      const span = lines.slice(i, i + c.lines.length), sk = span.map(skel), at = [];
-      for (const l of c.lines) at.push(sk.findIndex((x, j) => x === l && !at.includes(j)));
-      if (span.length < c.lines.length || at.includes(-1) || used.has(family(c.key) ?? c.key)) continue;
-      const n = nums(at.map(j => span[j])), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
+    for (const c of by.get(sk[i]) || []) {
+      const end = apart ? lines.length : i + c.lines.length, at = [];
+      for (const l of c.lines) at.push(sk.findIndex((x, j) => j >= i && j < end && x === l && !gone.has(j) && !at.includes(j)));
+      if (at.includes(-1) || used.has(family(c.key) ?? c.key)) continue;
+      const n = nums(at.map(j => lines[j])), values = c.stats.map(([, lo, hi], k) => n[k] === undefined ? hi : Math.round(n[k] / c.scale[k]));
       const off = c.stats.reduce((t, [, lo, hi], k) => t + Math.max(0, Math.min(lo, hi) - values[k], values[k] - Math.max(lo, hi)), 0);
       // rolls inside the modifier's range first (two plain modifiers also read as one two-line modifier of another
       // tier, with their numbers far off its range), then the one that takes more lines, then the nearest
       const out = off > 0, bout = best?.off > 0;
-      if (!best || out < bout || out === bout && (c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off)) best = { c, values, off };
+      if (!best || out < bout || out === bout && (c.lines.length > best.c.lines.length || c.lines.length === best.c.lines.length && off < best.off)) best = { c, values, off, at };
     }
-    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values), raw: best.values, src: lines[i] }); used.add(family(best.c.key) ?? best.c.key); i += best.c.lines.length; }
-    else missed.push(lines[i++]);
+    if (best) { found.push({ key: best.c.key, values: fixVals(best.c.stats, best.values), raw: best.values, src: lines[i] }); used.add(family(best.c.key) ?? best.c.key); for (const j of best.at) gone.add(j); }
+    else missed.push(lines[i]);
   }
   return { found, missed };
 }
 // a waystone's text (Ctrl+C on it in the game), read as an item's -> { tier, mods: { id: [the values of its stats] },
 // missed: [the modifier lines that are none a waystone rolls] }, null when it is no waystone. MAP: enemies.js's (its
-// tiers' names in every language, each kind of modifier with its rolls at the tier's tag)
+// tiers' names in every language, each kind of modifier with its rolls at the tags of the tiers it rolls on)
 export function parseWaystone(text, MAP) {
   const lines = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean), low = lines.map(l => l.toLowerCase());
   const tier = MAP.tiers.findIndex(x => Object.entries(x).some(([k, v]) => k.startsWith('name') && low.some(l => l.includes(v.toLowerCase())))) + 1;
   if (!tier) return null;
-  const tag = MAP.tiers[tier - 1].tag, cands = MAP.mods.flatMap(m => shapes(m.id, m.stats.map((s, k) => [s, ...m.rolls[tag][k]])));
+  const tag = MAP.tiers[tier - 1].tag, cands = MAP.mods.filter(m => m.rolls[tag]).flatMap(m => shapes(m.id, m.stats.map((s, k) => [s, ...m.rolls[tag][k]])));
   // under the names: no labels, states or sentences (how it is used), and the detailed text's "{ Prefix Modifier ... }"
   // lines and the range after each roll ("22(20-24)%") taken out
   const body = lines.slice(lines.findIndex(l => /^-{4,}$/.test(l)) + 1).map(l => l.replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1').replace(/\s—\s[^—]*$/, '').replace(TAG, '').trim())
     .filter(l => l && !/^\{.*\}$/.test(l) && !META.test(l) && !corruptLine(l) && !/^\(.*\)$/.test(l) && !/[.。]$/.test(l));
-  const { found, missed } = matchLines(body, cands);
+  const { found, missed } = matchLines(body, cands, undefined, true);
   return { tier, mods: Object.fromEntries(found.map(f => [f.key, f.raw])), missed };
 }
 // rows of stats as a game table has them ([[stat id, value], ...] each: the quest rewards, calc.js) -> a reader of
@@ -354,7 +356,7 @@ const itemLevel = text => +(text.match(/^Item Level: (\d+)/m)?.[1] || text.repla
 // text copied from the game (Ctrl+C on an item) or from Path of Building
 // -> { item, slots, missed: [lines not understood], name (as the text calls it), unidentified }, null if it is no item
 console.assert((w => w?.tier === 15 && w.mods.Fire?.[0] === 22 && w.mods.Cd?.[0] === -25 && w.mods.Crit?.join() === '280,28' && w.missed.join() === 'Area contains an additional Shrine')(parseWaystone(
-  `Item Class: Waystones\nRarity: Rare\nGrim Passage\nWaystone (Tier 15)\n--------\nWaystone Tier: 15\nWaystone Drop Chance: +105% (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Infernal" (Tier: 1) }\nMonsters deal 22(15-24)% of Damage as Extra Fire\nPlayers have 25% less Cooldown Recovery Rate\nMonsters have 280% increased Critical Hit Chance\nMonsters have +28% Critical Damage Bonus\nArea contains an additional Shrine\n--------\nCan be used in a Map Device, allowing you to enter a Map. Waystones can only be used once.\n--------\nCorrupted`,
+  `Item Class: Waystones\nRarity: Rare\nGrim Passage\nWaystone (Tier 15)\n--------\nWaystone Tier: 15\nWaystone Drop Chance: +105% (augmented)\n--------\nItem Level: 80\n--------\n{ Prefix Modifier "Infernal" (Tier: 1) }\nMonsters deal 22(15-24)% of Damage as Extra Fire\nMonsters have 280% increased Critical Hit Chance\nPlayers have 25% less Cooldown Recovery Rate\nMonsters have +28% Critical Damage Bonus\nArea contains an additional Shrine\n--------\nCan be used in a Map Device, allowing you to enter a Map. Waystones can only be used once.\n--------\nCorrupted`,
   { tiers: Array.from({ length: 16 }, (_, i) => ({ name: `Waystone (Tier ${i + 1})`, tag: 'high' })), mods: [{ id: 'Fire', stats: ['map_monsters_%_all_damage_to_gain_as_fire'], rolls: { high: [[15, 19]] } },
     { id: 'Cd', stats: ['map_player_cooldown_speed_+%_final'], rolls: { high: [[-30, -25]] } }, { id: 'Crit', stats: ['map_monsters_critical_strike_chance_+%', 'map_monsters_critical_strike_multiplier_+'], rolls: { high: [[200, 240], [21, 25]] } }] })), 'parseWaystone');
 export function parseItem(text) {

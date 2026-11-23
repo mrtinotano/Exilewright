@@ -1047,7 +1047,7 @@ $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} fr
 // monsters' are on every enemy, its players' on your character in the simulator, its ground is a patch in the room
 // (scene.js); its tier sets the enemies' level (the area's)
 let mapNote = '';   // what the last paste left out, or that it was no waystone
-const rollOf = (m, tier) => m.rolls[MAP.tiers[tier - 1].tag];
+const rollOf = (m, tier) => m.rolls[MAP.tiers[tier - 1].tag];   // undefined: it does not roll on a waystone of that tier
 const topRoll = (m, tier) => rollOf(m, tier).map(([lo, hi]) => Math.abs(lo) > Math.abs(hi) ? lo : hi);   // the strongest roll of each stat
 const mapLines = (m, vals) => shownLines(Object.fromEntries(m.stats.map((s, k) => [s, vals[k]]))).join(' · ');
 function setSceneMap(map, note = '') {
@@ -1055,17 +1055,17 @@ function setSceneMap(map, note = '') {
   setMap(map); mapSelf = mapPlayer(map);
   saveScene(); scene3d?.remap(); renderMap(); renderEnemy();
 }
-// a tier: its area level for the enemies, and each modifier's values brought within its rolls at that tier (own: a
-// pasted waystone's values, kept as the item has them)
+// a tier: its area level for the enemies, and each modifier's values brought within its rolls at that tier, without
+// those that do not roll on it (own: a pasted waystone's values, kept as the item has them)
 function pickTier(tier, mods = sceneCfg.map?.mods || {}, own = false, note = '') {
   if (!MAP.tiers[tier - 1]) return setSceneMap(null);
   sceneCfg.level = MAP.tiers[tier - 1].level; syncEnemy();
-  setSceneMap({ tier, mods: own ? mods : Object.fromEntries(Object.entries(mods).map(([id, vals]) =>
-    [id, rollOf(MAP.mods.find(x => x.id === id), tier).map(([lo, hi], k) => Math.max(lo, Math.min(hi, vals[k])))])) }, note);
+  setSceneMap({ tier, mods: own ? mods : Object.fromEntries(Object.entries(mods).flatMap(([id, vals]) => {
+    const R = rollOf(MAP.mods.find(x => x.id === id), tier); return R ? [[id, R.map(([lo, hi], k) => Math.max(lo, Math.min(hi, vals[k])))]] : []; })) }, note);
 }
 function renderMap() {
   const map = sceneCfg.map, n = Object.keys(map?.mods || {}).length, open = $('enMap').querySelector('details')?.open;
-  const row = m => { const on = map.mods[m.id], R = rollOf(m, map.tier);
+  const row = m => { const on = map.mods[m.id], R = rollOf(m, map.tier) || [];
     return `<label><input type="checkbox" data-mapmod="${esc(m.id)}"${on ? ' checked' : ''}> ${esc(mapLines(m, on || topRoll(m, map.tier)))}</label>`
       + (on ? R.map(([lo, hi], k) => lo === hi ? '' : `<input type="number" data-mapval="${esc(m.id)}:${k}" min="${lo}" max="${hi}" step="1" value="${+on[k] || 0}" title="${lo} – ${hi}">`).join('') : ''); };
   $('enMap').innerHTML = `<details class="en-mods en-map"${open || open == null && map ? ' open' : ''}><summary>${t('Map modifiers')} <small>${n}</small></summary>
@@ -1073,7 +1073,7 @@ function renderMap() {
     ${mapNote ? `<p class="note">${esc(mapNote)}</p>` : ''}
     <div class="sk-set"><label><span>${t('Waystone')}</span><select data-map="tier"><option value="0">—</option>${MAP.tiers.map((x, i) => `<option value="${i + 1}"${map?.tier === i + 1 ? ' selected' : ''}>${esc(tn(x))} · ${t('Level')} ${x.level}</option>`).join('')}</select></label>
       ${map ? `<button data-map="clear">${t('Remove the map')}</button>` : ''}</div>
-    ${map ? MAP.mods.map(row).join('') : ''}
+    ${map ? MAP.mods.filter(m => map.mods[m.id] || rollOf(m, map.tier)).map(row).join('') : ''}
     <p class="note">${t('The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.')}</p></details>`;
 }
 enWrap.addEventListener('input', e => {

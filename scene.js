@@ -5262,8 +5262,6 @@ export function initScene(el, api) {
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee || sheet().thornsAny) retaliate(d); if (a.melee) arctic(d); windDance(); ailed(d, raw, dealt);
-    // a map's: its chance for the hit to steal your Power, Frenzy and Endurance charges (note: the monster does not gain them here)
-    if (Math.random() * 100 < (a.ail?.steal_charges || 0) && Object.values(charges).some(n => n > 0)) { for (const k in charges) charges[k] = 0; say(t('Charges stolen'), 'chaos'); hudT = 0; }
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your

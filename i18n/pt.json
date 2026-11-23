@@ -949,7 +949,6 @@
  "Remove the map": "Remover o mapa",
  "Not simulated": "Não simulado",
  "That is not a waystone.": "Isso não é uma pedra-guia.",
- "Charges stolen": "Cargas roubadas",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Os modificadores do mapa estão em todos os inimigos e no seu personagem dentro do simulador. Cada tipo de solo que ele tem é uma área na sala; suas recompensas não são simuladas.",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "O Exilewright não pode iniciar: a porta {0} deste computador não está livre (outro programa a usa ou o Windows a reserva)."
 }
