@@ -900,6 +900,10 @@ def app(url):
     The window opens at the size, place and maximized or not it last had (window.json in the profile, with "tray": only
     an icon in the notification area, no taskbar button). Opened by Windows ("startup"): minimized, or only the icon"""
     import webview
+    # the page has to answer the window over the game while the game covers it: the web engine would take it for hidden
+    # and slow it down. Set here, as these arguments replace pywebview's own (ElasticOverscroll kept)
+    os.environ['WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS'] = ('--disable-features=ElasticOverscroll,CalculateNativeWinOcclusion --disable-backgrounding-occluded-windows'
+                                                           ' --disable-renderer-backgrounding --disable-background-timer-throttling')
 
     def over():
         global OVER
