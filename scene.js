@@ -38,7 +38,7 @@ const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', 
 const GC = GAME.game || {};
 const GRUEL = { slow: 15, pot: 10, max: 10, decay: 2 };   // KeywordPopups GruellingMadness: the first slows movement 15%, each more +10% slow potency of debuffs, at most 10, one lost every 2 s without more
 const DIVINE = { every: 4, time: 10 };   // The Ordained's Fragments of Divinity: one every 4 s (its text), each lasting 10 s (KeywordPopups DivineFragment)
-const BROKEN = { time: 12, taken: 20 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits
+const BROKEN = { time: 12, taken: 20, player: 4 };   // note: keywords.json ArmourBreak: Fully Broken for 12 s, +20% physical damage taken from hits; a player's 4 s, without it
 const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic Ward regenerates 5% a second by default
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
@@ -323,7 +323,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -5013,6 +5013,7 @@ export function initScene(el, api) {
       if (U.deflMissing && me.maxE > me.es && c.deflect) c = { ...c, deflect: { ...c.deflect, flat: Math.floor((me.maxE - me.es) / 50) * U.deflMissing } };
       if (U.esArmour && me.maxE > 0) c = { ...c, armourX: (c.armourX || 1) * (1 + me.es / me.maxE * U.esArmour) }; }
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
+    if (me.armCut || time < me.armBroken) c = { ...c, armour: time < me.armBroken ? 0 : Math.max(0, (c.armour || 0) - me.armCut) };   // your armour a monster modifier broke
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     // Future-Past: after its Hindsight (its duration) Hinekora's Foresight keeps the roll from avoiding hits; a hit while
     // rolling restores your life first and grants Sight Beyond Sight (its secondary duration: you cannot die), then
@@ -5065,6 +5066,9 @@ export function initScene(el, api) {
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }
     }
     if (me.ghost >= 1) { me.ghost--; me.ghostAt = time; }   // Ghost Dance
+    // a monster modifier's Armour Break: its share of the physical damage it deals; at all of your armour, Fully Broken
+    const AB = a.ail?.['armour_break_physical_damage_%_dealt_as_armour_break'];
+    if (AB && dealt.physical > 0 && !(time < me.armBroken) && sheet().armour > 0 && (me.armCut = (me.armCut || 0) + dealt.physical * AB / 100) >= sheet().armour) { me.armCut = 0; me.armBroken = time + BROKEN.player; say(t('Broken Armour'), 'physical'); }
     const AE = AD && ELEM.filter(e => dealt[e] > 0).sort((x, y) => dealt[y] - dealt[x])[0];   // adapt to the hit's highest elemental type, the oldest Adaptations giving way
     if (AE) { for (let k = 0; k < AD.gain; k++) me.adapt.push({ el: AE, until: time + AD.dur }); me.adapt = me.adapt.slice(-AD.max); }
     if (dealt.lightning > 0) valako(dealt.lightning);
