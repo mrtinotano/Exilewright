@@ -740,7 +740,8 @@ export function initScene(el, api) {
     for (const r of ['life', 'mana']) {
       const SL = r === 'life' && shifted()?.leech || 0, x = D.leech?.[r], n = x && (ofL(r, x).reduce((t, e) => t + (dealt[e] || 0), 0) * x.phys + total * x.all) / 100 * (x.more + SL / 100) * k * (r === 'mana' && SH.manaLeechCrit && meIs.CritRecently() ? 1 + SH.manaLeechCrit / 100 : 1);   // more life leeched while Shapeshifted
       if (!(n > 0) || r === 'mana' && sheet().noManaLeech) continue;   // Lochtonial Caress: no mana leech
-      const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
+      const VP = r === 'life' && sheet().vaal, q = me.leech[r]; q.left += n * (VP ? 1.5 : 1); q.rate = q.left * x.rate * (VP ? .33 : 1); q.keep = r === 'life' && (D.leech.keep || VP);
+      if (r === 'life' && SH.compLeech) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + n); }   // the tree's: your Companions leech the same. note: at once here   // Vaal Pact: 50% more, 67% less quickly, not removed on full life
     }
   }
   // Damaging ailments deal, per second, a share of the hit that inflicted them (the game's base values: monsters.json constants),
@@ -2149,7 +2150,7 @@ export function initScene(el, api) {
         if (IB && L > 0 && (e.burnT = (e.burnT ?? 0) - dt) <= 0) { e.burnT = .5; for (const d of inside(e.pos, S.dmg.stats.infernal_familiar_minion_burn_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IB / 100 }); }
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
-        const ON = e.companion && time < (me.compOns ?? -9);   // Companions' Onslaught (the tree's on kill)
+        const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
@@ -3854,7 +3855,7 @@ export function initScene(el, api) {
   // Tame Beast: its wisps engulf the Rare Beast nearest your aim, Hindering it by its % for its duration. note: capturing
   // the beast is not simulated
   K.tame = S => {
-    const [d] = nearest(S.at, 1, e => e.mon.category === 'Beast' && e.stat.rarity === 'rare');
+    const [d] = nearest(S.at, 1, e => e.mon.category === 'Beast' && (e.stat.rarity === 'rare' || sheet().tameUnique && e.stat.rarity === 'unique'));   // the tree's: Unique Beasts too
     if (!d) return;
     d.slows.push({ until: time + durOf(S), pct: -S.dmg.stats['tame_beast_hinder_%'] * slowK(S) }); fx.ring(d.pos, .2, 1, 'poison', .5, { a: .5 });
   };
