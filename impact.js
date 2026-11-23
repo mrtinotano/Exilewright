@@ -1,7 +1,7 @@
 // What a change does to the build: the character panel numbers and every skill's DPS, before and after it
 // (two calc.js snapshot()s). The tree tooltip (a passive and the path to it), the item editor and the support
 // picker all show these rows.
-import { t, fmt } from './i18n.js';
+import { t, esc, fmt } from './i18n.js';
 
 // [snapshot key, label, decimals, unit]; the labels are ones the character panel already uses
 const ROWS = [
@@ -30,7 +30,6 @@ export function diff(a, z) {
 // DPS of one skill before and after (support picker)
 export const dpsDiff = (x, y) => [row('DPS', x, y, Math.max(x || 0, y || 0) < 100 ? 1 : 0, '', true)].filter(Boolean);
 
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const signed = (d, dec, unit = '') => (d > 0 ? '+' : '−') + fmt(Math.abs(d), dec) + unit;
 const share = r => signed(r.pct, Math.abs(r.pct) < 10 ? 1 : 0, '%');
 const cls = r => r.d > 0 ? 'up' : 'down';

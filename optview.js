@@ -2,19 +2,18 @@
 // build the most, and trade.js for gear listed on the official trade site that does. Everything shown is what the
 // planner's own calculation says, so it is a guide, not a promise. app.js owns the build: it only changes through ctx.
 //   ctx: { build(), id(), rev(), sumOf(b), snap(b), tree, N, rootOf(b), total (tree points), setNodes(b, nodes), sockets(b) (its allocated jewel sockets),
-//          change(fn(b)) (edits the build, saves, redraws), showOnTree(ids), ask(text, ...options) }
-import { t, tn, fmt } from './i18n.js';
+//          change(fn(b)) (edits the build, saves, redraws), showOnTree(ids) }
+import { t, esc, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
-import { stored, put } from './settings.js';
+import { stored, put, ask } from './settings.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
 const KEY = 'poe2opt';
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const ATTR = { str: ['Strength', '#c44'], dex: ['Dexterity', '#4a4'], int: ['Intelligence', '#48c'] };
 const NOTES = {
@@ -395,7 +394,7 @@ export function initOpt(el, ctx) {
     }
     if (what === 'applyTree' && T) {
       const { r, fresh } = T, had = usedOf(b) + (b.set1?.length || 0) + (b.set2?.length || 0);
-      if (fresh && had && await ctx.ask(t('Replace the current tree? {0} allocated points will be removed.', had), t('Replace')) !== 0) return;
+      if (fresh && had && await ask(t('Replace the current tree? {0} allocated points will be removed.', had), t('Replace')) !== 0) return;
       if (T?.r !== r) return;   // the build changed while the question was open
       msg.tree = t('{0} passives added to the tree.', r.nodes.length);
       ctx.change(b => { const z = withPath(b, r, fresh); Object.assign(b, { nodes: z.nodes, set1: z.set1, set2: z.set2, attrs: z.attrs }); });

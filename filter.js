@@ -3,8 +3,8 @@
 // bottom and the first one an item matches decides how it shows. Item classes and bases come from the game
 // (poe2_data/available/filter.json, made by _tool/available.py); a .filter names them in English, the page shows them
 // in its own language.
-import { t, lang } from './i18n.js';
-import { stored, put } from './settings.js';
+import { t, esc, lang } from './i18n.js';
+import { stored, put, ask } from './settings.js';
 
 const KEY = 'exwFilter';
 const RARITIES = ['Normal', 'Magic', 'Rare', 'Unique'];
@@ -48,7 +48,6 @@ export function filterText({ name, rules, rest }) {
 }
 
 export function initFilter(el) {
-  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
   let D = null, msg = '', err = false;
   const shown = x => x[`name_${lang}`] || x.name;
@@ -112,7 +111,7 @@ export function initFilter(el) {
   async function write(overwrite) {
     const res = await fetch('filter', { method: 'POST', body: JSON.stringify({ name: S.name, text: filterText(S), overwrite }) }).catch(() => null);
     const body = res && await res.text();
-    if (res?.status === 409 && confirm(t('{0} already exists in the game folder. Replace it?', S.name + '.filter'))) return write(true);
+    if (res?.status === 409 && await ask(t('{0} already exists in the game folder. Replace it?', S.name + '.filter'), t('Replace')) === 0) return write(true);
     err = !res?.ok;
     msg = res?.ok ? t('Saved: {0}', body) : res?.status === 409 ? '' : t('It could not be saved: {0}', body || t('the planner is not running'));
     render();

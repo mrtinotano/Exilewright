@@ -28,9 +28,10 @@ export const cap = s => s[0].toUpperCase() + s.slice(1);
 // the game's keyword markup in a description: "[Ignite|ignited]" ("[Fire]": the word is its own key)
 const KWRE = /\[([^\]|]+)(?:\|([^\]]*))?\]/g;
 export const KW = await fetch('poe2_data/available/keywords.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
-const escKw = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+// a text as HTML, also inside a quoted attribute
+export const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 export const kwPlain = s => (s || '').replace(KWRE, (m, k, x) => x ?? k);
 // as HTML: a keyword the game explains on hover (KeywordPopups) shows that explanation as its tooltip (escaping
 // leaves the markup's [ | ] alone)
-export const kwHtml = s => escKw(s || '').replace(KWRE, (m, k, x, _, __, w = KW[k]) =>
-  w ? `<span class="kw" title="${escKw((w['term_' + lang] || w.term) + '\n' + (w['def_' + lang] || w.def))}">${x ?? k}</span>` : x ?? k);
+export const kwHtml = s => esc(s || '').replace(KWRE, (m, k, x, _, __, w = KW[k]) =>
+  w ? `<span class="kw" title="${esc((w['term_' + lang] || w.term) + '\n' + (w['def_' + lang] || w.def))}">${x ?? k}</span>` : x ?? k);

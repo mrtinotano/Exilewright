@@ -1,7 +1,7 @@
 // Skills tab laid out like the in-game skill panel: icon, level, name and support sockets per skill.
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
-import { t, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
+import { t, esc, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
 import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport } from './calc.js';
 export { canSupport };
 import { shownLines } from './stats.js';
@@ -13,7 +13,6 @@ const GEMS = await load('gems.json');
 export const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
 export const SUPPORTS = GEMS.filter(g => g.kind === 'support');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const ATTRS = { str: [t('Str'), 'strength', '#c44'], dex: [t('Dex'), 'dexterity', '#4a4'], int: [t('Int'), 'intelligence', '#48c'] };
 // a support uses capacity of its main attribute (the requirement % the game gives it)
 export const colour = g => { const a = Object.entries(g.attr).sort((x, y) => y[1] - x[1])[0]; return a[1] ? a[0] : null; };
@@ -174,7 +173,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
       if (m) m.sockets = Math.min(SK.max_support_sockets, Math.max(m.sockets ?? 2, (m.supports || []).filter(Boolean).length + 1 + getBuild().gems.filter(x => x !== g && x.meta === m.name).length));
       else { g.supports = []; g.sockets = 2; }
       g.meta = t.value;
-    } else g[t.dataset.k] = +t.value;
+    } else g[t.dataset.k] = t.max ? Math.max(+t.min, Math.min(+t.max, +t.value || 0)) : +t.value;
     changed(); render();
   });
   el.addEventListener('input', e => {   // filter the support list in place (keeps the focus in the box)

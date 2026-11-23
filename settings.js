@@ -2,7 +2,7 @@
 // searches for, the equipment comparison (loot.js draws it: `loot`, put after the price check),
 // the app's window (serve.py /settings: with Windows, only in the notification area), the language, and the update notice in the top bar (serve.py /update). Kept in this browser (localStorage); serve.py is told the price check shortcut,
 // since it is the one that sees the keyboard while the game is the window in use.
-import { t, LANGS, lang, setLang } from './i18n.js';
+import { t, esc, LANGS, lang, setLang } from './i18n.js';
 import { STATUS, leagues } from './trade.js';
 
 const KEY = 'exwSettings';
@@ -26,7 +26,6 @@ const taken = c => c === 'Escape' || slotKeys().includes(c) || S.input === 'wasd
 const fix = () => { for (const k in S.keys) if (taken(S.keys[k])) S.keys[k] = SCENE_KEYS[k]; };   // a key the bar or movement takes goes back to its default
 fix();
 export const settings = () => S;
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 let wait = null;   // the shortcut being set ('price', 'worn' or a scene key)
 const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data-cap="${k}">${wait === k ? t('Press a key…') : esc(shown)}</button>`;
 // the shortcut that takes an item as worn: in the comparison's section (loot.js draws it)
@@ -45,6 +44,22 @@ const comboOf = e => {
   const key = /^Key[A-Z]$|^Digit\d$/.test(e.code) ? e.code.slice(-1) : /^F([1-9]|1[0-2])$/.test(e.code) ? e.code : null;
   return key && (e.ctrlKey || e.altKey) ? [e.ctrlKey && 'Ctrl', e.shiftKey && 'Shift', e.altKey && 'Alt', key].filter(Boolean).join('+') : null;
 };
+
+// the app's own question (the browser's confirm() is blocked in some embedded ones): resolves with the index of the
+// chosen option, or -1 on Cancel / Escape / a click outside
+export function ask(text, ...opts) {
+  return new Promise(done => {
+    const d = document.createElement('div');
+    d.className = 'ask';
+    d.innerHTML = `<div><p>${esc(text)}</p>${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join(' ')} <button data-i="-1">${t('Cancel')}</button></div>`;
+    const close = v => { d.remove(); removeEventListener('keydown', key); done(v); };
+    const key = e => { if (e.key === 'Escape') close(-1); };
+    d.onclick = e => { if (e.target === d) close(-1); else if (e.target.dataset.i) close(+e.target.dataset.i); };
+    addEventListener('keydown', key);
+    document.body.append(d);
+    d.querySelector('button').focus();
+  });
+}
 
 // a newer version, looked for when the app opens and whenever its window comes back to the front (at most every
 // half minute): a line in the top bar with a button that installs it (the installed app)
@@ -71,7 +86,7 @@ export function watchUpdates(el) {
   };
   lookNow = () => look(true);
   look();
-  addEventListener('focus', look);
+  addEventListener('focus', () => look());
   document.addEventListener('visibilitychange', () => document.hidden || look());
 }
 

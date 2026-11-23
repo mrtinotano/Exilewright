@@ -1,9 +1,8 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
-import { t, tn, fmt, lang as LANG, kwHtml } from './i18n.js';
+import { t, esc, tn, fmt, lang as LANG, kwHtml } from './i18n.js';
 import { statLines, shownLines } from './stats.js';
 import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick } from './calc.js';
 
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const n = x => fmt(x == null ? x : Math.round(x));
 const f = (x, d = 2) => fmt(x, d);
 const sign = x => (x > 0 ? '+' : '') + x;

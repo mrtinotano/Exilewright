@@ -1,6 +1,6 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
-import { t, tn, lang, fmt, KW } from './i18n.js';
+import { t, esc, tn, lang, fmt, KW } from './i18n.js';
 import { statLines, statLinesEn, shownLines, nameLines } from './stats.js';
 import { diff, byGain, damage, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
@@ -551,7 +551,6 @@ export const baseOf = it => BASE[it?.base];                           // the bas
 export const known = it => !!BASE[it?.base] && (it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values)), true);
 { const it = { base: D.bases[0].name, mods: [{ id: D.affixes[0].id, values: [1] }, { id: 'gone', values: [1] }, { id: D.affixes[0].id }] };
   console.assert(known(it) && it.mods.length === 1 && !known({ base: 'gone' }) && !known(null), 'known'); }
-export const basesOf = cls => D.bases.filter(b => b.class === cls);   // every base of an item class
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
 // stored per minute...). -> [{ hash, at: [{ k (index in stats), scale (shown / stored) } | null per number shown] }]
@@ -725,7 +724,6 @@ export function tradeItem({ name, base: baseName, lines, runes = [] }) {
 }
 
 // ---------- UI (laid out like the in-game item tooltip)
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const range = (stats, vals, path) => stats.map(([id, lo, hi], k) => pickKind(id) ? namePick(id, vals?.[k], path, k) : lo === hi ? '' :
   `<input type="number" min="${Math.min(lo, hi)}" max="${Math.max(lo, hi)}" value="${vals?.[k] ?? hi}" data-path="${path}" data-k="${k}" title="${id}: ${lo}–${hi}">`).join('');
 // a modifier's numbers as the item has them: one rolled before a patch can be off its tier's range now

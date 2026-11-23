@@ -323,7 +323,7 @@ export function character(b, sum) {
   const esInc = pct('maximum_energy_shield_+%', defInc, 'maximum_life_mana_and_energy_shield_+%') + urS;
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
-  const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
+  const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items?.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
     // stun / ailment threshold from the gear: the lowest of the helmet's (boots') evasion and armour, a share of the armour
@@ -1042,7 +1042,7 @@ function rekey(k) {
   if (r === undefined) REKEY.set(k, r = k.replace(/^(.*)_with_([a-z_]+?)_(?:weapons|skills)$/, '$2_$1').replace(/^(.*damage)_(vs|against)_(\w+)_\+%$/, '$1_+%_$2_$3'));
   return r;
 }
-function inc(sum, suffix, tags) {
+export function inc(sum, suffix, tags) {
   let t = 0;
   for (const key in sum) {
     const k = rekey(key);
@@ -1251,7 +1251,7 @@ export function skill(g, b, treeGear) {
   // added damage per 15 (5) of the shield's armour / evasion (whole steps, PoB2's PerStat); a shield has no attack time,
   // so the skill's own, and its own critical chance
   const SH = { armour: 'armour', evasion: 'evasion', evasion_rating: 'evasion', armour_and_evasion_rating: 'both' };
-  const shield = attack && d.weapons?.some(x => x === 'Shields' || x === 'Bucklers') && d.weapons.includes(classOf(b.items.offhand)) && armourItems({ offhand: b.items.offhand });
+  const shield = attack && d.weapons?.some(x => x === 'Shields' || x === 'Bucklers') && d.weapons.includes(classOf(b.items?.offhand)) && armourItems({ offhand: b.items?.offhand });
   const shieldAdd = (t, i) => Object.entries(st).reduce((n, [k, x]) => {
     const m = k.match(new RegExp(`^off_hand_${i ? 'maximum' : 'minimum'}_added_${t}_damage_per_(\\d+)_shield_(\\w+)$`)), D = m && SH[m[2]];
     return D ? n + x * Math.floor((D === 'both' ? shield.armour + shield.evasion : shield[D]) / m[1]) : n; }, 0);
@@ -1345,7 +1345,7 @@ export function skill(g, b, treeGear) {
     + (sum.minion_damage_increases_and_reductions_also_affects_you ? v(sum, 'minion_damage_+%') : 0);
   const compInc = sum.companion_damage_increases_and_reductions_also_affects_you ? v(sum, 'companion_damage_+%') : 0;   // the tree's: your Companion's increased damage yours too
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
-  const dual = w && weaponStats({ weapon: b.items.offhand });   // a weapon in each hand
+  const dual = w && weaponStats({ weapon: b.items?.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
   const noEl = !!sum.deal_no_elemental_damage;   // Splinter of Lorrata

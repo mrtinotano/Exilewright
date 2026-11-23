@@ -6,7 +6,7 @@
 // are judged. It is compared with the gear kept here as worn (the build is left alone) or the build's own.
 // The verdict goes to serve.py's /overlay, which shows it over the game: there is nothing else to see.
 //   ctx: { build(), id(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
-import { t, fmt, tn, lang, cap } from './i18n.js';
+import { t, esc, fmt, tn, lang, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
 import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
@@ -16,7 +16,6 @@ import { priceOf, priceUnid, priceBulk, priceGem, priceWay, gemOf, wayOf, bulkOf
 import { settings, wornRow, stored, put } from './settings.js';
 
 const KEY = 'poe2loot';
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
 const BADGE = { up: ['▲', 'Upgrade'], mix: ['⇄', 'Trade-off'], same: ['≈', 'About the same'], down: ['▼', 'Worse'], on: ['✓', 'Equipped'], none: ['–', 'No slot for it'] };
 const RANK = { on: 4, up: 3, mix: 2, same: 1, down: 0 };

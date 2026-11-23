@@ -1,15 +1,15 @@
-import { t, tn, fmt, lang } from './i18n.js';
+import { t, esc, tn, fmt, lang } from './i18n.js';
 import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence } from './calc.js';
+import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
-import { initSettings, watchUpdates, stored, put } from './settings.js';
+import { initSettings, watchUpdates, stored, put, ask } from './settings.js';
 import { initFilter } from './filter.js';
 import { SEARCH_SLOTS, siteQuery, listingQuery } from './trade.js';
 import { diff, impactHtml } from './impact.js';
@@ -216,17 +216,6 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   return sum;
 }
 const treeSum = () => sumOf(B());
-// Sum of "<prefix>_<suffix>" stats that apply to a gem: generic prefixes always, others only if the gem has that tag
-// (spell_area_of_effect_+% -> spell, slam_skill_area_of_effect_+% -> slam). Minion/companion ones affect other skills.
-function inc(sum, suffix, tags) {
-  let t = 0;
-  for (const [k, v] of Object.entries(sum)) {
-    if (!k.endsWith(suffix)) continue;
-    const pre = k.slice(0, -suffix.length).replace(/_skill_$|_$/, '');
-    if (pre === '' || pre === 'base' || tags.includes(pre) && pre !== 'minion' && pre !== 'companion') t += v;
-  }
-  return t;
-}
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
   const d = SK.skills[g.name] || {}, gm = gems.find(x => x.name === g.name), tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
@@ -337,22 +326,6 @@ function addGem(name, level = 20) {   // level: the one an item that grants it s
 }
 
 const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); if (!$('items').hidden) renderItems(); };  // the Equipment view shows what each item changes
-// in-app confirmation (native confirm() is blocked in some embedded browsers): resolves true on the OK button
-// in-app choice dialog (native confirm() is blocked in some embedded browsers):
-// resolves with the index of the chosen option, or -1 on Cancel / Escape / click outside
-function ask(text, ...opts) {
-  return new Promise(done => {
-    const d = document.createElement('div');
-    d.className = 'ask';
-    d.innerHTML = `<div><p>${esc(text)}</p>${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join(' ')} <button data-i="-1">${t('Cancel')}</button></div>`;
-    const close = v => { d.remove(); removeEventListener('keydown', key); done(v); };
-    const key = e => { if (e.key === 'Escape') close(-1); };
-    d.onclick = e => { if (e.target === d) close(-1); else if (e.target.dataset.i) close(+e.target.dataset.i); };
-    addEventListener('keydown', key);
-    document.body.append(d);
-    d.querySelector('button').focus();
-  });
-}
 $('buildList').onchange = e => select(e.target.value);
 $('newBuild').onclick = () => { const id = String(Date.now()); builds[id] = blank(); save(); select(id); };
 $('delBuild').onclick = async () => {
@@ -841,7 +814,7 @@ function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint:
 // ---------- node search: highlights nodes whose name or description contains the text (case and accent insensitive)
 const fold = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const SEARCH_TEXT = {};
-const searchText = id => SEARCH_TEXT[id] ??= fold([N[id].name, N[id].name_es, N[id].grants_skill, ...statLines(nodeStats(id))].filter(Boolean).join('\n'));
+const searchText = id => SEARCH_TEXT[id] ??= fold([N[id].name, tn(N[id]), N[id].grants_skill, ...statLines(nodeStats(id))].filter(Boolean).join('\n'));
 let found = new Set(), foundAt = -1;
 function search() {
   const q = fold($('treeFind').value.trim());
@@ -987,12 +960,18 @@ function nodeAt(mx, my) {
   }
   return best;
 }
-const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);   // for text and for a quoted attribute
 const KIND = { keystone: 'Keystone', notable: 'Notable', jewel: 'Jewel socket', attribute: 'Attribute', small: 'Passive' };
+let tipKey;
 function showTip(id, mx, my) {
   const tip = $('tip'), n = N[id];
   tip.hidden = !id;
   if (!id) return;
+  if (tipKey !== (tipKey = `${id} ${mode} ${rev}`)) tipHtml(tip, id, n);
+  const box = cv.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(mx + 16, box.width - w - 4) + 'px';
+  tip.style.top = (my + 16 + h > box.height ? my - h - 10 : my + 16) + 'px';
+}
+function tipHtml(tip, id, n) {
   const b = B(), jv = n.type === 'jewel' && itemView(b.items?.['jewel:' + id]), cq = conquest(b).get(id);   // a socket: the jewel in it; a timeless jewel's conquest
   const by = cq && itemView(cq.by)?.name;
   const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], jv ? [jv.name || jv.base, ...jv.mods] : [],
@@ -1006,9 +985,6 @@ function showTip(id, mx, my) {
     + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
-  const box = cv.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-  tip.style.left = Math.min(mx + 16, box.width - w - 4) + 'px';
-  tip.style.top = (my + 16 + h > box.height ? my - h - 10 : my + 16) + 'px';
 }
 let drag = null;
 cv.onmousedown = e => drag = { x: e.offsetX, y: e.offsetY, moved: false };
@@ -1281,7 +1257,7 @@ const renderItems = initItems($('items'), B, () => { keepSplit(); save(); render
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
-const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(id => N[id].type === 'jewel'), setNodes, showOnTree, ask,
+const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(id => N[id].type === 'jewel'), setNodes, showOnTree,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,

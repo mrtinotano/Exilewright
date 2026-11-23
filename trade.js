@@ -54,9 +54,11 @@ function waitFor(kind, now = Date.now()) {   // seconds until one more call of t
   return w;
 }
 const rules = h => (h || '').split(',').map(x => x.split(':').slice(0, 2).map(Number)).filter(([n, secs]) => n > 0 && secs > 0);
-let last = 0;
-// one call at a time, spaced out; a wait longer than `patience` seconds is told instead
-async function call(path, body, patience = 8) {
+let last = 0, line = Promise.resolve();
+// one call at a time, spaced out: each waits for the one asked before it (two searches at once would both find the
+// gap free). A wait longer than `patience` seconds is told instead
+const call = (path, body, patience) => { const r = line.then(() => callNow(path, body, patience)); line = r.catch(() => {}); return r; };
+async function callNow(path, body, patience = 8) {
   const kind = kindOf(path);
   if (kind) { const w = waitFor(kind); if (w > patience) throw new TradeError('rate limit', 'wait', Math.ceil(w)); if (w > 0) await sleep(w * 1000); }
   const gap = last + 1100 - Date.now(); if (gap > 0) await sleep(gap);
@@ -76,8 +78,8 @@ async function call(path, body, patience = 8) {
   if (j.error) throw new TradeError(j.error.message || String(j.error), 'site');
   return j;
 }
-const cache = {};
-const data = kind => cache[kind] ||= call('data/' + kind).catch(e => { delete cache[kind]; throw e; });
+const cache = {};   // the site's lists (leagues, stats): asked once, and again after a day
+const data = kind => (cache[kind]?.at > Date.now() - 864e5 ? cache[kind] : cache[kind] = { at: Date.now(), got: call('data/' + kind).catch(e => { delete cache[kind]; throw e; }) }).got;
 export const leagues = () => data('leagues').then(j => j.result.filter(l => l.realm === 'poe2').map(l => l.id));
 
 // adds .id (the site's stat) to each line: "explicit.stat_<number>", the number Path of Building's data gives the
