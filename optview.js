@@ -10,7 +10,7 @@ import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
 import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
-import { stored } from './settings.js';
+import { stored, put } from './settings.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
 const KEY = 'poe2opt';
@@ -29,7 +29,7 @@ export function initOpt(el, ctx) {
   const S = { key: 'dps', gem: {}, mode: 'add', pref: '', cap: true, lineage: false, limited: false, slot: 'weapon', cls: {}, league: '', state: 'securable', max: '', currency: '', how: 'best', like: {}, reqLvl: true, reqAttr: true,
     ...stored(KEY) };
   if (!OBJECTIVES[S.key]) S.key = 'dps';
-  const keep = () => localStorage.setItem(KEY, JSON.stringify(S));
+  const keep = () => put(KEY, S);
   let at = null;                 // the build on screen
   let typed = {};                // numbers typed for this build (points, sockets, lvl); the rest follow the build
   let T = null, U = null;        // results for the build as it is (rev): tree { rev, r, after, fresh }, supports { rev, r, key, sockets }
@@ -124,7 +124,7 @@ export function initOpt(el, ctx) {
     await new Promise(r => setTimeout(r, 30));   // the progress line gets on screen first
     const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), extra: ctx.splitRoots(b0), jewels: ctx.jewels(b0), f: s => score(key, bL, s, g), points: pts,
       pref: S.pref || g && colour(GEM[g.name]) || 'str', stop: () => me.stop || ctx.rev() !== rev,
-      tick: p => { me.spent = p.spent; veil.say(runText()); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).catch(e => { veil.remove(); throw e; });
+      tick: p => { me.spent = p.spent; veil.say(runText()); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return breath(); } }).catch(e => { veil.remove(); throw e; });
     let buy = [];
     if (ctx.rev() === rev && !me.stop) { veil.say(t('Trying jewels for the empty sockets')); await new Promise(r => setTimeout(r, 30)); buy = jewelsToBuy(withPath(b, r, fresh), key, g); }
     veil.remove();

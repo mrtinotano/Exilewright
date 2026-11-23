@@ -68,7 +68,8 @@ const plus = (to, stats) => { for (const id in stats) to[id] = (to[id] || 0) + s
 //   jewels: the build's socketed jewels, allocated or not (app.js jewelsOf): id (its socket), R (items.js radiusOf),
 //   in(id) (within its radius), stats (what it grants with its socket allocated), free (the passives it frees),
 //   swap (Map id -> the stats a timeless jewel adds to that passive, below 0 what it takes away)
-//   tick({ spent, left, value }) may return a promise (lets the page breathe); stop() true ends the search.
+//   tick({ spent, left, value }) may return a promise (lets the page breathe): after each group taken, and every 40 ms
+//   of work within one, which can take seconds; stop() true ends the search, without the group it was working out.
 // Returns { nodes (new ids, in order), attrs ({id: str|dex|int}), from, to (objective before / after), steps }.
 export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [], f, points, pref = 'str', tick, stop }) {
   const N = tree.nodes, roots = new Set(tree.class_roots.map(String));
@@ -89,8 +90,9 @@ export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [
   };
   const plain = Object.fromEntries(Object.entries(ATTR).map(([k, id]) => [k, tree.attribute_options[id]]));
   const sig = new Map(), sigOf = id => sig.get(id) ?? (sig.set(id, JSON.stringify(N[id].stats)), sig.get(id));
-  let sum = { ...base }, left = points, cur = f(sum) || 0;
+  let sum = { ...base }, left = points, cur = f(sum) || 0, at = performance.now();
   const from = cur, nodes = [], attrs = {}, steps = [];
+  const due = () => tick && performance.now() - at > 40, pause = async () => { await tick({ spent: points - left, left, value: cur }); at = performance.now(); };
   while (left > 0 && !stop?.()) {
     // every passive within reach of the points left, and the way to it
     const dist = new Map([...have].map(u => [u, 0])), prev = new Map(), q = [...have];
@@ -111,6 +113,7 @@ export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [
       const st = statsOf(id, attr), k = st === N[id].stats ? sigOf(id) : st === NONE ? '' : JSON.stringify(st);
       if (!memo.has(k)) memo.set(k, k === '' || k === '{}' ? 0 : gain(st));
       if (memo.get(k) > eps) own.set(id, memo.get(k));
+      if (due()) await pause();
     }
     // candidates: the way to each useful passive, then growing over useful passives next to it, best first
     let pick = null;
@@ -123,6 +126,8 @@ export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [
       if (g > eps && (!pick || r > pick.r + eps || Math.abs(r - pick.r) <= eps && g > pick.g)) pick = { ids: [...ids], g, r };
     };
     for (const u of own.keys()) {
+      if (due()) await pause();
+      if (stop?.()) break;
       const ids = []; for (let x = u; dist.get(x) > 0; x = prev.get(x)) ids.push(x);
       ids.reverse(); rate(ids);
       const set = new Set(ids), edge = new Map();
@@ -133,7 +138,7 @@ export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [
         edge.delete(top); set.add(top); ids.push(top); open(top); rate(ids);
       }
     }
-    if (!pick) break;
+    if (!pick || stop?.()) break;
     for (const id of pick.ids) {
       if (N[id].type === 'attribute' && !counted.has(id) && !b.attrs?.[id]) attrs[id] = attr;
       plus(sum, statsOf(id, attr)); have.add(id); nodes.push(id);
