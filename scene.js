@@ -4793,9 +4793,9 @@ export function initScene(el, api) {
     const DK = sheet().darkness; if (DK) { me.dark = (me.dark || []).filter(u => u.until > time); const k = Math.min(n, DK - me.dark.reduce((t, u) => t + u.v, 0)); if (k > 0) { me.dark.push({ v: k, until: time + sheet().darkFor }); chaos *= 1 - k / n; n -= k; } }
     // energy shield takes the damage first; chaos damage removes twice as much of it
     const BY = hit && me.es < me.maxE / 2 ? (sheet().uDef?.bypass || 0) / 100 : 0;   // The Unleashed: that share of the hit bypasses energy shield below half of it
-    const DB = noEs ? 0 : 1;   // bypassing energy shield (bleeding, The Black Doubt's damage over time)
-    const other = (n - chaos) * (1 - BY), es0 = me.es; let e = Math.min(me.es, other * DB), left = other - e + (n - chaos) * BY; me.es -= e;
-    e = Math.min(me.es, chaos * 2 * DB); me.es -= e; left += chaos - e / 2;
+    // noEs: bypassing energy shield (bleeding, The Black Doubt's damage over time)
+    const other = (n - chaos) * (1 - BY), es0 = me.es; let e = noEs ? 0 : Math.min(me.es, other), left = other - e + (n - chaos) * BY; me.es -= e;
+    e = noEs ? 0 : Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
     const BK = d && es0 > me.es && onS('Barkskin');
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
@@ -5645,8 +5645,8 @@ export function initScene(el, api) {
   // Heartstopper: 50% less damage over time for a second after it starts, 50% more after (its start: none in the tick before)
   // Keeper of the Arc: less damage over time taken every other 5 s, the ones without its less damage from hits
   function heart() {
-    const KA = sheet().uDef?.alt && Math.floor(time / 5) % 2 === 1 ? 1 + sheet().uDef.alt / 100 : 1;
-    if (!sheet().heart) return KA;
+    const S = sheet(), KA = S.uDef?.alt && Math.floor(time / 5) % 2 ? 1 + S.uDef.alt / 100 : 1;
+    if (!S.heart) return KA;
     if (!(time - (me.dotLast ?? -99) <= .6)) me.dotStart = time;
     me.dotLast = time; return KA * (time - me.dotStart <= 1 ? .5 : 1.5);
   }
