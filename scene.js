@@ -707,7 +707,7 @@ export function initScene(el, api) {
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const ge = (me.gloryEaten || []).filter(x => time - x.t <= 6);   // the Glory consumed in the last 6 s
     const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
-      StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0,
+      StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0, ElementalAilments: ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(st).length,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: minionsNear(),
       EnduranceConsumedRecently: (me.spentLog || []).reduce((t, x) => t + (x.c === 'endurance' && time - x.t <= RECENT ? x.n : 0), 0),
@@ -923,6 +923,10 @@ export function initScene(el, api) {
     if (a === 'stun' && !S.src && sheet().ancStun && ['rare', 'unique'].includes(d.stat.rarity)) me.ancNext = time + sheet().ancStun;   // the tree's: the next attack within its seconds is Ancestrally Boosted
     if (a === 'freeze') d.frozeBy = S;   // Brittle Armour
     if (a === 'shock' && S.dmg?.sum?.['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage']) d.stormfire = S.dmg.sum['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage'];   // Stormfire
+    // Wildfire: the ignite spreads to the enemies within its radius, never twice to one (keywords.json AilmentSpread)
+    // note: at once, its delay is not in the data
+    const WF = a === 'ignite' && S.dmg?.sum?.support_ignite_proliferation_radius;
+    if (WF) { const seen = o?.spread || new Set([d]); for (const e of dummies) if (!e.dead && !seen.has(e) && dist(e.pos, d.pos) <= WF / 10) { seen.add(e); inflict(e, 'ignite', S, k, raw, { ...o, spread: seen }); } }
     const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
     const US = a === 'armour' && S.dmg?.sum?.['support_demolisher_physical_damage_taken_+%_on_fully_armour_breaking_up_to_20%']; if (US) d.smelt = Math.min(20, (d.smelt || 0) + US);   // Uruk's Smelting: increased physical damage taken, for good, up to 20%
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
@@ -2193,7 +2197,7 @@ export function initScene(el, api) {
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
           const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100); sw = 1;
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -2222,7 +2226,7 @@ export function initScene(el, api) {
       n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (SU['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) {
         // Last Gasp, Tecrod's Revenge: a persistent one fights on for its time at 0 life, then dies
-        const LG = e.keep && SU.support_last_gasp_duration_ms; if (LG) { this.life = 0; later(LG / 1000, () => { e.dead = e.slain = true; }); } else e.dead = e.slain = true; } } }] });
+        const LG = e.keep && SU.support_last_gasp_duration_ms; if (LG) { this.life = 0; e.lg = SU['support_last_gasp_attack_and_cast_speed_+%_while_undying'] || 0; later(LG / 1000, () => { e.dead = e.slain = true; }); } else e.dead = e.slain = true; } } }] });
     objs.push(e); return e;
   }
   // Plague Bearer: while on, stores its % of the poison damage you deal, up to its most; used again, it unleashes the
@@ -2344,6 +2348,8 @@ export function initScene(el, api) {
   // for that share of its life as fire in its area; Crater opens its fissures, a hit of its own each (their length and
   // spread the slam's: the data gives none) that last its duration
   function landed(S, c) {
+    const HD = S.dmg?.sum?.support_holy_descent_consecrated_ground_on_landing_radius;   // Holy Descent: Consecrated Ground where you land
+    if (HD) ground('consecrated', c, HD / 10, S.dmg.sum.support_holy_descent_consecrated_ground_base_duration_ms / 1000, S);
     for (const T of S.dmg?.trig || []) {
       const ts = T.stats || {};
       if (ts.corpse_explosion_monster_life_permillage_fire) {
@@ -4358,6 +4364,7 @@ export function initScene(el, api) {
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
+    const EB = !auto && S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebar = { until: time + (S.dmg.speed ? 1 / S.dmg.speed : SIM.castTime), s: EB / 1000 };   // Energy Barrier: while you use it
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
@@ -5230,7 +5237,7 @@ export function initScene(el, api) {
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
-    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } }   // "if you haven't been Stunned Recently"; Volatility when Stunned
+    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } if (time < me.ebar?.until) me.ebarT = time + me.ebar.s; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
@@ -5728,7 +5735,7 @@ export function initScene(el, api) {
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
     else if (c.lifeRecharge && !c.vaal && me.life < RL && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(RL, me.life + c.lifeRecharge * dt);   // Eternal Youth
-    else if (me.es < E && time - Math.max(me.esHurt ?? me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1)) me.esRech ??= time, me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
+    else if (me.es < E && (time < (me.ebarT ?? -99) || time - Math.max(me.esHurt ?? me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1))) me.esRech ??= time, me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;

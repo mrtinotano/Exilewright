@@ -89,7 +89,9 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
   'support_vitality_life_regeneration_rate_per_minute_%': 'life_regeneration_rate_per_minute_%', 'support_herbalism_life_recovery_+%_from_life_flasks': 'flask_life_to_recover_+%',
   // Thornskin, Warm Blooded, Cool Headed, Strong Hearted
   'support_thorns_spirit_cost_thorns_damage_+%': 'thorns_damage_+%', 'support_freeze_protection_spirit_cost_freeze_duration_on_self_+%_final': 'self_freeze_duration_+%_final',
-  'support_ignite_protection_spirit_cost_ignite_duration_on_self_+%_final': 'self_ignite_duration_+%_final', 'support_shock_protection_spirit_cost_shock_duration_on_self_+%_final': 'self_shock_duration_+%_final' };
+  'support_ignite_protection_spirit_cost_ignite_duration_on_self_+%_final': 'self_ignite_duration_+%_final', 'support_shock_protection_spirit_cost_shock_duration_on_self_+%_final': 'self_shock_duration_+%_final',
+  // Mysticism, Direstrike
+  'support_spell_damage_spirit_cost_spell_damage_+%_on_full_energy_shield': 'spell_damage_+%_while_es_full', 'support_attack_damage_spirit_cost_attack_damage_+%_on_low_life': 'attack_damage_+%_when_on_low_life' };
 export function skillStats(b) {
   const out = motes(b);
   for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent'))
@@ -1432,6 +1434,9 @@ export function skill(g, b, treeGear) {
   const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
   if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
   if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
+  // Excoriate (melee), Elemental Armament III (attacks): more damage per elemental ailment on the enemy hit
+  const EA = (tags.includes('melee') ? finals['support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0) + (attack ? finals['support_elemental_armament_attack_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0);
+  if (EA) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments' }], val: EA, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });
   const XP = v(sum, 'critical_hit_damage_+%_against_enemies_exited_your_presence_recently'); if (XP) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'ExitedPresenceRecently' }], val: XP, what: 'critBonus', w: cbW });
   // the tree's per recent use: elemental penetration per Glory skill used in the last 6 s; increased damage per Glory consumed
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
@@ -1626,7 +1631,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   }
   for (const s of ['freeze', 'shock']) if (F(`base_consume_enemy_${s}_on_hit`)) consume[s] ||= {};
   const sumOf = re => keys.filter(k => re.test(k)).reduce((t, k) => t + all(k), 0);
-  const never = a => F('never_' + a) || F('active_skill_never_freeze_shock_ignite') && ['freeze', 'shock', 'ignite'].includes(a);
+  const never = a => F('never_' + a) || (F('active_skill_never_freeze_shock_ignite') || F('cannot_inflict_elemental_ailments')) && ['freeze', 'shock', 'ignite'].includes(a);   // Excoriate, Elemental Armament III
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
