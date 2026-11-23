@@ -1382,7 +1382,7 @@ export function skill(g, b, treeGear) {
   // Uhtred's Constellation adds its uses to a skill that is not instant
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
   if (st._cooldown_ms) {
-    out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
+    out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit) + (GEM[g.name]?.types?.includes('CommandsMinions') ? v(sum, 'minion_command_skill_cooldown_speed_+%') : 0)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
     // Second Wind: less recovery rate, twice the uses (support_double_number_of_cooldown_uses)
     out.uses = ((st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags) + (d.cast_time_ms ? v(sum, 'support_added_cooldown_count_if_not_instant') : 0)) * ((g.supports || []).some(n => SK.skills[n]?.flags?.includes('support_double_number_of_cooldown_uses')) ? 2 : 1);
     out.useTime = out.speed && 1 / out.speed;   // the game's "Attack time", apart from the cooldown
@@ -1678,7 +1678,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     bleedBase: sum.keystone_crimson_assault ? 1 : null, bleedAgg: !!(sum.keystone_crimson_assault || sum.aggravate_inflicted_bleeding),   // Crimson Assault: 50% more, a 1 second base duration, always Aggravated (Apron of Emiran: Aggravated)
     shockTime: scale(['shock_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'shock_duration_+%_final'),
     chillTime: scale(['chill_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'chill_duration_+%_final'),
-    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: 1 + all('pin_duration_+%') / 100,
+    freezeTime: scale(['freeze_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'freeze_duration_+%_final'), pinTime: (1 + all('pin_duration_+%') / 100) * (1 + all('support_pin_pin_duration_+%_final') / 100),
     igniteTime: scale(['ignite_duration_+%', 'ignite_shock_chill_duration_+%', 'base_elemental_status_ailment_duration_+%'], 'damaging_ailment_duration_+%_final') / FB,
     bleedTime: scale(['base_bleed_duration_+%'], 'damaging_ailment_duration_+%_final') / FBl,   // and Bleeding's own faster
     poisonTime: scale(['base_poison_duration_+%'], /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less

@@ -1559,6 +1559,7 @@ export function initScene(el, api) {
   // Rime: an enemy in the chilled ground of a skill it supports builds up freeze as though dealing its less damage
   const rimeOn = d => 1 + (grounds.find(g => !g.dead && g.type === 'chilled' && dist(g, d.pos) <= g.r && g.S?.dmg?.sum?.['chilled_ground_applies_%_freeze_multiplier_taken'])?.S.dmg.sum['chilled_ground_applies_%_freeze_multiplier_taken'] || 0) / 100;
   function ground(type, c, r, dur, S, grow) {   // grow: its area +per% a second, up to +max% (Creeping Chill)
+    const EG = S?.dmg?.sum?.['support_ground_effect_area_of_effect_+%_final_per_second']; if (EG && !grow) grow = { per: EG, max: S.dmg.sum['support_ground_effect_area_of_effect_+%_final_per_second_max'] };   // Encroaching Ground
     if (grounds.length >= 40) grounds[0].dead = true;
     const [col, tex, dark] = GFX[type];
     const decal = fx.decal(c, r, tex, col, { a: dark ? .85 : .5, dark, k: 1.2, pulse: dark ? 0 : 5, y: .031 + (grounds.length % 20) * .0005 });
@@ -2196,7 +2197,7 @@ export function initScene(el, api) {
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
-          const PO = painOn(e), MX = PO ? { ...MS, mult: MS.mult * (1 + PO['pain_offering_damage_+%'] * offerX() / 100) } : MS;
+          const PO = painOn(e), NC = 1 + (S.dmg?.sum?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100, MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
@@ -2817,7 +2818,8 @@ export function initScene(el, api) {
         const ps = S.dmg?.part || {};
         for (let k = 1; k <= cs; k++) later(k * ps.aftershock_delay_ms / 1000, () => boom(c, R + k * ps['aftershock_radius_+_per_previous_aftershock'] / 10, S));
         // Tremors (and Titan's Earthbreaker): its independent chances for one, two and three more Aftershocks, each the slam's damage in its area after it (keywords.json)
-        const TR = !S.src && S.dmg?.sum, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3], ['your_slam_aftershock_chance_%', 1]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) ? k : 0), 0) + (Math.random() * 100 < (sh(S).aftershock || 0) ? 1 : 0) : 0;
+        // Reverberate: those chances increased per 250 ms of its attack time
+        const TR = !S.src && S.dmg?.sum, RV = TR ? 1 + (TR['chance_to_aftershock_+%_per_250_ms_attack_time'] || 0) * Math.floor((S.dmg.speed ? 1 / S.dmg.speed : 0) / .25) / 100 : 1, n = TR ? [['support_slam_chance_for_one_additional_aftershock_%', 1], ['support_slam_chance_for_two_additional_aftershocks_%', 2], ['support_slam_chance_for_three_additional_aftershocks_%', 3], ['your_slam_aftershock_chance_%', 1]].reduce((n, [w, k]) => n + (Math.random() * 100 < (TR[w] || 0) * RV ? k : 0), 0) + (Math.random() * 100 < (sh(S).aftershock || 0) * RV ? 1 : 0) : 0;
         // the tree's increased Aftershock area of the Slams you use yourself
         const AR = TR ? Math.sqrt(1 + (TR['your_aftershock_area_of_effect_+%'] || 0) / 100) : 1;
         for (let k = 1; k <= n; k++) later(.42 * k, () => { say(t('Aftershock of {0}', S.label), S.el); boom(c, R * AR, S); });
@@ -4364,7 +4366,7 @@ export function initScene(el, api) {
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
-    const EB = !auto && S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebar = { until: time + (S.dmg.speed ? 1 / S.dmg.speed : SIM.castTime), s: EB / 1000 };   // Energy Barrier: while you use it
+    if (!auto) { const T = S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime; me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
     used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
@@ -4894,6 +4896,10 @@ export function initScene(el, api) {
   function hurt(n, chaos, el, crit, d, hit = false, noEs = false) {
     if (!(n > 0)) return;
     if (time < me.helb?.until) me.helb.n += n;   // Helbrym's Composure stores the damage taken
+    // Unyielding (attacks), Unbending (spells): a share of the damage taken while you use it Recouped, per 250 ms of its use time
+    if (time < me.use?.until) { const A = me.use.S, U = A.dmg?.sum || {}, RT = sheet().recoup?.time || 8;
+      for (const [r, w, ok] of [['life', 'damage_taken_%_recouped_as_life_while_performing_attack_per_250_ms_attack_time', A.P?.attack], ['mana', 'damage_taken_%_recouped_as_mana_while_performing_spell_per_250_ms_cast_time', A.P?.spell]])
+        if (ok && U[w]) { const x = n * U[w] * me.use.k / 100; me.recoup.push({ k: r, left: x, rate: x / RT }); } }
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
@@ -5237,7 +5243,7 @@ export function initScene(el, api) {
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
-    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } if (time < me.ebar?.until) me.ebarT = time + me.ebar.s; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
+    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } const EB = time < me.use?.until && me.use.S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebarT = time + EB / 1000; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
@@ -5297,7 +5303,7 @@ export function initScene(el, api) {
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
       const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
         return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
-      const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
+      const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
       if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
         if (sheet().stunBlind) d.st.blind = Math.max(d.st.blind || 0, BLIND.time);   // the tree's: Blind the enemy that stuns you
         me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
@@ -5447,6 +5453,9 @@ export function initScene(el, api) {
     if (c.evaDouble && meIs.NotHitRecently()) c = { ...c, evasion: (c.evasion || 0) * 2 };   // Hyrri's Ire
     if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
     if (DW.length) c = { ...c, armour: c.armour * (1 + inc('a') / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + inc('e') / 100 / (c.evasionInc || 1)) };
+    // Unabating, Untouchable: increased armour / evasion while you use it, per 250 ms of its attack time
+    const UA = time < me.use?.until ? me.use.S.dmg?.sum || {} : {}, UAa = (UA['armour_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0), UAe = (UA['evasion_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0);
+    if (UAa || UAe) c = { ...c, armour: c.armour * (1 + UAa / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + UAe / 100 / (c.evasionInc || 1)) };
     const add = {};
     for (const u of me.cu) if (u) for (const [k, v] of Object.entries(u.c.stats)) { const m = k.match(/^base_(\w+)_damage_resistance_%$/); if (m) add[m[1]] = (add[m[1]] || 0) + v; }
     if (!Object.keys(add).length || !c.res) return c;
