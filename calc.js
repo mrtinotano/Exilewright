@@ -337,7 +337,7 @@ export function character(b, sum) {
     // spirit reserved by the build's persistent skills
     reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
     es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + P('body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
-    armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: sum.base_cannot_evade ? 0 : evadeChance(evasion, lvl),   // Bramblejack: cannot evade
+    armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     evaDouble: !!sum.double_evasion_rating_if_you_havent_been_hit_recently,   // Hyrri's Ire: doubled while not hit recently (the scene checks it)
     // the increases they have, and the tree's increased armour / evasion while you are in a state (the scene checks it)
     armourInc: pct('physical_damage_reduction_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), evasionInc: pct('evasion_rating_+%', 'evasion_and_physical_damage_reduction_rating_+%', defInc), esInc,
@@ -555,6 +555,7 @@ export function character(b, sum) {
   if (sum.keystone_eldritch_battery && c.mana != null) { c.mana += c.es; c.es = 0; }
   if (sum.keystone_blood_magic && c.mana != null) c.mana = 0;
   if (sum.keystone_iron_reflexes) { c.armour += c.evasion; c.evasion = 0; c.armourPct = armourReduction(c.armour, lvl); c.evadePct = 0; }
+  if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
   if (sum.resolute_technique) c.accuracy *= 2;
   if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
@@ -1875,3 +1876,6 @@ export function snapshot(b, sum) {
     satisfy: [sum.dexterity_can_satisfy_strength_and_intelligence_requirements_of_melee_weapons_and_skills && 'dex', sum.strength_can_satisfy_dexterity_and_intelligence_requirements_of_melee_weapons_and_skills && 'str'].filter(Boolean),   // Jarngreipr: of melee weapons
     dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };
 }
+// "You cannot evade": the evasion stays, its chance does not (after another change to the evasion too)
+if (MON.length) { const b = { asc: 'Warrior', level: 80, nodes: [], gems: [] }, sum = { base_evasion_rating: 5000, 'vivisection_armour_evasion_energy_shield_+%_final': -10 }, a = character(b, sum), z = character(b, { ...sum, base_cannot_evade: 1 });
+  console.assert(a.evadePct > 0 && a.evadeMax == null && z.evasion === a.evasion && z.evadePct === 0 && z.evadeMax === 0, 'cannot evade'); }
