@@ -1160,8 +1160,9 @@ function drawSocket(c, id) {
 const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s.slice(6))), 1 + (sumOf(b)['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100).map(j => ({ ...j,
   stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {}),
   free: j.R?.free ? main.filter(j.in) : [] }));
+const sockets = () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) }));   // the allocated jewel sockets, Voices' too
 const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
-  () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })),
+  sockets,
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
@@ -1169,7 +1170,7 @@ const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, s
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
-  sockets: () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) })) });
+  sockets });
 const renderSettings = initSettings($('settings'), lootEl);
 watchUpdates($('updNote'));
 const renderFilter = initFilter($('filter'));
