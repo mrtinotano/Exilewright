@@ -2175,9 +2175,12 @@ export function initScene(el, api) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
     // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies. With its life (calc.js
     // minionLife) enemies nearer to it than to you attack it (a decoy, as Lingering Illusion), and it dies at none left.
-    // its resistances take their share off enemy hits (calc.js minionOf). note: its armour and evasion are not counted
+    // its resistances and physical damage reduction take their share off enemy hits (calc.js minionOf), its extra energy
+    // shield is lost before its life, it regenerates and Recoups (over 8 seconds: keywords.json Recoup) what the tree
+    // gives minions, and a Gigantic one is 20% bigger. note: its armour and evasion are not counted, and its energy
+    // shield does not recharge (a monster's recharge is not in the data)
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 * S.mult }, ranged = S.P.ranged;
-    f.group.position.set(p.x, 0, p.z); scene.add(f.group);
+    f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
     const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
@@ -2186,6 +2189,7 @@ export function initScene(el, api) {
         if (e.s >= life) { e.dead = true; return; }
         if (e.rhoa && me.mounted) { e.pos.x = pp.x; e.pos.z = pp.z; f.group.rotation.y = facing; return; }   // ridden: under you, no attacks
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
+        if (e.rc?.length) { const q = e.segs[0]; for (const r of e.rc) { const x = Math.min(r.left, r.rate * dt); r.left -= x; if (q.life > 0) q.life = Math.min(q.max, q.life + x); } e.rc = e.rc.filter(r => r.left > 1e-6); }
         const SA = sheet(), q0 = e.segs?.[0], AR = (SA.allyRegen || 0) * me.maxL + (SA.allyRegenOwn || 0) * (q0?.max || 0) + (SA.allyRegenBase || 0) * 100; if (AR && q0?.life > 0 && dist(e.pos, pp) <= SA.overgrow.r) q0.life = Math.min(q0.max, q0.life + AR / 6000 * dt);   // the tree's, in your Presence
         // Infernal Hound: it Ignites the enemies within its radius as though dealt its % of its maximum life as base fire
         // damage (every half second here)
@@ -2229,8 +2233,8 @@ export function initScene(el, api) {
     const L = S.dmg?.minionLife;
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
     const SU = S.dmg?.sum || {}, bear = S.name === 'Wild Protector';
-    if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0),
-      regen: bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0, segs: [{ p: e.pos, r: .3, life: L, max: L, res: S.dmg?.minion?.res, hurt(n) {
+    if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0) + (e.companion && SU['companion_takes_%_damage_before_you'] || 0),   /* the tree's Trusted Partner */
+      regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) {
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
@@ -2239,6 +2243,8 @@ export function initScene(el, api) {
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
       if (time < e.guard?.until) { const G = Math.min(e.guard.n, n); e.guard.n -= G; n -= G; }   // Arbiter's Reach: its Guard takes it first
       n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (SU['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
+      if (this.es > 0) { const k = Math.min(this.es, n); this.es -= k; n -= k; }
+      const RC = S.dmg?.minion?.recoup; if (RC && n > 0) e.rc.push({ left: n * RC / 100, rate: n * RC / 800 });
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) {
         // Last Gasp, Tecrod's Revenge: a persistent one fights on for its time at 0 life, then dies
         const LG = e.keep && SU.support_last_gasp_duration_ms; if (LG) { this.life = 0; e.lg = SU['support_last_gasp_attack_and_cast_speed_+%_while_undying'] || 0; later(LG / 1000, () => { e.dead = e.slain = true; }); } else e.dead = e.slain = true; } } }] });

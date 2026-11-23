@@ -216,7 +216,7 @@ export function totem(g, sum = {}) {
     // what each type of a hit on it loses: its resistances (up to the monsters' maximum, more with the tree's) and its additional physical damage reduction
     res: { physical: v(s, 'totem_additional_physical_damage_reduction_%'), chaos: Math.min(cap, st['totem_chaos_resistance_%'] || 0), fire: er, cold: er, lightning: er },
     duration: (st.base_totem_duration || 0) / 1000 * (1 + v(s, 'totem_duration_+%') / 100),
-    limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed')
+    limit: ((st.base_number_of_totems_allowed || 0) + v(s, 'number_of_additional_totems_allowed') + (['melee', 'attack'].every(x => GEM[g.name]?.tags?.includes(x)) ? v(s, 'melee_attack_skills_additional_totems_allowed') : 0)   // Ancestral Artifice
       + (T.ballista ? v(s, 'additional_ballista_totems_allowed', 'attack_skills_additional_ballista_totems_allowed') : 0)) * (s.keystone_ancestral_bond ? 2 : 1),   // Ancestral Bond: doubled
   };
 }
@@ -374,7 +374,7 @@ export function character(b, sum) {
     chargeFill: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, v(sum, `gain_maximum_${c}_charges_on_${c}_charge_gained_%_chance`)])),   // the chance to gain the most of that kind
     res, penalty,
     // the armour's movement penalty is apart from the increases (the game's panel, 17/11: 25% boots, -4% body armour: +20.0%)
-    move: (1 + (v(sum, 'base_movement_velocity_+%') - armourItems(b.items).movement) / 100) * (1 + armourItems(b.items).movement / 100) * 100 - 100,
+    move: (1 + (v(sum, 'base_movement_velocity_+%') - worn.movement) / 100) * (1 + (sum.ignore_armour_movement_penalties ? 0 : worn.movement) / 100) * 100 - 100,   // Momentum: no penalty
     attackSpeed: v(sum, 'attack_speed_+%', 'attack_and_cast_speed_+%'),
     castSpeed: v(sum, 'base_cast_speed_+%', 'attack_and_cast_speed_+%'),
     critInc: v(sum, 'critical_strike_chance_+%'),
@@ -1542,11 +1542,11 @@ export function skill(g, b, treeGear) {
     + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   out.shape = { chains: (both('number_of_chains') + (attack ? v(sum, 'attacks_num_of_additional_chains') : 0) + (own.includes('lightning') ? v(sum, 'lightning_skill_additional_chains') : 0)) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
-    projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') : null,
+    projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') + (own.includes('grenade') ? v(sum, 'grenade_skill_number_of_additional_projectiles') : 0) : null,   // Cluster Bombs
     // the tree's chances for more projectiles: "Surpassing" (each full 100% one more, the rest a chance), with bow
     // attacks too; spells' chance for 2 more
     // the tree's chance for another Aftershock with Mace Slams or Shapeshift Slams (as "your_slam_aftershock_chance_%", by the scene)
-    aftershock: own.includes('slam') ? (tags.includes('mace') && attack ? v(sum, 'your_mace_slam_aftershock_chance_%') : 0) + (own.includes('shapeshift') ? v(sum, 'shapeshift_slam_skill_aftershock_chance_%') : 0) : 0,
+    aftershock: own.includes('slam') ? v(sum, 'slam_aftershock_chance_%') + (tags.includes('mace') && attack ? v(sum, 'your_mace_slam_aftershock_chance_%') : 0) + (own.includes('shapeshift') ? v(sum, 'shapeshift_slam_skill_aftershock_chance_%') : 0) : 0,
     extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0),
       two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (sum.keystone_hex_master ? 2 : 1)),
@@ -1636,8 +1636,10 @@ export function skill(g, b, treeGear) {
   // Tactician's aura the same for every Ally in your Presence
   const cw = (msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions')) + v(sum, 'aura_grant_%_base_main_hand_attack_damage_to_nearby_allies'), W = cw && weaponStats(b.items);
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
-  const mn = out.minion = mid ? minionOf(st, msum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
-  out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
+  const gsum = mid && (flags.has('minions_are_gigantic') || flags.has('companions_are_gigantic')) ? { ...msum, minions_are_gigantic: 1 } : msum;   // Hulking Minions, Tangmazu's Thurible
+  const mn = out.minion = mid ? minionOf(st, gsum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
+  out.minionLife = mid ? minionLife(st, gsum, mid, finals) : null;
+  if (mn) out.ail = { ...out.ail, stun: out.ail.stun * (1 + mn.stun / 100), breakPct: out.ail.breakPct + mn.breakPct };   // the tree's Minions' Stun buildup and Armour Break
   out.minionUndead = !!mid && enemy(mid)?.category === 'Undead';   // monsters.json category (Kulemak's Sovereignty)
   if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
   if (mn) {
@@ -1781,8 +1783,9 @@ function minionLife(st, sum, id, finals = {}) {
   const ms = minionStats(st, { ...sum, ...finals }, {});   // a support's "more" life too (Loyalty, Minion Mastery)
   return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
     * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1)
-    * (sum.keystone_kulemaks_sovereignty && m.category === 'Undead' ? .75 : 1));   // Kulemak's Sovereignty: Undead minions 25% less
+    * (sum.keystone_kulemaks_sovereignty && m.category === 'Undead' ? .75 : 1) * (ms.is_gigantic ? 1 + GIGANTIC / 100 : 1));   // Kulemak's Sovereignty: Undead minions 25% less
 }
+const GIGANTIC = 20;   // note: keywords.json Gigantic: 20% more maximum life, 20% more damage (and size: the scene's)
 // "Companions gain X% of Damage as extra Chaos / Cold" have no "Minions" twin: the companion's own stat ("minion:")
 const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%_to_gain_as_chaos', 'companion_%_damage_as_cold': 'minion:non_skill_base_all_damage_%_to_gain_as_cold' };
 const companion = sum => { const out = { ...sum }; for (const [k, x] of Object.entries(sum)) if (k.startsWith('companion_')) { const m = OWN[k] || 'minion_' + k.slice(10); out[m] = (out[m] || 0) + x; } return out; };
@@ -1817,9 +1820,10 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   // "gain X% of Damage as extra <type>" (Companions'), of the damage after conversion
   const pre = DMG.map(t => base[t]), all = [0, 1].map(i => pre.reduce((x, r) => x + r[i], 0));
   for (const t of DMG) { const g = v(ms, `non_skill_base_all_damage_%_to_gain_as_${t}`); if (g) base[t] = base[t].map((x, i) => x + all[i] * g / 100); }
+  const ec = v(ms, 'non_skill_base_elemental_damage_%_to_gain_as_chaos'); if (ec) base.chaos = base.chaos.map((x, i) => x + (pre[1][i] + pre[2][i] + pre[3][i]) * ec / 100);   // Forbidden Path: of their elemental damage
   const scale = t => (1 + (inc(ms, 'damage_+%', tags) + v(ms, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(ms, 'elemental_damage_+%') : 0)) / 100)
     * (1 + v(ms, 'damage_+%_final_for_minion') / 100) * (1 + v(st, 'active_skill_minion_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t)
-    * (1 + (fin['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100);   // Commandment: none with its own attacks
+    * (1 + (fin['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (ms.is_gigantic ? 1 + GIGANTIC / 100 : 1);   // Commandment: none with its own attacks
   const hits = {};
   for (const t of DMG) if (base[t][1]) hits[t] = base[t].map(x => Math.round(x * scale(t)));
   const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
@@ -1828,7 +1832,13 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   // its resistances: the monster's own (up to the monsters' maximum, more with its maximum) and what the build gives minions
   const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map((e, i) => [e, Math.min((MON_K.monster_max_resistance ?? 75) + (e === 'chaos' ? 0 : v(ms, `base_maximum_${e}_damage_resistance_%`, 'additional_maximum_all_elemental_resistances_%')),
     (m.res?.[i] || 0) + v(ms, `base_${e}_damage_resistance_%`) + (e === 'chaos' ? 0 : v(ms, 'base_resist_all_elements_%')))]));
-  return { name: m.name, level, hits, res, speed: Math.min(speed / period, a.cooldown ? 1 / a.cooldown : Infinity),
+  res.physical = v(ms, 'base_additional_physical_damage_reduction_%');
+  // what keeps it alive, for the scene: life regenerated a minute and damage taken Recouped (both %, with its life
+  // recovery rate), its share of life as extra energy shield; its Stun buildup and Armour Break
+  const rec = 1 + v(ms, 'life_recovery_rate_+%') / 100;
+  return { name: m.name, level, hits, res, gigantic: !!ms.is_gigantic, regen: v(ms, 'life_regeneration_rate_per_minute_%') * rec, recoup: v(ms, 'damage_taken_goes_to_life_over_4_seconds_%') * rec,
+    es: v(ms, 'maximum_life_%_to_gain_as_maximum_energy_shield'), stun: v(ms, 'hit_damage_stun_multiplier_+%'), breakPct: v(ms, 'armour_break_physical_damage_%_dealt_as_armour_break'),
+    speed: Math.min(speed / period, a.cooldown ? (1 + v(ms, 'base_cooldown_speed_+%') / 100) / a.cooldown : Infinity),
     crit: Math.min(100, a.crit * (1 + inc(ms, 'critical_strike_chance_+%', tags) / 100)),
     critBonus: a.critBonus + v(ms, 'base_critical_hit_damage_bonus') + inc(ms, 'critical_strike_multiplier_+', tags) };
 }
@@ -1838,6 +1848,9 @@ if (SK.minions['Raise Zombie']) {
   const z = skill({ name: 'Raise Zombie', level: 20, supports: [] }, { gems: [], items: {} }, {}), r = skill({ name: 'Raging Spirits', level: 20, supports: [] }, { gems: [], items: {} }, { 'minion_damage_+%': 20 });
   console.assert(z.minion?.level === 40 && z.hits.physical?.join() === '107,198' && Math.abs(z.speed - .8) < 1e-9 && z.critBonus === 100
     && r.hits.fire?.join() === '96,144' && r.hits.physical?.join() === '41,62' && Math.abs(r.speed - 1.4) < 1e-9, 'minion damage', z, r);
+  // Gigantic (the tree's, Hulking Minions): 20% more damage and life; the tree's physical damage reduction, regeneration and Recoup are the minion's
+  const G = s => skill({ name: 'Raise Zombie', level: 20, supports: s ? ['Hulking Minions'] : [] }, { gems: [], items: {} }, s ? {} : { minions_are_gigantic: 1, 'minion_additional_physical_damage_reduction_%': 12, 'minion_life_regeneration_rate_per_minute_%': 180, 'minion_life_recovery_rate_+%': -10, 'minion_damage_taken_%_recouped_as_their_life': 15 }), g = G(), h = G(1);
+  console.assert([g, h].every(x => x.minion.gigantic && Math.abs(x.dps - z.dps * 1.2) < z.dps * .01 && Math.abs(x.minionLife - z.minionLife * 1.2) <= 1) && g.minion.res.physical === 12 && g.minion.regen === 162 && g.minion.recoup === 13.5 && !z.minion.gigantic, 'gigantic minions', g.minion, h.minion);
   // life: a level 2 zombie (gem level 1) has floor(83 x 0.7) = 58, as PoB2's (RaisedZombie life 0.7); 50% increased: 87
   const l = n => skill({ name: 'Raise Zombie', level: 1, supports: [] }, { gems: [], items: {} }, n ? { 'minion_maximum_life_+%': n } : {}).minionLife;
   console.assert(l() === 58 && l(50) === 87, 'minion life', l(), l(50));

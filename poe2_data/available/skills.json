@@ -40849,6 +40849,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "companions_are_gigantic"
+   ],
    "meta_support": null
   },
   "Midnight Zenith": {
@@ -124485,6 +124488,9 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "flags": [
+    "minions_are_gigantic"
+   ],
    "meta_support": null
   },
   "Caltrops": {

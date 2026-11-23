@@ -895,9 +895,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // half of it for some Accuracy). Cheapest first.
     // ponytail: no exchange rates, a price in another currency goes by its place in the site's list of currencies
     // (Exalted, Chaos, Divine); the Currency Exchange's rates if mixed prices matter
-    const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
+    const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), rel = (a, z) => a ? z / a : z ? 2 : 1, d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
     const all = res.found.map((l, i) => { const items = { ...B.items, [slot]: { ...l.item, extra: worn?.extra || {} } }, z = snapOf(items), d = dmg(z), tz = trade.tough(items);
-      return { l, i, rows: diff(now, z), net: (d0 ? d / d0 : d ? 2 : 1) * (t0 ? tz / t0 : tz ? 2 : 1), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
+      return { l, i, rows: diff(now, z), net: rel(d0, d) * rel(t0, tz), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
     const rated = all.filter(x => Math.abs(x.net - 1) <= .005 ? !x.rows.length || x.rows.some(r => r.d > 0) : x.net > 1).sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1]), worse = all.length - rated.length;
     return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
