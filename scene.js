@@ -2262,7 +2262,7 @@ export function initScene(el, api) {
   // (note: what its defences take off is not in the data); else any hit bursts it
   const avgHit = by => Object.values(by.dmg?.hits || {}).reduce((t, [a, b]) => t + (a + b) / 2, 0) * (by.mult ?? 1);
   // an Ice Crystal's life: its skill's (Frost Wall, Grim Pillars, Frozen Locus), increased and more (Icicle, Glacier)
-  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + (S.dmg?.sum?.['support_glacier_ice_crystal_maximum_life_+%_final'] || 0) / 100) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
+  const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
     * Object.entries(S.dmg?.finals || {}).reduce((m, [k, x]) => k.endsWith('ice_crystal_maximum_life_+%_final') ? m * (1 + x / 100) : m, 1);
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
