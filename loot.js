@@ -115,7 +115,7 @@ export function initLoot(el, ctx) {
   }
   // serve.py's window over the game. It waits for an answer to every item it passes on: nothing to show is one too
   // always sent: the app's window over the game may come up after the page asked (serve.py answers 403 when there is none)
-  const say = v => { fetch('overlay', { method: 'POST', body: JSON.stringify(v) }).catch(() => {}); };
+  const say = v => fetch('overlay', { method: 'POST', body: JSON.stringify(v) }).catch(() => {});
 
   const fromBuild = () => { S.on = structuredClone(ctx.build().items || {}); keep(); };
   // ---------- items coming in
@@ -158,7 +158,7 @@ export function initLoot(el, ctx) {
     show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
   };
   async function priceCheck(text) {
-    const show = v => { fetch('overlay', { method: 'POST', body: JSON.stringify({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v }) }).catch(() => {}); };
+    const show = v => say({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v });
     text = text.replace(/\r/g, '').trim();
     // a gem or a waystone of its own (rare, magic): by the site's filters of them; else what stacks: on the Currency Exchange
     const G = gemOf(text), W = !G && wayOf(text), B = !G && !W && bulkOf(text);
