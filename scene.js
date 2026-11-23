@@ -453,7 +453,9 @@ export function initScene(el, api) {
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
       // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
       // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
-      const c = sheet(), far = /minion|totem/.test(S.src) ? 0 : falloff(d), acc = c.accuracy * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
+      // the tree's increased accuracy in a state and its accuracy against Bleeding enemies: your own attacks'
+      const c = sheet(), mine = !/minion|totem/.test(S.src), far = mine ? falloff(d) : 0, accIn = mine ? (c.accWhen || []).reduce((t, w) => t + (condN(w.cond, d, S) ? w.val : 0), 0) : 0;
+      const acc = (c.accuracy + (mine && c.accBleed && has(d, 'bleed') ? c.accBleed : 0)) * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100 + accIn) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       const NE = c.noEvade, sure = NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
@@ -705,7 +707,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Stunned: st('stun') || d.lstun > time, Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: d.slows?.some(x => x.until > time && x.pct < 0),
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -1250,7 +1252,7 @@ export function initScene(el, api) {
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
   // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
   // maximum life and mana
-  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0)) / 100) / 100;
+  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
     return !d.dead && (S.P.culls || !S.src && (S.P.attack && sheet().cullBow || sheet().cullMark && d.mark) || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
@@ -5159,7 +5161,7 @@ export function initScene(el, api) {
       const PN = sheet().parryNext; if (PN) me.parryNext = a.shape === 'projectile' ? PN.melee && { melee: PN.melee } : a.melee && PN.ranged ? { ranged: PN.ranged } : me.parryNext;   // the tree's: your next attack of the other kind
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
-    } else { R.blocked = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
+    } else { R.blocked = me.rblockAt = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
     blocked(d); return true;
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
@@ -5207,7 +5209,8 @@ export function initScene(el, api) {
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
     // deals its less damage
-    const DF = c.deflect && deflection(c.deflMove && meIs.Moving() ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + c.deflMove / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
+    const DFW = (c.deflMove && meIs.Moving() ? c.deflMove : 0) + (c.deflSurr && meIs.Surrounded() ? c.deflSurr : 0);   // increased deflection rating while moving, while Surrounded
+    const DF = c.deflect && deflection(DFW ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + DFW / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
@@ -5451,7 +5454,7 @@ export function initScene(el, api) {
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
-    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, Parrying: () => time < (me.parry?.until ?? -9), ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
+    PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, RaisedBlockRecently: () => time - (me.rblockAt ?? -99) <= RECENT, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, Parrying: () => time < (me.parry?.until ?? -9), ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
     ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.stunAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
     NoLifeFlaskUses: () => !!flasks()[0] && flaskLeft(0) < flasks()[0].per,
     Shapeshifted: () => !!me.form || !!me.demon, ShapeshiftedRecently: () => time - (me.shiftAt ?? -99) <= RECENT, RevertedRecently: () => time - (me.revertAt ?? -99) <= RECENT,
@@ -5475,6 +5478,7 @@ export function initScene(el, api) {
   const speedWhile = b => 1 + prowess().length / 10 + ((sheet().speedWhile || []).filter(w => w.to.includes(b.P.spell ? 'c' : 'a') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) + (b.P.spell ? Math.min(30, (sheet().echoSpeed || 0) * (me.echoed || []).filter(at => time - at <= RECENT).length) : 0)) / 100;   // and per spell Echoed recently
   function withCharms(c) {
     const MB = magma()?.dmg.stats['skill_igneous_shield_grants_block_chance_+%']; if (MB) c = { ...c, block: (c.block || 0) * (1 + MB / 100) };
+    const BW = (c.blockWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0); if (BW) c = { ...c, block: (c.block || 0) * (1 + BW / 100 / (c.blockInc || 1)) };   // the tree's increased block chance while in a state
     const AE = banner('armour_evasion_+%_final'), PL = plates() * (plating()?.['scavenged_plating_armour_+%_final_per_stack'] || 0), MR = banner('additional_maximum_all_elemental_resistances_%'), BR = banner('resist_all_elements_%'), WE = Math.floor(me.wind) * (onS('Wind Dancer')?.dmg.stats['wind_dancer_evasion_rating_+%_final_per_stage'] || 0);
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
     const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
@@ -5658,7 +5662,7 @@ export function initScene(el, api) {
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
-    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
+    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; if (inP && !d.inPres) d.enterAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());
     if (sheet().ordained && time - (me.fragAt ?? -9) >= DIVINE.every) { me.fragAt = time; const p = around(pp, sheet().overgrow.r); divine.push({ p, until: time + DIVINE.time, dec: fx.decal(p, .35, 'rune', 'lightning', { a: .8, spin: 1 }) }); }

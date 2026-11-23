@@ -6,7 +6,7 @@ import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
-import { initSkills } from './skills.js';
+import { initSkills, GEM } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
 import { initSettings, watchUpdates, stored, put, ask } from './settings.js';
@@ -218,7 +218,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
 const treeSum = () => sumOf(B());
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
-  const d = SK.skills[g.name] || {}, gm = gems.find(x => x.name === g.name), tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
+  const d = SK.skills[g.name] || {}, gm = GEM[g.name], tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
   for (const [k, n] of Object.entries(g.add || {})) T[k] = (T[k] || 0) + n;   // a buff the scene has on (g.add)
   const LR = T['light_radius_additive_modifiers_apply_to_area_%_value'];   // Cornathaum: increased Light Radius as area of effect at its share
   if (LR) T['base_skill_area_of_effect_+%'] = (T['base_skill_area_of_effect_+%'] || 0) + (T['light_radius_+%'] || 0) * LR / 100;
@@ -262,7 +262,7 @@ function renderStats() {
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 // a support's triggered skill (SK.skills[id].triggered_by) has no gem: its own name and types, the support's icon
-const gemInfo = g => { const d = SK.skills[g.name], gem = gems.find(x => x.name === g.name) || d?.triggered_by && { ...d, icon: gems.find(x => x.name === d.triggered_by)?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
+const gemInfo = g => { const d = SK.skills[g.name], gem = GEM[g.name] || d?.triggered_by && { ...d, icon: GEM[d.triggered_by]?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
 // and its map: { tier, mods: { id: [values] } } of a waystone's modifiers (enemies.js MAP), null when there is none
@@ -311,7 +311,7 @@ function renderSceneSkills() {
 function gemTip(t) {
   const tip = $('gtip'), g = t && B().gems[t.dataset.tip];
   if (!g) { tip.hidden = true; return; }
-  tip.innerHTML = skillTip(gems.find(x => x.name === g.name) || {}, g, B(), treeSum(), geo);
+  tip.innerHTML = skillTip(GEM[g.name] || {}, g, B(), treeSum(), geo);
   tip.hidden = false;
   const r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   tip.style.left = Math.max(4, r.right + 10 + w > innerWidth ? r.left - w - 10 : r.right + 10) + 'px';

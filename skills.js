@@ -2,15 +2,14 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, esc, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
-import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport } from './calc.js';
-export { canSupport };
+import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, GEM } from './calc.js';
+export { canSupport, GEM };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
 import { grantedSkills, SLOTS } from './items.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const GEMS = await load('gems.json');
-export const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
 export const SUPPORTS = GEMS.filter(g => g.kind === 'support');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 const ATTRS = { str: [t('Str'), 'strength', '#c44'], dex: [t('Dex'), 'dexterity', '#4a4'], int: [t('Int'), 'intelligence', '#48c'] };

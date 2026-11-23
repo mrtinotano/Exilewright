@@ -644,6 +644,7 @@ SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
 }
 armour = {a['BaseItemType']: a for a in load('ArmourTypes')}
 weapon = {w['BaseItemType']: w for w in load('WeaponTypes')}
+shield_block = {s['BaseItemType']: s['Block'] for s in load('ShieldTypes')}   # a shield's chance to block, %
 flasks = {f['BaseItemType']: f for f in load('Flasks')}
 charges = {c['BaseItemTypesKey']: c for c in load('ComponentCharges')}   # a flask's (and charm's) most charges and charges per use
 utility = load('UtilityFlaskBuffs')
@@ -674,6 +675,7 @@ for i, b in enumerate(base_types):
         'tags': sorted(set(read_it(b['InheritsFrom']) + [tags_tab[t]['Id'] for t in b['Tags']])),
         'implicits': [mods[m]['Id'] for m in b['Implicit_Mods']],
         'armour': a and {'armour': a['Armour'], 'evasion': a['Evasion'], 'energy_shield': a['EnergyShield'], 'movement_speed_%': a['IncreasedMovementSpeed']},
+        **({'block': shield_block[i]} if i in shield_block else {}),
         'img': visual[b['ItemVisualIdentity']]['DDSFile'] if b['ItemVisualIdentity'] is not None else None,
         'size': [b['Width'], b['Height']],
         'flask': fl and {'life': fl['LifePerUse'], 'mana': fl['ManaPerUse'], 'recovery_s': fl['RecoveryTime'] / 10, 'charges': charges[b['Id']]['MaxCharges'], 'per_use': charges[b['Id']]['PerCharge']},

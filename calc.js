@@ -126,7 +126,10 @@ function motes(b) {
 
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
-const GEM = Object.fromEntries(GEMS.map(g => [g.name, g]));
+// a gem by its name. Of several with one name the one you can cut stays (Spark and a unique's own triggered Spark), as
+// in skills.json; of the others the first (a staff's Lightning Bolt and a unique's)
+export const GEM = Object.fromEntries([...GEMS].reverse().sort((a, b) => (a.source === 'gem_cutting') - (b.source === 'gem_cutting')).map(g => [g.name, g]));
+console.assert(GEM.Spark.source === 'gem_cutting' && GEM.Unleash.kind === 'support', 'GEM: the gem you can cut');
 // self-check: 3 Strength Motes of its own, 2 for Berserk, which requires Strength alone, and 1 each for Mortar Cannon and
 // the Cluster Grenade it uses (a skill gem of its own, as PoB2 counts it), at 2% life each
 console.assert(skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Berserk' }, { name: 'Mortar Cannon' }, { name: 'Cluster Grenade' }] })['maximum_life_+%'] === 14 && skillStats({ gems: [{ name: 'Virtuous Barrier' }, { name: 'Ancestral Warrior Totem' }, { name: 'Orb of Storms' }] })['life_regeneration_rate_+%'] === 25 && !Object.keys(skillStats({ gems: [{ name: 'Berserk' }] })).length, 'Virtuous Barrier Motes');
@@ -324,6 +327,7 @@ export function character(b, sum) {
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
   const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items?.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
+  const worn = armourItems(b.items), blockInc = 1 + (v(sum, 'block_chance_+%') + Math.floor(worn.armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours')) / 100;
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
     // stun / ailment threshold from the gear: the lowest of the helmet's (boots') evasion and armour, a share of the armour
@@ -344,8 +348,11 @@ export function character(b, sum) {
     defWhile: DEF_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     speedWhile: SPEED_WHILE.filter(([k]) => sum[k]).map(([k, to, cv]) => ({ to, cv, val: sum[k] })),
     moveWhile: MOVE_WHILE.filter(([k, cv]) => sum[k] && (cv === 'Green10' ? SN.dex >= 10 : cv || weaponStats({ weapon: b.items?.offhand }))).map(([k, cv]) => ({ cv: cv === 'Green10' ? null : cv, val: sum[k] })),
-    block: sum.cannot_block ? 0 : (v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'block_chance_from_equipped_shield_is_%') : 0) + (classOf(b.items?.offhand) === 'Foci' ? v(sum, 'additional_block_chance_%_while_holding_focus') : 0))
-      * (1 + Math.floor(armourItems(b.items).armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours') / 100),   // Stone of Lazhwar; Ironbound's increased per 100 armour of your armour items; Renly's Training: the shield's base chance (note: a shield's own is not in the data)
+    // block: the shield's own chance (Renly's Training: its value instead) and what adds to it (Stone of Lazhwar with a
+    // focus), increased by the tree's and by Ironbound's per 100 armour of your armour items; rounded as Path of Building 2
+    // does. The tree's increased while you are in a state: the scene checks it
+    block: sum.cannot_block ? 0 : Math.round((v(sum, 'additional_block_%', 'block_%') + (/^(Shields|Bucklers)$/.test(oc) ? sum['block_chance_from_equipped_shield_is_%'] || worn.block : 0) + (oc === 'Foci' ? v(sum, 'additional_block_chance_%_while_holding_focus') : 0)) * blockInc),
+    blockInc, blockWhile: BLOCK_WHILE.filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),
     avoidDmg: Object.fromEntries(DMG.map(e => [e, v(sum, `avoid_${e}_damage_%`)])),   // Perfidy: its chance to avoid a type of a hit's damage
     takenAs: takenAs(sum), physDR: v(sum, 'base_additional_physical_damage_reduction_%'),   // The Hollow Mask
     // Tactician's Stay Light, Use Cover: armour defends at 200%, evade and physical reduction capped at 50%; Pathfinder's
@@ -373,7 +380,10 @@ export function character(b, sum) {
     critInc: v(sum, 'critical_strike_chance_+%'),
     critBonus: sum.no_critical_strike_multiplier ? 0 : sum.critical_strike_multiplier_is_250 ? 250 : 100 + v(sum, 'base_critical_strike_multiplier_+'),  // documented game rule: every character has +100% base critical damage bonus
     // character.ot: accuracy per level above the first
-    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0)) * accInc * (sum.accuracy_rating_is_doubled ? 2 : 1)), accuracyInc: accInc, accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
+    accuracy: Math.round(((CHAR.accuracy_rating_per_level || 0) * (lvl - 1) + v(sum, 'accuracy_rating') + (mw?.accuracy || 0) + fromAttr('accuracy') + (sum.gain_accuracy_rating_equal_to_intelligence ? at.int : 0) + (sum.gain_accuracy_rating_equal_to_strength ? at.str : 0)) * accInc * (sum.accuracy_rating_is_doubled ? 2 : 1)), accuracyInc: accInc,
+    // the tree's increased accuracy in a state, its accuracy against Bleeding enemies (the scene checks them on each attack)
+    accWhen: ACC_WHEN.filter(([k]) => sum[k]).map(([k, cv, en]) => ({ cond: en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }, val: sum[k] })), accBleed: v(sum, 'accuracy_rating_vs_bleeding_enemies') * accInc * (sum.accuracy_rating_is_doubled ? 2 : 1),
+    accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
     // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
       'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
@@ -608,7 +618,7 @@ export function recovery(c, sum) {
     noManaLeech: !!sum.base_cannot_leech_mana,   // Lochtonial Caress
     shrineEvery: sum.local_gain_shrine_buff_every_10_seconds ? 10 : 0,   // The Hammer of Faith: a random lesser Shrine buff every 10 s (its stat's name)
     redflare: !!sum.gain_power_charge_per_second_if_have_not_lost_power_charge_recently, stunPerRage: v(sum, 'stun_threshold_+%_per_rage'),   // Redflare Conduit; Wings of Caelyn
-    projBlock: v(sum, 'block_chance_+%_against_projectiles'), luckyBlock: !!sum.base_block_chance_luck, luckyDeflLow: !!sum.deflect_chance_is_lucky_while_on_low_life, deflMove: v(sum, 'deflection_rating_+%_while_moving'),   // Rondel de Ezo, Svalinn, The Auspex, Atziri's Step
+    projBlock: v(sum, 'block_chance_+%_against_projectiles'), luckyBlock: !!sum.base_block_chance_luck, luckyDeflLow: !!sum.deflect_chance_is_lucky_while_on_low_life, deflMove: v(sum, 'deflection_rating_+%_while_moving'), deflSurr: v(sum, 'deflection_rating_+%_while_surrounded'),   // Rondel de Ezo, Svalinn, The Auspex, Atziri's Step; the tree's
     noLightStun: !!sum.cannot_be_light_stunned, noStunDeflected: !!sum.cannot_be_light_stunned_by_deflected_hits, loseRage: !!sum.lose_all_rage_on_reaching_maximum_rage, onsAlways: !!sum.base_should_have_onslaught_from_stat,   // Eye of Chayula, Atziri's Step, Hateforge, Thrillsteel
     perHit: { life: v(sum, 'base_life_gain_per_target'), mana: v(sum, 'mana_gain_per_target') },   // The Lethal Draw, Thief's Torment: per enemy hit with attacks
     leechChaos: !!sum.life_leech_recovers_based_on_your_chaos_damage_instead_of_physical_damage, leechLightning: !!sum.life_leech_also_recovers_based_on_lightning_damage, manaLeechCrit: v(sum, 'mana_leech_amount_+%_if_crit_recently'),   // Spire of Ire, The Ordained, Nightscale
@@ -622,7 +632,7 @@ export function recovery(c, sum) {
     noEvade: { heavy: !!sum.hits_cannot_be_evaded_vs_heavy_stunned_enemies, pin: !!sum.pinned_enemies_cannot_evade_your_attacks }, noCrit: { pin: !!sum.pinned_enemies_cannot_crit, mark: !!sum.marked_enemies_cannot_deal_critical_strikes },
     oneDmgAil: !!sum.cannot_have_more_than_1_damaging_ailment, igniteSelf: !!sum.ignites_reflected_to_self, armBreakTaken: v(sum, 'armour_break_taken_+%'),
     groundTaken: { fire: v(sum, 'enemies_in_chilled_ground_take_+%_fire_damage'), cold: v(sum, 'enemies_in_ignited_ground_take_+%_cold_damage') },
-    cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
+    cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), cullImmob: v(sum, 'culling_strike_threshold_+%_vs_immobilised_enemies'), cullRare: v(sum, 'culling_strike_threshold_+%_vs_rare_or_unique_monsters'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
     chillAll: !!sum.base_all_damage_taken_can_chill, chillReversed: !!sum.chill_effect_is_reversed, sprintNoSlow: !!sum.slows_have_no_potency_on_you_while_sprinting, spellNoPierce: !!sum.projectiles_from_spells_cannot_pierce, energyFullMana: v(sum, 'energy_generated_+%_on_full_mana'),   // Sierran Inheritance, Ab Aeterno, Snakepit, Idle Hands
     critPierce: v(sum, 'projectiles_crit_chance_+%_for_each_time_they_have_pierced'), spellCritPer: v(sum, 'spell_crit_bonus_+%_per_spell_crit_recently'), noImmob: !!sum.cannot_immobilise_enemies, lioneye: v(sum, 'unique_bow_attacks_repeat_x_times_when_no_enemies_in_your_presence'), thornsLeech: v(sum, 'base_life_leech_from_all_thorns_damage_permyriad'),   // Drillneck, Seed of Cataclysm, The Prisoner's Manacles, Lioneye's Glare, Belly of the Beast
     auspex: !!sum.enemies_in_your_presence_gain_a_stack_of_gruelling_madness_every_second, gmMinion: v(sum, 'minion_chance_to_apply_gruelling_madness_on_hit_%'), gmHit: v(sum, 'local_inflict_x_stacks_of_gruelling_madness_on_hit'), gmPower: !!sum.monsters_in_your_presence_have_additional_power_equal_to_their_gruelling_madness_stacks,   // Gruelling Madness: The Auspex, The Raven's Flock, Sadist's Mercy
@@ -1027,7 +1037,13 @@ const CRIT_WHILE = [['critical_strike_chance_+%_if_enemy_killed_recently', 'crit
   ['critical_strike_multiplier_+_if_have_dealt_non_crit_recently', 'critBonus', 'NonCritRecently'], ['critical_strike_multiplier_vs_enemies_on_full_life_+', 'critBonus', 'FullLife', 'e'],
   ['critical_strike_multiplier_+_if_gained_power_charge_recently', 'critBonus', 'PowerGainedRecently'], ['critical_hit_damage_bonus_+%_if_consumed_power_charge_recently', 'critBonus', 'ConsumedPowerRecently'],
   ['critical_hit_chance_+%_vs_humanoids', 'crit', 'Humanoid', 'e'], ['critical_strike_chance_+%_while_shapeshifted', 'crit', 'Shapeshifted'], ['critical_strike_chance_+%_if_youve_shapeshifted_to_animal_recently', 'crit', 'ShapeshiftedRecently'],
-  ['critical_strike_chance_+%_if_triggered_skill_recently', 'crit', 'TriggeredRecently']];
+  ['critical_strike_chance_+%_if_triggered_skill_recently', 'crit', 'TriggeredRecently'], ['critical_hit_chance_+%_against_enemies_entered_your_presence_recently', 'crit', 'EnteredPresenceRecently', 'e'],
+  // of projectiles only (their texts): the fifth is the tag the skill has to have
+  ['critical_hit_damage_bonus_+%_vs_enemies_within_2m_distance', 'critBonus', 'Within2m', 'e', 'projectile'], ['critical_hit_damage_bonus_+%_vs_enemies_further_than_6m_distance', 'critBonus', 'Further6m', 'e', 'projectile']];
+// the tree's increased accuracy while you, or the enemy (e), are in a state (Close Range: 2 m, as the damage's)
+const ACC_WHEN = [['accuracy_rating_+%_while_surrounded', 'Surrounded'], ['accuracy_rating_+%_while_moving', 'Moving'], ['accuracy_rating_+%_vs_enemies_in_close_range', 'Within2m', 'e'], ['accuracy_rating_+%_vs_rare_or_unique_enemy', 'RareOrUnique', 'e']];
+// the tree's increased block chance while you are in a state
+const BLOCK_WHILE = [['block_chance_+%_while_surrounded', 'Surrounded'], ['block_chance_+%_if_blocked_with_active_block_recently', 'RaisedBlockRecently']];
 // the tree's increased area while you are in a state (the scene's, at each use)
 const AREA_WHILE = [['area_of_effect_+%_while_totem_active', 'TotemActive'], ['area_of_effect_+%_while_you_have_arcane_surge', 'ArcaneSurge'], ['area_of_effect_+%_if_have_stunned_an_enemy_recently', 'StunnedEnemyRecently']];
 export const DMG_NAME = { physical: '{0} physical', fire: '{0} fire', cold: '{0} cold', lightning: '{0} lightning', chaos: '{0} chaos' };
@@ -1052,6 +1068,13 @@ export function inc(sum, suffix, tags) {
   }
   return t;
 }
+const TYPED = new Map();   // "cold_attack_damage_+%" as ['cold', 'attack_damage_+%'], worked out once per stat as rekey's
+function typedOf(k) {
+  let r = TYPED.get(k);
+  if (r === undefined) { const m = k.match(/^(physical|fire|cold|lightning|chaos)_(\w+_damage_\+%)$/); TYPED.set(k, r = m ? [m[1], m[2]] : null); }
+  return r;
+}
+console.assert(String(typedOf('cold_attack_damage_+%')) === 'cold,attack_damage_+%' && !typedOf('cold_damage_+%') && !typedOf('attack_damage_+%'), 'typedOf');
 console.assert(inc({ 'damage_+%_with_two_handed_weapons': 40, 'damage_+%_with_bow_skills': 5 }, 'damage_+%', ['attack', 'twohand']) === 40, 'inc: _with_ stats');
 console.assert(inc({ 'attack_damage_vs_bleeding_enemies_+%': 7, 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%_vs_bleeding_enemies', ['attack']) === 7 && !inc({ 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%', []), 'inc: _vs_ stats');
 // what the stat ids call the weapon an attack is made with (item base tags; warstaff is the quarterstaff)
@@ -1193,7 +1216,8 @@ export function skill(g, b, treeGear) {
   // a link of its own if a build breaks it
   // g may be a copy with other supports (the Optimizer's): the build's gem of that name then
   const gi = (b.gems || []).indexOf(g), meta = usedBy(b, gi >= 0 ? gi : (b.gems || []).findIndex(x => x.name === g.name)), byTotem = meta && SK.skills[meta.name]?.totem || ownTotem;
-  const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : []), ...(g.name === 'Parry' ? ['parry'] : [])];   // passives for a weapon type count for attacks made with it
+  const tags = [...(w ? [...own, ...weaponTags(w)] : own), ...(byTotem?.ballista ? ['ballista'] : []), ...(g.name === 'Parry' ? ['parry'] : []),
+    ...(GEM[meta?.name]?.tags?.includes('invocation') ? ['invocation'] : [])];   // passives for a weapon type count for attacks made with it; the ones for Invocated spells, for the spell an Invocation holds
   // "per active Totem" counts each one: all the build may place (the game's windows, 16/11: one Mortar Cannon x1.0183
   // damage, two x1.0366)
   const totems = out.totems = byTotem && attack ? (totem(meta || g, treeGear)?.limit || 1) : 0;
@@ -1332,6 +1356,9 @@ export function skill(g, b, treeGear) {
   // a totem's grenade: "increased Grenade Damage" does not count (the game's window, 16/11: the same 4311-9885 without
   // two Grenade Damage nodes; Volatile Grenades' fuse is not in it either), the grenade cooldown ones do (10.99 s)
   const dmgTags = byTotem ? [...tags.filter(x => x !== 'grenade'), 'totem'] : tags;
+  // "<type>_<kind>_damage_+%" (the tree's Attack Cold Damage, Physical Damage with Bows): that type's damage with skills of that kind
+  const typed = Object.fromEntries(DMG.map(t => [t, {}]));
+  for (const k in sum) { const m = typedOf(k); if (m) typed[m[0]][m[1]] = sum[k]; }
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   // "increased Spell Damage with Spells that cost Life": a spell with a life cost (Lifetap, Blood Magic)
@@ -1344,7 +1371,7 @@ export function skill(g, b, treeGear) {
   const borrowed = (attack && sum.additive_spell_damage_modifiers_apply_to_attack_damage ? inc(sum, 'damage_+%', [...dmgTags, 'spell']) - inc(sum, 'damage_+%', dmgTags) : 0)
     + (sum.minion_damage_increases_and_reductions_also_affects_you ? v(sum, 'minion_damage_+%') : 0);
   const compInc = sum.companion_damage_increases_and_reductions_also_affects_you ? v(sum, 'companion_damage_+%') : 0;   // the tree's: your Companion's increased damage yours too
-  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
+  const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + inc(typed[t], 'damage_+%', dmgTags) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items?.offhand });   // a weapon in each hand
   const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
@@ -1408,7 +1435,8 @@ export function skill(g, b, treeGear) {
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? (sum.override_weapon_base_critical_strike_chance && !unarmed ? sum.override_weapon_base_critical_strike_chance / 100 : w.crit) + (unarmed && tags.includes('melee') ? v(sum, 'base_melee_critical_strike_chance_while_unarmed_%') : 0) : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, baseCrit * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    const addCrit = inc(sum, 'additional_critical_strike_chance_permyriad', tags) / 100;   // the tree's "+% to Critical Hit Chance" of attacks, of Herald skills: added to the base chance
+    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, (baseCrit + addCrit) * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
     out.critBonus = sum.no_critical_strike_multiplier || attack && w?.noCritBonus ? 0 : sum.critical_strike_multiplier_is_250 ? 250 : (100 + (attack && w?.critBonus || 0) + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
@@ -1482,7 +1510,7 @@ export function skill(g, b, treeGear) {
   const NE = v(sum, 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments'); if (NE) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments', neg: true }], val: NE, what: 'crit', w: critW });
   out.areaWhile = AREA_WHILE.filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] }));
   out.areaIgnited = attack ? v(sum, 'attack_area_of_effect_+%_per_enemy_ignited_last_8_seconds') : 0;   // its text: up to 40%
-  for (const [k, what, cv, en] of CRIT_WHILE) if (sum[k]) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
+  for (const [k, what, cv, en, need] of CRIT_WHILE) if (sum[k] && (!need || tags.includes(need))) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
   // and the weapon's own ("Attacks with this Weapon Penetrate X% Fire Resistance"). note: not counted "while Shapeshifted"

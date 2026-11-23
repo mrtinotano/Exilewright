@@ -4937,6 +4937,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
    "size": [
     2,
@@ -4984,6 +4985,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
    "size": [
     2,
@@ -5032,6 +5034,7 @@
     "energy_shield": 40,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
    "size": [
     2,
@@ -5081,6 +5084,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
    "size": [
     2,
@@ -6251,6 +6255,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
    "size": [
     2,
@@ -6299,6 +6304,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
    "size": [
     2,
@@ -6348,6 +6354,7 @@
     "energy_shield": 15,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
    "size": [
     2,
@@ -6398,6 +6405,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
    "size": [
     2,
@@ -9301,6 +9309,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -9347,6 +9356,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -9394,6 +9404,7 @@
     "energy_shield": 37,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -9442,6 +9453,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -10585,6 +10597,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -10632,6 +10645,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -10680,6 +10694,7 @@
     "energy_shield": 35,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -10729,6 +10744,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -11010,6 +11026,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -12712,6 +12729,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -12758,6 +12776,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -12804,6 +12823,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -12851,6 +12871,7 @@
     "energy_shield": 34,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -12899,6 +12920,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -14042,6 +14064,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -14089,6 +14112,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -14137,6 +14161,7 @@
     "energy_shield": 24,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -14186,6 +14211,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -14727,6 +14753,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -16658,6 +16685,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
    "size": [
     2,
@@ -18336,6 +18364,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -18382,6 +18411,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
    "size": [
     2,
@@ -18429,6 +18459,7 @@
     "energy_shield": 31,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -18477,6 +18508,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler11.dds",
    "size": [
     2,
@@ -19661,6 +19693,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -19708,6 +19741,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
    "size": [
     2,
@@ -19756,6 +19790,7 @@
     "energy_shield": 29,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -19805,6 +19840,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler11.dds",
    "size": [
     2,
@@ -21432,6 +21468,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower09.dds",
    "size": [
     2,
@@ -21479,6 +21516,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
    "size": [
     2,
@@ -21527,6 +21565,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
    "size": [
     2,
@@ -21577,6 +21616,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
    "size": [
     2,
@@ -21624,6 +21664,7 @@
     "energy_shield": 22,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -22287,6 +22328,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -22334,6 +22376,7 @@
     "energy_shield": 30,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -22382,6 +22425,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 28,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
    "size": [
     2,
@@ -22691,6 +22735,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -22739,6 +22784,7 @@
     "energy_shield": 24,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -22820,6 +22866,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -22867,6 +22914,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -22956,6 +23004,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -23004,6 +23053,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -23173,6 +23223,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler12.dds",
    "size": [
     2,
@@ -24566,6 +24617,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
    "size": [
     2,
@@ -24612,6 +24664,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
    "size": [
     2,
@@ -24659,6 +24712,7 @@
     "energy_shield": 29,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
    "size": [
     2,
@@ -24707,6 +24761,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
    "size": [
     2,
@@ -25796,6 +25851,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
    "size": [
     2,
@@ -25843,6 +25899,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
    "size": [
     2,
@@ -25891,6 +25948,7 @@
     "energy_shield": 26,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
    "size": [
     2,
@@ -25940,6 +25998,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
    "size": [
     2,
@@ -26514,6 +26573,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler12.dds",
    "size": [
     2,
@@ -29293,6 +29353,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler11.dds",
    "size": [
     2,
@@ -30560,6 +30621,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -30606,6 +30668,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -30653,6 +30716,7 @@
     "energy_shield": 27,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -30701,6 +30765,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -31570,6 +31635,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -31617,6 +31683,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -31665,6 +31732,7 @@
     "energy_shield": 22,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -31714,6 +31782,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -33067,6 +33136,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield08.dds",
    "size": [
     2,
@@ -34492,6 +34562,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower05.dds",
    "size": [
     2,
@@ -34538,6 +34609,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield03.dds",
    "size": [
     2,
@@ -34585,6 +34657,7 @@
     "energy_shield": 26,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
    "size": [
     2,
@@ -34633,6 +34706,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
    "size": [
     2,
@@ -34900,6 +34974,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield08.dds",
    "size": [
     2,
@@ -35401,6 +35476,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
    "size": [
     2,
@@ -35448,6 +35524,7 @@
     "energy_shield": 25,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest08.dds",
    "size": [
     2,
@@ -35497,6 +35574,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler10.dds",
    "size": [
     2,
@@ -35962,6 +36040,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
    "size": [
     2,
@@ -36010,6 +36089,7 @@
     "energy_shield": 25,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest08.dds",
    "size": [
     2,
@@ -36060,6 +36140,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler10.dds",
    "size": [
     2,
@@ -36108,6 +36189,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
    "size": [
     2,
@@ -37343,6 +37425,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -37389,6 +37472,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
    "size": [
     2,
@@ -37436,6 +37520,7 @@
     "energy_shield": 24,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -37484,6 +37569,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
    "size": [
     2,
@@ -37574,6 +37660,7 @@
     "energy_shield": 12,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -37796,6 +37883,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield07.dds",
    "size": [
     2,
@@ -37844,6 +37932,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield07.dds",
    "size": [
     2,
@@ -39497,6 +39586,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower09.dds",
    "size": [
     2,
@@ -39544,6 +39634,7 @@
     "energy_shield": 23,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
    "size": [
     2,
@@ -39593,6 +39684,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
    "size": [
     2,
@@ -40941,6 +41033,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
    "size": [
     2,
@@ -40987,6 +41080,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
    "size": [
     2,
@@ -41034,6 +41128,7 @@
     "energy_shield": 23,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
    "size": [
     2,
@@ -41082,6 +41177,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
    "size": [
     2,
@@ -42240,6 +42336,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower09.dds",
    "size": [
     2,
@@ -42288,6 +42385,7 @@
     "energy_shield": 23,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
    "size": [
     2,
@@ -42338,6 +42436,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
    "size": [
     2,
@@ -44829,6 +44928,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -44877,6 +44977,7 @@
     "energy_shield": 13,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
    "size": [
     2,
@@ -44926,6 +45027,7 @@
     "energy_shield": 19,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -44976,6 +45078,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
    "size": [
     2,
@@ -45025,6 +45128,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -45256,6 +45360,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -45384,6 +45489,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
    "size": [
     2,
@@ -49749,6 +49855,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
    "size": [
     2,
@@ -49797,6 +49904,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
    "size": [
     2,
@@ -49845,6 +49953,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -49893,6 +50002,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower04.dds",
    "size": [
     2,
@@ -49941,6 +50051,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
    "size": [
     2,
@@ -49990,6 +50101,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -50039,6 +50151,7 @@
     "energy_shield": 14,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
    "size": [
     2,
@@ -50088,6 +50201,7 @@
     "energy_shield": 12,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -50138,6 +50252,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler01.dds",
    "size": [
     2,
@@ -50187,6 +50302,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
    "size": [
     2,
@@ -50236,6 +50352,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
    "size": [
     2,
@@ -50285,6 +50402,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler04.dds",
    "size": [
     2,
@@ -50736,6 +50854,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -50874,6 +50993,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
    "size": [
     2,
@@ -51146,6 +51266,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -51193,6 +51314,7 @@
     "energy_shield": 20,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -51418,6 +51540,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
    "size": [
     2,
@@ -51466,6 +51589,7 @@
     "energy_shield": 20,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
    "size": [
     2,
@@ -53361,6 +53485,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
    "size": [
     2,
@@ -53408,6 +53533,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
    "size": [
     2,
@@ -53456,6 +53582,7 @@
     "energy_shield": 19,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
    "size": [
     2,
@@ -53505,6 +53632,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
    "size": [
     2,
@@ -54698,6 +54826,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
    "size": [
     2,
@@ -54746,6 +54875,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
    "size": [
     2,
@@ -54795,6 +54925,7 @@
     "energy_shield": 19,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
    "size": [
     2,
@@ -54845,6 +54976,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
    "size": [
     2,
@@ -55903,6 +56035,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -55950,6 +56083,7 @@
     "energy_shield": 17,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -56311,6 +56445,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
    "size": [
     2,
@@ -56359,6 +56494,7 @@
     "energy_shield": 17,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
    "size": [
     2,
@@ -57475,6 +57611,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -57524,6 +57661,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -57916,6 +58054,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
    "size": [
     2,
@@ -57966,6 +58105,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
    "size": [
     2,
@@ -58689,6 +58829,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
    "size": [
     2,
@@ -58869,6 +59010,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
    "size": [
     2,
@@ -59057,6 +59199,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower05.dds",
    "size": [
     2,
@@ -59105,6 +59248,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower05.dds",
    "size": [
     2,
@@ -61784,6 +61928,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower04.dds",
    "size": [
     2,
@@ -61831,6 +61976,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield03.dds",
    "size": [
     2,
@@ -61879,6 +62025,7 @@
     "energy_shield": 12,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
    "size": [
     2,
@@ -61928,6 +62075,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler04.dds",
    "size": [
     2,
@@ -63190,6 +63338,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower04.dds",
    "size": [
     2,
@@ -63238,6 +63387,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield03.dds",
    "size": [
     2,
@@ -63287,6 +63437,7 @@
     "energy_shield": 12,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
    "size": [
     2,
@@ -63337,6 +63488,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler04.dds",
    "size": [
     2,
@@ -63667,6 +63819,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -63886,6 +64039,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
    "size": [
     2,
@@ -64731,6 +64885,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
    "size": [
     2,
@@ -65267,6 +65422,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
    "size": [
     2,
@@ -66255,6 +66411,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
    "size": [
     2,
@@ -66557,6 +66714,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
    "size": [
     2,
@@ -66605,6 +66763,7 @@
     "energy_shield": 9,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -66654,6 +66813,7 @@
     "energy_shield": 9,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
    "size": [
     2,
@@ -67018,6 +67178,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
    "size": [
     2,
@@ -67199,6 +67360,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
    "size": [
     2,
@@ -67738,6 +67900,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
    "size": [
     2,
@@ -68251,6 +68414,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
    "size": [
     2,
@@ -70319,6 +70483,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
    "size": [
     2,
@@ -70363,6 +70528,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
    "size": [
     2,
@@ -70407,6 +70573,7 @@
     "energy_shield": 6,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
    "size": [
     2,
@@ -70452,6 +70619,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler01.dds",
    "size": [
     2,
@@ -71926,6 +72094,7 @@
     "energy_shield": 0,
     "movement_speed_%": -300
    },
+   "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
    "size": [
     2,
@@ -71971,6 +72140,7 @@
     "energy_shield": 0,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
    "size": [
     2,
@@ -72016,6 +72186,7 @@
     "energy_shield": 6,
     "movement_speed_%": -150
    },
+   "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
    "size": [
     2,
@@ -72062,6 +72233,7 @@
     "energy_shield": 0,
     "movement_speed_%": 0
    },
+   "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler01.dds",
    "size": [
     2,

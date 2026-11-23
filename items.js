@@ -101,6 +101,7 @@ function local(item) {
     r.evasion = Math.round((base.armour.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
     r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
     r.movement = base.armour['movement_speed_%'] / 100;
+    if (base.block) r.block = Math.round((base.block + (s['local_additional_block_chance_%'] || 0)) * (1 + (s['local_block_chance_+%'] || 0) / 100));   // a shield's chance to block (ShieldTypes), with its own modifiers
     // its Strength requirement with its own reduced / no requirements. note: the tree's increased / reduced ones not counted
     r.str = s.local_no_attribute_requirements ? 0 : Math.floor(reqOf(item).str * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
   }
@@ -150,10 +151,11 @@ export function gearStats(items = {}) {
 
 // The armour, evasion and energy shield of the equipped armour pieces (the character panel's "Item Armour"...)
 export function armourItems(items = {}) {
-  const out = { armour: 0, evasion: 0, energy_shield: 0, movement: 0 };   // movement: their base's movement speed penalty, %
+  const out = { armour: 0, evasion: 0, energy_shield: 0, movement: 0, block: 0 };   // movement: their base's movement speed penalty, %; block: the shield's chance to block
   for (const it of Object.values(items)) if (BASE[it?.base]?.armour) { const l = local(it); for (const k in out) out[k] += l[k] || 0; }
   return out;
 }
+console.assert(D.bases.filter(b => /^(Shields|Bucklers)$/.test(b.class)).every(b => armourItems({ offhand: { base: b.name, implicits: [], mods: [] } }).block > 0), 'a shield without a chance to block');
 // Recovery per second of the flasks that apply their effect constantly (their own "applies its Effect constantly", or a
 // body armour's "Non-Unique Life Flasks apply their Effects constantly"): amount x (1 + its own increased) x quality x
 // (1 + the character's increased) x more / less, over its duration sped up by the recovery rate. Matched to the game's
