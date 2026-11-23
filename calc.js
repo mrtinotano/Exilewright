@@ -159,11 +159,14 @@ export function gemStats(g, sum = {}) {
 // Spirit a gem reserves: its amount over (100% + reservation efficiency), the gem's own (quality) plus what passives
 // and gear give every skill or those of one of its tags (reservation_efficiency_+%_of_herald_skills).
 // Blasphemy's: its amount per curse socketed in it (the build b's gems in it). note: rounded to the nearest, as Path of Building 2 does
-export function reservation(g, sum = {}, b) {
+// Atziri's Communion: no Spirit, its % of maximum life per base Spirit instead (life: that %)
+export function reservation(g, sum = {}, b, life = false) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
   const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
+  const AC = (g.supports || []).includes("Atziri's Communion") && SK.skills["Atziri's Communion"].constant.skill_reserves_X_life_permyriad_per_spirit_instead_of_spirit;
+  if (life || AC) return life && AC ? own * AC / 100 : 0;
   // Lord of the Wilds: non-minion skills 50% less efficiency; Trusted Kinship: companions 30% more, the rest 20% less
   const T = GEM[g.name]?.tags || [], more = (sum.keystone_lord_of_the_wilds && !T.includes('minion') ? .5 : 1) * (sum.keystone_2_companions ? T.includes('companion') ? 1.3 : .8 : 1);
   return Math.round(own * 100 / (100 + eff) / more * (sum.unique_spirit_reservations_are_halved ? .5 : 1));   // Matsya: 50% less
@@ -417,7 +420,7 @@ export function character(b, sum) {
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
-    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%'),   // Infernalist's Beidat's Gaze: its share of life reserved
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true), 0),   /* and Atziri's Communion's */   // Infernalist's Beidat's Gaze: its share of life reserved
     presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges

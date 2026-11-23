@@ -4129,12 +4129,15 @@ export function initScene(el, api) {
       // Escape Shot: its arrow makes its Ice Fragments where it hits (its fragment part, iceFrags)
       const ES = !S.icetip && partOf(S, 'EscapeShotIceFragmentPlayer'); if (ES) S.icetip = fragsOf(S, ES);
       // Unleash (Zarokh's Revolt): a spell gains a Seal every its % of its cast time (sooner with increased Seal gain frequency), up to its most; casting it breaks them,
-      // each repeating it its times with its less damage
-      const SU = S.dmg?.sum, SL = !auto && P.spell && SU?.base_maximum_seals_for_skill;
+      // each repeating it its times with its less damage. Salvo: a Seal every its interval, each an additional projectile.
+      // Tul's Avalanche: a Seal every its number of hits you block, each an Echo of the skill
+      const SU = S.dmg?.sum, SL = !auto && SU?.base_maximum_seals_for_skill;
       if (SL) {
-        const every = SU['support_%_of_total_cast_time_as_base_skill_seal_gain_interval'] / 100 / (S.dmg.speed || 1 / SIM.castTime) / (1 + (SU['seal_gain_frequency_+%'] || 0) / 100), n = Math.min(SL, Math.floor((time - (me.sealAt[S.name] ?? -Infinity)) / every));
-        me.sealAt[S.name] = time;
-        if (n > 0) { S.rep = (S.rep || 0) + n * SU.skill_rapid_fire_repeats_per_broken_seal; S.repBy = t('Seal') + ` ×${n}`; S.repX = 1 + SU['support_spell_rapid_fire_repeat_use_damage_+%_final'] / 100; }
+        const XB = SU.skill_gain_seal_every_x_hits_blocked, every = (SU.base_skill_seal_gain_interval_ms ? SU.base_skill_seal_gain_interval_ms / 1000 : SU['support_%_of_total_cast_time_as_base_skill_seal_gain_interval'] / 100 / (S.dmg.speed || 1 / SIM.castTime)) / (1 + (SU['seal_gain_frequency_+%'] || 0) / 100);
+        const n = Math.min(SL, XB ? Math.floor(((me.blockN || 0) - (me.sealBlk?.[S.name] ?? 0)) / XB) : Math.floor((time - (me.sealAt[S.name] ?? -Infinity)) / every));
+        me.sealAt[S.name] = time; (me.sealBlk ||= {})[S.name] = me.blockN || 0;
+        if (n > 0 && SU.skill_rapid_fire_repeats_per_broken_seal) { S.rep = (S.rep || 0) + n * SU.skill_rapid_fire_repeats_per_broken_seal; S.repBy = t('Seal') + ` ×${n}`; S.repX = 1 + SU['support_spell_rapid_fire_repeat_use_damage_+%_final'] / 100; }
+        if (n > 0) { S.addProj = (S.addProj || 0) + n * (SU.skill_additional_projectiles_per_seal_broken || 0); S.sealEcho = n * (SU.skill_echoes_per_seal_broken || 0); }
       }
       // Fist of Kalguur: a Slam spends a share of its cost as Ward for a Runic Boost (Empowered): part of its damage
       // gained as physical, and its rune on the first enemy it hits
@@ -4327,9 +4330,9 @@ export function initScene(el, api) {
     if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
     // Spell Echo: the spell echoes its number of times at the same target after it, the echo with its increased area
     // note: the delay of an echo is not in its data, the scene's quarter second
-    const SE = S.dmg?.sum?.support_spell_echo_number_of_echo_cascades;
+    const SE = (S.dmg?.sum?.support_spell_echo_number_of_echo_cascades || 0) + (S.sealEcho || 0);   // and Tul's Avalanche's per Seal broken
     if (SE) echoed();
-    if (SE) for (let k = 1; k <= SE; k++) later(.25 * k, () => run({ ...S, A: S.A * Math.sqrt(1 + S.dmg.sum['echoed_spell_area_of_effect_+%'] / 100) }));
+    if (SE) for (let k = 1; k <= SE; k++) later(.25 * k, () => run({ ...S, A: S.A * Math.sqrt(1 + (S.dmg.sum['echoed_spell_area_of_effect_+%'] || 0) / 100) }));
     // Spell Cascade: the spell also lands on either side of its target along a random axis, its number on each side, in its smaller area
     const SC = S.dmg?.sum?.support_spell_cascade_number_of_cascades_per_side;
     if (SC) { const q = Math.random() * TAU, A = S.A * Math.sqrt(1 + S.dmg.sum['support_spell_cascade_area_of_effect_+%_for_cascade'] / 100); for (const sd of [1, -1]) for (let k = 1; k <= SC; k++) { const r = sd * (S.A + A * (2 * k - 1)); later(k * .12, () => run({ ...S, A, at: { x: S.at.x + Math.sin(q) * r, z: S.at.z + Math.cos(q) * r } })); } }
@@ -4950,10 +4953,13 @@ export function initScene(el, api) {
   function retaliate(d) {
     const D = thornsOf(); if (!D || d.dead) return;
     fx.emit(10, { p: { x: pp.x, y: 1, z: pp.z }, dir: V(d.pos.x - pp.x, 0, d.pos.z - pp.z), v: 3, life: .25, size: .1, c: 'dust', c2: 'white', drag: 2 });
-    hit(d, thornX(D, t('Thorns')), { noPay: true }); me.quill = 0;
+    hit(d, thornX(D, t('Thorns')), { noPay: true }); me.quill = me.barbs = 0;
     if (sheet().thornsLeech) leechIn('life', Object.values(D.hits).reduce((t, [a, b]) => t + (a + b) / 2, 0) * sheet().thornsLeech / 10000);   // Belly of the Beast: life leech from thorns
   }
   function thornHit(S, d) {
+    // Barbs: after you retaliate, the supported skill's next hits (its count) deal your thorns damage to the enemy
+    const BB = S.dmg?.sum?.deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger, BD = BB && me.barbs < BB && thornsOf();
+    if (BD) { me.barbs++; later(.02, () => !d.dead && hit(d, thornX(BD, t('Thorns')), { noPay: true })); }
     for (const T of S.dmg?.trig || []) {
       // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
       // enemy, for its Ward cost
@@ -5028,7 +5034,7 @@ export function initScene(el, api) {
     if (U.mana) { const n = avgHit({ dmg: d.atk }) * U.mana / 100, RT = sheet().recoup?.time || 8; me.recoup.push({ k: 'mana', left: n, rate: n / RT }); }
     if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.find(x => x.name === v.name); if (o) Object.assign(o, v); else d.dots.push(v); }
   }
-  const blocked = d => { blockU(d); me.blockAt = time; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
+  const blocked = d => { blockU(d); me.blockAt = time; me.blockN = (me.blockN || 0) + 1; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
   // critical hit chance, endurance: its more armour, evasion and energy shield), and it consumes one of each every its interval.
   // note: its increased skill speed is applied as more here
