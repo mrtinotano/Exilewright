@@ -276,6 +276,13 @@ export function character(b, sum) {
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
   const pct = (...ids) => 1 + v(sum, ...ids) / 100;
   const res = {}, SN = supportsOf((b.gems || []).flatMap(g => g.supports || []));   // the red / green / blue supports socketed in your skills (Gemling)
+  // the tree's stats under a count of socketed supports of a colour, with a Quarterstaff or per 10 Intelligence, as the
+  // stat they are then (Gem Enthusiast, Unnatural Resilience, Unbothering Cold, Conductive Embrace, One with the River, The Winter Owl)
+  for (const [k, n, to] of [['maximum_life_+%_if_10_red_supports_socketed', SN.str >= 10, 'maximum_life_+%'], ['maximum_mana_+%_if_10_blue_supports_socketed', SN.int >= 10, 'maximum_mana_+%'],
+    ['maximum_fire_resistance_+%_if_at_least_5_red_supports_socketed', SN.str >= 5, 'base_maximum_fire_damage_resistance_%'], ['maximum_cold_resistance_+%_if_at_least_5_blue_supports_socketed', SN.int >= 5, 'base_maximum_cold_damage_resistance_%'],
+    ['maximum_lightning_resistance_+%_if_at_least_5_green_supports_socketed', SN.dex >= 5, 'base_maximum_lightning_damage_resistance_%'],
+    ['armour_evasion_energy_shield_+%_while_wielding_quarterstaff', classOf(b.items?.weapon) === 'Quarterstaves', 'global_armour_evasion_energy_shield_+%'], ['evasion_+%_per_10_intelligence', Math.floor((at.int || 0) / 10), 'evasion_rating_+%']])
+    if (sum[k] && n) sum = { ...sum, [to]: (sum[to] || 0) + sum[k] * n };
   // the game lowers elemental resistances by the level of the area (ResistancePenaltyPerAreaLevel: none at first,
   // -60% from level 65 on): taken as the character's level
   const thornsX = pct('thorns_damage_+%');
@@ -291,7 +298,7 @@ export function character(b, sum) {
     const perSup = sum[`maximum_${k}_resistance_+1_per_X_corresponding_support`];
     const max = sum['override_maximum_damage_resistance_%'] || CHAR['base_maximum_all_resistances_%'] + v(sum, `base_maximum_${k}_damage_resistance_%`, 'additional_maximum_all_resistances_%', ...(k === 'chaos' ? [] : ['additional_maximum_all_elemental_resistances_%']))
       + ((k === 'cold' || k === 'lightning') && sum.modifiers_to_maximum_fire_resistance_apply_to_maximum_cold_and_lightning_resistance ? v(sum, 'base_maximum_fire_damage_resistance_%') : 0)
-      + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'dex', lightning: 'int' }[k]] / perSup) : 0)   // Gemling: red / green / blue supports
+      + (perSup ? Math.floor(SN[{ fire: 'str', cold: 'int', lightning: 'dex' }[k]] / perSup) : 0)   // Gemling: fire per red, cold per blue, lightning per green supports
       + (k !== 'chaos' && Math.min(SN.str, SN.dex, SN.int) >= 5 ? v(sum, 'additional_maximum_all_elemental_resistances_%_if_at_least_5_red_green_blue_supports_socketed') : 0)
       + (sum.maximum_block_modifiers_apply_to_maximum_resistances_instead ? v(sum, 'additional_maximum_block_%') : 0);   // Saffell's Frame
     res[k] = { value: val, max, capped: Math.min(val, max) };
@@ -304,7 +311,7 @@ export function character(b, sum) {
   // another defence per point of it ("+1 to Evasion Rating per 1 Item Armour on Equipped Gloves"), and Armour from the
   // Strength requirements of the boots, gloves and helmet
   const P = (s, k) => pieceDef(b.items, s, k);
-  const pieceA = P('boots', 'energy_shield') * v(sum, 'armour_+_per_1_boots_energy_shield') + Math.floor(['boots', 'gloves', 'helmet'].reduce((t, s) => t + P(s, 'str'), 0) * v(sum, 'armour_+_from_%_strength_requirements_from_boots_gloves_helmets') / 100);
+  const pieceA = P('body', 'armour') * v(sum, 'body_armour_+%') / 100 + P('boots', 'energy_shield') * v(sum, 'armour_+_per_1_boots_energy_shield') + Math.floor(['boots', 'gloves', 'helmet'].reduce((t, s) => t + P(s, 'str'), 0) * v(sum, 'armour_+_from_%_strength_requirements_from_boots_gloves_helmets') / 100);
   const pieceE = P('body', 'evasion') * v(sum, 'body_armour_evasion_rating_+%') / 100 + P('gloves', 'armour') * v(sum, 'evasion_rating_+_per_1_armour_on_gloves') + P('helmet', 'energy_shield') * v(sum, 'evasion_rating_+_per_1_helmet_energy_shield');
   const perEva = v(sum, 'maximum_energy_shield_+1_per_x_body_armour_evasion_rating');
   const pieceS = P('helmet', 'energy_shield') * v(sum, 'energy_shield_from_helmet_+%') / 100 + Math.floor(P('helmet', 'armour') / 8) * v(sum, 'energy_shield_+_per_8_helmet_armour') + (perEva ? Math.floor(P('body', 'evasion') / perEva) : 0);
@@ -1915,5 +1922,9 @@ export function snapshot(b, sum) {
 // "You cannot evade": the evasion stays, its chance does not (after another change to the evasion too)
 if (MON.length) { const b = { asc: 'Warrior', level: 80, nodes: [], gems: [] }, sum = { base_evasion_rating: 5000, 'vivisection_armour_evasion_energy_shield_+%_final': -10 }, a = character(b, sum), z = character(b, { ...sum, base_cannot_evade: 1 });
   console.assert(a.evadePct > 0 && a.evadeMax == null && z.evasion === a.evasion && z.evadePct === 0 && z.evadeMax === 0, 'cannot evade'); }
+// Thaumaturgical Infusion: maximum cold resistance per blue support, lightning per green
+if (GEMS.length) { const of = a => GEMS.filter(g => g.kind === 'support' && g.attr?.[a] > 0 && Object.values(g.attr).filter(Boolean).length === 1).slice(0, 3).map(g => g.name);
+  const mx = (a, e) => character({ asc: 'Warrior', level: 1, nodes: [], gems: [{ name: 'Spark', supports: of(a) }] }, { [`maximum_${e}_resistance_+1_per_X_corresponding_support`]: 3 }).res[e].max;
+  console.assert(mx('int', 'cold') === mx('dex', 'cold') + 1 && mx('dex', 'lightning') === mx('int', 'lightning') + 1 && mx('str', 'fire') === mx('int', 'fire') + 1, 'support colours'); }
 { const c = { life: 1000, es: 400 }, sum = { 'life_regeneration_rate_per_minute_%': 60 }, a = recovery(c, sum), b = recovery(c, { ...sum, 'map_player_life_and_es_recovery_speed_+%_final': -40 });
   console.assert(a.lifeRegen === 10 && Math.abs(b.lifeRegen - 6) < 1e-9 && Math.abs(b.esRecharge - a.esRecharge * .6) < 1e-9 && b.recMore === .6, "a map's less recovery rate"); }
