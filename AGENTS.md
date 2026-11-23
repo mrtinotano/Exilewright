@@ -25,6 +25,7 @@ npm for the app) served by one Python file, `serve.py`. Read `README.md` first f
 | `humanoid.js`, `mannequin.glb`, `moves.json` | the simulator's player figure: the mannequin with its run, roll and fall (Quaternius' Universal Animation Library, CC0), its blows, shots, throws and casts (moves of KayKit's Adventurers, CC0, as turns of the figure's joints), and the app's own poses for the rest |
 | `share.js` | Path of Building 2 codes and links |
 | `i18n.js`, `i18n/*.json` | UI translations |
+| `three/` | three.js r160 (MIT) as the simulator uses it: the minified module and the addons it imports, as published on npm |
 | `serve.py` | local server, trade site proxy, clipboard, overlay window, the app window |
 | `poe2_data/available/` | the game data the app reads (generated, in the repo) |
 | `poe2_data/_tool/` | the scripts that generate it from the installed game (see `poe2_data/README.md`) |

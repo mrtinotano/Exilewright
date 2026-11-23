@@ -195,8 +195,8 @@ builds are signed. Committer, reviewer and approver of every signing request: [m
 
 ## Privacy
 Exilewright has no accounts, telemetry or analytics, and keeps your builds and settings on your computer
-(`%LOCALAPPDATA%\Exilewright`, or next to the program in the portable version). It loads its 3D library (three.js) from
-cdn.jsdelivr.net and checks GitHub for a newer version of itself, downloading it only when you choose to update.
+(`%LOCALAPPDATA%\Exilewright`, or next to the program in the portable version). It checks GitHub for a newer version of
+itself, downloading it only when you choose to update.
 Anything else goes out only when you ask for it: a build imported or shared through the site whose link or button you
 use (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry), and the official trade site when you price an item or
 search for gear.
