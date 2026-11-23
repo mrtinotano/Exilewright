@@ -8,7 +8,7 @@ import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimiz
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickIn, itemImg, JEWEL_UNIQUES } from './items.js';
+import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
 
@@ -82,7 +82,7 @@ export function initOpt(el, ctx) {
     if (!empty.length || !(now > 0)) return out;
     for (const name of JEWEL_UNIQUES) {
       if (has.has(name) || !allowed(name)) continue;
-      const it = pickIn(newItem(name), 'skill', GEM[g?.name]?.specific || 0);
+      const it = pickSkill(newItem(name), GEM[g?.name]?.specific || 0);
       let best = null;
       for (const id of radiusOf(it) ? empty : empty.slice(0, 1)) {   // without a radius any socket is the same
         const v = rate(key, { ...z, items: { ...z.items, ['jewel:' + id]: it } }, g);

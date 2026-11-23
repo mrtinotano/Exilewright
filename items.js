@@ -31,11 +31,10 @@ export function setNames(nodes, label, keystones, skills, overrides = {}) {
   of('skill', skills.map(g => [g.specific, g]));
   of('override', Object.entries(overrides).map(([h, x]) => [+h, x]));
 }
-// a unique as it is when first equipped (every roll at its best), its name in the page's language, the jewel uniques
-export const newItem = name => make(name);
+// a unique's name in the page's language, the jewel uniques
 export const uniqueName = name => tn(UNIQ[name]) || name;
-// an item with every name of a kind not picked yet (0) given this value (Prism of Belief's skill)
-export const pickIn = (it, kind, v) => { for (const m of it.mods || []) AFFIX[m.id]?.stats.forEach(([id], k) => { if (pickKind(id) === kind && !m.values[k]) m.values[k] = v; }); return it; };
+// an item with its skill not picked yet (0) given this one (Prism of Belief)
+export const pickSkill = (it, v) => { for (const m of it.mods || []) AFFIX[m.id]?.stats.forEach(([id], k) => { if (pickKind(id) === 'skill' && !m.values[k]) m.values[k] = v; }); return it; };
 export const JEWEL_UNIQUES = UNIQUES.filter(u => BASE[u.base]?.class === 'Jewels').map(u => u.name);
 // what desecrating a timeless jewel can add (Undying Hate: HistoricAbyssJewel*), for a unique whose modifier is Abyss'
 const historicFor = u => !!u?.mods.some(m => /Abyss/.test(m.id));
@@ -476,6 +475,7 @@ export function parseItem(text) {
 // nothing here depends on how a line is worded or in which language.
 const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok ? r.json() : {}).then(j => j.mods || {}).catch(() => ({}));
 // a base or unique as it is when first equipped: every roll at its best
+export const newItem = name => make(name);   // a base or unique as first equipped, for the optimizer's suggestions
 const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
   return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
 export const classOf = it => BASE[it?.base]?.class;

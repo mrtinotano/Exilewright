@@ -632,11 +632,10 @@ function conquest(b, js = jewelsOf(b)) {
     for (const id of main) if (j.in(id)) { const ty = N[id].type;
       if (ty === 'keystone') { if (ks) out.set(id, { ks, by }); continue; }
       if (v.becomes?.[ty]) out.set(id, { stats: plusStats({ ...v.becomes[ty] }, extra[ty] || {}), by });
-      else if (v.replaces[ty] || v.adds[ty] && !v.plus?.[ty]) out.set(id, ty === 'notable' && b.nodes.includes(id) && over.length ? { over: over.shift(), stats: null, by } : { seed: true, by });
+      else if (v.replaces[ty] || v.adds[ty] && !v.plus?.[ty]) out.set(id, ty === 'notable' && b.nodes.includes(id) && over.length ? (o => ({ over: o, stats: o.stats, by }))(over.shift()) : { seed: true, by });
       else if (v.plus?.[ty] || extra[ty]) out.set(id, { add: plusStats({ ...v.plus?.[ty] }, extra[ty] || {}), by });
     }
   }
-  for (const c of out.values()) if (c.over) c.stats = c.over.stats;
   return out;
 }
 // the passives that can be allocated without being connected (Controlled Metamorphosis' radius, From Nothing's keystone's)
@@ -1176,7 +1175,7 @@ function drawSocket(c, id) {
 // the build's jewels as the optimizer takes them: every socket holding one, allocated or not, with what it grants there
 // (its modifiers, Megalomaniac's notables) and the passives it frees (optimize.js optimizeTree)
 const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s.slice(6))), 1 + (sumOf(b)['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100).map(j => ({ ...j,
-  stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {}),
+  stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce(plusStats, {}),
   free: j.R?.free ? main.filter(j.in) : [],
   // what a timeless jewel changes in its radius once its socket is allocated: per passive, the stats added (removed below 0)
   swap: new Map([...conquest(b, [j])].filter(([id, c]) => !c.ks && !c.seed && !c.over).map(([id, c]) => {
