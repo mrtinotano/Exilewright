@@ -450,6 +450,8 @@ export function initScene(el, api) {
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = o.stunX ?? 1;
+    // Kulemak's Sovereignty: your hits 1% more per 2 total Power of your Undead minions (a minion's is a normal monster's)
+    const KU = !S.src && sheet().kulemak; if (KU) g *= 1 + Math.floor(objs.filter(x => x.minion && x.undead && !x.dead).length * POWER.normal / KU) / 100;
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
@@ -2018,7 +2020,10 @@ export function initScene(el, api) {
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
-    const D = sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
+    // Ulaman's Vision: each projectile you fire does one of these at random: Fork once more (0), Chain once more (1), Chain
+    // from terrain once more (2: the scene has no terrain, so nothing), cannot collide with targets (3: it flies through them)
+    const UL = !S.src && !o.forked && !o.split && !o.back && !o.shard && sheet().ulaman ? Math.floor(Math.random() * 4) : -1;
+    const D = UL === 0 ? { ...sh(S), forks: (sh(S).forks || 0) + 1 } : sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
     const pierceN = S.P.spell && sheet().spellNoPierce ? 0 : Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
     let pierced = o.pierced || 0;
     // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
@@ -2028,8 +2033,8 @@ export function initScene(el, api) {
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
-      if ((P.chains || S.addChains) && hitD) {
-        chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0), seen, mult());
+      if ((P.chains || S.addChains || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
+        chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
         const by = chest(hitD);
         for (const e of nearest(hitD.pos, D.extraTargets || 0, e => !seen.has(e) && dist(e.pos, hitD.pos) <= S.A)) {
@@ -2063,7 +2068,7 @@ export function initScene(el, api) {
           if (q.dead) break;
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
-          for (const d of dummies) if (!EW && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
+          for (const d of dummies) if (!EW && UL !== 3 && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
             seen.add(d); shrapnel(cur, d); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
@@ -2105,7 +2110,7 @@ export function initScene(el, api) {
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
-    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
+    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
@@ -4140,7 +4145,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life + (sheet().skillLife || 0); if (me.life <= 0) died(S.label); if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life + (sheet().skillLife || 0); if (life > 0 && sheet().tecrod) (me.spent ||= []).push({ t: time, n: life }); if (me.life <= 0) died(S.label); if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -5567,7 +5572,9 @@ export function initScene(el, api) {
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
-    if (RG.mana > 0 && me.mana < M) me.mana = Math.min(M, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);
+    if (RG.mana > 0 && me.mana < M * (c.kurgal ? OVERFLOW : 1)) me.mana = Math.min(M * (c.kurgal ? OVERFLOW : 1), me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);   // Kurgal's Ambition: it Overflows
+    // Tecrod's Brutality: life a second for the life skills cost in its last seconds
+    if (c.tecrod) { me.spent = (me.spent || []).filter(x => time - x.t <= c.tecrod.secs); const TR = me.spent.reduce((s, x) => s + x.n, 0) / c.tecrod.per; if (TR > 0 && !c.vaal) me.life = Math.min(RL, me.life + TR * dt); }
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time

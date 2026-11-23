@@ -396,7 +396,12 @@ export function character(b, sum) {
     grin: v(sum, 'infernalist_burn_life_and_es_%_per_second_if_crit_recently'),   // Infernalist's Grinning Immolation: ignited after your critical hits
     wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),
     // Amanamu's Defiance (keystone_amanamus_defiance): 20% of the life hits take prevented, 150% of it lost over 4 seconds (its text's numbers)
-    amanamu: sum.keystone_amanamus_defiance ? { prevent: 20, lose: 150 } : null,   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
+    amanamu: sum.keystone_amanamus_defiance ? { prevent: 20, lose: 150 } : null,
+    // the other Abyss keystones (their text's numbers): Tecrod's Brutality, 1 life a second per 16 life spent in the
+    // past 4 seconds; Kurgal's Ambition, mana regeneration Overflows; Kulemak's Sovereignty, 1% more damage per 2 total
+    // Power of your Undead minions
+    tecrod: sum.keystone_tecrods_brutality ? { per: 16, secs: 4 } : null, kurgal: !!sum.keystone_kurgals_ambition, kulemak: sum.keystone_kulemaks_sovereignty ? 2 : 0,
+    ulaman: !!sum.keystone_ulamans_vision,   // Ulaman's Vision: each projectile Forks or Chains once more, or Chains from terrain, or cannot collide   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
@@ -1561,6 +1566,7 @@ export function skill(g, b, treeGear) {
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
   const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc), wAdd) : null;
   out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
+  out.minionUndead = !!mid && enemy(mid)?.category === 'Undead';   // monsters.json category (Kulemak's Sovereignty)
   if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
   if (mn) {
     const ty = Object.values(mn.hits);
@@ -1700,7 +1706,8 @@ function minionLife(st, sum, id, finals = {}) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1]; if (!m || !level) return null;
   const ms = minionStats(st, { ...sum, ...finals }, {});   // a support's "more" life too (Loyalty, Minion Mastery)
   return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
-    * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1));
+    * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1)
+    * (sum.keystone_kulemaks_sovereignty && m.category === 'Undead' ? .75 : 1));   // Kulemak's Sovereignty: Undead minions 25% less
 }
 // "Companions gain X% of Damage as extra Chaos / Cold" have no "Minions" twin: the companion's own stat ("minion:")
 const OWN = { 'companion_%_damage_as_chaos': 'minion:non_skill_base_all_damage_%_to_gain_as_chaos', 'companion_%_damage_as_cold': 'minion:non_skill_base_all_damage_%_to_gain_as_cold' };
