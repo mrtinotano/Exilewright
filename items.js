@@ -883,6 +883,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
   // the items found better than the one worn (trade.find): cheapest first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
+  // a listed item as the build counts it and as Equip puts it on: with what the worn one has socketed (runes, soul
+  // cores, idols, enchantments) in place of its own, to be socketed in it again: most are sold with their sockets
+  // empty, and the one worn would win by its runes alone
+  const asWorn = (it, worn) => Object.keys(worn?.extra || {}).length ? { ...it, extra: worn.extra } : it;
   function betterHtml(slot) {
     const { text, res } = better;
     if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
@@ -896,8 +900,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // ponytail: no exchange rates, a price in another currency goes by its place in the site's list of currencies
     // (Exalted, Chaos, Divine); the Currency Exchange's rates if mixed prices matter
     const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), rel = (a, z) => a ? z / a : z ? 2 : 1, d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
-    const all = res.found.map((l, i) => { const items = { ...B.items, [slot]: { ...l.item, extra: worn?.extra || {} } }, z = snapOf(items), d = dmg(z), tz = trade.tough(items);
-      return { l, i, rows: diff(now, z), net: rel(d0, d) * rel(t0, tz), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
+    const key = JSON.stringify([B, now.dps, t0]);   // each listing on the build: worked out once per build, not at every render
+    if (better.key !== key) Object.assign(better, { key, on: res.found.map(l => { const items = { ...B.items, [slot]: asWorn(l.item, worn) }; return [snapOf(items), trade.tough(items)]; }) });
+    const all = res.found.map((l, i) => { const [z, tz] = better.on[i];
+      return { l, i, rows: diff(now, z), net: rel(d0, dmg(z)) * rel(t0, tz), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
     const rated = all.filter(x => Math.abs(x.net - 1) <= .005 ? !x.rows.length || x.rows.some(r => r.d > 0) : x.net > 1).sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1]), worse = all.length - rated.length;
     return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
@@ -907,20 +913,19 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       // its base's own modifiers (implicits) apart from the rest by a line, as the game shows them, under its name and base
       const P = itemParts(l.item, false), div = x => `<div>${esc(x)}</div>`;
       const mods = P ? P.impl.map(div).join('') + (P.impl.length && P.expl.length + l.missed.length ? '<div class="bsep"></div>' : '') + [...P.expl, ...l.missed].map(div).join('') : l.mods.map(div).join('');
-      // what is socketed (runes, soul cores, idols) and enchanted, one stat a line with its socket, below the changes (which
-      // leave it out: the listed item counted with yours): what yours has that this one lacks (lost, as a negative; "of your
-      // <slot>"), what this one brings, and its empty sockets. note: the socket is the stat's place among the item's
-      // socketed stats (the site and the item keep no socket per stat)
-      const A = worn?.extra || {}, Z = l.item.extra || {}, KA = Object.keys(A), KZ = Object.keys(Z), line = (k, x) => statLines({ [k]: x }).join(', ');
-      const yours = n => t('Socket {0} of your {1}', n, t(SLOTS[slot] || slot)), alone = [];
-      for (const [K, X, Y, sign, cls, where] of [[KA, A, Z, -1, 'ddn', yours], [KZ, Z, A, 1, 'dup', n => t('Socket {0}', n)]]) for (const k of K) if (X[k] !== Y[k])
-        alone.push(`<div class="${cls}">${esc(`${line(k, sign * X[k])} (${where(K.indexOf(k) + 1)})`)}</div>`);
-      const sock = alone.join('')
+      // below the changes: what they count socketed in it (asWorn: the worn one's, when it is not what it has), then how
+      // it is sold: what it has socketed (runes, soul cores, idols) and enchanted, one stat a line with its socket, and
+      // its empty sockets. note: the socket is the stat's place among the item's socketed stats (the site and the item
+      // keep no socket per stat)
+      const A = worn?.extra || {}, Z = l.item.extra || {}, KA = Object.keys(A), KZ = Object.keys(Z);
+      const sock = (KA.length && [...KA, ...KZ].some(k => A[k] !== Z[k]) ? `<div class="sempty">${esc(t('Counted with what your {0} has socketed, to be socketed in it again: {1}', t(SLOTS[slot] || slot), statLines(A).join(', ')))}</div>` : '')
+        + KZ.map((k, n) => `<div class="sempty">${esc(`${statLines({ [k]: Z[k] }).join(', ')} (${t('Socket {0}', n + 1)})`)}</div>`).join('')
         + Array.from({ length: Math.max(0, (l.sockets || 0) - KZ.length) }, (_, n) => `<div class="sempty">${esc(t('Empty (Socket {0})', KZ.length + n + 1))}</div>`).join('');
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button><a class="buysite" href="${esc(trade.item(res.league, l, res.body?.query?.status?.option))}" target="_blank" rel="noopener">${t('Trade')}</a></div>
         <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}</span></div>`; }).join('')
       || (worse ? '' : `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`)}</div>
       ${worse ? `<p class="note">${t('{0} listed left out: with them the build is worse ({1} goes down).', worse, t('Damage × toughness'))}</p>` : ''}
+      ${res.more > 0 ? `<p class="note">${t('{0} more listed were not read: those read are spread over their prices. A lower price narrows the search.', res.more)}</p>` : ''}
       ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers; the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;
@@ -1034,7 +1039,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
         .then(res => { if (better === me) { me.res = res; render(); } });
       return;
     }
-    if (t.dataset.act === 'wearbuy') { const it = better?.res?.found[+t.dataset.i]?.item; if (!it) return; put(better.slot, structuredClone(it)); sel = better.slot; better = null; changed(); render(); return; }
+    if (t.dataset.act === 'wearbuy') { const it = better?.res?.found[+t.dataset.i]?.item; if (!it) return; put(better.slot, structuredClone(asWorn(it, items[better.slot]))); sel = better.slot; better = null; changed(); render(); return; }
     if (t.dataset.act === 'copy') { navigator.clipboard.writeText(itemText(items[t.dataset.slot])); t.textContent = '✓'; return; }
     if (t.dataset.act === 'clear') { keep(getBuild(), items[t.dataset.slot]); delete items[t.dataset.slot]; }
     else if (t.dataset.act === 'wear') { const it = getBuild().stash?.[+t.dataset.i], to = it && whereTo(it); if (!to) return; put(to, it); sel = to; }

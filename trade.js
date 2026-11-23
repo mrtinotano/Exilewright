@@ -393,40 +393,47 @@ async function asLines(lines) {
 const explicitOnly = ids => ids.filter(id => id.startsWith('explicit.') || !ids.includes('explicit.' + id.split('.').pop()));
 console.assert(JSON.stringify(explicitOnly(['explicit.stat_1', 'crafted.stat_1', 'desecrated.stat_2'])) === '["explicit.stat_1","desecrated.stat_2"]', 'explicitOnly');
 // the best the price lets through first: the dearest under it, and down from there (an anonymous search cannot sort
-// by the modifiers themselves: "Query is too complex"). Those 10 are shown cheapest first
+// by the modifiers themselves: "Query is too complex")
 const DEAREST = { price: 'desc' };
 // Items better than `item`, from the Equipment tab: every line it has (asLines), of its kind of item (`base`: of its
-// base; a unique: that unique; neither: 10 of its base and then 10 of any, so that what its base alone finds is never
-// missing), up to the price, the first 10 down from the dearest. Which of them is better is for the build to say
-// (items.js orders them by what they change). note: its implicits and runes are
+// base; a unique: that unique; neither: READ of its base and then READ of any, so that what its base alone finds is
+// never missing), up to the price: all of them when READ are enough, else READ spread over their prices (the 10
+// dearest left out a cheaper one that asking for one more line found). Which of them is better is for the build to
+// say (items.js lists those, cheapest first). note: its implicits and runes are
 // not asked: the data has no trade stat for them.
-// -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for) }
+// -> { found: [listing], body (the search, to open on the site), left (lines the site has no stat for), more (listed
+// ones of the widest search not read, at least) }
 // A rare has at most 6 modifiers, so asking for all of them is asking for a twin of it (2 gloves of a whole league had
 // one's 6 lines, none as high). Nothing found: at least one fewer of them, then two, never under 2 (fewer -> those counts)
 const fewer = n => [n - 1, n - 2].filter(k => k >= 2);
 const atLeast = (stats, k) => [{ ...stats[0], value: { min: k } }];
 console.assert(JSON.stringify(fewer(6)) === '[5,4]' && fewer(2).length === 0, 'fewer');
 const lineKey = l => l.hash ?? 'd:' + l.en;
+const READ = 30;   // listings read per kind of item: 3 fetches of 10 (the site lets 50 fetches through in 5 minutes)
+// m of a list, spread over it from its first to its last (all of it when they fit)
+const spread = (a, m) => a.length <= m || m < 2 ? a.slice(0, m) : Array.from({ length: m }, (_, i) => a[Math.round(i * (a.length - 1) / (m - 1))]);
+console.assert(spread([1, 2, 3, 4, 5, 6, 7], 3).join() === '1,4,7' && spread([1, 2], 3).join() === '1,2' && spread([1, 2, 3], 1).join() === '1', 'spread');
 export async function findBetter({ league, item, base, skip = [], price, req, state, tick }) {   // skip: lines left out (lineKey)
   const { stats, n, left } = await asLines(priceLines(item).filter(l => l.varies && !skip.includes(String(lineKey(l)))));
   const body = { query: { status: { option: state }, type: item.base, ...item.unique && { name: item.unique },
     stats, filters: filters(classOf(item), price) }, sort: DEAREST };
   tick?.('Searching the trade site ({0} of {1})…', 1, 1);
-  // those with every line first; fewer than 10 of them: the rest from those with one line less, then two (each search's
-  // own listings read with it, cheapest first)
+  // those with every line first; fewer than READ of them: the rest from those with one line less, then two (each
+  // search's own listings read with it, 10 a fetch)
   const groups = [], seen = new Set();
   const url = 'search?league=' + encodeURIComponent(league);
-  let s, need = 0, full = 0, cap = 0;
-  const take = () => { const ids = (s.result || []).filter(id => !seen.has(id)).slice(0, cap - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); };
+  let s, need = 0, full = 0, cap = 0, more = 0;
+  const take = () => { const ids = spread((s.result || []).filter(id => !seen.has(id)), cap - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); more = Math.max(more, (s.total || 0) - seen.size); };
   for (const own of base || item.unique ? [true] : [true, false]) {
     if (!own) delete body.query.type;
-    body.query.stats = stats; cap = seen.size + 10; s = await call(url, body); const had = seen.size; take(); full += seen.size - had;
+    body.query.stats = stats; cap = seen.size + READ; s = await call(url, body); const had = seen.size; take(); full += seen.size - had;
     for (const k of fewer(n)) { if (seen.size >= cap) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
   }
   const found = [];
   tick?.('Reading {0} items…', seen.size);
-  for (const { ids, q } of groups) found.push(...((await call(`fetch?ids=${ids.join()}&query=${q}`)).result || []).map(r => r && readListing(r)).filter(l => l?.item && fits(req, l)).reverse());
-  return { found, body, left, ...need && seen.size > full && { need, of: n, full } };
+  for (const { ids, q } of groups) for (let i = 0; i < ids.length; i += 10)
+    found.push(...((await call(`fetch?ids=${ids.slice(i, i + 10).join()}&query=${q}`)).result || []).map(r => r && readListing(r)).filter(l => l?.item && fits(req, l)));
+  return { found, body, left, more, ...need && seen.size > full && { need, of: n, full } };
 }
 // one search: its first `per` listings not read yet, each rated with the item on the build; false when it failed
 async function search(out, seen, { league, slot, items, value, per, req, tick }, plan) {
