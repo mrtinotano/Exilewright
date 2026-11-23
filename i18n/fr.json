@@ -962,7 +962,7 @@
  "Waystone": "Pierre de téléportation",
  "Remove the map": "Retirer la carte",
  "Not simulated": "Non simulé",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Les modificateurs de la carte s'appliquent à tous les ennemis et à votre personnage dans le simulateur. Ses récompenses et ses zones de sol ne sont pas simulées.",
  "That is not a waystone.": "Ce n'est pas une pierre de téléportation.",
- "Charges stolen": "Charges volées"
+ "Charges stolen": "Charges volées",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Les modificateurs de la carte s'appliquent à tous les ennemis et à votre personnage dans le simulateur. Chaque type de sol qu'elle a est une zone dans la salle ; ses récompenses ne sont pas simulées."
 }

@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, tn, fmt, cap } from './i18n.js';
-import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { makeHumanoid, clipOf } from './humanoid.js';
@@ -5516,6 +5516,14 @@ export function initScene(el, api) {
     return `<button class="s-flask${me.drink[n] || f.always ? ' act' : ''}${left < f.per ? ' low' : ''}" data-f="${n}" title="${esc(flaskName(n))} ${Math.floor(left)}/${f.max}">`
       + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" onerror="this.remove()">` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i>${key}</button>`;
   }
+  // the map's ground (enemies.js mapGround): one patch of each kind it has, of the game's radius, each 8 m from the middle
+  // of the room (the simulator's own layout: an area has several). Laid again when the map changes; Reset leaves them
+  const MAP_AT = { burning: [-7, -4], chilled: [7, -4], shocked: [0, 8] };
+  let patches = [];
+  function lay() {
+    patches.forEach(p => p.decal.remove());
+    patches = mapGround().map(g => { const [x, z] = MAP_AT[g.type], [col, tex] = GFX[g.type]; return { ...g, x, z, tick: 0, decal: fx.decal({ x, z }, g.r, tex, col, { a: .5, k: 1.2, pulse: 5, y: .03 }) }; });
+  }
   // ground left by a skill that deals damage over time: it hurts while you stand in it
   function hazard(d, p) {
     const list = Object.entries(d.atk.dot).sort((x, y) => y[1] - x[1]); if (!list.length) return;
@@ -5823,6 +5831,20 @@ export function initScene(el, api) {
     }
   }
   function tickHazards(dt) {
+    // the map's patches, on you while you stand on one, as your own ground is on enemies: Ignited Ground ignites you (the
+    // fire damage it deals per 10 seconds, a second), Chilled Ground chills by its magnitude, Shocked Ground shocks at the
+    // game's base magnitude; with your own ailment effects, durations and chances to avoid them
+    // note: the Flammability the glossary says Ignited Ground builds up before it ignites is not simulated
+    for (const p of patches) {
+      if (Math.random() < dt * (3 + p.r * p.r * 3)) groundFx(p);
+      if ((p.tick -= dt) > 0) continue;
+      p.tick = .5;
+      const D = sheet().ailments, a = GAIL[p.type];
+      if (me.safe > 0 || !me.known || !D?.ail || dist(p, pp) > p.r || Math.random() * 100 < (D.avoid[a] || 0)) continue;
+      if (a === 'ignite') { me.by = { mon: { name: t('Ignited Ground') } }; suffer(a, DUR.ignite * D.dur.ignite, { dot: { dps: p.v / 10 * D.eff.ignite, el: 'fire' } }); }   // what its damage is named after
+      else if (a === 'shock') suffer(a, .6, { mag: GC.BaseShockMagnitude * D.eff.shock });
+      else if (!frozen()) suffer(a, .6, { mag: Math.min(GC.ChillMaxEffect, p.v * D.eff.chill) });
+    }
     for (let i = hazards.length - 1; i >= 0; i--) {
       const h = hazards[i]; h.s -= dt; h.tick -= dt;
       if (h.s <= 0) { h.decal.remove(); hazards.splice(i, 1); continue; }
@@ -5960,6 +5982,7 @@ export function initScene(el, api) {
     composer ? composer.render(dt) : renderer.render(scene, cam);
   });
 
+  lay();
   return {
     select: i => select(i, false),
     selected: () => sel,
@@ -5975,7 +5998,7 @@ export function initScene(el, api) {
     // the map changed (enemies.js setMap): every enemy takes its stats again, the living ones at full life
     remap() {
       for (const d of dummies) { arm(d, d.level, d.atk.key, d.rarity, d.modKey ? d.modKey.split(',') : []); if (!d.dead) { d.life = d.max; d.es = d.maxEs; } }
-      shC.at = -99; hudT = 0;
+      lay(); shC.at = -99; hudT = 0;
     },
     placing: on => on == null ? placing : setPlacing(on),
     clear: wipe,

@@ -941,8 +941,9 @@ for m in mods:
             rarity.setdefault(r[1].lower(), {})[RARITY_STATS[stats[m[f'Stat{j}']]['Id']]] = m[f'Stat{j}Value'][0]
 # --- a waystone's modifiers (enemies.js): the area's Mods (domain 6) that roll on the waystones' own tags
 # (map_key_low / medium / high / highest), one entry per kind with its rolls at each tag. Its stats are those the item's
-# text words (stat_descriptions.csd): the rewards, worded in the item's header (map_stat_descriptions.csd), and the stats
-# that only place and draw a patch of ground are left out. And each tier's waystone: its names, area level (MapTiers) and tag
+# text words (stat_descriptions.csd): the rewards, worded in the item's header (map_stat_descriptions.csd), are left out,
+# and of a patch of ground its radius is kept (radius, game units), not how many the area has nor its art. And each
+# tier's waystone: its names, area level (MapTiers) and tag
 worded = {s for d in descs.values() for s in d['stats']}
 map_level = {r['Tier']: r['Level'] for r in load('MapTiers')}
 map_tiers, map_mods = {}, {}
@@ -961,6 +962,9 @@ for m in mods:
     assert e['stats'] == [s for s, _ in rolls] and rolls, ('a waystone modifier whose tiers word other stats', m['Id'])
     for tag in on:
         e['rolls'][tag] = [v for _, v in rolls]
+    for j in range(1, 9):
+        if m.get(f'Stat{j}') is not None and sid(m[f'Stat{j}']) == 'map_ground_effect_radius':
+            assert e.setdefault('radius', m[f'Stat{j}Value'][0]) == m[f'Stat{j}Value'][0], ('a patch of ground whose radius changes with the tier', m['Id'])
 with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
     json.dump({
         # index = monster level - 1
@@ -1037,7 +1041,7 @@ assert skills['Shockwave Totem']['levels'][20]['_base_multiplier'] == 6600 and s
 assert skills['Glacial Cascade']['part']['active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final'] > 0 and 'never_freeze' in skills['Glacial Cascade']['flags'], 'other stat sets of a skill'
 assert rarity['unique']['poise'] == 500 and rarity['rare']['curse'] == -30, 'monster rarity: poise / curse effect'
 assert sorted(map_tiers) == list(range(1, 17)) and map_tiers[16] == {**map_tiers[16], 'level': 80, 'tag': 'highest'}, 'waystone tiers (BaseItemTypes MapKeyTier<n>, MapTiers)'
-assert all(set(e['rolls']) == {'low', 'medium', 'high', 'highest'} and all(lo <= hi for r in e['rolls'].values() for lo, hi in r) for e in map_mods.values()) and map_mods['MapMonsterDamageAsFire']['rolls']['high'] == [[15, 19]], 'waystone modifiers (Mods domain 6, map_key_ tags)'
+assert all(set(e['rolls']) == {'low', 'medium', 'high', 'highest'} and all(lo <= hi for r in e['rolls'].values() for lo, hi in r) for e in map_mods.values()) and map_mods['MapMonsterDamageAsFire']['rolls']['high'] == [[15, 19]] and map_mods['MapSpreadChilledGround']['radius'] == 26, 'waystone modifiers (Mods domain 6, map_key_ tags)'
 assert rarity['unique']['life'] > rarity['rare']['life'] > rarity['magic']['life'] > 0 and rarity['unique']['damage'] < 0, ('monster rarity mods', rarity)
 assert skills['Orb of Storms']['radius'][12] == 36, 'the radius of a table_only row'
 assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_speed_+%_final'] == -50, 'meta_support'

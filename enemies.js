@@ -53,7 +53,7 @@ const foeAuras = ids => (ids || []).map(id => MOD_BY.get(id)).filter(x => x?.aur
 // ---------- the map: a waystone's modifiers (monsters.json map: every kind that rolls on a waystone, its rolls at each
 // tier's tag, and each tier's name, area level and tag). A map is { tier, mods: { id: [the values of its stats] } }.
 // The area gives its monsters' stats to every monster in it (map_monsters_<stat>: the monster's own <stat>, read where a
-// monster modifier's are), and its players' to the character (mapPlayer). note: its patches of ground are not simulated
+// monster modifier's are), and its players' to the character (mapPlayer). Its ground is mapGround's
 export const MAP = MON.map || { tiers: [], mods: [] };
 const MAP_BY = new Map(MAP.mods.map(x => [x.id, x]));
 export const mapStats = map => addStats(Object.entries(map?.mods || {}).map(([id, vals]) => Object.fromEntries((MAP_BY.get(id)?.stats || []).map((s, k) => [s, +vals?.[k] || 0]))));
@@ -63,9 +63,14 @@ export const mapStats = map => addStats(Object.entries(map?.mods || {}).map(([id
 const MAP_AS = { ...Object.fromEntries(TYPES.slice(1).map(el => [`%_all_damage_to_gain_as_${el}`, [`non_skill_base_all_damage_%_to_gain_as_${el}`]])),
   'attack_cast_and_movement_speed_+%': ['attack_and_cast_speed_+%', 'base_movement_velocity_+%'], additional_elemental_resistance: ['base_resist_all_elements_%'],
   'chance_to_poison_on_hit_%': ['base_chance_to_poison_on_hit_%'], 'chance_to_inflict_bleeding_%': ['local_chance_to_bleed_on_hit_%'], 'elemental_ailment_chance_+%': ['ignite_chance_+%', 'shock_chance_+%'] };
-let AREA = {};   // the stats every monster has from the map that is on
+// the ground a map has patches of, by the stat that words it: its kind as the scene names its own, the stat's value v
+// (Ignited Ground: the fire damage it deals per 10 seconds; Chilled Ground: its magnitude) and its radius in metres
+const GROUND_OF = { map_base_ground_fire_damage_to_deal_per_10_seconds: 'burning', map_ground_ice_base_magnitude: 'chilled', map_ground_lightning: 'shocked' };
+let AREA = {}, GROUNDS = [];   // the stats every monster has from the map that is on, and its kinds of ground
+export const mapGround = () => GROUNDS;
 export function setMap(map) {
   AREA = {};
+  GROUNDS = Object.entries(map?.mods || {}).flatMap(([id, vals]) => { const m = MAP_BY.get(id), type = GROUND_OF[m?.stats[0]]; return type ? [{ type, v: +vals?.[0] || 0, r: m.radius / 10 }] : []; });
   for (const [k, v] of Object.entries(mapStats(map))) { const m = k.match(/^map_monsters?_(.+)$/); if (m) for (const id of MAP_AS[m[1]] || [m[1]]) AREA[id] = (AREA[id] || 0) + v; }
 }
 // the players' part, as the character's own stats (calc.js): its maximum resistances and flask charges gained; its less
@@ -261,12 +266,13 @@ export function versusEnemy(dmg, st, accuracy) {
 }
 // self-check: a map's stats reach every monster that is not yours, by the names a monster's own are read by
 {
-  const m = ENEMIES[0], map = { tier: 1, mods: { MapMonsterLifeIncrease: [20], MapMonsterDamageAsFire: [10], MapMonstersElementalPenetration: [8], MapPlayerMaximumResists: [-4] } };
+  const m = ENEMIES[0], map = { tier: 1, mods: { MapMonsterLifeIncrease: [20], MapMonsterDamageAsFire: [10], MapMonstersElementalPenetration: [8], MapPlayerMaximumResists: [-4], MapSpreadChilledGround: [30] } };
   const was = enemyStats(m, 70), c = { res: { fire: { capped: 75 } } };
   setMap(map);
   const st = enemyStats(m, 70), atk = attackOf(m, 70, 'basic');
   console.assert(MAP.mods.length && st.life === Math.round(was.life * 1.2) && enemyStats(m, 70, null, true).life === was.life && atk.hits.fire?.[1] > 0 && atk.pen === 8
-    && Math.abs(playerTakes(c, 'fire', 100, true, true, atk.pen) - 33) < 1e-9 && playerTakes(c, 'fire', 100, false, true, atk.pen) === 25 && mapPlayer(map)['additional_maximum_all_resistances_%'] === -4, 'map modifiers');
+    && Math.abs(playerTakes(c, 'fire', 100, true, true, atk.pen) - 33) < 1e-9 && playerTakes(c, 'fire', 100, false, true, atk.pen) === 25 && mapPlayer(map)['additional_maximum_all_resistances_%'] === -4
+    && JSON.stringify(mapGround()) === '[{"type":"chilled","v":30,"r":2.6}]', 'map modifiers');
   setMap(null);
-  console.assert(enemyStats(m, 70).life === was.life, 'map off');
+  console.assert(enemyStats(m, 70).life === was.life && !mapGround().length, 'map off');
 }

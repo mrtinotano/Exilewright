@@ -962,7 +962,7 @@
  "Waystone": "Wegstein",
  "Remove the map": "Karte entfernen",
  "Not simulated": "Nicht simuliert",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Die Modifikatoren der Karte wirken im Simulator auf alle Gegner und auf deinen Charakter. Ihre Belohnungen und ihre Bodenflächen werden nicht simuliert.",
  "That is not a waystone.": "Das ist kein Wegstein.",
- "Charges stolen": "Ladungen gestohlen"
+ "Charges stolen": "Ladungen gestohlen",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Die Modifikatoren der Karte wirken im Simulator auf alle Gegner und auf deinen Charakter. Jede Bodenart der Karte ist eine Fläche im Raum; ihre Belohnungen werden nicht simuliert."
 }

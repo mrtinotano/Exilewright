@@ -962,7 +962,7 @@
  "Waystone": "Путевой камень",
  "Remove the map": "Убрать карту",
  "Not simulated": "Не симулируется",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Свойства карты действуют в симуляторе на всех врагов и на вашего персонажа. Её награды и участки земли не симулируются.",
  "That is not a waystone.": "Это не путевой камень.",
- "Charges stolen": "Заряды украдены"
+ "Charges stolen": "Заряды украдены",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Свойства карты действуют в симуляторе на всех врагов и на вашего персонажа. Каждый вид земли на карте — один участок в комнате; её награды не симулируются."
 }

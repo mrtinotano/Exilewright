@@ -1068,12 +1068,12 @@ $('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} fr
   <div class="en-pick"><input id="enFind" type="search" placeholder="${esc(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
   <div id="enMap"></div><div id="enDetail"></div>`;
 // ---------- the map of the scene: a waystone's modifiers (enemies.js MAP), pasted from the game or picked by hand. Its
-// monsters' are on every enemy, its players' on your character in the simulator; its tier sets the enemies' level (the area's)
+// monsters' are on every enemy, its players' on your character in the simulator, its ground is a patch in the room
+// (scene.js); its tier sets the enemies' level (the area's)
 let mapNote = '';   // what the last paste left out, or that it was no waystone
 const rollOf = (m, tier) => m.rolls[MAP.tiers[tier - 1].tag];
 const topRoll = (m, tier) => rollOf(m, tier).map(([lo, hi]) => Math.abs(lo) > Math.abs(hi) ? lo : hi);   // the strongest roll of each stat
 const mapLines = (m, vals) => shownLines(Object.fromEntries(m.stats.map((s, k) => [s, vals[k]]))).join(' · ');
-const mapSimulated = m => m.stats.some(s => /^map_(monsters?|player|additional_player)_/.test(s));   // not its patches of ground
 function setSceneMap(map, note = '') {
   sceneCfg.map = map; mapNote = note;
   setMap(map); mapSelf = mapPlayer(map);
@@ -1090,7 +1090,7 @@ function pickTier(tier, mods = sceneCfg.map?.mods || {}, own = false, note = '')
 function renderMap() {
   const map = sceneCfg.map, n = Object.keys(map?.mods || {}).length, open = $('enMap').querySelector('details')?.open;
   const row = m => { const on = map.mods[m.id], R = rollOf(m, map.tier);
-    return `<label><input type="checkbox" data-mapmod="${esc(m.id)}"${on ? ' checked' : ''}> ${esc(mapLines(m, on || topRoll(m, map.tier)))}${mapSimulated(m) ? '' : ` <small>(${t('Not simulated')})</small>`}</label>`
+    return `<label><input type="checkbox" data-mapmod="${esc(m.id)}"${on ? ' checked' : ''}> ${esc(mapLines(m, on || topRoll(m, map.tier)))}</label>`
       + (on ? R.map(([lo, hi], k) => lo === hi ? '' : `<input type="number" data-mapval="${esc(m.id)}:${k}" min="${lo}" max="${hi}" step="1" value="${+on[k] || 0}" title="${lo} – ${hi}">`).join('') : ''); };
   $('enMap').innerHTML = `<details class="en-mods en-map"${open || open == null && map ? ' open' : ''}><summary>${t('Map modifiers')} <small>${n}</small></summary>
     <textarea class="pasteItem" data-map="paste" rows="2" placeholder="${esc(t('Paste a waystone here: Ctrl+C on it in the game'))}"></textarea>
@@ -1098,7 +1098,7 @@ function renderMap() {
     <div class="sk-set"><label><span>${t('Waystone')}</span><select data-map="tier"><option value="0">—</option>${MAP.tiers.map((x, i) => `<option value="${i + 1}"${map?.tier === i + 1 ? ' selected' : ''}>${esc(tn(x))} · ${t('Level')} ${x.level}</option>`).join('')}</select></label>
       ${map ? `<button data-map="clear">${t('Remove the map')}</button>` : ''}</div>
     ${map ? MAP.mods.map(row).join('') : ''}
-    <p class="note">${t('The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.')}</p></details>`;
+    <p class="note">${t('The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.')}</p></details>`;
 }
 enWrap.addEventListener('input', e => {
   if (e.target.dataset.map !== 'paste' || !e.target.value.trim()) return;

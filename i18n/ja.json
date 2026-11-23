@@ -962,7 +962,7 @@
  "Waystone": "ウェイストーン",
  "Remove the map": "マップを外す",
  "Not simulated": "シミュレートされません",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "マップのモッドは、シミュレーター内のすべての敵とあなたのキャラクターに適用されます。報酬と地面のパッチはシミュレートされません。",
  "That is not a waystone.": "これはウェイストーンではありません。",
- "Charges stolen": "チャージを奪われた"
+ "Charges stolen": "チャージを奪われた",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "マップのモッドは、シミュレーター内のすべての敵とあなたのキャラクターに適用されます。マップにある地面の種類ごとに、部屋にパッチが1つ置かれます。報酬はシミュレートされません。"
 }

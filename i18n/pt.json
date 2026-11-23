@@ -962,7 +962,7 @@
  "Waystone": "Pedra-guia",
  "Remove the map": "Remover o mapa",
  "Not simulated": "Não simulado",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "Os modificadores do mapa estão em todos os inimigos e no seu personagem dentro do simulador. Suas recompensas e suas áreas de solo não são simuladas.",
  "That is not a waystone.": "Isso não é uma pedra-guia.",
- "Charges stolen": "Cargas roubadas"
+ "Charges stolen": "Cargas roubadas",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Os modificadores do mapa estão em todos os inimigos e no seu personagem dentro do simulador. Cada tipo de solo que ele tem é uma área na sala; suas recompensas não são simuladas."
 }

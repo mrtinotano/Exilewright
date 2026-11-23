@@ -962,7 +962,7 @@
  "Waystone": "換界石",
  "Remove the map": "移除地圖",
  "Not simulated": "未模擬",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "地圖詞綴會套用於模擬器中的所有敵人和你的角色。其獎勵與地面區域不會模擬。",
  "That is not a waystone.": "這不是換界石。",
- "Charges stolen": "充能球被偷取"
+ "Charges stolen": "充能球被偷取",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "地圖詞綴會套用於模擬器中的所有敵人和你的角色。地圖擁有的每種地面會在房間中放置一個區域；其獎勵不會模擬。"
 }

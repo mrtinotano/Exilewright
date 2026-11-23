@@ -962,7 +962,7 @@
  "Waystone": "ศิลานำทาง",
  "Remove the map": "นำแผนที่ออก",
  "Not simulated": "ไม่ได้จำลอง",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "ม็อดของแผนที่มีผลกับศัตรูทุกตัวและตัวละครของคุณในเครื่องจำลอง รางวัลและพื้นที่บนพื้นของแผนที่ไม่ได้จำลอง",
  "That is not a waystone.": "นี่ไม่ใช่ศิลานำทาง",
- "Charges stolen": "Charge ถูกขโมย"
+ "Charges stolen": "Charge ถูกขโมย",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "ม็อดของแผนที่มีผลกับศัตรูทุกตัวและตัวละครของคุณในเครื่องจำลอง พื้นแต่ละชนิดของแผนที่จะเป็นหนึ่งพื้นที่ในห้อง รางวัลของแผนที่ไม่ได้จำลอง"
 }

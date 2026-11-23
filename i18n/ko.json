@@ -962,7 +962,7 @@
  "Waystone": "경로석",
  "Remove the map": "지도 제거",
  "Not simulated": "시뮬레이션되지 않음",
- "The modifiers of the map are on every enemy and on your character in the simulator. Its rewards and its patches of ground are not simulated.": "지도 속성은 시뮬레이터의 모든 적과 내 캐릭터에 적용됩니다. 보상과 지면 구역은 시뮬레이션되지 않습니다.",
  "That is not a waystone.": "경로석이 아닙니다.",
- "Charges stolen": "충전 빼앗김"
+ "Charges stolen": "충전 빼앗김",
+ "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "지도 속성은 시뮬레이터의 모든 적과 내 캐릭터에 적용됩니다. 지도에 있는 지면 종류마다 방에 구역이 하나씩 놓입니다. 보상은 시뮬레이션되지 않습니다."
 }
