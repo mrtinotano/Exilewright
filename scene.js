@@ -938,7 +938,7 @@ export function initScene(el, api) {
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
     if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
     if (a === 'ignite' && !S.src && sheet().igniteHurt) hurt(playerTakes(sheet(), 'fire', sheet().igniteHurt, true));   // Fireflower: fire damage taken when you ignite
-    const fresh = !(d.st[a] > 0), left = d.st[a] || 0; if (a === 'bleed' && fresh) d.bleedAt = time; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time; if (a === 'ignite') { (me.ignLog ||= []).push({ d, t: time }); while (me.ignLog[0]?.t < time - 8) me.ignLog.shift(); }
+    const fresh = !(d.st[a] > 0), left = d.st[a] || 0; if (a === 'bleed' && fresh) d.bleedAt = time; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time; if (a === 'ignite') d.ignAt = time;
     // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
     const two = o?.mag && !fresh && (a === 'shock' || a === 'chill') && S.dmg?.sum?.[`can_apply_additional_${a}`];
     if (two) { const M = d.mag[a] || 0, lo = Math.min(M, o.mag), keep = M <= o.mag ? left : o.dur ?? DUR[a]; if (!(d.mag2?.[a]?.until > time && d.mag2[a].mag >= lo)) (d.mag2 ||= {})[a] = { mag: lo, until: time + keep }; }
@@ -4236,7 +4236,7 @@ export function initScene(el, api) {
     const AB = sheet().ancBoost || {};
     const AN = !auto && P.attack && time < me.ancNext; if (AN) me.ancNext = 0;
     // the tree's increased area while you are in a state, and per enemy you Ignited in the last 8 s (up to 40%)
-    const AW = (S.dmg?.areaWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0) + Math.min(40, (S.dmg?.areaIgnited || 0) * new Set((me.ignLog || []).filter(x => time - x.t <= 8).map(x => x.d)).size);
+    const AW = (S.dmg?.areaWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0) + Math.min(40, (S.dmg?.areaIgnited || 0) * dummies.filter(d => time - (d.ignAt ?? -99) <= 8).length);
     if (AW) S.A *= Math.sqrt(1 + AW / 100);
     if (KA && P.slams || AE || AN) { S.mult *= (1 + ANCESTRAL.slam / 100) * (1 + (AB.dmg || 0) / 100); S.A *= Math.sqrt(1 + (ANCESTRAL.area + (AB.area || 0)) / 100); }
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
@@ -5477,11 +5477,10 @@ export function initScene(el, api) {
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
     if (c.evaDouble && meIs.NotHitRecently()) c = { ...c, evasion: (c.evasion || 0) * 2 };   // Hyrri's Ire
-    if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };
-    if (c.evasionPerRage) c = { ...c, evasion: (c.evasion || 0) * (1 + c.evasionPerRage * rageNow() / 100 / (c.evasionInc || 1)) };   // the tree's: every Rage grants increased evasion
-    const DT = c.defPerTotem && c.defPerTotem * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;   // the tree's per totem in your Presence
-    if (DT) c = { ...c, armour: c.armour * (1 + DT / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + DT / 100 / (c.evasionInc || 1)) };   // Horns of Bynden: increased armour per Rage
-    if (DW.length) c = { ...c, armour: c.armour * (1 + inc('a') / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + inc('e') / 100 / (c.evasionInc || 1)) };
+    if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
+    // the tree's: every Rage grants increased evasion; increased armour and evasion per totem in your Presence
+    const ER = (c.evasionPerRage || 0) * rageNow(), DT = (c.defPerTotem || 0) * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;
+    if (DW.length || ER || DT) c = { ...c, armour: c.armour * (1 + (inc('a') + DT) / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + (inc('e') + ER + DT) / 100 / (c.evasionInc || 1)) };
     // Unabating, Untouchable: increased armour / evasion while you use it, per 250 ms of its attack time
     const UA = time < me.use?.until ? me.use.S.dmg?.sum || {} : {}, UAa = (UA['armour_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0), UAe = (UA['evasion_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0);
     if (UAa || UAe) c = { ...c, armour: c.armour * (1 + UAa / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + UAe / 100 / (c.evasionInc || 1)) };
