@@ -3697,9 +3697,10 @@ export function initScene(el, api) {
   // Storm Lance: the spear lands at the target (its area), lodges and zaps an enemy within its secondary radius every
   // its frequency for its duration; a detonator unleashes its volley of bolts and ends it. With a frenzy charge spent:
   // its infused part, faster and shorter, that detonates itself at the end and leaves Shocked Ground (its third radius,
-  // its second duration). note: the projectile's own path hits are not simulated, only its landing
+  // its second duration). A projectile: the first enemy on its way stops it, and it lands there
   K.lance = S => {
-    const I = S.spent && partOf(S, 'StormLanceInfusedPlayer'), X = I ? { ...I, mult: S.mult } : S, st = X.dmg.stats, c = { ...S.at }, R = radOf(S);
+    const I = S.spent && partOf(S, 'StormLanceInfusedPlayer'), X = I ? { ...I, mult: S.mult } : S, st = X.dmg.stats, R = radOf(S);
+    const way = dummies.filter(d => !d.dead && segDist(d.pos, pp, S.at) <= SIM.body + Math.max(.15, S.G.collision || 0)).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0], c = way ? { x: way.pos.x, z: way.pos.z } : { ...S.at };
     limit(o => o.lanceOf === S.name, S.dmg.stats.base_number_of_overcharged_spears_allowed, S);
     lob(fx.arrow('lightning'), hand(), V(c.x, .1, c.z), .35, 1.2, () => {
       boom(c, S.A, X); const m = fx.orb('lightning', .14); m.position.set(c.x, 1.2, c.z);
@@ -5041,8 +5042,11 @@ export function initScene(el, api) {
     const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (d.mark ? 1 + (c.markedAcc || 0) / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
     if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     if (a.shape === 'projectile' && Math.random() * 100 < (c.avoidProj || 0)) return fx.text(above(), t('Avoided'), GREY, .32), record('avoid', d.mon.name, t('Avoided'), 0, GREY);   // The Sunken Vessel
-    const BR = () => Math.random() * 100 < blockChance(c, a), BL = !RR && (BR() || c.luckyBlock && BR());   // Turtle Charm: a blocked hit still deals its share
-    if (BL) { blocked(d); if (!c.blockTaken) return; }
+    const BR = () => Math.random() * 100 < blockChance(c, a), BL = !RR && !frozen() && !(me.st.stun > 0) && (BR() || c.luckyBlock && BR());   // not while Stunned or Frozen (keywords.json Block); Turtle Charm: a blocked hit still deals its share
+    if (BL) {   // you still take the stun of a blocked hit (keywords.json Block): its damage as it would be after your defences
+      blocked(d);
+      if (!c.blockTaken) { const est = Object.fromEntries(Object.entries(a.hits).map(([el, [lo, hi]]) => [el, playerTakes(c, el, lo + Math.random() * (hi - lo))])); return ailed(d, est, est, true); }
+    }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
@@ -5126,12 +5130,13 @@ export function initScene(el, api) {
     fx.text(above(), t(a === 'stun' ? (o.heavy ? 'Heavy Stun' : 'Light Stun') : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
-  function ailed(d, raw, dealt) {
+  function ailed(d, raw, dealt, stunOnly = false) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
     const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
+    if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)
     // freeze and electrocute build up against their thresholds; once one fills, it is harder to fill again for a while
     // (GameConstants <name>ThresholdModifier / <name>ModifierDuration, the player's where the game has its own)
     const build = (a, n, cap, dur) => {
@@ -5165,16 +5170,19 @@ export function initScene(el, api) {
     // Plain hits cannot heavily stun a player (KeywordPopups HeavyStunPlayer), they can light stun you (LightStun): the
     // damage dealt (more from physical and melee hits, monster.ot) against your stun threshold, 100% at all of it, none
     // under the least chance; each stun of the last few seconds raises your threshold (character.ot)
-    const melee = d.atk.melee, hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
-      * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
-      * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
-    me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
-    // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
-    const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
-      return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
-    const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
-    if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
-      me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
+    stunNow();
+    function stunNow() {
+      const melee = d.atk.melee, hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
+        * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
+        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100);
+      me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
+      // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
+      const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
+        return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
+      const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100)) * 100) : 0;   // more threshold with Mountain's Teachings
+      if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
+        me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
+      }
     }
     if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical')) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
