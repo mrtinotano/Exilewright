@@ -394,14 +394,14 @@ export function character(b, sum) {
       reload: { fire: v(sum, 'gain_X_instilling_fire_on_reload'), cold: v(sum, 'gain_X_instilling_cold_on_reload') } },
     expression: v(sum, 'trigger_wild_strike_on_attack_crit') > 0,   // the Invoker's Elemental Expression on melee critical hits
     grin: v(sum, 'infernalist_burn_life_and_es_%_per_second_if_crit_recently'),   // Infernalist's Grinning Immolation: ignited after your critical hits
-    wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),
+    wounds: v(sum, 'lose_%_of_life_loss_over_4_seconds_instead'),   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
     // Amanamu's Defiance (keystone_amanamus_defiance): 20% of the life hits take prevented, 150% of it lost over 4 seconds (its text's numbers)
     amanamu: sum.keystone_amanamus_defiance ? { prevent: 20, lose: 150 } : null,
     // the other Abyss keystones (their text's numbers): Tecrod's Brutality, 1 life a second per 16 life spent in the
     // past 4 seconds; Kurgal's Ambition, mana regeneration Overflows; Kulemak's Sovereignty, 1% more damage per 2 total
     // Power of your Undead minions
     tecrod: sum.keystone_tecrods_brutality ? { per: 16, secs: 4 } : null, kurgal: !!sum.keystone_kurgals_ambition, kulemak: sum.keystone_kulemaks_sovereignty ? 2 : 0,
-    ulaman: !!sum.keystone_ulamans_vision,   // Ulaman's Vision: each projectile Forks or Chains once more, or Chains from terrain, or cannot collide   // Blood Mage's Grasping Wounds: that share of life lost from hits is lost over 4 seconds instead
+    ulaman: !!sum.keystone_ulamans_vision,   // Ulaman's Vision: each projectile Forks or Chains once more, or Chains from terrain, or cannot collide
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall

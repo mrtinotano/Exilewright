@@ -5572,10 +5572,11 @@ export function initScene(el, api) {
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
-    if (RG.mana > 0 && me.mana < M * (c.kurgal ? OVERFLOW : 1)) me.mana = Math.min(M * (c.kurgal ? OVERFLOW : 1), me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);   // Kurgal's Ambition: it Overflows
+    const MM = c.kurgal ? M * OVERFLOW : M;
+    if (RG.mana > 0 && me.mana < MM) me.mana = Math.min(MM, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);   // Kurgal's Ambition: it Overflows
+    else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     // Tecrod's Brutality: life a second for the life skills cost in its last seconds
     if (c.tecrod) { me.spent = (me.spent || []).filter(x => time - x.t <= c.tecrod.secs); const TR = me.spent.reduce((s, x) => s + x.n, 0) / c.tecrod.per; if (TR > 0 && !c.vaal) me.life = Math.min(RL, me.life + TR * dt); }
-    else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
