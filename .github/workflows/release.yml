@@ -71,4 +71,5 @@ jobs:
         run: |
           $v = [regex]::Match((Get-Content serve.py -Raw), "(?m)^VERSION = '([\d.]+)'").Groups[1].Value
           gh release create "v$v" dist/Exilewright-setup.exe dist/Exilewright-portable.zip --title "Exilewright $v" --notes $env:NOTES --target $env:GITHUB_SHA
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }   # not published: the older releases stay
           gh release list --limit 100 --json tagName --jq '.[].tagName' | Where-Object { $_ -ne "v$v" } | ForEach-Object { gh release delete $_ --yes --cleanup-tag }
