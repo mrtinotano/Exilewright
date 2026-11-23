@@ -54,7 +54,6 @@ The extraction takes a while (ten languages).
   `skills` (damage effectiveness, types, use time, cooldown and, where the tables say, projectile speed and area
   radius).
 - Game texts carry keyword markup (`[Key|text shown]`): only the text shown is written.
-- `item_mods.json` — item prefixes/suffixes with a spawn weight > 0.
 
 ## What the tables do not say: `python -I _tool/pob2.py` (does not need the game)
 Reads from Path of Building 2 (keeps the files in `pob2_cache/` and downloads them again when older than a week):

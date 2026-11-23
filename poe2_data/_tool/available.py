@@ -310,12 +310,7 @@ tab += [(i, False) for i, w in enumerate(words) if w['Wordlist'] == 6 and shown(
 save('uniques.json', sorted(({'name': shown(k), **tr(words_tr, k, 'Text2'), 'hidden_in_stash_tab': hidden} for k, hidden in tab if ok(shown(k))),
                             key=lambda x: x['name']))
 
-# --- rollable item mods: prefix/suffix on items with some non-zero spawn weight
 mods = load('Mods')
-save('item_mods.json', [{'id': m['Id'], 'name': m['Name'], 'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix',
-                         'level': m['Level'], 'stats': [stats[m[f'Stat{k}']]['Id'] for k in range(1, 9) if m[f'Stat{k}'] is not None],
-                         'values': [m[f'Stat{k}Value'] for k in range(1, 9) if m[f'Stat{k}'] is not None]}
-                        for m in mods if m['Domain'] == 1 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values'])])
 
 # --- skill geometry for the 3D scene. Units are game units (10 = 1 m).
 # radius: active_skill_base_area_of_effect_radius per gem level. Projectile speed: Projectiles.ProjectileSpeed / 10 = units/s
