@@ -165,10 +165,12 @@ export function initScene(el, api) {
   const hand = () => player.hand(V());
   // the character of the build (calc.js): defences, accuracy and recovery
   let shC = { at: -9, v: {} };
-  // The Hammer of Faith's lesser Shrine buff and the modifiers Headhunter took from rare monsters, while they last
+  // The Hammer of Faith's lesser Shrine buff and the modifiers Headhunter took from rare monsters, while they last, and the
+  // auras of monster modifiers you are within (Temporal Bubble, Executioner's Presence, flask drain)
   const shrineOn = () => {
     if (me?.hh) me.hh = me.hh.filter(h => h.until > time);
-    const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats)].filter(Boolean);
+    const foe = dummies.flatMap(d => d.dead || !d.stat?.foe ? [] : d.stat.foe.filter(a => dist(d.pos, pp) <= a.r).map(a => a.stats));
+    const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats), ...foe].filter(Boolean);
     return L.length ? addStats(L) : null;
   };
   const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.(shrineOn()) || {} }; return shC.v; };
@@ -5508,7 +5510,8 @@ export function initScene(el, api) {
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
     const RG2 = sheet().griefIgnite; if (RG2 && time - (me.griefAt ?? -9) >= 1) { me.griefAt = time; const X = thornX({ hits: {} }, 'Radiant Grief'); for (const d of inside(pp, sheet().overgrow.r)) inflict(d, 'ignite', X, 1, { fire: RG2 }, {}); }   // Radiant Grief: enemies in your Presence Ignited as though dealt its base fire damage (note: once a second here)
-    flasks().forEach((f, n) => { const g = FC + (GN[n] || 0) + (f?.regen || 0); if (g) me.fl[n] = Math.min(f.max, flaskLeft(n) + g / 60 * dt); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
+    const FD = shrineOn()?.generate_x_charges_for_any_flask_per_minute || 0;   // a monster's aura draining them
+    flasks().forEach((f, n) => { const g = FC + FD + (GN[n] || 0) + (f?.regen || 0); if (g) me.fl[n] = Math.max(0, Math.min(f.max, flaskLeft(n) + g / 60 * dt)); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
     if (GN[2]) charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + GN[2] / 60 * dt); });   // and per charm
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
@@ -5550,6 +5553,10 @@ export function initScene(el, api) {
     if (S.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if (S.stun > 0 && Math.random() < dt * 10) fx.emit(1, { p: { x: pp.x, y: 2.1, z: pp.z }, r: .35, v: .4, life: .5, size: .14, c: 'white', c2: 'gold' });
     if ((S.chill > 0 || S.freeze > 0) && Math.random() < dt * (S.freeze > 0 ? 20 : 6)) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
+    // Executioner's Presence: life and energy shield cannot recover above its share of their maximum (what they were is kept)
+    const CAP = shrineOn()?.['cannot_recover_life_or_energy_shield_above_%'];
+    if (CAP) { me.life = Math.min(me.life, Math.max(me.capL ?? me.life, L * CAP / 100)); me.es = Math.min(me.es, Math.max(me.capE ?? me.es, E * CAP / 100)); }
+    me.capL = me.life; me.capE = me.es;
     const RG = regenNow(c), RL = c.lowCap ? L * LOW : L, PU = c.regenPulse;   // Cat O' Nine Tails: recovery other than flasks only up to Low Life
     if (PU && RG.life > 0 && time - (me.pulseAt ?? -9) >= 4) { me.pulseAt = time; me.life = Math.min(RL, me.life + RG.life * 60 / PU); }   // Igniferis: no regeneration, its life every 4 s instead
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech

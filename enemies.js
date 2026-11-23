@@ -44,11 +44,13 @@ export const rarityOf = (m, r) => RARITIES.includes(r) ? r : m.boss ? 'unique' :
 export const MON_MODS = MON.mods || [];
 const MOD_BY = new Map(MON_MODS.map(x => [x.id, x]));
 export const addStats = list => list.reduce((s, x) => { for (const k in x) s[k] = (s[k] || 0) + x[k]; return s; }, {});   // stat objects added up
-export const modStats = ids => addStats((ids || []).map(id => MOD_BY.get(id)?.stats || {}));
+// its own stats (an aura on its enemies is not: foeAuras, its radius in metres and the stats it gives you)
+export const modStats = ids => addStats((ids || []).map(id => MOD_BY.get(id)).filter(x => x && !x.aura?.foe).map(x => x.stats));
+const foeAuras = ids => (ids || []).map(id => MOD_BY.get(id)).filter(x => x?.aura?.foe).map(x => ({ r: x.aura.r / 10, stats: x.stats }));
 // A player's minion (ally) is that monster with the allies' damage per level (DefaultMonsterStats MinionDamage)
 export function enemyStats(m, level, rarity, ally = false, mods = []) {
   const rar = rarityOf(m, rarity), R = MON.rarity?.[rar] || {}, more = k => 1 + (R[k] || 0) / 100;
-  const X = ['magic', 'rare'].includes(rar) ? modStats(mods) : {}, x = k => X[k] || 0;   // only magic and rare monsters have modifiers
+  const has = ['magic', 'rare'].includes(rar), X = has ? modStats(mods) : {}, x = k => X[k] || 0;   // only magic and rare monsters have modifiers
   const pool = Math.floor(row('life', level) * m.life), part = pool * (m.es || 0);   // part of the life pool is energy shield
   let dmg = Math.floor(row(ally ? 'ally_damage' : 'damage', level)) * m.damage * more('damage');
   if (!m.ignores_attack_speed) dmg *= m.attack_time;
@@ -68,7 +70,7 @@ export function enemyStats(m, level, rarity, ally = false, mods = []) {
     leechRes: 1 - (1 - row(['rare', 'unique'].includes(rar) ? 'leech_rare' : 'leech', level) / 1e4) * (1 - x('life_leeched_from_-permyriad') / 1e4),
     slowEffect: more('slow') * (1 + x('monster_slow_potency_+%_final') / 100), curseEffect: x('hexproof') ? 0 : more('curse'), expoEffect: more('exposure'), rarity: rar,
     // its modifiers': movement and action speed, life regenerated per minute, and all their stats (Headhunter's)
-    move: (1 + x('base_movement_velocity_+%') / 100) * (1 - x('action_speed_-%') / 100), regen: x('life_regeneration_rate_per_minute_%'), mods: X,
+    move: (1 + x('base_movement_velocity_+%') / 100) * (1 - x('action_speed_-%') / 100), regen: x('life_regeneration_rate_per_minute_%'), mods: X, foe: has ? foeAuras(mods) : [],
   };
 }
 

@@ -975,9 +975,13 @@ with open(os.path.join(OUT, 'monsters.json'), 'w', encoding='utf8') as f:
         },
         'monsters': monsters, 'rarity': rarity,
         # the modifiers a magic or rare monster can roll (Mods, monster domain, with a spawn weight): name ('TBD' left
-        # out), prefix/suffix and stats; Rarity has no monster mod count, so the app lets you pick them
+        # out), prefix/suffix and stats; Rarity has no monster mod count, so the app lets you pick them. An aura's
+        # (BuffTemplates): its radius in game units and whether it is on its enemies (BuffDefinitions BuffCategory 2,
+        # a debuff) or on its allies and itself (1)
         'mods': [{'id': m['Id'], **({'name': m['Name'], **tr(mods_tr, i)} if m['Name'] and m['Name'] != 'TBD' else {}),
-                  'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix', 'stats': mod_stats([i])}
+                  'affix': 'prefix' if m['GenerationType'] == 1 else 'suffix', 'stats': mod_stats([i]),
+                  **({'aura': {'r': t['AuraRadius'], 'foe': buff_defs[t['BuffDefinition']]['BuffCategory'] == 2}}
+                     if (t := m['BuffTemplate'] is not None and _tmpl[m['BuffTemplate']]) and t['AuraRadius'] else {})}
                  for i, m in enumerate(mods) if m['Domain'] == 3 and m['GenerationType'] in (1, 2) and any(m['SpawnWeight_Values']) and mod_stats([i])],
         'skills': {k: monster_skill(ge_tab[g]) for k, g in sorted(mskills.items())},
     }, f, ensure_ascii=False, separators=(',', ':'))
