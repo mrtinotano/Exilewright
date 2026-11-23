@@ -27,11 +27,13 @@ export const ENEMIES = [...MON.monsters].sort((a, b) => a.name.localeCompare(b.n
 const BY_ID = new Map(ENEMIES.map(m => [m.id, m]));
 export const enemy = id => BY_ID.get(id) || null;
 export const monSkill = key => MON.skills?.[key] || null;   // a monster skill as the data has it (its cast time, cooldown)
-// every word of the query has to appear in the name, category or areas; names that start with the query come first
+// every word of the query has to appear in the name, category or areas; names that start with the query come first.
+// Only monsters the game places somewhere (a zone's packs or bosses): the tables also keep NPCs, test dummies and
+// monsters of leagues no longer in the game, which enemy() still finds for a player's minions
 export function search(q, limit = 80) {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean), first = words.join(' ');
   const rank = m => { const n = m.name.toLowerCase(); return !first ? 0 : n.startsWith(first) ? 0 : n.split(/[\s,'-]+/).some(w => w.startsWith(words[0])) ? 1 : words.every(w => n.includes(w)) ? 2 : 3; };
-  const hits = ENEMIES.filter(m => words.every(w => m.key.includes(w)));
+  const hits = ENEMIES.filter(m => m.areas?.length && words.every(w => m.key.includes(w)));
   return { total: hits.length, list: hits.map(m => [rank(m), m]).sort((a, b) => a[0] - b[0]).slice(0, limit).map(x => x[1]) };
 }
 

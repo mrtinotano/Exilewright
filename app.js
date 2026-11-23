@@ -1017,7 +1017,7 @@ enWrap.innerHTML = `<summary>${t('Enemies')}</summary><div id="sceneEnemy"></div
 $('scene').append(enWrap);
 enWrap.onchange = $('sceneSkills').onchange; enWrap.onclick = $('sceneSkills').onclick;
 enWrap.querySelector('summary').onmouseup = e => e.target.blur();   // Space rolls in the scene, it must not fold the panel
-$('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(ENEMIES.length))}</small></h3>
+$('sceneEnemy').innerHTML = `<h3>${t('Enemies')} <small class="note">${t('{0} from the game', fmt(ENEMIES.filter(m => m.areas?.length).length))}</small></h3>
   <div class="en-pick"><input id="enFind" type="search" placeholder="${attr(t('Search enemy…'))}" autocomplete="off" spellcheck="false"><div id="enList" hidden></div></div>
   <div id="enDetail"></div>`;
 const enFind = $('enFind'), enList = $('enList');
