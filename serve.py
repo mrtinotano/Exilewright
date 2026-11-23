@@ -988,7 +988,9 @@ def app(url):
             icon.MouseClick += lambda *_: come_back()
         if icon:
             icon.Visible = on
-        if f.ShowInTaskbar == on:
+        # only of a window that shows and has its page (loaded, come_back): Windows builds the window again for it, which
+        # stopped the web engine still starting inside it (an empty window) and showed a window that was hidden
+        if f.Visible and f.ShowInTaskbar == on:
             f.ShowInTaskbar = not on
         if s['tray'] != on:
             keep(tray=on)
@@ -997,13 +999,15 @@ def app(url):
         from System.Windows.Forms import FormWindowState
         f = w.native
         f.Show()
+        set_tray(True)   # a window that started hidden still has its taskbar button
         if f.WindowState == FormWindowState.Minimized:
             f.WindowState = FormWindowState.Maximized if s['maximized'] else FormWindowState.Normal
         f.Activate()
     if sys.platform == 'win32':
         global TRAY
         TRAY = (set_tray, lambda: s['tray'])
-        w.events.before_show += lambda: s['tray'] and set_tray(True)   # before the window has a taskbar button
+        w.events.before_show += lambda: s['tray'] and set_tray(True)   # the icon, from the start
+        w.events.loaded += lambda: s['tray'] and set_tray(True)   # the taskbar button, once the page is there
         w.events.minimized += lambda: s['tray'] and w.hide()   # with no taskbar button, minimized is hidden: the icon brings it back
     w.events.maximized += lambda: keep(maximized=True)
     w.events.restored += lambda: keep(maximized=False)
