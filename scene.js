@@ -1082,19 +1082,19 @@ export function initScene(el, api) {
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
       const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect);
       if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime, mag });   // the most: Heavy Snows' override, else the game's
-      if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * rimeOn(d) * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100), S, A);
+      if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * rimeOn(d) * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100) * (S.freezeEmp || 1), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (o.crit && SU.inflict_lightning_exposure_on_crit) expo(d, ['lightning'], EXPO.res * E.effect);   // Blessed Bonds: lightning exposure on a critical hit
     const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
-    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100), S, A);
+    if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100) * (d.st.shock > 0 ? A.elShock || 1 : 1), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
     if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK, S, A);
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
-    const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1);   // the tree's stun buildup after Shapeshifting, within 2 m
+    const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1) * (d.life <= d.max * LOW ? A.stunLow || 1 : 1) * (!S.src && meIs.Shapeshifted() ? A.stunShifted || 1 : 1) * (S.stunEmp || 1);   // the tree's stun buildup after Shapeshifting, within 2 m, on Low Life ones, while Shapeshifted; an Empowered attack's
     if (!N.stun) AL.stun || o.full && S.P.attack && SU.local_always_heavy_stun_on_full_life ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) :
       build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);   // Marohi Erqi: on full life
     // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
@@ -2207,8 +2207,8 @@ export function initScene(el, api) {
         else if (d && wait <= 0) {
           // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here)
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
-          const PO = painOn(e), NC = (1 + (S.dmg?.sum?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
+          const PO = painOn(e), NC = (1 + (S.dmg?.sum?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -4189,6 +4189,11 @@ export function initScene(el, api) {
         const VP = S.dmg?.sum?.gain_X_volatility_on_empowered_skill_use; if (VP) gainVol(VP);   // Volatile Power
         if (EF && ph) { S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: ph.map((x, i) => (S.dmg.hits.fire?.[i] || 0) + x * EF / 100) } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
         S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
+        // the tree's: an Empowered attack's stun / freeze buildup, and its damage gained as extra cold (Hail)
+        const SM = P.attack ? S.dmg?.sum || {} : {}; S.stunEmp = 1 + (SM['empowered_attack_hit_damage_stun_multiplier_+%'] || 0) / 100; S.freezeEmp = 1 + (SM['hit_damage_freeze_multiplier_+%_with_empowered_attacks'] || 0) / 100;
+        const HL = SM['non_skill_base_all_damage_%_to_gain_as_cold_with_empowered_attacks'], HH = HL && S.dmg.hits;
+        if (HH) { const n = Math.max(...Object.values(HH).map(x => x.length)), add = Array.from({ length: n }, (_, i) => Object.values(HH).reduce((t, x) => t + (x[i] || 0), 0) * HL / 100);
+          S.dmg = { ...S.dmg, hits: { ...HH, cold: add.map((x, i) => (HH.cold?.[i] || 0) + x) } }; const { els, ail } = withEl(S, 'cold'); Object.assign(S, { els, ail }); }
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
         if (ts.length) S.mult *= 1 + EA / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length;
         S.costX = 1 + (F['support_discount_skill_cost_+%_final_if_empowered'] || 0) / 100; S.accX = 1 + (F['support_discount_accuracy_rating_+%_final_if_empowered'] || 0) / 100; }
@@ -5325,7 +5330,7 @@ export function initScene(el, api) {
         * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1);   // Dazed: more stun buildup (keywords.json Daze)
       me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
-      const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
+      const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
         return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
       const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
       if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
