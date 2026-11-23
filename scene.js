@@ -507,7 +507,7 @@ export function initScene(el, api) {
       const SL = crit && !S.src && !S.leapt && S.dmg?.sum?.support_shocking_leap_shocked_ground_radius;
       if (SL) { S.leapt = true; ground('shocked', { x: d.pos.x, z: d.pos.z }, SL / 10, S.dmg.sum.support_shocking_leap_shocked_ground_duration_ms / 1000, S); }
       // Pain Attunement: 30% less critical damage bonus on full life, 30% more on low life
-      const PAIN = sheet().pain && S.src !== 'minionHit' ? lowLife() ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1;
+      const PAIN = (sheet().pain && S.src !== 'minionHit' ? lowLife() ? 1.3 : me.life >= me.maxL ? .7 : 1 : 1) * (1 - (d.stat?.mods?.['base_self_critical_strike_multiplier_-%'] || 0) / 100);   // and a monster modifier's less critical damage bonus against it
       const cm = crit ? 1 + ((D.critBonus || 0) * W.critBonus * PAIN * (S.src !== 'minionHit' && me.st.shock > 0 ? 1 + (sheet().critShocked || 0) / 100 : 1) + (M?.D?.crit || 0)) / 100 : 1, B = S.src === 'minionHit' ? [] : buffs.filter(b => b.gain && !(b.gain.attack && !S.P.attack)).map(b => b.gain);   // a crit starts Inexorable Critical again
       // The Spring Hare: its chance for your hits' damage to be Lucky (rolled twice, the higher)
       // and the tree's chance for lightning damage to be Lucky
@@ -5124,17 +5124,19 @@ export function initScene(el, api) {
       me.bar[a] = 0; me.lock[a] = rule('ModifierDuration');
       if (can(a)) suffer(a, dur);
     };
-    if (x('fire')) {   // flammability: each hit adds some for a while, the total is the chance to ignite you
-      me.flam.push({ v: x('fire') / thr * GC.IgniteChanceMultiplier * more('ignite_chance_+%', 'active_skill_ignite_chance_+%_final'), s: PL.BaseFlammabilityDuration });
-      if (roll(me.flam.reduce((t, f) => t + f.v, 0)) && can('ignite')) suffer('ignite', DUR.ignite * D.dur.ignite, { dot: dot('ignite', 'fire', x('fire') * D.eff.ignite) });
+    // a monster modifier's: all damage of its hits counts for ignite / chill, its hits always ignite / shock
+    const all = Object.values(raw).reduce((t, n) => t + n, 0), IG = A.all_damage_can_ignite ? all : x('fire');
+    if (IG) {   // flammability: each hit adds some for a while, the total is the chance to ignite you
+      me.flam.push({ v: IG / thr * GC.IgniteChanceMultiplier * more('ignite_chance_+%', 'active_skill_ignite_chance_+%_final'), s: PL.BaseFlammabilityDuration });
+      if ((A.always_ignite || roll(me.flam.reduce((t, f) => t + f.v, 0))) && can('ignite')) suffer('ignite', DUR.ignite * D.dur.ignite, { dot: dot('ignite', 'fire', IG * D.eff.ignite) });
     }
     // a skill that shocks / chills as though dealing more damage (active_skill_<ailment>_as_though_damage_+%_final)
     const though = a => 1 + (A[`active_skill_${a}_as_though_damage_+%_final`] || 0) / 100;
-    if (x('lightning') && roll(x('lightning') * though('shock') / thr * GC.ShockChanceMultiplier * more('shock_chance_+%', 'active_skill_shock_chance_+%_final')) && can('shock'))
+    if (x('lightning') && (A.always_shock || roll(x('lightning') * though('shock') / thr * GC.ShockChanceMultiplier * more('shock_chance_+%', 'active_skill_shock_chance_+%_final'))) && can('shock'))
       suffer('shock', PL.BaseShockDuration * D.dur.shock, { mag: GC.BaseShockMagnitude * D.eff.shock });
-    const SC = sheet(), CX = SC.chillAll || SC.chillPois && me.st.poison > 0 || SC.chillBleed && me.st.bleed > 0 ? Object.values(raw).reduce((t, n) => t + n, 0) : x('cold');   // Icefang Orbit, Venopuncture: all damage taken chills you while poisoned / bleeding
+    const SC = sheet(), CX = SC.chillAll || SC.chillPois && me.st.poison > 0 || SC.chillBleed && me.st.bleed > 0 || A.all_damage_can_chill ? all : x('cold');   // Icefang Orbit, Venopuncture: all damage taken chills you while poisoned / bleeding
     if (CX && !frozen()) {
-      const mag = Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * CX * though('chill') / thr * D.eff.chill);
+      const mag = Math.max(A['chill_minimum_slow_%'] || 0, Math.min(GC.ChillMaxEffect, GC.ChillEffectMultiplier * CX * though('chill') / thr * D.eff.chill));   // a modifier's least chill
       if (mag >= CHILL_MIN && can('chill')) suffer('chill', PL.BaseChillDuration * D.dur.chill, { mag });
       build('freeze', roll(A['base_chance_to_freeze_%'] || 0) ? Infinity : x('cold') * PL.FreezeDamageScale * more('hit_damage_freeze_multiplier_+%', 'active_skill_hit_damage_freeze_multiplier_+%_final'),
         D.freeze, PL.FreezeDuration * D.dur.freeze * more('freeze_duration_+%'));

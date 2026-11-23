@@ -134,7 +134,8 @@ export function attackOf(m, level, key, rarity, ally = false, mods = []) {
     period, interval: Math.max(period, (sk?.cooldown || 0) / uses), cooldown: sk?.cooldown || 0, uses,
     crit: (sk?.crit ?? m.crit ?? 0) * (1 + x('critical_strike_chance_+%') / 100), critBonus: K.monster_crit_bonus ?? 30,
     shape: projectile ? 'projectile' : !hasHit ? 'area' : attack ? (area ? 'slam' : 'melee') : area ? 'area' : 'bolt',
-    area, unblockable: !!set.unblockable, ail: set.const || {},   // the skill's ailment chances and freeze multipliers
+    // the skill's ailment chances and freeze multipliers, with its modifiers' (Poison / Bleeding on Hit: always)
+    area, unblockable: !!set.unblockable, ail: addStats([set.const || {}, st.mods, { 'local_chance_to_bleed_on_hit_%': x('global_bleed_on_hit') * 100, 'base_chance_to_poison_on_hit_%': x('global_poison_on_hit') * 100 }]),
     // metres and metres per second, where the game's tables say them (else the scene uses its own)
     radius: radiusOf(set.const || {}) * Math.sqrt(1 + x('rare_monster_mod_area_of_effect_+%_final') / 100) || null,
     count: (set.const?.number_of_projectiles_override || 1) + (projectile ? x('number_of_additional_projectiles') : 0), projSpeed: (sk?.proj_speed || 0) / 10 || null,
