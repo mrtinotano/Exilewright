@@ -954,5 +954,7 @@
  "Modifiers": "ม็อด",
  "Headhunter": "Headhunter",
  "{0} listed left out: they only make the build worse.": "ข้าม {0} ชิ้นที่ขายอยู่: ทำให้บิลด์แย่ลงเท่านั้น",
- "{0} of {1} combinations tried…": "ลองแล้ว {0} จาก {1} ชุด…"
+ "{0} of {1} combinations tried…": "ลองแล้ว {0} จาก {1} ชุด…",
+ "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "การเปลี่ยนแปลงของคุณไม่ได้ถูกบันทึก: พื้นที่จัดเก็บของหน้าต่างนี้เต็มหรือถูกปิดกั้น ส่งออกบิลด์เพื่อไม่ให้สูญหาย",
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright เริ่มทำงานไม่ได้ ปิดแล้วเปิดใหม่อีกครั้ง หากเกิดขึ้นอีกให้ติดตั้งเวอร์ชันล่าสุด"
 }

@@ -954,5 +954,7 @@
  "Modifiers": "Modificadores",
  "Headhunter": "Cazador de cabezas",
  "{0} listed left out: they only make the build worse.": "{0} a la venta quedan fuera: solo empeoran la build.",
- "{0} of {1} combinations tried…": "{0} de {1} combinaciones probadas…"
+ "{0} of {1} combinations tried…": "{0} de {1} combinaciones probadas…",
+ "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "Tus cambios no se están guardando: el almacenamiento de esta ventana está lleno o cerrado para ella. Exporta la build para no perderlos.",
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright no ha podido arrancar. Ciérralo y vuelve a abrirlo; si se repite, instala la última versión."
 }

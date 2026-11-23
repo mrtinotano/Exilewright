@@ -9,7 +9,7 @@ import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, f
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { initLoot } from './loot.js';
-import { initSettings, watchUpdates, stored } from './settings.js';
+import { initSettings, watchUpdates, stored, put } from './settings.js';
 import { initFilter } from './filter.js';
 import { SEARCH_SLOTS, siteQuery, listingQuery } from './trade.js';
 import { diff, impactHtml } from './impact.js';
@@ -32,7 +32,7 @@ NAMES.specific_skill = i => { const g = gems.find(x => x.specific === i); return
 // ---------- builds (localStorage; export/import as JSON files)
 const KEY = 'poe2builds';
 let builds = stored(KEY);
-if (!Object.keys(builds).length && (localStorage.getItem(KEY) || '{}') !== '{}') localStorage.setItem(KEY + ':unread', localStorage.getItem(KEY));   // builds that cannot be read are kept aside, not written over by the first save
+if (!Object.keys(builds).length && (localStorage.getItem(KEY) || '{}') !== '{}') put(KEY + ':unread', localStorage.getItem(KEY));   // builds that cannot be read are kept aside, not written over by the first save
 let cur;
 // asc: the ascendancy, or the base class's name while none is chosen
 const blank = () => ({ name: t('New build'), level: 1, asc: ascs[0].class, gems: [], nodes: [], ascNodes: [], notes: '' });
@@ -41,7 +41,13 @@ let rev = 0;   // goes up with every change to the builds: what is worked out fr
 // is one step)
 const hist = {}, HIST_MAX = 100;
 let shown = '', stepAt = 0;
-const store = () => { rev++; localStorage.setItem(KEY, JSON.stringify(builds)); };
+let unsaved = false;   // the last save did not get into the storage: said once, until one does
+const store = () => {
+  rev++;
+  const ok = put(KEY, builds);
+  if (!ok && !unsaved) ask(t('Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.'), t('Export')).then(i => { if (i === 0) openShare(true); });
+  unsaved = !ok;
+};
 const save = () => {
   if (B()) linkMetas(B());
   const now = JSON.stringify(B() ?? null), h = hist[cur] ||= { undo: [], redo: [] };
@@ -90,11 +96,17 @@ function clean(b) {
   console.assert(b.name === 'a<"b' && b.notes === '' && b.asc === ascs[0].class && JSON.stringify(b.gems) === JSON.stringify([{ name: g, level: '1>img onerror=x>', supports: [g, null] }])
     && b.nodes + '' === n && !b.ascNodes.length && !('<k' in b) && JSON.stringify(b.items) === '{}' && !b.stash.length && !('swap' in b), 'clean'); }
 function select(id) {
-  cur = id; rev++; localStorage.setItem(KEY + ':last', id); if (B()) linkMetas(clean(B())); shown = JSON.stringify(B() ?? null); undoBtns();
+  cur = id; rev++; put(KEY + ':last', id); if (B()) linkMetas(clean(B())); shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }
 const B = () => builds[cur];
+// another window of the app saved: this one goes on from the builds as they are now, instead of writing its older ones over them
+addEventListener('storage', e => {
+  const now = e.key === KEY && stored(KEY);
+  if (!now || !Object.keys(now).length) return;
+  builds = now; select(builds[cur] ? cur : Object.keys(builds)[0]); document.querySelector('nav button.on')?.click();
+});
 if (!Object.keys(builds).length) builds[Date.now()] = blank();
 
 // ---------- top bar (build, name, level, class, ascendancy) and side panel (character sheet)
@@ -1029,7 +1041,7 @@ document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
 });
 
 // ---------- enemy of the 3D scene: searchable list of the game's monsters, its level and attack, and what the numbers say (enemies.js)
-const saveScene = () => localStorage.setItem(SCENE_KEY, JSON.stringify(sceneCfg));
+const saveScene = () => put(SCENE_KEY, sceneCfg);
 // the simulator's skill bar of each build: { slots: [gem name or null x8], seen: [gem names it has placed] }
 const BAR_KEY = SCENE_KEY + ':bar', sceneBars = stored(BAR_KEY);
 const enemyLevel = () => Math.max(1, Math.min(100, sceneCfg.level || B().level || 1));
@@ -1160,7 +1172,7 @@ scene3d = initScene($('scene'), { build: B, geo, playerSpeed, still: () => scene
   chargeIcon: c => gemImg(SK.charge_icons?.[c]), infusion: e => SK.infusions?.[e] && { icon: gemImg(SK.infusions[e].icon), name: tn(SK.infusions[e]) }, moveIcon: gemImg(SK.move_icon), ailmentIcon: a => gemImg(SK.ailment_icons?.[a]), archonIcon: gemImg(SK.archon_nature_icon), archon: SK.archon_nature,
   swapSet: () => { swapSet(B(), B().wset === 2 ? 1 : 2); save(); renderSide(); return B().wset; },
   look: () => ({ weapon: baseOf(B().items?.weapon)?.class, offhand: baseOf(B().items?.offhand)?.class }),   // what the figure holds
-  bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; try { localStorage.setItem(BAR_KEY, JSON.stringify(sceneBars)); } catch {} renderSceneSkills(); } });
+  bar: () => sceneBars[cur], setBar: v => { sceneBars[cur] = v; put(BAR_KEY, sceneBars); renderSceneSkills(); } });
 // Split Personality can't be taken out while passives hang from the start it opens (as in the game): that item change is
 // undone (seenItems: the build's gear as the panel last showed it)
 const seenItems = new WeakMap();
@@ -1225,4 +1237,4 @@ const renderSettings = initSettings($('settings'), lootEl);
 watchUpdates($('updNote'));
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
-
+$('boot')?.remove();   // the page is ready

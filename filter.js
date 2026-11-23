@@ -4,7 +4,7 @@
 // (poe2_data/available/filter.json, made by _tool/available.py); a .filter names them in English, the page shows them
 // in its own language.
 import { t, lang } from './i18n.js';
-import { stored } from './settings.js';
+import { stored, put } from './settings.js';
 
 const KEY = 'exwFilter';
 const RARITIES = ['Normal', 'Magic', 'Rare', 'Unique'];
@@ -19,7 +19,7 @@ const NUMS = [['ItemLevel', 'Item level'], ['AreaLevel', 'Area level'], ['Qualit
 const newRule = () => ({ on: true, show: true, classes: [], bases: [], rarity: [], min: {}, text: '', border: '', bg: '', size: '',
   sound: '', volume: 300, effect: '', temp: false, icon: null });
 const S = { name: 'Exilewright', rest: true, rules: [], ...stored(KEY) };
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+const save = () => put(KEY, S);
 
 const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(' ') + ' 255';
 const q = s => `"${s.replace(/"/g, '')}"`;

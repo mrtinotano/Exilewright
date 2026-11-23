@@ -954,5 +954,7 @@
  "Modifiers": "Свойства",
  "Headhunter": "Охотник за головами",
  "{0} listed left out: they only make the build worse.": "{0} в продаже пропущены: они только ухудшают билд.",
- "{0} of {1} combinations tried…": "Проверено {0} из {1} сочетаний…"
+ "{0} of {1} combinations tried…": "Проверено {0} из {1} сочетаний…",
+ "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "Изменения не сохраняются: хранилище этого окна заполнено или закрыто для него. Экспортируйте билд, чтобы не потерять их.",
+ "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright не удалось запустить. Закройте его и откройте снова; если это повторится, установите последнюю версию."
 }

@@ -18,6 +18,8 @@ const NEEDS = 'The shortcut needs Ctrl or Alt, so it never takes a key the game 
 const DEFAULTS = { input: 'click', priceKey: 'Ctrl+D', wornKey: 'Alt+D', league: '', state: 'available', near: 10, deep: false };   // near, deep: the price check's ±% and thorough search (trade.js priceOf)
 // what the app keeps in the browser under a key: an object, also when what is there cannot be read
 export const stored = key => { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch { return {}; } };
+// ...and what it puts there, text as it is: false when it did not get in (the storage is full, or closed to the page)
+export const put = (key, v) => { try { localStorage.setItem(key, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch { return false; } };
 const S = (s => ({ ...DEFAULTS, ...s, keys: { ...SCENE_KEYS, ...s.keys } }))(stored(KEY));
 export const slotKeys = () => SLOTS[S.input] || SLOTS.click;
 const taken = c => c === 'Escape' || slotKeys().includes(c) || S.input === 'wasd' && MOVE_KEYS.includes(c);
@@ -31,7 +33,7 @@ const cap = (k, shown) => `<button class="keycap${wait === k ? ' on' : ''}" data
 export const wornRow = () => `<div class="lworn"><p class="note">${t('Put an item on in the game, hold the pointer over it and press the shortcut: the comparison takes it as what the character wears.')}</p>
   <div class="optrow"><label>${t('Shortcut')} ${cap('worn', S.wornKey)}</label></div></div>`;
 const tell = () => fetch('settings', { method: 'POST', body: JSON.stringify({ price_key: S.priceKey, worn_key: S.wornKey }) }).catch(() => {});
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} tell(); };
+const save = () => { put(KEY, S); tell(); };
 tell();
 // how a key is shown: "Space" in the page's language, "KeyR" as "R", "Digit1" as "1"
 export const keyName = code => code === 'Space' ? t('Space') : code.replace(/^Key|^Digit/, '');
