@@ -953,5 +953,6 @@
  "No Vaal modifier": "ไม่มีม็อดวาล",
  "Modifiers": "ม็อด",
  "Headhunter": "Headhunter",
- "{0} listed left out: they only make the build worse.": "ข้าม {0} ชิ้นที่ขายอยู่: ทำให้บิลด์แย่ลงเท่านั้น"
+ "{0} listed left out: they only make the build worse.": "ข้าม {0} ชิ้นที่ขายอยู่: ทำให้บิลด์แย่ลงเท่านั้น",
+ "{0} of {1} combinations tried…": "ลองแล้ว {0} จาก {1} ชุด…"
 }

@@ -953,5 +953,6 @@
  "No Vaal modifier": "Kein Vaal-Modifikator",
  "Modifiers": "Modifikatoren",
  "Headhunter": "Kopfjäger",
- "{0} listed left out: they only make the build worse.": "{0} im Angebot ausgelassen: Sie machen den Build nur schlechter."
+ "{0} listed left out: they only make the build worse.": "{0} im Angebot ausgelassen: Sie machen den Build nur schlechter.",
+ "{0} of {1} combinations tried…": "{0} von {1} Kombinationen probiert…"
 }

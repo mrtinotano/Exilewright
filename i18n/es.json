@@ -953,5 +953,6 @@
  "No Vaal modifier": "Sin modificador vaal",
  "Modifiers": "Modificadores",
  "Headhunter": "Cazador de cabezas",
- "{0} listed left out: they only make the build worse.": "{0} a la venta quedan fuera: solo empeoran la build."
+ "{0} listed left out: they only make the build worse.": "{0} a la venta quedan fuera: solo empeoran la build.",
+ "{0} of {1} combinations tried…": "{0} de {1} combinaciones probadas…"
 }

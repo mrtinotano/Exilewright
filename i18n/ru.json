@@ -953,5 +953,6 @@
  "No Vaal modifier": "Без модификатора ваал",
  "Modifiers": "Свойства",
  "Headhunter": "Охотник за головами",
- "{0} listed left out: they only make the build worse.": "{0} в продаже пропущены: они только ухудшают билд."
+ "{0} listed left out: they only make the build worse.": "{0} в продаже пропущены: они только ухудшают билд.",
+ "{0} of {1} combinations tried…": "Проверено {0} из {1} сочетаний…"
 }

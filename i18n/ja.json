@@ -953,5 +953,6 @@
  "No Vaal modifier": "ヴァールの修正値なし",
  "Modifiers": "モッド",
  "Headhunter": "ヘッドハンター",
- "{0} listed left out: they only make the build worse.": "出品中の{0}件は除外しました：ビルドが弱くなるだけです。"
+ "{0} listed left out: they only make the build worse.": "出品中の{0}件は除外しました：ビルドが弱くなるだけです。",
+ "{0} of {1} combinations tried…": "{0}/{1}通りの組み合わせを試行済み…"
 }

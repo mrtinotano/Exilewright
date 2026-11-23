@@ -34,7 +34,6 @@ export function initOpt(el, ctx) {
   let typed = {};                // numbers typed for this build (points, sockets, lvl); the rest follow the build
   let T = null, U = null;        // results for the build as it is (rev): tree { rev, r, after, fresh }, supports { rev, r, key, sockets }
   let run = null, busy = null;   // searches in progress: tree { stop, spent, of }, trade site { text }
-  let thinking = false;          // supports being worked out
   let msg = {};                  // what the last action did, per card
   let likeOpen = false;          // the Chosen modifiers' list open (with its search)
   const G = {};                  // gear found, per build + slot + class + objective
@@ -108,22 +107,26 @@ export function initOpt(el, ctx) {
     return z;
   }
   const runText = () => t('{0} of {1} points placed…', run.spent, run.of);
+  // the app is blocked while a search runs: a dark veil with its progress, dots that keep moving and its Cancel
+  function veilOf(me, note = '') {
+    const v = document.createElement('div');
+    v.className = 'ask'; v.innerHTML = `<div><p><span></span><span class="dots"><i>.</i><i>.</i><i>.</i></span></p>${note && `<p class="note">${note}</p>`}<button>${t('Cancel')}</button></div>`;
+    v.querySelector('button').onclick = () => { me.stop = true; };
+    document.body.append(v);
+    return { say: s => { v.querySelector('span').textContent = s.replace(/[….]+$/, ''); }, remove: () => v.remove() };
+  }
   async function runTree() {
     const b = ctx.build(), g = gemOf(b), fresh = S.mode === 'new', rev = ctx.rev(), key = S.key, b0 = withJewels(fresh ? freshOf(b) : b), pts = pointsFor(b);
     const bL = { ...b0, level: Math.min(100, 1 + usedOf(b0) + pts) };
     const me = run = { stop: false, spent: 0, of: pts };
     T = null; render();
-    // the app is blocked while it searches: a dark veil with its progress, dots that keep moving and its Cancel
-    const veil = document.createElement('div'), line = () => runText().replace(/[….]+$/, '');
-    veil.className = 'ask'; veil.innerHTML = `<div><p><span></span><span class="dots"><i>.</i><i>.</i><i>.</i></span></p><p class="note">${t('This can take several minutes.')}</p><button>${t('Cancel')}</button></div>`;
-    veil.querySelector('span').textContent = line(); veil.querySelector('button').onclick = () => { me.stop = true; };
-    document.body.append(veil);
+    const veil = veilOf(me, t('This can take several minutes.')); veil.say(runText());
     await new Promise(r => setTimeout(r, 30));   // the progress line gets on screen first
     const r = await optimizeTree({ tree: ctx.tree, b: b0, base: ctx.sumOf(b0), root: ctx.rootOf(b), extra: ctx.splitRoots(b0), jewels: ctx.jewels(b0), f: s => score(key, bL, s, g), points: pts,
       pref: S.pref || g && colour(GEM[g.name]) || 'str', stop: () => me.stop || ctx.rev() !== rev,
-      tick: p => { me.spent = p.spent; veil.querySelector('span').textContent = line(); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).catch(e => { veil.remove(); throw e; });
+      tick: p => { me.spent = p.spent; veil.say(runText()); const o = el.querySelector('#optRun'); if (o) o.textContent = runText(); return new Promise(r => setTimeout(r)); } }).catch(e => { veil.remove(); throw e; });
     let buy = [];
-    if (ctx.rev() === rev && !me.stop) { veil.querySelector('span').textContent = t('Trying jewels for the empty sockets'); await new Promise(r => setTimeout(r, 30)); buy = jewelsToBuy(withPath(b, r, fresh), key, g); }
+    if (ctx.rev() === rev && !me.stop) { veil.say(t('Trying jewels for the empty sockets')); await new Promise(r => setTimeout(r, 30)); buy = jewelsToBuy(withPath(b, r, fresh), key, g); }
     veil.remove();
     if (run === me) run = null;
     if (ctx.rev() === rev) T = { rev, r, fresh, key, after: withPath(b, r, fresh), buy };
@@ -159,21 +162,24 @@ export function initOpt(el, ctx) {
   // ---------- support gems
   const supKey = () => S.key === 'speed' ? 'speed' : 'dps';   // supports change a skill: any other objective rates them by its damage
   const socketsFor = g => Math.max(1, Math.min(SK.max_support_sockets || 5, typed.sockets ?? g?.sockets ?? 2));
-  function runSup() {
-    thinking = true; U = null; render();
-    setTimeout(() => {   // the page shows "Calculating…" before the work starts
-      thinking = false;
-      const b = ctx.build(), g = gemOf(b), key = supKey(), sockets = socketsFor(g);
-      if (g) U = { rev: ctx.rev(), key, sockets, r: bestSupports({ b, g, sum: ctx.sumOf(b), key, sockets, lineage: S.lineage, limited: S.limited, capacity: S.cap }) };
-      render();
-    }, 30);
+  // between two stretches of the search: a message, since a timer waits a whole second in a window that is covered (the game over it)
+  const breath = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => { c.port1.close(); r(); }; c.port2.postMessage(0); });
+  async function runSup() {
+    const b = ctx.build(), g = gemOf(b), key = supKey(), sockets = socketsFor(g), rev = ctx.rev(), me = { stop: false };
+    if (!g) return;
+    U = null; render();
+    const veil = veilOf(me); veil.say(t('Calculating…'));
+    await new Promise(r => setTimeout(r, 30));   // the veil gets on screen first
+    const r = await bestSupports({ b, g, sum: ctx.sumOf(b), key, sockets, lineage: S.lineage, limited: S.limited, capacity: S.cap, stop: () => me.stop,
+      tick: p => { veil.say(t('{0} of {1} combinations tried…', fmt(p.done), fmt(p.of))); return breath(); } }).finally(veil.remove);
+    if (!me.stop) U = { rev, key, sockets, r };
+    render();
   }
   const chip = name => `<span class="optgem" title="${esc(supportText(GEM[name]) || '')}"><img src="${img(GEM[name].icon)}" alt=""><b style="color:${ATTR[colour(GEM[name])]?.[1] || '#ccc'}">${gemName(name)}</b></span>`;
   function supCard(b, g, sum) {
     const key = supKey(), n = socketsFor(g);
     let res = '';
-    if (thinking) res = `<p class="note">${t('Calculating…')}</p>`;
-    else if (U?.r.error) res = `<p class="note">${esc(t(U.r.error))}</p>`;
+    if (U?.r.error) res = `<p class="note">${esc(t(U.r.error))}</p>`;
     else if (U) {
       const r = U.r, cur = score(U.key, b, sum, g), has = (g.supports || []).some(Boolean);
       res = `<div class="optres">${r.combos.length ? '' : `<p class="note">${t('No support the planner can calculate raises this.')}</p>`}
@@ -191,7 +197,7 @@ export function initOpt(el, ctx) {
         ${chk('cap', S.cap, t('Within the support capacity'), t('Each support needs capacity of its colour: 5 of the attribute give 1, and the supports of your other skills use it too.'))}
         ${chk('lineage', S.lineage, t('Lineage supports'), t('Rare supports that drop from specific bosses.'))}
         ${chk('limited', S.limited, t('Supports that limit its use'), t('Supports that add a long cooldown or a condition to use the skill: more per use, not more per second.'))}
-        <button class="optgo" data-do="sup"${g && !thinking ? '' : ' disabled'}>${t('Find the best supports')}</button></div>${res}</section>`;
+        <button class="optgo" data-do="sup"${g ? '' : ' disabled'}>${t('Find the best supports')}</button></div>${res}</section>`;
   }
 
   // ---------- gear on the trade site

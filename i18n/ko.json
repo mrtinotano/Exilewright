@@ -953,5 +953,6 @@
  "No Vaal modifier": "바알 속성 없음",
  "Modifiers": "속성",
  "Headhunter": "헤드헌터",
- "{0} listed left out: they only make the build worse.": "판매 중인 {0}개는 제외했습니다: 빌드가 나빠지기만 합니다."
+ "{0} listed left out: they only make the build worse.": "판매 중인 {0}개는 제외했습니다: 빌드가 나빠지기만 합니다.",
+ "{0} of {1} combinations tried…": "{0}/{1} 조합 시험됨…"
 }

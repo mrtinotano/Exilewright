@@ -953,5 +953,6 @@
  "No Vaal modifier": "無瓦爾詞綴",
  "Modifiers": "詞綴",
  "Headhunter": "獵首",
- "{0} listed left out: they only make the build worse.": "已略過 {0} 件上架物品：它們只會讓配置變差。"
+ "{0} listed left out: they only make the build worse.": "已略過 {0} 件上架物品：它們只會讓配置變差。",
+ "{0} of {1} combinations tried…": "已嘗試 {0} / {1} 種組合…"
 }

@@ -157,8 +157,10 @@ export const limitsUse = name => LIMITS.test(SK.supports?.[name]?.text || '');
 // their multipliers stack with each other. Game rules kept: supported skill types, one support per family in a
 // skill, and (capacity: true) the support gem capacity the attributes give, minus what the other skills use.
 // Returns { base, combos: [{ names, value }] (best first), singles: [{ name, value }], unknown (compatible supports
-// without data to calculate), compatible, cap: {str,dex,int} sockets left per colour or null }, or { error }.
-export function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2, lineage = false, limited = false, capacity = true, keep = 3 }) {
+// without data to calculate), compatible, cap: {str,dex,int} sockets left per colour or null, stopped }, or { error }.
+// The combinations are rated a stretch at a time, so the page stays alive: tick({ done, of }) is awaited between
+// stretches and stop() ends the search.
+export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2, lineage = false, limited = false, capacity = true, keep = 3, tick, stop }) {
   const G = GEM[g.name];
   if (!G || G.kind === 'support') return { error: 'Add a skill to the build first' };
   if (G.cannot_be_supported) return { error: 'Cannot be supported' };
@@ -168,7 +170,16 @@ export function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2,
   const types = new Set(G.types || []);
   const fit = SUPPORTS.filter(s => canSupport(s, types) && (lineage || !s.lineage) && (limited || !limitsUse(s.name)));
   const known = fit.filter(s => supportKnown(s.name));
-  const singles = known.map(s => ({ s, name: s.name, value: f([s.name]) })).filter(x => x.value != null && x.value > base * (1 + 1e-9)).sort((x, y) => y.value - x.value);
+  let at = performance.now();
+  const rate = async lists => {
+    const out = [];
+    for (let i = 0; i < lists.length && !stop?.(); i++) {
+      const value = f(lists[i]); if (value != null) out.push({ names: lists[i], value });
+      if (tick && performance.now() - at > 40) { await tick({ done: i + 1, of: lists.length }); at = performance.now(); }
+    }
+    return out;
+  };
+  const singles = (await rate(known.map(s => [s.name]))).map(x => ({ s: GEM[x.names[0]], name: x.names[0], value: x.value })).filter(x => x.value > base * (1 + 1e-9)).sort((x, y) => y.value - x.value);
   // of a family (tiers I / II / III of one support) only the best can be used anyway
   const fams = new Set(), top = [];
   for (const x of singles) { const k = x.s.family.join() || x.name; if (!fams.has(k) && top.length < TOP) { fams.add(k); top.push(x); } }
@@ -180,11 +191,11 @@ export function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2,
       const c = n && GEM[n] && colour(GEM[n]); if (c) cap[c]--; }
   }
   // every valid combination of up to `sockets` of them
-  const combos = [], names = [], used = new Set(), need = { str: 0, dex: 0, int: 0 };
+  const list = [], names = [], used = new Set(), need = { str: 0, dex: 0, int: 0 };
   const walk = from => {
     if (names.length) {
       const all = new Set([...types, ...names.flatMap(n => GEM[n].adds || [])]);   // a support may change the skill's types for the others
-      if (all.size === types.size || names.every(n => canSupport(GEM[n], all))) { const value = f(names); if (value != null) combos.push({ names: [...names], value }); }
+      if (all.size === types.size || names.every(n => canSupport(GEM[n], all))) list.push([...names]);
     }
     if (names.length >= sockets) return;
     for (let i = from; i < top.length; i++) {
@@ -196,6 +207,7 @@ export function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets ?? 2,
     }
   };
   walk(0);
+  const combos = await rate(list);
   combos.sort((x, y) => y.value - x.value || x.names.length - y.names.length);
-  return { base, combos: combos.slice(0, keep), singles: singles.map(({ name, value }) => ({ name, value })), unknown: fit.length - known.length, compatible: fit.length, cap };
+  return { base, combos: combos.slice(0, keep), singles: singles.map(({ name, value }) => ({ name, value })), unknown: fit.length - known.length, compatible: fit.length, cap, stopped: !!stop?.() };
 }
