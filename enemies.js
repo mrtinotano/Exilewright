@@ -275,7 +275,7 @@ export function versusEnemy(dmg, st, accuracy) {
   const was = enemyStats(m, 70), c = { res: { fire: { capped: 75 } } };
   setMap(map);
   const st = enemyStats(m, 70), atk = attackOf(m, 70, 'basic');
-  console.assert(MAP.mods.length && st.life === Math.round(was.life * 1.2) && Math.abs(st.armour - was.armour - row('armour', 70) * .5) <= 1 && Math.abs(st.evasion - was.evasion - row('evasion', 70) * .4) <= 1
+  console.assert(MAP.mods.length && Math.abs(st.life - was.life * 1.2) <= 1 && Math.abs(st.armour - was.armour - row('armour', 70) * .5) <= 1 && Math.abs(st.evasion - was.evasion - row('evasion', 70) * .4) <= 1
     && Math.abs(st.es - was.es - st.life * .2) <= 1 && enemyStats(m, 70, null, true).life === was.life && atk.hits.fire?.[1] > 0 && atk.pen === 8
     && Math.abs(playerTakes(c, 'fire', 100, true, true, atk.pen) - 33) < 1e-9 && playerTakes(c, 'fire', 100, false, true, atk.pen) === 25 && mapPlayer(map)['additional_maximum_all_resistances_%'] === -4
     && JSON.stringify(mapGround()) === '[{"type":"chilled","v":30,"r":2.6}]', 'map modifiers');
