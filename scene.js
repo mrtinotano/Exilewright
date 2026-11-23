@@ -1094,7 +1094,7 @@ export function initScene(el, api) {
     if (xa('bleed', 'physical') && !N.bleed && roll(A.bleed * AC * (o.full ? 1 + A.bleedFull / 100 : 1) + INCISION.per * (A.incFx || 1) * (d.inc || 0) + (o.crit ? A.bleedCrit || 0 : 0))) {
       const cut = d.inc > 0; me.incs = me.incs.filter(u => time - u.t <= RECENT); if (d.inc) { me.incs.push({ t: time, n: d.inc }); d.inc = 0; }
       const ri = me.incs.reduce((t, u) => t + u.n, 0);
-      inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: (A.bleedBase ?? DUR.bleed) * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) * (cut ? A.bleedIncision || 1 : 1) });   // Concoct; the tree's against Incision
+      inflict(d, 'bleed', S, 1, { ...raw, physical: xa('bleed', 'physical') }, { dur: (A.bleedBase ?? DUR.bleed) * A.bleedTime, eff: A.bleedEffect * (1 + Math.min(INCISION.cap, A.incEff * ri) / 100) * (1 + (S.concoct || 0) / 100) * (cut ? A.bleedIncision || 1 : 1) * (d.st.poison > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_bleed_effect_+%_final_vs_poisoned'] || 0) / 100 : 1) });   // Concoct; the tree's against Incision; Admixture against the Poisoned
     }
     const IN = (A.incision || 0) + (roll(A.incChance?.[0]) ? 1 : 0) + (roll(A.incChance?.[1]) ? 10 : 0);
     if (IN) d.inc = Math.min(INCISION.max, (d.inc || 0) + IN);
@@ -1107,7 +1107,7 @@ export function initScene(el, api) {
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
-    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF });
+    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) });   // Admixture, Poison III against the Bleeding
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -2199,7 +2199,7 @@ export function initScene(el, api) {
     const L = S.dmg?.minionLife;
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
     const SU = S.dmg?.sum || {}, bear = S.name === 'Wild Protector';
-    if (L > 0) Object.assign(e, { decoy: true, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0),
+    if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0),
       regen: bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0, segs: [{ p: e.pos, r: .3, life: L, max: L, res: S.dmg?.minion?.res, hurt(n) {
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
@@ -2207,7 +2207,7 @@ export function initScene(el, api) {
       const B = objs.find(o => o.bone && !o.dead);
       if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
-      n *= o.taken || 1;   // an Empowered Zombie's less damage taken
+      n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
@@ -4868,7 +4868,7 @@ export function initScene(el, api) {
     const LY = d && objs.find(o => o.loyal && !o.dead && o.segs[0].life > 0);
     // Warbringer's Wooden Wall: its share taken from the life of your nearest totem, before you
     const TW = sheet().totemWall, TT = TW && objs.filter(o => o.totemOf && !o.dead && o.segs?.[0].life > 0).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0];
-    for (const [o, p] of [[LY, LY?.loyal], [TT, TW]]) if (o) { const k = p / 100; o.segs[0].hurt(n * k); n *= 1 - k; chaos *= 1 - k; }
+    for (const [o, p] of [[LY, LY?.loyal], [TT, TW]]) if (o) { const k = p / 100; o.segs[0].hurt(n * k); if (o.recoupLoyal) me.recoup.push({ k: 'life', left: n * k * o.recoupLoyal / 100, rate: n * k * o.recoupLoyal / 100 / (sheet().recoup?.time || 8) }); n *= 1 - k; chaos *= 1 - k; }   // Romira's Requital: its % of what the companion takes Recouped as your life
     // Darkness: the damage is reserved from what is left of it before energy shield and life, each part back after its time
     const DK = sheet().darkness; if (DK) { me.dark = (me.dark || []).filter(u => u.until > time); const k = Math.min(n, DK - me.dark.reduce((t, u) => t + u.v, 0)); if (k > 0) { me.dark.push({ v: k, until: time + sheet().darkFor }); chaos *= 1 - k / n; n -= k; } }
     // energy shield takes the damage first; chaos damage removes twice as much of it
@@ -4976,8 +4976,9 @@ export function initScene(el, api) {
   }
   function thornHit(S, d) {
     // Barbs: after you retaliate, the supported skill's next hits (its count) deal your thorns damage to the enemy
-    const BB = S.dmg?.sum?.deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger, BD = BB && me.barbs < BB && thornsOf();
-    if (BD) { me.barbs++; later(.02, () => !d.dead && hit(d, thornX(BD, t('Thorns')), { noPay: true })); }
+    // (Barbs III: twice)
+    const B2 = S.dmg?.sum?.deal_thorns_damage_twice_on_hit_for_X_hits_after_thorns_trigger, BB = S.dmg?.sum?.deal_thorns_damage_on_hit_for_X_hits_after_thorns_trigger || B2, BD = BB && me.barbs < BB && thornsOf();
+    if (BD) { me.barbs++; for (let k = 1; k <= (B2 ? 2 : 1); k++) later(.02 * k, () => !d.dead && hit(d, thornX(BD, t('Thorns')), { noPay: true })); }
     for (const T of S.dmg?.trig || []) {
       // Runeforged Blades: a hit on Fully Broken Armour consumes it for a nova of its projectiles, which cannot hit that
       // enemy, for its Ward cost
