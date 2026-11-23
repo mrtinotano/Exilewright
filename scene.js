@@ -921,6 +921,7 @@ export function initScene(el, api) {
     if (a === 'bleed') d.red = S.dmg?.sum?.['bleeding_monsters_attack_speed_+%'] != null && S.dmg.sum;   // See Red: they move and attack faster while bleeding
     if (a === 'ignite' && !S.src && !(time < me.earch) && time >= (me.earch ?? -99) + SK.archon_time[1] && Math.random() * 100 < (S.dmg?.sum?.['gain_archon_elemental_when_you_ignite_enemy_chance_%'] || 0)) earchGo(sheet().earch || { time: SK.archon_time[0] });   // Arbiter's Ignition: Elemental Archon
     if (a === 'stun' && !S.src && sheet().ancStun && ['rare', 'unique'].includes(d.stat.rarity)) me.ancNext = time + sheet().ancStun;   // the tree's: the next attack within its seconds is Ancestrally Boosted
+    const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
     const US = a === 'armour' && S.dmg?.sum?.['support_demolisher_physical_damage_taken_+%_on_fully_armour_breaking_up_to_20%']; if (US) d.smelt = Math.min(20, (d.smelt || 0) + US);   // Uruk's Smelting: increased physical damage taken, for good, up to 20%
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
     if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
@@ -1257,6 +1258,8 @@ export function initScene(el, api) {
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
     me.culledAt = time; fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    const CF = X[`skill_grant_X_frenzy_charges_against_${d.stat.rarity === 'unique' ? 'unique' : d.stat.rarity === 'rare' ? 'rare' : 'normal_and_magic'}_monsters`] || 0;   // Cull The Weak: frenzy charges by the culled one's rarity
+    for (let k = 0; k < CF; k++) chargeBy('frenzy', S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
     return true;
   }
@@ -1379,7 +1382,7 @@ export function initScene(el, api) {
     const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
     if (/^minion/.test(S?.src) && S.g && api.info(S.g).gem?.types?.includes('Companion') && Math.random() * 100 < (sheet().companionOns || 0)) me.compOns = time + ONSLAUGHT.time;   // the tree's: your Companions' Onslaught on kill
-    d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
+    d.dead = true; stats.kills++; if (S) me.killAt = time; if (S && d.st.shock > 0) me.es = Math.min(me.maxE, me.es + me.maxE * (S.dmg?.sum?.['support_recover_%_maximum_energy_shield_killing_shocked_enemies'] || 0) / 100);   /* Shock Siphon */ if (S && Math.random() * 100 < (sheet().volOnKill || 0)) { gainVol(1); }   /* Volatility on kill */ record('kill', S?.label || '?', d.mon.name); if (!S?.src) gainRage(sheet().rage?.gain.kill);
     // Headhunter: a rare monster you kill gives you its modifiers for the text's seconds
     const HH = S && !S.src && sheet().headhunter; if (HH && d.stat.rarity === 'rare' && Object.keys(d.stat.mods).length) { (me.hh ||= []).push({ stats: d.stat.mods, until: time + HH }); shC.at = -99; setBuff({ label: `${t('Headhunter')}: ${d.mon.name}`, c: css('gold'), s: HH }); }
     houndBlow(d, false); harbinger(d, S, true); if (!S?.src) swarm(d, true); popBoils(d);
@@ -1487,6 +1490,7 @@ export function initScene(el, api) {
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
     const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;   // life: the corpse's monster's
     if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.el);   // the tree's chance to not destroy it
+    flaskGain(0, S.dmg?.sum?.support_grants_X_life_flask_charges_on_using_corpse || 0); flaskGain(1, S.dmg?.sum?.support_grants_X_mana_flask_charges_on_using_corpse || 0);   // Gorge
     if (S.P.gain) chargeBy(S.P.gain, S);
     return p;
   }
@@ -2208,7 +2212,7 @@ export function initScene(el, api) {
       const B = objs.find(o => o.bone && !o.dead);
       if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
-      n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more
+      n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (SU['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) e.dead = e.slain = true; } }] });
     objs.push(e); return e;
   }
@@ -4081,6 +4085,7 @@ export function initScene(el, api) {
       if (S.stage != null && !P.ownStages) { S.mult *= st.flameblast_maximum_stages ? 1 + blast(S) * st['charged_blast_spell_damage_+%_final_per_stack'] / 100 : DA ? 1 : 1 + 2 * S.stage; if (S.perfect) { if (!S.dmg?.parts?.SnipeExplosionPlayer) { S.mult *= 1.5; S.aoe = true; } fx.text({ x: pp.x, y: 2.6, z: pp.z }, t('Perfect timing!'), css('gold')); } }
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       if (time < me.perf?.until) S.mult *= 1 + PERFECTION.more * me.perf.n / 100;   // Perfection: all your skills
+      if (P.spell && time < me.pmag?.until) S.mult *= 1 + me.pmag.inc / 100;   // Practical Magic's increased spell damage. note: as more here
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;
