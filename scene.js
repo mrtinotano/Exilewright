@@ -65,6 +65,7 @@ const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
 const INCISION = { per: 10, max: 10, cap: 30 };   // keywords.json Incision: 10% chance to bleed per stack, up to 10; the support's "up to 30%"
 const IMPALE = { pct: 30, max: 60 };   // keywords.json Impale: 30% of the hit's physical damage, up to 60 on a target
+const CHALICE = { charges: 2, rec: 30 };   // keywords.json OverflowingChalice: flasks gain 2 charges a second, 30% increased recovery
 const WITHER = { per: 5, max: 10 };   // note: keywords.json Withered: 5% increased chaos damage taken, up to 10 times
 const TRINITY_MAX = 100;   // note: keywords.json Affinity: a maximum of 100 of each type
 const CULL = { normal: 35, magic: 20, rare: 10, unique: 5 };   // note: keywords.json CullingStrike: the life % at or below which a hit kills
@@ -460,7 +461,7 @@ export function initScene(el, api) {
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
-    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = o.stunX ?? 1;
+    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = (o.stunX ?? 1) * (S.stunX || 1);
     // Kulemak's Sovereignty: your hits 1% more per 2 total Power of your Undead minions (a minion's is a normal monster's)
     const KU = !S.src && sheet().kulemak; if (KU) g *= 1 + Math.floor(objs.filter(x => x.minion && x.undead && !x.dead).length * POWER.normal / KU) / 100;
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
@@ -599,6 +600,10 @@ export function initScene(el, api) {
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
       if (LX) { S.conduit = true; const L = inside(S.at, S.A); L.length || L.push(d);
         for (let k = 0; k < LX; k++) { const e = L[k % L.length]; later(.1 * (k + 1), () => { if (!e.dead) { fx.bolt(V(e.pos.x, 12, e.pos.z), V(e.pos.x, 0, e.pos.z), S.el, .2, .06, .5); hit(e, { ...S, src: 'conduit' }); } }); } }
+      // Font of Blood, Font of Mana: a totem's hit leeches its share of its physical damage to you within its radius
+      const FT = /totem/.test(S.src || '') && dealt.physical && S.dmg?.sum;
+      if (FT) for (const [r, k, R] of [['life', 'allies_in_font_of_blood_radius_leech_%_of_my_physical_damage_as_life', 'font_of_blood_radius'], ['mana', 'allies_in_font_of_mana_radius_leech_%_of_my_physical_damage_as_mana', 'font_of_mana_radius']])
+        if (FT[k] && objs.some(o => o.totemOf && !o.dead && dist(o.pos, pp) <= FT[R] / 10)) leechIn(r, dealt.physical * FT[k] / 100);
       if (!/minion|totem/.test(S.src || '')) { leech(D, dealt, total, d); const BH = sheet().bloodHit; if (BH && dealt.physical) d.blood = (d.blood || 0) + dealt.physical * BH / 100; }   // Atziri's Acuity: its share of your hits' physical damage as Blood Loss
     } else total = (d.max + d.maxEs) / 8 * m * g * shocked(d);
     // a mark that grants a charge (Sniper's Mark) is consumed by your critical hit
@@ -1061,7 +1066,9 @@ export function initScene(el, api) {
       // Incendiary Shot: its ignite lasts longer for each of its pellets that hit this enemy
       const PH = S.dmg.stats['ignite_duration_+%_per_shotgun_pellet_hit'], pellets = PH ? 1 + PH * (S.pellets ??= new Map()).set(d, (S.pellets.get(d) || 0) + 1).get(d) / 100 : 1;
       d.flam.push({ v: xa('ignite', 'fire') / thr * GC.IgniteChanceMultiplier * A.igniteChance * EAx * AR, s: GC.BaseFlammabilityDuration });
-      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); if (SU.inflict_cold_exposure_on_ignite) expo(d, ['cold'], EXPO.res * E.effect); }   // Blessed Bonds: cold exposure on ignite   // Incendiary Shot's Heat
+      // Frostfire: on a Frozen enemy its more ignite effect (more still on a unique), Consuming the Freeze
+      const FF = d.st.freeze > 0 && SU['ignite_effect_+%_final_against_frozen_enemies'] ? (1 + SU['ignite_effect_+%_final_against_frozen_enemies'] / 100) * (d.stat.rarity === 'unique' ? 1 + (SU['support_frostfire_ignite_effect_+%_final_vs_frozen_unique_enemies'] || 0) / 100 : 1) : 1;
+      if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { if (FF > 1) clear(d, 'freeze'); inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets, eff: FF * A.igniteEffect * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); if (SU.inflict_cold_exposure_on_ignite) expo(d, ['cold'], EXPO.res * E.effect); }   // Blessed Bonds: cold exposure on ignite   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
     if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
@@ -2170,7 +2177,7 @@ export function initScene(el, api) {
     f.group.position.set(p.x, 0, p.z); scene.add(f.group);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
-    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
+    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
@@ -2197,7 +2204,9 @@ export function initScene(el, api) {
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
-          const PO = painOn(e), NC = 1 + (S.dmg?.sum?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100, MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
+          // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here)
+          const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
+          const PO = painOn(e), NC = (1 + (S.dmg?.sum?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
@@ -2224,6 +2233,7 @@ export function initScene(el, api) {
       const B = objs.find(o => o.bone && !o.dead);
       if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
+      if (time < e.guard?.until) { const G = Math.min(e.guard.n, n); e.guard.n -= G; n -= G; }   // Arbiter's Reach: its Guard takes it first
       n *= (o.taken || 1) * (1 + (SU['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (SU['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) {
         // Last Gasp, Tecrod's Revenge: a persistent one fights on for its time at 0 life, then dies
@@ -2600,7 +2610,7 @@ export function initScene(el, api) {
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.sum?.['support_echoing_cry_warcry_monster_power_+%_final'] || 0) / 100) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
@@ -4004,7 +4014,8 @@ export function initScene(el, api) {
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
   function costOf(S, held) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
-    const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
+    const UE = me.drink[1] && S.dmg?.sum?.['base_mana_cost_efficiency_+%_during_mana_flask'], ue = S.dmg?.manaEff || 1;   // Uhtred's Rite: its mana cost efficiency during a mana flask
+    const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (UE ? ue / (ue + UE / 100) : 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
     const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
     return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
   }
@@ -4112,7 +4123,13 @@ export function initScene(el, api) {
         // Atalui's Bloodletting: its % of damage as extra physical per 20 of its life cost, up to 40%
         const AB = SU['gain_%_of_damage_as_physical_per_20_life_cost_up_to_40_%']; if (AB) S.gains = [...(S.gains || []), { el: 'physical', pct: Math.min(40, AB * Math.floor(costOf(S).life / 20)) }];
         // Window of Opportunity II: on Perfect Timing, deflection rating of its % of your evasion for 8 s
-        const WO = S.perfect && SU['gain_%_of_evasion_as_deflection_rating_on_perfect_timing_for_8_seconds']; if (WO) me.woo = { pct: WO, until: time + 8 }; }
+        const WO = S.perfect && SU['gain_%_of_evasion_as_deflection_rating_on_perfect_timing_for_8_seconds']; if (WO) me.woo = { pct: WO, until: time + 8 };
+        // Retaliate, Spar: more damage / stun buildup the fuller your Heavy Stun bar
+        const RP = !S.src && (me.bar.stun || 0) / 100;
+        if (RP) { S.mult *= 1 + (SU['support_max_attack_damage_+%_final_from_current_poise'] || 0) * RP / 100; S.stunX = (S.stunX || 1) * (1 + (SU['support_hit_damage_stun_multiplier_+%_final_from_current_poise'] || 0) * RP / 100); }
+        // Uhtred's Rite: Overflowing Chalice for its time per second of cooldown; more damage during your life flask
+        const UC = !S.src && S.dmg?.cooldown && SU.support_uhtreds_chalice_buff_on_skill_use_duration_ms_per_1000_ms_cooldown; if (UC) me.chalice = Math.max(me.chalice || 0, time + UC / 1000 * S.dmg.cooldown / 1000);
+        if (me.drink[0] && SU['support_uhtreds_chalice_damage_+%_final_during_life_flask']) S.mult *= 1 + SU['support_uhtreds_chalice_damage_+%_final_during_life_flask'] / 100; }
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); player.cast(1); player.setColor(S.el); goal = null; walk = false;
@@ -5342,7 +5359,8 @@ export function initScene(el, api) {
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
     const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
-    me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
+    const OC = time < me.chalice && !f.es ? (1 + (f.inc + CHALICE.rec) / 100) / (1 + f.inc / 100) : 1;   // Overflowing Chalice's increased recovery
+    me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL * OC / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (n && sheet().esOnManaFlask) me.esEarly = 1e9;   // Bitterbloom: a mana flask starts energy shield recharge
     if (f.k === 'life') gainRage(sheet().flaskRage);   // the tree's Rage on using a life flask
     if (f.k === 'life' && sheet().flaskUnbleed) me.st.bleed = 0;   // Zerphi's Genesis: a life flask removes Bleeding
@@ -5690,6 +5708,9 @@ export function initScene(el, api) {
     if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }
     if (!(time < me.earch) && buffs.some(b => b.earch)) buffs = buffs.filter(b => !b.earch);   // Elemental Archon lost early (an attack, the most Flame)
     for (let i = me.flam.length - 1; i >= 0; i--) if ((me.flam[i].s -= dt) <= 0) me.flam.splice(i, 1);
+    if (time < me.chalice) { flaskGain(0, CHALICE.charges * dt); flaskGain(1, CHALICE.charges * dt); }   // Overflowing Chalice
+    // Arbiter's Reach: every 6 s, Guard of 10% of your maximum life on the allies in your Presence for its time (its stat text)
+    const MW = sheet().motherWard; if (MW && time >= (me.mwAt ?? -99) + 6) { me.mwAt = time; for (const o of objs) if (o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r) o.guard = { n: me.maxL * .1, until: time + MW / 1000 }; }
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
     if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + sheet().stunDecay / 100 : 1));   // the tree's Heavy Stun buildup emptying faster
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick

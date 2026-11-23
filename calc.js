@@ -91,7 +91,9 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
   'support_thorns_spirit_cost_thorns_damage_+%': 'thorns_damage_+%', 'support_freeze_protection_spirit_cost_freeze_duration_on_self_+%_final': 'self_freeze_duration_+%_final',
   'support_ignite_protection_spirit_cost_ignite_duration_on_self_+%_final': 'self_ignite_duration_+%_final', 'support_shock_protection_spirit_cost_shock_duration_on_self_+%_final': 'self_shock_duration_+%_final',
   // Mysticism, Direstrike
-  'support_spell_damage_spirit_cost_spell_damage_+%_on_full_energy_shield': 'spell_damage_+%_while_es_full', 'support_attack_damage_spirit_cost_attack_damage_+%_on_low_life': 'attack_damage_+%_when_on_low_life' };
+  'support_spell_damage_spirit_cost_spell_damage_+%_on_full_energy_shield': 'spell_damage_+%_while_es_full', 'support_attack_damage_spirit_cost_attack_damage_+%_on_low_life': 'attack_damage_+%_when_on_low_life',
+  // Upwelling (the scene's, while you are not on full mana), Arbiter's Reach (its Guard's duration)
+  'support_minion_damage_spirit_cost_minion_damage_+%_while_missing_mana': 'minion_damage_+%_while_missing_mana', 'support_mothers_ward_base_duration_ms': 'mothers_ward_ms' };
 export function skillStats(b) {
   const out = motes(b);
   for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent'))
@@ -679,6 +681,7 @@ export function recovery(c, sum) {
     // Low Life, Low Mana and Full Mana at other shares (Coward's Legacy, Idle Hands), and on Low Life by your mana / Low Mana by your life (Serpent's Lesson)
     thresh: { lowLife: v(sum, 'low_life_threshold_%_override'), lowMana: v(sum, 'low_mana_threshold_%_override'), fullMana: v(sum, 'full_mana_threshold_%_override'),
       lifeByMana: v(sum, 'unique_you_count_as_on_low_life_while_at_%_of_maximum_mana_or_below'), manaByLife: v(sum, 'unique_you_count_as_on_low_mana_while_at_%_of_maximum_health_or_below') }, buffTime: v(sum, 'buff_time_passed_+%_only_buff_category'),
+    upwell: v(sum, 'minion_damage_+%_while_missing_mana'), motherWard: v(sum, 'mothers_ward_ms'),   // Upwelling; Arbiter's Reach
     volatility: v(sum, 'gain_X_volatility_on_inflicting_elemental_ailment'), volOnKill: v(sum, 'volatility_on_kill_%_chance'), volOnStun: v(sum, 'volatility_when_stunned_%_chance'), charmAnother: v(sum, 'charms_%_chance_on_use_to_use_another_charm_without_consuming_charges'), volImmune: !!sum.immune_to_volatility_damage, volMax: v(sum, 'maximum_volatility_allowed'), flaskRage: v(sum, 'rage_gained_on_life_flask_use'), pierceBroken: !!sum.projectiles_pierce_enemies_with_fully_broken_armour, minionWither: v(sum, 'minions_have_%_chance_to_inflict_wither_on_hit'), ancStun: v(sum, 'next_attack_is_ancestrally_boosted_for_x_seconds_on_heavy_stunning_unique_or_rare_enemy'), immIntim: v(sum, 'enemies_intimidated_x_seconds_when_pinned_heavy_stunned_frozen_or_electrocuted'), aggOld: v(sum, 'aggravate_bleeding_older_than_ms_on_hit') / 1000, stunBlind: !!sum.blind_enemies_when_they_stun_you, volDot: v(sum, 'chaos_damage_over_time_+%_per_volatility'), volCrit: v(sum, 'volatility_critical_strike_chance_+%_to_grant'), volFuse: Math.max(0, 1 + v(sum, 'volatility_detonation_delay_+%') / 100),   // Acolyte of Chayula
     hinderTime: 1 + v(sum, 'hinder_duration_+%') / 100, dazeMag: 1 + v(sum, 'daze_magnitude_+%') / 100,   // the Hinder and Daze you inflict
     unluckyDmg: sum.damage_taken_from_hits_is_unlucky ? 100 : v(sum, 'enemy_extra_damage_rolls_chance_%'),   // chance for hits' damage against you to be Unlucky (Oracle: always)
@@ -1212,6 +1215,7 @@ export function skill(g, b, treeGear) {
     // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
     // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
     const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%') + (own.includes('spell') ? v(sum, 'spells_cost_life_instead_of_mana_%') : 0)) / 100;   // Blood Magic: all of it
+    out.manaEff = eff;   // its mana cost efficiency (Uhtred's Rite adds to it in the scene)
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
       const life = perSec ? raw * toLife : Math.round(Math.floor(raw) * toLife), inc2 = 1 + (v(sum, 'base_cost_+%') + v(sum, 'base_life_cost_+%')) / 100, more2 = (1 + (finals['blood_magic_skill_life_cost_+%_final'] || 0) / 100) * (sum.keystone_tecrods_brutality ? 1.2 : 1);   // Tecrod's Brutality: 20% more
@@ -1590,7 +1594,7 @@ export function skill(g, b, treeGear) {
   // Tactician's aura the same for every Ally in your Presence
   const cw = (msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions')) + v(sum, 'aura_grant_%_base_main_hand_attack_damage_to_nearby_allies'), W = cw && weaponStats(b.items);
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
-  const mn = out.minion = mid ? minionOf(st, msum, fin, mid, attributes(sum, b?.asc), wAdd) : null;
+  const mn = out.minion = mid ? minionOf(st, msum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
   out.minionLife = mid ? minionLife(st, msum, mid, finals) : null;
   out.minionUndead = !!mid && enemy(mid)?.category === 'Undead';   // monsters.json category (Kulemak's Sovereignty)
   if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
@@ -1770,7 +1774,8 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
   const pre = DMG.map(t => base[t]), all = [0, 1].map(i => pre.reduce((x, r) => x + r[i], 0));
   for (const t of DMG) { const g = v(ms, `non_skill_base_all_damage_%_to_gain_as_${t}`); if (g) base[t] = base[t].map((x, i) => x + all[i] * g / 100); }
   const scale = t => (1 + (inc(ms, 'damage_+%', tags) + v(ms, `${t}_damage_+%`) + (t !== 'physical' && t !== 'chaos' ? v(ms, 'elemental_damage_+%') : 0)) / 100)
-    * (1 + v(ms, 'damage_+%_final_for_minion') / 100) * (1 + v(st, 'active_skill_minion_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t);
+    * (1 + v(ms, 'damage_+%_final_for_minion') / 100) * (1 + v(st, 'active_skill_minion_damage_+%_final') / 100) * more(fin, 'damage_+%', tags, t)
+    * (1 + (fin['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100);   // Commandment: none with its own attacks
   const hits = {};
   for (const t of DMG) if (base[t][1]) hits[t] = base[t].map(x => Math.round(x * scale(t)));
   const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
