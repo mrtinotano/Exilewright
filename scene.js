@@ -529,7 +529,7 @@ export function initScene(el, api) {
       const CO = !S.src && S.P.spell && sheet().coil, nC = CO && [d.curse, ...(d.hexes || [])].filter(Boolean).length;   // Liminal Coil: spells gain as extra chaos / physical per curse on the target
       if (nC) { raw.chaos = (raw.chaos || 0) + tot * CO.chaos * nC / 100; raw.physical = (raw.physical || 0) + tot * CO.phys * nC / 100; }
       const HV = !S.src && raw.cold && d.st.chill > 0 && sheet().heatshiver; if (HV) raw.fire = (raw.fire || 0) + raw.cold * (d.mag.chill || 0) * HV / 100;   // Heatshiver: per 1% Chill magnitude on it
-      const UM = !S.src ? sheet().unholy : S.src === 'minionHit' && sheet().allyUnholy; if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
+      const UM = !S.src ? sheet().unholy || (time < me.umUntil ? 1 : 0) : S.src === 'minionHit' && (sheet().allyUnholy || (time < me.mumUntil ? 1 : 0)); if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       const MX = /^minion/.test(S.src || '') || isCmd(S) ? (uarch() ? 1 + UARCHON.more * sheet().overgrow.archonEffect / 100 : 1) * (isCmd(S) ? 1 + PUPPET.cmdDmg * pup() / 100 : 1) : 1; if (MX !== 1) for (const e in raw) raw[e] *= MX;   // Archon of Undeath, Puppet Master. note: its increased command damage as more here
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
@@ -2183,6 +2183,9 @@ export function initScene(el, api) {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
         if (e.keep && e.slain) fallen(S, e);
+        // Deathmarch: on death it heals the allied minions within its radius for its % of its life (their ailments: minions have none here)
+        const DM = e.slain && S.dmg?.sum?.['minion_on_death_heal_nearby_minions_for_%_of_life_and_remove_ailments'];
+        if (DM) for (const o of objs) if (o !== e && o.minion && !o.dead && o.segs?.[0]?.max && dist(o.pos, e.pos) <= S.dmg.sum.minion_on_death_heal_radius / 10) o.segs[0].life = Math.min(o.segs[0].max, o.segs[0].life + L * DM / 100);
       } };
     const L = S.dmg?.minionLife;
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
@@ -4111,6 +4114,7 @@ export function initScene(el, api) {
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
       if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {};
+        const VP = S.dmg?.sum?.gain_X_volatility_on_empowered_skill_use; if (VP) gainVol(VP);   // Volatile Power
         if (EF && ph) { S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: ph.map((x, i) => (S.dmg.hits.fire?.[i] || 0) + x * EF / 100) } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
         S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
         const EA = P.attack && S.dmg?.sum?.['empowered_attack_damage_+%'], ts = EA ? Object.keys(S.dmg.hits) : [];   /* the tree's increased damage of Empowered Attacks */
@@ -4291,6 +4295,8 @@ export function initScene(el, api) {
     // then the rest's chance), each lasting on its own; at their most a new one replaces the oldest
     if (!auto && isCmd(S)) {
       if (Math.random() * 100 < sheet().undeath.cmd) undeathGo();
+      // Kurgal's Leash: Unholy Might for its time, on you and on your minions. ponytail: all your minions', not only the commanded skill's
+      const KL = S.dmg?.sum || {}; if (KL.gain_unholy_might_for_X_ms_on_command) me.umUntil = time + KL.gain_unholy_might_for_X_ms_on_command / 1000; if (KL.minion_gain_unholy_might_for_X_ms_on_command) me.mumUntil = time + KL.minion_gain_unholy_might_for_X_ms_on_command / 1000;
       const P = sheet().puppet; for (let n = Math.floor(P.ch / 100) + (Math.random() * 100 < P.ch % 100 ? 1 : 0); n > 0; n--) { pup(); if (me.pup.length >= PUPPET.max + P.max) me.pup.shift(); me.pup.push(time + PUPPET.time * P.dur); }
     }
     // a Command skill (keywords.json Minion Commands): the tree's chance to Revive a random fallen persistent minion
@@ -4486,6 +4492,7 @@ export function initScene(el, api) {
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
+    for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
     // Primal Bounty: the dodge expends an Owl Feather (up to its number more with The Mhacha's Gift, each 100% more
     // Empowerment effect) to empower your next projectile skill: its additional projectiles and faster flight
