@@ -2,7 +2,7 @@
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, esc, tn, lang, fmt, KW } from './i18n.js';
 import { statLines, statLinesEn, shownLines, nameLines } from './stats.js';
-import { diff, byGain, damage, impactHtml, impactLine, impactList, impactText } from './impact.js';
+import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
@@ -881,7 +881,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
-  // the items found better than the one worn (trade.find): best first, each with its price, what it changes and Equip
+  // the items found better than the one worn (trade.find): cheapest first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
   function betterHtml(slot) {
     const { text, res } = better;
@@ -889,11 +889,16 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
     const B = getBuild(), worn = B.items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {}, { [slot]: _, ...rest } = B.items || {};
     const lvl = B.level > 1 ? B.level : 101, s0 = B.level > 1 ? snapOf(rest) : null, s = s0?.glovesFree && slotType(slot) === 'gloves' ? null : s0;   // no character yet: nothing to check
-    // what each changes on the build; those that only lose are left out (the search asks for the worn one's lines, not
-    // for more damage: one of another base, or with a line less, can be worse in everything), the most damage gained
-    // first (the rest as the search gave them)
-    const all = res.found.map((l, i) => ({ l, i, rows: gain(slot, { ...l.item, extra: worn?.extra || {} }, 'buy' + i) }));
-    const rated = all.filter(x => !x.rows.length || x.rows.some(r => r.d > 0)).sort((p, q) => damage(q.rows) - damage(p.rows)), worse = all.length - rated.length;
+    // what each changes on the build. Left out: those the build is worse with: its damage (its skills' DPS added up)
+    // times its toughness goes down (the Loot verdict's two numbers), or neither moves and nothing else is gained (the
+    // search asks for the worn one's lines, not for more damage: one of another base, or with a line less, can lose
+    // half of it for some Accuracy). Cheapest first.
+    // ponytail: no exchange rates, a price in another currency goes by its place in the site's list of currencies
+    // (Exalted, Chaos, Divine); the Currency Exchange's rates if mixed prices matter
+    const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
+    const all = res.found.map((l, i) => { const items = { ...B.items, [slot]: { ...l.item, extra: worn?.extra || {} } }, z = snapOf(items), d = dmg(z), tz = trade.tough(items);
+      return { l, i, rows: diff(now, z), net: (d0 ? d / d0 : d ? 2 : 1) * (t0 ? tz / t0 : tz ? 2 : 1), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
+    const rated = all.filter(x => Math.abs(x.net - 1) <= .005 ? !x.rows.length || x.rows.some(r => r.d > 0) : x.net > 1).sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1]), worse = all.length - rated.length;
     return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
       const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
@@ -915,7 +920,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button><a class="buysite" href="${esc(trade.item(res.league, l, res.body?.query?.status?.option))}" target="_blank" rel="noopener">${t('Trade')}</a></div>
         <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}</span></div>`; }).join('')
       || (worse ? '' : `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`)}</div>
-      ${worse ? `<p class="note">${t('{0} listed left out: they only make the build worse.', worse)}</p>` : ''}
+      ${worse ? `<p class="note">${t('{0} listed left out: with them the build is worse ({1} goes down).', worse, t('Damage × toughness'))}</p>` : ''}
       ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers; the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       <a class="golink" href="${esc(trade.site(res.league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>`;

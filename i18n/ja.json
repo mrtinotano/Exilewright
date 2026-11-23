@@ -939,7 +939,7 @@
  "No Vaal modifier": "ヴァールの修正値なし",
  "Modifiers": "モッド",
  "Headhunter": "ヘッドハンター",
- "{0} listed left out: they only make the build worse.": "出品中の{0}件は除外しました：ビルドが弱くなるだけです。",
+ "{0} listed left out: with them the build is worse ({1} goes down).": "出品中の{0}件は除外しました：装備するとビルドが弱くなります（{1}が下がる）。",
  "{0} of {1} combinations tried…": "{0}/{1}通りの組み合わせを試行済み…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "変更が保存されていません。このウィンドウのストレージが満杯か、利用できません。失わないようにビルドをエクスポートしてください。",
  "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewrightを起動できませんでした。閉じてからもう一度開いてください。再発する場合は最新バージョンをインストールしてください。",

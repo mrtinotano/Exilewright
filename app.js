@@ -3,11 +3,12 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc } from './calc.js';
+import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
-import { initSkills, GEM } from './skills.js';
+import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
+import { toughness } from './optimize.js';
 import { initLoot } from './loot.js';
 import { initSettings, watchUpdates, stored, put, ask } from './settings.js';
 import { initFilter } from './filter.js';
@@ -1255,7 +1256,7 @@ const sockets = () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map(
 const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
   sockets,
   items => snap({ ...B(), items }), treeSum,
-  { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
+  { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), tough: items => { const b = { ...B(), items }; return toughness(character(b, sumOf(b))); }, find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(id => N[id].type === 'jewel'), setNodes, showOnTree,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });

@@ -46,10 +46,6 @@ const both = r => r.pct != null && !r.dps ? `${signed(r.d, r.dec, r.unit)} ${r.l
 // number that had no old value first among its sign
 const worth = r => r.pct ?? (r.unit ? r.d : Math.sign(r.d) * 1e9);
 export const byGain = rows => [...rows].sort((p, q) => worth(q) - worth(p));
-// what a change does to the skills' damage, to put several in order: the shares of their DPS added up (a skill that
-// did none before counts as 100)
-export const damage = rows => rows.reduce((s, r) => s + (r.dps ? r.pct ?? Math.sign(r.d) * 100 : 0), 0);
-console.assert(damage([{ dps: true, pct: 20, d: 1 }, { dps: true, pct: -5, d: -1 }, { pct: 50, d: 3 }]) === 15, 'damage');
 // every change, one per line, gains first (empty when nothing changes); pct: with the share of each
 export const impactList = (rows, pct = false) => rows.length ? `<div class="impv">${[...rows].sort((p, q) => (q.d > 0) - (p.d > 0)).map(r => `<div class="${cls(r)}">${esc((pct ? both : brief)(r))}</div>`).join('')}</div>` : '';
 // the biggest changes on one line, for list entries (empty when nothing changes)

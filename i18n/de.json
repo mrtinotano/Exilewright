@@ -939,7 +939,7 @@
  "No Vaal modifier": "Kein Vaal-Modifikator",
  "Modifiers": "Modifikatoren",
  "Headhunter": "Kopfjäger",
- "{0} listed left out: they only make the build worse.": "{0} im Angebot ausgelassen: Sie machen den Build nur schlechter.",
+ "{0} listed left out: with them the build is worse ({1} goes down).": "{0} im Angebot ausgelassen: Mit ihnen ist der Build schlechter ({1} sinkt).",
  "{0} of {1} combinations tried…": "{0} von {1} Kombinationen probiert…",
  "Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.": "Deine Änderungen werden nicht gespeichert: Der Speicher dieses Fensters ist voll oder für es gesperrt. Exportiere den Build, damit sie nicht verloren gehen.",
  "Exilewright could not start. Close it and open it again; if it happens again, install the latest version.": "Exilewright konnte nicht starten. Schließe es und öffne es erneut; passiert es wieder, installiere die neueste Version.",

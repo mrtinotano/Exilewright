@@ -1068,13 +1068,6 @@ export function inc(sum, suffix, tags) {
   }
   return t;
 }
-const TYPED = new Map();   // "cold_attack_damage_+%" as ['cold', 'attack_damage_+%'], worked out once per stat as rekey's
-function typedOf(k) {
-  let r = TYPED.get(k);
-  if (r === undefined) { const m = k.match(/^(physical|fire|cold|lightning|chaos)_(\w+_damage_\+%)$/); TYPED.set(k, r = m ? [m[1], m[2]] : null); }
-  return r;
-}
-console.assert(String(typedOf('cold_attack_damage_+%')) === 'cold,attack_damage_+%' && !typedOf('cold_damage_+%') && !typedOf('attack_damage_+%'), 'typedOf');
 console.assert(inc({ 'damage_+%_with_two_handed_weapons': 40, 'damage_+%_with_bow_skills': 5 }, 'damage_+%', ['attack', 'twohand']) === 40, 'inc: _with_ stats');
 console.assert(inc({ 'attack_damage_vs_bleeding_enemies_+%': 7, 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%_vs_bleeding_enemies', ['attack']) === 7 && !inc({ 'damage_vs_enemies_on_low_life_+%': 3 }, 'damage_+%', []), 'inc: _vs_ stats');
 // what the stat ids call the weapon an attack is made with (item base tags; warstaff is the quarterstaff)
@@ -1358,7 +1351,7 @@ export function skill(g, b, treeGear) {
   const dmgTags = byTotem ? [...tags.filter(x => x !== 'grenade'), 'totem'] : tags;
   // "<type>_<kind>_damage_+%" (the tree's Attack Cold Damage, Physical Damage with Bows): that type's damage with skills of that kind
   const typed = Object.fromEntries(DMG.map(t => [t, {}]));
-  for (const k in sum) { const m = typedOf(k); if (m) typed[m[0]][m[1]] = sum[k]; }
+  for (const k in sum) { const m = k.match(/^(physical|fire|cold|lightning|chaos)_(\w+_damage_\+%)$/); if (m) typed[m[1]][m[2]] = sum[k]; }
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   // "increased Spell Damage with Spells that cost Life": a spell with a life cost (Lifetap, Blood Magic)
