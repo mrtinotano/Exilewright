@@ -1276,7 +1276,8 @@ export function skill(g, b, treeGear) {
   const ELE = ['fire', 'cold', 'lightning'], cvOf = (f, t) => f === t ? 0 : v(sum, `non_skill_base_${f}_damage_%_to_convert_to_${t}`) + (ELE.includes(f) ? v(sum, `non_skill_base_elemental_damage_%_to_convert_to_${t}`) : 0)
     + (f === 'fire' && t === 'cold' && tags.includes('mace') ? v(sum, 'unique_mace_fire_damage_with_mace_skills_%_to_convert_to_cold') : 0)
     + (f === 'physical' && t === 'fire' && tags.includes('bear') ? v(sum, 'non_skill_physical_damage_%_to_convert_to_fire_with_bear_skills') : 0)
-    + (f === 'physical' && t === 'cold' && tags.includes('parry') ? v(sum, 'parry_physical_damage_%_to_convert_to_cold') : 0);
+    + (f === 'physical' && t === 'cold' && tags.includes('parry') ? v(sum, 'parry_physical_damage_%_to_convert_to_cold') : 0)
+    + (f === 'physical' && t === 'fire' ? st['ancestral_cry_non_skill_physical_to_fire_convert_%'] || 0 : 0);   // Ancestral Cry's
   const cvFrom = { ...base };
   for (const f of DMG) {
     const tot = DMG.reduce((s, t) => s + cvOf(f, t), 0), k = tot && Math.min(1, 100 / tot) / 100;

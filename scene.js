@@ -2154,6 +2154,17 @@ export function initScene(el, api) {
         // damage (every half second here)
         const IB = S.dmg?.stats?.['infernal_familiar_minion_burns_for_%_max_life'];
         if (IB && L > 0 && (e.burnT = (e.burnT ?? 0) - dt) <= 0) { e.burnT = .5; for (const d of inside(e.pos, S.dmg.stats.infernal_familiar_minion_burn_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IB / 100 }); }
+        // Infernal Legion: it burns, taking its % of its maximum life as fire a minute, and Ignites the enemies within its
+        // radius as Infernal Hound does
+        const IL = S.dmg?.sum?.['support_minions_ignite_for_%_max_life'];
+        if (IL && L > 0 && q0?.life > 0) {
+          q0.hurt(q0.max * (S.dmg.sum['minion_fire_damage_%_of_maximum_life_taken_per_minute'] || 0) / 6000 * dt * (1 - (q0.res?.fire || 0) / 100));
+          if ((e.ilT = (e.ilT ?? 0) - dt) <= 0) { e.ilT = .5; for (const d of inside(e.pos, S.dmg.sum.infernal_legion_minion_burning_effect_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IL / 100 }); }
+        }
+        // Minion Instability: reduced to Low Life it explodes for its % of its maximum life as fire (once, until healed above). note: the explosion's area is the scene's
+        const MI = S.dmg?.sum?.['explode_on_low_life_%_maximum_life_to_deal'], low = q0 && q0.life > 0 && q0.life <= q0.max * LOW;
+        if (MI && low && !e.blew) { const x = q0.max * MI / 100; boom({ x: e.pos.x, z: e.pos.z }, SIM.area, { ...MS, dmg: { ...S.dmg, hits: { fire: [x, x] }, trig: [] }, els: ['fire'], el: 'fire', mult: 1, src: 'trigger' }); }
+        if (q0) e.blew = low;
         const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
