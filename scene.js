@@ -2716,7 +2716,7 @@ export function initScene(el, api) {
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
-      const TL = S.dmg?.totemLife;
+      const TL = S.dmg?.totemLife * (S.totemLife || 1);   // Spell Totem: more per Endurance Charge consumed
       if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
     },
@@ -3862,7 +3862,8 @@ export function initScene(el, api) {
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
     const EH = me.maxM * (S.dmg?.sum?.['recoup_mana_%_on_minion_death'] || 0) / 100, RT = sheet().recoup?.time || 8; if (EH > 0) me.recoup.push({ k: 'mana', left: EH, rate: EH / RT });   // Essence Harvest: its % of your maximum mana Recouped
-    const RS = sheet().resummon; if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / RS.speed;   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
+    const RS = sheet().resummon, SC = S.dmg?.minionUndead ? onS('Sacrifice')?.dmg.stats['harvester_minion_resummon_speed_+%_final'] || 0 : 0;   // Sacrifice: undead ones Revive more slowly
+    if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / RS.speed / (1 + SC / 100);   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
@@ -4322,7 +4323,7 @@ export function initScene(el, api) {
     if (NC) {
       const have = charges.power + charges.endurance; if (have < NC) { toast(t('{0} needs {1} charges and has {2}', S.label, NC, have)); return false; }
       const p = Math.min(NC, charges.power), st = S.dmg.stats; charges.power -= p; charges.endurance -= NC - p; chargesSpent(p, 'power'); chargesSpent(NC - p, 'endurance');
-      S.totemMult = 1 + p * st['spell_totem_damage_+%_final_per_power_charge_consumed'] / 100; S.totemTime = 1 + (NC - p) * st['spell_totem_totem_duration_+%_final_per_endurance_charge_consumed'] / 100;
+      S.totemMult = 1 + p * st['spell_totem_damage_+%_final_per_power_charge_consumed'] / 100; S.totemTime = 1 + (NC - p) * st['spell_totem_totem_duration_+%_final_per_endurance_charge_consumed'] / 100; S.totemLife = 1 + (NC - p) * (st['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed'] || 0) / 100;
     }
     // Spectral Volley: a supported projectile attack you use deals its less damage and leaves a Spectral Projectile, up to
     // its most; they all fire, with their more damage, one every its delay, once none has been created for its duration
@@ -4814,7 +4815,8 @@ export function initScene(el, api) {
     }
     if (st.pin > 0 && st.pin <= dt && d.unpin) { inflict(d, 'maim', d.unpin.S, 1, null, { dur: d.unpin.s }); d.unpin = null; }
     if (st.ignite > 0) d.ignSec = (d.ignSec || 0) + dt;   // the seconds it was ever Ignited
-    for (const k in st) if (st[k] > 0) st[k] -= dt;
+    const TX = 1 + curseFx(d, C => C?.expire) / 100;   // Temporal Chains: its other effects expire more slowly
+    for (const k in st) if (st[k] > 0) st[k] -= dt * TX;
     for (const k in d.lock) d.lock[k] -= dt;
     for (const k in d.imm) d.imm[k] -= dt;
     for (let i = d.flam.length - 1; i >= 0; i--) if ((d.flam[i].s -= dt) <= 0) d.flam.splice(i, 1);
@@ -5779,6 +5781,8 @@ export function initScene(el, api) {
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * Math.min(D.s, dt); D.s -= dt;
       flaskHeal(D, got); const F = flasks()[n] || {};
+      const AB = D.k === 'life' && onS("Alchemist's Boon")?.dmg.stats['recovery_from_flasks_applies_to_allies_in_presence_%'];   // Alchemist's Boon: its share to your minions in your Presence
+      if (AB) for (const o of objs) { const s = o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got * AB / 100); }
       if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
       if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
       if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m

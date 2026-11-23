@@ -1814,7 +1814,7 @@ function markOf(st, eff = 1) {
 function curseOf(st, sum, finals = {}) {
   const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, (st[`base_skill_buff_${e}_damage_resistance_%_to_apply`] || 0) + (e !== 'chaos' ? st['base_skill_buff_all_elements_resistance_%_to_apply'] || 0 : 0)]));
   return { res, armour: st['base_skill_buff_total_armour_-_to_grant'] || 0, damage: st['base_skill_buff_damage_+%_final_to_apply'] || 0,
-    speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
+    speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, expire: st['base_temporal_chains_other_buff_time_passed_+%_to_apply'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
     effect: (1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100) * (1 + (finals['support_atziri_curse_effect_+%_final'] || 0) / 100) };   // Atziri's Allure: less
 }
 // self-check: Purity of Fire at level 10 grants +31% fire resistance, 50% more with 50% increased aura magnitudes
