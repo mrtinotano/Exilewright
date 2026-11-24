@@ -169,7 +169,7 @@ export function gemStats(g, sum = {}) {
 // Atziri's Communion: no Spirit, its % of maximum life per base Spirit instead (life: that %)
 export function reservation(g, sum = {}, b, life = false) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
-  const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
+  const eff = (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
   const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
@@ -236,7 +236,7 @@ export function attributes(sum, ascName) {
   const pair = { str: ['strength_and_dexterity', 'strength_and_intelligence'], dex: ['strength_and_dexterity', 'dexterity_and_intelligence'], int: ['strength_and_intelligence', 'dexterity_and_intelligence'] };
   for (const [k, id] of Object.entries(ids)) {
     const flat = base[k] + v(sum, 'base_' + id, 'additional_' + id, 'additional_all_attributes', 'base_all_attributes', ...pair[k].flatMap(p => ['additional_' + p, 'base_' + p]));
-    out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%') / 100) * (1 + v(sum, 'gemling_all_attributes_+%_final') / 100));   // Gemling Legionnaire: more (less)
+    out[k] = Math.floor(flat * (1 + v(sum, id + '_+%', 'all_attributes_+%', ...pair[k].map(p => p + '_+%')) / 100) * (1 + v(sum, 'gemling_all_attributes_+%_final') / 100));   // Gemling Legionnaire: more (less)
   }
   return out;
 }
@@ -463,7 +463,7 @@ export function character(b, sum) {
     earch: sum.gain_archon_elemental_when_energy_shield_recharge_starts || sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame || sum['gain_archon_elemental_after_spending_100%_of_your_maximum_mana'] ? { recharge: !!sum.gain_archon_elemental_when_energy_shield_recharge_starts, mana: !!sum['gain_archon_elemental_after_spending_100%_of_your_maximum_mana'], cast: !!sum.gain_elemental_archon_when_you_cast_a_spell_while_on_high_infernal_flame, time: SK.archon_time[0] * pct('archon_duration_+%'), delay: sum.archon_no_recovery_period ? 0 : SK.archon_time[1] / pct('archon_delay_expires_x%_faster'),
       keep: !!sum.elemental_archon_does_not_expire_while_on_high_infernal_flame, full: !!sum.lose_elemental_archone_on_reaching_full_infernal_flame } : null,
     elixir: !!sum.life_flask_effects_are_not_removed_at_full_life,   // Pathfinder's Enduring Elixirs
-    tailwind: sum.gain_tailwind_stack_on_skill_use ? { lose: !!sum.lose_all_tailwind_when_hit } : null,   // Deadeye's Gathering Winds: a Tailwind stack on each skill use
+    tailwind: sum.gain_tailwind_stack_on_skill_use || sum.gain_tailwind_on_critical_hit ? { use: !!sum.gain_tailwind_stack_on_skill_use, crit: !!sum.gain_tailwind_on_critical_hit, lose: !!sum.lose_all_tailwind_when_hit } : null,   // (The Black Insignia: one on a Critical Hit)   // Deadeye's Gathering Winds: a Tailwind stack on each skill use
     // the Amazon's Predatory Instinct: Revealed Weaknesses, its more damage against an enemy with an Open Weakness; In for the Kill: movement and skill speed against them
     weakness: sum.bloodlust_reveal_weakness || sum.unique_reveal_weakness ? { more: v(sum, 'damage_+%_final_against_bloodlusting_enemies'), move: v(sum, 'movement_speed_+%_against_bloodlusting_enemies'), speed: v(sum, 'skill_speed_+%_against_bloodlusting_enemies'),
       rareOnly: !sum.bloodlust_reveal_weakness, recoupL: v(sum, 'recoup_%_of_damage_taken_from_enemies_with_open_weakness_as_life'), recoupLE: v(sum, 'recoup_%_of_damage_taken_from_enemies_with_open_weakness_as_life_and_energy_shield') } : null,   // The Master's Reach: against rare and unique enemies, its damage taken from them recouped
@@ -476,7 +476,7 @@ export function character(b, sum) {
     markedAcc: v(sum, 'marked_enemy_accuracy_rating_+%'), avoidDeath: v(sum, 'chance_to_avoid_death_%'), offerHeal: v(sum, 'recover_%_life_when_you_create_an_offering'), chaosLoss: v(sum, 'lose_%_of_life_and_energy_shield_when_you_use_a_chaos_skill'), flaskLifeCost: v(sum, 'skill_mana_costs_converted_to_life_costs_%_during_life_flask'), gloryLife: v(sum, 'recover_%_maximum_life_per_glory_consumed'), moveProj: v(sum, 'projectile_attacks_%_chance_to_fire_2_additional_projectiles_while_moving'),
     mountOk: mwTags.includes('bow') || mwTags.includes('spear'), cullBow: !!sum.bow_attacks_have_culling_strike && mwTags.includes('bow'),   // Rhoa Mount: mounted only while wielding a Bow or Spear
     axeOns: mwTags.includes('axe') ? v(sum, 'chance_to_gain_onslaught_on_kill_with_axes_%') : 0, meleeProj: v(sum, 'melee_strike_range_+_if_youve_dealt_projectile_attack_hit_recently') / 10, forkMelee: v(sum, 'projectiles_fork_chance_%_if_youve_dealt_melee_hit_recently'),
-    surrArea: v(sum, 'surrounded_area_of_effect_+%'), rollSurr: v(sum, 'dodge_roll_travel_distance_+_while_surrounded') / 10, echoSpeed: v(sum, 'cast_speed_+%_per_spell_echoed_recently_up_to_30%'), igniteFire: v(sum, 'permanent_fire_damage_+%_per_second_of_ignite_up_to_10%'),
+    surrArea: v(sum, 'surrounded_area_of_effect_+%'), surrN: v(sum, 'required_enemies_to_be_considered_surrounded_offset'), penFloor: sum.elemental_penetration_can_go_down_to_override ? -50 : 0, rollSurr: v(sum, 'dodge_roll_travel_distance_+_while_surrounded') / 10, echoSpeed: v(sum, 'cast_speed_+%_per_spell_echoed_recently_up_to_30%'), igniteFire: v(sum, 'permanent_fire_damage_+%_per_second_of_ignite_up_to_10%'),
     flaskGuard: v(sum, 'gain_%_of_expected_recovery_over_1_second_as_guard_on_life_flask_use'), blockDaze: v(sum, 'daze_enemies_on_block_with_shield_raised_chance_%'), invokeMax: v(sum, 'invocation_skill_maximum_energy_+%'),
     invokeHalf: v(sum, 'invocation_spell_chance_to_cost_half_energy_%'), trigRefund: v(sum, 'trigger_skills_refund_half_energy_spent_chance_%'),
     resummon: { base: (CHAR.global_resummon_time_ms || 0) / 1000, speed: 1 + v(sum, 'minion_resummon_speed_+%') / 100, friends: v(sum, 'minion_resummon_speed_+%_if_all_active_minions_are_companions') / 100 },   // Reviving Minions: their delay (character stats), faster with the tree
@@ -605,7 +605,7 @@ export function recovery(c, sum) {
     // enemies' elemental resistances: ignored by your critical hits (Beacon of Azis; Choir of the Storm: lightning), none in
     // your Presence (The Coming Calamity), resisted by their lowest (Leopold's Applause; in your Presence: Sacred Flame)
     critIgnoreRes: sum.critical_strikes_ignore_elemental_resistances ? ['fire', 'cold', 'lightning'] : sum.critical_strikes_ignore_lightning_resistance ? ['lightning'] : null,
-    presence: { blind: !!sum.enemies_in_presence_are_blinded, intim: !!sum.enemies_in_presence_are_intimidated, hinder: !!sum.base_enemies_in_your_presence_are_hindered },   // Sandstorm Visage, Perfidy, Amor Mandragora
+    presence: { weak: v(sum, 'enemies_in_presence_gain_critical_weakness_every_second_for_seconds'), blind: !!sum.enemies_in_presence_are_blinded, intim: !!sum.enemies_in_presence_are_intimidated, hinder: !!sum.base_enemies_in_your_presence_are_hindered },   // Sandstorm Visage, Perfidy, Amor Mandragora
     noResNear: !!sum.enemies_in_presence_have_no_elemental_resistances, lowestRes: !!sum.elemental_damage_resisted_by_lowest_elemental_resistance, lowestResNear: !!sum.enemies_in_presence_elemental_damage_resisted_by_lowest_elemental_resistance,
     leechOver: !!sum.life_leech_can_overcap_life, leechToEs: !!sum.life_leech_excess_goes_to_energy_shield,   // Couture of Crimson; Soul Tether (the scene plays them)
     minionRage: { dmg: v(sum, 'minion_damage_+%_per_rage'), speed5: v(sum, 'minion_attack_speed_+%_per_five_rage'), hit: v(sum, 'minion_damage_+%_if_enemy_hit_recently') },   // the tree's: your Rage, your hits
@@ -634,7 +634,7 @@ export function recovery(c, sum) {
     noBleedDeflected: !!sum.deflected_hits_cannot_inflict_bleeding_on_self, noMaimDeflected: !!sum.deflected_hits_cannot_directly_inflict_maim_on_self,   // Staunch Deflection
     armourFrozen: v(sum, 'physical_damage_reduction_rating_while_frozen'), adaptRes: v(sum, 'maximum_elemental_resistance_+%_of_each_elemental_damage_type_youve_been_hit_with_recently'),   // Flesh Withstands, Adaptive Skin
     noLightStun: !!sum.cannot_be_light_stunned, noStunDeflected: !!sum.cannot_be_light_stunned_by_deflected_hits, loseRage: !!sum.lose_all_rage_on_reaching_maximum_rage, onsAlways: !!sum.base_should_have_onslaught_from_stat,   // Eye of Chayula, Atziri's Step, Hateforge, Thrillsteel
-    perHit: { life: v(sum, 'base_life_gain_per_target'), mana: v(sum, 'mana_gain_per_target') },   // The Lethal Draw, Thief's Torment: per enemy hit with attacks
+    perHit: { life: v(sum, 'base_life_gain_per_target'), mana: v(sum, 'mana_gain_per_target'), lifeCrit: v(sum, 'life_gained_on_attack_hit_if_crit_recently'), lifeCursed: v(sum, 'life_gained_on_attack_hit_vs_cursed_enemies'), manaCursed: v(sum, 'mana_gained_on_attack_hit_vs_cursed_enemies') },   // The Lethal Draw, Thief's Torment: per enemy hit with attacks
     leechChaos: !!sum.life_leech_recovers_based_on_your_chaos_damage_instead_of_physical_damage, leechLightning: !!sum.life_leech_also_recovers_based_on_lightning_damage, manaLeechCrit: v(sum, 'mana_leech_amount_+%_if_crit_recently'),   // Spire of Ire, The Ordained, Nightscale
     leechEs: !!sum.convert_all_life_leech_to_energy_shield_leech, manaLeechEs: !!sum.mana_leech_applies_recovery_to_energy_shield_also, recoupEs: !!sum.life_recoup_also_applies_to_energy_shield, esKeep: !!sum.energy_shield_recharge_is_not_interrupted_if_recharge_begaen_recently,   // Essentia Sanguis, Sacrosanctum, Prayers for Rain
     chillPois: !!sum.all_damage_taken_chills_you_while_poisoned, chillBleed: !!sum.all_damage_taken_chills_you_while_bleeding, energyX2: !!sum.energy_generation_is_doubled,   // Icefang Orbit, Venopuncture, Seeing Stars
@@ -703,7 +703,7 @@ export function recovery(c, sum) {
     flame: sum['infernal_flame_instead_of_mana_at_%_ratio'] ? { ratio: sum['infernal_flame_instead_of_mana_at_%_ratio'], decay: v(sum, 'lose_%_of_max_infernal_flame_per_minute'), hit: v(sum, 'hit_for_%_max_life_es_on_max_infernal_flame'), lose: v(sum, 'lose_%_of_infernal_flame_on_reaching_max') } : null,
     // Lich: Unholy Might's magnitude (per 100 maximum mana), its spells' Sacrifice and Power Charge, Eternal Life, mana lost a second
     unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? umag : 0,
-    allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0, minionUnholy: sum.minions_have_unholy_might ? 1 : 0,   // (Vis Mortis: your Minions have Unholy Might, whatever your mana)   // Necromantic Conduit: your allies in your Presence too
+    allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0, minionUnholy: sum.minions_have_unholy_might ? 1 : 0,   // Necromantic Conduit: your allies in your Presence too; Vis Mortis: your Minions, whatever your mana
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace', 'mana_degeneration_per_minute_%'),
     lifeDegen: v(sum, 'life_degeneration_%_per_minute_not_in_grace'), esDegen: v(sum, 'energy_shield_lost_per_minute_%'),   // uniques' loss of a share of maximum life / energy shield a second
@@ -747,7 +747,7 @@ export function recovery(c, sum) {
     // energy shield, The Black Doubt's mana sacrificed for life off full life (a second), ailments you receive when hit (Coat of Red, Apep's Supremacy, The Infinite Pursuit)
     uDef: { bypass: v(sum, 'hit_damage_bypass_energy_shield_%_when_below_half_energy_shield'), deflMissing: v(sum, '+_deflection_rating_per_50_missing_maximum_energy_shield'), doubt: v(sum, 'unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es'),
       recvBleed: v(sum, 'receive_bleeding_chance_%_when_hit'), recvPoison: v(sum, 'chance_to_be_poisoned_%'), recvAil: 1 + v(sum, 'chance_to_be_inflicted_with_an_ailment_+%') / 100, resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
-      rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollDist: v(sum, 'dodge_roll_base_travel_distance') / 10, rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
+      rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollDist: v(sum, 'dodge_roll_base_travel_distance') / 10, minionDeath: v(sum, 'physical_damage_taken_on_minion_death'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
       beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
       esArmour: v(sum, 'armour_+%_final_vs_hits_per_1%_current_energy_shield'), spellLeech: v(sum, 'life_leech_%_maximum_life_on_spell_cast'), wardenDefl: v(sum, 'companion_takes_%_damage_from_deflected_hits_before_you'), spellES: v(sum, 'sacrifice_%_maximum_life_to_gain_as_es_on_spell_cast'),
       attackWard: v(sum, 'sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack'), flaskGuard: v(sum, 'using_mana_flask_grants_%_recovery_amount_as_guard_for_4s'), yoke: v(sum, 'elemental_ailment_types_apply_damage_taken_+%') },
@@ -766,7 +766,7 @@ export function recovery(c, sum) {
     coil: sum['coil_of_undoing_curse_magnitude_+%_final'] || sum['spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'] ? { zero: v(sum, 'coil_of_undoing_curse_magnitude_+%_final'), chaos: v(sum, 'spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'), phys: v(sum, 'spells_gain_%_of_damage_as_extra_phys_per_curse_on_target') } : null,
     enemyChaos: v(sum, 'enemies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos'), redblade: v(sum, 'unique_redblade_banner_enemies_in_presence_monster_power_+%_final'), bloodPrice: v(sum, 'unique_blood_price_enemies_in_presence_have_at_least_%_life_reserved'), diadem: v(sum, 'consume_nearby_corpse_every_3_seconds_to_recover_%_maximum_life'), perfectWin: v(sum, 'perfect_timing_window_ms_+%'), griefIgnite: v(sum, 'ignite_as_though_dealing_X_damage_in_your_presence'),
     heatshiver: v(sum, 'non_skill_cold_damage_%_to_gain_as_fire_per_1%_chill_effect_on_enemy'),
-    uEv: { spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
+    uEv: { powerStun: v(sum, 'chance_to_gain_power_charge_on_stun_%'), spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
     flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
@@ -1001,7 +1001,7 @@ const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['
   ['evasion_rating_+%_if_have_not_been_hit_recently', 'e', 'NotHitRecently'], ['armour_+%_if_you_havent_been_hit_recently', 'a', 'NotHitRecently'], ['evasion_rating_+%_while_moving', 'e', 'Moving'], ['armour_and_evasion_on_low_life_+%', 'ae', 'LowLife'],
   ['evasion_rating_+%_if_sprinting', 'e', 'Sprinting'], ['armour_evasion_energy_shield_+%_while_channelling', 'ae', 'Channelling'], ['evasion_rating_+%_if_you_have_hit_an_enemy_recently', 'e', 'HitRecently'],
   ['armour_+%_if_hit_enemy_with_melee_attack_recently', 'a', 'HitMeleeRecently'], ['evasion_rating_+%_while_you_have_energy_shield', 'e', 'HaveEnergyShield'],
-  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['evasion_rating_+%_when_on_low_life', 'e', 'LowLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted']];
+  ['evasion_rating_+%_if_you_dodge_rolled_recently', 'e', 'DodgeRolledRecently'], ['evasion_rating_+%_when_on_full_life', 'e', 'FullLife'], ['evasion_rating_+%_when_on_low_life', 'e', 'LowLife'], ['armour_+%_while_shapeshifted', 'a', 'Shapeshifted'], ['evasion_rating_+%_while_leeching', 'e', 'Leeching']];
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
 // counted against Bloodlusting
 // enemies, Parry's own speed after a Parry
@@ -1013,7 +1013,8 @@ const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'P
   ['attack_speed_+%_while_not_on_low_mana', 'a', 'NotLowMana'], ['attack_speed_+%_while_surrounded', 'a', 'Surrounded'],
   ['cast_speed_+%_for_4_seconds_on_attack', 'c', 'AttackedRecently'], ['cast_speed_+%_if_you_have_used_a_mana_flask_recently', 'c', 'ManaFlaskRecently'],
   ['cast_speed_+%_when_on_full_life', 'c', 'FullLife'], ['cast_speed_+%_when_on_low_life', 'c', 'LowLife'], ['cast_speed_+%_while_chilled', 'c', 'Chilled'],
-  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['attack_speed_+%_while_on_full_mana', 'a', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently'], ['skill_speed_+%_while_shapeshifted', 'ac', 'Shapeshifted']];
+  ['cast_speed_+%_while_ignited', 'c', 'Ignited'], ['cast_speed_+%_while_on_full_mana', 'c', 'FullMana'], ['attack_speed_+%_while_on_full_mana', 'a', 'FullMana'], ['skill_speed_+%_if_consumed_frenzy_charge_recently', 'ac', 'ConsumedFrenzyRecently'], ['skill_speed_+%_while_shapeshifted', 'ac', 'Shapeshifted'],
+  ['attack_speed_+%_if_not_been_hit_recently', 'a', 'NotHitRecently'], ['attack_speed_+%_when_on_full_life', 'a', 'FullLife']];
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
 // 'Green10': 10 green supports socketed, known here. note: not counted against Bloodlusting enemies (the scene's have
 // none), the penalties while performing an action
@@ -2006,3 +2007,4 @@ if (GEMS.length) { const of = a => GEMS.filter(g => g.kind === 'support' && g.at
   console.assert(Math.abs(t.crit - (2 * p - p * p) * 100) < 1e-9 && Math.abs(t.critBonus - (2 * p * (1 - p) * t0.critBonus + p * p * ((1 + t0.critBonus / 100) ** 2 - 1) * 100) / (2 * p - p * p)) < 1e-9
     && run('Shyaba', 'Earthquake').ail.alwaysHit && !m.ail.alwaysHit && m.ail.stun === 2 * m0.ail.stun && life({ keystone_iron_grip: 1 }) < life({})
     && Math.abs(run('Tangletongue', 'Rapid Assault', { local_weapon_roll_crits_twice: -1 }, { additional_base_critical_strike_chance: 150 }).crit - t0.crit - 1.5) < 1e-9, "uniques' weapon rules", t.crit, t0.crit, t.critBonus, m.ail.stun); }
+console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 }).str === Math.floor(attributes({ base_strength: 100 }).str * 1.1) && attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 }).int === attributes({ base_strength: 100 }).int, 'increased Strength and Dexterity');

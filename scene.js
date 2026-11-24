@@ -644,7 +644,7 @@ export function initScene(el, api) {
     if (real) { const n = S.src === 'minionHit' ? sheet().gmMinion : !S.src ? S.dmg?.sum?.['chance_to_apply_gruelling_madness_on_hit_%'] : 0; if (Math.random() * 100 < (n || 0)) madness(d); if (!S.src && S.P.attack) madness(d, sheet().gmHit); }   // Gruelling Madness on hit
     if (!S.src && real && crit && S.P.melee && sheet().thornsCrit) later(.02, () => retaliate(d));   // Dreadfist: your Thorns damage to enemies you critically hit with melee
     if (!S.src && real) { const O = sheet(); if (Math.random() * 100 < (O.onsHit || 0)) me.onsUntil = time + ONSLAUGHT.time; if (Math.random() * 100 < (O.powerHit || 0) + (crit ? O.powerCrit || 0 : 0)) gainCharge('power', S.label); }   // uniques' Onslaught and Power Charge on hit
-    if (!S.src && real && S.dmg?.attack) { const O = sheet(); if (O.perHit?.life || O.perHit?.mana) { me.life = gain(me.life, me.maxL, O.perHit.life); me.mana = gain(me.mana, me.maxM, O.perHit.mana); }   // The Lethal Draw, Thief's Torment
+    if (!S.src && real && S.dmg?.attack) { const O = sheet(), PH = O.perHit || {}, pl = (PH.life || 0) + (meIs.CritRecently() ? PH.lifeCrit || 0 : 0) + (d.curse ? PH.lifeCursed || 0 : 0), pm = (PH.mana || 0) + (d.curse ? PH.manaCursed || 0 : 0); if (pl || pm) { me.life = gain(me.life, me.maxL, pl); me.mana = gain(me.mana, me.maxM, pm); }   // The Lethal Draw, Thief's Torment
       if (O.olro) me.olro = [...(me.olro || []).filter(u => u.until > time), { v: pow(d), until: time + 20 }];   // Olrovasara: the enemy's Power for 20 s
       if (Math.random() * 100 < (O.molten || 0)) { const j = api.build().gems.findIndex(g => g.name === 'Molten Shower'); if (j >= 0) later(.05, () => use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' })); } }   // Brutus' Lead Sprinkler: hits trigger its Molten Shower
     if (!S.src && H) {
@@ -660,6 +660,7 @@ export function initScene(el, api) {
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
+    if (!S.src && crit && sheet().tailwind?.crit && time - (me.tailAt ?? -9) >= 1) { me.tailAt = time; me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1); }   // The Black Insignia: Tailwind on Critical Hit, once a second
     if (UE) { if (crit && S.P.spell) weaken(d, UE.spellWeak); if (crit && r(UE.volCrit)) gainVol(1); if (S.P.melee && S.P.attack && r(UE.thornsMelee)) retaliate(d); }
     if (S.src === 'minionHit' && r(sheet().minionWither || 0)) withers(d, 4);   // the tree's: your minions' chance to Wither (for the 4 s its text has elsewhere)
     if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (S.P.attack && r(UH.daze)) daze(d, DAZE.time, S); if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
@@ -962,7 +963,7 @@ export function initScene(el, api) {
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
     if (a === 'stun' && !S.src && (me.form || me.demon) && sheet().shiftMore?.intim) d.intim = Math.max(d.intim || 0, time + sheet().shiftMore.intim);   // the tree's: Intimidated when you Heavy Stun it Shapeshifted
     if (a === 'ignite' && !S.src && sheet().igniteHurt) hurt(playerTakes(sheet(), 'fire', sheet().igniteHurt, true));   // Fireflower: fire damage taken when you ignite
-    const fresh = !(d.st[a] > 0), left = d.st[a] || 0; if (a === 'bleed' && fresh) d.bleedAt = time; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time; if (a === 'ignite') d.ignAt = time;
+    const fresh = !(d.st[a] > 0), left = d.st[a] || 0; if (a === 'bleed' && fresh) d.bleedAt = time; d.st[a] = Math.max(d.st[a] || 0, o?.dur ?? DUR[a]); d.by = S; if (o?.dur) (d.full ||= {})[a] = o.dur; (me.inflAt ||= {})[a] = time; if (a === 'ignite') d.ignAt = time; if (a === 'stun' && S && !S.src && Math.random() * 100 < (sheet().uEv?.powerStun || 0)) gainCharge('power', S.label);
     // Stormweaver's Strike Twice / Heavy Snows: a second shock / chill of yours at once, kept with its own time (mag2), the two adding up
     const two = o?.mag && !fresh && (a === 'shock' || a === 'chill') && S.dmg?.sum?.[`can_apply_additional_${a}`];
     if (two) { const M = d.mag[a] || 0, lo = Math.min(M, o.mag), keep = M <= o.mag ? left : o.dur ?? DUR[a]; if (!(d.mag2?.[a]?.until > time && d.mag2[a].mag >= lo)) (d.mag2 ||= {})[a] = { mag: lo, until: time + keep }; }
@@ -1049,7 +1050,7 @@ export function initScene(el, api) {
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = (el === 'chaos' || el === 'fire' && sheet().witherFire) && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
     const crush = isHit && el === 'physical' && d.crushed > time ? r * CRUSH / 100 : 0;   // Crushed: less physical damage reduction
-    const got = enemyTakes(st, el, r, isHit, pen), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
+    const got = enemyTakes(st, el, r, isHit, pen, SE.penFloor), over = el === 'physical' ? (r - got) * ow / 100 : 0;   // High Velocity Rounds: Overwhelm, its share of the reduction ignored
     return (got + over + crush) * (el === 'physical' ? 1 + (d.smelt || 0) / 100 : 1) * (isHit && (el === 'physical' || sheet().implode || sheet().brokenEl.includes(el)) && d.st.armour > 0 ? 1 + (BROKEN.taken + (time < d.sunder?.until ? d.sunder.pct : 0)) * (d.brokenX || 1) / 100 : 1) * (1 + W / 100) * (d.jag > time ? 1 + d.jagPct / 100 : 1) * (el === 'fire' && d.ignSec ? 1 + Math.min(10, d.ignSec * (sheet().igniteFire || 0)) / 100 : 1);   // the tree's fire damage taken per second ever Ignited
   }
   // Withered for s seconds, its chaos damage taken (Wither's own, else keywords.json's), up to its most at once
@@ -1425,7 +1426,7 @@ export function initScene(el, api) {
     const v = place(d.pos.x + rnd(-1, 1), d.pos.z + rnd(-1, 1), d.mon, d.level); if (!v) return;
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
-  const onsl = () => time < me.wildUntil || time < me.onsUntil || !!sheet().onsAlways;   // Onslaught (Savage Fury's frenzy, the tree's on kill)
+  const onsl = () => time < me.wildUntil || time < me.onsUntil || !!sheet().onsAlways || me.cu.some(u => u?.c.ons);   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
     const HS = d.curse && sheet().uEv?.hexSpread; if (HS) for (const e of inside(d.pos, 3).filter(e => e !== d && !e.curse).slice(0, HS)) e.curse = { ...d.curse };   // Veilpiercer: the curse spreads to that many enemies within its text's 3 m
     const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
@@ -2325,7 +2326,7 @@ export function initScene(el, api) {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS, null, 1);
         if (e.keep && e.slain) fallen(S, e);
-        if (e.slain) me.minionDiedAt = time;   // the tree's "if one of your Minions has died Recently"
+        if (e.slain) { me.minionDiedAt = time; const H = sheet().uDef?.minionDeath; if (H) hurt(H, 0, 'physical'); }   /* Heartbound Loop: physical damage taken on Minion death */   // the tree's "if one of your Minions has died Recently"
         // Deathmarch: on death it heals the allied minions within its radius for its % of its life (their ailments: minions have none here)
         const DM = e.slain && S.dmg?.sum?.['minion_on_death_heal_nearby_minions_for_%_of_life_and_remove_ailments'];
         if (DM) for (const o of objs) if (o !== e && o.minion && !o.dead && o.segs?.[0]?.max && dist(o.pos, e.pos) <= S.dmg.sum.minion_on_death_heal_radius / 10) o.segs[0].life = Math.min(o.segs[0].max, o.segs[0].life + L * DM / 100);
@@ -4339,7 +4340,7 @@ export function initScene(el, api) {
       // Lich: a spell Sacrifices its share of your maximum energy shield (if you have it all) for its more damage, and
       // consumes a Power Charge if it can for its more damage
       const LI = P.spell && !S.src && !auto && sheet().lich;
-      if (!S.src && !auto && sheet().tailwind) me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1);   // Gathering Winds
+      if (!S.src && !auto && sheet().tailwind?.use) me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1);   // Gathering Winds
       const EA = !S.src && sheet().earch; if (EA && P.attack && !api.info(S.g)?.gem?.types?.includes('Instant')) me.earch = Math.min(me.earch || 0, time);   // a non-instant attack removes Elemental Archon
       if (EA?.cast && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) earchGo(EA);
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
@@ -5379,6 +5380,7 @@ export function initScene(el, api) {
     const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
     if (time < me.woo?.until && c.deflect) c = { ...c, deflect: { ...c.deflect, flat: (c.deflect.flat || 0) + (c.evasion || 0) * me.woo.pct / 100 / (c.deflect.inc || 1) } };   // Window of Opportunity II: as flat rating
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
+    if (me.cu.some(u => u?.c.armour2)) c = { ...c, armourX: (c.armourX || 1) * 2 };   // For Utopia: defend with 200% of Armour during its effect
     if (me.tail) c = { ...c, evasion: (c.evasion || 0) * (1 + me.tail * TAILWIND.evasion / 100 / (c.evasionInc || 1)), deflect: c.deflect && { ...c.deflect, less: 100 - (100 - c.deflect.less) * (1 - me.tail * TAILWIND.deflect / 100) } };   // Tailwind (its increased evasion added to yours)
     if (me.jade) c = { ...c, physDR: (c.physDR || 0) + me.jade * c.jade.dr };   // Jade: its additional physical damage reduction a stack
     if (c.fireMaxIgnited && me.st.ignite > 0) { const F = c.res.fire, max = F.max + c.fireMaxIgnited; c = { ...c, res: { ...c.res, fire: { ...F, max, capped: Math.min(F.value, max) } } }; }   // the tree's maximum fire resistance while Ignited
@@ -5620,6 +5622,8 @@ export function initScene(el, api) {
     if (f.igGround) ground('burning', { x: pp.x, z: pp.z }, SIM.area, 4, { el: 'fire', els: ['fire'], ail: ['ignite'], src: 'ground', label: f.name, raw: { fire: me.maxL * f.igGround / 100 } });   // Beira's Anguish: Ignited Ground for 4 s (note: its radius is not in the data: the scene's)
     if (f.life) flaskHeal({ k: 'life' }, f.life, false, false); if (f.mana) flaskHeal({ k: 'mana' }, f.mana, false, false); if (f.guard) me.guard = f.guard;
     const [LF, MF] = flasks(); if (f.lifeOfMana && MF) flaskHeal({ k: 'life' }, MF.amount * f.lifeOfMana / 100, false, false); if (f.manaOfLife && LF) flaskHeal({ k: 'mana' }, LF.amount * f.manaOfLife / 100, false, false);   // Arakaali's Gift
+    if (f.charge) gainCharge(f.charge, f.name); if (f.rageMax) gainRage(rageMax()); if (f.esStart) me.esHurt = me.esStop = -99;   // Breath of the Mountains, Valako's Roar, Ngamahu's Chosen, Nascent Hope
+    if (f.holy) ground('consecrated', { x: pp.x, z: pp.z }, ...f.holy);   // Sanguis Heroum
     const a = IMMUNE_TO[f.buff]; if (a) { me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; me.bar[a] = 0; }
     say(t('{0} used', f.name), 'gold'); fx.ring(pp, .3, 1.3, 'gold', .4); hudT = 0;
   }
@@ -5651,7 +5655,7 @@ export function initScene(el, api) {
   }
   // your resistances with those of the charms in use
   const meIs = { Archon: () => archonOn() || time < (me.earch || 0) || uarch(), CompanionInPresence: () => inPresence(o => o.companion), Still: () => !walk && !move, Bleeding: () => me.st.bleed > 0, Ignited: () => me.st.ignite > 0,
-    Surrounded: () => inside(pp, SURROUNDED.r * Math.sqrt(1 + (sheet().surrArea || 0) / 100)).length >= SURROUNDED.n, Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
+    Surrounded: () => inside(pp, SURROUNDED.r * Math.sqrt(1 + (sheet().surrArea || 0) / 100)).length >= SURROUNDED.n + (sheet().surrN || 0), Leeching: () => me.leech.life.left > 0 || me.leech.mana.left > 0, BeenHitRecently: () => time - me.hurt <= RECENT,
     NotHitRecently: () => time - me.hurt > RECENT, Moving: () => walk || !!move, Sprinting: () => !!me.sprint, Channelling: () => !!(held && base(held.i)?.P.channel || charge),
     HitRecently: () => time - (me.hitAt ?? -99) <= RECENT, HitMeleeRecently: () => time - (me.meleeHit ?? -99) <= RECENT, HaveEnergyShield: () => me.es > 0,
     DodgeRolledRecently: () => time - (me.rollAt ?? -99) <= RECENT, FullLife: () => me.life >= me.maxL, LowLife: lowLife,
@@ -5892,6 +5896,7 @@ export function initScene(el, api) {
       if (PS.blind) d.st.blind = Math.max(d.st.blind || 0, .25); if (PS.intim) d.intim = Math.max(d.intim || 0, time + .25);
       if (PS.hinder) { const h = d.presSlow ||= { pct: -HINDER.slow }; if (!d.slows.includes(h)) d.slows.push(h); h.until = time + .25; }
     }
+    if (PS.weak && time - (me.presWeakAt ?? -99) >= 1) { me.presWeakAt = time; for (const d of dummies) if (d.inPres && !d.dead) weaken(d, 1, PS.weak); }   // Sandstorm Visage: every second, Critical Weakness for its seconds
     // Healing Runes: while the buff it supports is on, every its interval you lose up to its % of your maximum Ward and
     // heal its % of what you lost, split between your minions not on full life. note: who counts as nearby is not in
     // its data (the scene's: all your minions; you are not healed), nor whether Ward is lost with none to heal (here it is not)

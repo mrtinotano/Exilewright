@@ -229,6 +229,10 @@ export function charmOf(it, sum = {}) {
   return { on: Object.keys(s).find(k => k.startsWith('local_flask_use_on_'))?.slice(19), ...base.charm, ...stats && { stats },
     killCharge: s['local_%_chance_to_gain_flask_charge_on_kill'] || 0, lifeOfMana: s['charm_recover_life_equal_to_x%_of_mana_flask_recovery_amount'] || 0, manaOfLife: s['charm_recover_mana_equal_to_x%_of_life_flask_recovery_amount'] || 0,   // Arakaali's Gift
     img: base.img, name: tn(base) || base.name, time: F.recovery_s * (1 + ((s['local_charm_duration_+%'] || 0) + g('charm_duration_+%') + (it.corrupted ? g('corrupted_charms_have_+%_duration') : 0)) / 100), bangle: s['charm_x%_of_chaos_damage_from_hits_prevented_recouped_as_life_and_mana_during_effect'] || 0, igGround: s['charm_ignite_ground_as_though_dealing_fire_damage_equal_to_x%_of_your_maximum_life_when_used'] || 0,
+    // the unique charms' own: Onslaught and double armour during the effect, a charge, Rage, the energy shield recharge or Consecrated Ground on use
+    ons: !!s.charm_gain_onslaught_during_effect, armour2: !!s.charm_defend_with_double_armour_during_effect, esStart: !!s.charm_energy_shield_recharge_starts_when_used, rageMax: !!s.charm_grants_up_to_your_maximum_rage_when_used,
+    charge: s.charm_grants_power_charge_when_used ? 'power' : s.charm_grants_frenzy_charge_when_used ? 'frenzy' : null,
+    holy: s.charm_create_consecrated_ground_when_used ? [s.charm_create_consecrated_ground_when_used_radius / 10, s.charm_create_consecrated_ground_when_used_duration_ms / 1000] : null,
     max: mostCharges(F, s), per: g('charms_use_no_charges') ? 0 : Math.floor(F.per_use * (1 + ((s['local_charges_used_+%'] || 0) + g('charm_charges_used_+%')) / 100)),   // Pragmatism: none
     gain: (1 + g('charm_charges_gained_+%') / 100) * (1 + g('primalist_charm_charges_gained_+%_final') / 100), keep: g('charms_%_chance_to_not_consume_charges'),   // Ritualist: more charges
     life: s.charm_recover_X_life_when_used || 0, mana: s.charm_recover_X_mana_when_used || 0, guard: s.charm_gain_X_guard_for_duration || 0 };

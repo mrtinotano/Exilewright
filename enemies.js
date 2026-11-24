@@ -223,10 +223,10 @@ export function playerTakes(c, type, raw, isHit = true, conv = true, pen = 0) {
 }
 // one damage type of the character's hit against a monster with stats st
 // pen: the hit's penetration of that resistance, which lowers only a positive resistance and not below 0 (PoB2)
-export function enemyTakes(st, type, raw, isHit = true, pen = 0) {
+export function enemyTakes(st, type, raw, isHit = true, pen = 0, floor = 0) {   // floor: how low penetration can take a resistance
   if (type === 'physical') return isHit ? raw * (1 - armourCut(st.armour, raw, K.monster_max_physical_reduction ?? 75)) : raw;
   const res = st.res[type] || 0;
-  return raw * (1 - (isHit && pen && res > 0 ? Math.max(res - pen, 0) : res) / 100);
+  return raw * (1 - (isHit && pen && res > floor ? Math.max(res - pen, floor) : res) / 100);
 }
 // block applies to strikes and projectiles, not to area damage or to skills the data marks as unblockable
 export const blockChance = (c, atk) => atk.unblockable || atk.area || !['melee', 'projectile'].includes(atk.shape) ? 0 : clamp((c.block || 0) * (atk.shape === 'projectile' ? 1 + (c.projBlock || 0) / 100 : 1), 0, c.blockMax ?? K.player_max_block ?? 50);
@@ -282,3 +282,4 @@ export function versusEnemy(dmg, st, accuracy) {
   setMap(null);
   console.assert(enemyStats(m, 70).life === was.life && !mapGround().length, 'map off');
 }
+console.assert(enemyTakes({ res: { fire: 30, cold: -20 } }, 'fire', 100, true, 40) === 100 && Math.abs(enemyTakes({ res: { fire: 30 } }, 'fire', 100, true, 40, -50) - 110) < 1e-9 && enemyTakes({ res: { cold: -20 } }, 'cold', 100, true, 40) === 120 && enemyTakes({ res: { cold: -20 } }, 'cold', 100, true, 40, -50) === 150, "penetration and its floor (Leopold's Applause)");
