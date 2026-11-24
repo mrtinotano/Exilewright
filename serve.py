@@ -540,7 +540,7 @@ def watch_keys():
                     user.keybd_event(k, 0, how, 0)
 
 
-VERSION = '0.71'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
+VERSION = '0.72'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
