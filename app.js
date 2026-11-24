@@ -920,14 +920,14 @@ function drawTree() {
   const alt = new Map();
   for (const j of js) { const v = j.R && statsOf(j.it).local_unique_jewel_alternate_tree_version; if (LINK_ALT[v]) for (const id of main) if (j.in(id)) alt.set(id, v); }
   // links: off, preview, allocated (glowing); altP: those between two passives of such a jewel, by version
-  const off = new Path2D(), path = new Path2D(), lit = new Path2D(), setLit = { [SET_COL[1]]: new Path2D(), [SET_COL[2]]: new Path2D() }, altP = {};
+  const off = new Path2D(), path = new Path2D(), lit = new Path2D(), setLit = { [SET_COL[1]]: new Path2D(), [SET_COL[2]]: new Path2D() }, altP = {}, own = { normal: off, can: path, active: lit };
   for (const id of vis) for (const l of N[id].links) {
     const m = String(l);
     if (!visSet.has(m) || +m < +id || !N[id].ascendancy !== !N[m].ascendancy) continue;
     const A = on.has(id), Bo = on.has(m);
     const tint = A && Bo && (setTint(id) || setTint(m));
     const kind = A && Bo ? 'active' : (A || pre.has(id)) && (Bo || pre.has(m)) ? 'can' : 'normal', av = alt.get(id) === alt.get(m) && alt.get(id);
-    linkPath(tint ? setLit[tint] : (av ? altP[av] ||= { normal: new Path2D(), can: new Path2D(), active: new Path2D() } : { normal: off, can: path, active: lit })[kind], id, m);
+    linkPath(tint ? setLit[tint] : (av ? altP[av] ||= { normal: new Path2D(), can: new Path2D(), active: new Path2D() } : own)[kind], id, m);
   }
   const px = v => v / s;   // screen pixels -> world units
   ctx.lineCap = 'round';
