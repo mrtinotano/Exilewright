@@ -151,7 +151,7 @@ function local(item) {
     r.range = w.range * (1 + (s['local_+%_weapon_range'] || 0) / 100); r.critBonus = s['local_critical_strike_multiplier_+'] || 0;   // its own +% to Critical Damage Bonus
     r.accuracy = s.local_accuracy_rating || 0;   // its own accuracy, for attacks with it
     // "Always Hits" (Shyaba), "Causes Double Stun Buildup" (Brynhand's Mark), "Bifurcates Critical Hits" (Tangletongue)
-    r.alwaysHit = !!s.local_always_hit; r.stunX = s.local_double_hit_damage_stun_build_up ? 2 : 1; r.forkCrit = !!s.local_weapon_roll_crits_twice;
+    r.alwaysHit = !!s.local_always_hit; r.stunX = s.local_double_hit_damage_stun_build_up ? 2 : 1; r.forkCrit = !!s.local_weapon_roll_crits_twice; r.noThrow = !!s.local_cannot_be_thrown; r.noPoisonLimit = !!s.local_hits_with_this_weapon_ignore_poison_limit;
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
     // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)

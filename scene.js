@@ -322,7 +322,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.gm = d.riven = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -941,7 +941,8 @@ export function initScene(el, api) {
       if (critHit === S) v.dps *= S.dmg.ail?.critAil?.[a] || 1;   // inflicted by a critical hit (afflict)
       // Pathfinder's Overwhelming Toxicity, the tree's "+1 of your Poisons at the same time": two of your poisons at once,
       // the weaker kept with its own time (burn2). ponytail: a third or more counts as the second
-      if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
+      if (a === 'poison' && w && !w.sim && !v.sim && S.dmg?.ail?.noPoisonLimit) d.burnX = [...(d.burnX || []).filter(p => p.until > time), { v: v.dps > w.dps ? w : v, until: time + (v.dps > w.dps ? d.st.poison : o?.dur ?? DUR.poison) }];   // Splinter of Lorrata: every one of its Poisons, each with its own time
+      else if (a === 'poison' && w && !w.sim && !v.sim && (S.dmg?.sum?.double_number_of_poison_you_can_inflict || S.dmg?.sum?.number_of_additional_poison_stacks > 0)) { const lo = v.dps > w.dps ? w : v, t = lo === w ? d.st.poison : o?.dur ?? DUR.poison; if (!(d.burn2?.until > time && d.burn2.v.dps >= lo.dps)) d.burn2 = { v: lo, until: time + t }; }
       if (!w || w.sim && !v.sim || w.sim === v.sim && v.dps > w.dps) d.burn[a] = v;
       const CB = a === 'poison' && !v.sim && d.stat.armour > 0 && !(d.st.armour > 0) && S.dmg?.sum?.['armour_break_for_%_of_poison_damage_over_poison_duration'];   // Corrosion: Armour Break of its % of the poison's damage. note: at once here, not over its duration
       if (CB) { d.cut = (d.cut || 0) + v.dps * (o?.dur ?? DUR.poison) * CB / 100; if (d.cut >= d.stat.armour) { d.cut = 0; inflict(d, 'armour', S, 1, null, { dur: BROKEN.time }); } }
@@ -956,7 +957,7 @@ export function initScene(el, api) {
     if (a === 'shock' && S.dmg?.sum?.['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage']) d.stormfire = S.dmg.sum['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage'];   // Stormfire
     // Wildfire: the ignite spreads to the enemies within its radius, never twice to one (keywords.json AilmentSpread)
     // note: at once, its delay is not in the data
-    const WF = a === 'ignite' && (S.dmg?.sum?.support_ignite_proliferation_radius || S.dmg?.stats?.active_skill_ignite_proliferation_radius);   // or the skill's own (Phantasmal Arrow's explosion)
+    const WF = a === 'ignite' && (S.dmg?.sum?.support_ignite_proliferation_radius || S.dmg?.stats?.active_skill_ignite_proliferation_radius || !S.src && S.dmg?.sum?.ignite_proliferation_radius_15 && 15);   // (The Searing Touch: your Ignites, within 1.5 metres)   // or the skill's own (Phantasmal Arrow's explosion)
     if (WF) { const seen = o?.spread || new Set([d]); for (const e of dummies) if (!e.dead && !seen.has(e) && dist(e.pos, d.pos) <= WF / 10) { seen.add(e); inflict(e, 'ignite', S, k, raw, { ...o, spread: seen }); } }
     const FX = a === 'freeze' && S.dmg?.sum?.chilling_ice_create_chilled_ground_on_freeze_base_duration_ms; if (FX) ground('chilled', { x: d.pos.x, z: d.pos.z }, S.dmg.sum.chilling_ice_freezing_area_base_radius / 10, FX / 1000, S);   // Frost Nexus
     const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
@@ -5055,7 +5056,7 @@ export function initScene(el, api) {
       // bleeding deals its extra damage while the enemy moves, as aggravated (keywords.json Bleeding): moved since the last tick
       const mov = d.lastAt && dist(d.pos, d.lastAt) > .05; d.lastAt = { x: d.pos.x, z: d.pos.z };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(a === 'bleed' && mov ? { ...d.burn[a], agg: true } : d.burn[a], a !== 'ignite');
-      if (d.burn2?.until > time) add(d.burn2.v, true);   // a second poison (Overwhelming Toxicity)
+      if (d.burn2?.until > time) add(d.burn2.v, true); for (const p of d.burnX || []) if (p.until > time) add(p.v, true);   // a second poison (Overwhelming Toxicity)
       if (st.shock > 0 && st.ignite > 0 && d.stormfire && d.burn.ignite?.raw) add({ dps: defence(d, 'lightning', d.burn.ignite.raw * d.stormfire / 100, false), el: 'lightning' });   // Stormfire: its share of the ignite as lightning too
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
       const HM = d.mark?.hound; if (HM && st.bleed > 0 && d.burn.bleed) build(d, 'stun', d.burn.bleed.dps * .5 * HM.dmg.stats['hunters_mark_%_of_phys_damage_over_time_as_build_up'] / 100, HM, {});
