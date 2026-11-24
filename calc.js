@@ -540,6 +540,9 @@ export function character(b, sum) {
   }
   // uniques' more Global Evasion Rating and Energy Shield
   const HW = pct('hand_wraps_evasion_rating_and_energy_shield_+%_final'); if (HW !== 1) { c.evasion = Math.round(c.evasion * HW); c.evadePct = evadeChance(c.evasion, lvl); c.es = Math.round(c.es * HW); }
+  // Decree of Acuity: you are Blind and its effect on you is reversed (keywords.json Blind: 20% less Accuracy Rating and
+  // Evasion Rating)
+  if (sum.blind_from_sightless_conviction_unique) { const B = sum.effects_from_blinded_are_inverted ? 1.2 : .8; c.evasion = Math.round(c.evasion * B); c.evadePct = evadeChance(c.evasion, lvl); c.accuracy = Math.round(c.accuracy * B); }
   // Queen of the Forest: its movement speed alone, 25% and 1% per so much evasion, up to 75% (its text's numbers)
   const QF = sum['movement_speed_is_only_base_+1%_per_x_evasion_rating']; if (QF) c.move = Math.min(75, 25 + Math.floor(c.evasion / QF));
   // Decree of Loyalty: 1% of maximum life to twice as much armour per 1% chaos resistance above 0%

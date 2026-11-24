@@ -64,7 +64,19 @@ const reqOf = item => { const s = rolled(item), b = BASE[item.base]?.req || {}; 
 // note: how a roll carries over is not in the data: a modifier both forms have keeps its roll, a rare's is as far up its
 // range as the one it comes from, a unique's (nothing tells which it comes from) at the top; no quality (the base cannot
 // be modified); what is socketed in the gloves is kept
-export const wornItems = (b, sum) => sum?.ascendancy_hand_wraps && b.items?.gloves ? { ...b.items, gloves: { ...b.items.gloves, fists: b.level || 1 } } : b.items;
+// and a unique's rule for the other slots: Kalandra's Touch reflects the opposite ring, with Thief's Torment no other
+// ring counts, with The Bringer of Rain no body armour
+const uHas = (it, id) => !!UNIQ[it?.unique]?.mods.some(m => m.stats.some(([k]) => k === id));
+export function wornItems(b, sum) {
+  let it = b.items; if (!it) return it;
+  const less = ks => Object.fromEntries(Object.entries(it).filter(([k]) => !ks.includes(k)));
+  if (sum?.ascendancy_hand_wraps && it.gloves) it = { ...it, gloves: { ...it.gloves, fists: b.level || 1 } };
+  const rings = ['ring1', 'ring2', 'ring3'].filter(k => it[k]), only = rings.find(k => uHas(it[k], 'local_ring_disable_other_ring'));
+  if (only && rings.length > 1) it = less(rings.filter(k => k !== only));
+  for (const [a, o] of [['ring1', 'ring2'], ['ring2', 'ring1']]) if (it[o] && uHas(it[a], 'local_ring_duplicate_other_ring') && !uHas(it[o], 'local_ring_duplicate_other_ring')) it = { ...it, [a]: it[o] };
+  if (it.body && uHas(it.helmet, 'disable_chest_slot')) it = less(['body']);
+  return it;
+}
 function fistMods(it) {
   const set = (id, stats, dflt) => ({ id, stats, values: fixVals(stats, it.fistVals?.[id] || dflt) });
   return UNIQ[it.unique]?.stonefist?.map(m => set(m.id, m.stats, it.mods?.find(x => x.id === m.id)?.values))
@@ -603,6 +615,9 @@ export function known(it) {
   console.assert(gearStats({ body: make('Runeforged Iron Cuirass') }).base_maximum_ward === 43 && gearStats({ body: { ...make('Runeforged Iron Cuirass'), quality: 20, extra: { local_ward: 7, 'local_ward_+%': 100 } } }).base_maximum_ward === 120
     && String(local(make('Skysliver')).physical) === '0,0' && local(make('Nebuloch')).chaos?.[1] > 0, 'an item\'s Runic Ward, No Physical Damage, added chaos damage', local(make('Runeforged Iron Cuirass')), local(make('Nebuloch')));
   console.assert(local(make('Splinter of Lorrata')).range === local({ ...make('Splinter of Lorrata'), mods: [] }).range * 1.2, 'a weapon\'s own increased melee range', local(make('Splinter of Lorrata')).range);
+  { const r = make('Ruby Ring'), one = gearStats({ ring1: r }), w = items => wornItems({ items }), two = gearStats(w({ ring1: r, ring2: make("Kalandra's Touch") })), tt = gearStats(w({ ring1: r, ring2: make("Thief's Torment") }));
+    console.assert(Object.keys(one).length && Object.keys(one).every(k => two[k] === 2 * one[k] && !(k in tt)) && tt.base_life_gain_per_target > 0 && !w({ helmet: make('The Bringer of Rain'), body: make('Iron Cuirass') }).body && w({ ring1: r }).ring1 === r,
+      "Kalandra's Touch, Thief's Torment, The Bringer of Rain", one, two, tt); }
   if (fb) console.assert(R['attack_area_of_effect_+%'] === 7 && !R.additional_strength && R.local_hand_wraps_evasion_rating_per_level === 7 && local({ ...rare, fists: 10 }).evasion === 70, 'Fists of Stone: the modifiers of a rare', R); }
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slotType(slot))).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
@@ -845,7 +860,7 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 // trade: { can(slot), money() -> [[currency, name]], go(slot, max, currency) }: the search for one like the item worn or better
 //   (and map(canvas, socket) / show(socket): where a jewel socket is on the tree)
 export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, trade) {
-  const giant = () => tree().keystone_giants_blood, staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
+  const giant = () => tree().keystone_giants_blood || Object.values(getBuild().items || {}).some(it => uHas(it, 'can_wield_2h_axe_sword_mace_in_one_hand')), staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
   const open = s => slotOpen(s, s === 'ring3' && tree());   // the build's stats only asked for the slot that needs them
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
