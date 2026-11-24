@@ -1468,7 +1468,7 @@ export function initScene(el, api) {
     // the tree's explosions on kill: a cursed enemy for a quarter of its maximum life as chaos, any for all of it as physical.
     // Zealous Inquisition's chance doubled against Undead and Demons (its text). note: their radius is not in the data (a herald's here)
     const XB = S && sheet().blast, R = () => Math.random() * 100, XK = XB && (d.curse && R() < XB.cursed + (/^minion/.test(S.src) ? XB.allyCursed : 0) ? [.25, 'chaos'] : R() < XB.any * (['Undead', 'Demon'].includes(d.mon?.category) ? 2 : 1) ? [1, 'physical']
-      : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
+      : (d.st.ignite > 0 && R() < XB.burning) || (S.empd && R() < XB.empowered) ? [.1, 'fire'] : R() < XB.phys10 ? [.1, 'physical'] : null);   // a Burning one, or killed by an Empowered attack: a tenth as fire
     if (XK) later(.05, () => { pop(p, SIM.heraldR, XK[1] === 'physical' ? 'blood' : XK[1]); lifeBlast(p, SIM.heraldR, S, XK[1], d.max * XK[0]); });
     if (S && sheet().gloom) later(.05, () => { pop(p, SIM.heraldR, 'chaos'); lifeBlast(p, SIM.heraldR, S, 'chaos', d.max * .25); });   // Palm of the Dreamer's Gloom Shrine: explode_enemies_for_25%_life_as_chaos_on_kill_chance_% (100). note: its radius is the scene's
     // Cannibalism, on a persistent buff that is up: life recovered on kill
@@ -2246,7 +2246,7 @@ export function initScene(el, api) {
             }
             if (slow) hit(d, cur);
             else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || d.st.ignite > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_pierce_ignited_enemy_%'] || 0) || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0) || !cur.src && d.st.armour > 0 && sheet().pierceBroken) { hit(d, cur, { mult: mult(), pierced }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
-            else if (forked < (D.forks || 0) || !forked && d.st.freeze > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_from_frozen_enemy_%'] || 0)) {   // Flamepierce (above), Freezefork: on Ignited / Frozen enemies
+            else if (forked < (D.forks || 0) || !forked && Math.random() * 100 < (d.st.freeze > 0 ? cur.dmg?.sum?.['chance_to_fork_from_frozen_enemy_%'] || 0 : 0) + (cur.dmg?.sum?.['projectile_chance_to_fork_%'] || 0)) {   // Flamepierce (above), Freezefork: on Ignited / Frozen enemies
               hit(d, cur, { mult: mult(), pierced }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
               for (const s of fk) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }

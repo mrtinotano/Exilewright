@@ -439,7 +439,7 @@ export function character(b, sum) {
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
     chargeGen: [v(sum, 'generate_x_charges_for_life_flasks_per_minute'), v(sum, 'generate_x_charges_for_mana_flasks_per_minute'), v(sum, 'generate_x_charges_for_charms_per_minute')],   // life / mana flask and charm charges a minute
     watch: v(sum, 'totems_nearby_enemies_damage_taken_+%'),   // Watchtowers: each totem's increased damage taken for the enemies in its Presence
-    blast: { cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), allyCursed: v(sum, 'allies_in_presence_have_explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical'),
+    blast: { phys10: v(sum, 'explode_enemies_for_10%_life_as_physical_on_kill_chance_%'), cursed: v(sum, 'explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), allyCursed: v(sum, 'allies_in_presence_have_explode_cursed_enemies_for_25%_life_as_chaos_on_kill_chance_%'), any: v(sum, 'witchhunter_chance_to_explode_enemies_for_100%_of_life_as_physical'),
       burning: v(sum, 'explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%'), empowered: v(sum, 'explode_enemies_for_10%_life_as_fire_on_kill_with_empowered_attacks_chance_%') },   // Lich's Rupture the Soul (a quarter of their life as chaos), Witchhunter's Zealous Inquisition (all of it as physical)
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
@@ -1212,8 +1212,13 @@ export function skill(g, b, treeGear) {
   // hit chance per 10 energy shield of the equipped armour
   const HP = SK.hollow_palm, palm = attack && sum.keystone_hollow_palm_technique && !b.items?.weapon && !b.items?.offhand && d.weapons?.includes('Quarterstaves') && cb?.WeaponSpeed && HP?.length;
   const pw = palm && armourItems(wornItems(b, sum)), lv = palm && Math.min(HP.length, Math.max(1, st._level || g.level || 1));
+  // Facebreaker: with both hands empty a One Handed Mace attack is used unarmed, with the gloves' own damage in place of
+  // the mace's (fire as Fists of Stone). note: its + per Boss's Face Broken is not counted (how many is not in a build)
+  const fbG = attack && sum.unique_facebreaker_can_use_mace_attacks_with_both_hands_empty_using_facebreaker_base_damage && !b.items?.weapon && !b.items?.offhand && d.weapons?.includes('One Hand Maces') && cb?.WeaponSpeed && statsOf(wornItems(b, sum).gloves);
+  const fbD = fbG && [fbG.local_unique_facebreaker_minimum_base_damage || 0, fbG.local_unique_facebreaker_maximum_base_damage || 0];
   const w = palm ? { physical: [...HP[lv - 1]], attacks_per_second: 1000 / cb.WeaponSpeed * (1 + Math.floor(pw.evasion / 75) / 100),
     crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100 + Math.floor(pw.energy_shield / 10) * .1, range: cb.MaxAttackDistance }
+    : fbG ? { physical: fbG.local_unique_facebreaker_damage_is_fire ? [0, 0] : fbD, ...(fbG.local_unique_facebreaker_damage_is_fire && { fire: fbD }), attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance, tags: ['mace', 'onehand'] }
     : attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
   // unarmed (no weapon in the main hand): the uniques' unarmed critical chance, strike range, more damage per Strength
   // and fire damage gained per Intelligence (Northpaw, Thunderfist, Facebreaker)
@@ -1225,7 +1230,7 @@ export function skill(g, b, treeGear) {
   const accPhys = w?.accuracy && v(sum, 'real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy') * w.accuracy / 100;
   if (accPhys) w.physical = w.physical.map(x => x + accPhys);
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
-  if (w && !bare && !palm && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
+  if (w && !bare && !palm && !fbG && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
   // Path of Building group comes in) is a totem's ballista attack: "increased Ballista / Totem Damage" count, "per active
   // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
@@ -1547,6 +1552,7 @@ export function skill(g, b, treeGear) {
   // (the scene has none)
   out.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, v(sum, `base_reduce_enemy_${e}_resistance_%`, 'reduce_enemy_elemental_resistance_%', 'base_penetrate_elemental_resistances_%')
     + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') + (w?.pen?.[e] || 0) : 0)]));
+  if (attack && b.items?.weapon && sum['reduce_enemy_chaos_resistance_with_weapons_%']) out.pen.chaos = sum['reduce_enemy_chaos_resistance_with_weapons_%'];   // "Damage with Weapons Penetrates Chaos Resistance" (a Fists of Stone modifier)
   if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
   out.projSpeed = (1 + projInc / 100) * (1 + v(finals, 'support_faster_projectiles_projectile_speed_+%_final') / 100) * (1 + v(finals, 'support_slower_projectiles_projectile_speed_+%_final') / 100);   // Projectile Acceleration, Deceleration: more, less
   for (const el of ['fire', 'cold', 'lightning']) if (sum['penetrate_elemental_resistance_%_while_shapeshifted']) out.when.push({ cond: [{ type: 'Condition', var: 'Shapeshifted' }], val: sum['penetrate_elemental_resistance_%_while_shapeshifted'], what: 'pen', el });
@@ -1775,9 +1781,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     stunCrit: 1 + all('passive_overwhelming_strike_hit_damage_stun_multiplier_+%_final_with_crits') / 100,
     poisonRecent: all('poison_duration_+%_per_poison_applied_recently') ? { per: all('poison_duration_+%_per_poison_applied_recently'), inc: durI.poison.reduce((t, k) => t + all(k), 0) } : null,
     bleedIncision: critX(effI.bleed, 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
-    bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
+    bleed: all(all('base_bleed_chance_is_poison_chance_instead') ? 'base_chance_to_poison_on_hit_%' : 'base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
-    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: (tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0) + all('poison_on_critical_strike') * 100,   /* Atsak's Sight: Critical Hits Poison */
+    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all(all('base_poison_chance_is_bleed_chance_instead') ? 'base_chance_to_inflict_bleeding_%' : 'base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: (tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0) + all('poison_on_critical_strike') * 100,   /* Atsak's Sight: Critical Hits Poison */
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
     maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
     maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),
@@ -2008,3 +2014,7 @@ if (GEMS.length) { const of = a => GEMS.filter(g => g.kind === 'support' && g.at
     && run('Shyaba', 'Earthquake').ail.alwaysHit && !m.ail.alwaysHit && m.ail.stun === 2 * m0.ail.stun && life({ keystone_iron_grip: 1 }) < life({})
     && Math.abs(run('Tangletongue', 'Rapid Assault', { local_weapon_roll_crits_twice: -1 }, { additional_base_critical_strike_chance: 150 }).crit - t0.crit - 1.5) < 1e-9, "uniques' weapon rules", t.crit, t0.crit, t.critBonus, m.ail.stun); }
 console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 }).str === Math.floor(attributes({ base_strength: 100 }).str * 1.1) && attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 }).int === attributes({ base_strength: 100 }).int, 'increased Strength and Dexterity');
+// Facebreaker: a One Handed Mace attack with both hands empty, with the gloves' own damage (fire as Fists of Stone)
+{ const FB = 'unique_facebreaker_can_use_mace_attacks_with_both_hands_empty_using_facebreaker_base_damage', run = (sum, items = { gloves: newItem('Facebreaker') }) => skill({ name: 'Boneshatter', level: 10, supports: [] }, { gems: [], items, asc: 'Titan', level: 80 }, sum);
+  const a = run({ [FB]: 1 }), f = run({ [FB]: 1, ascendancy_hand_wraps: 1 }), n = run({}), m = run({ [FB]: 1 }, { gloves: newItem('Facebreaker'), weapon: newItem('Wooden Club') });
+  console.assert(a.hits.physical?.[1] > 0 && !a.hits.fire && f.hits.fire?.[1] > 0 && !f.hits.physical?.[1] && !n.hits.physical && m.hits.physical?.[1] > 0 && m.hits.physical[1] !== a.hits.physical[1], 'Facebreaker', a.hits, f.hits, n.reason, m.hits); }
