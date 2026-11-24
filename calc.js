@@ -1240,8 +1240,9 @@ export function skill(g, b, treeGear) {
   const perTotemSpeed = totems * v(sum, 'totems_attack_speed_+%_per_active_totem');
   // and the meta gem's own support part slows it and lowers its damage (Mortar Cannon: -50% more attack speed and damage;
   // the game's window, 1.79 s, has them). Its +100% cooldown recovery is not in that window (10.99 s fits without)
-  const metaFinal = end => meta && byTotem ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
-  const metaSpeed = metaFinal('attack_speed_+%_final'), metaDmg = metaFinal('ballista_damage_+%_final');
+  // Spell Totem's less cast speed; Cast on Critical's less damage for the spells it triggers (no totem)
+  const metaFinal = (end, any) => meta && (byTotem || any) ? 1 + Object.entries(SK.skills[meta.name].meta_support || {}).reduce((t, [k, x]) => t + (k.endsWith(end) ? x : 0), 0) / 100 : 1;
+  const metaSpeed = metaFinal('attack_speed_+%_final'), metaCast = metaFinal('support_spell_totem_cast_speed_+%_final'), metaDmg = metaFinal('ballista_damage_+%_final') * metaFinal('trigger_meta_gem_damage_+%_final', true);
   // Rage: 1% more attack damage per point (measured in the game, 16/11: 44 Rage made every damage type of Cluster Grenade
   // x1.440; the value is in no table, only the stat attack_damage_final_permyriad_from_rage). note: full Rage (30 of
   // GameConstants + "maximum Rage") when a gem of the build regenerates it (Eternal Rage), else none. Berserk's "increased
@@ -1427,7 +1428,7 @@ export function skill(g, b, treeGear) {
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
   if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + (sum.additive_modifiers_to_minion_attack_speed_also_affect_you ? v(sum, 'minion_attack_speed_+%', 'minion_attack_and_cast_speed_+%') : 0) + speedInc + perTotemSpeed + atkSp) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed * dwd;
-  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd;
+  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
   if (byTotem && out.speed) out.speed *= 1 + v(sum, 'ascendency_tactician_totem_skill_speed_+%_final') / 100;   // Tactician's Cannons, Ready!: more skill speed of totems' skills
   // "+X seconds to Total Attack / Cast Time" (Leap Slam, Rolling Slam, Comet): added to the use time whatever the speed (PoB2's TotalAttackTime)
   const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) out.speed = 1 / (1 / out.speed + addT);

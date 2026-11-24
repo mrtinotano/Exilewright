@@ -1930,12 +1930,12 @@ export function initScene(el, api) {
   // (one), what Navira's Embrace absorbs, Navira's Oasis, the recharge rate of Navira's Well, whether Navira's Fracturing
   // uses up the ground (it stays)
   const damaging = S => Object.keys({ ...S.dmg?.hits, ...S.dmg?.dot }).length > 0;
+  const djMore = st => 1 + (st['djinn_damage_+%_final_per_number_of_damaging_skills_my_parent_has_used_recently'] || 0) * used.filter(u => u.dmg && !u.cmd && time - u.t <= RECENT).length / 100;   // Ruzhan's
   function djinnCast(S) {
     const C = S.dmg.cmd, e = objs.find(o => o.minion && o.ofS === C.owner && !o.dead), key = C.key, sets = monSkill(key).sets, at = { x: S.at.x, z: S.at.z };
     if (!e) return toast(t('{0} needs a minion', S.label));
     const ost = onS(C.owner)?.dmg?.stats || {}, rad = s => (s?.const?.active_skill_base_area_of_effect_radius || s?.const?.active_skill_base_secondary_area_of_effect_radius || 0) / 10, r0 = rad(sets[0]);
-    const more = 1 + (ost['djinn_damage_+%_final_per_number_of_damaging_skills_my_parent_has_used_recently'] || 0) * used.filter(u => u.dmg && !u.cmd && time - u.t <= RECENT).length / 100;
-    const part = i => { const h = C.hits[i] || {}, els = Object.keys(h); return els.length ? { ...S, src: 'minionHit', els, el: els[0], aoe: true, A: rad(sets[i + 1]) || SIM.area, dmg: { ...S.dmg, hits: h, ail: C.ail[i], stats: ost, trig: [] }, mult: S.mult * more } : null; };
+    const part = i => { const h = C.hits[i] || {}, els = Object.keys(h); return els.length ? { ...S, src: 'minionHit', els, el: els[0], aoe: true, A: rad(sets[i + 1]) || SIM.area, dmg: { ...S.dmg, hits: h, ail: C.ail[i], stats: ost, trig: [] }, mult: S.mult * djMore(ost) } : null; };
     const CL = key === 'ExplosiveTeleportSandDjinn' && me.djClone, seq = CL && !CL.dead ? CL.n + 1 : 0;
     if (C.owner === 'Navira, the Last Mirage') { me.navira = { until: time + monSkill('PassiveTriggeredManaWaveWaterDjinn').sets[0].const.base_skill_effect_duration / 1000, v: ost['water_djinn_mana_wave_mana_regeneration_rate_+%'] || 0 }; fx.ring(e.pos, .3, 2.5, 'cold', .5); }
     later(C.cast, () => {
@@ -1956,8 +1956,7 @@ export function initScene(el, api) {
     const Z = onS('Ruzhan, the Blazing Sword'), K = Z?.dmg?.cmd?.strike, e = K?.hits && objs.find(o => o.minion && o.ofS === Z.name && !o.dead);
     if (!e || time < me.zealAt || !damaging(S) || S.dmg.cmd) return;
     me.zealAt = time + K.cooldown; const els = Object.keys(K.hits), at = { x: S.at.x, z: S.at.z };
-    const n = used.filter(u => u.dmg && !u.cmd && time - u.t <= RECENT).length;
-    later(monSkill(K.key).cast, () => { boom(at, SIM.area, { ...Z, src: 'minionHit', els, el: els[0], at, dmg: { ...Z.dmg, hits: K.hits, trig: [] }, mult: 1 + (Z.dmg.stats['djinn_damage_+%_final_per_number_of_damaging_skills_my_parent_has_used_recently'] || 0) * n / 100 }); for (const d of inside(at, SIM.area)) expo(d, ELEM); });
+    later(monSkill(K.key).cast, () => { boom(at, SIM.area, { ...Z, src: 'minionHit', els, el: els[0], at, dmg: { ...Z.dmg, hits: K.hits, trig: [] }, mult: djMore(Z.dmg.stats) }); for (const d of inside(at, SIM.area)) expo(d, ELEM); });
   }
   function mirage(name) {
     const M = onS(name), D = M && SK.skills[name], X = D && Object.values(D.meta_skill)[0];
@@ -2310,6 +2309,8 @@ export function initScene(el, api) {
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0 && !S.dmg?.cmd) {   // (a djinn acts only on Command: djinnCast)
+          // note: Skeletal Reaver's Enrage (its Command: Rage on hit, life lost over time, 3% attack speed per Rage) is not
+          // simulated: the Rage a hit gives them and the life they lose are not in the data
           // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here); Crazed Minions: more if it Revived Recently
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
           const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
@@ -2414,9 +2415,11 @@ export function initScene(el, api) {
         const SH = (by.P?.consumes?.includes('freeze') || by.dmg?.ail?.consume?.freeze) && (B.dmg?.stats || {}), XA = SH ? Math.sqrt(1 + (SH['ice_crystal_shatter_detonation_area_of_effect_+%_final'] || 0) / 100) : 1, XM = SH ? 1 + (SH['ice_crystal_shatter_detonation_damage_+%_final'] || 0) / 100 : 1;
         if (!SH && !by.breaks && life > 0 && (life -= avgHit(by)) > 0) return;   // by.breaks: destroyed outright (Vruun's Aftermath)
         e.dead = true;
+        // burst in its first half second it deals its less damage (Frost Wall's own stat, Glacial Bolt's wall part's)
+        const EK = 'ice_crystals_damage_+%_final_for_first_500_ms_when_not_killed_by_self', EA = e.s < .5 ? 1 + (S.dmg?.stats?.[EK] ?? Object.values(S.dmg?.parts || {}).find(q => q.stats?.[EK])?.stats[EK] ?? 0) / 100 : 1;
         const VG = by.dmg?.sum?.['support_crystalshatter_buff_damage_%_gained_as_extra_cold_per_2000_crystal_life'];   // Verglas: the destroying skill's cold gain, per 2000 of the crystal's life
         if (VG) (me.verglas ||= {})[by.name] = { pct: VG * Math.floor(full / 2000), until: time + by.dmg.sum.support_crystalshatter_buff_duration / 1000 };
-        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A * XA, { ...B, dmg: BD, mult: (B.mult || 1) * XM, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
+        later(rnd(.04, .14), () => { if (by.src !== 'crystal') say(t('{0}: the ice crystals explode ({1})', S.label, by.label), 'ice'); const IC = S.dmg?.sum?.['ice_crystal_explosion_impale_chance_%'], BD = IC && B.dmg ? { ...B.dmg, ail: { ...B.dmg.ail, impale: { n: 1, mag: 1, ...B.dmg.ail?.impale, chance: (B.dmg.ail?.impale?.chance || 0) + IC } } } : B.dmg; boom(p, B.A * XA, { ...B, dmg: BD, mult: (B.mult || 1) * XM * EA, self: e, src: 'crystal' });   // Crystalline Shards: its chance to Impale
           const X = S.infs?.includes('lightning') && partOf(S, 'FrostWallInfusedPlayer');   // Frost Wall's Lightning Infusion: another explosion
           if (X) boom(p, radOf(X), { ...X, self: e, src: 'crystal' }); });
       },
@@ -2854,6 +2857,7 @@ export function initScene(el, api) {
       // you aimed (note: as a straight run on, its slowing down is not simulated)
       const SE = (S.dmg?.stats?.shield_charge_extra_distance || 0) / 10;
       const P = S.P, to = SE ? { x: S.at.x + S.dx * SE, z: S.at.z + S.dz * SE } : S.at, from = { x: pp.x, z: pp.z }, far = S.dmg?.stats?.['base_additional_damage_from_distance_+%_final'], crash = far != null;
+      me.leapK = Math.min(1, dist(from, to) / (sh(S).travel ?? SIM.travelRange));   // the share of its range it travels (useTime: Leap Slam's and Molten Crash's seconds added by distance)
       const land = (at = to) => {
         const k = Math.min(1, dist(from, at) / ((sh(S).travel ?? SIM.travelRange) + SE)), Y = crash ? { ...S, mult: S.mult * (1 + far * k / 100) } : S, X = partOf(S, 'ShieldChargeFinalConePlayer');
         // fully charged (its whole range run): its more stun buildup
@@ -3833,6 +3837,7 @@ export function initScene(el, api) {
     const st = S.dmg?.stats || {}, C = { ...S, P: { ...S.P, culls: true } }, e = corpseAt(S.at, SIM.snap) || near(S.at, SIM.snap, d => cullable(d, C));
     if (!e) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
     const p = { x: e.pos.x, z: e.pos.z }, l = dist(p, pp), reach = meleeR(S) + SIM.body;
+    me.leapK = l <= reach ? 0 : Math.min(1, (l - reach) / (st.base_melee_dash_range / 10));   // the share of its dash range it travels (useTime)
     const eatAll = () => [e, ...corpses(p, S.A).filter(d => d !== e).slice(0, st.wyvern_devour_max_extra_corpses_to_consume)].forEach(d => {
       if (d.corpse > 0) eat(d, S.el); else if (!cull(d, C)) return;
       me.life = gain(me.life, me.maxL, st.wyvern_devour_life_restoration); chargeBy('power', S);
@@ -4666,6 +4671,12 @@ export function initScene(el, api) {
       / (1 + new Set(used.filter(u => u.spell && time - u.t <= 8).map(u => u.name)).size * (b.P.spell && b.dmg?.sum?.['cast_speed_+%_per_num_unique_spells_cast_in_last_8_seconds'] || 0) / 100);
     const LL = sheet().lament?.life;   // The Last Lament: life sacrificed to not consume the last bolt
     if (c && !(Math.random() < c.keep) && (clips[b.name] = (clips[b.name] ?? c.bolts) - 1) <= 0 && !(LL && me.life > LL && (me.life -= LL, clips[b.name] = 1))) { clips[b.name] = c.bolts; t += c.reload; reloads.push({ t: time + t, n: c.bolts }); gemini(); while (reloads[0]?.t < time - 8) reloads.shift(); }
+    // "up to +X seconds to Total Attack Time based on distance travelled" (Leap Slam, Molten Crash, Devour): by the share of
+    // its range it just travelled; Devour's less attack speed on a near target, more on a far one
+    // note: a leap's range is the scene's; Devour's near and far are not in the data: near within reach, far when it dashes
+    const bs = b.dmg?.stats || {}, BD = bs.skill_added_attack_time_by_distance_ms, DV = bs[me.leapK ? 'wyvern_devour_far_target_attack_speed_+%_final' : 'wyvern_devour_near_target_attack_speed_+%_final'];
+    if (DV) t /= 1 + DV / 100;
+    if (BD) t += BD / 1000 * (me.leapK || 0);
     return t;
   };
   function press(i, key) {
