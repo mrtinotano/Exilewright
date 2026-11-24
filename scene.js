@@ -2234,9 +2234,9 @@ export function initScene(el, api) {
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0) {
-          // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here)
+          // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here); Crazed Minions: more if it Revived Recently
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
-          const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
+          const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
@@ -2411,6 +2411,9 @@ export function initScene(el, api) {
   // Aftershock along it, as keywords.json MoltenFissure has it (the rule the game states for its long-lasting fissures):
   // its damage again to those on it, on to the fissures it crosses, each at most once per 0.2 s
   function fissure(S, from, ang, len, r = .8, mult = .5, o = {}) {
+    // Upheaval, Kaom's Madness: its additional fissures, fanned beside the first. ponytail: once per use, its fissures within 0.5 s
+    const AF = !o.branch && !o.extra && !(time - (S.addAt ?? -9) < .5) && S.dmg?.sum?.base_number_of_additional_fissures;
+    if (AF) { S.addAt = time; for (let k = 1; k <= AF; k++) later(.08 * k, () => fissure(S, from, ang + (k % 2 ? 1 : -1) * .5 * Math.ceil(k / 2), len, r, mult, { ...o, extra: true })); }
     if (!o.branch && !o.extra && !(time - (S.fissAt ?? -9) < .5) && Math.random() * 100 < (S.dmg?.sum?.['skill_additional_fissure_chance_%'] || 0)) { S.fissAt = time; later(.08, () => fissure(S, from, ang + .5, len, r, mult, { ...o, extra: true })); }   // the tree's chance of another. ponytail: a use's fissures within 0.5 s roll once
     const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len }, seen = new Set();   // each enemy once
     const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
@@ -2487,7 +2490,7 @@ export function initScene(el, api) {
             const a = rnd(TAU), r = i ? rnd(.6, 1.6) : 0, p = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, m = fx.orb(S.el, .16); m.position.set(p.x, .2, p.z);
             const e = thing(m, (sh(S).detonate || SIM.fuse) + i * .15, { r: .3, name: S.name,
               tick(dt, e) { m.userData.core.scale.setScalar(.16 * (1 + e.s / e.dur)); },
-              touch(by) { if (by.P.detonator || by.els.includes('fire')) e.s = e.dur; },
+              touch(by) { if (!S.dmg?.sum?.skill_grenade_detonate_only_at_end_of_duration && (by.P.detonator || by.els.includes('fire'))) e.s = e.dur; },   // Long Fuse: only at the end of its time
               end: e => boom(p, R, { ...S, self: e }) });
           }
         });
@@ -3906,7 +3909,7 @@ export function initScene(el, api) {
   // the fallen minions Revived, in their order, up to n total maximum life of theirs
   function reviveFallen(n) {
     let used = 0, k = 0;
-    me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n - used) return !!X; used += f.life; k++; tog[f.name].objs.push(minion(X, around(pp, 1.5), Infinity)); return false; });
+    me.fallen = me.fallen.filter(f => { const X = onS(f.name); if (!X || f.life > n - used) return !!X; used += f.life; k++; tog[f.name].objs.push(Object.assign(minion(X, around(pp, 1.5), Infinity), { revAt: time })); return false; });
     me.life = Math.min(me.maxL, me.life + me.maxL * k * sheet().reviveLife / 100);   // the tree's life per minion Revived
     return { used, k };
   }
@@ -4272,6 +4275,8 @@ export function initScene(el, api) {
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
     const PX = !auto && P.attack && me.parryNext?.[P.melee ? 'melee' : 'ranged']; if (PX) { S.mult *= 1 + PX / 100; me.parryNext = null; }   // a parry's increased damage to this attack (note: as a factor of its own)
+    const RU = !auto && S.dmg?.sum?.support_ruthless_big_hit_max_count;   // Ruthless: every that many uses of it, its more Stun buildup
+    if (RU && ((me.ruth ||= {})[S.name] = (me.ruth[S.name] || 0) + 1) % RU === 0) S.stunEmp = (S.stunEmp || 1) * (1 + (S.dmg.finals?.['support_ruthless_big_hit_stun_damage_+%_final'] || 0) / 100);
     S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
     // Ancestrally Boosted: its more damage and increased area, with the tree's increased ones (note: its damage as a factor)
     const AB = sheet().ancBoost || {};
@@ -5346,7 +5351,7 @@ export function initScene(el, api) {
   function ailed(d, raw, dealt, stunOnly = false) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
-    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (1 + (charge && base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100) /* Steadfast II, while channelling it */, more =(inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
+    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (1 + (charge && base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100) /* Steadfast II, while channelling it */, more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
     if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)

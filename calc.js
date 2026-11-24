@@ -1121,6 +1121,7 @@ export function withSupports(g, sum, wset) {
       if (read.has(k) || k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) { all[k] = (all[k] || 0) + val; if (k.includes('_final')) twice.add(k); }
       else if (!k.startsWith('branching_fissure_') && (plainMore(k, n) || plainText(k))) fin[k] = (fin[k] || 0) + val;   // Branching Fissures: its Branched Fissures' alone (scene.js)
+      else if (k.endsWith('_detonation_damage_+%_final')) mods.push(['Damage', 'MORE', val, ['hit'], 0, k]);   // Long Fuse: its detonation's. note: a hit of the skill before it detonates (Stormblast Bolts' bolt) counts too
     }
     // a flag of the gem that Path of Building 2 names and the dump leaves out of its stats (Pin: "Physical damage can
     // Pin"; Tul's Stillness: "Chaos damage can Freeze"; Atziri's Allure: its curses ignore the limit), once each
@@ -1574,7 +1575,7 @@ export function skill(g, b, treeGear) {
     aftershock: own.includes('slam') ? v(sum, 'slam_aftershock_chance_%') + (tags.includes('mace') && attack ? v(sum, 'your_mace_slam_aftershock_chance_%') : 0) + (own.includes('shapeshift') ? v(sum, 'shapeshift_slam_skill_aftershock_chance_%') : 0) : 0,
     extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0),
       two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
-    detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (sum.keystone_hex_master ? 2 : 1)),
+    detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (1 + v(finals, 'support_ritual_curse_curse_delay_+%_final') / 100) * (1 + v(finals, 'support_focus_curse_curse_delay_+%_final') / 100) * (sum.keystone_hex_master ? 2 : 1)),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
     // Pierce, Fork and Chain as PoB2 counts them (CalcOffence, SkillStatMap) and the glossary orders them: a projectile
     // pierces, else forks (the first time it hits), else chains; chaining reaches 6 m from a projectile, 4 m otherwise
@@ -1699,6 +1700,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   for (const k of keys) {
     let m = k.match(/consume_enemy_(freeze|shock|ignite|fully_broken_armour)_to_gain_(damage|hit_damage_stun_multiplier)(?:_against_(unique|non_unique))?_\+%(?:_final)?$/);
     if (m) { const c = consume[STATE_OF[m[1]] || m[1]] ||= {}, key = m[2] === 'damage' ? m[3] || 'any' : 'stun'; c[key] = (c[key] || 0) + all(k); continue; }
+    if (k === 'support_morrigans_refuge_damage_+%_final_vs_frozen_enemies') { (consume.freeze ||= {}).any = (consume.freeze.any || 0) + all(k); continue; }   // Morrigan's Insight: "Consume Freeze on enemies to deal more Damage"
     m = k.match(/damage_\+%_final_(?:vs|against)_(\w+?)(_unique|_non_unique)?_enemies$/);
     if (m && STATE_OF[m[1]]) vs.push([STATE_OF[m[1]], all(k), m[2] ? m[2] === '_unique' : null, /physical/.test(k)]);
   }
