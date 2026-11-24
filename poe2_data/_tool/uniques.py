@@ -76,7 +76,11 @@ for page, name, _ in entries:
             matched += 1
         else:
             unmatched.append(text(header))
-    out.append({**{k: v for k, v in names[name].items() if k.startswith('name')}, 'base': base, 'mods': found, 'unmatched': unmatched})   # name, name_es...
+    # a gloves' page also lists it as Fists of Stone (the Martial Artist's Way of the Stonefist), implicits first: those
+    # modifiers apart, without the implicits (the transformed base's own: available.py)
+    cut = next((i for i, m in enumerate(found) if m['id'].startswith('HandWraps')), len(found))
+    fists = [m for m in found[cut:] if not m['id'].startswith('HandWrapsImplicit')]
+    out.append({**{k: v for k, v in names[name].items() if k.startswith('name')}, 'base': base, 'mods': found[:cut], 'unmatched': unmatched, **({'stonefist': fists} if fists else {})})   # name, name_es...
 
 with open(os.path.join(ROOT, 'available', 'unique_items.json'), 'w', encoding='utf8') as f:
     json.dump(out, f, ensure_ascii=False, indent=1)

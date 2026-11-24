@@ -15613,39 +15613,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "UniqueGrantsLifeRemnants1",
     "text": "",
@@ -15731,8 +15702,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Treefingers",
@@ -15817,39 +15787,10 @@
       20
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -15916,8 +15857,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Lochtonial Caress",
@@ -15986,39 +15926,10 @@
       25
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueShareChargesWithAllies1",
     "text": "(5—10)% chance to grant a Endurance Charge to Allies in your Presence on Hit(5—10)% chance to grant a Frenzy Charge to Allies in your Presence on Hit(5—10)% chance to grant a Power Charge to Allies in your Presence on Hit",
@@ -16089,8 +16000,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Dreadfist",
@@ -16164,39 +16074,10 @@
       49
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -16257,8 +16138,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Atziri's Acuity",
@@ -16332,39 +16212,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "UniqueGrantsLifeRemnants1",
     "text": "",
@@ -16431,7 +16282,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalAddedMaximumEnergyShield",
@@ -16542,39 +16392,10 @@
       6
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent23",
     "text": "+(70—100) to maximum Runic Ward",
@@ -16631,7 +16452,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalIncreasedAttackSpeed",
@@ -16744,39 +16564,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -16832,8 +16623,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Northpaw",
@@ -16896,39 +16686,10 @@
       25
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueCriticalMultiplier1",
     "text": "(15—20)% increased Critical Damage Bonus",
@@ -16978,8 +16739,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Grip of Winter",
@@ -17053,39 +16813,10 @@
       30
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -17146,8 +16877,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Idle Hands",
@@ -17216,39 +16946,10 @@
       10
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -17305,7 +17006,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalManaLeechPermyriad",
@@ -17425,39 +17125,10 @@
       600
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -17519,7 +17190,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalPoisonDurationIfConsumedFrenzyChargeRecently",
@@ -17640,39 +17310,12 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [
+   ""
+  ],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -17728,9 +17371,6 @@
      ]
     ]
    }
-  ],
-  "unmatched": [
-   ""
   ]
  },
  {
@@ -17810,39 +17450,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "UniqueGrantsLifeRemnants1",
     "text": "",
@@ -17903,8 +17514,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Painter's Servant",
@@ -17984,39 +17594,13 @@
       33
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [
+   "",
+   ""
+  ],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueElementalDamageGainedAsFire1",
     "text": "Gain (6—15)% of Fire damage as Extra Physical damage",
@@ -18061,10 +17645,6 @@
      ]
     ]
    }
-  ],
-  "unmatched": [
-   "",
-   ""
   ]
  },
  {
@@ -18145,39 +17725,10 @@
       -10
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -18249,8 +17800,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Doedre's Tenure",
@@ -18308,39 +17858,10 @@
       30
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueIncreasedCastSpeed6",
     "text": "(15—25)% reduced Attack Speed",
@@ -18390,8 +17911,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Kitoko's Current",
@@ -18449,39 +17969,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -18526,8 +18017,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Demon Stitcher",
@@ -18585,39 +18075,10 @@
       15
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueIncreasedCastSpeed7",
     "text": "(9—15)% increased Attack Speed",
@@ -18663,7 +18124,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalSkillCostEfficiency",
@@ -18795,39 +18255,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedEnergyShieldPercent25",
     "text": "(15—25)% more Global Evasion Rating and Energy Shield",
@@ -18899,8 +18330,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Leopold's Applause",
@@ -18969,39 +18399,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -19057,8 +18458,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Jarngreipr",
@@ -19132,39 +18532,10 @@
       50
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueIncreasedLife6",
     "text": "(6—8)% more damage taken while on Low Life",
@@ -19220,8 +18591,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Aurseize",
@@ -19268,39 +18638,10 @@
       -2
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -19334,8 +18675,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Deathblow",
@@ -19404,39 +18744,10 @@
       10
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -19492,8 +18803,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Valako's Vice",
@@ -19573,39 +18883,10 @@
       100
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -19672,8 +18953,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Aerisvane's Wings",
@@ -19731,39 +19011,12 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [
+   "Deal Double Damage to Enemies that are on Full Life"
+  ],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -19797,9 +19050,6 @@
      ]
     ]
    }
-  ],
-  "unmatched": [
-   "Deal Double Damage to Enemies that are on Full Life"
   ]
  },
  {
@@ -19880,39 +19130,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -19984,8 +19205,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Gravebind",
@@ -20059,39 +19279,10 @@
       15
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -20152,8 +19343,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Shackles of the Wretched",
@@ -20233,39 +19423,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent5",
     "text": "(10—15)% more Global Evasion Rating and Energy Shield",
@@ -20322,7 +19483,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalCurseEffectiveness",
@@ -20467,39 +19627,10 @@
       20
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueIntelligence19",
     "text": "(10—15)% increased Cooldown Recovery Rate",
@@ -20565,8 +19696,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "The Prisoner's Manacles",
@@ -20657,39 +19787,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
     "text": "(20—25)% more Global Evasion Rating and Energy Shield",
@@ -20772,8 +19873,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Plaguefinger",
@@ -20842,39 +19942,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -20920,7 +19991,6 @@
     ]
    }
   ],
-  "unmatched": [],
   "mutated": [
    {
     "id": "UniqueMutatedVaalGlobalChaosGemLevel",
@@ -21040,39 +20110,10 @@
       30
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedEvasionAndEnergyShield2",
     "text": "+(30—50) to maximum Runic Ward",
@@ -21128,8 +20169,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Hand of Wisdom and Action",
@@ -21192,39 +20232,10 @@
       10
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueDexterity31",
     "text": "(11—13)% increased Dexterity",
@@ -21274,8 +20285,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Essentia Sanguis",
@@ -21349,39 +20359,10 @@
       1
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent6",
     "text": "(15—20)% more Global Evasion Rating and Energy Shield",
@@ -21442,8 +20423,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Thunderfist",
@@ -21528,39 +20508,10 @@
       110
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "UniqueGrantsLifeRemnants1",
     "text": "",
@@ -21631,8 +20582,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Legionstride",
@@ -25916,39 +24866,10 @@
       50
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "HandWrapsUniqueIncreasedSkillSpeed5",
     "text": "(15—25)% increased Attack Speed if you've dealt a Critical Hit Recently",
@@ -25993,8 +24914,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Ab Aeterno",
@@ -26288,39 +25208,10 @@
       100
      ]
     ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel",
-    "text": "Has +3 to Evasion Rating per player levelHas +1 to maximum Energy Shield per player levellocal level requirement override [1]",
-    "stats": [
-     [
-      "local_hand_wraps_evasion_rating_per_level",
-      3,
-      3
-     ],
-     [
-      "local_hand_wraps_energy_shield_per_level",
-      1,
-      1
-     ],
-     [
-      "local_level_requirement_override",
-      1,
-      1
-     ]
-    ]
-   },
-   {
-    "id": "HandWrapsImplicitLocalCopyPlayerLevelValue",
-    "text": "local hand wraps player level to use [0]",
-    "stats": [
-     [
-      "local_hand_wraps_player_level_to_use",
-      0,
-      0
-     ]
-    ]
-   },
+   }
+  ],
+  "unmatched": [],
+  "stonefist": [
    {
     "id": "UniqueGrantsLifeRemnants1",
     "text": "",
@@ -26397,8 +25288,7 @@
      ]
     ]
    }
-  ],
-  "unmatched": []
+  ]
  },
  {
   "name": "Atziri's Step",
