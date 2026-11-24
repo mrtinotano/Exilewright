@@ -38,7 +38,7 @@ export function initLoot(el, ctx) {
 
   // ---------- the build and what the item is compared with
   const skills = b => b.gems.filter(g => GEM[g.name] && GEM[g.name].kind !== 'support');
-  const gemOf = b => { const l = skills(b); return l[S.gem[ctx.id()] || 0] || l[0] || null; };   // the skill picked for this build
+  const skillOf = b => { const l = skills(b); return l[S.gem[ctx.id()] || 0] || l[0] || null; };   // the skill picked for this build
   const gearOf = b => S.vs === 'build' ? b.items || {} : S.on;
   const slotName = slot => slot.startsWith('jewel:') ? `${t('Jewel')} (${ctx.sockets().find(j => 'jewel:' + j.id === slot)?.label || '?'})` : t(SLOTS[slot]);
   const nameOf = it => { const v = itemView(it); return it.name || (v ? v.name || v.base : it.base); };   // it.name: the one the game gave a worn item
@@ -88,7 +88,7 @@ export function initLoot(el, ctx) {
   }
   // an item in every slot it fits, the best slot first (none: a jewel with no socket allocated)
   function verdict(e) {
-    const b = ctx.build(), g = gemOf(b), gear = gearOf(b), sum = ctx.sumOf(b), giant = sum.keystone_giants_blood;
+    const b = ctx.build(), g = skillOf(b), gear = gearOf(b), sum = ctx.sumOf(b), giant = sum.keystone_giants_blood;
     // with no skill to say which weapons the build uses, a weapon is only compared with one of its own kind
     const fits = s => s === 'offhand' ? offhandFits(gear.weapon, e.r.item, giant) : s !== 'weapon' || g || !gear.weapon || classOf(gear.weapon) === classOf(e.r.item);
     const slots = e.r.slots.includes('jewel') ? ctx.sockets().map(j => 'jewel:' + j.id) : e.r.slots.filter(s => SLOTS[s] && slotOpen(s, sum) && fits(s));
@@ -130,7 +130,7 @@ export function initLoot(el, ctx) {
     if (S.vs !== 'build' && !Object.keys(S.on).length) fromBuild();
     // nothing is known to be worn where it goes: this is it (what the character has on is copied first)
     const free = S.vs === 'build' ? null : r.slots.find(s => verdict(e).some(x => x.slot === s && !x.old));
-    if (free) { e.took = free; put(free, r.item, r.name); }
+    if (free) { e.took = free; putOn(free, r.item, r.name); }
     say(told(e, verdict(e)[0]));
   }
   // the "put on" shortcut (Settings): the copied item is now what the character wears, in the slot where it does the
@@ -145,7 +145,7 @@ export function initLoot(el, ctx) {
     if (!all.length) return say(told(e));
     const slot = on ? slots[(slots.indexOf(on.slot) + 1) % slots.length] : all[0].slot;
     if (on && slot !== on.slot) { if (S.was?.[on.slot]) S.on[on.slot] = S.was[on.slot]; else delete S.on[on.slot]; }
-    if (slot !== on?.slot) { S.was = { [slot]: S.on[slot] }; put(slot, r.item, r.name); }
+    if (slot !== on?.slot) { S.was = { [slot]: S.on[slot] }; putOn(slot, r.item, r.name); }
     say({ kind: 'on', title: `${BADGE.on[0]} ${t('Equipped')} · ${slotName(slot)}`, name: r.name || nameOf(r.item), lines: [
       t('Taken as what the character wears: what you copy next is compared with it'),
       ...slots.length > 1 ? [[[t('Press the shortcut again over it to put it in the other slot.'), 'dim']]] : []] });
@@ -221,9 +221,9 @@ export function initLoot(el, ctx) {
 
   // ---------- the section
   // slot <- item in the worn gear kept here
-  function put(slot, item, name) { S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; keep(); }
+  function putOn(slot, item, name) { S.on[slot] = { ...structuredClone(item), ...(name && { name }) }; keep(); }
   function render() {
-    const b = ctx.build(), g = gemOf(b), own = skills(b);
+    const b = ctx.build(), g = skillOf(b), own = skills(b);
     el.innerHTML = `<h3>${t('Equipment comparison')}</h3>
         <p class="note">${t("Hold the pointer over an item in the game (one you found and identified, one in the inventory or one a merchant sells) and press Ctrl+C: next to the pointer you see whether it is better or worse than the one the character wears. The item is tried in every slot it fits and the build is worked out with and without it: the build's passives and skills decide what counts.")}</p>
         <div class="optrow">
