@@ -178,11 +178,14 @@ export function reservation(g, sum = {}, b, life = false) {
   if (life || AC) return life && AC ? own * AC / 100 : 0;
   // Lord of the Wilds: non-minion skills 50% less efficiency; Trusted Kinship: companions 30% more, the rest 20% less
   const T = GEM[g.name]?.tags || [], more = (sum.keystone_lord_of_the_wilds && !T.includes('minion') ? .5 : 1) * (sum.keystone_2_companions ? T.includes('companion') ? 1.3 : .8 : 1);
-  return Math.round(own * 100 / (100 + eff) / more * (sum.unique_spirit_reservations_are_halved ? .5 : 1));   // Matsya: 50% less
+  const solid = T.includes('persistent') && T.includes('buff') ? 1 + v(sum, 'tactician_spirit_reservation_+%_final_for_permanent_buffs') / 100 : 1;   // A Solid Plan: Persistent Buffs' less Reservation
+  return Math.round(own * 100 / (100 + eff) / more * (sum.unique_spirit_reservations_are_halved ? .5 : 1) * solid);   // Matsya: 50% less
 }
 // self-check: Eternal Rage (100 spirit, 0.75% efficiency per quality as its second effect) with 6% quality and +2 levels
 { const g = { name: 'Eternal Rage', level: 15 }, sum = { 'all_skill_gem_quality_+': 6, ascendancy_gemling_enable_thaumaturgy_quality_stats: 1, 'strength_skill_gem_level_+': 2, 'spell_skill_gem_level_+': 3 };
-  console.assert(reservation(g) === 100 && reservation(g, sum) === 96 && gemStats(g, sum)._level === 17 && reservation({ ...g, quality: 20 }) === 100, 'gem level and quality'); }
+  console.assert(reservation(g) === 100 && reservation(g, sum) === 96 && gemStats(g, sum)._level === 17 && reservation({ ...g, quality: 20 }) === 100, 'gem level and quality');
+  const P = { 'tactician_spirit_reservation_+%_final_for_permanent_buffs': -50 }, h = { name: 'Herald of Ash', level: 15 }, z = { name: 'Skeletal Sniper', level: 15 };   // A Solid Plan: a Persistent Buff's half, not a minion's
+  console.assert(reservation(h, P) === Math.round(reservation(h) / 2) && reservation(z, P) === reservation(z), 'A Solid Plan'); }
 
 // monster of a given level (DefaultMonsterStats): the character panel rates armour / evasion against it
 const MON = SK.monster_stats || [];
@@ -510,7 +513,9 @@ export function character(b, sum) {
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
     splash: sum.melee_splash ? 100 : mwTags.includes('mace') ? v(sum, 'your_mace_strike_melee_splash_chance_%') : 0, volMinion: v(sum, 'gain_X_volatility_on_persistent_minion_death'), reviveLife: v(sum, 'you_gain_%_life_when_one_of_your_minions_is_revived'),
     bannerBack: v(sum, 'on_banner_expiry_recover_%_of_required_glory'), bannerLinger: v(sum, 'banner_buff_lingers_for_X_seconds_after_leaving_area'), shockBack: v(sum, 'reapply_enemy_shock_on_consuming_enemy_shock_chance_%'), rareGlory: v(sum, 'gain_1_glory_every_X_seconds_per_rare_unique_monster_in_presence'), shockSpread: v(sum, 'shock_enemies_in_150cm_radius_on_shock_chance_%'),
-    volRefresh: v(sum, 'volatility_refresh_%_chance'), remnantTwice: v(sum, 'created_remnants_have_%_chance_to_duplicate_pick_up_results'), hazArmour: v(sum, 'enemies_affected_by_your_hazards_recently_have_+%_armour'), revertRage: v(sum, 'consume_rage_when_reverting_to_recover_x%_maximum_life_per_rage'),
+    volRefresh: v(sum, 'volatility_refresh_%_chance'), remnantTwice: v(sum, 'created_remnants_have_%_chance_to_duplicate_pick_up_results'), hazArmour: v(sum, 'enemies_affected_by_your_hazards_recently_have_+%_armour'), hazEvasion: v(sum, 'enemies_affected_by_your_hazards_recently_have_+%_evasion_rating'),
+    flaskUncurse: !!sum.remove_curse_on_mana_flask_use, chanUncurse: v(sum, 'remove_x_curses_after_channelling_for_2_seconds'),   // Warding Potions, Draiocht Cleansing: a curse on you removed
+    revertRage: v(sum, 'consume_rage_when_reverting_to_recover_x%_maximum_life_per_rage'),
     remnantPick: { life: v(sum, 'remnant_recover_%_life_on_pickup'), mana: v(sum, 'remnant_recover_%_mana_on_pickup') }, cryHeal: v(sum, 'restore_life_and_mana_on_warcry_%'), totemSpeed: v(sum, 'attack_and_cast_speed_+%_on_placing_totem'), firstPoison: v(sum, 'poison_effect_+%_vs_non_poisoned_enemies'),
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
@@ -1317,10 +1322,10 @@ export function skill(g, b, treeGear) {
       out.lifeCost = perSec ? Math.max(0, life * inc2 * more2 * moreCost / eff2) : Math.max(0, Math.round(step(step(step(life, inc2), more2), moreCost) / eff2));
       out.cost = perSec ? out.cost * (1 - toLife) : Math.floor(out.cost * (1 - toLife));
     }
-    // uniques' extra costs: life equal to a share of the mana cost (The Covenant, Prized Pain), a share of maximum life for
+    // extra costs: life equal to a share of the mana cost (The Covenant, Prized Pain; all of it: Sanguimancy), a share of maximum life for
     // non-channelling spells (Rathpith Globe), of maximum mana for attacks (Mind of the Council)
     const RL = spell && !own.includes('channelling') && v(sum, 'base_life_cost_+_with_non_channelling_spells_%_maximum_life'), AM = attack && v(sum, 'attacks_base_mana_cost_+_%_of_maximum_mana'), pc = (RL || AM) && character(b, sum);
-    const extraLife = out.cost * v(sum, 'base_skill_gain_life_cost_%_of_mana_cost') / 100 + (RL ? (pc.life || 0) * RL / 100 : 0);
+    const extraLife = out.cost * (v(sum, 'base_skill_gain_life_cost_%_of_mana_cost') + (sum.skill_cost_base_life_equal_to_base_mana ? 100 : 0)) / 100 + (RL ? (pc.life || 0) * RL / 100 : 0);
     if (extraLife) out.lifeCost = (out.lifeCost || 0) + (perSec ? extraLife : Math.round(extraLife));
     if (AM) out.cost += perSec ? (pc.mana || 0) * AM / 100 : Math.round((pc.mana || 0) * AM / 100);
     // Paquate's Pact: a % of maximum life more for each use or trigger of the skill Recently, up to the stat's own cap
@@ -1518,6 +1523,8 @@ export function skill(g, b, treeGear) {
   out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
   const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
   out.critW = critW;   // (the scene's Finality)
+  out.arrowCrit = attack && tags.includes('bow') ? v(sum, 'arrow_critical_strike_chance_+%_max_as_distance_travelled_increases') : 0;   // Sniper: an arrow's increased crit chance by how far it has flown (the scene)
+  out.staffPower = attack && tags.includes('quarterstaff') ? v(sum, 'quarterstaff_skills_that_consume_power_charges_count_as_consuming_x_additional_power_charges') : 0;   // One with the Storm
   out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
     .filter(([[name, kind, , fl, cond, stat]]) => Array.isArray(cond) && /^(?:(?:Physical|Elemental)?Damage|CritChance|CritMultiplier)$/.test(name) && /^(?:MORE|INC)$/.test(kind)
       && fl.every(hit) && !/consume_enemy_|damage_\+%_final_(?:vs|against)_\w+_enemies$/.test(stat))
@@ -2033,7 +2040,8 @@ console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot I
 { const b = { gems: [], items: {} }, orb = sum => skill({ name: 'Orb of Storms', level: 20, supports: ['Shock Conduction II'] }, b, sum).cost;
   console.assert(skill({ name: 'Orb of Storms', level: 20 }, b, {}).cost === 129 && orb({}) === 154 && orb({ 'base_mana_cost_-%': 10 }) === 139 && orb({ 'base_mana_cost_-%': 10, 'base_mana_cost_efficiency_+%': 25 }) === 111
     && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true
-    && skill({ name: 'Orb of Storms', level: 20, supports: ['Efficiency I'] }, b, {}).cost === 91 && skill({ name: 'Orb of Storms', level: 20, supports: ['Lifetap'] }, b, {}).lifeCost === 129, 'mana cost'); }
+    && skill({ name: 'Orb of Storms', level: 20, supports: ['Efficiency I'] }, b, {}).cost === 91 && skill({ name: 'Orb of Storms', level: 20, supports: ['Lifetap'] }, b, {}).lifeCost === 129
+    && (s => s.cost === 129 && s.lifeCost === 129)(skill({ name: 'Orb of Storms', level: 20 }, b, { skill_cost_base_life_equal_to_base_mana: 1 })), 'mana cost'); }   // Sanguimancy: that much life too
 
 // Tribute (Undying Hate's conquered passives: base_tribute), with its increase
 export const tributeOf = sum => Math.floor(v(sum, 'base_tribute') * (1 + v(sum, 'tribute_+%') / 100));

@@ -477,7 +477,7 @@ export function initScene(el, api) {
       // the tree's increased accuracy in a state and its accuracy against Bleeding enemies: your own attacks'
       const c = sheet(), mine = !/minion|totem/.test(S.src), far = mine ? falloff(d) : 0, accIn = mine ? (c.accWhen || []).reduce((t, w) => t + (condN(w.cond, d, S) ? w.val : 0), 0) : 0;
       const acc = (c.accuracy + (mine && c.accBleed && has(d, 'bleed') ? c.accBleed : 0)) * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100 + accIn) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
-      const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
+      const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (c.hazEvasion && time - (d.hazAt ?? -99) <= RECENT ? Math.max(0, 1 + c.hazEvasion / 100) : 1);   // Shredding Contraptions: of the enemies your Hazards affected recently
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       const DZ = d.dazed > time && S.g?.supports?.includes('Dazzle'); if (DZ) later(0, () => { d.dazed = 0; });   // Dazzle: it always hits a Dazed enemy, and Consumes the Daze
       const NE = c.noEvade, sure = DZ || NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
@@ -530,7 +530,8 @@ export function initScene(el, api) {
     if (real) {
       // a mark adds to the critical damage bonus; the buff of a consumed Freezing / Voltaic Mark adds damage as extra cold / lightning
       const W = when(D, d, S);
-      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc * (!S.src && time < me.volPower?.until ? 1 + (sheet().volCrit || 0) * me.volPower.n / 100 : 1) * (o.pierced && sheet().critPierce ? 1 + sheet().critPierce * o.pierced / 100 : 1);   // Drillneck: more crit chance per pierce
+      const pc = (D.crit || 0) * W.crit * regulate('power', 'charge_mastery_crit_chance_+%_final_with_power_charges') + weakOf(d) + overHit; crit = Math.random() * 100 < pc * (!S.src && time < me.volPower?.until ? 1 + (sheet().volCrit || 0) * me.volPower.n / 100 : 1) * (o.pierced && sheet().critPierce ? 1 + sheet().critPierce * o.pierced / 100 : 1)   // Drillneck: more crit chance per pierce
+        * (o.went > 3.5 && D.arrowCrit ? 1 + D.arrowCrit * Math.min(1, (o.went - 3.5) / 3.5) * (D.critW || 1) / 100 : 1);   // Sniper: an arrow's increased crit chance, none within 3.5 metres up to all of it at 7 (as Far Shot's)
       if (S.P.spell && !S.src && sheet().spellCritPer) { me.spellCrits = (me.spellCrits || []).filter(at => time - at <= RECENT); W.critBonus *= Math.max(0, 1 + sheet().spellCritPer * me.spellCrits.length / 100); if (crit) me.spellCrits.push(time); }   // Seed of Cataclysm: less bonus per spell crit recently
       // Oracle's Forced Outcome, Inevitable Critical Hits (KeywordPopups): a hit that could crit re-rolls until it does, its less
       // critical damage bonus for each re-roll
@@ -1061,6 +1062,7 @@ export function initScene(el, api) {
     me.hexes = Object.fromEntries([...live.filter(([, h]) => h.free), ...free || sheet().curseIgnore ? lim : lim.slice(-((sheet().curseLimit || 1) - 1) || Infinity), [name, { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect, free }]]);
   };
   const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
+  const uncurse = () => { const k = Object.keys(me.hexes || {}).find(n => time < me.hexes[n].until); if (k) { delete me.hexes[k]; fx.ring(pp, .2, 1.2, 'gold', .35); } };   // one of the curses on you
   const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0);
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) * (me.whisp ? 1 + me.whisp.n * WHISPER.mag / 100 / (u.C?.inc || 1) : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
@@ -2234,6 +2236,7 @@ export function initScene(el, api) {
     // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
     // the second's none within 3.5 scaling up to all of it at 7
     const left0 = left, went = () => (o.went || 0) + left0 - left, PB = sheet().shot, far = () => { const k = Math.min(1, Math.max(0, (went() - 3.5) / 3.5)); return PB ? 1 + (PB[0] * (1 - k) + PB[1] * k) / 100 : 1; };
+    const how = x => ({ mult: mult(), went: went(), ...x });   // a hit of this projectile: its damage and how far it has flown
     const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
@@ -2252,11 +2255,11 @@ export function initScene(el, api) {
       else if (P.explodes || S.aoe) {
         // Phantasmal Arrow: the arrow hits and sticks, and explodes after its duration (its explosion part)
         const PX = partOf(cur, 'PhantasmalArrowExplosionPlayer');
-        if (PX) { if (hitD) hit(hitD, cur, { mult: mult() }); later(durOf(cur), () => boom(p, PX.A, PX)); } else boom(p, S.A, cur);
+        if (PX) { if (hitD) hit(hitD, cur, how()); later(durOf(cur), () => boom(p, PX.A, PX)); } else boom(p, S.A, cur);
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
         if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
       }
-      else if (hitD) { hit(hitD, cur, { mult: mult() }); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); spearBurst(cur, hitD); }
+      else if (hitD) { hit(hitD, cur, how()); touch(p, .5, cur); fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); spearBurst(cur, hitD); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
@@ -2288,7 +2291,7 @@ export function initScene(el, api) {
             if (slow) hit(d, cur);
             else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || d.st.ignite > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_pierce_ignited_enemy_%'] || 0) || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0) || !cur.src && d.st.armour > 0 && sheet().pierceBroken) { hit(d, cur, { mult: mult(), pierced }); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
             else if (forked < (D.forks || 0) || !forked && Math.random() * 100 < (d.st.freeze > 0 ? cur.dmg?.sum?.['chance_to_fork_from_frozen_enemy_%'] || 0 : 0) + (cur.dmg?.sum?.['projectile_chance_to_fork_%'] || 0)) {   // Flamepierce (above), Freezefork: on Ignited / Frozen enemies
-              hit(d, cur, { mult: mult(), pierced }); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
+              hit(d, cur, how({ pierced })); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
               for (const s of fk) { const a = a0 + s * .5; shoot(cur, m.position, Math.sin(a), Math.cos(a), { speed, range: left, seen, pierced, forked: forked + 1, went: went() }); }
               break;
@@ -4301,6 +4304,7 @@ export function initScene(el, api) {
       const going = P.channel && time - (chanAt[S.name] ?? -9) <= SIM.channelTick * 2; if (P.channel) chanAt[S.name] = time;
       S.infs = going ? chanInf[S.name] || [] : !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
       if (P.channel && !going) { chanInf[S.name] = S.infs; S.fresh = true; chan0[S.name] = { t: time }; }
+      if (going && sheet().chanUncurse && !chan0[S.name].unc && time - chan0[S.name].t >= 2) { chan0[S.name].unc = true; for (let k = sheet().chanUncurse; k > 0; k--) uncurse(); }   // Draiocht Cleansing: after channelling for 2 seconds
       const st = S.dmg?.stats || {}, arc = st['arc_damage_+%_final_from_infusion_consumption'], fs = st['firestorm_damage_+%_if_consumed_fire_infusion'];
       S.addChains = 0;
       if (arc && S.infs.includes('lightning')) { S.mult *= 1 + arc / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
@@ -4311,7 +4315,7 @@ export function initScene(el, api) {
       // Flame Breath: it consumes its Power Charge as its channelling starts, Empowered for all of it: its share of damage
       // gained as lightning, its less Rage a second
       const FE = st['wyvern_devour_empowered_flame_breath_base_all_damage_%_to_gain_as_lightning'];
-      if (!inhib && !byCharge && !(FE && going)) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n, c); charges[c] -= n; }
+      if (!inhib && !byCharge && !(FE && going)) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c], as = n + (c === 'power' && S.dmg?.staffPower || 0); S.gm *= 1 + ((ch[c]?.per || 0) * as + (ch[c]?.when || 0)) / 100; S.spent += as; chargesSpent(n, c); charges[c] -= n; }   // as: One with the Storm, a Quarterstaff skill's power charges count as one more
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
       if (FE) { if (!going) chan0[S.name].emp = S.spent > 0; if (chan0[S.name]?.emp) S.breath = FE; }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
@@ -4550,7 +4554,7 @@ export function initScene(el, api) {
     // them, Heightened Charges may double what they give; Medved's Felling costs life per 5 Rage
     const U = !auto && S.dmg?.onUse; nextCdX = 1;
     if (U) {
-      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n, c); return n * (Math.random() * 100 < U.double + (c === 'frenzy' ? sheet().frenzyX || 0 : 0) ? 2 : 1); };   // Deadeye's Thrilling Chase: frenzy charges' too
+      const take = (c, every) => { const n = every ? charges[c] : Math.min(1, charges[c]); if (!n) return 0; if (!(Math.random() * 100 < U.keep)) charges[c] -= n; chargesSpent(n, c); return (n + (c === 'power' && S.dmg?.staffPower || 0)) * (Math.random() * 100 < U.double + (c === 'frenzy' ? sheet().frenzyX || 0 : 0) ? 2 : 1); };   // Deadeye's Thrilling Chase: frenzy charges' too
       let n;
       if (U.speed && (n = take('frenzy'))) nextCdX = 1 + U.speed * n / 100;
       if (U.breakPct && (n = take('frenzy'))) S.breakPct = U.breakPct * n;
@@ -5685,7 +5689,7 @@ export function initScene(el, api) {
     // increased life recovery when used on Low Life, and of any flask while a Charm is active (Efficient Alchemy), with the other increased. ponytail: as it is drunk; per tick if a charm ending mid-flask matters
     const LL = (1 + (f.inc + (f.k === 'life' && lowLife() ? sheet().lowFlask || 0 : 0) + (me.cu.some(Boolean) ? sheet().flaskCharm || 0 : 0)) / 100) / (1 + f.inc / 100);
     const OC = time < me.chalice && !f.es ? (1 + (f.inc + CHALICE.rec) / 100) / (1 + f.inc / 100) : 1;   // Overflowing Chalice's increased recovery
-    me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL * OC / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
+    me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL * OC / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().flaskUncurse) uncurse(); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (n && sheet().esOnManaFlask) me.esEarly = 1e9;   // Bitterbloom: a mana flask starts energy shield recharge
     if (f.k === 'life') gainRage(sheet().flaskRage);   // the tree's Rage on using a life flask
     if (f.k === 'life' && sheet().flaskUnbleed) me.st.bleed = 0;   // Zerphi's Genesis: a life flask removes Bleeding
