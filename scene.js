@@ -541,7 +541,7 @@ export function initScene(el, api) {
       const CO = !S.src && S.P.spell && sheet().coil, nC = CO && [d.curse, ...(d.hexes || [])].filter(Boolean).length;   // Liminal Coil: spells gain as extra chaos / physical per curse on the target
       if (nC) { raw.chaos = (raw.chaos || 0) + tot * CO.chaos * nC / 100; raw.physical = (raw.physical || 0) + tot * CO.phys * nC / 100; }
       const HV = !S.src && raw.cold && d.st.chill > 0 && sheet().heatshiver; if (HV) raw.fire = (raw.fire || 0) + raw.cold * (d.mag.chill || 0) * HV / 100;   // Heatshiver: per 1% Chill magnitude on it
-      const UM = !S.src ? sheet().unholy || (time < me.umUntil ? 1 : 0) : S.src === 'minionHit' && (sheet().allyUnholy || (time < me.mumUntil ? 1 : 0)); if (UM && !meIs.LowMana()) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
+      const LM = meIs.LowMana(), UM = !S.src ? !LM && (sheet().unholy || (time < me.umUntil ? 1 : 0)) : S.src === 'minionHit' && (!LM && (sheet().allyUnholy || (time < me.mumUntil ? 1 : 0)) || sheet().minionUnholy); if (UM) raw.chaos = (raw.chaos || 0) + tot * UNHOLY / 100 * UM;   // Unholy Might (and Necromantic Conduit's for your minions, as though they were in your Presence)
       const MX = /^minion/.test(S.src || '') || isCmd(S) ? (uarch() ? 1 + UARCHON.more * sheet().overgrow.archonEffect / 100 : 1) * (isCmd(S) ? 1 + PUPPET.cmdDmg * pup() / 100 : 1) : 1; if (MX !== 1) for (const e in raw) raw[e] *= MX;   // Archon of Undeath, Puppet Master. note: its increased command damage as more here
       if (time < me.chayula?.until && !S.src) for (const e of ['physical', 'chaos']) if (raw[e]) raw[e] *= 1 + me.chayula.more / 100;   // Archon of Chayula
       if (time < me.unbound?.until && !S.src) for (const e of ELEM) if (raw[e]) raw[e] *= me.unbound.more;   // Unbound
@@ -4784,7 +4784,7 @@ export function initScene(el, api) {
     // Blink, Black Powder Blitz (on): the dodge is its teleport / its leap as far as it travels, once every its cooldown
     // (the roll meanwhile); Black Powder Blitz's round explodes where you leave (it Blinds and Ignites: its stats; a Detonator)
     const DR = ['Blink', 'Black Powder Blitz'].map(onS).find(X => X && sh(X).travel && !(time < me.leapAt?.[X.name]));
-    const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
+    const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (UD.rollDist || 0) + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
     if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06; if (Object.keys(DR.dmg.hits).length) boom(move.from, DR.A, { ...DR, mult: 1 }); }
@@ -5190,7 +5190,7 @@ export function initScene(el, api) {
   function scavenge(d) { const S = onS('Scavenged Plating'); if (S) { (me.plates ||= []).push({ n: PLATES[d.stat.rarity] || 1, until: time + durOf(S) }); say(`${S.label}: ${plates()}`, 'dust'); } }
   function thornsOf() {
     const T = sheet().thorns || { hits: {} }, N = buffs.find(b => b.thorns), hits = { ...T.hits }, SP = plating(), n = SP && plates();
-    if (N) hits.cold = N.thorns.map(x => x * (T.thornsX || 1));
+    if (N) hits.cold = N.thorns.map((x, k) => x * (T.thornsX || 1) + (T.hits.cold?.[k] || 0));
     if (T.life?.[1]) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.life[k] / 100 * (T.thornsX || 1));   // a share of maximum life (mana) as physical (cold) thorns
     if (T.manaCold) hits.cold = [0, 1].map(k => (hits.cold?.[k] || 0) + me.maxM * T.manaCold / 100 * (T.thornsX || 1));
     if (T.lifeShift && shifted()) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.lifeShift / 100 * (T.thornsX || 1));   // the tree's physical thorns from your life while Shapeshifted

@@ -154,7 +154,8 @@ const BODY_GRANTS = [['body_armour_grants_spirit_+%', 'spirit_+%'], ['body_armou
   ['body_armour_grants_x_physical_damage_taken_%_as_fire', 'physical_damage_from_hits_%_taken_as_fire'], ['body_armour_grants_x_strength_+%', 'strength_+%'],
   ['body_armour_grants_x_maximum_life_+%', 'maximum_life_+%'], ['body_armour_grants_x_base_fire_damage_resistance_%', 'base_fire_damage_resistance_%'],
   ['body_armour_grants_thorns_damage_+%', 'thorns_damage_+%'], ['body_armour_grants_glory_generation_+%', 'glory_generation_+%']];
-const PER_ATTR = [['weapon_damage_+%_per_10_str', 'str', 10, 'attack_damage_+%'], ['attack_speed_+%_per_10_dex', 'dex', 10, 'attack_speed_+%'],
+const PER_ATTR = [['keystone_iron_grip', 'str', 2, 'projectile_attack_damage_+%'], ['keystone_iron_will', 'str', 2, 'spell_damage_+%'],   // Irongrasp's Iron Grip and Iron Will: 1% per 2 Strength
+  ['weapon_damage_+%_per_10_str', 'str', 10, 'attack_damage_+%'], ['attack_speed_+%_per_10_dex', 'dex', 10, 'attack_speed_+%'],
   ['attack_area_of_effect_+%_per_10_int', 'int', 10, 'attack_area_of_effect_+%'], ['attack_speed_+%_per_20_dex', 'dex', 20, 'attack_speed_+%'],
   ['area_of_effect_+%_per_20_int', 'int', 20, 'base_skill_area_of_effect_+%'], ['spell_damage_+%_per_10_int', 'int', 10, 'spell_damage_+%'],
   ['minimum_added_lightning_damage_to_attacks_per_20_intelligence', 'int', 20, 'attack_minimum_added_lightning_damage'], ['maximum_added_lightning_damage_to_attacks_per_20_intelligence', 'int', 20, 'attack_maximum_added_lightning_damage'],

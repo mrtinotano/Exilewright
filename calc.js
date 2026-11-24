@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems } from './items.js';
+import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems, newItem } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
 import { enemy, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
@@ -265,13 +265,14 @@ function takenAs(sum) {
 }
 // the Kalguuran keystones (a timeless jewel's, Heroic Tragedy): no inherent bonus from one attribute, and 1% increased
 // Energy Shield / Armour / Evasion Rating per 2 of it
+const NO_INHERENT = { str: ['keystone_iron_grip', 'keystone_iron_will'], dex: [], int: ['gain_no_inherent_bonus_from_intelligence'] };   // "Gain no inherent bonus from Strength" (Iron Grip, Iron Will: Irongrasp), "... from Intelligence"
 const KALGUUR = { str: ['keystone_alternate_strength_bonus', 'maximum_energy_shield_+%'], dex: ['keystone_alternate_dexterity_bonus', 'physical_damage_reduction_rating_+%'],
   int: ['keystone_alternate_intelligence_bonus', 'evasion_rating_+%'] };
 export function character(b, sum) {
   const A = ascOf(b.asc), cb = A.class_base || {}, lvl = b.level || 1, at = attributes(sum, b.asc);
   for (const [a, [k, to]] of Object.entries(KALGUUR)) if (sum[k]) sum = { ...sum, [to]: (sum[to] || 0) + Math.floor((at[a] || 0) / 2) };
   if (sum['local_all_attributes_-_per_level']) for (const k of ['str', 'dex', 'int']) at[k] = Math.max(0, (at[k] || 0) - lvl * sum['local_all_attributes_-_per_level']);   // Greymake
-  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (sum[KALGUUR[['str', 'dex', 'int'][i]][0]] ? 0 : (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]]), 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
+  const fromAttr = k => ['Strength', 'Dexterity', 'Intelligence'].reduce((t, a, i) => t + (sum[KALGUUR[['str', 'dex', 'int'][i]][0]] || NO_INHERENT[['str', 'dex', 'int'][i]].some(s => sum[s]) ? 0 : (perAttr(a)[k] || 0) * at[['str', 'dex', 'int'][i]]), 0) * (sum.gemling_double_basic_attribute_bonuses ? 2 : 1);   // Gemling: doubled
   // the class's own amount (Characters row: 16 life, 30 mana) plus character.ot's amount per level, the first included
   const base = (row, perLvl) => cb[row] == null || CHAR[perLvl] == null ? null : cb[row] + lvl * CHAR[perLvl];
   const lifeBase = base('BaseMaxLife', 'life_per_level'), manaBase = base('BaseMaxMana', 'mana_per_level');
@@ -507,7 +508,7 @@ export function character(b, sum) {
     brew: !!sum.life_mana_flasks_restore_mana_life,   // Amazon's Azmeri Brew: life flasks also recover mana, mana flasks life
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
-    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round((x + P('body', 'armour') * v(sum, 'base_body_armour_permyriad_to_gain_as_physical_thorns_damage') / 1e4) * thornsX)), fire: [v(sum, 'thorns_minimum_base_fire_damage'), v(sum, 'thorns_maximum_base_fire_damage')].map(x => Math.round(x * thornsX)) },
+    thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round((x + P('body', 'armour') * v(sum, 'base_body_armour_permyriad_to_gain_as_physical_thorns_damage') / 1e4) * thornsX)), fire: [v(sum, 'thorns_minimum_base_fire_damage'), v(sum, 'thorns_maximum_base_fire_damage')].map(x => Math.round(x * thornsX)), cold: [v(sum, 'thorns_minimum_base_cold_damage'), v(sum, 'thorns_maximum_base_cold_damage')].map(x => Math.round(x * thornsX)) },
       crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), lifeShift: v(sum, 'gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted'), ail: ailments({}, sum, {}, []), thornsX },
   };
   // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
@@ -702,7 +703,7 @@ export function recovery(c, sum) {
     flame: sum['infernal_flame_instead_of_mana_at_%_ratio'] ? { ratio: sum['infernal_flame_instead_of_mana_at_%_ratio'], decay: v(sum, 'lose_%_of_max_infernal_flame_per_minute'), hit: v(sum, 'hit_for_%_max_life_es_on_max_infernal_flame'), lose: v(sum, 'lose_%_of_infernal_flame_on_reaching_max') } : null,
     // Lich: Unholy Might's magnitude (per 100 maximum mana), its spells' Sacrifice and Power Charge, Eternal Life, mana lost a second
     unholy: sum.grant_unholy_might_to_self_while_not_on_low_mana ? umag : 0,
-    allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0,   // Necromantic Conduit: your allies in your Presence too
+    allyUnholy: sum.allies_in_presence_have_unholy_might_while_you_not_on_low_mana ? umag : 0, minionUnholy: sum.minions_have_unholy_might ? 1 : 0,   // (Vis Mortis: your Minions have Unholy Might, whatever your mana)   // Necromantic Conduit: your allies in your Presence too
     lich: { sac: v(sum, 'spells_sacrifice_%_of_your_energy_shield'), sacMore: v(sum, 'ascendancy_lich_spell_damage_+%_final_when_sacrificing_energy_shield'), power: v(sum, 'ascendancy_lich_spells_consume_power_charges_for_spell_damage_+%_final'), keep: !!sum.sacrificing_energy_shield_does_not_interrupt_recharge },
     eternal: !!sum.your_life_cannot_change_while_you_have_energy_shield, manaDegen: v(sum, 'mana_degeneration_%_per_minute_not_in_grace', 'mana_degeneration_per_minute_%'),
     lifeDegen: v(sum, 'life_degeneration_%_per_minute_not_in_grace'), esDegen: v(sum, 'energy_shield_lost_per_minute_%'),   // uniques' loss of a share of maximum life / energy shield a second
@@ -746,7 +747,7 @@ export function recovery(c, sum) {
     // energy shield, The Black Doubt's mana sacrificed for life off full life (a second), ailments you receive when hit (Coat of Red, Apep's Supremacy, The Infinite Pursuit)
     uDef: { bypass: v(sum, 'hit_damage_bypass_energy_shield_%_when_below_half_energy_shield'), deflMissing: v(sum, '+_deflection_rating_per_50_missing_maximum_energy_shield'), doubt: v(sum, 'unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es'),
       recvBleed: v(sum, 'receive_bleeding_chance_%_when_hit'), recvPoison: v(sum, 'chance_to_be_poisoned_%'), recvAil: 1 + v(sum, 'chance_to_be_inflicted_with_an_ailment_+%') / 100, resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
-      rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
+      rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollDist: v(sum, 'dodge_roll_base_travel_distance') / 10, rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
       beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
       esArmour: v(sum, 'armour_+%_final_vs_hits_per_1%_current_energy_shield'), spellLeech: v(sum, 'life_leech_%_maximum_life_on_spell_cast'), wardenDefl: v(sum, 'companion_takes_%_damage_from_deflected_hits_before_you'), spellES: v(sum, 'sacrifice_%_maximum_life_to_gain_as_es_on_spell_cast'),
       attackWard: v(sum, 'sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack'), flaskGuard: v(sum, 'using_mana_flask_grants_%_recovery_amount_as_guard_for_4s'), yoke: v(sum, 'elemental_ailment_types_apply_damage_taken_+%') },
@@ -789,7 +790,7 @@ export function ailmentDefence(c, sum) {
   const esStun = v(sum, 'stun_threshold_based_on_%_energy_shield_instead_of_life');   // Asceticism: a share of energy shield instead of life
   const stun = c.life == null ? null : ((esStun ? (c.es || 0) * esStun / 100 : c.life) + (c.stunGear || 0) + v(sum, 'stun_threshold_+') + (at.str || 0) * v(sum, 'stun_threshold_+_per_strength') + (at.dex || 0) * v(sum, 'stun_threshold_+_per_dexterity')
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
-  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (c.ailGear || 0) + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
+  const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (c.ailGear || 0) + v(sum, 'ailment_threshold_+') + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
     + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
   const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield', 'gain_%_maximum_energy_shield_as_freeze_threshold_+') / 100) * pct('freeze_threshold_+%');
   // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
@@ -1458,11 +1459,15 @@ export function skill(g, b, treeGear) {
   // crit: base chance from weapon / skill row, increased by tree and gear; +100% damage bonus is the game's base
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? (sum.override_weapon_base_critical_strike_chance && !unarmed ? sum.override_weapon_base_critical_strike_chance / 100 : w.crit) + (unarmed && tags.includes('melee') ? v(sum, 'base_melee_critical_strike_chance_while_unarmed_%') : 0) : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
-    const addCrit = inc(sum, 'additional_critical_strike_chance_permyriad', tags) / 100;   // the tree's "+% to Critical Hit Chance" of attacks, of Herald skills: added to the base chance
+    const addCrit = (inc(sum, 'additional_critical_strike_chance_permyriad', tags) + v(sum, 'additional_base_critical_strike_chance')) / 100;   // the tree's "+% to Critical Hit Chance" of attacks, of Herald skills: added to the base chance
     out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, (baseCrit + addCrit) * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
     if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
     out.critBonus = sum.no_critical_strike_multiplier || attack && w?.noCritBonus ? 0 : sum.critical_strike_multiplier_is_250 ? 250 : (100 + (attack && w?.critBonus || 0) + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
+  // Bifurcated Critical Hits (keywords.json ForksCrit: Tangletongue): the weapon's hits roll their chance twice: a critical
+  // hit if either succeeds, and with both the Critical Damage Bonus applies twice -> that chance, and the bonus a critical
+  // hit has on average
+  if (attack && w?.forkCrit && out.crit) { const p = out.crit / 100, b = out.critBonus / 100, c = 1 - (1 - p) ** 2; out.critBonus = (2 * p * (1 - p) * b + p * p * ((1 + b) ** 2 - 1)) / c * 100; out.crit = c * 100; }
   // supports' damage and crit that count only under a condition (PoB2's tags, pob2.py): the 3D scene checks it on each hit
   // (scene.js when()). w: what one point of it is worth to that damage type, 1 for "more", 1 / (1 + the skill's
   // increased) for "increased"; cap: the support's own most (Dauntless 45%, Burgeon 40%) or most stacks (Arakaali's 40).
@@ -1555,6 +1560,8 @@ export function skill(g, b, treeGear) {
   const part = out.part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };   // the skill's other part's stats (Supercharged Slam's Aftershocks)
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), tags, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
+  if (attack && w?.alwaysHit) out.ail.alwaysHit = true;   // a weapon that Always Hits (Shyaba)
+  if (attack && w?.stunX > 1) out.ail.stun *= w.stunX;   // a weapon that Causes Double Stun Buildup (Brynhand's Mark)
   if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
   // "Attacks ... Maim on Hit": none for other skills; a skill whose own description says its hits Maim (Spearfield,
   // Artillery Ballista: "[Maim|Maiming]"; not one that Maims with its final hit only, Rapid Assault, nor a minion's)
@@ -1769,7 +1776,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     bleedIncision: critX(effI.bleed, 'bleeding_effect_+%_when_consuming_incision'),   // a bleed that consumes Incision
     bleed: all('base_chance_to_inflict_bleeding_%'), bleedCrit: all('bleed_on_crit_%') + (tags.includes('attack') ? all('bleed_on_crit_%_with_attacks') : 0), bleedFull: all('bleed_chance_+%_vs_full_life_enemy'),
     incision: all('apply_X_incision_on_hit'), incChance: tags.includes('attack') ? [all('chance_to_inflict_incision_on_attack_hit_%'), all('chance_to_inflict_10_incision_on_attack_hit_%')] : [0, 0], incFx: 1 + all('incision_effect_+%') / 100,   // attack hits' chance to apply one, or ten; each one's increased effect
-    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0,
+    incEff: all('support_incision_bleeding_effect_+%_final_per_incision_consumed_recently_up_to_30%'), poison: all('base_chance_to_poison_on_hit_%') + (tags.includes('attack') ? all('local_poison_on_hit_%') : 0), poisonFirst: all('base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies'), poisonCrit: (tags.includes('dagger') ? all('chance_to_poison_on_critical_strike_with_dagger_%') : 0) + all('poison_on_critical_strike') * 100,   /* Atsak's Sight: Critical Hits Poison */
     // Maim on hit (the Maim support, the tree), against poisoned enemies, on fully breaking armour, for a while after Pin ends
     maim: F('global_maim_on_hit') || all('global_maim_on_hit') ? 100 : all('maim_on_hit_%'), maimCrit: false,
     maimPoisoned: all('maim_on_hit_%_vs_poisoned_enemies'), maimBleeding: all('maim_bleeding_enemies_on_hit_%'),
@@ -1990,3 +1997,12 @@ if (GEMS.length) { const of = a => GEMS.filter(g => g.kind === 'support' && g.at
   console.assert(mx('int', 'cold') === mx('dex', 'cold') + 1 && mx('dex', 'lightning') === mx('int', 'lightning') + 1 && mx('str', 'fire') === mx('int', 'fire') + 1, 'support colours'); }
 { const c = { life: 1000, es: 400 }, sum = { 'life_regeneration_rate_per_minute_%': 60 }, a = recovery(c, sum), b = recovery(c, { ...sum, 'map_player_life_and_es_recovery_speed_+%_final': -40 });
   console.assert(a.lifeRegen === 10 && Math.abs(b.lifeRegen - 6) < 1e-9 && Math.abs(b.esRecharge - a.esRecharge * .6) < 1e-9 && b.recMore === .6, "a map's less recovery rate"); }
+// uniques: a weapon that Bifurcates Critical Hits (Tangletongue), Always Hits (Shyaba) or Causes Double Stun Buildup
+// (Brynhand's Mark); no inherent bonus from Strength (Irongrasp's Iron Grip); + to Critical Hit Chance (Dreadfist)
+{ const run = (n, g, extra, sum = {}) => skill({ name: g, level: 10, supports: [] }, { gems: [], items: { weapon: { ...newItem(n), extra } } }, sum);
+  const t = run('Tangletongue', 'Rapid Assault'), t0 = run('Tangletongue', 'Rapid Assault', { local_weapon_roll_crits_twice: -1 }), p = t0.crit / 100;
+  const m = run("Brynhand's Mark", 'Earthquake'), m0 = run("Brynhand's Mark", 'Earthquake', { local_double_hit_damage_stun_build_up: -1 });
+  const life = s => character({ gems: [], items: {}, level: 80, asc: 'Titan' }, { base_strength: 100, ...s }).life;
+  console.assert(Math.abs(t.crit - (2 * p - p * p) * 100) < 1e-9 && Math.abs(t.critBonus - (2 * p * (1 - p) * t0.critBonus + p * p * ((1 + t0.critBonus / 100) ** 2 - 1) * 100) / (2 * p - p * p)) < 1e-9
+    && run('Shyaba', 'Earthquake').ail.alwaysHit && !m.ail.alwaysHit && m.ail.stun === 2 * m0.ail.stun && life({ keystone_iron_grip: 1 }) < life({})
+    && Math.abs(run('Tangletongue', 'Rapid Assault', { local_weapon_roll_crits_twice: -1 }, { additional_base_critical_strike_chance: 150 }).crit - t0.crit - 1.5) < 1e-9, "uniques' weapon rules", t.crit, t0.crit, t.critBonus, m.ail.stun); }

@@ -136,8 +136,10 @@ function local(item) {
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
     r.crit = s.local_weapon_base_crit_chance_permyriad_override != null ? s.local_weapon_base_crit_chance_permyriad_override / 100 : w.crit + (s.local_critical_strike_chance || 0) / 100;   // Quecholli: its own chance
     r.noCritBonus = !!s.local_no_critical_strike_multiplier;
-    r.range = w.range; r.critBonus = s['local_critical_strike_multiplier_+'] || 0;   // its own +% to Critical Damage Bonus
+    r.range = w.range * (1 + (s['local_+%_weapon_range'] || 0) / 100); r.critBonus = s['local_critical_strike_multiplier_+'] || 0;   // its own +% to Critical Damage Bonus
     r.accuracy = s.local_accuracy_rating || 0;   // its own accuracy, for attacks with it
+    // "Always Hits" (Shyaba), "Causes Double Stun Buildup" (Brynhand's Mark), "Bifurcates Critical Hits" (Tangletongue)
+    r.alwaysHit = !!s.local_always_hit; r.stunX = s.local_double_hit_damage_stun_build_up ? 2 : 1; r.forkCrit = !!s.local_weapon_roll_crits_twice;
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
     // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)
@@ -596,6 +598,7 @@ export function known(it) {
   const rare = { base: fb?.base, implicits: [], mods: [{ id: 'Strength1', values: [5] }, { id: 'LocalIncreasedEvasionRating7_', values: [1] }] }, R = fb && rolled({ ...rare, fists: 10 });
   console.assert(gearStats({ body: make('Runeforged Iron Cuirass') }).base_maximum_ward === 43 && gearStats({ body: { ...make('Runeforged Iron Cuirass'), quality: 20, extra: { local_ward: 7, 'local_ward_+%': 100 } } }).base_maximum_ward === 120
     && String(local(make('Skysliver')).physical) === '0,0' && local(make('Nebuloch')).chaos?.[1] > 0, 'an item\'s Runic Ward, No Physical Damage, added chaos damage', local(make('Runeforged Iron Cuirass')), local(make('Nebuloch')));
+  console.assert(local(make('Splinter of Lorrata')).range === local({ ...make('Splinter of Lorrata'), mods: [] }).range * 1.2, 'a weapon\'s own increased melee range', local(make('Splinter of Lorrata')).range);
   if (fb) console.assert(R['attack_area_of_effect_+%'] === 7 && !R.additional_strength && R.local_hand_wraps_evasion_rating_per_level === 7 && local({ ...rare, fists: 10 }).evasion === 70, 'Fists of Stone: the modifiers of a rare', R); }
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slotType(slot))).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
