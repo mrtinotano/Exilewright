@@ -45,6 +45,7 @@ const DMG_AIL = ['bleed', 'ignite', 'poison'];   // keywords.json DamagingAilmen
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
 const ANCESTRAL = { slam: 30, area: 25, strike: 2 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area; a Strike 2 additional enemies
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
+const FAERIE = { pct: 2, time: 8, max: 10 };   // note: keywords.json FaerieFire: 2% of damage gained as a random element per stack, 8 s, up to 10
 const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
 const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 };   // note: keywords.json Volatility
 const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos
@@ -584,7 +585,7 @@ export function initScene(el, api) {
       if (LF && flaskLeft(0) >= LF.max) { const n = Math.floor(LF.max * SG.use / 100); me.fl[0] -= n; me.tides = { pct: n * SG.per, until: time + SG.dur }; }
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.breath || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: ELEM[Math.floor(Math.random() * 3)], pct: FAERIE.pct * (d.ff?.filter(u => u > time).length || 0) }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -642,12 +643,13 @@ export function initScene(el, api) {
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
-      if (D.combo?.strike) { me.combo = comboNow(S) + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
+      if (D.combo?.strike) { me.combo = comboNow() + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     if (FO && d.focusMax > 0) { d.focus = Math.max(0, d.focus - total * FO.drain / 100); d.focusAt = time; }
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
+    if (Math.random() * 100 < D?.stats?.['%_chance_to_apply_hounded_by_wisps_on_hit']) d.ff = [...(d.ff || []).filter(u => u > time).slice(1 - FAERIE.max), time + FAERIE.time];   // Azmerian Swarms: a Swarm's hit inflicts Faerie Fire
     if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
@@ -716,7 +718,7 @@ export function initScene(el, api) {
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const ge = (me.gloryEaten || []).filter(x => time - x.t <= 6);   // the Glory consumed in the last 6 s
-    const count = { Rage: me.rage, ComboStacks: comboNow(S), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
+    const count = { Rage: me.rage, ComboStacks: comboNow(), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0, ElementalAilments: EL_AIL.filter(st).length,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: minionsNear(),
@@ -1753,7 +1755,7 @@ export function initScene(el, api) {
   // over one grants the Infusion for 20 s (its increased duration) or until a skill consumes it, up to the most of each
   // kind, with its chance of one more (calc.js infusion). A skill that can consume one does on use (skillfx infuses),
   // its own kind first, else a Verisium one; its chance not to remove it, the power charge it may grant
-  const chanAt = {}, chan0 = {}, chanInf = {}, fus = {};   // chan0: when a channelling started (and whether Empowered: Flame Breath)   // fus: Ember Fusillade's Embers
+  const chanAt = {}, chan0 = {}, chanInf = {}, fus = {};   // chan0: when a channelling started (and whether Empowered: Flame Breath); fus: Ember Fusillade's Embers
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
   const EQUILIBRIUM = { fire: 'lightning', lightning: 'cold', cold: 'fire' };   // Elemental Equilibrium: the Infusion Remnant you create instead
@@ -2949,8 +2951,20 @@ export function initScene(el, api) {
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
+      // Staggering Palm: its strike Heavy Stuns an enemy Primed for Stun (keywords.json PrimedStun) and, if it did, dashes on
+      // to strike the others Primed within its dash range; each one it Heavy Stuns grants its buff for its duration, up to
+      // its most: your Quarterstaff attacks also fire its projectile (its part)
+      const SP = !S.src && S.dmg?.stats?.staggering_palm_buff_max_duration_ms, primed = d => !d.dead && (d.bar.stun || 0) >= PRIMED[d.stat.rarity];
+      const palm = (d, k) => {
+        const pr = primed(d), was = d.st.stun > 0; go(d, k);
+        if (pr && !d.dead && !(d.st.stun > 0)) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
+        if (was || !(d.st.stun > 0)) return false;
+        me.palm = { X: partOf(S, 'StaggeringPalmProjectilePlayer'), until: Math.min(time + SP / 1000, Math.max(time, me.palm?.until || 0) + durOf(S)) };
+        setBuff({ label: S.label, name: S.name, c: css('physical'), s: me.palm.until - time }); return true;
+      };
       const shocked0 = first.st.shock > 0;
-      go(first, 0);
+      if (!SP) go(first, 0);
+      else if (palm(first, 0)) dummies.filter(e => e !== first && primed(e) && dist(e.pos, pp) <= (S.dmg.stats.base_melee_dash_range || 0) / 10).forEach((e, k) => later((k + 1) * .13, () => palm(e, k + 1)));
       // Primal Strikes: its first two attacks on a shocked enemy refresh the shock and conjure a charging spirit (its stag
       // part); its final consumes the shock for its stampede of them, its more damage, a volley every its delay apart
       const W = S.chain0 && partOf({ ...S, dmg: S.chain0 }, 'PrimalStrikesStagWavePlayer');
@@ -3420,7 +3434,9 @@ export function initScene(el, api) {
     const st = S.dmg.stats, j = api.build().gems.findIndex((g, j) => { const b = g.name !== S.name && base(j); return b && b.P.melee && b.P.attack && !b.P.channel && !api.info(g).gem?.types?.includes('HasUsageCondition'); });
     if (j < 0 || time - (me.hollowAt ?? -9) < useTime(base(j)) / (1 + st['mantra_of_illusions_triggered_skill_attack_speed_+%_final'] / 100)) return;
     me.hollowAt = time;
-    for (let k = 1 + (S.spent ? st.mantra_of_illusions_bonus_illusions_when_consuming_power_charge : 0); k > 0; k--) {
+    const mc = costOf(base(j)).cost * st['mantra_of_illusions_cloned_skill_mana_cost_%'] / 100;   // an image spends its share of the socketed skill's cost
+    for (let k = 1 + (S.spent ? st.mantra_of_illusions_bonus_illusions_when_consuming_power_charge : 0); k > 0 && me.mana >= mc; k--) {
+      payMana(mc);
       const p = around(S.at, 1.5), f = makeMinion(fx, 'arcane'); f.group.position.set(p.x, 0, p.z); thing(f.group, .7, { name: S.name });
       // ponytail: the image attacks from where it stands by moving you there for the use (aim reads your position)
       later(.1 * k, () => { const d = nearest(p, 1, () => true)[0], o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z;
@@ -4033,10 +4049,11 @@ export function initScene(el, api) {
     const R = S.A * Math.sqrt(1 + st['warding_steel_area_of_effect_+%_final_per_charge_%'] * n / st.warding_steel_maximum_stored_mitigated_physical_damage);
     me.iron = 0; boom({ x: pp.x, z: pp.z }, R, { ...S, els: ['physical'], el: 'physical', dmg: { ...S.dmg, hits: { physical: [n, n] } } });
   };
-  // Time Freeze: time stops for the enemies in its area, for its duration. note: the shorter stop for an enemy stopped
-  // before (within its resistance duration) is not sized in the data, nor do their ailments pause here
+  // Time Freeze: time stops for the enemies in its area, for its duration, halved for each time it was stopped for them
+  // within its resistance duration (its text). note: their ailments do not pause here
   K.tfreeze = S => {
-    const dur = durOf(S); for (const d of inside(pp, S.A)) d.halt = time + dur;
+    const dur = durOf(S), RD = S.dmg.stats.time_freeze_resistance_duration_ms / 1000;
+    for (const d of inside(pp, S.A)) { d.tfz = (d.tfz || []).filter(u => time - u <= RD); d.halt = time + dur / 2 ** d.tfz.length; d.tfz.push(time); }
     fx.ring(pp, .3, S.A, 'white', .7, { k: 2 }); say(t('{0} active', S.label), 'white');
   };
   // Pinnacle of Power: for its duration per power charge consumed, its more elemental damage per charge, and its
@@ -4326,10 +4343,10 @@ export function initScene(el, api) {
     if (left > 0) { toast(t('{0}: move {1} m first', S.label, Math.ceil(left))); return false; }
     if (MV) me.travAt[S.name] = me.trav;
     const CB = S.dmg?.combo;
-    if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
+    if (!auto && CB?.need && comboNow() < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
     // Vruun's Inevitability: it expends the Combo your other melee attacks built (up to its most), its increased area each
     const VA = S.dmg?.sum?.['area_of_effect_+%_per_combo_stack'];
-    if (!auto && (CB?.need || VA)) { S.comboSpent = Math.min(comboNow(S), VA && S.dmg.sum.skill_maximum_number_of_combo_stacks || Infinity); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB?.esSooner || 0); me.combo = 0;   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
+    if (!auto && (CB?.need || VA)) { S.comboSpent = Math.min(comboNow(), VA && S.dmg.sum.skill_maximum_number_of_combo_stacks || Infinity); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB?.esSooner || 0); me.combo = 0;   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
       if (VA) S.A *= Math.sqrt(1 + S.comboSpent * VA / 100);
       // Ailith's Chimes: its Surpassing chance of a Power Charge per Combo expended (over 100%: one for sure, the rest for one more)
       for (let c = S.comboSpent * (S.dmg.sum?.['chance_%_to_gain_power_charges_per_combo_spent'] || 0); c > 0; c -= 100) if (Math.random() * 100 < c) gainCharge('power', S.label);
@@ -4454,6 +4471,8 @@ export function initScene(el, api) {
     run(S); whirl(S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
     if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
+    // Staggering Palm's buff: your Quarterstaff attacks also fire its projectile
+    if (!auto && P.attack && time < me.palm?.until && me.palm.X && S.name !== 'Staggering Palm' && SK.skills[S.name]?.weapons?.includes('Quarterstaves')) shoot({ ...me.palm.X, mult: S.mult }, { x: pp.x, z: pp.z }, S.dx, S.dz);
     const OC = S.dmg?.sum?.support_empowers_x_additional_other_skills; if (OC) for (const e of empower) if (e.name === S.name && e.uses && !e.oc) { e.uses += OC; e.oc = true; }
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration

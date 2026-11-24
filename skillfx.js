@@ -66,6 +66,7 @@ const NAMED = {
   'Hammer of the Gods': { kind: 'meteor' },
   'Lightning Bolt': { kind: 'meteor', delay: 0.25 },
   'Hexblast': { kind: 'hexblast' },
+  'Staggering Palm': { kind: 'strike' },   // its projectiles are its buff's, not the skill
   'Spark': { count: 4, wander: true },
   'Ice Nova': { from: 'Frostbolt' },
   'Contagion': { spread: true },

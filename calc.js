@@ -170,7 +170,8 @@ export function gemStats(g, sum = {}) {
 export function reservation(g, sum = {}, b, life = false) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
   const eff = (st[id] || 0) + v(sum, id, ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
-  const own = (st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
+  // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
+  const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
   const AC = (g.supports || []).includes("Atziri's Communion") && SK.skills["Atziri's Communion"].constant.skill_reserves_X_life_permyriad_per_spirit_instead_of_spirit;
   if (life || AC) return life && AC ? own * AC / 100 : 0;
