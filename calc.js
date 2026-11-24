@@ -1185,8 +1185,9 @@ export function skill(g, b, treeGear) {
   if (LR) treeGear = { ...treeGear, 'base_skill_area_of_effect_+%': v(treeGear, 'base_skill_area_of_effect_+%') + v(treeGear, 'light_radius_+%') * LR / 100 };
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
-  // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s)
-  const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = own.includes('meta') ? { sum: treeGear, fin: {}, mods: [], finals: {} } : withSupports(g, treeGear, b?.wset);
+  // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s), unless they can support the
+  // gem too (Boundless Energy, Energy Capacitor, Fluke: its Energy and what it triggers)
+  const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = withSupports(own.includes('meta') ? { ...g, supports: (g.supports || []).filter(n => GEM[n] && canSupport(GEM[n], new Set(G.types || []))) } : g, treeGear, b?.wset);
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
