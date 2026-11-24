@@ -459,7 +459,7 @@ export function initScene(el, api) {
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       const NE = c.noEvade, sure = NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
-      if (acc > 0 && d.stat.evasion > 0 && !sure && !(D?.sum?.cannot_miss_against_full_life_enemies && d.life >= d.max) && Math.random() * 100 >= playerHitChance(acc, evNow)) {   /* Heightened Accuracy II: never on full life */ fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      if (acc > 0 && d.stat.evasion > 0 && !sure && !(D?.sum?.cannot_miss_against_full_life_enemies && d.life >= d.max) && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }   // Heightened Accuracy II: never on full life
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
@@ -823,6 +823,8 @@ export function initScene(el, api) {
   // consumes bleeding for crystals around the enemy (up to the most allowed) that burst after their duration, each that
   // share of the bleeding's remaining damage; Charged Mark: a mark that activates leaves Shocked Ground where it was.
   // Smash to Smithereens: a heavy stun triggers its burst around the enemy, its fire breaking armour (its share).
+  // Fan the Flames: a hit on an ignited enemy bursts on it and in a cone behind it (note: the cone's angle is not in the
+  // data, the scene's own); II spreads that enemy's ignite to the others in it (note: as it burns on the first one).
   // note: Corrupted Blood's debuffs share one duration, refreshed (the game times each one)
   const trigReady = {}, fields = { static: [], rift: [] }, crystals = [];
   // a triggered skill's cooldown and stored uses: false while none is left
@@ -832,9 +834,9 @@ export function initScene(el, api) {
     ['support_mana_flare_%_of_current_mana_consumed', 'flare'], ['spell_minimum_base_cold_damage_as_%_of_intelligence', 'discharge'],
     ['base_chaos_damage_to_deal_per_minute', 'decay'], ['add_buff_to_target_skill_number_of_corrupted_blood_debuffs_to_inflict', 'cry'],
     ['support_battershout_physical_damage_equal_to_%_of_broken_armour', 'batter'], ['support_haemocrystals_physical_damage_equal_to_%_of_remaining_bleed_damage', 'crystal'],
-    ['chance_to_trigger_shocked_ground_on_mark_activated_%', 'charged'], ['trigger_on_heavy_stun_%', 'smash']];
+    ['chance_to_trigger_shocked_ground_on_mark_activated_%', 'charged'], ['trigger_on_heavy_stun_%', 'smash'], ['triggered_by_support_fan_the_flames_%', 'fan']];
   const ON = { rift: 'shock', static: 'shock', current: 'shock', erupt: 'ignitedHit', fulminate: 'electrocuteKill', flare: 'crit', discharge: 'hit',
-    decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun' };
+    decay: 'curse', cry: 'warcry', batter: 'warcry', crystal: 'hit', charged: 'mark', smash: 'heavyStun', fan: 'ignitedHit' };
   const DISCHARGE = { ignite: 'fire', freeze: 'cold', shock: 'lightning' };
   function trigger(S, on, d) {
     if (on === 'mark' && d) weaken(d, S?.dmg?.sum?.apply_X_critical_weakness_on_consuming_mark || 0);   // Deadeye's Bullseye: Critical Weakness on consuming a Mark
@@ -873,6 +875,11 @@ export function initScene(el, api) {
       else if (kind === 'erupt') for (let k = 0; k < (ts.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(ts.skill_mortar_minimum_projectile_distance, ts.skill_mortar_maximum_projectile_distance) / 10, q = { x: c.x + Math.sin(a) * r, z: c.z + Math.cos(a) * r };
         later(SIM.meteor, () => boom(q, R, X));
+      } else if (kind === 'fan') {
+        const l = dist(d.pos, pp) || 1, dx = (d.pos.x - pp.x) / l, dz = (d.pos.z - pp.z) / l, from = { x: c.x - dx * .1, z: c.z - dz * .1 }, W = { ...X, kind: 'cone', from, dx, dz, R };
+        const B = T.id.endsWith('Two') && d.st.ignite > 0 && d.burn.ignite, left = d.st.ignite;
+        K.sweep(W);
+        if (B) for (const e of inside(from, R)) if (e !== d && !(e.imm.ignite > 0) && inCone(from, Math.atan2(dz, dx), coneHalf(W), e.pos) && !(e.st.ignite > 0 && e.burn.ignite?.dps >= B.dps)) { e.burn.ignite = B; e.st.ignite = left; }
       } else {   // a field that pulses: Static Shocks, Shocking Rift
         const F = fields[kind], max = ts.maximum_grounding_shocks_allowed || ts.number_of_shocking_rifts_allowed, me2 = { dead: false, in: near4 || [] };
         if (F.length >= max) { const old = F.shift(); old.dead = true; old.in.forEach(e => e.inRift = false); }
@@ -1167,6 +1174,9 @@ export function initScene(el, api) {
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime * vsAil(A, 'freeze', 'dur', d, S) : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
+    // Impact Shockwave: an Aftershock (keywords.json: the same damage) on the other enemies within its radius of the one it Heavy Stuns
+    const IW = a === 'stun' && !S.src && !S.shockwave && S.dmg?.sum?.support_impact_shockwave_base_non_slam_aftershock_on_heavy_stun_radius;
+    if (IW) { const c = { x: d.pos.x, z: d.pos.z }; say(t('Aftershock of {0}', S.label), S.el); fx.explode(c, IW / 10, S.el, { soft: true }); for (const e of inside(c, IW / 10)) if (e !== d) hit(e, { ...S, shockwave: true }); }
     if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) { gainPct('life', recOn('stunRare')); if (sheet().endOnStunRare) gainCharge('endurance', S.label); }   // Cranial Impact
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
@@ -5336,7 +5346,7 @@ export function initScene(el, api) {
   function ailed(d, raw, dealt, stunOnly = false) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
-    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100 : 1),   /* Steadfast II: while channelling it */ more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
+    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (1 + (charge && base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100) /* Steadfast II, while channelling it */, more =(inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
     if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)
