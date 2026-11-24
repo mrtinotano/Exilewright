@@ -144,6 +144,17 @@ function nodeStats(id, b = B(), cq = conquest(b)) {
   return c?.add ? plusStats({ ...own }, c.add) : own;   // ...or what it adds to it
 }
 const plusStats = (to, x) => { for (const k in x) to[k] = (to[k] || 0) + x[k]; return to; };
+// A notable a timeless jewel's seed changes (conquest's tell): a right click asks which of its conqueror's notables the
+// game shows there
+async function tellConquest(id) {
+  const b = B(), c = conquest(b).get(id), ver = c?.tell && statsOf(c.by).local_unique_jewel_alternate_tree_version;
+  if (!c?.tell) return;
+  const opts = Object.entries(TL.notables).filter(([, x]) => x.version === ver).sort((x, y) => label(x[1]).localeCompare(label(y[1])));
+  const i = await ask(t('In the game, {1} turns {0} into:', label(N[id]), itemView(c.by).name), ...opts.map(([, x]) => label(x)), t('As on the tree'));
+  if (i < 0) return;
+  (b.conq ||= {})[c.tell] = opts[i]?.[0];
+  save(); renderSide(); drawTree();
+}
 function cycleAttr(id) {
   if (N[id].type !== 'attribute') return;
   const b = B(); b.attrs ||= {};
@@ -669,8 +680,10 @@ function sockOn(b) {
 // what a kind of passive always becomes or gets added, whatever the seed (Undying Hate: small passives become Tribute,
 // attribute ones add Tribute), with what the jewel's own modifiers add to that kind; a notable its modifier names
 // ("One Conquered Notable Passive Skill becomes Ephemeral Contact": the first of them allocated, which one is the seed's).
-// The rest the seed changes is only marked (which passive and how is not in the game's client data)
-// -> Map id -> { ks, by (the jewel) } | { stats, named (the passive it became: its name and art), by } | { add, by } | { over (the notable it became), by } | { seed: true, by }
+// The rest the seed changes is only marked (which passive and how is not in the game's client data: the game mixes the
+// seed with a number the jewel hides), until the player says what the game shows there (tell: its key in b.conq, the
+// seed and the passive, so the same jewel says the same in any socket; tellConquest)
+// -> Map id -> { ks, by (the jewel) } | { stats, named (the passive it became: its name and art), by } | { add, by } | { over (the notable it became), told (by the player), tell, by } | { seed: true, tell, by }
 const TL = tree.timeless || { versions: [], keystones: [], overrides: {} };
 function conquest(b, js = jewelsOf(b)) {
   const out = new Map();
@@ -680,15 +693,20 @@ function conquest(b, js = jewelsOf(b)) {
     const ks = TL.keystones.find(k => k.version === ver && k.index === st.local_unique_jewel_alternate_tree_keystone), by = j.it;
     const extra = {}; for (const [k, [kind, to]] of Object.entries(v.extra || {})) if (st[k]) plusStats(extra[kind] ||= {}, { [to]: st[k] });
     const over = Object.entries(st).filter(([k, x]) => /^local_historic_jewel_override_\d+_conquored_notable_to_passive_hash_\d+$/.test(k) && TL.overrides?.[x]).map(([, x]) => TL.overrides[x]);
-    for (const id of main) if (j.in(id)) { const ty = N[id].type;
+    const can = Object.values(TL.notables || {}).some(x => x.version === ver);
+    for (const id of main) if (j.in(id)) { const ty = N[id].type, tell = ty === 'notable' && can && st.local_unique_jewel_alternate_tree_seed + ':' + id, told = tell && TL.notables[b.conq?.[tell]];
       if (ty === 'keystone') { if (ks) out.set(id, { ks, by }); continue; }
       if (v.becomes?.[ty]) out.set(id, { stats: plusStats({ ...v.becomes[ty] }, extra[ty] || {}), named: v.named?.[ty], by });
-      else if (v.replaces[ty] || v.adds[ty] && !v.plus?.[ty]) out.set(id, ty === 'notable' && b.nodes.includes(id) && over.length ? (o => ({ over: o, stats: o.stats, by }))(over.shift()) : { seed: true, by });
+      else if (v.replaces[ty] || v.adds[ty] && !v.plus?.[ty]) out.set(id, told?.version === ver ? { over: told, stats: told.stats, told: true, tell, by } : ty === 'notable' && b.nodes.includes(id) && over.length ? (o => ({ over: o, stats: o.stats, tell, by }))(over.shift()) : { seed: true, tell, by });
       else if (v.plus?.[ty] || extra[ty]) out.set(id, { add: plusStats({ ...v.plus?.[ty] }, extra[ty] || {}), by });
     }
   }
   return out;
 }
+// as seen in the game: an Undying Hate of seed 6858 turns Melting Flames into Domineering Commands
+console.assert((b => conquest(b).get('43939')?.over?.name === 'Domineering Commands' && conquest({ ...b, conq: {} }).get('43939')?.seed)({ nodes: ['26196'], conq: { '6858:43939': 'abyss_notable_20' },
+  items: { 'jewel:26196': { base: 'Timeless Jewel', implicits: [], mods: [{ id: 'UniqueJewelAlternateTreeInRadiusAbyssal', values: [7, 6858, 1, 1500, 1, 1, 0] }], unique: 'Undying Hate' } } }),
+  'a conquered notable is what the player said the game shows, and only marked until then');
 // the passives that can be allocated without being connected (Controlled Metamorphosis' radius, From Nothing's keystone's)
 const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(id => j.in(id) && mayTake(id, b))));
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
@@ -1015,7 +1033,7 @@ function drawTree() {
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
     if (x < -r * 2 || y < -r * 2 || x > W + r * 2 || y > H + r * 2) continue;
     if (found.has(id)) drawFound(x, y, r);
-    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), (cq.get(id)?.ks || cq.get(id)?.named)?.icon || tree.attribute_icons[ATTR[(b.attrs || {})[id]]?.[0]], alt.get(id));
+    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), (cq.get(id)?.ks || cq.get(id)?.named || cq.get(id)?.over)?.icon || tree.attribute_icons[ATTR[(b.attrs || {})[id]]?.[0]], alt.get(id));
   }
   // labels
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -1093,7 +1111,7 @@ function tipHtml(tip, id, n) {
   tip.innerHTML = `<div class="th">${esc(label(cq?.ks || cq?.over || cq?.named || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
     + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
-    + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
+    + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${cq?.tell ? t('Right click: what it is in the game') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
 }
 let drag = null;
@@ -1109,7 +1127,7 @@ cv.onmousemove = e => {
   cv.style.cursor = h ? 'pointer' : 'grab';
   showTip(h, e.offsetX, e.offsetY);
 };
-cv.onmouseup = e => { if (drag && !drag.moved) { const h = nodeAt(e.offsetX, e.offsetY); if (h) { e.button === 2 ? cycleAttr(h) : clickNode(h); showTip(h, e.offsetX, e.offsetY); } } drag = null; };
+cv.onmouseup = e => { if (drag && !drag.moved) { const h = nodeAt(e.offsetX, e.offsetY); if (h) { e.button === 2 ? (cycleAttr(h), tellConquest(h)) : clickNode(h); showTip(h, e.offsetX, e.offsetY); } } drag = null; };
 cv.oncontextmenu = e => e.preventDefault();
 cv.onmouseleave = () => { drag = null; hover = null; $('tip').hidden = true; redraw(); };
 cv.onwheel = e => {
@@ -1358,7 +1376,7 @@ const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s
   stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce(plusStats, {}),
   free: j.R?.free ? main.filter(id => j.in(id) && mayTake(id, b)) : [],
   // what a timeless jewel changes in its radius once its socket is allocated: per passive, the stats added (removed below 0)
-  swap: new Map([...conquest(b, [j])].filter(([id, c]) => !c.ks && !c.seed && !c.over).map(([id, c]) => {
+  swap: new Map([...conquest(b, [j])].filter(([id, c]) => !c.ks && !c.seed && (!c.over || c.told)).map(([id, c]) => {
     const was = nodeStats(id, b, new Map()), now = nodeStats(id, b, new Map([[id, c]])), d = {};
     for (const k of new Set([...Object.keys(was), ...Object.keys(now)])) if ((now[k] || 0) !== (was[k] || 0)) d[k] = (now[k] || 0) - (was[k] || 0);
     return [id, d]; })) }));

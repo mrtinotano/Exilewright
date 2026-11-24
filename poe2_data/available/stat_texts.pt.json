@@ -52950,6 +52950,30 @@
  },
  {
   "stats": [
+   "base_cooldown_speed_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[CooldownRecovery|Velocidade de recarga] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[CooldownRecovery|Velocidade de recarga] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "X_armour_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -53221,6 +53245,54 @@
     ],
     "t": "Ataques ganham [Accuracy|precisão] aumentada equivalente a {0}% da [Critical|chance de golpe crítico]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Accuracy|Precisão] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Accuracy|Precisão] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Accuracy|Precisão] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Accuracy|Precisão] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -53787,6 +53859,23 @@
     ],
     "t": "{0:+d}% a todas as resistências máximas, se você não tiver cargas de tolerância",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_thorns_critical_strike_chance_permyriad_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% à chance de [Critical|golpe crítico] de [Thorns|espinhos] por 50 Tributos",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
    }
   ]
  },
@@ -56293,6 +56382,30 @@
  },
  {
   "stats": [
+   "attack_critical_strike_chance_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Chance de [Critical|golpe crítico] de [Attack|ataque] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Chance de [Critical|golpe crítico] de [Attack|ataque] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_for_each_different_non_instant_spell_youve_cast_in_the_past_8_seconds"
   ],
   "rows": [
@@ -56346,6 +56459,30 @@
      "#|-1"
     ],
     "t": "Dano de [Attack|ataque] reduzido em {0}%, se você se [Shapeshift|transformou] em um animal [Recently|recentemente]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Dano de [Attack|ataque] aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Dano de [Attack|ataque] reduzido em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -57890,6 +58027,54 @@
  },
  {
   "stats": [
+   "base_damage_taken_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Dano sofrido aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Dano sofrido reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damaging_ailment_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[BuffMagnitude|Intensidade] de [DamagingAilments|afecções danosas] infligidas por você aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[BuffMagnitude|Intensidade] de [DamagingAilments|afecções danosas] infligidas por você reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_darkness"
   ],
   "rows": [
@@ -57921,6 +58106,34 @@
  },
  {
   "stats": [
+   "base_deflection_rating_%_of_evasion_rating_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ganha [Deflect|deflexão] equivalente a {0}% da [Evasion|evasão] por 25 Tributos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_dexterity_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} à [Dexterity|Destreza] por 25 Tributos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_enemies_in_your_presence_are_hindered"
   ],
   "rows": [
@@ -57943,6 +58156,20 @@
      "#"
     ],
     "t": "Ganha {0} de [Rage|fúria] ao [Hit|atingir]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_intelligence_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} à [Intelligence|Inteligência] por 25 Tributos",
     "h": []
    }
   ]
@@ -58088,6 +58315,30 @@
      "#|-1"
     ],
     "t": "[Efficiency|Eficiência] de custo de mana de [Mark|marcas] reduzida em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_mana_cost_efficiency_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Efficiency|Eficiência] de custo de mana aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Efficiency|Eficiência] de custo de mana reduzida em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -58413,6 +58664,44 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_spirit_reservation_efficiency_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Efficiency|Eficiência] de reserva de [Spirit|espírito] de habilidades aumentada em {0}% por 20 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Efficiency|Eficiência] de reserva de [Spirit|espírito] de habilidades reduzida em {0}% por 20 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_strength_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} à [Strength|Força] por 25 Tributos",
+    "h": []
    }
   ]
  },
@@ -60104,6 +60393,20 @@
  },
  {
   "stats": [
+   "chance_to_fork_extra_projectile_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Projéteis têm {0}% de chance de ganhar 1 projétil adicional ao [Fork|ramificar] por 10 Tributos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_fortify_on_melee_stun_%"
   ],
   "rows": [
@@ -60119,6 +60422,27 @@
      "100|#"
     ],
     "t": "Ataques [Melee|corpo a corpo] que atordoam Fortificam",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_gain_1_more_charge_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "Ao ganhar uma [Charges|carga], há {0}% de chance de você ganhar uma [Charges|carga] adicional por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Ao ganhar uma [Charges|carga], você ganha uma [Charges|carga] adicional por 10 Tributos",
     "h": []
    }
   ]
@@ -60605,6 +60929,54 @@
     ],
     "t": "Defende com 200% da [Armour|armadura] durante o efeito",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Duração do efeito de [Charm|patuá] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Duração do efeito de [Charm|patuá] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Charm|Patuás] que afetam você têm o efeito aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Charm|Patuás] que afetam você têm o efeito reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -61345,6 +61717,30 @@
      "#|-1"
     ],
     "t": "Dano de [Cold|frio] com habilidades de [Attack|ataque] reduzido em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cold_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Efeito de [Exposure|Exposição ao Frio] aumentado em {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Efeito de [Exposure|Exposição ao Frio] reduzido em {0}%",
     "h": [
      "negate",
      "1"
@@ -62897,6 +63293,30 @@
  },
  {
   "stats": [
+   "curse_delay_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse|Maldições] ativam {0}% mais devagar por 20 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse|Maldições] ativam {0}% mais rápido por 20 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_duration_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -62912,6 +63332,30 @@
      "#|-1"
     ],
     "t": "Duração da [Curse|maldição] reduzida em {0}% com 100 ou mais Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "curse_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Duração da [Curse|maldição] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Duração da [Curse|maldição] reduzida em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -63727,6 +64171,34 @@
  },
  {
   "stats": [
+   "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% do dano sofrido é [Recoup|recuperado] como vida por 10 Tributos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_goes_to_mana_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% do dano sofrido é recuperado como mana por 10 Tributos",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_taken_+%_on_low_life"
   ],
   "rows": [
@@ -63794,6 +64266,30 @@
      "#|-1"
     ],
     "t": "Duração de [DamagingAilments|afecções danosas] em inimigos reduzida em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damaging_ailment_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Duração de [DamagingAilments|afecções danosas] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Duração de [DamagingAilments|afecções danosas] reduzida em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -65580,6 +66076,30 @@
  },
  {
   "stats": [
+   "empowered_attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Dano de [Empowered|ataques fortalecidos] aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Dano de [Empowered|ataques fortalecidos] reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "empowered_attack_hit_damage_stun_multiplier_+%"
   ],
   "rows": [
@@ -66771,6 +67291,30 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[ESRechargeRate|Velocidade de recarga do escudo de energia] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[ESRechargeRate|Velocidade de recarga do escudo de energia] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_per_4_strength"
   ],
   "rows": [
@@ -67126,6 +67670,30 @@
      "#|-1"
     ],
     "t": "[Evasion|Evasão] reduzida em {0}% ao correr",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "evasion_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Evasion|Evasão] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Evasion|Evasão] reduzida em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -67703,6 +68271,30 @@
  },
  {
   "stats": [
+   "fire_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Efeito de [Exposure|Exposição ao Fogo] aumentado em {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Efeito de [Exposure|Exposição ao Fogo] reduzido em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_penetration_%_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -67835,6 +68427,30 @@
  },
  {
   "stats": [
+   "flask_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Duração do efeito de [Flask|frasco] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Duração do efeito de [Flask|frasco] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "flask_life_and_mana_recovery_+%_while_using_charm"
   ],
   "rows": [
@@ -67850,6 +68466,30 @@
      "#|-1"
     ],
     "t": "Mana e vida recuperados de [Flask|frascos] reduzidos em {0}%, se você tiver um [Charm|patuá] ativo",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "flask_life_and_mana_to_recover_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Mana e vida recuperados de [Flask|frascos] aumentados em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Mana e vida recuperados de [Flask|frascos] reduzidos em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -70043,6 +70683,30 @@
     ],
     "t": "[Hazard|Ameaças] não podem ser ativadas por {0} segundos após serem criadas",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "heavy_stun_poise_decay_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Seu acúmulo de [HeavyStunPlayer|atordoamento total] expira {0}% mais rápido por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Seu acúmulo de [HeavyStunPlayer|atordoamento total] expira {0}% mais devagar por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -73026,6 +73690,30 @@
  },
  {
   "stats": [
+   "hit_damage_stun_multiplier_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Acúmulo de [Stun|atordoamento] aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Acúmulo de [Stun|atordoamento] reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hit_damage_stun_multiplier_+%_while_shapeshifted"
   ],
   "rows": [
@@ -75118,6 +75806,30 @@
  },
  {
   "stats": [
+   "life_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Recuperação de vida aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Recuperação de vida reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_recovery_rate_+%_per_5%_missing_life"
   ],
   "rows": [
@@ -75538,6 +76250,30 @@
  },
  {
   "stats": [
+   "light_radius_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LightRadius|Campo de visão] aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LightRadius|Campo de visão] reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "lightning_ailment_duration_+%"
   ],
   "rows": [
@@ -75651,6 +76387,30 @@
     ],
     "t": "{0}% do dano [Lightning|elétrico] sofrido é [Recoup|recuperado] como vida",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Efeito de [Exposure|Exposição à Eletricidade] aumentado em {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Efeito de [Exposure|Exposição à Eletricidade] reduzido em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -78948,6 +79708,30 @@
     "t": "Regenera {0} de mana por segundo, se todos os itens [Equipped|equipados] estiverem corrompidos",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Recuperação de mana aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Recuperação de mana reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -89279,6 +90063,30 @@
  },
  {
   "stats": [
+   "maximum_energy_shield_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[EnergyShield|Escudo de energia] máximo aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[EnergyShield|Escudo de energia] máximo reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89420,6 +90228,20 @@
      "#"
     ],
     "t": "{0:+d} à quantidade máxima de [ElementalInfusion|Infusões Elementais]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% de vida máxima [StatConversion|convertida] em [EnergyShield|escudo de energia] por 20 Tributos",
     "h": []
    }
   ]
@@ -90124,6 +90946,30 @@
  },
  {
   "stats": [
+   "minion_attack_and_cast_speed_+%_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Velocidade de [Attack|ataque] e de conjuração dos [Minion|lacaios] aumentada em {0}% por 50 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Velocidade de [Attack|ataque] e de conjuração dos [Minion|lacaios] reduzida em {0}% por 50 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_attack_and_cast_speed_+%"
   ],
   "rows": [
@@ -90369,6 +91215,30 @@
  },
  {
   "stats": [
+   "minion_cooldown_recovery_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[CooldownRecovery|Velocidade de recarga] dos [Minion|lacaios] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[CooldownRecovery|Velocidade de recarga] dos [Minion|lacaios] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_critical_strike_chance_+%"
   ],
   "rows": [
@@ -90402,6 +91272,30 @@
     ],
     "t": "[Minion|Lacaios] têm o [CriticalDamageBonus|bônus de dano crítico] aumentado em {0}%",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Lacaios] causam dano aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Lacaios] causam dano reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -90814,6 +91708,30 @@
     ],
     "t": "Ataques de lacaios só podem matar inimigos incendiados",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_lose_%_life_when_following_commands_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Lacaios] perdem {0}% de vida por 10 de seus Tributos ao seguirem [Command|comandos]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Lacaios] perdem {0}% de vida por 10 de seus Tributos ao seguirem [Command|comandos] por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -93146,6 +94064,30 @@
  },
  {
   "stats": [
+   "parry_skill_effect_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Duração da [ParriedDebuff|penalidade de aparo] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Duração da [ParriedDebuff|penalidade de aparo] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "parry_skill_effect_duration_+%"
   ],
   "rows": [
@@ -93562,6 +94504,30 @@
  },
  {
   "stats": [
+   "physical_damage_reduction_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Armour|Armadura] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Armour|Armadura] reduzida em {0}% por 10 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "physical_damage_reduction_rating_per_endurance_charge"
   ],
   "rows": [
@@ -93947,6 +94913,30 @@
      "#|-1"
     ],
     "t": "Precisão tem a eficiência da reserva de mana reduzida em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "presence_area_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Área de efeito de [Presence|presença] aumentada em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Área de efeito de [Presence|presença] reduzida em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -94860,6 +95850,30 @@
  },
  {
   "stats": [
+   "recover_%_maximum_life_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Recupera {0}% de vida máxima ao matar por 50 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LifeLoss|Perde] {0}% de vida máxima ao matar por 50 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_%_maximum_life_per_glory_consumed"
   ],
   "rows": [
@@ -94869,6 +95883,30 @@
     ],
     "t": "Recupera {0}% de vida máxima por [Glory|glória] consumida",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_maximum_mana_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Recupera {0}% de mana máximo ao matar por 50 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Perde {0}% de mana máximo ao matar por 50 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -95173,6 +96211,30 @@
     "t": "Regenera mana equivalente a {0}% da vida máxima por segundo",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Remnant|Vestígios] criados por você têm o efeito aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Remnant|Vestígios] criados por você têm o efeito reduzido em {0}% por 10 Tributos",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -95696,6 +96758,30 @@
      "#|-1"
     ],
     "t": "[Armour|Armadura], [Evasion|evasão] e [EnergyShield|escudo de energia] do [Shield|escudo] equipado reduzidos em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "shield_armour_evasion_energy_shield_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Armour|Armadura], [Evasion|evasão] e [EnergyShield|escudo de energia] do escudo equipado aumentados em {0}% por 25 de tributo",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Armour|Armadura], [Evasion|evasão] e [EnergyShield|escudo de energia] do escudo equipado reduzidos em {0}% por 25 de tributo",
     "h": [
      "negate",
      "1"
@@ -97486,6 +98572,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[StunThreshold|Resistência-limite a atordoamento] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[StunThreshold|Resistência-limite a atordoamento] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+%_per_number_of_times_stunned_recently"
   ],
   "rows": [
@@ -98343,6 +99453,30 @@
      "#|-1"
     ],
     "t": "ㅤ-{0}% de dano de [Thorns|espinhos] se você usou uma [Charges|carga de tolerância] [Recently|recentemente]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Dano de [Thorns|espinhos] aumentado em {0}% por 10 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Dano de [Thorns|espinhos] reduzido em {0}% por 10 Tributos",
     "h": [
      "negate",
      "1"
@@ -100603,6 +101737,30 @@
  },
  {
   "stats": [
+   "warcry_speed_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Velocidade de [Warcry|clamor] aumentada em {0}% por 25 Tributos",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Velocidade de [Warcry|clamor] reduzida em {0}% por 25 Tributos",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ward_%_gained_on_kill"
   ],
   "rows": [
@@ -102701,6 +103859,30 @@
     ],
     "t": "{0:+d} de Tributo",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tribute_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Tributo aumentado em {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Tributo reduzido em {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },

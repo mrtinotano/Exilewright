@@ -42,7 +42,7 @@ TREE['ring_inv'] = radii[0]['Inverse1']
 TREE['ring_1'], TREE['ring_2'] = radii[0]['Circle1'], radii[0]['Circle2']
 for n in sorted({s[1] for u in uniques for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'}):
     TREE[f'ring{n}_1'], TREE[f'ring{n}_2'] = radii[alt[n]['JewelRadiiArt']]['Circle1'], radii[alt[n]['JewelRadiiArt']]['Circle2']
-    paths |= {k['icon'] for k in tree['timeless']['keystones'] if k['version'] == n}   # the keystone its conqueror puts in place of the tree's
+    paths |= {k['icon'] for k in [*tree['timeless']['keystones'], *tree['timeless']['notables'].values()] if k['version'] == n}   # the keystone its conqueror puts in place of the tree's, what its notables become
     if alt[n]['UIArt'] is not None:
         for kind in ('Passive', 'Notable', 'Keystone'):
             for state, col in (('normal', 'Normal'), ('can', 'CanAllocate'), ('active', 'Active')):

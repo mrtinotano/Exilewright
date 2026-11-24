@@ -52945,6 +52945,30 @@
  },
  {
   "stats": [
+   "base_cooldown_speed_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮增加{0}%[CooldownRecovery|冷卻時間恢復率]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮減少{0}%[CooldownRecovery|冷卻時間恢復率]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "X_armour_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -53216,6 +53240,54 @@
     ],
     "t": "攻擊獲得等同於其[Critical|暴擊率]{0}%的[Accuracy|命中值]提升",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮增加{0}%[Accuracy|命中]值",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮減少{0}%[Accuracy|命中]值",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮增加{0}%[Accuracy|命中]值",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮減少{0}%[Accuracy|命中]值",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -53782,6 +53854,23 @@
     ],
     "t": "當身上不存在耐力球時，增加{0:+d}%所有屬性的最大抗性",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_thorns_critical_strike_chance_permyriad_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有50貢禮，{0:+d}%[Thorns|荊棘]的[Critical|暴擊]率",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
    }
   ]
  },
@@ -56288,6 +56377,30 @@
  },
  {
   "stats": [
+   "attack_critical_strike_chance_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Attack|攻擊]的[Critical|暴擊率]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Attack|攻擊]的[Critical|暴擊率]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_for_each_different_non_instant_spell_youve_cast_in_the_past_8_seconds"
   ],
   "rows": [
@@ -56341,6 +56454,30 @@
      "#|-1"
     ],
     "t": "如果你[Recently|近期][Shapeshift|變形]成動物型態，減少{0}%[Attack|攻擊]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮增加{0}%[Attack|攻擊]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮減少{0}%[Attack|攻擊]傷害",
     "h": [
      "negate",
      "1"
@@ -57885,6 +58022,54 @@
  },
  {
   "stats": [
+   "base_damage_taken_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%承受傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%承受傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damaging_ailment_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%你所造成之[DamagingAilments|傷害型異常狀態]的[BuffMagnitude|幅度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%你所造成之[DamagingAilments|傷害型異常狀態]的[BuffMagnitude|幅度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_darkness"
   ],
   "rows": [
@@ -57916,6 +58101,34 @@
  },
  {
   "stats": [
+   "base_deflection_rating_%_of_evasion_rating_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有25貢禮，獲得等同{0}%[Evasion|閃避值]的[Deflect|偏斜值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_dexterity_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有25貢禮{0:+d}[Dexterity|敏捷]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_enemies_in_your_presence_are_hindered"
   ],
   "rows": [
@@ -57938,6 +58151,20 @@
      "#"
     ],
     "t": "擊中時獲得{0}層[Rage|盛怒]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_intelligence_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有25貢禮{0:+d}[Intelligence|智慧]",
     "h": []
    }
   ]
@@ -58083,6 +58310,30 @@
      "#|-1"
     ],
     "t": "減少{0}%[Mark|印記]的魔力消耗[Efficiency|效用]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_mana_cost_efficiency_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%魔力消耗[Efficiency|效用]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%魔力消耗[Efficiency|效用]",
     "h": [
      "negate",
      "1"
@@ -58408,6 +58659,44 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_spirit_reservation_efficiency_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每20貢禮，技能增加{0}%[Spirit|精魂][Reservation|保留][Efficiency|效用]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每20貢禮，技能減少{0}%[Spirit|精魂][Reservation|保留][Efficiency|效用]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_strength_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有25貢禮{0:+d}[Strength|力量]",
+    "h": []
    }
   ]
  },
@@ -60099,6 +60388,20 @@
  },
  {
   "stats": [
+   "chance_to_fork_extra_projectile_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，投射物[Fork|分裂]時有{0}%機率發射一個額外投射物",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_fortify_on_melee_stun_%"
   ],
   "rows": [
@@ -60114,6 +60417,27 @@
      "100|#"
     ],
     "t": "可造成暈眩的[Melee|近戰]擊中會賦予護體",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_gain_1_more_charge_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "每有10貢禮，你獲得一顆[Charges|能量球]時有{0}%機率獲得一顆額外的[Charges|能量球]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "每有10貢禮，你獲得一顆[Charges|能量球]時獲得一顆額外的[Charges|能量球]",
     "h": []
    }
   ]
@@ -60600,6 +60924,54 @@
     ],
     "t": "在效果期間，以200%[Armour|護甲值]防禦",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮，增加{0}%[Charm|護符]效果持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮，減少{0}%[Charm|護符]效果持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%對你生效的[Charm|護符]效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%對你生效的[Charm|護符]效果",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -61340,6 +61712,30 @@
      "#|-1"
     ],
     "t": "[Attack|攻擊]技能減少{0}%冰冷傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cold_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Exposure|冰冷曝曬]效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Exposure|冰冷曝曬]效果",
     "h": [
      "negate",
      "1"
@@ -62892,6 +63288,30 @@
  },
  {
   "stats": [
+   "curse_delay_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有20貢禮，[Curse|詛咒]啟動速度減緩{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有20貢禮，[Curse|詛咒]啟動速度加快{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_duration_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -62907,6 +63327,30 @@
      "#|-1"
     ],
     "t": "若你有至少100貢禮，減少{0}%[Curse|詛咒]持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "curse_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Curse|詛咒]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Curse|詛咒]持續時間",
     "h": [
      "negate",
      "1"
@@ -63722,6 +64166,34 @@
  },
  {
   "stats": [
+   "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有10貢禮，承受的{0}%傷害[Recoup|補償]為生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_goes_to_mana_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有10貢禮，承受的{0}%傷害補償為魔力",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_taken_+%_on_low_life"
   ],
   "rows": [
@@ -63789,6 +64261,30 @@
      "#|-1"
     ],
     "t": "減少{0}%敵人身上的[DamagingAilments|傷害型異常狀態]持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damaging_ailment_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%敵人身上的[DamagingAilments|傷害型異常狀態]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%敵人身上的[DamagingAilments|傷害型異常狀態]持續時間",
     "h": [
      "negate",
      "1"
@@ -65575,6 +66071,30 @@
  },
  {
   "stats": [
+   "empowered_attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Empowered|強化攻擊]造成的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Empowered|強化攻擊]造成的傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "empowered_attack_hit_damage_stun_multiplier_+%"
   ],
   "rows": [
@@ -66766,6 +67286,30 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮，增加{0}%[ESRechargeRate|能量護盾充能率]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮，減少{0}%[ESRechargeRate|能量護盾充能率]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_per_4_strength"
   ],
   "rows": [
@@ -67121,6 +67665,30 @@
      "#|-1"
     ],
     "t": "衝刺期間減少{0}%[Evasion|閃避值]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "evasion_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Evasion|閃避值]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Evasion|閃避值]",
     "h": [
      "negate",
      "1"
@@ -67698,6 +68266,30 @@
  },
  {
   "stats": [
+   "fire_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Exposure|火焰曝曬]效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Exposure|火焰曝曬]效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_penetration_%_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -67830,6 +68422,30 @@
  },
  {
   "stats": [
+   "flask_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮，增加{0}%[Flask|藥劑]效果持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮，減少{0}%[Flask|藥劑]效果持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "flask_life_and_mana_recovery_+%_while_using_charm"
   ],
   "rows": [
@@ -67845,6 +68461,30 @@
      "#|-1"
     ],
     "t": "你擁有作用中的[Charm|護符]時，減少{0}%[Flask|藥劑]的生命和魔力恢復",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "flask_life_and_mana_to_recover_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Flask|藥劑]的生命和魔力恢復",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Flask|藥劑]的生命和魔力恢復",
     "h": [
      "negate",
      "1"
@@ -70038,6 +70678,30 @@
     ],
     "t": "[Hazard|危險]在被創造後{0}秒內無法被觸發",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "heavy_stun_poise_decay_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，你的[HeavyStunPlayer|沉重暈眩]累積消退速度加快{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，你的[HeavyStunPlayer|沉重暈眩]累積消退速度減緩{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -73018,6 +73682,30 @@
  },
  {
   "stats": [
+   "hit_damage_stun_multiplier_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Stun|暈眩]累積",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Stun|暈眩]累積",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hit_damage_stun_multiplier_+%_while_shapeshifted"
   ],
   "rows": [
@@ -75110,6 +75798,30 @@
  },
  {
   "stats": [
+   "life_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%生命回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%生命回復率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_recovery_rate_+%_per_5%_missing_life"
   ],
   "rows": [
@@ -75530,6 +76242,30 @@
  },
  {
   "stats": [
+   "light_radius_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[LightRadius|照亮範圍]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[LightRadius|照亮範圍]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "lightning_ailment_duration_+%"
   ],
   "rows": [
@@ -75643,6 +76379,30 @@
     ],
     "t": "所承受[Lightning|閃電]傷害的{0}%[Recoup|補償]為生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Exposure|閃電曝曬]效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Exposure|閃電曝曬]效果",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -78940,6 +79700,30 @@
     "t": "若[Equipped|已裝備]的物品皆受到汙染，每秒回復{0}點魔力",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%魔力恢復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%魔力恢復率",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -89271,6 +90055,30 @@
  },
  {
   "stats": [
+   "maximum_energy_shield_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%最大[EnergyShield|能量護盾]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%最大[EnergyShield|能量護盾]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89412,6 +90220,20 @@
      "#"
     ],
     "t": "{0:+d}最大[ElementalInfusion|元素灌注]數量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有20貢禮，{0}%最大生命[StatConversion|轉換]為[EnergyShield|能量護盾]",
     "h": []
    }
   ]
@@ -90116,6 +90938,30 @@
  },
  {
   "stats": [
+   "minion_attack_and_cast_speed_+%_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有50貢禮，[Minion|召喚物]增加{0}%[Attack|攻擊]和施法速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有50貢禮，[Minion|召喚物]減少{0}%[Attack|攻擊]和施法速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_attack_and_cast_speed_+%"
   ],
   "rows": [
@@ -90361,6 +91207,30 @@
  },
  {
   "stats": [
+   "minion_cooldown_recovery_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Minion|召喚物]的[CooldownRecovery|冷卻時間恢復率]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Minion|召喚物]的[CooldownRecovery|冷卻時間恢復率]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_critical_strike_chance_+%"
   ],
   "rows": [
@@ -90394,6 +91264,30 @@
     ],
     "t": "[Minion|召喚物]增加{0}%[CriticalDamageBonus|暴擊傷害加成]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Minion|召喚物]造成的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Minion|召喚物]造成的傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -90806,6 +91700,30 @@
     ],
     "t": "召喚物擊中只能擊殺點燃敵人",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_lose_%_life_when_following_commands_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，[Minion|召喚物]被[Command|號令]時失去{0}%生命值",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，[Minion|召喚物]被[Command|號令]時獲得{0}%生命值",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -93138,6 +94056,30 @@
  },
  {
   "stats": [
+   "parry_skill_effect_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[ParriedDebuff|受招架減益效果]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[ParriedDebuff|受招架減益效果]持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "parry_skill_effect_duration_+%"
   ],
   "rows": [
@@ -93554,6 +94496,30 @@
  },
  {
   "stats": [
+   "physical_damage_reduction_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Armour|護甲值]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Armour|護甲值]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "physical_damage_reduction_rating_per_endurance_charge"
   ],
   "rows": [
@@ -93939,6 +94905,30 @@
      "#|-1"
     ],
     "t": "精準減少{0}%魔力保留效用",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "presence_area_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Presence|存在範圍]的範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Presence|存在範圍]的範圍效果",
     "h": [
      "negate",
      "1"
@@ -94852,6 +95842,30 @@
  },
  {
   "stats": [
+   "recover_%_maximum_life_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有50貢禮，擊殺時恢復{0}%最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有50貢禮，擊殺時[LifeLoss|失去]{0}%最大生命",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_%_maximum_life_per_glory_consumed"
   ],
   "rows": [
@@ -94861,6 +95875,30 @@
     ],
     "t": "每消耗1[Glory|榮耀]就恢復{0}%最大生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_maximum_mana_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有50貢禮，擊殺時恢復{0}%最大魔力",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有50貢禮，擊殺時失去{0}%最大魔力",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -95165,6 +96203,30 @@
     "t": "每秒回復等同於{0}%最大生命的魔力",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每擁有10奉獻，你產生的[Remnant|痕跡]增加{0}%效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每擁有10奉獻，你產生的[Remnant|痕跡]減少{0}%效果",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -95688,6 +96750,30 @@
      "#|-1"
     ],
     "t": "減少{0}%來自裝備[Shield|盾牌]的[Armour|護甲]、[Evasion|閃避]與[EnergyShield|能量護盾]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "shield_armour_evasion_energy_shield_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你每擁有25奉獻，增加{0}%來自裝備盾牌的[Armour|護甲]、[Evasion|閃避]與[EnergyShield|能量護盾]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "你每擁有25奉獻，減少{0}%來自裝備盾牌的[Armour|護甲]、[Evasion|閃避]與[EnergyShield|能量護盾]",
     "h": [
      "negate",
      "1"
@@ -97478,6 +98564,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮，增加{0}%[StunThreshold|暈眩門檻]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮，減少{0}%[StunThreshold|暈眩門檻]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+%_per_number_of_times_stunned_recently"
   ],
   "rows": [
@@ -98335,6 +99445,30 @@
      "#|-1"
     ],
     "t": "若你[Recently|近期]消耗過一顆[Charges|耐力球]，減少{0}%[Thorns|荊棘]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有10貢禮，增加{0}%[Thorns|荊棘]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有10貢禮，減少{0}%[Thorns|荊棘]傷害",
     "h": [
      "negate",
      "1"
@@ -100605,6 +101739,30 @@
  },
  {
   "stats": [
+   "warcry_speed_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有25貢禮，增加{0}%[Warcry|戰吼]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有25貢禮，減少{0}%[Warcry|戰吼]速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ward_%_gained_on_kill"
   ],
   "rows": [
@@ -102703,6 +103861,30 @@
     ],
     "t": "{0:+d}貢禮",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tribute_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%貢禮",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%貢禮",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },

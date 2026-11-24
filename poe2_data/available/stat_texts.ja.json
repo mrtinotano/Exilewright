@@ -52946,6 +52946,30 @@
  },
  {
   "stats": [
+   "base_cooldown_speed_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[CooldownRecovery|クールダウン解消レート]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[CooldownRecovery|クールダウン解消レート]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "X_armour_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -53217,6 +53241,54 @@
     ],
     "t": "アタックはその[Critical|クリティカルヒット率]の{0}%と同量の[Accuracy|命中力]増加を獲得する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Accuracy|命中力]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Accuracy|命中力]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[Accuracy|命中力]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[Accuracy|命中力]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -53783,6 +53855,23 @@
     ],
     "t": "エンデュランスチャージがない時に全ての耐性の最大値 {0:+d}%",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_thorns_critical_strike_chance_permyriad_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート50ごとに[Thorns|棘][Critical|クリティカルヒット]率 {0:+d}%",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
    }
   ]
  },
@@ -56289,6 +56378,30 @@
  },
  {
   "stats": [
+   "attack_critical_strike_chance_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Attack|アタック][Critical|クリティカルヒット率]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Attack|アタック][Critical|クリティカルヒット率]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_for_each_different_non_instant_spell_youve_cast_in_the_past_8_seconds"
   ],
   "rows": [
@@ -56342,6 +56455,30 @@
      "#|-1"
     ],
     "t": "[Recently|直近]動物形態に[Shapeshift|シェープシフト]していれば[Attack|アタック]ダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Attack|アタック]ダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Attack|アタック]ダメージが{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -57886,6 +58023,54 @@
  },
  {
   "stats": [
+   "base_damage_taken_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに受けるダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに受けるダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damaging_ailment_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにプレイヤーが付与した[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにプレイヤーが付与した[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_darkness"
   ],
   "rows": [
@@ -57917,6 +58102,34 @@
  },
  {
   "stats": [
+   "base_deflection_rating_%_of_evasion_rating_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート25ごとに[Evasion|回避力]の{0}%と同量の[Deflect|受け流し力]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_dexterity_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート25ごとに[Dexterity|器用さ] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_enemies_in_your_presence_are_hindered"
   ],
   "rows": [
@@ -57939,6 +58152,20 @@
      "#"
     ],
     "t": "[Hit|ヒット]時に[Rage|憤怒]を{0}獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_intelligence_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート25ごとに[Intelligence|知性] {0:+d}",
     "h": []
    }
   ]
@@ -58084,6 +58311,30 @@
      "#|-1"
     ],
     "t": "[Mark|呪印]のマナコスト[Efficiency|効率]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_mana_cost_efficiency_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにマナコスト[Efficiency|効率]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにマナコスト[Efficiency|効率]が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -58409,6 +58660,44 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_spirit_reservation_efficiency_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート20ごとに[Spirit|スピリット][Reservation|リザーブ][Efficiency|効率]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート20ごとに[Spirit|スピリット][Reservation|リザーブ][Efficiency|効率]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_strength_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート25ごとに[Strength|筋力] {0:+d}",
+    "h": []
    }
   ]
  },
@@ -60100,6 +60389,20 @@
  },
  {
   "stats": [
+   "chance_to_fork_extra_projectile_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに投射物は[Fork|分岐]する時に{0}%の確率で投射物を追加で1個放つ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_fortify_on_melee_stun_%"
   ],
   "rows": [
@@ -60115,6 +60418,27 @@
      "100|#"
     ],
     "t": "スタンを与えた[Melee|近接]ヒットは堅牢化する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_gain_1_more_charge_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "トリビュート10ごとに[Charges|チャージ]を1個獲得する時に{0}%の確率で[Charges|チャージ]を追加で1個獲得する",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "トリビュート10ごとに[Charges|チャージ]を1個獲得する時に[Charges|チャージ]を追加で1個獲得する",
     "h": []
    }
   ]
@@ -60601,6 +60925,54 @@
     ],
     "t": "効果中は200%の[Armour|アーマー]で防御する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[Charm|チャーム]の効果持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[Charm|チャーム]の効果持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにプレイヤーに適用される[Charm|チャーム]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにプレイヤーに適用される[Charm|チャーム]の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -61341,6 +61713,30 @@
      "#|-1"
     ],
     "t": "[Attack|アタック]スキルの冷気ダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cold_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|冷気の曝露]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|冷気の曝露]の効果が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -62893,6 +63289,30 @@
  },
  {
   "stats": [
+   "curse_delay_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート20ごとに[Curse|呪い]のアクティベーションが{0}%遅くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート20ごとに[Curse|呪い]のアクティベーションが{0}%速くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_duration_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -62908,6 +63328,30 @@
      "#|-1"
     ],
     "t": "トリビュートが最低100ある場合、[Curse|呪い]の持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "curse_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Curse|呪い]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Curse|呪い]の持続時間が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -63723,6 +64167,34 @@
  },
  {
   "stats": [
+   "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート10ごとに受けたダメージの{0}%をライフとして[Recoup|回収]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_goes_to_mana_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート10ごとに受けたダメージの{0}%をマナとして回収する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_taken_+%_on_low_life"
   ],
   "rows": [
@@ -63790,6 +64262,30 @@
      "#|-1"
     ],
     "t": "敵に付与した[DamagingAilments|ダメージ性状態異常]の持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damaging_ailment_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに敵に付与した[DamagingAilments|ダメージ性状態異常]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに敵に付与した[DamagingAilments|ダメージ性状態異常]の持続時間が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -65576,6 +66072,30 @@
  },
  {
   "stats": [
+   "empowered_attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Empowered|強化されたアタック]のダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Empowered|強化されたアタック]のダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "empowered_attack_hit_damage_stun_multiplier_+%"
   ],
   "rows": [
@@ -66767,6 +67287,30 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[ESRechargeRate|エナジーシールドリチャージレート]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[ESRechargeRate|エナジーシールドリチャージレート]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_per_4_strength"
   ],
   "rows": [
@@ -67122,6 +67666,30 @@
      "#|-1"
     ],
     "t": "スプリント中に[Evasion|回避力]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "evasion_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Evasion|回避力]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Evasion|回避力]が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -67699,6 +68267,30 @@
  },
  {
   "stats": [
+   "fire_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|火の曝露]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|火の曝露]の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_penetration_%_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -67831,6 +68423,30 @@
  },
  {
   "stats": [
+   "flask_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[Flask|フラスコ]効果持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[Flask|フラスコ]効果持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "flask_life_and_mana_recovery_+%_while_using_charm"
   ],
   "rows": [
@@ -67846,6 +68462,30 @@
      "#|-1"
     ],
     "t": "[Charm|チャーム]がアクティブな間[Flask|フラスコ]によるライフおよびマナ回復が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "flask_life_and_mana_to_recover_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Flask|フラスコ]によるライフおよびマナ回復量が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Flask|フラスコ]によるライフおよびマナ回復量が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -70039,6 +70679,30 @@
     ],
     "t": "[Hazard|ハザード]は生成された後{0}秒間はトリガーできなくなる",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "heavy_stun_poise_decay_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにプレイヤーの[HeavyStunPlayer|ヘビースタン]蓄積が空になる速さが{0}%速くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにプレイヤーの[HeavyStunPlayer|ヘビースタン]蓄積が空になる速さが{0}%遅くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -73022,6 +73686,30 @@
  },
  {
   "stats": [
+   "hit_damage_stun_multiplier_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Stun|スタン]蓄積が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Stun|スタン]蓄積が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hit_damage_stun_multiplier_+%_while_shapeshifted"
   ],
   "rows": [
@@ -75114,6 +75802,30 @@
  },
  {
   "stats": [
+   "life_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにライフ回復レートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにライフ回復レートが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_recovery_rate_+%_per_5%_missing_life"
   ],
   "rows": [
@@ -75534,6 +76246,30 @@
  },
  {
   "stats": [
+   "light_radius_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[LightRadius|光半径]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[LightRadius|光半径]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "lightning_ailment_duration_+%"
   ],
   "rows": [
@@ -75647,6 +76383,30 @@
     ],
     "t": "受けた[Lightning|雷]ダメージの{0}%をライフとして[Recoup|回収]する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|雷の曝露]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|雷の曝露]の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -78944,6 +79704,30 @@
     "t": "[Equipped|装備中]のアイテムが全てコラプト状態ならば毎秒{0}のマナを自動回復する",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとにマナ回復レートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとにマナ回復レートが{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -89275,6 +90059,30 @@
  },
  {
   "stats": [
+   "maximum_energy_shield_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに最大[EnergyShield|エナジーシールド]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに最大[EnergyShield|エナジーシールド]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89416,6 +90224,20 @@
      "#"
     ],
     "t": "[ElementalInfusion|エレメンタルインフュージョン]の最大数 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トリビュート20ごとに最大ライフの{0}%が[EnergyShield|エナジーシールド]に[StatConversion|変換]される",
     "h": []
    }
   ]
@@ -90120,6 +90942,30 @@
  },
  {
   "stats": [
+   "minion_attack_and_cast_speed_+%_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]はトリビュート50ごとに[Attack|アタック]スピードおよびキャストスピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|ミニオン]はトリビュート50ごとに[Attack|アタック]スピードおよびキャストスピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_attack_and_cast_speed_+%"
   ],
   "rows": [
@@ -90365,6 +91211,30 @@
  },
  {
   "stats": [
+   "minion_cooldown_recovery_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Minion|ミニオン]の[CooldownRecovery|クールダウン解消レート]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Minion|ミニオン]の[CooldownRecovery|クールダウン解消レート]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_critical_strike_chance_+%"
   ],
   "rows": [
@@ -90398,6 +91268,30 @@
     ],
     "t": "[Minion|ミニオン]の[CriticalDamageBonus|クリティカルダメージボーナス]が{0}%増える",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Minion|ミニオン]のダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Minion|ミニオン]のダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -90810,6 +91704,30 @@
     ],
     "t": "ミニオンのヒットは発火状態の敵だけを倒すことができる",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_lose_%_life_when_following_commands_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]は[Command|コマンド]に従うときにトリビュート10ごとにライフの{0}%を失う",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|ミニオン]は[Command|コマンド]に従うときにトリビュート10ごとにライフの{0}%を失う",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -93142,6 +94060,30 @@
  },
  {
   "stats": [
+   "parry_skill_effect_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[ParriedDebuff|パリィのデバフ]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[ParriedDebuff|パリィのデバフ]の持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "parry_skill_effect_duration_+%"
   ],
   "rows": [
@@ -93558,6 +94500,30 @@
  },
  {
   "stats": [
+   "physical_damage_reduction_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Armour|アーマー]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Armour|アーマー]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "physical_damage_reduction_rating_per_endurance_charge"
   ],
   "rows": [
@@ -93943,6 +94909,30 @@
      "#|-1"
     ],
     "t": "プレシジョンのマナリザーブ効率が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "presence_area_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Presence|存在下]の効果範囲が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Presence|存在下]の効果範囲が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -94856,6 +95846,30 @@
  },
  {
   "stats": [
+   "recover_%_maximum_life_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート50ごとにキル時に最大ライフの{0}%を回復する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート50ごとにキル時に最大ライフの{0}%を[LifeLoss|失う]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_%_maximum_life_per_glory_consumed"
   ],
   "rows": [
@@ -94865,6 +95879,30 @@
     ],
     "t": "消費した[Glory|グローリー]ごとに最大ライフの{0}%を回復する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_maximum_mana_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート50ごとにキル時に最大マナの{0}%を回復する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート50ごとにキル時に最大マナの{0}%を失う",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -95169,6 +96207,30 @@
     "t": "毎秒最大ライフの{0}%と同量のマナを自動回復する",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーが生成した[Remnant|レムナント]はトリビュート10ごとに効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "プレイヤーが生成した[Remnant|レムナント]はトリビュート10ごとに効果が{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -95692,6 +96754,30 @@
      "#|-1"
     ],
     "t": "装備中の[Shield|盾]から得られる[Armour|アーマー]、[Evasion|回避力]および[EnergyShield|エナジーシールド]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "shield_armour_evasion_energy_shield_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに装備中の盾から得られる[Armour|アーマー]、[Evasion|回避力]および[EnergyShield|エナジーシールド]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに装備中の盾から得られる[Armour|アーマー]、[Evasion|回避力]および[EnergyShield|エナジーシールド]が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -97482,6 +98568,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[StunThreshold|スタン閾値]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[StunThreshold|スタン閾値]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+%_per_number_of_times_stunned_recently"
   ],
   "rows": [
@@ -98339,6 +99449,30 @@
      "#|-1"
     ],
     "t": "[Recently|直近][Charges|エンデュランスチャージ]を消費していれば[Thorns|棘]ダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート10ごとに[Thorns|棘]ダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート10ごとに[Thorns|棘]ダメージが{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -100599,6 +101733,30 @@
  },
  {
   "stats": [
+   "warcry_speed_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュート25ごとに[Warcry|ウォークライ]スピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュート25ごとに[Warcry|ウォークライ]スピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ward_%_gained_on_kill"
   ],
   "rows": [
@@ -102697,6 +103855,30 @@
     ],
     "t": "トリビュート {0:+d}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tribute_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリビュートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリビュートが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },

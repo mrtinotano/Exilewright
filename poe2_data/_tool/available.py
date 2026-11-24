@@ -285,6 +285,12 @@ for vi, (v, out) in enumerate(zip(load('AlternateTreeVersions'), alt_versions)):
         if cnt[ty][0] == cnt[ty][1] > 0 and len(a) == 1 and (st := alt_fixed(a[0], 3)) is not None: out.setdefault('plus', {})[kind] = {k: x * cnt[ty][0] for k, x in st.items()}
     ex = {stats[r['Id']]['Id']: [PTYPE[r['NodeType']], stats[r['Stat']]['Id']] for r in load('AlternateTreeExtraAdditionsFromJewelStats') if r['JewelType'] == vi}
     if ex: out['extra'] = ex
+# what a conquered notable can become (its version's notables in AlternatePassiveSkills; one with no weight never comes
+# up), for the timeless jewels there are (uniques.py's unique_items.json). Which of them is not in the client data: the game mixes the jewel's seed with a number the jewel hides
+# (local_unique_jewel_break_timeless_jewel_calculators), so the planner is told what the game shows (app.js tellConquest)
+alt_live = {s[1] for u in json.load(open(os.path.join(OUT, 'unique_items.json'), encoding='utf8')) for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'}
+alt_notables = {x['Id']: {'version': x['AlternateTreeVersion'], 'name': x['Name'], **tr(alt_tr, x['_index']), 'icon': x['DDSIcon'], 'stats': st}
+                for x in alt_skills if x['AlternateTreeVersion'] in alt_live and 3 in x['PassiveType'] and x['SpawnWeight'] > 0 and (st := alt_fixed(x, 6)) is not None}
 # the notables an Undying Hate's modifier makes one of its conquered notables become ("One Conquered Notable Passive
 # Skill becomes Ephemeral Contact": local_historic_jewel_override_*, a passive's hash)
 alt_over = {}
@@ -298,7 +304,7 @@ socketed = {**{bases[r['BaseItemTypesKey']]['Name']: r['SocketedImage'] for r in
             **{words[r['Name']]['Text']: r['JewelArt'] for r in load('PassiveJewelUniqueArt')}}
 socket_art = {words[r['Name']]['Text']: r['KeystoneArt'] for r in load('PassiveJewelUniqueArt') if r['KeystoneArt']}   # and the art behind that socket
 save('passive_tree.json', {'class_roots': roots, 'socketed': socketed, 'socket_art': socket_art, 'attribute_options': attr_opts, 'attribute_icons': attr_icons, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
-                           'timeless': {'versions': alt_versions, 'keystones': conquerors, 'overrides': alt_over},
+                           'timeless': {'versions': alt_versions, 'keystones': conquerors, 'overrides': alt_over, 'notables': alt_notables},
                            # Flesh Crucible's keystone (local_vivisection_random_keystone_index, from 1): PassiveKeystoneList's rows
                            'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})
 
@@ -605,7 +611,7 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
 skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
-used |= {s for k in [*conquerors, *alt_over.values()] for s in k['stats']}   # the keystones timeless jewels put in place of the tree's, the notables Undying Hate's modifiers name
+used |= {s for k in [*conquerors, *alt_over.values(), *alt_notables.values()] for s in k['stats']}   # the keystones timeless jewels put in place of the tree's, the notables Undying Hate's modifiers name
 used |= {s for v in alt_versions for st in [*v.get('becomes', {}).values(), *v.get('plus', {}).values()] for s in st} | {to for v in alt_versions for _, to in v.get('extra', {}).values()}   # and what the passives they conquer become or get (Tribute)
 kept = [d for d in descs.values() if used & set(d['stats'])]
 # a skill's own .csd (it includes the general ones and overrides them): entries marked with the skills that use it

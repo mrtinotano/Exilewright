@@ -52950,6 +52950,30 @@
  },
  {
   "stats": [
+   "base_cooldown_speed_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [CooldownRecovery|재사용 대기시간 회복 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [CooldownRecovery|재사용 대기시간 회복 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "X_armour_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -53221,6 +53245,54 @@
     ],
     "t": "공격의 [Critical|치명타 명중 확률]의 {0}%만큼 공격의 [Accuracy|정확도] 증가",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Accuracy|정확도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Accuracy|정확도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [Accuracy|정확도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [Accuracy|정확도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -53787,6 +53859,23 @@
     ],
     "t": "인내 충전이 없는 동안 모든 저항 최대치 {0:+d}%",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_thorns_critical_strike_chance_permyriad_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 50당 [Thorns|가시] [Critical|치명타 명중] 확률 {0:+d}%",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
    }
   ]
  },
@@ -56293,6 +56382,30 @@
  },
  {
   "stats": [
+   "attack_critical_strike_chance_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Attack|공격]의 [Critical|치명타 명중 확률] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Attack|공격]의 [Critical|치명타 명중 확률] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_for_each_different_non_instant_spell_youve_cast_in_the_past_8_seconds"
   ],
   "rows": [
@@ -56346,6 +56459,30 @@
      "#|-1"
     ],
     "t": "[Recently|최근 4초 이내] 동물 형상으로 [Shapeshift|형태 변환]한 경우 [Attack|공격] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Attack|공격] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Attack|공격] 피해 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -57890,6 +58027,54 @@
  },
  {
   "stats": [
+   "base_damage_taken_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 받는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 받는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damaging_ailment_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 플레이어가 유발하는 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 플레이어가 유발하는 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_darkness"
   ],
   "rows": [
@@ -57921,6 +58106,34 @@
  },
  {
   "stats": [
+   "base_deflection_rating_%_of_evasion_rating_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 25당 [Evasion|회피]의 {0}%와 동일한 [Deflect|튕겨내기 평점] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_dexterity_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 25당 [Dexterity|민첩] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_enemies_in_your_presence_are_hindered"
   ],
   "rows": [
@@ -57943,6 +58156,20 @@
      "#"
     ],
     "t": "명중 시 [Rage|격노] {0} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_intelligence_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 25당 [Intelligence|지능] {0:+d}",
     "h": []
    }
   ]
@@ -58088,6 +58315,30 @@
      "#|-1"
     ],
     "t": "[Mark|징표]의 마나 소모 [Efficiency|효율] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_mana_cost_efficiency_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 마나 소모 [Efficiency|효율] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 마나 소모 [Efficiency|효율] {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -58413,6 +58664,44 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_spirit_reservation_efficiency_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 20당 스킬의 [Spirit|정신력] 점유 [Efficiency|효율] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 20당 스킬의 [Spirit|정신력] 점유 [Efficiency|효율] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_strength_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 25당 [Strength|힘] {0:+d}",
+    "h": []
    }
   ]
  },
@@ -60104,6 +60393,20 @@
  },
  {
   "stats": [
+   "chance_to_fork_extra_projectile_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "투사체가 [Fork|갈라질] 때 공물 점수 10당 {0}%의 확률로 투사체 1개 추가 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_fortify_on_melee_stun_%"
   ],
   "rows": [
@@ -60119,6 +60422,27 @@
      "100|#"
     ],
     "t": "[Melee|근접] 명중으로 기절 유발 시 방어 상승",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_gain_1_more_charge_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Charges|충전] 획득 시 공물 점수 10당 {0}% 확률로 [Charges|충전] 1개 추가 획득",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Charges|충전] 획득 시 공물 점수 10당 [Charges|충전] 1개 추가 획득",
     "h": []
    }
   ]
@@ -60605,6 +60929,54 @@
     ],
     "t": "효과를 받는 동안 200%의 [Armour|방어도]로 방어",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [Charm|호신부] 효과 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [Charm|호신부] 효과 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 자신에게 적용된 [Charm|호신부]의 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 자신에게 적용된 [Charm|호신부]의 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -61345,6 +61717,30 @@
      "#|-1"
     ],
     "t": "[Attack|공격] 스킬의 냉기 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cold_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|냉기 노출] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|냉기 노출] 효과 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -62897,6 +63293,30 @@
  },
  {
   "stats": [
+   "curse_delay_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 20당 [Curse|저주] 활성화 속도 {0}% 감속",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 20당 [Curse|저주] 활성화 속도 {0}% 가속",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_duration_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -62912,6 +63332,30 @@
      "#|-1"
     ],
     "t": "공물 점수가 100 이상인 경우 [Curse|저주] 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "curse_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Curse|저주] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Curse|저주] 지속시간 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -63727,6 +64171,34 @@
  },
  {
   "stats": [
+   "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 10당 받은 피해의 {0}%를 생명력으로 [Recoup|회생]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_goes_to_mana_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 10당 받은 피해의 {0}%를 마나로 회생",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_taken_+%_on_low_life"
   ],
   "rows": [
@@ -63794,6 +64266,30 @@
      "#|-1"
     ],
     "t": "적에게 적용되는 [DamagingAilments|피해를 주는 상태 이상]의 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damaging_ailment_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "적에게 적용되는 [DamagingAilments|피해를 주는 상태 이상]의 지속시간 공물 점수 10당 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "적에게 적용되는 [DamagingAilments|피해를 주는 상태 이상]의 지속시간 공물 점수 10당 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -65580,6 +66076,30 @@
  },
  {
   "stats": [
+   "empowered_attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Empowered|강화된 공격]이 주는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Empowered|강화된 공격]이 주는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "empowered_attack_hit_damage_stun_multiplier_+%"
   ],
   "rows": [
@@ -66771,6 +67291,30 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [ESRechargeRate|에너지 보호막 재충전 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [ESRechargeRate|에너지 보호막 재충전 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_per_4_strength"
   ],
   "rows": [
@@ -67126,6 +67670,30 @@
      "#|-1"
     ],
     "t": "달리는 동안 [Evasion|회피] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "evasion_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Evasion|회피] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Evasion|회피] {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -67703,6 +68271,30 @@
  },
  {
   "stats": [
+   "fire_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|화염 노출] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|화염 노출] 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_penetration_%_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -67835,6 +68427,30 @@
  },
  {
   "stats": [
+   "flask_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [Flask|플라스크] 효과 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [Flask|플라스크] 효과 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "flask_life_and_mana_recovery_+%_while_using_charm"
   ],
   "rows": [
@@ -67850,6 +68466,30 @@
      "#|-1"
     ],
     "t": "[Charm|호신부]가 활성화되어 있는 동안 [Flask|플라스크]로 얻는 생명력과 마나 회복 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "flask_life_and_mana_to_recover_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Flask|플라스크]로 얻는 생명력과 마나 회복 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Flask|플라스크]로 얻는 생명력과 마나 회복 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -70026,6 +70666,30 @@
     ],
     "t": "[Hazard|위해 요소]가 생성된 후 {0}초 동안 발동되지 않음",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "heavy_stun_poise_decay_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [HeavyStun|강력 기절] 축적이 떨어지는 속도 {0}% 가속",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [HeavyStun|강력 기절] 축적이 떨어지는 속도 {0}% 감속",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -73009,6 +73673,30 @@
  },
  {
   "stats": [
+   "hit_damage_stun_multiplier_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Stun|기절] 축적 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Stun|기절] 축적 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hit_damage_stun_multiplier_+%_while_shapeshifted"
   ],
   "rows": [
@@ -75101,6 +75789,30 @@
  },
  {
   "stats": [
+   "life_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 생명력 회복 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 생명력 회복 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_recovery_rate_+%_per_5%_missing_life"
   ],
   "rows": [
@@ -75521,6 +76233,30 @@
  },
  {
   "stats": [
+   "light_radius_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [LightRadius|시야 반경] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [LightRadius|시야 반경] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "lightning_ailment_duration_+%"
   ],
   "rows": [
@@ -75634,6 +76370,30 @@
     ],
     "t": "받은 번개 피해의 {0}%를 생명력으로 [Recoup|회생]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Exposure|번개 노출] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Exposure|번개 노출] 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -78931,6 +79691,30 @@
     "t": "[Equipped|장착]한 아이템이 모두 타락한 경우 1초마다 마나 {0} 재생",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 마나 회복 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 마나 회복 속도 {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -89262,6 +90046,30 @@
  },
  {
   "stats": [
+   "maximum_energy_shield_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [EnergyShield|에너지 보호막] 최대치 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [EnergyShield|에너지 보호막] 최대치 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89403,6 +90211,20 @@
      "#"
     ],
     "t": "[ElementalInfusion|원소 주입] 수치 최대치 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 20당 최대 생명력의 {0}%를 [EnergyShield|에너지 보호막]으로 [StatConversion|전환]",
     "h": []
    }
   ]
@@ -90107,6 +90929,30 @@
  },
  {
   "stats": [
+   "minion_attack_and_cast_speed_+%_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 50당 [Minion|소환수]의 공격 및 시전 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 50당 [Minion|소환수]의 공격 및 시전 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_attack_and_cast_speed_+%"
   ],
   "rows": [
@@ -90352,6 +91198,30 @@
  },
  {
   "stats": [
+   "minion_cooldown_recovery_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Minion|소환수]의 [CooldownRecovery|재사용 대기시간 회복 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Minion|소환수]의 [CooldownRecovery|재사용 대기시간 회복 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_critical_strike_chance_+%"
   ],
   "rows": [
@@ -90385,6 +91255,30 @@
     ],
     "t": "[Minion|소환수]의 [CriticalDamageBonus|치명타 피해 보너스] {0}% 증가",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Minion|소환수]가 주는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Minion|소환수]가 주는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -90797,6 +91691,30 @@
     ],
     "t": "소환수가 적중 시 점화된 적만 처치 가능",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_lose_%_life_when_following_commands_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|소환수]가 [Command|명령]을 따를 때 플레이어의 공물 점수 10당 생명력의 {0}% 상실",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Minion|소환수]가 [Command|명령]을 따를 때 플레이어의 공물 점수 10당 생명력의 {0}% 상실",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -93129,6 +94047,30 @@
  },
  {
   "stats": [
+   "parry_skill_effect_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [ParriedDebuff|흘려보내기 디버프] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [ParriedDebuff|흘려보내기 디버프] 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "parry_skill_effect_duration_+%"
   ],
   "rows": [
@@ -93545,6 +94487,30 @@
  },
  {
   "stats": [
+   "physical_damage_reduction_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Armour|방어도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Armour|방어도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "physical_damage_reduction_rating_per_endurance_charge"
   ],
   "rows": [
@@ -93930,6 +94896,30 @@
      "#|-1"
     ],
     "t": "정밀함의 마나 점유 효율 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "presence_area_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Presence|접근] 효과 범위 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Presence|접근] 효과 범위 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -94843,6 +95833,30 @@
  },
  {
   "stats": [
+   "recover_%_maximum_life_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "처치 시 공물 점수 50당 생명력 최대치의 {0}% 회복",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "처치 시 공물 점수 50당 생명력 최대치의 {0}% [LifeLoss|상실]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_%_maximum_life_per_glory_consumed"
   ],
   "rows": [
@@ -94852,6 +95866,30 @@
     ],
     "t": "소모한 [Glory|영광] 하나당 생명력 최대치의 {0}% 회복",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_maximum_mana_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "처치 시 공물 점수 50당 마나 최대치의 {0}% 회복",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "처치 시 공물 점수 50당 마나 최대치의 {0}% 상실",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -95156,6 +96194,30 @@
     "t": "1초마다 최대 생명력의 {0}%와 동일한 마나 재생",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 플레이어가 생성하는 [Remnant|잔류물]의 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 플레이어가 생성하는 [Remnant|잔류물]의 효과가 {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -95679,6 +96741,30 @@
      "#|-1"
     ],
     "t": "장착한 [Shield|방패]로 얻는 [Armour|방어도], [Evasion|회피], [EnergyShield|에너지 보호막] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "shield_armour_evasion_energy_shield_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 장착한 [Shield|방패]로 얻는 [Armour|방어도], [Evasion|회피], [EnergyShield|에너지 보호막] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 장착한 [Shield|방패]로 얻는 [Armour|방어도], [Evasion|회피], [EnergyShield|에너지 보호막] {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -97469,6 +98555,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [StunThreshold|기절 한계치] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [StunThreshold|기절 한계치] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+%_per_number_of_times_stunned_recently"
   ],
   "rows": [
@@ -98326,6 +99436,30 @@
      "#|-1"
     ],
     "t": "[Recently|최근 4초 이내] [Charges|인내 충전]을 소모한 경우 [Thorns|가시] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 10당 [Thorns|가시] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 10당 [Thorns|가시] 피해 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -100590,6 +101724,30 @@
  },
  {
   "stats": [
+   "warcry_speed_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 25당 [Warcry|함성] 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 25당 [Warcry|함성] 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ward_%_gained_on_kill"
   ],
   "rows": [
@@ -102688,6 +103846,30 @@
     ],
     "t": "공물 점수 {0:+d}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tribute_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "공물 점수 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "공물 점수 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },

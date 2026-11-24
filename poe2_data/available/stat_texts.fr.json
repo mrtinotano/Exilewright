@@ -52941,6 +52941,30 @@
  },
  {
   "stats": [
+   "base_cooldown_speed_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de la [CooldownRecovery|Vitesse de Recharge] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de la [CooldownRecovery|Vitesse de Recharge] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "X_armour_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -53212,6 +53236,54 @@
     ],
     "t": "Les Attaques bénéficient d'une Augmentation de Score de [Accuracy|Précision] équivalente à {0}% de leurs chances de [Critical|Touche critique]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Score de [Accuracy|Précision] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Score de [Accuracy|Précision] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "accuracy_rating_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Score de [Accuracy|Précision] tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Score de [Accuracy|Précision] tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -53777,6 +53849,23 @@
     ],
     "t": "{0:+d}% à toutes les Résistances élémentaires maximales tant que vous n'avez pas de Charges d'endurance",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_thorns_critical_strike_chance_permyriad_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% aux chances de [Critical|Touche critique] des [Thorns|Épines] tous les 50 de Tribut",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
    }
   ]
  },
@@ -56283,6 +56372,30 @@
  },
  {
   "stats": [
+   "attack_critical_strike_chance_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vous avez {0}% d'Augmentation de [Critical|Chances de Touche critique] des [Attack|Attaques] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vous avez {0}% de Réduction de [Critical|Chances de Touche critique] des [Attack|Attaques] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_for_each_different_non_instant_spell_youve_cast_in_the_past_8_seconds"
   ],
   "rows": [
@@ -56336,6 +56449,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction des Dégâts d'[Attack|Attaque] si vous vous êtes [Shapeshift|Métamorphosé] en une forme Animale [Recently|Récemment]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation des Dégâts d'[Attack|Attaque] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction des Dégâts d'[Attack|Attaque] tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -57883,6 +58020,54 @@
  },
  {
   "stats": [
+   "base_damage_taken_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation des Dégâts subis tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction des Dégâts subis tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damaging_ailment_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [DamagingAilments|Altérations infligeant des Dégâts] que vous infligez ont {0}% d'Augmentation d'[BuffMagnitude|Amplitude] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [DamagingAilments|Altérations infligeant des Dégâts] que vous infligez ont {0}% de Réduction d'[BuffMagnitude|Amplitude] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_darkness"
   ],
   "rows": [
@@ -57914,6 +58099,34 @@
  },
  {
   "stats": [
+   "base_deflection_rating_%_of_evasion_rating_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Vous gagnez un montant de [Deflect|Score de Déviation] équivalent à {0}% de votre [Evasion|Score d'Évasion] par tranche de 25 de Tribut",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_dexterity_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} de [Dexterity|Dextérité] tous les 25 de Tribut",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_enemies_in_your_presence_are_hindered"
   ],
   "rows": [
@@ -57936,6 +58149,20 @@
      "#"
     ],
     "t": "Vous gagnez {0} de [Rage|Rage] au Toucher",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_intelligence_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} d'[Intelligence|Intelligence] tous les 25 de Tribut",
     "h": []
    }
   ]
@@ -58081,6 +58308,30 @@
      "#|-1"
     ],
     "t": "Le Coût en Mana des [Mark|Marques] a {0}% de Réduction d'[Efficiency|Efficacité]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_mana_cost_efficiency_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les Coûts en Mana ont {0}% d'Augmentation d'[Efficiency|Efficacité] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les Coûts en Mana ont {0}% de Réduction d'[Efficiency|Efficacité] tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -58406,6 +58657,44 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_spirit_reservation_efficiency_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Efficiency|Efficacité] de Réservation d'[Spirit|Esprit] augmentée de {0} % tous les 20 tributs.",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Efficiency|Efficacité] de Réservation d'[Spirit|Esprit] réduite de {0} % tous les 20 tributs.",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_strength_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} de [Strength|Force] tous les 25 de Tribut",
+    "h": []
    }
   ]
  },
@@ -60097,6 +60386,20 @@
  },
  {
   "stats": [
+   "chance_to_fork_extra_projectile_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Tous les 10 de Tribut, les Projectiles qui se [Fork|Scindent] ont {0}% de chances de générer un Projectile supplémentaire",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_fortify_on_melee_stun_%"
   ],
   "rows": [
@@ -60112,6 +60415,27 @@
      "100|#"
     ],
     "t": "Vous vous Renforcez lorsque vous Étourdissez en Touchant en [Melee|Mêlée]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_gain_1_more_charge_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "Tous les 10 de Tribut, lorsque vous gagnez une [Charges|Charge], vous avez {0}% de chances de gagner une [Charges|Charge] supplémentaire",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Tous les 10 de Tribut, lorsque vous gagnez une [Charges|Charge], vous gagnez une [Charges|Charge] supplémentaire",
     "h": []
    }
   ]
@@ -60598,6 +60922,54 @@
     ],
     "t": "Vous vous Défendez avec 200% de votre [Armour|Armure] pendant la durée de l'Effet",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les Effets des [Charm|Charmes] ont {0}% d'Augmentation de Durée tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les Effets des [Charm|Charmes] ont {0}% de Réduction de Durée tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "charm_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [Charm|Charmes] vous affectant ont {0}% d'Augmentation d'Effet tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "es [Charm|Charmes] vous affectant ont {0}% de Réduction d'Effet tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -61338,6 +61710,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction des Dégâts de froid avec les Aptitudes d'[Attack|Attaque]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cold_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "L'[Exposure|Exposition au Froid] a {0}% d'Augmentation d'Effet",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "L'[Exposure|Exposition au Froid] a {0}% de Réduction d'Effet",
     "h": [
      "negate",
      "1"
@@ -62890,6 +63286,30 @@
  },
  {
   "stats": [
+   "curse_delay_+%_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "L'Activation des [Curse|Malédictions] est {0}% plus lente tous les 20 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "L'Activation des [Curse|Malédictions] est {0}% plus rapide tous les 20 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "curse_duration_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -62905,6 +63325,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction de la Durée des [Curse|Malédictions] si vous avez au moins 100 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "curse_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de la Durée des [Curse|Malédictions] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de la Durée des [Curse|Malédictions] tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -63720,6 +64164,34 @@
  },
  {
   "stats": [
+   "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% des Dégâts subis sont [Recoup|Recouvrés] sous forme de Vie, tous les 10 de Tribut",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_goes_to_mana_%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% des Dégâts subis sont Recouvrés sous forme de Mana, tous les 10 de Tribut",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_taken_+%_on_low_life"
   ],
   "rows": [
@@ -63787,6 +64259,30 @@
      "#|-1"
     ],
     "t": "Les [DamagingAilments|Altérations infligeant des Dégâts] affectant les Ennemis ont {0}% de Réduction de Durée",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damaging_ailment_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [DamagingAilments|Altérations infligeant des Dégâts] ont {0}% d'Augmentation de Durée sur les Ennemis tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [DamagingAilments|Altérations infligeant des Dégâts] ont {0}% de Réduction de Durée sur les Ennemis tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -65573,6 +66069,30 @@
  },
  {
   "stats": [
+   "empowered_attack_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [Empowered|Attaques Améliorées] ont {0}% d'Augmentation de Dégâts tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [Empowered|Attaques Améliorées] ont {0}% de Réduction de Dégâts tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "empowered_attack_hit_damage_stun_multiplier_+%"
   ],
   "rows": [
@@ -66764,6 +67284,30 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation du [ESRechargeRate|Taux de Recharge du Bouclier d'énergie] tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction du [ESRechargeRate|Taux de Recharge du Bouclier d'énergie] tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_per_4_strength"
   ],
   "rows": [
@@ -67119,6 +67663,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction du [Evasion|Score d'Évasion] tant que vous Sprintez",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "evasion_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Score d'[Evasion|Évasion] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Score d'[Evasion|Évasion] tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -67696,6 +68264,30 @@
  },
  {
   "stats": [
+   "fire_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "L'[Exposure|Exposition au feu] a {0}% d'Augmentation d'Effet",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "L'[Exposure|Exposition au feu] a {0}% de Réduction d'Effet",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_penetration_%_if_you_have_blocked_recently"
   ],
   "rows": [
@@ -67828,6 +68420,30 @@
  },
  {
   "stats": [
+   "flask_duration_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de la Durée des Effets des [Flask|Flacons] tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de la Durée des Effets des [Flask|Flacons] tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "flask_life_and_mana_recovery_+%_while_using_charm"
   ],
   "rows": [
@@ -67843,6 +68459,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction de Récupération de Vie et Mana des [Flask|Flacons] tant que vous avez un [Charm|Charme] actif",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "flask_life_and_mana_to_recover_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "La Récupération de Vie et de Mana des [Flask|Flacons] a {0}% d'Augmentation tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "a Récupération de Vie et de Mana des [Flask|Flacons] a {0}% de Réduction tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -70032,6 +70672,30 @@
     ],
     "t": "Les [Hazard|Périls] ne peuvent pas être déclenchés pendant {0} secondes après avoir été créés",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "heavy_stun_poise_decay_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Votre Accumulation d'[HeavyStunPlayer|Étourdissement massif] se vide {0}% plus rapidement tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Votre Accumulation d'[HeavyStunPlayer|Étourdissement massif] se vide {0}% plus lentement tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -73015,6 +73679,30 @@
  },
  {
   "stats": [
+   "hit_damage_stun_multiplier_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de l'Accumulation d'[Stun|Étourdissement] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de l'Accumulation d'[Stun|Étourdissement] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hit_damage_stun_multiplier_+%_while_shapeshifted"
   ],
   "rows": [
@@ -75110,6 +75798,30 @@
  },
  {
   "stats": [
+   "life_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Taux de Récupération de Vie tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Taux de Récupération de Vie tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_recovery_rate_+%_per_5%_missing_life"
   ],
   "rows": [
@@ -75530,6 +76242,30 @@
  },
  {
   "stats": [
+   "light_radius_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vous avez {0}% d'Augmentation de [LightRadius|Rayonnement lumineux] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vous avez {0}% de Réduction de [LightRadius|Rayonnement lumineux] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "lightning_ailment_duration_+%"
   ],
   "rows": [
@@ -75643,6 +76379,30 @@
     ],
     "t": "{0}% des Dégâts de [Lightning|Foudre] subis sont [Recoup|Recouvrés] sous forme de Vie",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_exposure_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "L'[Exposure|Exposition] à la Foudre a {0}% d'Augmentation d'Effet",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "L'[Exposure|Exposition] à la Foudre a {0}% de Réduction d'Effet",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -78940,6 +79700,30 @@
     "t": "Vous Régénérez {0} de Mana par seconde si tous les Objets [Equipped|Équipés] sont Corrompus",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Taux de Récupération de Mana tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Taux de Récupération de Mana tous les 10 de Tribut",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -89271,6 +90055,30 @@
  },
  {
   "stats": [
+   "maximum_energy_shield_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de [EnergyShield|Bouclier d'énergie] maximal tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de [EnergyShield|Bouclier d'énergie] maximal tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_energy_shield_+1_per_x_body_armour_evasion_rating"
   ],
   "rows": [
@@ -89412,6 +90220,20 @@
      "#"
     ],
     "t": "{0:+d} au nombre maximum d'[ElementalInfusion|Infusions élémentaires]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% de votre Vie maximale est [StatConversion|Convertie] en [EnergyShield|Bouclier d'énergie] tous les 20 de Tribut",
     "h": []
    }
   ]
@@ -90116,6 +90938,30 @@
  },
  {
   "stats": [
+   "minion_attack_and_cast_speed_+%_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [Minion|Créatures] ont {0}% d'Augmentation de Vitesse d'[Attack|Attaque] et incantation tous les 50 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [Minion|Créatures] ont {0}% de Réduction de Vitesse d'[Attack|Attaque] et incantation tous les 50 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_attack_and_cast_speed_+%"
   ],
   "rows": [
@@ -90361,6 +91207,30 @@
  },
  {
   "stats": [
+   "minion_cooldown_recovery_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vos [Minion|créatures] ont une [CooldownRecovery|vitesse de recharge] augmentée de {0} % tous les 10 tributs.",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vos [Minion|créatures] ont une [CooldownRecovery|vitesse de recharge] réduite de {0} % tous les 10 tributs.",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_critical_strike_chance_+%"
   ],
   "rows": [
@@ -90394,6 +91264,30 @@
     ],
     "t": "Vos [Minion|Créatures] ont {0}% d'Augmentation de [CriticalDamageBonus|Bonus de Dégâts critiques]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vos [Minion|créatures] infligent {0} % de dégâts supplémentaires tous les 10 tributs.",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vos [Minion|créatures] infligent {0} % de dégâts en moins tous les 10 tributs.",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -90806,6 +91700,30 @@
     ],
     "t": "Les Créatures ne peuvent Tuer au Toucher que les Ennemis Embrasés",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_lose_%_life_when_following_commands_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vos [Minion|créatures] perdent {0} % de points de vie tous les 10 tributs que vous possédez lorsqu'elles suivent vos [Command|ordres].",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vos [Minion|créatures] perdent {0} % de points de vie tous les 10 tributs que vous possédez lorsqu'elles suivent vos [Command|ordres].",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -93138,6 +94056,30 @@
  },
  {
   "stats": [
+   "parry_skill_effect_duration_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "L'Effet néfaste [ParriedDebuff|Paré] a {0}% d'Augmentation de Durée tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "L'Effet néfaste [ParriedDebuff|Paré] a {0}% de Réduction de Durée tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "parry_skill_effect_duration_+%"
   ],
   "rows": [
@@ -93554,6 +94496,30 @@
  },
  {
   "stats": [
+   "physical_damage_reduction_rating_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation d'[Armour|Armure] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction d'[Armour|Armure] tous les 10 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "physical_damage_reduction_rating_per_endurance_charge"
   ],
   "rows": [
@@ -93939,6 +94905,30 @@
      "#|-1"
     ],
     "t": "Justesse a {0}% de Réduction de l'Efficacité de la Réservation de Mana",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "presence_area_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Votre [Presence|Présence] a {0}% d'Augmentation de Zone d'effet tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Votre [Presence|Présence] a {0}% de Réduction de Zone d'effet tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -94852,6 +95842,30 @@
  },
  {
   "stats": [
+   "recover_%_maximum_life_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vous récupérez {0} % de votre maximum de points de vie en tuant par tranche de 50 tributs.",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vous [LifeLoss|perdez] {0} % de votre maximum de points de vie en tuant par tranche de 50 tributs.",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_%_maximum_life_per_glory_consumed"
   ],
   "rows": [
@@ -94861,6 +95875,30 @@
     ],
     "t": "Vous récupérez {0} % de votre maximum de points de vie par point de [Glory|gloire] consommé.",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_maximum_mana_on_kill_per_50_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Vous récupérez {0} % de votre maximum de mana en tuant par tranche de 50 tributs.",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Vous perdez {0} % de votre maximum de mana en tuant par tranche de 50 tributs.",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -95165,6 +96203,30 @@
     "t": "Vous régénérez du mana égal à {0} % de votre maximum de points de vie par seconde.",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remnant_effect_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Les [Remnant|Reliquats] que vous créez ont {0}% d'Augmentation d'effet tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Les [Remnant|Reliquats] que vous créez ont {0}% de Réduction d'effet tous les 10 de Tribut",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -95688,6 +96750,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction de l'[Armour|Armure], de l'[Evasion|Évasion] et du [EnergyShield|Bouclier d'énergie] du [Shield|Bouclier] Équipé",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "shield_armour_evasion_energy_shield_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de l'[Armour|Armure], de l'[Evasion|Évasion] et du [EnergyShield|Bouclier d'énergie] du Bouclier Équipé tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de l'[Armour|Armure], de l'[Evasion|Évasion] et du [EnergyShield|Bouclier d'énergie] du Bouclier Équipé tous les 25 de Tribut",
     "h": [
      "negate",
      "1"
@@ -97472,6 +98558,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de [StunThreshold|Seuil d'Étourdissement] tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de [StunThreshold|Seuil d'Étourdissement] tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+%_per_number_of_times_stunned_recently"
   ],
   "rows": [
@@ -98329,6 +99439,30 @@
      "#|-1"
     ],
     "t": "{0}% de Réduction de Dégâts des [Thorns|Épines] si vous avez consommé une [Charges|Charge d'endurance] [Recently|Récemment]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_damage_+%_per_10_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Dégâts des [Thorns|Épines] tous les 10 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Dégâts des [Thorns|Épines] tous les 10 de Tribut",
     "h": [
      "negate",
      "1"
@@ -100589,6 +101723,30 @@
  },
  {
   "stats": [
+   "warcry_speed_+%_per_25_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Vitesse des [Warcry|Cris de guerre] tous les 25 de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Vitesse des [Warcry|Cris de guerre] tous les 25 de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "ward_%_gained_on_kill"
   ],
   "rows": [
@@ -102687,6 +103845,30 @@
     ],
     "t": "{0:+d} de Tribut",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tribute_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% d'Augmentation de Tribut",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% de Réduction de Tribut",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },

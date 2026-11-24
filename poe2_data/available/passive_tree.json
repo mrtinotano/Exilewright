@@ -153996,6 +153996,1190 @@
      "physical_damage_prevented_recouped_as_life_%_if_you_have_at_least_100_tribute": 20
     }
    }
+  },
+  "notables": {
+   "kalguur_notable1": {
+    "version": 6,
+    "name": "Scorched Earth",
+    "name_es": "Tierra calcinada",
+    "name_pt": "Terra Arrasada",
+    "name_fr": "Terre brûlée",
+    "name_de": "Verbrannte Erde",
+    "name_ru": "Опалённая земля",
+    "name_ja": "焦げた大地",
+    "name_ko": "그을린 대지",
+    "name_th": "Scorched Earth",
+    "name_zh": "焦土",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "fire_damage_+%": 40,
+     "base_intelligence": 15
+    }
+   },
+   "kalguur_notable2": {
+    "version": 6,
+    "name": "War Tactics",
+    "name_es": "Tácticas de guerra",
+    "name_pt": "Táticas de Guerra",
+    "name_fr": "Tactiques de guerre",
+    "name_de": "Kriegstaktik",
+    "name_ru": "Военная тактика",
+    "name_ja": "戦争戦術",
+    "name_ko": "병법",
+    "name_th": "War Tactics",
+    "name_zh": "戰爭策略",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "physical_damage_+%": 40,
+     "mana_regeneration_rate_+%": 20
+    }
+   },
+   "kalguur_notable3": {
+    "version": 6,
+    "name": "Kalguuran Forged",
+    "name_es": "Forjado por los kalguur",
+    "name_pt": "Forjado pelos Kalguuranos",
+    "name_fr": "Forgé façon kalguur",
+    "name_de": "Kalguurisch geschmiedet",
+    "name_ru": "Калгууранская закалка",
+    "name_ja": "カルグール製",
+    "name_ko": "칼구르의 작품",
+    "name_th": "Kalguuran Forged",
+    "name_zh": "卡爾葛鍛造",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "base_maximum_fire_damage_resistance_%": 2,
+     "base_self_freeze_duration_-%": 10
+    }
+   },
+   "kalguur_notable4": {
+    "version": 6,
+    "name": "Born of Middengard",
+    "name_es": "Nacido en Middengard",
+    "name_pt": "Oriundo de Middengard",
+    "name_fr": "Issu de Middengard",
+    "name_de": "Geboren in Middengard",
+    "name_ru": "Рождённый в Мидденгарде",
+    "name_ja": "ミデンガルド生まれ",
+    "name_ko": "미덴가르드 태생",
+    "name_th": "Born of Middengard",
+    "name_zh": "密登加德之裔",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "physical_damage_reduction_rating_+%": 40,
+     "base_cold_damage_resistance_%": 10
+    }
+   },
+   "kalguur_notable5": {
+    "version": 6,
+    "name": "Force of Will",
+    "name_es": "Fuerza de voluntad",
+    "name_pt": "Força de Vontade",
+    "name_fr": "Force de volonté",
+    "name_de": "Macht des Willens",
+    "name_ru": "Сила воли",
+    "name_ja": "意志の力",
+    "name_ko": "의지의 힘",
+    "name_th": "Force of Will",
+    "name_zh": "意志之力",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "hit_damage_stun_multiplier_+%": 30,
+     "maximum_mana_+%": 2
+    }
+   },
+   "kalguur_notable6": {
+    "version": 6,
+    "name": "Runic Flows",
+    "name_es": "Flujos rúnicos",
+    "name_pt": "Fluxos Rúnicos",
+    "name_fr": "Flux runiques",
+    "name_de": "Runenströme",
+    "name_ru": "Рунический поток",
+    "name_ja": "ルーンの流れ",
+    "name_ko": "룬의 흐름",
+    "name_th": "Runic Flows",
+    "name_zh": "符文奔流",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "life_regeneration_rate_per_minute_%": 90,
+     "base_curse_duration_+%": 10
+    }
+   },
+   "kalguur_notable7": {
+    "version": 6,
+    "name": "Siege Mentality",
+    "name_es": "Mentalidad de asedio",
+    "name_pt": "Mentalidade de Cerco",
+    "name_fr": "Mentalité de siège",
+    "name_de": "Belagerungsmentalität",
+    "name_ru": "Осадный менталитет",
+    "name_ja": "包囲戦の心構え",
+    "name_ko": "포위 심리",
+    "name_th": "Siege Mentality",
+    "name_zh": "圍攻心理",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "armour_break_amount_+%": 40,
+     "energy_shield_delay_-%": 10
+    }
+   },
+   "kalguur_notable8": {
+    "version": 6,
+    "name": "Rune Knight",
+    "name_es": "Caballero rúnico",
+    "name_pt": "Cavaleiro Rúnico",
+    "name_fr": "Chevalier des runes",
+    "name_de": "Runenritter",
+    "name_ru": "Рунный рыцарь",
+    "name_ja": "ルーンの騎士",
+    "name_ko": "룬 기사",
+    "name_th": "Rune Knight",
+    "name_zh": "魔符騎士",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "melee_damage_+%": 40,
+     "base_spell_critical_strike_multiplier_+": 15
+    }
+   },
+   "kalguur_notable9": {
+    "version": 6,
+    "name": "Fiery Leadership",
+    "name_es": "Liderazgo pasional",
+    "name_pt": "Liderança Ardente",
+    "name_fr": "Commandement fougueux",
+    "name_de": "Feurige Führungsqualität",
+    "name_ru": "Пламенное лидерство",
+    "name_ja": "情熱的なリーダーシップ",
+    "name_ko": "타오르는 통솔력",
+    "name_th": "Fiery Leadership",
+    "name_zh": "激情領導",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "ignite_chance_+%": 40,
+     "minion_elemental_resistance_%": 15
+    }
+   },
+   "kalguur_notable10": {
+    "version": 6,
+    "name": "Druidic Alliance",
+    "name_es": "Alianza druídica",
+    "name_pt": "Aliança Druídica",
+    "name_fr": "Alliance druidique",
+    "name_de": "Druidische Allianz",
+    "name_ru": "Друидский союз",
+    "name_ja": "ドルイドの同盟",
+    "name_ko": "드루이드의 동맹",
+    "name_th": "Druidic Alliance",
+    "name_zh": "德魯伊同盟",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "totem_damage_+%": 40,
+     "base_chaos_damage_resistance_%": 7
+    }
+   },
+   "kalguur_notable11": {
+    "version": 6,
+    "name": "Steel and Sorcery",
+    "name_es": "Acero y brujería",
+    "name_pt": "Aço e Feitiçaria",
+    "name_fr": "Acier et sorcellerie",
+    "name_de": "Stahl und Zauberei",
+    "name_ru": "Сталь и магия",
+    "name_ja": "鉄と魔術",
+    "name_ko": "강철과 마법",
+    "name_th": "Steel and Sorcery",
+    "name_zh": "堅鋼與巫術",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "base_bleeding_effect_+%": 20,
+     "arcane_surge_effect_on_self_+%": 10
+    }
+   },
+   "kalguur_notable12": {
+    "version": 6,
+    "name": "Triskelion's Light",
+    "name_es": "Luz del Trisquel",
+    "name_pt": "Luz de Triskelion",
+    "name_fr": "Lumière du triskèle",
+    "name_de": "Triskelions Licht",
+    "name_ru": "Свет Трискелиона",
+    "name_ja": "トリスケリオンの光",
+    "name_ko": "트리스켈리온의 빛",
+    "name_th": "Triskelion's Light",
+    "name_zh": "三曲之光",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrNotable.dds",
+    "stats": {
+     "empowered_attack_damage_+%": 50,
+     "lightning_exposure_effect_+%": 10,
+     "cold_exposure_effect_+%": 10,
+     "fire_exposure_effect_+%": 10
+    }
+   },
+   "kalguur_notable13": {
+    "version": 6,
+    "name": "Stormtossed Voyager",
+    "name_es": "Viajero arrojado por la tormenta",
+    "name_pt": "Navegante de Tempestades",
+    "name_fr": "Voyageur malmené par la tempête",
+    "name_de": "Sturmgepeitschter Seefahrer",
+    "name_ru": "Странник в буре",
+    "name_ja": "嵐に翻弄される航海者",
+    "name_ko": "폭풍에 시달리는 여행자",
+    "name_th": "Stormtossed Voyager",
+    "name_zh": "暴風航行者",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "base_maximum_lightning_damage_resistance_%": 2,
+     "base_self_ignite_duration_-%": 10
+    }
+   },
+   "kalguur_notable14": {
+    "version": 6,
+    "name": "Wrest Control",
+    "name_es": "Arrebatar el control",
+    "name_pt": "Retomar o Controle",
+    "name_fr": "Prise de contrôle",
+    "name_de": "Kontrolle erringen",
+    "name_ru": "Захват контроля",
+    "name_ja": "支配権奪取",
+    "name_ko": "통제력 강탈",
+    "name_th": "Wrest Control",
+    "name_zh": "強奪控制",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "lightning_damage_+%": 40,
+     "base_strength": 15
+    }
+   },
+   "kalguur_notable15": {
+    "version": 6,
+    "name": "Firedancer",
+    "name_es": "Bailarín de fuego",
+    "name_pt": "Dançarino de Fogo",
+    "name_fr": "Danseur de feu",
+    "name_de": "Feuertänzer",
+    "name_ru": "Танцующий с огнём",
+    "name_ja": "ファイヤーダンサー",
+    "name_ko": "불춤꾼",
+    "name_th": "Firedancer",
+    "name_zh": "火焰舞者",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "evasion_rating_+%": 40,
+     "base_fire_damage_resistance_%": 10
+    }
+   },
+   "kalguur_notable16": {
+    "version": 6,
+    "name": "Mercenary's Lot",
+    "name_es": "El destino del mercenario",
+    "name_pt": "Fado do Mercenário",
+    "name_fr": "Destin du mercenaire",
+    "name_de": "Anteil des Söldners",
+    "name_ru": "Удел наёмника",
+    "name_ja": "傭兵の運命",
+    "name_ko": "용병의 운명",
+    "name_th": "Mercenary's Lot",
+    "name_zh": "僱用兵之命",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "attack_speed_+%": 10,
+     "stun_threshold_+%": 15
+    }
+   },
+   "kalguur_notable17": {
+    "version": 6,
+    "name": "Vorana's Fury",
+    "name_es": "Furia de Vorana",
+    "name_pt": "Furor de Vorana",
+    "name_fr": "Fureur de Vorana",
+    "name_de": "Voranas Wut",
+    "name_ru": "Гнев Вораны",
+    "name_ja": "ヴォラナの怒り",
+    "name_ko": "보라나의 광분",
+    "name_th": "Vorana's Fury",
+    "name_zh": "沃拉娜之怒",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "projectile_damage_+%": 40,
+     "gain_x_rage_on_melee_hit": 1
+    }
+   },
+   "kalguur_notable18": {
+    "version": 6,
+    "name": "Sensible Precautions",
+    "name_es": "Precauciones sensatas",
+    "name_pt": "Precauções Sensatas",
+    "name_fr": "Précautions judicieuses",
+    "name_de": "Vernünftige Vorsichtsmaßnahmen",
+    "name_ru": "Разумные предосторожности",
+    "name_ja": "賢明な予防策",
+    "name_ko": "분별 있는 조심성",
+    "name_th": "Sensible Precautions",
+    "name_zh": "明智預防",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "flask_life_to_recover_+%": 40,
+     "block_chance_+%": 6
+    }
+   },
+   "kalguur_notable19": {
+    "version": 6,
+    "name": "Aim for the Jugular",
+    "name_es": "Apuntar a la yugular",
+    "name_pt": "Mirar na Jugular",
+    "name_fr": "Viser la jugulaire",
+    "name_de": "Auf die Halsschlagader zielen",
+    "name_ru": "Бей в слабое место",
+    "name_ja": "急所を突け",
+    "name_ko": "경정맥 노리기",
+    "name_th": "Aim for the Jugular",
+    "name_zh": "瞄準要害",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "accuracy_rating_+%": 30,
+     "base_bleeding_effect_+%": 10
+    }
+   },
+   "kalguur_notable20": {
+    "version": 6,
+    "name": "Survival Plan",
+    "name_es": "Plan de supervivencia",
+    "name_pt": "Plano de Sobrevivência",
+    "name_fr": "Plan de survie",
+    "name_de": "Überlebensplan",
+    "name_ru": "План выживания",
+    "name_ja": "生存計画",
+    "name_ko": "생존 계획",
+    "name_th": "Survival Plan",
+    "name_zh": "生存計畫",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "flask_mana_to_recover_+%": 40,
+     "maximum_life_+%": 2
+    }
+   },
+   "kalguur_notable21": {
+    "version": 6,
+    "name": "War of Attrition",
+    "name_es": "Guerra de atrición",
+    "name_pt": "Guerra de Atrito",
+    "name_fr": "Guerre d'attrition",
+    "name_de": "Zermürbungskrieg",
+    "name_ru": "Война на истощение",
+    "name_ja": "持久戦",
+    "name_ko": "소모전",
+    "name_th": "War of Attrition",
+    "name_zh": "消耗戰",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "base_poison_effect_+%": 20,
+     "base_life_leech_amount_+%": 10
+    }
+   },
+   "kalguur_notable22": {
+    "version": 6,
+    "name": "Guerilla Warfare",
+    "name_es": "Guerra de guerrillas",
+    "name_pt": "Arte de Guerrilha",
+    "name_fr": "Guérilla",
+    "name_de": "Guerillakrieg",
+    "name_ru": "Партизанская тактика",
+    "name_ja": "ゲリラ戦",
+    "name_ko": "유격전",
+    "name_th": "Guerilla Warfare",
+    "name_zh": "游擊戰",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "shock_chance_+%": 40,
+     "totem_life_+%": 15
+    }
+   },
+   "kalguur_notable23": {
+    "version": 6,
+    "name": "One for the Road",
+    "name_es": "Uno para el camino",
+    "name_pt": "Para a Viagem",
+    "name_fr": "Un dernier pour la route",
+    "name_de": "Einer für die Straße",
+    "name_ru": "В путь-дорогу",
+    "name_ja": "旅立ちの一杯",
+    "name_ko": "마지막 한 잔",
+    "name_th": "One for the Road",
+    "name_zh": "餞行酒",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "flask_duration_+%": 30,
+     "warcry_cooldown_speed_+%": 15
+    }
+   },
+   "kalguur_notable24": {
+    "version": 6,
+    "name": "Targeted Strike",
+    "name_es": "Golpe dirigido",
+    "name_pt": "Golpe Direcionado",
+    "name_fr": "Frappe ciblée",
+    "name_de": "Gezielter Angriff",
+    "name_ru": "Направленный удар",
+    "name_ja": "狙い撃ち",
+    "name_ko": "표적 타격",
+    "name_th": "Targeted Strike",
+    "name_zh": "指定打擊",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "mark_effect_+%": 20,
+     "skill_effect_duration_+%": 8
+    }
+   },
+   "kalguur_notable25": {
+    "version": 6,
+    "name": "Steel Bastion",
+    "name_es": "Bastión de acero",
+    "name_pt": "Bastião de Aço",
+    "name_fr": "Bastion d'acier",
+    "name_de": "Stahlbastion",
+    "name_ru": "Стальной бастион",
+    "name_ja": "鋼の要塞",
+    "name_ko": "강철 보루",
+    "name_th": "Steel Bastion",
+    "name_zh": "鋼鐵堡壘",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexNotable.dds",
+    "stats": {
+     "elemental_damage_+%": 40,
+     "shield_armour_evasion_energy_shield_+%": 20
+    }
+   },
+   "kalguur_notable26": {
+    "version": 6,
+    "name": "Forceful Energies",
+    "name_es": "Energías contundentes",
+    "name_pt": "Energias Poderosas",
+    "name_fr": "Énergies vigoureuses",
+    "name_de": "Kraftvolle Energien",
+    "name_ru": "Могучая энергия",
+    "name_ja": "強力なエネルギー",
+    "name_ko": "강한 에너지",
+    "name_th": "Forceful Energies",
+    "name_zh": "強力能量",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "base_cast_speed_+%": 10,
+     "base_chance_to_pierce_%": 10
+    }
+   },
+   "kalguur_notable27": {
+    "version": 6,
+    "name": "Winter Forest",
+    "name_es": "Bosque invernal",
+    "name_pt": "Floresta Invernal",
+    "name_fr": "Forêt hivernale",
+    "name_de": "Winterwald",
+    "name_ru": "Зимний лес",
+    "name_ja": "冬の森",
+    "name_ko": "겨울 숲",
+    "name_th": "Winter Forest",
+    "name_zh": "寒冬之林",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "cold_damage_+%": 40,
+     "base_dexterity": 15
+    }
+   },
+   "kalguur_notable28": {
+    "version": 6,
+    "name": "Fight as One",
+    "name_es": "Luchar como uno solo",
+    "name_pt": "Lutar Lado a Lado",
+    "name_fr": "Unis dans la bataille",
+    "name_de": "Gemeinsam kämpfen",
+    "name_ru": "Бейся как одно целое",
+    "name_ja": "一丸となって戦え",
+    "name_ko": "하나 되어 싸운다",
+    "name_th": "Fight as One",
+    "name_zh": "並肩作戰",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "minion_damage_+%": 40,
+     "accuracy_rating_+%": 8
+    }
+   },
+   "kalguur_notable29": {
+    "version": 6,
+    "name": "Summer Meadows",
+    "name_es": "Prados veraniegos",
+    "name_pt": "Prados Estivais",
+    "name_fr": "Prairies estivales",
+    "name_de": "Sommerwiesen",
+    "name_ru": "Летние луга",
+    "name_ja": "夏の牧草地",
+    "name_ko": "여름 풀밭",
+    "name_th": "Summer Meadows",
+    "name_zh": "盛夏草原",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "minion_maximum_life_+%": 30,
+     "evasion_rating_+%": 15
+    }
+   },
+   "kalguur_notable30": {
+    "version": 6,
+    "name": "Druidic Training",
+    "name_es": "Entrenamiento druídico",
+    "name_pt": "Treinamento Druídico",
+    "name_fr": "Formation druidique",
+    "name_de": "Druidische Ausbildung",
+    "name_ru": "Друидская подготовка",
+    "name_ja": "ドルイドの訓練",
+    "name_ko": "드루이드의 훈련",
+    "name_th": "Druidic Training",
+    "name_zh": "德魯伊訓練",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "spell_damage_+%": 40,
+     "charges_gained_+%": 10
+    }
+   },
+   "kalguur_notable31": {
+    "version": 6,
+    "name": "Corrupted Vision",
+    "name_es": "Visión corrupta",
+    "name_pt": "Visão Corrompida",
+    "name_fr": "Vision corrompue",
+    "name_de": "Verderbte Vision",
+    "name_ru": "Осквернённый взор",
+    "name_ja": "穢れた予見",
+    "name_ko": "타락한 시야",
+    "name_th": "Corrupted Vision",
+    "name_zh": "腐化視界",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "spell_critical_strike_chance_+%": 30,
+     "global_chance_to_blind_on_hit_%": 5
+    }
+   },
+   "kalguur_notable32": {
+    "version": 6,
+    "name": "Runic Tattoos",
+    "name_es": "Tatuajes rúnicos",
+    "name_pt": "Tatuagens Rúnicas",
+    "name_fr": "Tatouages runiques",
+    "name_de": "Runen-Tattoos",
+    "name_ru": "Рунические татуировки",
+    "name_ja": "ルーンのタトゥー",
+    "name_ko": "룬 문신",
+    "name_th": "Runic Tattoos",
+    "name_zh": "符文紋身",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "mana_regeneration_rate_+%": 30,
+     "ailment_threshold_+%": 15
+    }
+   },
+   "kalguur_notable33": {
+    "version": 6,
+    "name": "Furs and Leather",
+    "name_es": "Pieles y cuero",
+    "name_pt": "Peles e Couros",
+    "name_fr": "Fourrures et cuir",
+    "name_de": "Pelze und Leder",
+    "name_ru": "Шкуры и кожа",
+    "name_ja": "毛皮と革",
+    "name_ko": "모피와 가죽",
+    "name_th": "Furs and Leather",
+    "name_zh": "毛皮與皮革",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "base_maximum_cold_damage_resistance_%": 2,
+     "base_self_shock_duration_-%": 10
+    }
+   },
+   "kalguur_notable34": {
+    "version": 6,
+    "name": "Sudden Hail",
+    "name_es": "Granizo repentino",
+    "name_pt": "Granizo Repentino",
+    "name_fr": "Grêle soudaine",
+    "name_de": "Plötzlicher Hagel",
+    "name_ru": "Внезапный град",
+    "name_ja": "突然の雹",
+    "name_ko": "갑작스러운 우박",
+    "name_th": "Sudden Hail",
+    "name_zh": "突降冰雹",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "hit_damage_freeze_multiplier_+%": 30,
+     "base_projectile_speed_+%": 8
+    }
+   },
+   "kalguur_notable35": {
+    "version": 6,
+    "name": "Natural Energies",
+    "name_es": "Energías naturales",
+    "name_pt": "Energias Naturais",
+    "name_fr": "Énergies naturelles",
+    "name_de": "Natürliche Energien",
+    "name_ru": "Природная энергия",
+    "name_ja": "自然のエネルギー",
+    "name_ko": "자연의 에너지",
+    "name_th": "Natural Energies",
+    "name_zh": "自然能量",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "maximum_energy_shield_+%": 40,
+     "base_lightning_damage_resistance_%": 10
+    }
+   },
+   "kalguur_notable36": {
+    "version": 6,
+    "name": "Oaken Form",
+    "name_es": "Forma de roble",
+    "name_pt": "Forma de Carvalho",
+    "name_fr": "Forme de chêne",
+    "name_de": "Eichenform",
+    "name_ru": "Форма дуба",
+    "name_ja": "樫の姿",
+    "name_ko": "참나무 형상",
+    "name_th": "Oaken Form",
+    "name_zh": "橡木形態",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "damage_taken_goes_to_life_over_4_seconds_%": 10,
+     "charm_duration_+%": 10
+    }
+   },
+   "kalguur_notable37": {
+    "version": 6,
+    "name": "Spider's Lesson",
+    "name_es": "Lección de la araña",
+    "name_pt": "Lição da Aranha",
+    "name_fr": "Leçon de l'araignée",
+    "name_de": "Lektion der Spinne",
+    "name_ru": "Паучий урок",
+    "name_ja": "蜘蛛の教訓",
+    "name_ko": "거미의 교훈",
+    "name_th": "Spider's Lesson",
+    "name_zh": "毒蛛的教訓",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntNotable.dds",
+    "stats": {
+     "chaos_damage_+%": 37,
+     "projectile_chance_to_chain_1_extra_time_from_terrain_%": 6
+    }
+   },
+   "abyss_notable_1": {
+    "version": 7,
+    "name": "Disciple of Darkness",
+    "name_es": "Discípulo de la oscuridad",
+    "name_pt": "Discípulo das Trevas",
+    "name_fr": "Disciple des Ténèbres",
+    "name_de": "Jünger der Dunkelheit",
+    "name_ru": "Служитель Тьмы",
+    "name_ja": "闇の弟子",
+    "name_ko": "어둠의 신봉자",
+    "name_th": "Disciple of Darkness",
+    "name_zh": "黑暗門徒",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "tribute_+%": 20
+    }
+   },
+   "abyss_notable_2": {
+    "version": 7,
+    "name": "Creature of Death",
+    "name_es": "Criatura de muerte",
+    "name_pt": "Criatura da Morte",
+    "name_fr": "Créature de la Mort",
+    "name_de": "Kreatur des Todes",
+    "name_ru": "Создание смерти",
+    "name_ja": "死の怪物",
+    "name_ko": "죽음의 생물",
+    "name_th": "Creature of Death",
+    "name_zh": "死亡之獸",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "damage_taken_goes_to_life_over_4_seconds_%_per_10_tribute": 1,
+     "recover_%_maximum_life_on_kill_per_50_tribute": 1
+    }
+   },
+   "abyss_notable_3": {
+    "version": 7,
+    "name": "Creature of Magic",
+    "name_es": "Criatura de magia",
+    "name_pt": "Criatura da Magia",
+    "name_fr": "Créature de la Magie",
+    "name_de": "Kreatur der Magie",
+    "name_ru": "Создание волшебства",
+    "name_ja": "魔法の怪物",
+    "name_ko": "마법의 생물",
+    "name_th": "Creature of Magic",
+    "name_zh": "魔法之獸",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "damage_taken_goes_to_mana_%_per_10_tribute": 1,
+     "recover_%_maximum_mana_on_kill_per_50_tribute": 1
+    }
+   },
+   "abyss_notable_4": {
+    "version": 7,
+    "name": "Quickened Corpses",
+    "name_es": "Cadáveres acelerados",
+    "name_pt": "Cadáveres Acelerados",
+    "name_fr": "Cadavres vivifiés",
+    "name_de": "Belebte Leichen",
+    "name_ru": "Ускоренные трупы",
+    "name_ja": "活性化した死体",
+    "name_ko": "빨라진 시신",
+    "name_th": "Quickened Corpses",
+    "name_zh": "屍體激勵",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "minion_damage_+%_per_10_tribute": 1,
+     "minion_attack_and_cast_speed_+%_per_50_tribute": 3
+    }
+   },
+   "abyss_notable_5": {
+    "version": 7,
+    "name": "Ambivalent Command",
+    "name_es": "Orden ambivalente",
+    "name_pt": "Ordem Ambígua",
+    "name_fr": "Ordre ambivalent",
+    "name_de": "Ambivalenter Befehl",
+    "name_ru": "Неоднозначный приказ",
+    "name_ja": "相反する命令",
+    "name_ko": "엇갈리는 명령",
+    "name_th": "Ambivalent Command",
+    "name_zh": "矛盾命令",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "minions_lose_%_life_when_following_commands_per_10_tribute": 2,
+     "minion_cooldown_recovery_+%_per_10_tribute": 4
+    }
+   },
+   "abyss_notable_6": {
+    "version": 7,
+    "name": "Boneshedder",
+    "name_es": "Sueltahuesos",
+    "name_pt": "Esfola-ossos",
+    "name_fr": "Fendeur d'os",
+    "name_de": "Knochenschinder",
+    "name_ru": "Крошитель костей",
+    "name_ja": "骨砕き",
+    "name_ko": "탈골기",
+    "name_th": "Boneshedder",
+    "name_zh": "骸骨削切",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "chance_to_fork_extra_projectile_%_per_10_tribute": 10
+    }
+   },
+   "abyss_notable_7": {
+    "version": 7,
+    "name": "Unfiltered Brutality",
+    "name_es": "Brutalidad sin filtros",
+    "name_pt": "Brutalidade Explícita",
+    "name_fr": "Brutalité à l'état pur",
+    "name_de": "Ungefilterte Brutalität",
+    "name_ru": "Неприкрытая жестокость",
+    "name_ja": "生の凶暴性",
+    "name_ko": "여과 없는 잔인성",
+    "name_th": "Unfiltered Brutality",
+    "name_zh": "純粹殘暴",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "base_damage_taken_+%_per_10_tribute": 1,
+     "attack_damage_+%_per_10_tribute": 8
+    }
+   },
+   "abyss_notable_8": {
+    "version": 7,
+    "name": "Derogatory Gaze",
+    "name_es": "Mirada despectiva",
+    "name_pt": "Olhar Desdenhoso",
+    "name_fr": "Regard dénigrant",
+    "name_de": "Abwertender Blick",
+    "name_ru": "Презрительный взор",
+    "name_ja": "軽蔑の視線",
+    "name_ko": "경멸하는 눈길",
+    "name_th": "Derogatory Gaze",
+    "name_zh": "貶損凝視",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "attack_critical_strike_chance_+%_per_10_tribute": 5,
+     "accuracy_rating_+%_per_25_tribute": -3
+    }
+   },
+   "abyss_notable_9": {
+    "version": 7,
+    "name": "Abyssal Conduit",
+    "name_es": "Conducto abisal",
+    "name_pt": "Conduíte Abissal",
+    "name_fr": "Conduit abyssal",
+    "name_de": "Abgründige Leitung",
+    "name_ru": "Проводник Бездны",
+    "name_ja": "アビスの導き手",
+    "name_ko": "심연의 도관",
+    "name_th": "Abyssal Conduit",
+    "name_zh": "深淵連結",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "base_mana_cost_efficiency_+%_per_10_tribute": 2
+    }
+   },
+   "abyss_notable_10": {
+    "version": 7,
+    "name": "Expedited Horrors",
+    "name_es": "Horrores expeditivos",
+    "name_pt": "Horrores Velozes",
+    "name_fr": "Horreurs express",
+    "name_de": "Beschleunigte Schrecken",
+    "name_ru": "Скрытые ужасы",
+    "name_ja": "加速した恐怖",
+    "name_ko": "가속된 공포",
+    "name_th": "Expedited Horrors",
+    "name_zh": "加深恐懼",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "curse_duration_+%_per_10_tribute": 3,
+     "curse_delay_+%_per_20_tribute": -3
+    }
+   },
+   "abyss_notable_11": {
+    "version": 7,
+    "name": "Confined Exaltation",
+    "name_es": "Exaltación confinada",
+    "name_pt": "Exaltação Confinada",
+    "name_fr": "Exaltation confinée",
+    "name_de": "Eingesperrte Erhabenheit",
+    "name_ru": "Сдержанное возвышение",
+    "name_ja": "閉ざされた高揚",
+    "name_ko": "한정된 환희",
+    "name_th": "Confined Exaltation",
+    "name_zh": "侷限喜悅",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "presence_area_+%_per_10_tribute": -2,
+     "base_spirit_reservation_efficiency_+%_per_20_tribute": 1
+    }
+   },
+   "abyss_notable_12": {
+    "version": 7,
+    "name": "Arcane Ascension",
+    "name_es": "Ascensión arcana",
+    "name_pt": "Ascensão Arcana",
+    "name_fr": "Ascension arcanique",
+    "name_de": "Arkaner Aufstieg",
+    "name_ru": "Колдовское восхождение",
+    "name_ja": "アーケインの昇華",
+    "name_ko": "비전의 상승",
+    "name_th": "Arcane Ascension",
+    "name_zh": "秘術昇華",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "maximum_life_%_to_convert_to_maximum_energy_shield_per_20_tribute": 1
+    }
+   },
+   "abyss_notable_13": {
+    "version": 7,
+    "name": "Ravenous Mind",
+    "name_es": "Mente voraz",
+    "name_pt": "Mente Voraz",
+    "name_fr": "Esprit vorace",
+    "name_de": "Gieriger Geist",
+    "name_ru": "Ненасытный разум",
+    "name_ja": "貪欲な精神",
+    "name_ko": "굶주린 정신",
+    "name_th": "Ravenous Mind",
+    "name_zh": "貪婪思想",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "mana_recovery_rate_+%_per_10_tribute": 2
+    }
+   },
+   "abyss_notable_14": {
+    "version": 7,
+    "name": "Gluttonous Presence",
+    "name_es": "Presencia insaciable",
+    "name_pt": "Presença Glutona",
+    "name_fr": "Présence gloutonne ",
+    "name_de": "Unersättliche Präsenz",
+    "name_ru": "Прожорливое присутствие",
+    "name_ja": "貪り喰う存在",
+    "name_ko": "걸신들린 존재",
+    "name_th": "Gluttonous Presence",
+    "name_zh": "暴食存在",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "life_recovery_rate_+%_per_10_tribute": 2
+    }
+   },
+   "abyss_notable_15": {
+    "version": 7,
+    "name": "Unrestrained Intellect",
+    "name_es": "Intelecto irrestricto",
+    "name_pt": "Intelecto Indiscriminado",
+    "name_fr": "Intellect débridé",
+    "name_de": "Ungezügelter Intellekt",
+    "name_ru": "Несдержанный интеллект",
+    "name_ja": "自由奔放な知性",
+    "name_ko": "제약 없는 지성",
+    "name_th": "Unrestrained Intellect",
+    "name_zh": "無縛智慧",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "base_cooldown_speed_+%_per_10_tribute": 1,
+     "base_intelligence_per_25_tribute": 2
+    }
+   },
+   "abyss_notable_16": {
+    "version": 7,
+    "name": "Cruel Strength",
+    "name_es": "Fuerza cruel",
+    "name_pt": "Força Cruel",
+    "name_fr": "Force cruelle",
+    "name_de": "Grausame Stärke",
+    "name_ru": "Жестокая сила",
+    "name_ja": "残酷な筋力",
+    "name_ko": "잔혹한 힘",
+    "name_th": "Cruel Strength",
+    "name_zh": "殘忍力量",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "hit_damage_stun_multiplier_+%_per_10_tribute": 2,
+     "base_strength_per_25_tribute": 2
+    }
+   },
+   "abyss_notable_17": {
+    "version": 7,
+    "name": "Opportunistic Dexterity",
+    "name_es": "Destreza oportunista",
+    "name_pt": "Destreza Oportunista",
+    "name_fr": "Dextérité opportuniste",
+    "name_de": "Opportunistisches Geschick",
+    "name_ru": "Гибкая ловкость",
+    "name_ja": "好機の器用さ",
+    "name_ko": "기회주의적 민첩",
+    "name_th": "Opportunistic Dexterity",
+    "name_zh": "投機敏捷",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "parry_skill_effect_duration_+%_per_10_tribute": 2,
+     "base_dexterity_per_25_tribute": 2
+    }
+   },
+   "abyss_notable_18": {
+    "version": 7,
+    "name": "Unreal Potential",
+    "name_es": "Potencial irreal",
+    "name_pt": "Potencial Descomunal",
+    "name_fr": "Potentiel inouï",
+    "name_de": "Unwirkliches Potenzial",
+    "name_ru": "Нереальный потенциал",
+    "name_ja": "非現実的なポテンシャル",
+    "name_ko": "비현실적 잠재력",
+    "name_th": "Unreal Potential",
+    "name_zh": "虛幻潛力",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "chance_to_gain_1_more_charge_%_per_10_tribute": 1
+    }
+   },
+   "abyss_notable_19": {
+    "version": 7,
+    "name": "I Have Darkvision",
+    "name_es": "Veo en la oscuridad",
+    "name_pt": "Visão no Escuro",
+    "name_fr": "Je vois dans le noir",
+    "name_de": "Ich habe eine Dunkelvision",
+    "name_ru": "Я вижу тьму",
+    "name_ja": "暗視が利く",
+    "name_ko": "암흑시야",
+    "name_th": "I Have Darkvision",
+    "name_zh": "吾有黯視",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "light_radius_+%_per_10_tribute": -2,
+     "accuracy_rating_+%_per_10_tribute": 2
+    }
+   },
+   "abyss_notable_20": {
+    "version": 7,
+    "name": "Domineering Commands",
+    "name_es": "Órdenes dominantes",
+    "name_pt": "Ordens Autoritárias",
+    "name_fr": "Ordres impérieux",
+    "name_de": "Herrschsüchtige Befehle",
+    "name_ru": "Довлеющие приказы",
+    "name_ja": "支配的な命令",
+    "name_ko": "군림하는 명령",
+    "name_th": "Domineering Commands",
+    "name_zh": "跋扈命令",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "empowered_attack_damage_+%_per_10_tribute": 2,
+     "warcry_speed_+%_per_25_tribute": 4
+    }
+   },
+   "abyss_notable_21": {
+    "version": 7,
+    "name": "Worthy Tithes",
+    "name_es": "Diezmos dignos",
+    "name_pt": "Oferendas Nobres",
+    "name_fr": "Dîmes honorables",
+    "name_de": "Würdige Abgaben",
+    "name_ru": "Достойные подношения",
+    "name_ja": "価値ある十分の一税",
+    "name_ko": "가치 있는 십일조",
+    "name_th": "Worthy Tithes",
+    "name_zh": "值得的稅負",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "remnant_effect_+%_per_10_tribute": 2
+    }
+   },
+   "abyss_notable_23": {
+    "version": 7,
+    "name": "Fast Rot",
+    "name_es": "Putrefacción rápida",
+    "name_pt": "Putrefação Rápida",
+    "name_fr": "Pourriture rapide",
+    "name_de": "Schnelle Verwesung",
+    "name_ru": "Быстрое гниение",
+    "name_ja": "急速な腐敗",
+    "name_ko": "빠른 부패",
+    "name_th": "Fast Rot",
+    "name_zh": "快速腐爛",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "base_damaging_ailment_effect_+%_per_10_tribute": 2,
+     "damaging_ailment_duration_+%_per_10_tribute": -1
+    }
+   },
+   "abyss_notable_24": {
+    "version": 7,
+    "name": "Hollow Bones",
+    "name_es": "Huesos huecos",
+    "name_pt": "Ossos Côncavos",
+    "name_fr": "Os creux",
+    "name_de": "Hohle Knochen",
+    "name_ru": "Пустотелые кости",
+    "name_ja": "空洞のある骨",
+    "name_ko": "속이 빈 뼈",
+    "name_th": "Hollow Bones",
+    "name_zh": "空洞骸骨",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "evasion_rating_+%_per_10_tribute": 2,
+     "base_deflection_rating_%_of_evasion_rating_per_25_tribute": 2
+    }
+   },
+   "abyss_notable_25": {
+    "version": 7,
+    "name": "Ancient Bastion",
+    "name_es": "Bastión ancestral",
+    "name_pt": "Bastião Antigo",
+    "name_fr": "Bastion antique",
+    "name_de": "Uralte Bastion",
+    "name_ru": "Древний бастион",
+    "name_ja": "古代の砦",
+    "name_ko": "고대 보루",
+    "name_th": "Ancient Bastion",
+    "name_zh": "遠古堅堡",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssIntNotable.dds",
+    "stats": {
+     "maximum_energy_shield_+%_per_10_tribute": 4,
+     "energy_shield_recharge_rate_+%_per_25_tribute": -2
+    }
+   },
+   "abyss_notable_26": {
+    "version": 7,
+    "name": "Deformed Steel",
+    "name_es": "Acero deformado",
+    "name_pt": "Aço Deformado",
+    "name_fr": "Acier déformé",
+    "name_de": "Deformierter Stahl",
+    "name_ru": "Погнутая сталь",
+    "name_ja": "変形した鋼",
+    "name_ko": "변형된 강철",
+    "name_th": "Deformed Steel",
+    "name_zh": "殘破堅鋼",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "physical_damage_reduction_rating_+%_per_10_tribute": 2,
+     "stun_threshold_+%_per_25_tribute": 5
+    }
+   },
+   "abyss_notable_27": {
+    "version": 7,
+    "name": "Mystic Brew",
+    "name_es": "Brebaje místico",
+    "name_pt": "Infusão Mística",
+    "name_fr": "Breuvage mystique",
+    "name_de": "Mystisches Gebräu",
+    "name_ru": "Мистическое варево",
+    "name_ja": "神秘の醸造",
+    "name_ko": "신비한 조제물",
+    "name_th": "Mystic Brew",
+    "name_zh": "神秘精釀",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "flask_life_and_mana_to_recover_+%_per_10_tribute": 1,
+     "flask_duration_+%_per_25_tribute": 3
+    }
+   },
+   "abyss_notable_28": {
+    "version": 7,
+    "name": "Resilient Wards",
+    "name_es": "Barreras resilientes",
+    "name_pt": "Salvaguardas Resistentes",
+    "name_fr": "Protections résilientes",
+    "name_de": "Widerstandsfähiger Schutz",
+    "name_ru": "Крепкие барьеры",
+    "name_ja": "回復力の守護",
+    "name_ko": "탄력적인 수호",
+    "name_th": "Resilient Wards",
+    "name_zh": "堅韌守護",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssDexNotable.dds",
+    "stats": {
+     "charm_effect_+%_per_10_tribute": 1,
+     "charm_duration_+%_per_25_tribute": 3
+    }
+   },
+   "abyss_notable_29": {
+    "version": 7,
+    "name": "Dreadful Fortitude",
+    "name_es": "Fortaleza espantosa",
+    "name_pt": "Vigor Terrível",
+    "name_fr": "Courage épouvantable",
+    "name_de": "Furchtbare Standhaftigkeit",
+    "name_ru": "Ужасающая стойкость",
+    "name_ja": "恐るべき強靭さ",
+    "name_ko": "무시무시한 강건함",
+    "name_th": "Dreadful Fortitude",
+    "name_zh": "可敬的堅毅",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "heavy_stun_poise_decay_rate_+%_per_10_tribute": 1,
+     "shield_armour_evasion_energy_shield_+%_per_25_tribute": 5
+    }
+   },
+   "abyss_notable_30": {
+    "version": 7,
+    "name": "Barbed Allegiance",
+    "name_es": "Lealtad hiriente",
+    "name_pt": "Aliança Farpada",
+    "name_fr": "Allégeance barbelée",
+    "name_de": "Stachelige Treue",
+    "name_ru": "Колючая верность",
+    "name_ja": "棘の盟約",
+    "name_ko": "가시 돋친 동맹",
+    "name_th": "Barbed Allegiance",
+    "name_zh": "帶刺忠誠",
+    "icon": "Art/2DArt/SkillIcons/passives/AbyssStrNotable.dds",
+    "stats": {
+     "thorns_damage_+%_per_10_tribute": 2,
+     "additional_thorns_critical_strike_chance_permyriad_per_50_tribute": 50
+    }
+   }
   }
  },
  "keystone_list": [
