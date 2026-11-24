@@ -454,7 +454,6 @@ export function character(b, sum) {
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
     // for its share of damage gained as physical per charge, for its duration; flasks recover no life
     parryRange: sum.infinite_active_block_distance ? Infinity : v(sum, 'active_block_maximum_distance_+%'),   // increased Parry Range (Calgyra's Arc: infinite)
-    offerEff: v(sum, 'offering_spells_effect_+%'),
     lowFlask: v(sum, 'life_recovery_+%_from_flasks_while_on_low_life'),   // increased life recovery from flasks used on Low Life
     tides: sum.blood_mage_life_flask_buff_duration_ms ? { gain: v(sum, 'gain_X_life_flask_charges_per_4%_life_spent'), use: v(sum, 'blood_mage_life_flask_buff_%_charges_to_consume'),
       per: v(sum, 'blood_mage_life_flask_buff_%_damage_to_gain_as_physical_per_charge_consumed'), dur: sum.blood_mage_life_flask_buff_duration_ms / 1000, dry: !!sum.base_life_flasks_do_not_recover_life } : null,

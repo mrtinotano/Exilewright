@@ -239,7 +239,6 @@ export function initScene(el, api) {
   const setBuff = b => { buffs = buffs.filter(x => x.label !== b.label); buffs.push(b); };
   const moreProj = S => { const E = sh(S).extraProj; if (!E) return 0; const p = Math.random() * 100;   // calc.js shape extraProj
     return Math.floor(E.chance / 100) + (p < E.chance % 100 ? 1 : 0) + (Math.random() * 100 < E.two ? 2 : 0); };
-  const offerX = () => 1 + (sheet().offerEff || 0) / 100;   // the tree's increased Offering buff effect
   const sh = S => S.dmg?.shape || {}, durOf = S => sh(S).duration || (S.dmg?.stats?.base_skill_effect_duration || 0) / 1000;   // the gem's own chains, projectiles and times (calc.js)
   const mk = i => { const b = base(i); return b && { ...b, els: [...b.els], ail: [...b.ail] }; };
   const byName = name => api.build().gems.findIndex(g => g.name === name);
@@ -576,7 +575,7 @@ export function initScene(el, api) {
       const EC = S.src !== 'minionHit' && onS('Elemental Conflux');
       if (EC) { if (!(time < me.conflux?.until)) me.conflux = { el: ELEM[Math.floor(Math.random() * ELEM.length)], until: time + durOf(EC) }; if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
-      if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] * offerX() / 100;
+      if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] * SO._x / 100;
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
       const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
@@ -2325,7 +2324,7 @@ export function initScene(el, api) {
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
-    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'),
+    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
@@ -2358,8 +2357,8 @@ export function initScene(el, api) {
           // simulated: the Rage a hit gives them and the life they lose are not in the data
           // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here); Crazed Minions: more if it Revived Recently
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
-          const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
-          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * offerX() / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
+          const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * PO._x / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
+          wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * (PO?._x || 1) / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
           if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -4047,9 +4046,12 @@ export function initScene(el, api) {
     if (Math.random() * 100 < sheet().undeath.offer) undeathGo();   // the tree's chance of Archon of Undeath
     const OH = sheet().offerHeal; if (OH) me.life = Math.min(me.maxL, me.life + me.maxL * OH / 100);   // the tree's life recovered when you create an Offering
     // Guatelitzi's Ablation: a Power Charge every its interval while the Offering stands; when it ends, its share of your
-    // life and mana a second for as long as it stood. note: its life Sacrificed on use is not simulated (of which life, the data does not say)
+    // life and mana a second for as long as it stood
     const GA = S.dmg?.sum || {}, PC = GA.supported_offerings_grant_you_a_powercharge_every_x_ms / 1000, RG = GA['recover_%_life_and_mana_per_minute_for_supported_offering_lifetime'] / 6000;
-    fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: S.dmg.stats, R: S.A, off: () => ring.remove(),
+    // its buff effect (_x): the tree's increased, Sacrificial Offering's; Danse Macabre's when a second skeletal minion is there to go too
+    const DM = S.dmg?.sup?.['offering_spells_effect_+%_if_consumed_additional_skeleton'], m2 = DM && objs.find(o => o.minion && !o.dead && o.skeleton); if (m2) m2.dead = true;
+    const X = 1 + ((GA['offering_spells_effect_+%'] || 0) + (m2 ? DM : 0)) / 100;
+    fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: { ...S.dmg.stats, _x: X }, R: S.A, off: () => ring.remove(),
       tick(dt, e) { if (PC && Math.floor(e.s / PC) > Math.floor((e.s - dt) / PC)) gainCharge('power', S.label); },
       end(e) { if (RG) for (const [k, M] of [['life', me.maxL], ['mana', me.maxM]]) me.recoup.push({ k, left: M * RG * e.s, rate: M * RG }); } }); say(t('{0} active', S.label), 'blood');
   }
@@ -4400,6 +4402,9 @@ export function initScene(el, api) {
       if (EA?.cast && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) earchGo(EA);
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
+      // Extraction, Sacrificial Offering, Guatelitzi's Ablation: their share of your life Sacrificed on use (not damage, and
+      // never below 1: keywords.json Sacrifice). note: of maximum life, as the Lich's and the uniques' Sacrifices here
+      const sacL = !S.src && !auto && S.dmg?.sum?.['sacrifice_%_life_on_skill_use']; if (sacL) me.life -= Math.max(0, Math.min(me.life - 1, me.maxL * sacL / 100));
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
       if (tally() < had || P.attack && !S.src && S.kind !== 'totem' && sheet().uDef?.allEmp) { S.empd = true; const F = S.dmg?.finals || {};
