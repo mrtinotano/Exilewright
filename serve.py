@@ -23,7 +23,9 @@ the league's reference currencies (Exalted, Chaos and Divine Orbs) are worth.
 /clipboard?lang=<code> (GET, a stream of server-sent events) tells the equipment comparison (loot.js, in Settings) about the items copied in
 the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
-here.
+here. Where the game copies nothing for the price check shortcut (the rewards of an expedition), the text on the
+game's window is read instead, once for that key press (read_screen, ocr.ps1: Windows' own text recognition, on this
+computer), and its lines are passed on as {"seen": [...]}: the picture is kept nowhere.
 
 /filtersound?name=<file> (POST, body = the sound) copies a sound of the user's own (.mp3, .wav, .ogg) into the game's
 folder for the Filter tab; GET plays it from there. Local only.
@@ -75,6 +77,7 @@ import queue
 import re
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import threading
@@ -243,7 +246,7 @@ def pad_state():
 
 def overlay():
     """-> (show, loop) of a small window that stays over everything on the screen, or None without tkinter or a screen.
-    show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread). A
+    show(verdict) puts {kind, title, name, lines: [[(text, tone)]]} in it, next to the pointer (from any thread); show(None) closes it. A
     comparison stays until its ✕ is clicked, a click lands anywhere else, a key is pressed or another window comes to
     the front (all Windows only) or the next one comes; anything else (the item was taken as worn, a notice of the server's) goes by itself in a few seconds.
     loop() runs the window and has to be called in the thread that called this, the main one"""
@@ -390,7 +393,8 @@ def overlay():
                 hide()
         try:
             while True:
-                draw(q.get_nowait())
+                v = q.get_nowait()
+                draw(v) if v else hide()
         except queue.Empty:
             pass
         m, p = root.winfo_pointerxy(), pad_state()
@@ -454,6 +458,45 @@ def tell(text):
     OVER[0]({'kind': '', 'title': 'Exilewright', 'name': '', 'lines': [[(words(text), '')]]})
 
 
+def read_screen():
+    """Windows: the lines of text on the window in use (the game), as Windows' own text recognition reads them
+    (ocr.ps1), for the price check where the game copies nothing; [] when they cannot be read. The picture goes to it
+    in memory and is kept nowhere. This app's own window over the game is closed first (watch_clipboard): its text
+    would be read too"""
+    user, gdi = ctypes.windll.user32, ctypes.windll.gdi32
+    for f in (user.GetDC, gdi.CreateCompatibleDC, gdi.CreateCompatibleBitmap, gdi.SelectObject):
+        f.restype = ctypes.c_void_p
+    hwnd, box, at, title = ctypes.c_void_p(user.GetForegroundWindow()), (ctypes.c_long * 4)(), (ctypes.c_long * 2)(), ctypes.create_unicode_buffer(64)
+    user.GetWindowTextW(hwnd, title, 64)
+    user.GetClientRect(hwnd, box)
+    user.ClientToScreen(hwnd, at)
+    w, h = box[2], box[3]
+    if not title.value.startswith('Path of Exile 2') or w < 200 or h < 200:   # another window came to the front since the key: not read
+        return []
+    screen = ctypes.c_void_p(user.GetDC(None))
+    dc, bmp = ctypes.c_void_p(gdi.CreateCompatibleDC(screen)), ctypes.c_void_p(gdi.CreateCompatibleBitmap(screen, w, h))
+    try:
+        old = ctypes.c_void_p(gdi.SelectObject(dc, bmp))
+        gdi.BitBlt(dc, 0, 0, w, h, screen, at[0], at[1], 0x00CC0020)   # SRCCOPY
+        gdi.SelectObject(dc, old)
+        head = ctypes.create_string_buffer(struct.pack('<IiiHHIIiiII', 40, w, h, 1, 24, 0, 0, 0, 0, 0, 0), 40)   # 24 bits, bottom row first
+        rows = ctypes.create_string_buffer(((w * 3 + 3) & ~3) * h)
+        if gdi.GetDIBits(dc, bmp, 0, h, rows, head, 0) != h:
+            return []
+    finally:
+        gdi.DeleteObject(bmp)
+        gdi.DeleteDC(dc)
+        user.ReleaseDC(None, screen)
+    shell = os.path.join(os.environ.get('SystemRoot', r'C:\Windows'), 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe')
+    try:   # no window of its own (0x08000000): nothing takes the keyboard from the game
+        out = subprocess.run([shell, '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', os.path.join(HERE, 'ocr.ps1')],
+                             input=b'BM' + struct.pack('<IHHI', 54 + len(rows), 0, 0, 54) + head.raw + rows.raw,
+                             capture_output=True, timeout=10, creationflags=0x08000000).stdout
+    except (OSError, subprocess.SubprocessError):
+        return []
+    return [line.strip()[:200] for line in out.decode('utf-8', 'replace').splitlines() if line.strip()][:300]
+
+
 def watch_clipboard():
     """the one reader of the clipboard: item text goes to every page listening. With the window over the game, a line
     in it when no page is there to judge the item, or none answers"""
@@ -479,6 +522,20 @@ def watch_clipboard():
                 ASKED = time.monotonic()
             elif OVER:
                 tell('The planner is not open: nothing can judge the item')
+        elif text:
+            PRESSED = ('', 0)                        # something else was copied: that was this key press's one read
+        elif PRESSED[0] == 'price' and .7 < time.monotonic() - PRESSED[1] < 2 and LISTEN:
+            # the game copied nothing there (the rewards of an expedition): the text on its window instead, read once
+            # (GGG's rule for tools: the screen or the clipboard, once per manual key press)
+            PRESSED = ('', 0)
+            if OVER:                                 # an earlier price still shown would be read with the rest
+                OVER[0](None)
+                time.sleep(.2)
+            lines = read_screen()
+            for q in list(LISTEN):                   # nothing read is said too: the key was pressed
+                q.put({'seen': lines})
+            if OVER:
+                ASKED = time.monotonic()
         if ASKED and time.monotonic() - ASKED > 3:
             ASKED = 0
             tell("The planner's page is not answering: look at its tab once")

@@ -277,6 +277,20 @@ export function bulkOf(text) {
   const n = lines.map(l => l.match(/^[^:：]+[:：]\s*([\d.,\s]+?)\s*\/\s*[\d.,\s]+$/)?.[1]).find(Boolean);   // \s: a thousands space too
   return { ...b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
 }
+// lines of text read off the game's window (serve.py read_screen) -> what the exchange lists among them, one of each,
+// [{ ...its entry, stack }]: a line is a name, or "3x Greater Orb of Transmutation" (an expedition's rewards; the reader
+// takes "1x" for "IX" or "lx"). Names are compared without case, accents, spaces or signs
+// ponytail: a name read with a wrong letter is not priced; the nearest name instead if the reader proves that bad
+const flat = s => s.toLowerCase().normalize('NFD').replace(/[^\p{L}\p{N}]/gu, '');
+const SEEN_BY = new Map([...BULK_BY].filter(([k]) => !k.includes('|')).map(([k, b]) => [flat(k), b]));
+export function bulkSeen(lines) {
+  const got = new Map();
+  for (const l of lines) {
+    const whole = SEEN_BY.get(flat(l)), m = !whole && l.match(/^\s*([\dIilOo|]{1,4})\s?[x×]\s*(.+)$/i), b = whole || m && SEEN_BY.get(flat(m[2]));
+    if (b && !got.get(b.id)?.counted) got.set(b.id, { ...b, stack: m ? +m[1].replace(/[il|]/gi, '1').replace(/o/gi, '0') || 1 : 1, counted: !!m });   // the line with its amount over its name alone (the game's description of it)
+  }
+  return [...got.values()];
+}
 // what it goes for there in each currency paid (Exalted, Chaos and Divine Orbs), none turned into another: the site's
 // market is thin and its sellers do not agree across currencies (an uncut gem at 20 exalted and at 1 divine at once).
 // asks: what its sellers ask, the cheapest of each currency. bids, for one of those three orbs only (its own sellers
@@ -348,6 +362,9 @@ export function wayOf(text) {
 }
 console.assert(!BULK.length || bulkOf('Item Class: Uncut Skill Gems\nRarity: Currency\nUncut Skill Gem\n--------\nLevel: 19\n--------\nItem Level: 19')?.id === 'uncut-skill-gem-19'
   && bulkOf('Rarity: Currency\nUncut Skill Gem (Level 19)\n--------\nItem Level: 19')?.id === 'uncut-skill-gem-19' && bulkOf('Rarity: Currency\nDivine Orb\n--------\nStack Size: 3/10')?.stack === 3, 'bulkOf');
+// as Windows read an expedition's rewards off a picture of the game
+console.assert(!BULK.length || bulkSeen(['Runeshape Combinations', 'UNCUT SKILL GEM (LEVEL 19)', '3x Greater Orb of Transmutation', 'IX Uncut Skill Gem (Level 19)', 'IX Ward Rune', 'lOx Mind Rune', 'Uncut Skill Gem'])
+  .map(b => b.id + ' ' + b.stack).join() === 'uncut-skill-gem-19 1,greater-orb-of-transmutation 3,ward-rune 1,mind-rune 10', 'bulkSeen');
 // the cheapest ones like a gem: its level and quality or more, corrupted or not as it is. -> as priceOf
 export async function priceGem({ league, name, level, quality: q, corrupted, state = 'available' }) {
   const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: name, filters: {

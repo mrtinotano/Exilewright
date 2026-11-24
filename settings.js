@@ -102,6 +102,7 @@ export function initSettings(el, loot) {
     el.innerHTML = `<div class="opt settings">
       <section><h3>${t('Price check over the game')}</h3>
         <p class="note">${t('Hold the pointer over an item in the game and press the shortcut: the planner copies the item (one Ctrl+C, as if you pressed it) and shows next to the pointer what the same item costs on the official trade site.')}</p>
+        <p class="note">${t("Where the game copies nothing (an expedition's rewards), that same key press reads the text on the game's window once, with Windows' own text recognition, and prices what stacks among it. The picture stays on this computer and is not kept.")}</p>
         <div class="optrow"><label>${t('Shortcut')} ${cap('price', S.priceKey)}</label>
           <label>${t('League')} <select data-s="league">${leagueList.map(l => opt(l, l, l === (S.league || leagueList[0]))).join('')}</select></label>
           <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === S.state)).join('')}</select></label>
