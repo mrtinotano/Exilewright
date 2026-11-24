@@ -8,7 +8,7 @@ import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimiz
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
-import { SLOTS, classOf, slotClasses, slotOpen, flaskOf, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
+import { SLOTS, classOf, slotClasses, slotOpen, flaskOf, flaskLabel, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { stored, put, ask } from './settings.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
@@ -202,12 +202,7 @@ export function initOpt(el, ctx) {
 
   // ---------- gear on the trade site
   // the slots a search can be for: the gear's that the build has (the third ring: the Ritualist's) and its allocated jewel sockets
-  const slotsMemo = { key: '', list: [] };
-  function gearSlots(b) {
-    const key = ctx.id() + '|' + ctx.rev();
-    if (slotsMemo.key !== key) { const sum = ctx.sumOf(b); slotsMemo.key = key; slotsMemo.list = [...SEARCH_SLOTS.filter(s => slotOpen(s, sum)), ...ctx.sockets(b).map(id => 'jewel:' + id)]; }
-    return slotsMemo.list;
-  }
+  const gearSlots = b => { const sum = ctx.sumOf(b); return [...SEARCH_SLOTS.filter(s => slotOpen(s, sum)), ...ctx.sockets(b).map(id => 'jewel:' + id)]; };
   const slotName = (b, s) => s.startsWith('jewel:') ? `${t('Jewel')} · ${t('socket {0}', ctx.sockets(b).map(String).indexOf(s.slice(6)) + 1)}` : t(SLOTS[s]);
   const likeNow = sel => S.how === 'like' || OWN.test(sel.slot);
   function gearSel(b) {
@@ -286,7 +281,7 @@ export function initOpt(el, ctx) {
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
         <div class="gmods">${modsOf(l).map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
         ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
-        <div class="gfoot"><div class="gval">${fl ? `${esc(t(fl.k === 'life' ? 'Recovers Life' : 'Recovers Mana'))}: <b>${fmt(fl.amount)}</b> ${pct(fw?.amount, fl.amount)}`
+        <div class="gfoot"><div class="gval">${fl ? `${esc(t(flaskLabel(fl)))}: <b>${fmt(fl.amount)}</b> ${pct(fw?.amount, fl.amount)}`
           : own ? '' : `${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}`}</div>
           <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
           ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}

@@ -192,6 +192,7 @@ export function flaskOf(it, sum = {}) {
   const instant = k === 'life' && !!g('life_flask_recovery_is_instant'), instantLow = !!g(k === 'life' ? 'life_flask_recovery_is_instant_while_on_low_life' : 'mana_flask_recovery_is_instant_while_on_low_mana'), overLife = k === 'life' && !!g('life_flask_recovery_can_overcap_life');
   return { k, amount, inc: gInc, time, max, per, gain, always, instant, instantLow, overLife, regen: s.local_flask_gain_X_charges_every_minute || 0, killCharge: s['local_%_chance_to_gain_flask_charge_on_kill'] || 0, wardRegen: s['local_flask_ward_regeneration_per_minute_%_during_flask_effect'] || 0, wardGuard: s['local_unique_flask_gain_%_of_current_ward_as_guard_when_flask_effect_ends'] || 0, wardGuardMs: s['local_unique_flask_ward_gained_as_guard_duration_ms_when_flask_effect_ends'] || 0, noWard: s['local_unique_flask_life_loss_%_per_minute_while_you_have_no_runic_ward_during_flask_effect'] || 0, over: !!s['local_unique_flask_mana_flask_recovery_can_overcap_mana_during_flask_effect'], nova: s['local_unique_flask_nova_with_chaos_damage_equal_to_%_mana_spent_during_flask_effect'] || 0, endChaos: s['local_unique_flask_take_chaos_damage_equal_to_current_mana_%_when_flask_effect_ends'] || 0, recoup: s['local_flask_damage_taken_goes_to_life_over_4_seconds_%_during_effect'] || 0, keep: g('flasks_%_chance_to_not_consume_charges'), es: k === 'life' && !!g('life_recovery_from_flasks_also_recovers_energy_shield'), img: base.img };
 }
+export const flaskLabel = f => f.k === 'life' ? 'Recovers Life' : 'Recovers Mana';   // a flask's own number (flaskOf's amount), as the item editor names it
 const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges || 0)) * (1 + (s['local_max_charges_+%'] || 0) / 100));
 // A charm: what sets it off (on: its implicit "used when...", local_flask_use_on_<on>), what it grants while it lasts (its
 // buff and the buff's stats: UtilityFlaskBuffs) and for how long, the life, mana and guard it gives when used, and its
@@ -905,7 +906,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // (Exalted, Chaos, Divine); the Currency Exchange's rates if mixed prices matter
     const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), rel = (a, z) => a ? z / a : z ? 2 : 1, d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
     // a flask: what it recovers a use (its base, quality and modifiers) is its number, and no number of the build has it
-    const f0 = flaskOf(worn), FL = f0 && (f0.k === 'life' ? 'Recovers Life' : 'Recovers Mana');
+    const f0 = flaskOf(worn), FL = f0 && flaskLabel(f0);
     const key = JSON.stringify([B, now.dps, t0]);   // each listing on the build: worked out once per build, not at every render
     if (better.key !== key) Object.assign(better, { key, on: res.found.map(l => { const items = { ...B.items, [slot]: asWorn(l.item, worn) }; return [snapOf(items), trade.tough(items)]; }) });
     const all = res.found.map((l, i) => { const [z, tz] = better.on[i];
