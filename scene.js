@@ -5599,7 +5599,7 @@ export function initScene(el, api) {
     fx.text(above(), t(a === 'stun' ? (o.heavy ? 'Heavy Stun' : 'Light Stun') : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
-  function ailed(d, raw, dealt, stunOnly = false, held) {
+  function ailed(d, raw, dealt, stunOnly = false, blockS) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
     const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (1 + (charge && base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100) /* Steadfast II, while channelling it */, more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
@@ -5641,9 +5641,9 @@ export function initScene(el, api) {
     // under the least chance; each stun of the last few seconds raises your threshold (character.ot)
     stunNow();
     function stunNow() {
-      const melee = d.atk.melee, tot = cold => Object.entries(dealt).reduce((t, [e, v]) => t + (e === 'cold' && !cold ? 0 : v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1)), 0),
-        X = (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
-        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1), hard = tot(true) * X;   // Dazed: more stun buildup (keywords.json Daze)
+      const melee = d.atk.melee, X = (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
+        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1),   // Dazed: more stun buildup (keywords.json Daze)
+        hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0) * X;
       me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
       const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0)) + (I.perStun || 0) * me.stuns.length;   // per time you were Hit Recently, up to 100%; per time Stunned Recently
@@ -5651,8 +5651,8 @@ export function initScene(el, api) {
       // a hit you block yourself (shield raised, parry, Runic Reprieve) builds up Heavy Stun on you (keywords.json HeavyStunPlayer):
       // its damage but the cold (keywords.json Cold) at the player's scale (GameConstants), against your stun threshold with the
       // skill's own (Parry's less, Runic Reprieve's increased) and Unbreakable's and Styrn's Mountain's more while using it
-      if (held) { const own = held.dmg?.stats || {}, U = held.dmg?.sum || {}, f = k => 1 + (k || 0) / 100;
-        build('stun', tot() * X * PL.HeavyStunDamageScale, D.stun * stunIf(D) * f(own['stun_threshold_+%_final_while_performing_action']) * f(own['active_skill_stun_threshold_+%_while_performing_action']) * f(U['support_stability_heavy_stun_threshold_+%_final_while_performing_action']) * f(U['support_knights_legacy_heavy_stun_threshold_+%_final_while_performing_action']), (D.heavy || DUR.stun) * D.dur.stun, { heavy: true });
+      if (blockS) { const own = blockS.dmg?.stats || {}, U = blockS.dmg?.sum || {}, f = k => 1 + (k || 0) / 100;
+        build('stun', (hard - (dealt.cold || 0) * X) * PL.HeavyStunDamageScale, D.stun * stunIf(D) * f(own['stun_threshold_+%_final_while_performing_action']) * f(own['active_skill_stun_threshold_+%_while_performing_action']) * f(U['support_stability_heavy_stun_threshold_+%_final_while_performing_action']) * f(U['support_knights_legacy_heavy_stun_threshold_+%_final_while_performing_action']), (D.heavy || DUR.stun) * D.dur.stun, { heavy: true });
         if (stunOnly === 'heavy') return; }
       // with your Shield raised: Raise Shield's own more light stun threshold, doubled by Dionadair; Runefather's Boasts add theirs
       const RSH = time < me.raised?.until ? (sheet().raisedStun || 1) * (1 + (me.raised.S.dmg?.stats?.['active_block_light_stun_threshold_+%_final'] || 0) / 100) : 1;
@@ -6082,8 +6082,8 @@ export function initScene(el, api) {
     const MW = sheet().motherWard; if (MW && time >= (me.mwAt ?? -99) + 6) { me.mwAt = time; for (const o of objs) if (o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r) o.guard = { n: me.maxL * .1, until: time + MW / 1000 }; }
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
     // your Heavy Stun bar does not empty while you block yourself (keywords.json HeavyStunPlayer), nor for the skill's own time after
-    { const G = [me.raised, me.parry, me.reprieve].find(x => time < x?.until); if (G) me.guard = time + (G.S?.dmg?.stats?.active_skill_heavy_stun_decay_after_action_delay_ms || 0) / 1000; }
-    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) if (a !== 'stun' || !(time < me.guard)) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + (sheet().stunDecay + (time - (me.parryAt ?? -99) <= RECENT ? sheet().stunDecayParry : 0)) / 100 : 1));   // the tree's Heavy Stun buildup emptying faster (Resolute Reprisal: if you Parried Recently)
+    { const G = [me.raised, me.parry, me.reprieve].find(x => time < x?.until); if (G) me.poiseHold = time + (G.S?.dmg?.stats?.active_skill_heavy_stun_decay_after_action_delay_ms || 0) / 1000; }
+    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) if (a !== 'stun' || !(time < me.poiseHold)) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + (sheet().stunDecay + (time - (me.parryAt ?? -99) <= RECENT ? sheet().stunDecayParry : 0)) / 100 : 1));   // the tree's Heavy Stun buildup emptying faster (Resolute Reprisal: if you Parried Recently)
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick
       me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0, bled = 0, bEl = 'physical';
       // bleeding: its extra damage while you move, and it bypasses energy shield (keywords.json Bleeding)
