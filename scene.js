@@ -65,6 +65,9 @@ const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 
 // note: KeywordPopups Runefather's Challenge: +5 Power (BuffTemplates AncientsChallenge), each Runefather's Boast +1 to Armour,
 // to Evasion Rating and to Stun Threshold; Corrupted Blood: up to 10 of them on each target
 const RUNEFATHER = 5, BLOOD_MAX = 10;
+// note: KeywordPopups Soul Eater: each eaten Soul 1% increased Skill Speed, up to 50, one lost every 0.5 s once 4 s pass without
+// eating; Fear Incarnate: 10% increased Culling Strike threshold each for 10 s (refreshed), up to 20; Overencumbered: Slows by 10%, stacking
+const SOUL = { speed: 1, max: 50, every: .5, wait: 4 }, FEAR = { cull: 10, time: 10, max: 20 }, OVERENC = 10;
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
@@ -478,6 +481,7 @@ export function initScene(el, api) {
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if ((sheet().parrySpell ? P?.spell : D?.attack) && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried (Nocturne: more Spell damage taken instead)
+    if (real && !S.src && sheet().uEv?.soulHit && openWeak(d)) eatSoul();   // The Master's Reach: a Soul when you Hit an enemy with an Open Weakness
     if (real && D.offhand && sheet().runefather?.off) d.rfc = true;   // Eyes of the Runefather: off-hand Hits inflict Runefather's Challenge
     // Savage Fury, while on and not in its frenzy: Fury on an attack's hit, once per use, up to its most
     const SF = !S.src && P.attack && !S.wildGot && tog['Savage Fury'] && !(time < me.wildUntil) && onS('Savage Fury')?.dmg.stats;
@@ -1290,7 +1294,7 @@ export function initScene(el, api) {
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
   // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
   // maximum life and mana
-  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (time < me.cullUp?.until ? me.cullUp.inc : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
+  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (time < me.cullUp?.until ? me.cullUp.inc : 0) + (time < me.fear?.until ? me.fear.n * FEAR.cull : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
   // Culling Strike II: its increased threshold for 20 seconds after culling with it (the seconds: its text)
   const cullUp = S => { const n = S.dmg?.sum?.['support_culling_strike_threshold_+%_on_cull_for_seconds_from_code']; if (n) me.cullUp = { inc: n, until: time + 20 }; };
   const cullable = (d, S) => {
@@ -1304,7 +1308,7 @@ export function initScene(el, api) {
   const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
-    me.culledAt = time; cullUp(S); fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; cullUp(S); if (sheet().uEv?.fearCull) me.fear = { n: Math.min(FEAR.max, (time < me.fear?.until ? me.fear.n : 0) + sheet().uEv.fearCull), until: time + FEAR.time };   /* Horror's Flight */ fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
@@ -1313,7 +1317,7 @@ export function initScene(el, api) {
     // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
-    me.culledAt = time; cullUp(S); fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; cullUp(S); if (sheet().uEv?.fearCull) me.fear = { n: Math.min(FEAR.max, (time < me.fear?.until ? me.fear.n : 0) + sheet().uEv.fearCull), until: time + FEAR.time };   /* Horror's Flight */ fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     const CF = X[`skill_grant_X_frenzy_charges_against_${d.stat.rarity === 'unique' ? 'unique' : d.stat.rarity === 'rare' ? 'rare' : 'normal_and_magic'}_monsters`] || 0;   // Cull The Weak: frenzy charges by the culled one's rarity
     for (let k = 0; k < CF; k++) chargeBy('frenzy', S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
@@ -1450,6 +1454,7 @@ export function initScene(el, api) {
     const KG = S && !S.src ? ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]) : [];
     for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
+    if (sheet().uEv?.soulEater && dist(d.pos, pp) <= sheet().overgrow.r) eatSoul();   // Zerphi's Serape: the Souls of enemies that die in your Presence
     if (d.rfc && sheet().runefather?.max) me.boast = Math.min(sheet().runefather.max, (me.boast || 0) + Math.floor(pow(d)));   // Eyes of the Runefather: a Boast per Power of a challenged enemy you kill
     if (Math.random() * 100 < (sheet().lament?.load || 0)) for (const k in clips) clips[k]++;   // The Last Lament: a bolt loaded into all crossbow skills (note: one already full is not shown as over its clip)
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
@@ -4677,7 +4682,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Puppet Master. note: as more here */
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
+      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (1 + souls() * SOUL.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -4707,8 +4712,9 @@ export function initScene(el, api) {
     if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z }, parries: sheet().raiseParry && { more: RS.S.dmg.stats['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + sheet().raiseParry * (sheet().parryTime || 1) } });   // Bastion of Light: Parried on Hit
     const P = c && base(c.i)?.P; if (!P) return;
     // Assailum, Tasalio's Rhythm: a longer Perfect Timing window; each stack of the Rhythm a shorter one. note: its 30% shorter as less
-    const SU = base(c.i).dmg?.sum || {}, TR = SU.gain_X_tasalios_perfection_on_perfect_timing, win = .2 * (1 + ((sheet().perfectWin || 0) + (SU['perfect_timing_window_ms_+%'] || 0)) / 100) * (TR ? (1 - TASALIO.win / 100) ** (me.tasalio || 0) : 1);
+    const SU = base(c.i).dmg?.sum || {}, TR = SU.gain_X_tasalios_perfection_on_perfect_timing, win = .2 * (1 + ((sheet().perfectWin || 0) + (SU['perfect_timing_window_ms_+%'] || 0) + flaskOn('perfectWin')) / 100) * (TR ? (1 - TASALIO.win / 100) ** (me.tasalio || 0) : 1);
     const perfect = P.perfect && Math.abs(c.s - 1) < win;
+    if (perfect) flasks().forEach((f, n) => f?.onPerfect && drink(n, true));   // Opportunity: used when you release a skill with Perfect Timing
     if (use(c.i, { stage: Math.min(1, c.s / (P.perfect ? 1 : 1.6)), perfect, held: c.s })) { cd = useTime(base(c.i)); player.pace(cd); }
     // Perfection, Tasalio's Rhythm: a stack on Perfect Timing, all lost on failing one
     if (P.perfect && perfect) { const PF = SU.gain_X_perfection_on_successful_perfect_timing; if (PF) me.perf = { n: Math.min(PERFECTION.max, (time < me.perf?.until ? me.perf.n : 0) + PF), until: time + PERFECTION.time }; if (TR) me.tasalio = Math.min(TASALIO.max, (me.tasalio || 0) + TR); }
@@ -4799,7 +4805,7 @@ export function initScene(el, api) {
     const DR = ['Blink', 'Black Powder Blitz'].map(onS).find(X => X && sh(X).travel && !(time < me.leapAt?.[X.name]));
     const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (UD.rollDist || 0) + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
     if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; if (UD.overEnc) me.overEnc = { n: (time < me.overEnc?.until ? me.overEnc.n : 0) + 1, until: time + 4 };   /* Ab Aeterno: Overencumbered for 4 seconds (its text), stacking */ facing = Math.atan2(dx, dz); charge = held = goal = null;
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06; if (Object.keys(DR.dmg.hits).length) boom(move.from, DR.A, { ...DR, mult: 1 }); }
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
@@ -5005,6 +5011,9 @@ export function initScene(el, api) {
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
     if (me.boast) b.push(one(null, css('physical'), t("Runefather's Boast"), me.boast));
+    if (souls()) b.push(one(null, css('chaos'), t('Soul Eater'), souls()));
+    if (time < me.fear?.until) b.push(one(null, css('blood'), t('Fear Incarnate'), me.fear.n, me.fear.until - time));
+    if (time < me.overEnc?.until) b.push(one(null, css('dust'), t('Overencumbered'), me.overEnc.n, me.overEnc.until - time, true));
     if (me.locust) b.push(one(icon("Queen's Procession"), css('physical'), t("Swarm's Advance"), me.locust));
     if (me.heat) b.push(`<span class="s-txt" style="--c:${css('fire')}">${t('Heat')} ${Math.floor(me.heat)}</span>`);
     if (seen()) b.push(one(icon('Future-Past'), css('gold'), api.info({ name: 'Future-Past' }).label));
@@ -5150,6 +5159,7 @@ export function initScene(el, api) {
   }
   function hurt(n, chaos, el, crit, d, hit = false, noEs = false) {
     if (!(n > 0)) return;
+    if (noEs && sheet().uDef?.dotEs) noEs = false;   // Decree of Loyalty: damage over time cannot bypass your energy shield
     if (hit) player.flinch(Math.min(1, .3 + 4 * n / (me.maxL || 1)));
     if (time < me.helb?.until) me.helb.n += n;   // Helbrym's Composure stores the damage taken
     // Unyielding (attacks), Unbending (spells): a share of the damage taken while you use it Recouped, per 250 ms of its use time
@@ -5159,7 +5169,7 @@ export function initScene(el, api) {
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
-    stats.taken += n; me.hurt = time; if (sheet().gambleMove) me.gamble = Math.random() * sheet().gambleMove; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage(sheet().rage?.gain.hurt);
+    stats.taken += n; me.hurt = time; if (sheet().gambleMove) me.gamble = Math.random() * sheet().gambleMove; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage((sheet().rage?.gain.hurt || 0) + (hit ? flaskOn('rageHit') : 0));   // Blood of the Warrior: Rage when Hit during its effect
     const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
@@ -5212,6 +5222,7 @@ export function initScene(el, api) {
     if (T.life?.[1]) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.life[k] / 100 * (T.thornsX || 1));   // a share of maximum life (mana) as physical (cold) thorns
     if (T.manaCold) hits.cold = [0, 1].map(k => (hits.cold?.[k] || 0) + me.maxM * T.manaCold / 100 * (T.thornsX || 1));
     if (T.lifeShift && shifted()) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.maxL * T.lifeShift / 100 * (T.thornsX || 1));   // the tree's physical thorns from your life while Shapeshifted
+    if (me.runes && T.perRune?.[1]) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + me.runes * T.perRune[k] * (T.thornsX || 1));   // Serle's Grit: per Runic Plate of Runic Tempering
     if (n) hits.physical = [0, 1].map(k => (hits.physical?.[k] || 0) + n * SP[k ? 'scavenged_plating_thorns_maximum_physical_damage' : 'scavenged_plating_thorns_minimum_physical_damage'] * (T.thornsX || 1));
     // Crackling Barrier: while you channel the skill it supports, its share of your maximum mana as lightning thorns
     const ci = held?.i ?? charge?.i, cb = ci != null ? base(ci) : null, CB = cb?.P.channel && cb.dmg?.sum?.['return_%_of_maximum_mana_as_lightning_damage_to_attacker_while_channelling'];
@@ -5356,7 +5367,7 @@ export function initScene(el, api) {
     if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.filter(x => x.name === v.name); if (o.length < BLOOD_MAX) d.dots.push(v); else Object.assign(o.reduce((a, x) => x.s < a.s ? x : a), v); }
     if (U.enfeeble && Math.random() * 100 < U.enfeeble.chance) { const E = U.enfeeble;   // Rondel de Ezo: cursed with Enfeeble, as a curse of yours
       d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== 'Enfeeble').slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
-      d.curse = { s: E.time, full: E.time, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; }
+      d.curse = { s: SIM.curseTime, full: SIM.curseTime, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; }
   }
   const blocked = d => { blockU(d); me.blockAt = time; me.blockN = (me.blockN || 0) + 1; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
@@ -5418,7 +5429,7 @@ export function initScene(el, api) {
     // rolling restores your life first and grants Sight Beyond Sight (its secondary duration: you cannot die), then
     // Hindsight again. note: her copy (foresight_clone_duration_ms) is a look the scene does not have
     const FP = onS('Future-Past'), foresight = seen();
-    if (move && !move.S && !a.area && !foresight && !sheet().bulwark) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
+    if (move && !move.S && (!a.area || move.roll && sheet().uDef?.rollAll) && !foresight && !sheet().bulwark) return fx.text(above(), t('Dodged'), GREY, .32), record('avoid', d.mon.name, t('Dodged'), 0, GREY);   // the dodge roll avoids strikes and projectiles
     if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }
     if (!a.unblockable && activeBlock(d, a)) return;
     // Runic Reprieve's bubble Blocks the hit: you take its share of the damage, also taken off your Runic Ward, and are not
@@ -5454,7 +5465,7 @@ export function initScene(el, api) {
     let total = 0, chaos = 0, top = d.col, best = 0; const raw = {}, dealt = {}, IW = onS('Iron Ward')?.dmg.stats;
     me.struck = [...(me.struck || []).filter(at => time - at <= RECENT), time];   // the times you were Hit Recently
     const UL = Math.random() * 100 < (OR.unluckyDmg || 0);   // the hit's damage Unlucky
-    const DR = OR.dmgRolls || {}, rollOf = el => { const n = (DR[el] || 0) + (lowLife() ? DR.low || 0 : 0); return UL || n < 0 ? Math.min(Math.random(), Math.random()) : n > 0 ? Math.max(Math.random(), Math.random()) : Math.random(); };   // Lucky: the higher of two rolls
+    const DR = OR.dmgRolls || {}, rollOf = el => { const n = (DR[el] || 0) + (lowLife() ? DR.low || 0 : 0) + (el === 'lightning' ? me.cu.reduce((t, u) => t + (u?.c.lightRoll || 0), 0) : 0); return UL || n < 0 ? Math.min(Math.random(), Math.random()) : n > 0 ? Math.max(Math.random(), Math.random()) : Math.random(); };   // Lucky: the higher of two rolls
     const TW = (OR.takenWhile || []).reduce((m, w) => meIs[w.cv]() ? m * (1 + w.val / 100) : m, 1);   // more / less damage taken in a state (before this hit counts)
     const ALT = OR.uDef?.alt && Math.floor(time / 5) % 2 === 0 ? 1 + OR.uDef.alt / 100 : 1;   // Keeper of the Arc: less damage from hits every other 5 s (heart(): over time the other 5 s)
     const FT = OR.flatTaken || {}, flat = (FT.phys || 0) + (a.attack ? FT.attack || 0 : 0) + (a.attack && a.shape === 'projectile' ? FT.proj || 0 : 0);   // uniques' "-10 Physical Damage taken from Hits" (note: taken off before your defences)
@@ -5502,7 +5513,7 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100),   // Pathfinder: unaffected by slows
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100) * (time < me.overEnc?.until && !(me.sprint && sheet().sprintNoSlow) ? Math.max(0, 1 - OVERENC * me.overEnc.n * sheet().ailments.eff.slow / 100) : 1),   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
@@ -5591,6 +5602,9 @@ export function initScene(el, api) {
   const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1) + (sheet().gmPower && d?.gm && dist(d.pos, pp) <= sheet().overgrow.r ? d.gm.n : 0) + (d?.rfc ? RUNEFATHER : 0);   // a monster's Power (Redblade Banner: more in your Presence; Runefather's Challenge: more)
   const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
   const flasks = () => sheet().flasks || [];
+  const souls = () => { const s = me.souls; return s ? Math.max(0, s.n - Math.max(0, Math.floor((time - s.at - SOUL.wait) / SOUL.every))) : 0; };
+  const eatSoul = () => { me.souls = { n: Math.min(SOUL.max, souls() + 1), at: time }; hudT = 0; };
+  const flaskOn = k => flasks().reduce((t, f, n) => t + (f && me.drink[n] ? +f[k] || 0 : 0), 0);   // what the flasks in effect give (a unique's own)
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
   const flaskHeal = (f, n, B = sheet().brew, dry = sheet().tides?.dry) => {   // life (and energy shield, when the build says so) or mana; with Azmeri Brew a flask recovers both
@@ -5599,9 +5613,10 @@ export function initScene(el, api) {
     if (!sheet().vaal) me.life = (f.overLife ? overflow : gain)(me.life, me.maxL, n); if (f.es) me.es = gain(me.es, me.maxE, n);   // Vaal Pact: no life; The Gnashing Sash: over maximum life
   };
   // Guard for s seconds, the higher one kept, up to 200% of your maximum life (keywords.json Guard)
-  function guardFor(g, s) { g = Math.min(g, 2 * (me.maxL || 0)); if (g > me.guard) { me.guard = g; later(s, () => { if (me.guard === g) me.guard = 0; }); } }
-  function drink(n) {
+  function guardFor(g, s) { g = Math.min(g, 2 * ((sheet().uDef?.guardEs ? me.maxE : me.maxL) || 0));   /* Decree of Flight: of maximum energy shield instead */ if (g > me.guard) { me.guard = g; later(s, () => { if (me.guard === g) me.guard = 0; }); } }
+  function drink(n, auto) {   // auto: used by itself (Opportunity, on Perfect Timing), which a flask that cannot be used manually needs
     const f = flasks()[n];
+    if (auto ? !f || flaskLeft(n) < f.per : f?.noManual) return auto || toast(`${flaskName(n)}: ${statLines({ local_flask_cannot_be_used_manually: 1 })[0]}`);
     if (!f) return toast(t('{0}: nothing equipped', flaskName(n)));
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
@@ -5988,7 +6003,7 @@ export function initScene(el, api) {
       me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0, bled = 0, bEl = 'physical';
       // bleeding: its extra damage while you move, and it bypasses energy shield (keywords.json Bleeding)
       for (const a in me.burn) if (me.st[a] > 0) {
-        const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5 * (a === 'bleed' && time - (me.movedAt ?? -9) < .5 ? AGGRAVATED : 1);
+        const B = me.burn[a], got = playerTakes(withCharms(c), B.el, B.dps, false) * .5 * (a === 'bleed' && time - (me.movedAt ?? -9) < .5 && !sheet().uDef?.noBleedMove ? AGGRAVATED : 1);
         if (a === 'bleed') { bled += got; bEl = B.el; continue; }
         n += got; if (B.el === 'chaos') chaos += got; if (got > best) { best = got; worst = B.el; }
       }
@@ -6056,7 +6071,7 @@ export function initScene(el, api) {
       if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
       if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
       if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m
-      if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) { const x = me.mana * F.endChaos / 100; hurt(x, x, 'chaos'); } }   // when its effect ends (a life flask's when your life is full, unless Enduring Elixirs): Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you
+      if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir && !F.keepFull) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) { const x = me.mana * F.endChaos / 100; hurt(x, x, 'chaos'); } }   // when its effect ends (a life flask's when your life is full, unless Enduring Elixirs): Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you
     });
     for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
@@ -6067,7 +6082,7 @@ export function initScene(el, api) {
     // Primal Hunger: 1 Rage a second per 4 spent Recently
     if (R.noEffect) { me.rageSpent = (me.rageSpent || []).filter(x => time - x[0] <= RECENT); gainRage(Math.floor(me.rageSpent.reduce((t, x) => t + x[1], 0) / 4) * dt); }
     if (time < me.calamity?.until) gainRage(me.calamity.rage / 60 * dt);
-    if (time - me.raged > R.delay) me.rage = Math.max(0, me.rage - R.loss * dt);
+    if (time - me.raged > R.delay && !flaskOn('noRageLoss')) me.rage = Math.max(0, me.rage - R.loss * dt);   // (Blood of the Warrior: no inherent loss during its effect)
     me.rage = Math.min(me.rage, top);
     if (R.berserk && tog[R.berserk.name] && me.known && me.rage > 0 && time - me.raged <= R.delay) {
       me.life -= me.maxL * R.berserk.lifePerRage / 100 * me.rage * dt;

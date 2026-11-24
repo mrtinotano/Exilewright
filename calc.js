@@ -515,7 +515,9 @@ export function character(b, sum) {
     storm: v(sum, 'trigger_elemental_storm_on_crit') > 0,   // the Stormweaver's Elemental Storm on spell critical hits
     get ward() { return (v(sum, 'base_maximum_ward') + (this.life || 0) * v(sum, 'maximum_life_%_to_gain_as_total_ward') / 100) * pct('maximum_ward_+%'); },
     thorns: { hits: { physical: [v(sum, 'thorns_minimum_base_physical_damage'), v(sum, 'thorns_maximum_base_physical_damage')].map(x => Math.round((x + P('body', 'armour') * v(sum, 'base_body_armour_permyriad_to_gain_as_physical_thorns_damage') / 1e4) * thornsX)), fire: [v(sum, 'thorns_minimum_base_fire_damage'), v(sum, 'thorns_maximum_base_fire_damage')].map(x => Math.round(x * thornsX)), cold: [v(sum, 'thorns_minimum_base_cold_damage'), v(sum, 'thorns_maximum_base_cold_damage')].map(x => Math.round(x * thornsX)) },
-      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), lifeShift: v(sum, 'gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted'), ail: ailments({}, sum, {}, []), thornsX },
+      crit: v(sum, 'base_thorns_critical_strike_chance'), critBonus: 100 + v(sum, 'base_critical_strike_multiplier_+', 'base_thorns_critical_strike_multiplier_+'), ignoreArmour: v(sum, 'thorns_damage_has_%_chance_to_ignore_armour'), lifeShift: v(sum, 'gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted'),
+      perRune: [v(sum, 'gain_min_physical_thorns_damage_equal_to_x_times_your_runic_tempering_stacks'), v(sum, 'gain_max_physical_thorns_damage_equal_to_x_times_your_runic_tempering_stacks')],   // Serle's Grit: per Runic Plate (the scene's)
+      ail: ailments({}, sum, {}, []), thornsX },
   };
   // Blood Mage: more life, the body armour's own energy shield; Infernalist: mana, energy shield and Spirit per so much of
   // your maximum life; Invoker: Spirit per evasion and energy shield on the body armour. note: added to the totals, after
@@ -534,7 +536,7 @@ export function character(b, sum) {
   if (c.life != null) c.life = Math.round(c.life * VS('maximum_life')); if (c.mana != null) c.mana = Math.round(c.mana * VS('maximum_mana')); c.spirit = Math.round(c.spirit * VS('spirit'));
   if (VS('armour_evasion_energy_shield') !== 1) { for (const k of ['armour', 'evasion', 'es']) c[k] = Math.round(c[k] * VS('armour_evasion_energy_shield')); c.armourPct = armourReduction(c.armour, lvl); c.evadePct = evadeChance(c.evasion, lvl); }
   // Immaculate Adherence: maximum energy shield converted to maximum Divinity (its increased, less per corrupted item equipped); no energy shield
-  const toDiv = sum['convert_100%_energy_shield_to_divinity'];
+  const toDiv = sum['convert_100%_energy_shield_to_divinity'] && !sum.energy_shield_cannot_be_converted;   // (Geofri's Sanctuary: it cannot be converted)
   if (toDiv) { const nC = Object.values(b.items || {}).filter(it => it?.corrupted).length; c.divinity = Math.round(c.es * Math.max(0, 1 + (v(sum, 'maximum_divinity_+%') + v(sum, 'maximum_divinity_+%_per_equipped_corrupted_item') * nC) / 100)); c.divCost = !!sum.skills_cost_divinity_instead_of_mana_or_life; }
   if (toDiv || sum.cannot_have_current_energy_shield) c.es = 0;
   // resistances per equipped item with a modifier to another one (Safrin's Resolve, Eshtera's Path, Zaida's Longevity).
@@ -582,7 +584,7 @@ export function character(b, sum) {
     c.immuneWhen = { archon: when({ immune_to_bleeding_while_archon: ['bleed'], immune_to_freeze_chill_while_archon: ['freeze', 'chill'], immune_to_shock_while_archon: ['shock'] }),
       shift: when({ immune_to_bleeding_while_shapeshifted: ['bleed'], immune_to_maim_while_shapeshifted: ['maim'] }), roll: when({ unaffected_by_chill_during_dodge_roll: ['chill'] }), leech: when({ unaffected_by_chill_while_mana_leeching: ['chill'] }) }; }
   if (sum.keystone_chaos_inoculation) { c.life = 1; c.res.chaos = { ...c.res.chaos, capped: 100, immune: true }; c.bleedImmune = true; }
-  if (sum.keystone_eldritch_battery && c.mana != null) { c.mana += c.es; c.es = 0; }
+  if (sum.keystone_eldritch_battery && c.mana != null && !sum.energy_shield_cannot_be_converted) { c.mana += c.es; c.es = 0; }
   if (sum.keystone_blood_magic && c.mana != null) c.mana = 0;
   if (sum.keystone_iron_reflexes) { c.armour += c.evasion; c.evasion = 0; c.armourPct = armourReduction(c.armour, lvl); c.evadePct = 0; }
   if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
@@ -754,7 +756,11 @@ export function recovery(c, sum) {
     // Runic Ward (Lifesprig, Demon Stitcher); Guard from a mana flask (Glowswarm); damage taken per elemental ailment type (Yoke of Suffering)
     // The Unleashed's hit damage bypassing energy shield below half of it, Forgotten Warden's deflection per 50 missing
     // energy shield, The Black Doubt's mana sacrificed for life off full life (a second), ailments you receive when hit (Coat of Red, Apep's Supremacy, The Infinite Pursuit)
-    uDef: { bypass: v(sum, 'hit_damage_bypass_energy_shield_%_when_below_half_energy_shield'), deflMissing: v(sum, '+_deflection_rating_per_50_missing_maximum_energy_shield'), doubt: v(sum, 'unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es'),
+    // Ab Aeterno (a Dodge Roll avoids all Hits and leaves you Overencumbered), The Road Warrior (moving while Bleeding), Decree of
+    // Loyalty (damage over time cannot bypass energy shield), Decree of Flight (the most Guard from maximum energy shield)
+    uDef: { rollAll: !!sum.dodge_roll_can_avoid_all_damage, overEnc: !!sum.overencumbrance_on_dodge_roll, noBleedMove: !!sum.no_extra_bleeding_damage_while_moving,
+      dotEs: !!sum.unique_body_armour_unfaltering_faith_damage_over_time_does_not_bypass_energy_shield, guardEs: !!sum.maximum_guard_is_based_on_energy_shield,
+      bypass: v(sum, 'hit_damage_bypass_energy_shield_%_when_below_half_energy_shield'), deflMissing: v(sum, '+_deflection_rating_per_50_missing_maximum_energy_shield'), doubt: v(sum, 'unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es'),
       recvBleed: v(sum, 'receive_bleeding_chance_%_when_hit'), recvPoison: v(sum, 'chance_to_be_poisoned_%'), recvAil: 1 + v(sum, 'chance_to_be_inflicted_with_an_ailment_+%') / 100, resPower: v(sum, 'resist_all_elements_%_per_power_charge'), manaHurt: v(sum, 'skills_deal_you_x%_of_mana_cost_as_physical_damage'), rollFresh: v(sum, 'dodge_roll_travel_distance_+_if_not_dodge_rolled_recently') / 10, rollAgain: v(sum, 'dodge_roll_travel_distance_+_if_dodge_rolled_recently') / 10,
       rollSpeed: v(sum, 'dodge_roll_speed_+%'), rollDist: v(sum, 'dodge_roll_base_travel_distance') / 10, minionDeath: v(sum, 'physical_damage_taken_on_minion_death'), indigon: v(sum, 'spell_damage_+%_per_200_mana_spent_recently'), indigonCost: v(sum, 'mana_cost_+%_per_200_mana_spent_recently'), allEmp: !!sum.all_attacks_count_as_exerted, noWarcry: !!sum.cannot_use_warcries, glory2: v(sum, 'skill_glory_gain_per_2_seconds'), rollGuard: v(sum, 'gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll'), esKill: v(sum, 'energy_shield_recharges_on_kill_%'), wardKill: v(sum, 'ward_%_gained_on_kill'),
       beforeHit: v(sum, 'missing_life_%_gained_as_life_before_hit'), alt: v(sum, 'has_trickster_alternating_damage_taken_+%_final'), fireLow: v(sum, 'fire_damage_resistance_%_when_on_low_life'), evaLow: v(sum, 'evasion_rating_+_when_on_low_life'),
@@ -770,15 +776,18 @@ export function recovery(c, sum) {
     // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
     uBlock: { cull: !!sum.culling_strike_enemies_on_block, intim: v(sum, 'intimidate_enemy_on_block_for_duration_ms') / 1000, poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
       blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000,
-      // Rondel de Ezo: Enfeeble on Block. note: the level of that curse is not in the data: the glossary's Enfeeble when nothing
-      // says otherwise (20% less damage dealt: the gem's at level 1), for that level's time and without its limit of level
-      enfeeble: sum['curse_on_block_enfeeble_chance_%'] ? (st => ({ chance: sum['curse_on_block_enfeeble_chance_%'], C: { ...curseOf(st, sum), maxLevel: null }, time: st.base_skill_effect_duration / 1000 }))(gemStats({ name: 'Enfeeble', level: 1 }, sum)) : null },
+      // Rondel de Ezo: Enfeeble on Block. note: neither the level nor the duration of that curse are in the data: the glossary's
+      // Enfeeble when nothing says otherwise (20% less damage dealt, as the gem at level 1, without its limit of level), which the
+      // scene keeps for its own curse time
+      enfeeble: sum['curse_on_block_enfeeble_chance_%'] ? (st => ({ chance: sum['curse_on_block_enfeeble_chance_%'], C: { ...curseOf(st, sum), maxLevel: null } }))(gemStats({ name: 'Enfeeble', level: 1 }, sum)) : null },
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
     coil: sum['coil_of_undoing_curse_magnitude_+%_final'] || sum['spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'] ? { zero: v(sum, 'coil_of_undoing_curse_magnitude_+%_final'), chaos: v(sum, 'spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'), phys: v(sum, 'spells_gain_%_of_damage_as_extra_phys_per_curse_on_target') } : null,
     enemyChaos: v(sum, 'enemies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos'), redblade: v(sum, 'unique_redblade_banner_enemies_in_presence_monster_power_+%_final'), bloodPrice: v(sum, 'unique_blood_price_enemies_in_presence_have_at_least_%_life_reserved'), diadem: v(sum, 'consume_nearby_corpse_every_3_seconds_to_recover_%_maximum_life'), perfectWin: v(sum, 'perfect_timing_window_ms_+%'), griefIgnite: v(sum, 'ignite_as_though_dealing_X_damage_in_your_presence'),
     heatshiver: v(sum, 'non_skill_cold_damage_%_to_gain_as_fire_per_1%_chill_effect_on_enemy'),
-    uEv: { powerStun: v(sum, 'chance_to_gain_power_charge_on_stun_%'), spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
+    // Zerphi's Serape (Soul Eater), The Master's Reach (a Soul on hitting an enemy with an Open Weakness), Horror's Flight (Fear Incarnate on culling)
+    uEv: { soulEater: !!sum.unique_gain_soul_eater, soulHit: !!sum.gain_soul_eater_when_hitting_a_rare_or_unique_enemy_that_has_open_weakness, fearCull: v(sum, 'grant_fear_incarnate_stack_on_culling_enemies'),
+      powerStun: v(sum, 'chance_to_gain_power_charge_on_stun_%'), spellWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_critical_hit_with_spells'), parryWeak: v(sum, 'apply_X_stacks_of_critical_weakness_on_parry'), volCrit: v(sum, 'instability_on_critical_%_chance'),
       thornsMelee: v(sum, 'melee_attack_deal_thorns_damage_chance_%_on_hit'), reflect: v(sum, 'melee_physical_damage_taken_%_to_deal_to_attacker'), hexSpread: v(sum, 'transfer_hexes_to_X_nearby_enemies_on_kill'), overkill: v(sum, 'overkill_damage_%_as_physical_to_nearby_enemies') },
     onsHit: v(sum, 'base_onlsaught_on_hit_%_chance'), powerHit: v(sum, 'add_power_charge_on_skill_hit_%'), powerCrit: v(sum, 'add_power_charge_on_critical_strike_%'),
     flatTaken: { phys: v(sum, 'physical_damage_taken_+'), attack: v(sum, 'physical_attack_damage_taken_+'), proj: v(sum, 'physical_ranged_attack_damage_taken_+') }, avoidProj: v(sum, 'base_avoid_projectiles_%_chance'),
@@ -803,7 +812,7 @@ export function ailmentDefence(c, sum) {
   const stun = c.life == null ? null : ((esStun ? (c.es || 0) * esStun / 100 : c.life) + (c.stunGear || 0) + v(sum, 'stun_threshold_+') + (at.str || 0) * v(sum, 'stun_threshold_+_per_strength') + (at.dex || 0) * v(sum, 'stun_threshold_+_per_dexterity')
     + c.es * v(sum, 'stun_threshold_+_from_%_maximum_energy_shield') / 100) * pct('stun_threshold_+%');
   const ail = c.life == null ? null : (c.life * CHAR['ailment_threshold_life_%'] / 100 + (c.ailGear || 0) + v(sum, 'ailment_threshold_+') + (at.dex || 0) * v(sum, 'ailment_threshold_+_per_dexterity') + c.es * v(sum, 'ailment_threshold_+_from_%_maximum_energy_shield') / 100
-    + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * pct('ailment_threshold_+%');
+    + c.evasion * v(sum, 'evasion_rating_%_to_gain_as_ailment_threshold') / 100) * (pct('ailment_threshold_+%') + (sum.ailment_threshold_increased_by_uncapped_chaos_resistance ? (c.res?.chaos?.value || 0) / 100 : 0));   // Skin of the Loyal: increased by uncapped chaos resistance
   const freeze = stun == null ? null : (stun + v(sum, 'freeze_threshold_+') + c.es * v(sum, 'freeze_threshold_+_from_maximum_energy_shield', 'gain_%_maximum_energy_shield_as_freeze_threshold_+') / 100) * pct('freeze_threshold_+%');
   // electrocute builds up against the elemental ailment threshold (KeywordPopups AilmentThreshold)
   const electrocute = ail == null ? null : (ail + v(sum, 'electrocute_threshold_+')) * pct('electrocute_threshold_+%') * pct('electrocute_threshold_+%_final');
@@ -844,7 +853,8 @@ export function rageOf(b, sum) {
   const regenPct = v(sum, 'base_rage_regeneration_rate_per_minute_%') / 6000 * (sum.mana_regeneration_rate_modifiers_apply_to_rage_regeneration ? 1 + v(sum, 'mana_regeneration_rate_+%') / 100 : 1);
   const axe = W && weaponTags(W).includes('axe') ? v(sum, 'maximum_rage_+_while_wielding_axe') : 0;
   const base = ((CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage', 'natures_sustenance_additional_maximum_rage') + axe) * (sum.keystone_druidic_rage ? 2 : 1),   // Primal Hunger: 100% more
-    any = !!rg || !!sum.maximum_rage || !!axe || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0);
+    any = !!rg || !!sum.maximum_rage || !!axe || !!regenPct || fromSupport || Object.values(gain).some(x => x > 0)
+      || Object.values(b.items || {}).some(it => statsOf(it).local_flask_gain_x_rage_when_hit_during_effect);   // Blood of the Warrior: Rage when Hit during its effect
   return {
     base: any ? base : 0, noEffect: !!sum.keystone_druidic_rage, gain, regenPct, cost: v(sum, 'natures_sustenance_added_rage_cost'), spellPer2: v(sum, 'ascendancy_shaman_spell_damage_+%_final_per_2_rage'), delay: (CHAR.rage_loss_delay_ms + v(sum, 'rage_loss_delay_ms_+')) / 1000 / (1 + v(sum, 'rage_loss_delay_recovery_rate_+%') / 100), loss: sum.no_inherent_rage_loss ? 0 : CHAR.rage_loss_per_minute / 60 * Math.max(0, 1 + v(sum, 'rage_decay_speed_+%') / 100),   // its loss faster or slower, and its start
     glory: v(sum, 'max_rage_+_if_glory_skill_used_in_last_20_seconds'), fill: v(sum, 'gain_max_rage_on_rage_gain_from_hit_%_chance'),   // the tree's
@@ -2040,6 +2050,10 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
 { const FB = 'unique_facebreaker_can_use_mace_attacks_with_both_hands_empty_using_facebreaker_base_damage', run = (sum, items = { gloves: newItem('Facebreaker') }) => skill({ name: 'Boneshatter', level: 10, supports: [] }, { gems: [], items, asc: 'Titan', level: 80 }, sum);
   const a = run({ [FB]: 1 }), f = run({ [FB]: 1, ascendancy_hand_wraps: 1 }), n = run({}), m = run({ [FB]: 1 }, { gloves: newItem('Facebreaker'), weapon: newItem('Wooden Club') });
   console.assert(a.hits.physical?.[1] > 0 && !a.hits.fire && f.hits.fire?.[1] > 0 && !f.hits.physical?.[1] && !n.hits.physical && m.hits.physical?.[1] > 0 && m.hits.physical[1] !== a.hits.physical[1], 'Facebreaker', a.hits, f.hits, n.reason, m.hits); }
+// Skin of the Loyal: ailment threshold increased by uncapped chaos resistance; Geofri's Sanctuary: energy shield is not converted (Eldritch Battery)
+{ const b = { gems: [], items: {}, level: 80, asc: 'Titan' }, A = s => ailmentDefence(character(b, s), s).ail, R = { 'base_chaos_damage_resistance_%': 40 }, x = character(b, R).res.chaos.value;
+  const eb = s => character(b, { base_maximum_energy_shield: 100, keystone_eldritch_battery: 1, ...s }).es;
+  console.assert(x > 0 && Math.abs(A({ ...R, ailment_threshold_increased_by_uncapped_chaos_resistance: 1 }) / A(R) - (1 + x / 100)) < .01 && eb({}) === 0 && eb({ energy_shield_cannot_be_converted: 1 }) > 0, 'Skin of the Loyal, Geofri', x, A(R)); }
 // Kaltenhalt: Parry's modifiers to Stun buildup go to its Freeze buildup, its physical damage is cold; a shield skill's Hits are off-hand ones
 { const b = { gems: [], items: { offhand: newItem('Ridged Buckler') } }, run = s => skill({ name: 'Parry', level: 10, supports: [] }, b, s), a = run({}), k = run({ parry_modifiers_to_stun_buildup_instead_apply_to_freeze: 1, 'parry_physical_damage_%_to_convert_to_cold': 100 });
   console.assert(a.ail.stun > 1 && a.offhand && k.ail.stun === 1 && k.ail.freeze === a.ail.stun * a.ail.freeze && k.hits.cold && !k.hits.physical, "Kaltenhalt's Parry", a.ail, k.ail, k.hits); }
