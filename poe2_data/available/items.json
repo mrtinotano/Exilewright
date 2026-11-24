@@ -5175,7 +5175,8 @@
     "armour": 466,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr10.dds",
    "size": [
@@ -5221,7 +5222,8 @@
     "armour": 0,
     "evasion": 406,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex10.dds",
    "size": [
@@ -5267,7 +5269,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 132,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 133
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt10.dds",
    "size": [
@@ -5313,7 +5316,8 @@
     "armour": 267,
     "evasion": 243,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 64
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex08.dds",
    "size": [
@@ -5360,7 +5364,8 @@
     "armour": 112,
     "evasion": 0,
     "energy_shield": 31,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 344
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr08.dds",
    "size": [
@@ -5407,7 +5412,8 @@
     "armour": 0,
     "evasion": 246,
     "energy_shield": 75,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt08.dds",
    "size": [
@@ -5452,7 +5458,8 @@
     "armour": 169,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 240
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr07.dds",
    "size": [
@@ -5496,7 +5503,8 @@
     "armour": 0,
     "evasion": 154,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 240
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex07.dds",
    "size": [
@@ -5540,7 +5548,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 240
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt08.dds",
    "size": [
@@ -5583,7 +5592,8 @@
     "armour": 150,
     "evasion": 137,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 65
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex05.dds",
    "size": [
@@ -5628,7 +5638,8 @@
     "armour": 86,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 254
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr06.dds",
    "size": [
@@ -5673,7 +5684,8 @@
     "armour": 0,
     "evasion": 78,
     "energy_shield": 24,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 254
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt06.dds",
    "size": [
@@ -5718,7 +5730,8 @@
     "armour": 78,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 127
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr06.dds",
    "size": [
@@ -5762,7 +5775,8 @@
     "armour": 0,
     "evasion": 77,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 120
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex06.dds",
    "size": [
@@ -5806,7 +5820,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 21,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 128
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt06.dds",
    "size": [
@@ -5850,7 +5865,8 @@
     "armour": 36,
     "evasion": 33,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 141
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex04.dds",
    "size": [
@@ -5895,7 +5911,8 @@
     "armour": 39,
     "evasion": 0,
     "energy_shield": 11,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 134
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr04.dds",
    "size": [
@@ -5940,7 +5957,8 @@
     "armour": 0,
     "evasion": 34,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 138
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt04.dds",
    "size": [
@@ -5985,7 +6003,8 @@
     "armour": 127,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 180
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr06.dds",
    "size": [
@@ -6029,7 +6048,8 @@
     "armour": 0,
     "evasion": 124,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 169
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex06.dds",
    "size": [
@@ -6073,7 +6093,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 34,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 184
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt06.dds",
    "size": [
@@ -6117,7 +6138,8 @@
     "armour": 64,
     "evasion": 59,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 190
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex04.dds",
    "size": [
@@ -6162,7 +6184,8 @@
     "armour": 59,
     "evasion": 0,
     "energy_shield": 16,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 201
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr04.dds",
    "size": [
@@ -6207,7 +6230,8 @@
     "armour": 0,
     "evasion": 56,
     "energy_shield": 17,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 194
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt04.dds",
    "size": [
@@ -6253,7 +6277,8 @@
     "armour": 112,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 176
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
@@ -6302,7 +6327,8 @@
     "armour": 57,
     "evasion": 52,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 185
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
@@ -6352,7 +6378,8 @@
     "armour": 52,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 194
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
@@ -6403,7 +6430,8 @@
     "armour": 0,
     "evasion": 87,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 134
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
@@ -6451,7 +6479,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 36,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 181
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus10.dds",
    "size": [
@@ -6496,7 +6525,8 @@
     "armour": 0,
     "evasion": 361,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 129
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex01.dds",
    "size": [
@@ -6539,7 +6569,8 @@
     "armour": 0,
     "evasion": 223,
     "energy_shield": 68,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt08.dds",
    "size": [
@@ -9542,7 +9573,8 @@
     "armour": 446,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr08.dds",
    "size": [
@@ -9587,7 +9619,8 @@
     "armour": 0,
     "evasion": 298,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 236
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex08.dds",
    "size": [
@@ -9632,7 +9665,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 142,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 64
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt08.dds",
    "size": [
@@ -9675,7 +9709,8 @@
     "armour": 120,
     "evasion": 109,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 408
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex06.dds",
    "size": [
@@ -9721,7 +9756,8 @@
     "armour": 191,
     "evasion": 0,
     "energy_shield": 53,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 215
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr06.dds",
    "size": [
@@ -9767,7 +9803,8 @@
     "armour": 0,
     "evasion": 186,
     "energy_shield": 57,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 189
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt06.dds",
    "size": [
@@ -9811,7 +9848,8 @@
     "armour": 351,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr05.dds",
    "size": [
@@ -9854,7 +9892,8 @@
     "armour": 0,
     "evasion": 320,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex05.dds",
    "size": [
@@ -9897,7 +9936,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 97,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt05.dds",
    "size": [
@@ -9940,7 +9980,8 @@
     "armour": 186,
     "evasion": 169,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex05.dds",
    "size": [
@@ -9984,7 +10025,8 @@
     "armour": 186,
     "evasion": 0,
     "energy_shield": 52,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr05.dds",
    "size": [
@@ -10028,7 +10070,8 @@
     "armour": 0,
     "evasion": 169,
     "energy_shield": 52,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt05.dds",
    "size": [
@@ -10072,7 +10115,8 @@
     "armour": 169,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr05.dds",
    "size": [
@@ -10115,7 +10159,8 @@
     "armour": 0,
     "evasion": 148,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex05.dds",
    "size": [
@@ -10158,7 +10203,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 49,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt05.dds",
    "size": [
@@ -10201,7 +10247,8 @@
     "armour": 89,
     "evasion": 81,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex03.dds",
    "size": [
@@ -10245,7 +10292,8 @@
     "armour": 93,
     "evasion": 0,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr03.dds",
    "size": [
@@ -10289,7 +10337,8 @@
     "armour": 0,
     "evasion": 85,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt03.dds",
    "size": [
@@ -10333,7 +10382,8 @@
     "armour": 253,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr05.dds",
    "size": [
@@ -10376,7 +10426,8 @@
     "armour": 0,
     "evasion": 222,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex05.dds",
    "size": [
@@ -10419,7 +10470,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 69,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt05.dds",
    "size": [
@@ -10462,7 +10514,8 @@
     "armour": 129,
     "evasion": 117,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex03.dds",
    "size": [
@@ -10506,7 +10559,8 @@
     "armour": 139,
     "evasion": 0,
     "energy_shield": 39,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr03.dds",
    "size": [
@@ -10550,7 +10604,8 @@
     "armour": 0,
     "evasion": 132,
     "energy_shield": 40,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt03.dds",
    "size": [
@@ -10595,7 +10650,8 @@
     "armour": 221,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 35
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
@@ -10643,7 +10699,8 @@
     "armour": 113,
     "evasion": 103,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 53
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
@@ -10692,7 +10749,8 @@
     "armour": 126,
     "evasion": 0,
     "energy_shield": 35,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 26
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
@@ -10742,7 +10800,8 @@
     "armour": 0,
     "evasion": 155,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
@@ -10789,7 +10848,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 68,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 53
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus08.dds",
    "size": [
@@ -10980,7 +11040,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 124,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt01.dds",
    "size": [
@@ -11024,7 +11085,8 @@
     "armour": 203,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 70
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
@@ -11072,7 +11134,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 106
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus08.dds",
    "size": [
@@ -11206,7 +11269,8 @@
     "armour": 0,
     "evasion": 223,
     "energy_shield": 68,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt01.dds",
    "size": [
@@ -13009,7 +13073,8 @@
     "armour": 327,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 236
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr06.dds",
    "size": [
@@ -13052,7 +13117,8 @@
     "armour": 0,
     "evasion": 226,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 378
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex06.dds",
    "size": [
@@ -13097,7 +13163,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 91,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 236
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt06.dds",
    "size": [
@@ -13142,7 +13209,8 @@
     "armour": 245,
     "evasion": 223,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex04.dds",
    "size": [
@@ -13188,7 +13256,8 @@
     "armour": 245,
     "evasion": 0,
     "energy_shield": 68,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr04.dds",
    "size": [
@@ -13234,7 +13303,8 @@
     "armour": 0,
     "evasion": 223,
     "energy_shield": 68,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt04.dds",
    "size": [
@@ -13278,7 +13348,8 @@
     "armour": 279,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr04.dds",
    "size": [
@@ -13321,7 +13392,8 @@
     "armour": 0,
     "evasion": 243,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 99
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex04.dds",
    "size": [
@@ -13364,7 +13436,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 70,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 113
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt04.dds",
    "size": [
@@ -13407,7 +13480,8 @@
     "armour": 154,
     "evasion": 140,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex04.dds",
    "size": [
@@ -13451,7 +13525,8 @@
     "armour": 139,
     "evasion": 0,
     "energy_shield": 39,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 113
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr04.dds",
    "size": [
@@ -13495,7 +13570,8 @@
     "armour": 0,
     "evasion": 133,
     "energy_shield": 41,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 99
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt04.dds",
    "size": [
@@ -13539,7 +13615,8 @@
     "armour": 120,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr04.dds",
    "size": [
@@ -13582,7 +13659,8 @@
     "armour": 0,
     "evasion": 109,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex04.dds",
    "size": [
@@ -13625,7 +13703,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 33,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt04.dds",
    "size": [
@@ -13668,7 +13747,8 @@
     "armour": 66,
     "evasion": 60,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex02.dds",
    "size": [
@@ -13712,7 +13792,8 @@
     "armour": 66,
     "evasion": 0,
     "energy_shield": 18,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr02.dds",
    "size": [
@@ -13756,7 +13837,8 @@
     "armour": 0,
     "evasion": 60,
     "energy_shield": 18,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt02.dds",
    "size": [
@@ -13800,7 +13882,8 @@
     "armour": 161,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr04.dds",
    "size": [
@@ -13843,7 +13926,8 @@
     "armour": 0,
     "evasion": 146,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex04.dds",
    "size": [
@@ -13886,7 +13970,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt04.dds",
    "size": [
@@ -13929,7 +14014,8 @@
     "armour": 95,
     "evasion": 87,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex02.dds",
    "size": [
@@ -13973,7 +14059,8 @@
     "armour": 88,
     "evasion": 0,
     "energy_shield": 25,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr02.dds",
    "size": [
@@ -14017,7 +14104,8 @@
     "armour": 0,
     "evasion": 81,
     "energy_shield": 25,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 116
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt02.dds",
    "size": [
@@ -14062,7 +14150,8 @@
     "armour": 156,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 106
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
@@ -14110,7 +14199,8 @@
     "armour": 86,
     "evasion": 78,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 106
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
@@ -14159,7 +14249,8 @@
     "armour": 86,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 106
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
@@ -14209,7 +14300,8 @@
     "armour": 0,
     "evasion": 114,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 85
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
@@ -14256,7 +14348,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 114
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus06.dds",
    "size": [
@@ -14485,7 +14578,8 @@
     "armour": 0,
     "evasion": 384,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex01.dds",
    "size": [
@@ -14528,7 +14622,8 @@
     "armour": 0,
     "evasion": 338,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex13.dds",
    "size": [
@@ -14571,7 +14666,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 96,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 129
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt13.dds",
    "size": [
@@ -14616,7 +14712,8 @@
     "armour": 164,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 301
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr11.dds",
    "size": [
@@ -14662,7 +14759,8 @@
     "armour": 218,
     "evasion": 0,
     "energy_shield": 61,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr12.dds",
    "size": [
@@ -14706,7 +14804,8 @@
     "armour": 218,
     "evasion": 0,
     "energy_shield": 61,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Uniques/Loreweave.dds",
    "size": [
@@ -14751,7 +14850,8 @@
     "armour": 203,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 53
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
@@ -16975,7 +17075,8 @@
     "armour": 136,
     "evasion": 124,
     "energy_shield": 38,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 215
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDexInt03.dds",
    "size": [
@@ -17023,7 +17124,8 @@
     "armour": 136,
     "evasion": 124,
     "energy_shield": 38,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 322
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDexInt03.dds",
    "size": [
@@ -17071,7 +17173,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 550
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDexInt03.dds",
    "size": [
@@ -18598,7 +18701,8 @@
     "armour": 273,
     "evasion": 0,
     "energy_shield": 76,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 129
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDexInt02.dds",
    "size": [
@@ -18642,7 +18746,8 @@
     "armour": 258,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 365
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr03.dds",
    "size": [
@@ -18687,7 +18792,8 @@
     "armour": 0,
     "evasion": 442,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 64
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex03.dds",
    "size": [
@@ -18730,7 +18836,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 66,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 387
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt03.dds",
    "size": [
@@ -18775,7 +18882,8 @@
     "armour": 180,
     "evasion": 164,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 236
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex02.dds",
    "size": [
@@ -18819,7 +18927,8 @@
     "armour": 114,
     "evasion": 0,
     "energy_shield": 32,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 417
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr02.dds",
    "size": [
@@ -18863,7 +18972,8 @@
     "armour": 0,
     "evasion": 114,
     "energy_shield": 35,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 395
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt02.dds",
    "size": [
@@ -18907,7 +19017,8 @@
     "armour": 305,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr02.dds",
    "size": [
@@ -18950,7 +19061,8 @@
     "armour": 0,
     "evasion": 290,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex02.dds",
    "size": [
@@ -18993,7 +19105,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 85,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt02.dds",
    "size": [
@@ -19036,7 +19149,8 @@
     "armour": 172,
     "evasion": 156,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 48
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex02.dds",
    "size": [
@@ -19080,7 +19194,8 @@
     "armour": 168,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr02.dds",
    "size": [
@@ -19124,7 +19239,8 @@
     "armour": 0,
     "evasion": 160,
     "energy_shield": 49,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt02.dds",
    "size": [
@@ -19168,7 +19284,8 @@
     "armour": 153,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr02.dds",
    "size": [
@@ -19211,7 +19328,8 @@
     "armour": 0,
     "evasion": 139,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex02.dds",
    "size": [
@@ -19254,7 +19372,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 42,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt02.dds",
    "size": [
@@ -19297,7 +19416,8 @@
     "armour": 84,
     "evasion": 76,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex01.dds",
    "size": [
@@ -19341,7 +19461,8 @@
     "armour": 84,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr01.dds",
    "size": [
@@ -19385,7 +19506,8 @@
     "armour": 0,
     "evasion": 76,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
    "size": [
@@ -19429,7 +19551,8 @@
     "armour": 229,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr02.dds",
    "size": [
@@ -19472,7 +19595,8 @@
     "armour": 0,
     "evasion": 209,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex02.dds",
    "size": [
@@ -19515,7 +19639,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 64,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt02.dds",
    "size": [
@@ -19558,7 +19683,8 @@
     "armour": 133,
     "evasion": 121,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex01.dds",
    "size": [
@@ -19602,7 +19728,8 @@
     "armour": 126,
     "evasion": 0,
     "energy_shield": 35,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr01.dds",
    "size": [
@@ -19646,7 +19773,8 @@
     "armour": 0,
     "evasion": 115,
     "energy_shield": 35,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt01.dds",
    "size": [
@@ -19691,7 +19819,8 @@
     "armour": 193,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 44
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
@@ -19739,7 +19868,8 @@
     "armour": 106,
     "evasion": 97,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 44
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
@@ -19788,7 +19918,8 @@
     "armour": 106,
     "evasion": 0,
     "energy_shield": 29,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 44
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
@@ -19838,7 +19969,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 117
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler11.dds",
@@ -19885,7 +20017,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 55,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 62
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus03.dds",
    "size": [
@@ -20311,7 +20444,8 @@
     "armour": 0,
     "evasion": 406,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex10.dds",
    "size": [
@@ -20354,7 +20488,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 124,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt12.dds",
    "size": [
@@ -20398,7 +20533,8 @@
     "armour": 191,
     "evasion": 174,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 107
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex08.dds",
    "size": [
@@ -20444,7 +20580,8 @@
     "armour": 136,
     "evasion": 124,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 215
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex11.dds",
    "size": [
@@ -20489,7 +20626,8 @@
     "armour": 55,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 129
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr08.dds",
    "size": [
@@ -20533,7 +20671,8 @@
     "armour": 218,
     "evasion": 0,
     "energy_shield": 61,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr09.dds",
    "size": [
@@ -20577,7 +20716,8 @@
     "armour": 145,
     "evasion": 132,
     "energy_shield": 40,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr01.dds",
    "size": [
@@ -20624,7 +20764,8 @@
     "armour": 136,
     "evasion": 124,
     "energy_shield": 38,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 215
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDexInt02.dds",
    "size": [
@@ -20670,7 +20811,8 @@
     "armour": 0,
     "evasion": 266,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex08.dds",
    "size": [
@@ -20713,7 +20855,8 @@
     "armour": 0,
     "evasion": 222,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex09.dds",
    "size": [
@@ -20756,7 +20899,8 @@
     "armour": 0,
     "evasion": 178,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 113
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex01.dds",
    "size": [
@@ -20800,7 +20944,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 141
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt08.dds",
    "size": [
@@ -20843,7 +20988,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 68,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt11.dds",
    "size": [
@@ -20886,7 +21032,8 @@
     "armour": 161,
     "evasion": 146,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex07.dds",
    "size": [
@@ -20930,7 +21077,8 @@
     "armour": 168,
     "evasion": 153,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 59
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex08.dds",
    "size": [
@@ -20977,7 +21125,8 @@
     "armour": 116,
     "evasion": 0,
     "energy_shield": 32,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 113
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr06.dds",
    "size": [
@@ -21021,7 +21170,8 @@
     "armour": 77,
     "evasion": 71,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 99
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr01.dds",
    "size": [
@@ -21066,7 +21216,8 @@
     "armour": 143,
     "evasion": 0,
     "energy_shield": 40,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr08.dds",
    "size": [
@@ -21110,7 +21261,8 @@
     "armour": 0,
     "evasion": 130,
     "energy_shield": 40,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt08.dds",
    "size": [
@@ -21154,7 +21306,8 @@
     "armour": 114,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr07.dds",
    "size": [
@@ -21197,7 +21350,8 @@
     "armour": 0,
     "evasion": 49,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
    "size": [
@@ -21241,7 +21395,8 @@
     "armour": 30,
     "evasion": 27,
     "energy_shield": 8,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr01.dds",
    "size": [
@@ -21286,7 +21441,8 @@
     "armour": 0,
     "evasion": 178,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 74
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex02.dds",
    "size": [
@@ -21329,7 +21485,8 @@
     "armour": 107,
     "evasion": 0,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr01.dds",
    "size": [
@@ -21373,7 +21530,8 @@
     "armour": 0,
     "evasion": 85,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 63
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt01.dds",
    "size": [
@@ -21417,7 +21575,8 @@
     "armour": 45,
     "evasion": 41,
     "energy_shield": 12,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 106
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr01.dds",
    "size": [
@@ -21466,7 +21625,8 @@
     "armour": 162,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 35
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower09.dds",
@@ -21514,7 +21674,8 @@
     "armour": 102,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 88
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
@@ -21563,7 +21724,8 @@
     "armour": 112,
     "evasion": 102,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 53
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
@@ -21614,7 +21776,8 @@
     "armour": 0,
     "evasion": 148,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Shield10.dds",
@@ -21662,7 +21825,8 @@
     "armour": 78,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 62
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
@@ -22471,7 +22635,8 @@
     "armour": 417,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 103
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr08.dds",
    "size": [
@@ -22514,7 +22679,8 @@
     "armour": 0,
     "evasion": 345,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 144
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex08.dds",
    "size": [
@@ -22557,7 +22723,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 117,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 103
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt08.dds",
    "size": [
@@ -22600,7 +22767,8 @@
     "armour": 235,
     "evasion": 214,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 124
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex06.dds",
    "size": [
@@ -22644,7 +22812,8 @@
     "armour": 230,
     "evasion": 0,
     "energy_shield": 64,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 103
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr06.dds",
    "size": [
@@ -22688,7 +22857,8 @@
     "armour": 0,
     "evasion": 209,
     "energy_shield": 64,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 103
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt06.dds",
    "size": [
@@ -22733,7 +22903,8 @@
     "armour": 86,
     "evasion": 78,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 59
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
@@ -22782,7 +22953,8 @@
     "armour": 86,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 59
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
@@ -23002,7 +23174,8 @@
     "armour": 153,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 58
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
@@ -23051,7 +23224,8 @@
     "armour": 0,
     "evasion": 111,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 47
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
@@ -23098,7 +23272,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 43,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 58
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus08.dds",
    "size": [
@@ -23221,7 +23396,8 @@
     "armour": 0,
     "evasion": 103,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 33
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler12.dds",
@@ -24848,7 +25024,8 @@
     "armour": 363,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 158
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr07.dds",
    "size": [
@@ -24891,7 +25068,8 @@
     "armour": 0,
     "evasion": 362,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 119
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex07.dds",
    "size": [
@@ -24934,7 +25112,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 107,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 138
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt07.dds",
    "size": [
@@ -24977,7 +25156,8 @@
     "armour": 199,
     "evasion": 181,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 158
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex05.dds",
    "size": [
@@ -25021,7 +25201,8 @@
     "armour": 199,
     "evasion": 0,
     "energy_shield": 56,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 158
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr05.dds",
    "size": [
@@ -25065,7 +25246,8 @@
     "armour": 0,
     "evasion": 181,
     "energy_shield": 56,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 158
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt05.dds",
    "size": [
@@ -25109,7 +25291,8 @@
     "armour": 238,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 104
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr05.dds",
    "size": [
@@ -25152,7 +25335,8 @@
     "armour": 0,
     "evasion": 227,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 91
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex05.dds",
    "size": [
@@ -25195,7 +25379,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 67,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 104
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt05.dds",
    "size": [
@@ -25238,7 +25423,8 @@
     "armour": 157,
     "evasion": 0,
     "energy_shield": 44,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr05.dds",
    "size": [
@@ -25282,7 +25468,8 @@
     "armour": 0,
     "evasion": 125,
     "energy_shield": 39,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 91
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt05.dds",
    "size": [
@@ -25326,7 +25513,8 @@
     "armour": 137,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr05.dds",
    "size": [
@@ -25369,7 +25557,8 @@
     "armour": 0,
     "evasion": 113,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex05.dds",
    "size": [
@@ -25412,7 +25601,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 33,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt05.dds",
    "size": [
@@ -25455,7 +25645,8 @@
     "armour": 78,
     "evasion": 71,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex03.dds",
    "size": [
@@ -25499,7 +25690,8 @@
     "armour": 69,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr03.dds",
    "size": [
@@ -25543,7 +25735,8 @@
     "armour": 0,
     "evasion": 65,
     "energy_shield": 20,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt03.dds",
    "size": [
@@ -25587,7 +25780,8 @@
     "armour": 178,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 78
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr05.dds",
    "size": [
@@ -25630,7 +25824,8 @@
     "armour": 0,
     "evasion": 170,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 68
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex05.dds",
    "size": [
@@ -25673,7 +25868,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 58,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt05.dds",
    "size": [
@@ -25716,7 +25912,8 @@
     "armour": 118,
     "evasion": 107,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex03.dds",
    "size": [
@@ -25760,7 +25957,8 @@
     "armour": 113,
     "evasion": 0,
     "energy_shield": 32,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr03.dds",
    "size": [
@@ -25804,7 +26002,8 @@
     "armour": 0,
     "evasion": 98,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 58
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt03.dds",
    "size": [
@@ -25849,7 +26048,8 @@
     "armour": 171,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 41
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
@@ -25897,7 +26097,8 @@
     "armour": 94,
     "evasion": 85,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 41
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
@@ -25946,7 +26147,8 @@
     "armour": 94,
     "evasion": 0,
     "energy_shield": 26,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 41
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
@@ -25996,7 +26198,8 @@
     "armour": 0,
     "evasion": 124,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
@@ -26043,7 +26246,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 50,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus07.dds",
    "size": [
@@ -26433,7 +26637,8 @@
     "armour": 0,
     "evasion": 129,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 124
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex10.dds",
    "size": [
@@ -27706,7 +27911,8 @@
     "armour": 340,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 93
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr08.dds",
    "size": [
@@ -27750,7 +27956,8 @@
     "armour": 0,
     "evasion": 270,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 130
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex07.dds",
    "size": [
@@ -27794,7 +28001,8 @@
     "armour": 0,
     "evasion": 385,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 19
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex08.dds",
    "size": [
@@ -27838,7 +28046,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 48,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 186
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt07.dds",
    "size": [
@@ -27882,7 +28091,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 72,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 149
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt08.dds",
    "size": [
@@ -27926,7 +28136,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 96,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt09.dds",
    "size": [
@@ -27970,7 +28181,8 @@
     "armour": 199,
     "evasion": 180,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex05.dds",
    "size": [
@@ -28015,7 +28227,8 @@
     "armour": 187,
     "evasion": 170,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex06.dds",
    "size": [
@@ -28060,7 +28273,8 @@
     "armour": 175,
     "evasion": 159,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 93
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex07.dds",
    "size": [
@@ -28105,7 +28319,8 @@
     "armour": 210,
     "evasion": 0,
     "energy_shield": 60,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr05.dds",
    "size": [
@@ -28150,7 +28365,8 @@
     "armour": 210,
     "evasion": 0,
     "energy_shield": 60,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr06.dds",
    "size": [
@@ -28195,7 +28411,8 @@
     "armour": 187,
     "evasion": 0,
     "energy_shield": 53,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr07.dds",
    "size": [
@@ -28239,7 +28456,8 @@
     "armour": 725,
     "evasion": 0,
     "energy_shield": 206,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 130
    },
    "img": "Art/2DItems/Armours/BodyArmours/Uniques/Loreweave.dds",
    "size": [
@@ -28284,7 +28502,8 @@
     "armour": 0,
     "evasion": 138,
     "energy_shield": 43,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 130
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt05.dds",
    "size": [
@@ -28329,7 +28548,8 @@
     "armour": 0,
     "evasion": 170,
     "energy_shield": 53,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt06.dds",
    "size": [
@@ -28374,7 +28594,8 @@
     "armour": 209,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 61
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr05.dds",
    "size": [
@@ -28418,7 +28639,8 @@
     "armour": 111,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 147
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr06.dds",
    "size": [
@@ -28462,7 +28684,8 @@
     "armour": 334,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr08.dds",
    "size": [
@@ -28506,7 +28729,8 @@
     "armour": 0,
     "evasion": 139,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 110
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex06.dds",
    "size": [
@@ -28550,7 +28774,8 @@
     "armour": 0,
     "evasion": 202,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex07.dds",
    "size": [
@@ -28594,7 +28819,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 32,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 98
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt05.dds",
    "size": [
@@ -28638,7 +28864,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 16,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 196
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt06.dds",
    "size": [
@@ -28682,7 +28909,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 67,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt07.dds",
    "size": [
@@ -28726,7 +28954,8 @@
     "armour": 107,
     "evasion": 97,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 122
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex05.dds",
    "size": [
@@ -28771,7 +29000,8 @@
     "armour": 77,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 122
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr05.dds",
    "size": [
@@ -28816,7 +29046,8 @@
     "armour": 0,
     "evasion": 125,
     "energy_shield": 39,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt06.dds",
    "size": [
@@ -28861,7 +29092,8 @@
     "armour": 70,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 61
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr05.dds",
    "size": [
@@ -28905,7 +29137,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt05.dds",
    "size": [
@@ -28949,7 +29182,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 31
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt06.dds",
    "size": [
@@ -28993,7 +29227,8 @@
     "armour": 61,
     "evasion": 56,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex03.dds",
    "size": [
@@ -29038,7 +29273,8 @@
     "armour": 69,
     "evasion": 63,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 12
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex04.dds",
    "size": [
@@ -29083,7 +29319,8 @@
     "armour": 77,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 37
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr03.dds",
    "size": [
@@ -29128,7 +29365,8 @@
     "armour": 73,
     "evasion": 0,
     "energy_shield": 21,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 12
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr04.dds",
    "size": [
@@ -29172,7 +29410,8 @@
     "armour": 0,
     "evasion": 38,
     "energy_shield": 12,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 67
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt03.dds",
    "size": [
@@ -29216,7 +29455,8 @@
     "armour": 0,
     "evasion": 56,
     "energy_shield": 17,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
    "size": [
@@ -29261,7 +29501,8 @@
     "armour": 157,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 46
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr05.dds",
    "size": [
@@ -29305,7 +29546,8 @@
     "armour": 69,
     "evasion": 63,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex04.dds",
    "size": [
@@ -29351,7 +29593,8 @@
     "armour": 0,
     "evasion": 114,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 12
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler11.dds",
@@ -29399,7 +29642,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 40,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 31
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus07.dds",
    "size": [
@@ -30852,7 +31096,8 @@
     "armour": 401,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr06.dds",
    "size": [
@@ -30895,7 +31140,8 @@
     "armour": 0,
     "evasion": 364,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex06.dds",
    "size": [
@@ -30938,7 +31184,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 114,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt06.dds",
    "size": [
@@ -30981,7 +31228,8 @@
     "armour": 221,
     "evasion": 200,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex04.dds",
    "size": [
@@ -31025,7 +31273,8 @@
     "armour": 193,
     "evasion": 0,
     "energy_shield": 55,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 128
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr04.dds",
    "size": [
@@ -31069,7 +31318,8 @@
     "armour": 0,
     "evasion": 192,
     "energy_shield": 60,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 92
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt04.dds",
    "size": [
@@ -31113,7 +31363,8 @@
     "armour": 252,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 60
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr04.dds",
    "size": [
@@ -31156,7 +31407,8 @@
     "armour": 0,
     "evasion": 219,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 72
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex04.dds",
    "size": [
@@ -31199,7 +31451,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 75,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 48
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt04.dds",
    "size": [
@@ -31242,7 +31495,8 @@
     "armour": 121,
     "evasion": 109,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 96
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex04.dds",
    "size": [
@@ -31286,7 +31540,8 @@
     "armour": 127,
     "evasion": 0,
     "energy_shield": 36,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 84
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr04.dds",
    "size": [
@@ -31330,7 +31585,8 @@
     "armour": 0,
     "evasion": 126,
     "energy_shield": 39,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 60
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt04.dds",
    "size": [
@@ -31374,7 +31630,8 @@
     "armour": 110,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 48
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr04.dds",
    "size": [
@@ -31417,7 +31674,8 @@
     "armour": 0,
     "evasion": 119,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex04.dds",
    "size": [
@@ -31460,7 +31718,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 34,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt04.dds",
    "size": [
@@ -31503,7 +31762,8 @@
     "armour": 189,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr04.dds",
    "size": [
@@ -31546,7 +31806,8 @@
     "armour": 0,
     "evasion": 179,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex04.dds",
    "size": [
@@ -31589,7 +31850,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 51,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt04.dds",
    "size": [
@@ -31633,7 +31895,8 @@
     "armour": 144,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 53
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
@@ -31681,7 +31944,8 @@
     "armour": 79,
     "evasion": 72,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 53
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
@@ -31730,7 +31994,8 @@
     "armour": 79,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 53
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
@@ -31780,7 +32045,8 @@
     "armour": 0,
     "evasion": 104,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
@@ -31827,7 +32093,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 43,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus06.dds",
    "size": [
@@ -32781,7 +33048,8 @@
     "armour": 0,
     "evasion": 105,
     "energy_shield": 33,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 47
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt05.dds",
    "size": [
@@ -32825,7 +33093,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt07.dds",
    "size": [
@@ -32868,7 +33137,8 @@
     "armour": 36,
     "evasion": 33,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 58
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex01.dds",
    "size": [
@@ -34795,7 +35065,8 @@
     "armour": 0,
     "evasion": 359,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex10.dds",
    "size": [
@@ -34839,7 +35110,8 @@
     "armour": 218,
     "evasion": 0,
     "energy_shield": 63,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 87
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr08.dds",
    "size": [
@@ -34884,7 +35156,8 @@
     "armour": 0,
     "evasion": 197,
     "energy_shield": 63,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 87
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt08.dds",
    "size": [
@@ -34929,7 +35202,8 @@
     "armour": 260,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 57
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr08.dds",
    "size": [
@@ -34973,7 +35247,8 @@
     "armour": 89,
     "evasion": 81,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 40
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield08.dds",
@@ -35022,7 +35297,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus10.dds",
    "size": [
@@ -35861,7 +36137,8 @@
     "armour": 390,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr10.dds",
    "size": [
@@ -35905,7 +36182,8 @@
     "armour": 214,
     "evasion": 194,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 86
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex08.dds",
    "size": [
@@ -35950,7 +36228,8 @@
     "armour": 0,
     "evasion": 231,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex08.dds",
    "size": [
@@ -35994,7 +36273,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 73,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt08.dds",
    "size": [
@@ -36039,7 +36319,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 148
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower10.dds",
@@ -36088,7 +36369,8 @@
     "armour": 88,
     "evasion": 0,
     "energy_shield": 25,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 40
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest08.dds",
@@ -36139,7 +36421,8 @@
     "armour": 0,
     "evasion": 116,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 29
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler10.dds",
@@ -36188,7 +36471,8 @@
     "armour": 96,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 42
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
@@ -36544,7 +36828,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 110,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 68
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt10.dds",
    "size": [
@@ -37659,7 +37944,8 @@
     "armour": 42,
     "evasion": 0,
     "energy_shield": 12,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 82
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
@@ -37932,7 +38218,8 @@
     "armour": 82,
     "evasion": 74,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 38
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield07.dds",
@@ -41267,7 +41554,8 @@
     "armour": 355,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 76
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr09.dds",
    "size": [
@@ -41311,7 +41599,8 @@
     "armour": 0,
     "evasion": 320,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 76
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex09.dds",
    "size": [
@@ -41355,7 +41644,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 103,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 76
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt09.dds",
    "size": [
@@ -41399,7 +41689,8 @@
     "armour": 195,
     "evasion": 176,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex07.dds",
    "size": [
@@ -41444,7 +41735,8 @@
     "armour": 195,
     "evasion": 0,
     "energy_shield": 57,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr07.dds",
    "size": [
@@ -41489,7 +41781,8 @@
     "armour": 0,
     "evasion": 176,
     "energy_shield": 57,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt07.dds",
    "size": [
@@ -41534,7 +41827,8 @@
     "armour": 233,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr07.dds",
    "size": [
@@ -41578,7 +41872,8 @@
     "armour": 0,
     "evasion": 210,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex07.dds",
    "size": [
@@ -41622,7 +41917,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 68,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 56
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt07.dds",
    "size": [
@@ -41666,7 +41962,8 @@
     "armour": 128,
     "evasion": 115,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex06.dds",
    "size": [
@@ -41711,7 +42008,8 @@
     "armour": 128,
     "evasion": 0,
     "energy_shield": 37,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr06.dds",
    "size": [
@@ -41756,7 +42054,8 @@
     "armour": 0,
     "evasion": 115,
     "energy_shield": 37,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt06.dds",
    "size": [
@@ -41801,7 +42100,8 @@
     "armour": 116,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr06.dds",
    "size": [
@@ -41845,7 +42145,8 @@
     "armour": 0,
     "evasion": 105,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex06.dds",
    "size": [
@@ -41889,7 +42190,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 34,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt06.dds",
    "size": [
@@ -41933,7 +42235,8 @@
     "armour": 64,
     "evasion": 58,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex04.dds",
    "size": [
@@ -41978,7 +42281,8 @@
     "armour": 64,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr04.dds",
    "size": [
@@ -42023,7 +42327,8 @@
     "armour": 0,
     "evasion": 58,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt04.dds",
    "size": [
@@ -42068,7 +42373,8 @@
     "armour": 174,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr06.dds",
    "size": [
@@ -42112,7 +42418,8 @@
     "armour": 0,
     "evasion": 157,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex06.dds",
    "size": [
@@ -42156,7 +42463,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 51,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt06.dds",
    "size": [
@@ -42200,7 +42508,8 @@
     "armour": 96,
     "evasion": 86,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex04.dds",
    "size": [
@@ -42245,7 +42554,8 @@
     "armour": 96,
     "evasion": 0,
     "energy_shield": 28,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr04.dds",
    "size": [
@@ -42290,7 +42600,8 @@
     "armour": 0,
     "evasion": 86,
     "energy_shield": 28,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 39
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt04.dds",
    "size": [
@@ -42336,7 +42647,8 @@
     "armour": 145,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 36
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower09.dds",
@@ -42385,7 +42697,8 @@
     "armour": 80,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 38
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest07.dds",
@@ -42436,7 +42749,8 @@
     "armour": 0,
     "evasion": 105,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 29
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler09.dds",
@@ -42484,7 +42798,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 42,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus09.dds",
    "size": [
@@ -42528,7 +42843,8 @@
     "armour": 231,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 126
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr07.dds",
    "size": [
@@ -42572,7 +42888,8 @@
     "armour": 0,
     "evasion": 52,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex06.dds",
    "size": [
@@ -43640,7 +43957,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 95,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt08.dds",
    "size": [
@@ -43684,7 +44002,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 62,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt06.dds",
    "size": [
@@ -44265,7 +44584,8 @@
     "armour": 271,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr06.dds",
    "size": [
@@ -44309,7 +44629,8 @@
     "armour": 0,
     "evasion": 301,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex06.dds",
    "size": [
@@ -44353,7 +44674,8 @@
     "armour": 114,
     "evasion": 102,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 115
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex04.dds",
    "size": [
@@ -44398,7 +44720,8 @@
     "armour": 0,
     "evasion": 134,
     "energy_shield": 44,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt04.dds",
    "size": [
@@ -44443,7 +44766,8 @@
     "armour": 115,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 85
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr04.dds",
    "size": [
@@ -44487,7 +44811,8 @@
     "armour": 0,
     "evasion": 73,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 75
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex05.dds",
    "size": [
@@ -44575,7 +44900,8 @@
     "armour": 104,
     "evasion": 93,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 19
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex04.dds",
    "size": [
@@ -44620,7 +44946,8 @@
     "armour": 66,
     "evasion": 0,
     "energy_shield": 20,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 81
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr04.dds",
    "size": [
@@ -44665,7 +44992,8 @@
     "armour": 0,
     "evasion": 78,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 57
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt04.dds",
    "size": [
@@ -44712,7 +45040,8 @@
     "armour": 79,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 71
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr04.dds",
    "size": [
@@ -44756,7 +45085,8 @@
     "armour": 0,
     "evasion": 99,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex05.dds",
    "size": [
@@ -44800,7 +45130,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 33,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 42
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt05.dds",
    "size": [
@@ -44846,7 +45177,8 @@
     "armour": 173,
     "evasion": 155,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex03.dds",
    "size": [
@@ -44891,7 +45223,8 @@
     "armour": 0,
     "evasion": 70,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt03.dds",
    "size": [
@@ -44937,7 +45270,8 @@
     "armour": 98,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 29
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
@@ -44986,7 +45320,8 @@
     "armour": 43,
     "evasion": 0,
     "energy_shield": 13,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 47
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
@@ -45036,7 +45371,8 @@
     "armour": 65,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 12
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
@@ -45087,7 +45423,8 @@
     "armour": 0,
     "evasion": 66,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
@@ -45137,7 +45474,8 @@
     "armour": 0,
     "evasion": 61,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 33
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
@@ -45185,7 +45523,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 47
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus06.dds",
    "size": [
@@ -45451,7 +45790,8 @@
     "armour": 0,
     "evasion": 154,
     "energy_shield": 51,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 82
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt06.dds",
    "size": [
@@ -45498,7 +45838,8 @@
     "armour": 0,
     "evasion": 92,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler08.dds",
@@ -45546,7 +45887,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt02.dds",
    "size": [
@@ -45819,7 +46161,8 @@
     "armour": 0,
     "evasion": 179,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 52
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex06.dds",
    "size": [
@@ -45863,7 +46206,8 @@
     "armour": 66,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 33
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr02.dds",
    "size": [
@@ -45907,7 +46251,8 @@
     "armour": 0,
     "evasion": 84,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex03.dds",
    "size": [
@@ -46731,7 +47076,8 @@
     "armour": 244,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 110
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr01.dds",
    "size": [
@@ -46775,7 +47121,8 @@
     "armour": 260,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr03.dds",
    "size": [
@@ -46819,7 +47166,8 @@
     "armour": 275,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr05.dds",
    "size": [
@@ -46863,7 +47211,8 @@
     "armour": 0,
     "evasion": 82,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 165
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex01.dds",
    "size": [
@@ -46907,7 +47256,8 @@
     "armour": 0,
     "evasion": 178,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 152
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex02.dds",
    "size": [
@@ -46951,7 +47301,8 @@
     "armour": 0,
     "evasion": 219,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex03.dds",
    "size": [
@@ -46995,7 +47346,8 @@
     "armour": 0,
     "evasion": 164,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 138
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex04.dds",
    "size": [
@@ -47039,7 +47391,8 @@
     "armour": 0,
     "evasion": 219,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex05.dds",
    "size": [
@@ -47083,7 +47436,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 9,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 138
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt01.dds",
    "size": [
@@ -47127,7 +47481,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 55,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 99
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt02.dds",
    "size": [
@@ -47171,7 +47526,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 64,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 83
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt03.dds",
    "size": [
@@ -47215,7 +47571,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 46,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 138
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt04.dds",
    "size": [
@@ -47259,7 +47616,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 27,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 110
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt05.dds",
    "size": [
@@ -47303,7 +47661,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 73,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt06.dds",
    "size": [
@@ -47347,7 +47706,8 @@
     "armour": 151,
     "evasion": 135,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex01.dds",
    "size": [
@@ -47392,7 +47752,8 @@
     "armour": 118,
     "evasion": 105,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 83
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex02.dds",
    "size": [
@@ -47437,7 +47798,8 @@
     "armour": 143,
     "evasion": 128,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex03.dds",
    "size": [
@@ -47482,7 +47844,8 @@
     "armour": 202,
     "evasion": 0,
     "energy_shield": 60,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 55
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr01.dds",
    "size": [
@@ -47527,7 +47890,8 @@
     "armour": 118,
     "evasion": 0,
     "energy_shield": 35,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 83
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr03.dds",
    "size": [
@@ -47572,7 +47936,8 @@
     "armour": 141,
     "evasion": 0,
     "energy_shield": 42,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 44
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr04.dds",
    "size": [
@@ -47617,7 +47982,8 @@
     "armour": 0,
     "evasion": 135,
     "energy_shield": 45,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 28
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt01.dds",
    "size": [
@@ -47662,7 +48028,8 @@
     "armour": 0,
     "evasion": 113,
     "energy_shield": 38,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt02.dds",
    "size": [
@@ -47707,7 +48074,8 @@
     "armour": 0,
     "evasion": 90,
     "energy_shield": 30,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 110
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt03.dds",
    "size": [
@@ -47752,7 +48120,8 @@
     "armour": 360,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr01.dds",
    "size": [
@@ -47796,7 +48165,8 @@
     "armour": 140,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr02.dds",
    "size": [
@@ -47840,7 +48210,8 @@
     "armour": 170,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr03.dds",
    "size": [
@@ -47884,7 +48255,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 201
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex01.dds",
    "size": [
@@ -47928,7 +48300,8 @@
     "armour": 0,
     "evasion": 134,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex02.dds",
    "size": [
@@ -47972,7 +48345,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 48,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt01.dds",
    "size": [
@@ -48016,7 +48390,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt02.dds",
    "size": [
@@ -48060,7 +48435,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 72
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt03.dds",
    "size": [
@@ -48104,7 +48480,8 @@
     "armour": 44,
     "evasion": 39,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 109
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex01.dds",
    "size": [
@@ -48149,7 +48526,8 @@
     "armour": 275,
     "evasion": 247,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex02.dds",
    "size": [
@@ -48194,7 +48572,8 @@
     "armour": 77,
     "evasion": 69,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex03.dds",
    "size": [
@@ -48239,7 +48618,8 @@
     "armour": 72,
     "evasion": 0,
     "energy_shield": 21,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 72
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr01.dds",
    "size": [
@@ -48284,7 +48664,8 @@
     "armour": 83,
     "evasion": 0,
     "energy_shield": 25,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr02.dds",
    "size": [
@@ -48329,7 +48710,8 @@
     "armour": 165,
     "evasion": 0,
     "energy_shield": 50,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr03.dds",
    "size": [
@@ -48374,7 +48756,8 @@
     "armour": 0,
     "evasion": 30,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt01.dds",
    "size": [
@@ -48419,7 +48802,8 @@
     "armour": 0,
     "evasion": 118,
     "energy_shield": 40,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt02.dds",
    "size": [
@@ -48464,7 +48848,8 @@
     "armour": 0,
     "evasion": 69,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt03.dds",
    "size": [
@@ -48509,7 +48894,8 @@
     "armour": 50,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr01.dds",
    "size": [
@@ -48553,7 +48939,8 @@
     "armour": 80,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr02.dds",
    "size": [
@@ -48597,7 +48984,8 @@
     "armour": 95,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr03.dds",
    "size": [
@@ -48641,7 +49029,8 @@
     "armour": 80,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr04.dds",
    "size": [
@@ -48685,7 +49074,8 @@
     "armour": 0,
     "evasion": 63,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 20
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex01.dds",
    "size": [
@@ -48729,7 +49119,8 @@
     "armour": 0,
     "evasion": 63,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex02.dds",
    "size": [
@@ -48773,7 +49164,8 @@
     "armour": 0,
     "evasion": 76,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex04.dds",
    "size": [
@@ -48817,7 +49209,8 @@
     "armour": 0,
     "evasion": 72,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex05.dds",
    "size": [
@@ -48861,7 +49254,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 18,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt01.dds",
    "size": [
@@ -48905,7 +49299,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt03.dds",
    "size": [
@@ -48949,7 +49344,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 21,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt04.dds",
    "size": [
@@ -48993,7 +49389,8 @@
     "armour": 44,
     "evasion": 39,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex01.dds",
    "size": [
@@ -49038,7 +49435,8 @@
     "armour": 52,
     "evasion": 47,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 14
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex02.dds",
    "size": [
@@ -49083,7 +49481,8 @@
     "armour": 33,
     "evasion": 0,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr01.dds",
    "size": [
@@ -49128,7 +49527,8 @@
     "armour": 44,
     "evasion": 0,
     "energy_shield": 13,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr02.dds",
    "size": [
@@ -49173,7 +49573,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 90
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
    "size": [
@@ -49218,7 +49619,8 @@
     "armour": 0,
     "evasion": 37,
     "energy_shield": 12,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt02.dds",
    "size": [
@@ -49265,7 +49667,8 @@
     "armour": 150,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr01.dds",
    "size": [
@@ -49311,7 +49714,8 @@
     "armour": 120,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr02.dds",
    "size": [
@@ -49357,7 +49761,8 @@
     "armour": 135,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 20
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr03.dds",
    "size": [
@@ -49403,7 +49808,8 @@
     "armour": 0,
     "evasion": 54,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 81
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex02.dds",
    "size": [
@@ -49449,7 +49855,8 @@
     "armour": 0,
     "evasion": 94,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex03.dds",
    "size": [
@@ -49495,7 +49902,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt01.dds",
    "size": [
@@ -49541,7 +49949,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 41,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt02.dds",
    "size": [
@@ -49587,7 +49996,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 34,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt03.dds",
    "size": [
@@ -49631,7 +50041,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 36,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt04.dds",
    "size": [
@@ -49677,7 +50088,8 @@
     "armour": 50,
     "evasion": 44,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 54
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex01.dds",
    "size": [
@@ -49724,7 +50136,8 @@
     "armour": 66,
     "evasion": 59,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex02.dds",
    "size": [
@@ -49771,7 +50184,8 @@
     "armour": 58,
     "evasion": 0,
     "energy_shield": 17,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr02.dds",
    "size": [
@@ -49818,7 +50232,8 @@
     "armour": 0,
     "evasion": 55,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt02.dds",
    "size": [
@@ -49864,7 +50279,8 @@
     "armour": 100,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 23
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
@@ -49913,7 +50329,8 @@
     "armour": 63,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 57
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
@@ -49962,7 +50379,8 @@
     "armour": 88,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 34
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
@@ -50011,7 +50429,8 @@
     "armour": 94,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 28
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower04.dds",
@@ -50060,7 +50479,8 @@
     "armour": 55,
     "evasion": 49,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 23
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
@@ -50110,7 +50530,8 @@
     "armour": 52,
     "evasion": 46,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 28
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
@@ -50160,7 +50581,8 @@
     "armour": 48,
     "evasion": 0,
     "energy_shield": 14,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 34
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
@@ -50210,7 +50632,8 @@
     "armour": 41,
     "evasion": 0,
     "energy_shield": 12,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 45
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
@@ -50261,7 +50684,8 @@
     "armour": 0,
     "evasion": 108,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler01.dds",
@@ -50311,7 +50735,8 @@
     "armour": 0,
     "evasion": 90,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
@@ -50361,7 +50786,8 @@
     "armour": 0,
     "evasion": 67,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
@@ -50411,7 +50837,8 @@
     "armour": 0,
     "evasion": 45,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler04.dds",
@@ -50459,7 +50886,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 38,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 23
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus01.dds",
    "size": [
@@ -50503,7 +50931,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus02.dds",
    "size": [
@@ -50547,7 +50976,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus03.dds",
    "size": [
@@ -50591,7 +51021,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 38,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 45
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus04.dds",
    "size": [
@@ -50635,7 +51066,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 57
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus05.dds",
    "size": [
@@ -50912,7 +51344,8 @@
     "armour": 298,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 70
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr08.dds",
    "size": [
@@ -50956,7 +51389,8 @@
     "armour": 164,
     "evasion": 147,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 78
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex06.dds",
    "size": [
@@ -51002,7 +51436,8 @@
     "armour": 67,
     "evasion": 60,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 34
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield06.dds",
@@ -51415,7 +51850,8 @@
     "armour": 0,
     "evasion": 260,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex08.dds",
    "size": [
@@ -51459,7 +51895,8 @@
     "armour": 160,
     "evasion": 0,
     "energy_shield": 48,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 77
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr06.dds",
    "size": [
@@ -51504,7 +51941,8 @@
     "armour": 191,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 50
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr06.dds",
    "size": [
@@ -51549,7 +51987,8 @@
     "armour": 119,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 33
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower08.dds",
@@ -51598,7 +52037,8 @@
     "armour": 66,
     "evasion": 0,
     "energy_shield": 20,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 34
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest06.dds",
@@ -51647,7 +52087,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 36,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 30
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus08.dds",
    "size": [
@@ -53768,7 +54209,8 @@
     "armour": 270,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr07.dds",
    "size": [
@@ -53812,7 +54254,8 @@
     "armour": 0,
     "evasion": 240,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex07.dds",
    "size": [
@@ -53856,7 +54299,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 83,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 69
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt07.dds",
    "size": [
@@ -53900,7 +54344,8 @@
     "armour": 149,
     "evasion": 132,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 74
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex05.dds",
    "size": [
@@ -53945,7 +54390,8 @@
     "armour": 149,
     "evasion": 0,
     "energy_shield": 46,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 74
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr05.dds",
    "size": [
@@ -53990,7 +54436,8 @@
     "armour": 0,
     "evasion": 132,
     "energy_shield": 46,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 74
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt05.dds",
    "size": [
@@ -54035,7 +54482,8 @@
     "armour": 177,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr05.dds",
    "size": [
@@ -54079,7 +54527,8 @@
     "armour": 0,
     "evasion": 158,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex05.dds",
    "size": [
@@ -54123,7 +54572,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 54,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt05.dds",
    "size": [
@@ -54167,7 +54617,8 @@
     "armour": 97,
     "evasion": 87,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 44
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex05.dds",
    "size": [
@@ -54212,7 +54663,8 @@
     "armour": 97,
     "evasion": 0,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 44
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr05.dds",
    "size": [
@@ -54257,7 +54709,8 @@
     "armour": 0,
     "evasion": 87,
     "energy_shield": 30,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 44
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt05.dds",
    "size": [
@@ -54302,7 +54755,8 @@
     "armour": 89,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 22
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr05.dds",
    "size": [
@@ -54346,7 +54800,8 @@
     "armour": 0,
     "evasion": 79,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 22
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex05.dds",
    "size": [
@@ -54390,7 +54845,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 27,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 22
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt05.dds",
    "size": [
@@ -54434,7 +54890,8 @@
     "armour": 49,
     "evasion": 43,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex03.dds",
    "size": [
@@ -54479,7 +54936,8 @@
     "armour": 49,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr03.dds",
    "size": [
@@ -54524,7 +54982,8 @@
     "armour": 0,
     "evasion": 43,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt03.dds",
    "size": [
@@ -54569,7 +55028,8 @@
     "armour": 133,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr05.dds",
    "size": [
@@ -54613,7 +55073,8 @@
     "armour": 0,
     "evasion": 118,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex05.dds",
    "size": [
@@ -54657,7 +55118,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 41,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 36
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt05.dds",
    "size": [
@@ -54701,7 +55163,8 @@
     "armour": 73,
     "evasion": 65,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex03.dds",
    "size": [
@@ -54746,7 +55209,8 @@
     "armour": 73,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr03.dds",
    "size": [
@@ -54791,7 +55255,8 @@
     "armour": 0,
     "evasion": 65,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 34
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt03.dds",
    "size": [
@@ -54837,7 +55302,8 @@
     "armour": 111,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 30
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower07.dds",
@@ -54886,7 +55352,8 @@
     "armour": 61,
     "evasion": 54,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 33
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield05.dds",
@@ -54936,7 +55403,8 @@
     "armour": 61,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 33
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest05.dds",
@@ -54987,7 +55455,8 @@
     "armour": 0,
     "evasion": 79,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler07.dds",
@@ -55035,7 +55504,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 34,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 28
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus07.dds",
    "size": [
@@ -56144,7 +56614,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 74,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 66
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt06.dds",
    "size": [
@@ -56188,7 +56659,8 @@
     "armour": 129,
     "evasion": 0,
     "energy_shield": 41,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 77
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr04.dds",
    "size": [
@@ -56233,7 +56705,8 @@
     "armour": 0,
     "evasion": 114,
     "energy_shield": 41,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 77
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt04.dds",
    "size": [
@@ -56278,7 +56751,8 @@
     "armour": 85,
     "evasion": 0,
     "energy_shield": 27,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr04.dds",
    "size": [
@@ -56323,7 +56797,8 @@
     "armour": 0,
     "evasion": 75,
     "energy_shield": 27,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt04.dds",
    "size": [
@@ -56368,7 +56843,8 @@
     "armour": 0,
     "evasion": 68,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 22
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex04.dds",
    "size": [
@@ -56412,7 +56888,8 @@
     "armour": 0,
     "evasion": 102,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex04.dds",
    "size": [
@@ -56457,7 +56934,8 @@
     "armour": 96,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 27
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower06.dds",
@@ -56506,7 +56984,8 @@
     "armour": 53,
     "evasion": 0,
     "energy_shield": 17,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 31
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest04.dds",
@@ -56865,7 +57344,8 @@
     "armour": 228,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 64
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr06.dds",
    "size": [
@@ -56909,7 +57389,8 @@
     "armour": 149,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 49
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr04.dds",
    "size": [
@@ -56953,7 +57434,8 @@
     "armour": 75,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr04.dds",
    "size": [
@@ -56997,7 +57479,8 @@
     "armour": 112,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 31
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr04.dds",
    "size": [
@@ -57041,7 +57524,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 36,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 31
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt04.dds",
    "size": [
@@ -57800,7 +58284,8 @@
     "armour": 0,
     "evasion": 194,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 62
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex06.dds",
    "size": [
@@ -57844,7 +58329,8 @@
     "armour": 121,
     "evasion": 107,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 73
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex04.dds",
    "size": [
@@ -57889,7 +58375,8 @@
     "armour": 0,
     "evasion": 127,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 48
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex04.dds",
    "size": [
@@ -57933,7 +58420,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 47,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 48
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt04.dds",
    "size": [
@@ -57977,7 +58465,8 @@
     "armour": 80,
     "evasion": 70,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex04.dds",
    "size": [
@@ -58022,7 +58511,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 23,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 20
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt04.dds",
    "size": [
@@ -58067,7 +58557,8 @@
     "armour": 50,
     "evasion": 44,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 30
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield04.dds",
@@ -58118,7 +58609,8 @@
     "armour": 0,
     "evasion": 64,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 20
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler06.dds",
@@ -58166,7 +58658,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 29,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 25
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus06.dds",
    "size": [
@@ -58933,7 +59426,8 @@
     "armour": 0,
     "evasion": 168,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 65
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex05.dds",
    "size": [
@@ -58977,7 +59471,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 64,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 65
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt05.dds",
    "size": [
@@ -59023,7 +59518,8 @@
     "armour": 0,
     "evasion": 55,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler05.dds",
@@ -59071,7 +59567,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 26,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 24
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus05.dds",
    "size": [
@@ -59261,7 +59758,8 @@
     "armour": 76,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 25
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower05.dds",
@@ -60030,7 +60528,8 @@
     "armour": 178,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 61
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr05.dds",
    "size": [
@@ -62328,7 +62827,8 @@
     "armour": 150,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr04.dds",
    "size": [
@@ -62372,7 +62872,8 @@
     "armour": 0,
     "evasion": 128,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex04.dds",
    "size": [
@@ -62416,7 +62917,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 54,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt04.dds",
    "size": [
@@ -62460,7 +62962,8 @@
     "armour": 83,
     "evasion": 71,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex03.dds",
    "size": [
@@ -62505,7 +63008,8 @@
     "armour": 83,
     "evasion": 0,
     "energy_shield": 30,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr03.dds",
    "size": [
@@ -62550,7 +63054,8 @@
     "armour": 0,
     "evasion": 71,
     "energy_shield": 30,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 53
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt03.dds",
    "size": [
@@ -62595,7 +63100,8 @@
     "armour": 99,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr03.dds",
    "size": [
@@ -62639,7 +63145,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 35,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt03.dds",
    "size": [
@@ -62683,7 +63190,8 @@
     "armour": 54,
     "evasion": 46,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex03.dds",
    "size": [
@@ -62728,7 +63236,8 @@
     "armour": 54,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr03.dds",
    "size": [
@@ -62773,7 +63282,8 @@
     "armour": 0,
     "evasion": 46,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt03.dds",
    "size": [
@@ -62818,7 +63328,8 @@
     "armour": 49,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr03.dds",
    "size": [
@@ -62862,7 +63373,8 @@
     "armour": 0,
     "evasion": 42,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex03.dds",
    "size": [
@@ -62906,7 +63418,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 18,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt03.dds",
    "size": [
@@ -62950,7 +63463,8 @@
     "armour": 27,
     "evasion": 23,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex02.dds",
    "size": [
@@ -62995,7 +63509,8 @@
     "armour": 27,
     "evasion": 0,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr02.dds",
    "size": [
@@ -63040,7 +63555,8 @@
     "armour": 0,
     "evasion": 23,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt02.dds",
    "size": [
@@ -63085,7 +63601,8 @@
     "armour": 74,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr03.dds",
    "size": [
@@ -63129,7 +63646,8 @@
     "armour": 0,
     "evasion": 63,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex03.dds",
    "size": [
@@ -63173,7 +63691,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 27,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt03.dds",
    "size": [
@@ -63217,7 +63736,8 @@
     "armour": 41,
     "evasion": 35,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex02.dds",
    "size": [
@@ -63262,7 +63782,8 @@
     "armour": 41,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr02.dds",
    "size": [
@@ -63307,7 +63828,8 @@
     "armour": 0,
     "evasion": 35,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt02.dds",
    "size": [
@@ -63353,7 +63875,8 @@
     "armour": 62,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 22
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower04.dds",
@@ -63402,7 +63925,8 @@
     "armour": 34,
     "evasion": 29,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 22
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield03.dds",
@@ -63452,7 +63976,8 @@
     "armour": 34,
     "evasion": 0,
     "energy_shield": 12,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 22
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest03.dds",
@@ -63503,7 +64028,8 @@
     "armour": 0,
     "evasion": 42,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler04.dds",
@@ -63551,7 +64077,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 22
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus04.dds",
    "size": [
@@ -63966,7 +64493,8 @@
     "armour": 80,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr02.dds",
    "size": [
@@ -64010,7 +64538,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt02.dds",
    "size": [
@@ -64055,7 +64584,8 @@
     "armour": 50,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 18
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower03.dds",
@@ -64949,7 +65479,8 @@
     "armour": 115,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr03.dds",
    "size": [
@@ -64993,7 +65524,8 @@
     "armour": 0,
     "evasion": 96,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex03.dds",
    "size": [
@@ -65037,7 +65569,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 45,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt03.dds",
    "size": [
@@ -65081,7 +65614,8 @@
     "armour": 63,
     "evasion": 53,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex02.dds",
    "size": [
@@ -65126,7 +65660,8 @@
     "armour": 0,
     "evasion": 53,
     "energy_shield": 25,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 43
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt02.dds",
    "size": [
@@ -65171,7 +65706,8 @@
     "armour": 42,
     "evasion": 34,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 32
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex02.dds",
    "size": [
@@ -65216,7 +65752,8 @@
     "armour": 38,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 16
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr02.dds",
    "size": [
@@ -65260,7 +65797,8 @@
     "armour": 0,
     "evasion": 31,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 16
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex02.dds",
    "size": [
@@ -65304,7 +65842,8 @@
     "armour": 57,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr02.dds",
    "size": [
@@ -65348,7 +65887,8 @@
     "armour": 0,
     "evasion": 47,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex02.dds",
    "size": [
@@ -65392,7 +65932,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 22,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 21
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt02.dds",
    "size": [
@@ -65438,7 +65979,8 @@
     "armour": 0,
     "evasion": 31,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 14
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
@@ -66160,7 +66702,8 @@
     "armour": 59,
     "evasion": 0,
     "energy_shield": 24,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 41
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr02.dds",
    "size": [
@@ -66205,7 +66748,8 @@
     "armour": 0,
     "evasion": 58,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex02.dds",
    "size": [
@@ -66249,7 +66793,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 29,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 27
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt02.dds",
    "size": [
@@ -66293,7 +66838,8 @@
     "armour": 39,
     "evasion": 0,
     "energy_shield": 16,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 30
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr02.dds",
    "size": [
@@ -66338,7 +66884,8 @@
     "armour": 0,
     "evasion": 32,
     "energy_shield": 16,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 30
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt02.dds",
    "size": [
@@ -66383,7 +66930,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 18,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus03.dds",
    "size": [
@@ -66731,7 +67279,8 @@
     "armour": 21,
     "evasion": 17,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 17
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield02.dds",
@@ -66830,7 +67379,8 @@
     "armour": 20,
     "evasion": 0,
     "energy_shield": 9,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 16
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest02.dds",
@@ -67286,7 +67836,8 @@
     "armour": 14,
     "evasion": 11,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 12
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStrDex01.dds",
    "size": [
@@ -67331,7 +67882,8 @@
     "armour": 22,
     "evasion": 17,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 18
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStrDex01.dds",
    "size": [
@@ -67377,7 +67929,8 @@
     "armour": 33,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 15
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower02.dds",
@@ -67425,7 +67978,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 15,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 15
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus02.dds",
    "size": [
@@ -68115,7 +68669,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 35,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 35
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt02.dds",
    "size": [
@@ -68159,7 +68714,8 @@
     "armour": 26,
     "evasion": 20,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex01.dds",
    "size": [
@@ -68204,7 +68760,8 @@
     "armour": 26,
     "evasion": 0,
     "energy_shield": 13,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetIntStr01.dds",
    "size": [
@@ -68249,7 +68806,8 @@
     "armour": 0,
     "evasion": 20,
     "energy_shield": 13,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 26
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDexInt01.dds",
    "size": [
@@ -68294,7 +68852,8 @@
     "armour": 13,
     "evasion": 0,
     "energy_shield": 6,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 11
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesIntStr01.dds",
    "size": [
@@ -68339,7 +68898,8 @@
     "armour": 20,
     "evasion": 0,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsIntStr01.dds",
    "size": [
@@ -68384,7 +68944,8 @@
     "armour": 0,
     "evasion": 15,
     "energy_shield": 10,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 17
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDexInt01.dds",
    "size": [
@@ -68431,7 +68992,8 @@
     "armour": 0,
     "evasion": 18,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 11
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler02.dds",
@@ -68972,7 +69534,8 @@
     "armour": 0,
     "evasion": 49,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 33
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex02.dds",
    "size": [
@@ -69016,7 +69579,8 @@
     "armour": 0,
     "evasion": 9,
     "energy_shield": 6,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 11
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
    "size": [
@@ -71462,7 +72026,8 @@
     "armour": 45,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -500
+    "movement_speed_%": -500,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr01.dds",
    "size": [
@@ -71503,7 +72068,8 @@
     "armour": 0,
     "evasion": 30,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDex01.dds",
    "size": [
@@ -71544,7 +72110,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 28,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyInt01.dds",
    "size": [
@@ -71585,7 +72152,8 @@
     "armour": 25,
     "evasion": 16,
     "energy_shield": 0,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStrDex01.dds",
    "size": [
@@ -71626,7 +72194,8 @@
     "armour": 25,
     "evasion": 0,
     "energy_shield": 16,
-    "movement_speed_%": -400
+    "movement_speed_%": -400,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyIntStr01.dds",
    "size": [
@@ -71667,7 +72236,8 @@
     "armour": 0,
     "evasion": 16,
     "energy_shield": 16,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 29
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt01.dds",
    "size": [
@@ -71707,7 +72277,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 100
    },
    "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyStr01.dds",
    "size": [
@@ -71748,7 +72319,8 @@
     "armour": 29,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 19
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStr01.dds",
    "size": [
@@ -71789,7 +72361,8 @@
     "armour": 0,
     "evasion": 19,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 19
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetDex01.dds",
    "size": [
@@ -71830,7 +72403,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 19,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 19
    },
    "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetInt01.dds",
    "size": [
@@ -71871,7 +72445,8 @@
     "armour": 15,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 10
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesStr01.dds",
    "size": [
@@ -71912,7 +72487,8 @@
     "armour": 0,
     "evasion": 10,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 10
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDex01.dds",
    "size": [
@@ -71953,7 +72529,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 9,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 10
    },
    "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesInt01.dds",
    "size": [
@@ -71994,7 +72571,8 @@
     "armour": 22,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 14
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsStr01.dds",
    "size": [
@@ -72035,7 +72613,8 @@
     "armour": 0,
     "evasion": 15,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 14
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsDex01.dds",
    "size": [
@@ -72076,7 +72655,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 14,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 14
    },
    "img": "Art/2DItems/Armours/Boots/Basetypes/BootsInt01.dds",
    "size": [
@@ -72118,7 +72698,8 @@
     "armour": 18,
     "evasion": 0,
     "energy_shield": 0,
-    "movement_speed_%": -300
+    "movement_speed_%": -300,
+    "ward": 12
    },
    "block": 26,
    "img": "Art/2DItems/Offhand/Shields/Tower01.dds",
@@ -72164,7 +72745,8 @@
     "armour": 10,
     "evasion": 7,
     "energy_shield": 0,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 12
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Shield01.dds",
@@ -72210,7 +72792,8 @@
     "armour": 10,
     "evasion": 0,
     "energy_shield": 6,
-    "movement_speed_%": -150
+    "movement_speed_%": -150,
+    "ward": 12
    },
    "block": 25,
    "img": "Art/2DItems/Offhand/Shields/Crest01.dds",
@@ -72257,7 +72840,8 @@
     "armour": 0,
     "evasion": 10,
     "energy_shield": 0,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 10
    },
    "block": 20,
    "img": "Art/2DItems/Offhand/Shields/Buckler01.dds",
@@ -72302,7 +72886,8 @@
     "armour": 0,
     "evasion": 0,
     "energy_shield": 12,
-    "movement_speed_%": 0
+    "movement_speed_%": 0,
+    "ward": 12
    },
    "img": "Art/2DItems/Offhand/Foci/Basetypes/Focus01.dds",
    "size": [

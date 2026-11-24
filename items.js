@@ -75,8 +75,10 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
   if (item.fists) { for (const st of Object.values(D.fists.implicits)) add(st, st.map(x => x[1])); for (const m of fistMods(item)) add(m.stats, m.values); }
-  else base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
-  if (!item.fists) for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
+  else {
+    base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
+    for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
+  }
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return out;
 }
@@ -120,6 +122,8 @@ function local(item) {
     r.armour = Math.round((A.armour + (s.local_base_physical_damage_reduction_rating || 0)) * inc('physical_damage_reduction_rating', 'armour_and_evasion', 'armour_and_energy_shield', all) * q);
     r.evasion = Math.round((A.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
     r.energy_shield = Math.round((A.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
+    // its Runic Ward: the base's (a Runeforged or Runemastered one), its own "+ to maximum Runic Ward" and increased, quality
+    r.ward = Math.round(((A.ward || 0) + (s.local_ward || 0) + (s.local_hand_wraps_ward_per_level || 0) * (F || 0)) * (1 + (s['local_ward_+%'] || 0) / 100) * q);
     r.movement = A['movement_speed_%'] / 100;
     if (base.block) r.block = Math.round((base.block + (s['local_additional_block_chance_%'] || 0)) * (1 + (s['local_block_chance_+%'] || 0) / 100));   // a shield's chance to block (ShieldTypes), with its own modifiers
     // its Strength requirement with its own reduced / no requirements. note: the tree's increased / reduced ones not counted
@@ -127,8 +131,8 @@ function local(item) {
   }
   if (base.weapon) {
     const w = base.weapon, phys = (1 + (s['local_physical_damage_+%'] || 0) / 100) * q;
-    r.physical = [Math.round((w.min + (s.local_minimum_added_physical_damage || 0)) * phys), Math.round((w.max + (s.local_maximum_added_physical_damage || 0)) * phys)];
-    for (const e of ['fire', 'cold', 'lightning']) if (s[`local_minimum_added_${e}_damage`]) r[e] = [s[`local_minimum_added_${e}_damage`], s[`local_maximum_added_${e}_damage`]];
+    r.physical = s.local_weapon_no_physical_damage ? [0, 0] : [Math.round((w.min + (s.local_minimum_added_physical_damage || 0)) * phys), Math.round((w.max + (s.local_maximum_added_physical_damage || 0)) * phys)];   // "No Physical Damage" (Skysliver)
+    for (const e of ['fire', 'cold', 'lightning', 'chaos']) if (s[`local_minimum_added_${e}_damage`]) r[e] = [s[`local_minimum_added_${e}_damage`], s[`local_maximum_added_${e}_damage`]];
     r.attacks_per_second = 1000 / w.attack_time_ms * (1 + (s['local_attack_speed_+%'] || 0) / 100);
     r.crit = s.local_weapon_base_crit_chance_permyriad_override != null ? s.local_weapon_base_crit_chance_permyriad_override / 100 : w.crit + (s.local_critical_strike_chance || 0) / 100;   // Quecholli: its own chance
     r.noCritBonus = !!s.local_no_critical_strike_multiplier;
@@ -163,6 +167,7 @@ export function gearStats(items = {}) {
     add('base_physical_damage_reduction_rating', l.armour);
     add('base_evasion_rating', l.evasion);
     add('base_maximum_energy_shield', l.energy_shield);
+    add('base_maximum_ward', l.ward);
     add('base_movement_velocity_+%', l.movement);
     add('base_spirit_from_equipment', l.spirit);
   }
@@ -589,6 +594,8 @@ export function known(it) {
   const fb = make('Facebreaker'), W = fb && wornItems({ level: 50, items: { gloves: fb } }, { ascendancy_hand_wraps: 1 }), L = W && local(W.gloves);
   if (fb) console.assert(!fb.fists && String(grantedSkills(W).map(x => x[0])) === 'Smash to Smithereens' && L.evasion === 150 && L.energy_shield === 50 && !L.armour && !grantedSkills({ gloves: fb }).length && local(fb).armour > 0, 'Fists of Stone', L);
   const rare = { base: fb?.base, implicits: [], mods: [{ id: 'Strength1', values: [5] }, { id: 'LocalIncreasedEvasionRating7_', values: [1] }] }, R = fb && rolled({ ...rare, fists: 10 });
+  console.assert(gearStats({ body: make('Runeforged Iron Cuirass') }).base_maximum_ward === 43 && gearStats({ body: { ...make('Runeforged Iron Cuirass'), quality: 20, extra: { local_ward: 7, 'local_ward_+%': 100 } } }).base_maximum_ward === 120
+    && String(local(make('Skysliver')).physical) === '0,0' && local(make('Nebuloch')).chaos?.[1] > 0, 'an item\'s Runic Ward, No Physical Damage, added chaos damage', local(make('Runeforged Iron Cuirass')), local(make('Nebuloch')));
   if (fb) console.assert(R['attack_area_of_effect_+%'] === 7 && !R.additional_strength && R.local_hand_wraps_evasion_rating_per_level === 7 && local({ ...rare, fists: 10 }).evasion === 70, 'Fists of Stone: the modifiers of a rare', R); }
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slotType(slot))).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
@@ -787,7 +794,7 @@ export function itemView(it) {
     // its own numbers: [label, number or [from, to], decimals, unit]
     props: [['Physical Damage', l.physical], ['Fire Damage', l.fire], ['Cold Damage', l.cold], ['Lightning Damage', l.lightning],
       ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
-      ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
+      ['Chaos Damage', l.chaos], ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Runic Ward', l.ward], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
     mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i])))),
       ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values)))))] };
 }
@@ -808,7 +815,7 @@ export function modDiff(old, item) {
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
 const DOLL = ['v v . . . . u u', 'w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w q b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
 const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', ring3: 'q', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
-const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shield', 'Energy Shield']];   // an armour piece's own defences (local())
+const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shield', 'Energy Shield'], ['ward', 'Runic Ward']];   // an armour piece's own defences (local())
 const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
 // why the character cannot wear a listed item yet (l.req, from the site): the levels to go, and each attribute short of
 // it with the tree's increased / reduced requirements (s: the character's snapshot without the item worn there; null: not asked)
@@ -885,10 +892,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const options = uniq ? historicFor(uniq) ? D.affixes.filter(a => a.historic && !families.has(a.family)) : [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
       .sort((a, b) => a.affix.localeCompare(b.affix) || String(a.family).localeCompare(String(b.family)) || a.level - b.level);
     const props = [
-      l.physical && prop('Physical Damage', l.physical.join('–')),
-      ...['fire', 'cold', 'lightning'].filter(e => l[e]).map(e => prop({ fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage' }[e], l[e].join('–'))),
+      l.physical?.[1] && prop('Physical Damage', l.physical.join('–')),
+      ...['fire', 'cold', 'lightning', 'chaos'].filter(e => l[e]).map(e => prop({ fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage', chaos: 'Chaos Damage' }[e], l[e].join('–'))),
       l.crit && prop('Critical Hit Chance', l.crit.toFixed(2) + '%'), l.attacks_per_second && prop('Attacks per Second', l.attacks_per_second.toFixed(2)),
-      l.armour && prop('Armour', l.armour), l.evasion && prop('Evasion Rating', l.evasion), l.energy_shield && prop('Energy Shield', l.energy_shield),
+      l.armour && prop('Armour', l.armour), l.evasion && prop('Evasion Rating', l.evasion), l.energy_shield && prop('Energy Shield', l.energy_shield), l.ward && prop('Runic Ward', l.ward),
       l.movement && prop('Base Movement Speed', l.movement + '%'),
       (base.armour || base.weapon) && prop('Quality', `<input type="number" min="0" step="1" class="qual" data-slot="${slot}" data-act="quality" value="${it.quality || 0}">%`),
       l.flask?.life && prop('Recovers Life', t('{0} over {1} s', l.flask.life, l.flask.recovery_s)), l.flask?.mana && prop('Recovers Mana', t('{0} over {1} s', l.flask.mana, l.flask.recovery_s)),

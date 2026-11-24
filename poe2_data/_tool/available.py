@@ -677,7 +677,8 @@ for i, b in enumerate(base_types):
         'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'slots': SLOT_CLASSES[cls], 'level': b['DropLevel'], 'domain': b['ModDomain'],
         'tags': sorted(set(read_it(b['InheritsFrom']) + [tags_tab[t]['Id'] for t in b['Tags']])),
         'implicits': [mods[m]['Id'] for m in b['Implicit_Mods']],
-        'armour': a and {'armour': a['Armour'], 'evasion': a['Evasion'], 'energy_shield': a['EnergyShield'], 'movement_speed_%': a['IncreasedMovementSpeed']},
+        # (ward: the Runic Ward of a Runeforged / Runemastered base, only where it has any)
+        'armour': a and {'armour': a['Armour'], 'evasion': a['Evasion'], 'energy_shield': a['EnergyShield'], 'movement_speed_%': a['IncreasedMovementSpeed'], **({'ward': a['Ward']} if a['Ward'] else {})},
         **({'block': shield_block[i]} if i in shield_block else {}),
         'img': visual[b['ItemVisualIdentity']]['DDSFile'] if b['ItemVisualIdentity'] is not None else None,
         'size': [b['Width'], b['Height']],
