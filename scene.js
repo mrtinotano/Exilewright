@@ -982,6 +982,7 @@ export function initScene(el, api) {
     const WF = a === 'ignite' && (S.dmg?.sum?.support_ignite_proliferation_radius || S.dmg?.stats?.active_skill_ignite_proliferation_radius || !S.src && S.dmg?.sum?.ignite_proliferation_radius_15 && 15);   // (The Searing Touch: your Ignites, within 1.5 metres)   // or the skill's own (Phantasmal Arrow's explosion)
     if (WF) { const seen = o?.spread || new Set([d]); for (const e of dummies) if (!e.dead && !seen.has(e) && dist(e.pos, d.pos) <= WF / 10) { seen.add(e); inflict(e, 'ignite', S, k, raw, { ...o, spread: seen }); } }
     const FX = a === 'freeze' && S.dmg?.sum?.chilling_ice_create_chilled_ground_on_freeze_base_duration_ms; if (FX) ground('chilled', { x: d.pos.x, z: d.pos.z }, S.dmg.sum.chilling_ice_freezing_area_base_radius / 10, FX / 1000, S);   // Frost Nexus
+    const BV = a === 'freeze' && !S.src && S.dmg?.sum?.supported_skill_grants_shatter_fang_to_you_and_allies_in_presence_for_base_X_ms_on_freeze; if (BV) me.fang = { pct: Math.floor(me.rage / 2), until: time + BV / 1000 };   // Bhatair's Vengeance: 1% of damage as cold per 2 Rage you have then, for its time
     const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
     const US = a === 'armour' && S.dmg?.sum?.['support_demolisher_physical_damage_taken_+%_on_fully_armour_breaking_up_to_20%']; if (US) d.smelt = Math.min(20, (d.smelt || 0) + US);   // Uruk's Smelting: increased physical damage taken, for good, up to 20%
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
@@ -4065,6 +4066,8 @@ export function initScene(el, api) {
   // Grim Remnant. Used again (Grim Resurrection), the life you hold Revives the dead minions, oldest first, up to that
   // much total life of theirs; it is all consumed. note: the game's own Revive after a delay is not in the data
   // (PoB2 MinionRevivalTimeBase), so the scene's minions come back only this way or by using their skill again
+  const volBlow = () => { if (!sheet().volImmune) { const VN = me.vol * VOLATILITY.dmg, VC = VN * Math.min(100, sheet().volCold || 0) / 100; hurt(VN - VC + (VC ? playerTakes(sheet(), 'cold', VC, false) : 0), 0, VC ? 'cold' : 'physical', false, null); }   /* Dream Fragments: its share taken as cold */
+    me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = Math.random() * 100 < (sheet().volRefresh || 0) ? me.vol : 0; me.volAt = time; };   // Volatility explodes (keywords.json Volatility)
   const gainVol = n => { me.vol = Math.min(sheet().volMax || VOLATILITY.max, (me.vol || 0) + n); me.volAt = time; };   // Volatility on you, up to its most, its fuse anew
   function fallen(S, e) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
@@ -4332,6 +4335,7 @@ export function initScene(el, api) {
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       if (time < me.perf?.until) S.mult *= 1 + PERFECTION.more * me.perf.n / 100;   // Perfection: all your skills
       if (P.spell && time < me.pmag?.until) S.mult *= 1 + me.pmag.inc / 100;   // Practical Magic's increased spell damage. note: as more here
+      if (time < me.fang?.until && me.fang.pct) S.gains = [...(S.gains || []), { el: 'cold', pct: me.fang.pct }];   // Bhatair's Vengeance. note: yours only, not your allies'
       { const I = P.spell && !S.src && sheet().uDef?.indigon, ts = I ? Object.keys(S.dmg?.hits || {}) : []; if (ts.length) S.mult *= 1 + I * spent200() / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length; }   // Indigon
       { const SU = S.dmg?.sum || {};
         // Minion Pact: drains its % of your life from a minion that has it all, for its more damage
@@ -4402,9 +4406,6 @@ export function initScene(el, api) {
       if (EA?.cast && P.spell && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay && me.flame >= me.maxM * HIGH_FLAME) earchGo(EA);
       if (LI?.sac) { const n = me.maxE * LI.sac / 100; if (n > 0 && me.es >= n) { me.es -= n; S.mult *= 1 + LI.sacMore / 100; if (!LI.keep) me.esStop = time; } }   // the Sacrifice interrupts its recharge, unless Eldritch Empowerment
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
-      // Extraction, Sacrificial Offering, Guatelitzi's Ablation: their share of your life Sacrificed on use (not damage, and
-      // never below 1: keywords.json Sacrifice). note: of maximum life, as the Lich's and the uniques' Sacrifices here
-      const sacL = !S.src && !auto && S.dmg?.sum?.['sacrifice_%_life_on_skill_use']; if (sacL) me.life -= Math.max(0, Math.min(me.life - 1, me.maxL * sacL / 100));
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
       if (tally() < had || P.attack && !S.src && S.kind !== 'totem' && sheet().uDef?.allEmp) { S.empd = true; const F = S.dmg?.finals || {};
@@ -4487,6 +4488,8 @@ export function initScene(el, api) {
     if (MV) me.travAt[S.name] = me.trav;
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow() < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
+    const CV = !auto && S.dmg?.sum?.skill_conditional_requires_X_volatility;   // Catharsis: usable only with its Volatility on you
+    if (CV && (me.vol || 0) < CV) { toast(t('Not enough Volatility for {0}', S.label)); return false; }
     // Vruun's Inevitability: it expends the Combo your other melee attacks built (up to its most), its increased area each
     const VA = S.dmg?.sum?.['area_of_effect_+%_per_combo_stack'];
     if (!auto && (CB?.need || VA)) { S.comboSpent = Math.min(comboNow(), VA && S.dmg.sum.skill_maximum_number_of_combo_stacks || Infinity); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB?.esSooner || 0); me.combo = 0;   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
@@ -4552,6 +4555,10 @@ export function initScene(el, api) {
       S.ambrosia = flaskUse(1, 'consume_%_of_maximum_mana_flask_charges_on_skill_use', 'gain_%_damage_as_lighting_per_mana_flask_charge_consumed');
       if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
     }
+    // Extraction, Sacrificial Offering, Guatelitzi's Ablation: their share of your life Sacrificed on use (not damage, and
+    // never below 1: keywords.json Sacrifice). note: of maximum life, as the Lich's and the uniques' Sacrifices here
+    const sacL = !S.src && !auto && S.dmg?.sum?.['sacrifice_%_life_on_skill_use']; if (sacL) me.life -= Math.max(0, Math.min(me.life - 1, me.maxL * sacL / 100));
+    if (CV) volBlow();   // Catharsis: the skill detonates the Volatility on you
     // how far you moved and how long you stood still before this use (Momentum, Dauntless); Rageforged's Rage spent
     S.moved = me.walked || 0; S.still = time - (me.movedAt ?? -99); me.walked = 0;
     if (!auto && S.dmg?.enrage && me.rage >= S.dmg.enrage) { if (!(Math.random() * 100 < (S.dmg.sum?.['rage_skip_consume_chance_%'] || 0))) spendRage(S.dmg.enrage); S.enraged = true; }   // Rageforged II: its chance to keep the Rage
@@ -6071,7 +6078,7 @@ export function initScene(el, api) {
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;
     for (const a in me.lock) me.lock[a] -= dt;
     // Volatility explodes after its fuse: its physical damage to you per stack (none if immune), then Volatile Power
-    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) { if (!sheet().volImmune) { const VN = me.vol * VOLATILITY.dmg, VC = VN * Math.min(100, sheet().volCold || 0) / 100; hurt(VN - VC + (VC ? playerTakes(sheet(), 'cold', VC, false) : 0), 0, VC ? 'cold' : 'physical', false, null); }   /* Dream Fragments: its share taken as cold */ me.volPower = { n: me.vol, until: time + VOLATILITY.time }; me.vol = Math.random() * 100 < (sheet().volRefresh || 0) ? me.vol : 0; me.volAt = time; }
+    if (me.vol > 0 && time - me.volAt >= VOLATILITY.fuse * (sheet().volFuse ?? 1)) volBlow();
     if (me.flame > 0) me.flame = Math.max(0, me.flame - me.maxM * (sheet().flame?.decay || 0) / 100 / 60 * dt);   // Infernal Flame lost over time
     // Seething Body: Elemental Archon does not expire on High Infernal Flame
     if (sheet().earch?.keep && time < me.earch && me.flame >= me.maxM * HIGH_FLAME) { me.earch = Math.max(me.earch, time + .2); const B = buffs.find(b => b.earch); if (B) B.s = Math.max(B.s, .2); }

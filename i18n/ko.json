@@ -806,6 +806,7 @@
  "Rage": "격노",
  "Not enough mana for {0}": "{0}에 필요한 마나가 부족합니다",
  "Not enough Rage for {0}": "{0}에 필요한 격노가 부족합니다",
+ "Not enough Volatility for {0}": "{0}에 필요한 일촉즉발이 부족합니다",
  "Not enough life for {0}": "{0}에 필요한 생명력이 부족합니다",
  "Shield": "보호막",
  "Empty": "비어 있음",

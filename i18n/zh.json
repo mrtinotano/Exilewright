@@ -806,6 +806,7 @@
  "Rage": "盛怒",
  "Not enough mana for {0}": "魔力不足，無法使用{0}",
  "Not enough Rage for {0}": "盛怒不足，無法使用{0}",
+ "Not enough Volatility for {0}": "易爆不足，無法使用{0}",
  "Not enough life for {0}": "生命不足，無法使用{0}",
  "Shield": "護盾",
  "Empty": "空",

@@ -806,6 +806,7 @@
  "Rage": "憤怒",
  "Not enough mana for {0}": "{0}のマナが足りない",
  "Not enough Rage for {0}": "{0}の憤怒が足りない",
+ "Not enough Volatility for {0}": "{0}のボラティリティが足りない",
  "Not enough life for {0}": "{0}のライフが足りない",
  "Shield": "エナジーシールド",
  "Empty": "空き",
