@@ -62,6 +62,9 @@ const UARCHON = { more: 25, cd: 200, limit: 100 }, PUPPET = { cmdSpeed: 10, cmdM
 const EARCHON = { more: 25, ail: 100 }, HIGH_FLAME = .65;   // KeywordPopups ElementalArchon: 25% more elemental spell damage, 100% more freeze buildup, flammability and shock chance; HighInfernalFlame: 65% or more
 const ONSLAUGHT = { speed: 20, move: 10, time: 4 };   // keywords.json Onslaught: 20% increased skill speed, 10% increased movement speed, 4 s unless specified
 const INTIM = 10;   // keywords.json Intimidate: 10% increased damage taken and 10% reduced damage dealt
+// note: KeywordPopups Runefather's Challenge: +5 Power (BuffTemplates AncientsChallenge), each Runefather's Boast +1 to Armour,
+// to Evasion Rating and to Stun Threshold; Corrupted Blood: up to 10 of them on each target
+const RUNEFATHER = 5, BLOOD_MAX = 10;
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
@@ -322,14 +325,14 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -474,7 +477,8 @@ export function initScene(el, api) {
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
-    if (D?.attack && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried
+    if ((sheet().parrySpell ? P?.spell : D?.attack) && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried (Nocturne: more Spell damage taken instead)
+    if (real && D.offhand && sheet().runefather?.off) d.rfc = true;   // Eyes of the Runefather: off-hand Hits inflict Runefather's Challenge
     // Savage Fury, while on and not in its frenzy: Fury on an attack's hit, once per use, up to its most
     const SF = !S.src && P.attack && !S.wildGot && tog['Savage Fury'] && !(time < me.wildUntil) && onS('Savage Fury')?.dmg.stats;
     if (SF) { S.wildGot = true; me.wild = Math.min(SF.wild_beast_maximum_energy, (me.wild || 0) + SF.wild_beast_energy_per_hit); }
@@ -1446,6 +1450,7 @@ export function initScene(el, api) {
     const KG = S && !S.src ? ['power', 'frenzy'].filter(c => S.dmg?.stats?.[`skill_grant_X_${c}_charges_against_${kr}_monsters`]) : [];
     for (const c of KG) for (let k = S.dmg.stats[`skill_grant_X_${c}_charges_against_${kr}_monsters`]; k > 0; k--) chargeBy(c, S);
     const r = d.stat.rarity || 'normal';   // the kill refills your flasks
+    if (d.rfc && sheet().runefather?.max) me.boast = Math.min(sheet().runefather.max, (me.boast || 0) + Math.floor(pow(d)));   // Eyes of the Runefather: a Boast per Power of a challenged enemy you kill
     if (Math.random() * 100 < (sheet().lament?.load || 0)) for (const k in clips) clips[k]++;   // The Last Lament: a bolt loaded into all crossbow skills (note: one already full is not shown as over its clip)
     // Bounty: a killing blow of a supported skill grants its more flask and charm charges
     const BY = !S?.src && S?.dmg?.sum || {}, bk = k => 1 + (BY[`support_${k}_charges_gained_+%_final_from_killing_blow`] || 0) / 100;
@@ -3651,7 +3656,10 @@ export function initScene(el, api) {
   };
   K.meditate = () => fx.ring(pp, .2, .9, 'holy', .25, { a: .4 });   // its recharge: update
   K.parry = S => { me.parry = { S, until: time + PARRY_WAIT }; fx.ring(pp, .3, .9, 'white', .3, { a: .5 }); };
-  K.shield = S => { me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
+  // Eyes of the Runefather: Runefather's Challenge on the enemies in front of you when you raise it, no more than once every 2 seconds (its text)
+  K.shield = S => { const RF = sheet().runefather?.r;
+    if (RF && !(time < me.raised?.until) && time - (me.rfAt ?? -9) >= 2) { me.rfAt = time; for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= RF && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.rfc = true; }
+    me.raised = { ...me.raised, S, until: time + SIM.channelTick * 2 }; };
   // Runic Reprieve: channelled (from at least its share of your maximum Runic Ward), its bubble around you (struck)
   K.reprieve = S => {
     const st = S.dmg.stats, on = time < me.reprieve?.until;
@@ -4915,6 +4923,7 @@ export function initScene(el, api) {
     const st = S?.dmg?.stats || {}, f = S?.dmg?.finals || {}, P = st[PERFORM]; if (P == null) return null;
     const A = sheet().actMove || {}, more = ['support_mobility_movement_speed_penalty_+%_final_while_performing_action', 'support_deliberation_movement_speed_penalty_+%_final_while_performing_action']
       .reduce((m, k) => m * (1 + ((st[k] || 0) + (f[k] || 0)) / 100), 1 + (A.more || 0) / 100);
+    if (S.kind === 'shield' && A.none) return 1;   // Feathered Fortress: no penalty while your Shield is raised
     const pen = -P * (1 + ((A.inc || 0) + (S.els?.includes('fire') ? A.fire || 0 : 0) + (S.els?.includes('cold') ? A.cold || 0 : 0) + (S.kind === 'shield' ? A.shield || 0 : 0)) / 100) * more;
     return Math.max(0, 1 - pen / 100);
   }
@@ -4995,6 +5004,7 @@ export function initScene(el, api) {
     if (pup()) b.push(one(null, css('chaos'), t('Puppet Master'), me.pup.length, Math.max(...me.pup) - time));
     if (me.demon) b.push(one(icon(me.demon.name), css('fire'), me.demon.label, demon()));
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
+    if (me.boast) b.push(one(null, css('physical'), t("Runefather's Boast"), me.boast));
     if (me.locust) b.push(one(icon("Queen's Procession"), css('physical'), t("Swarm's Advance"), me.locust));
     if (me.heat) b.push(`<span class="s-txt" style="--c:${css('fire')}">${t('Heat')} ${Math.floor(me.heat)}</span>`);
     if (seen()) b.push(one(icon('Future-Past'), css('gold'), api.info({ name: 'Future-Past' }).label));
@@ -5343,7 +5353,10 @@ export function initScene(el, api) {
     if (U.intim) d.intim = Math.max(d.intim || 0, time + U.intim);   // Wulfsbane
     if (U.cull && underCull(d, {})) { fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, thornX({ hits: {} }, t('Blocked'))); return; }   // Doomgate
     if (U.mana) { const n = avgHit({ dmg: d.atk }) * U.mana / 100, RT = sheet().recoup?.time || 8; me.recoup.push({ k: 'mana', left: n, rate: n / RT }); }
-    if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.find(x => x.name === v.name); if (o) Object.assign(o, v); else d.dots.push(v); }
+    if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.filter(x => x.name === v.name); if (o.length < BLOOD_MAX) d.dots.push(v); else Object.assign(o.reduce((a, x) => x.s < a.s ? x : a), v); }
+    if (U.enfeeble && Math.random() * 100 < U.enfeeble.chance) { const E = U.enfeeble;   // Rondel de Ezo: cursed with Enfeeble, as a curse of yours
+      d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== 'Enfeeble').slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
+      d.curse = { s: E.time, full: E.time, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; }
   }
   const blocked = d => { blockU(d); me.blockAt = time; me.blockN = (me.blockN || 0) + 1; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
@@ -5553,7 +5566,9 @@ export function initScene(el, api) {
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
       const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0)) + (I.perStun || 0) * me.stuns.length;   // per time you were Hit Recently, up to 100%; per time Stunned Recently
         return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
-      const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
+      // with your Shield raised: Raise Shield's own more light stun threshold, doubled by Dionadair; Runefather's Boasts add theirs
+      const RSH = time < me.raised?.until ? (sheet().raisedStun || 1) * (1 + (me.raised.S.dmg?.stats?.['active_block_light_stun_threshold_+%_final'] || 0) / 100) : 1;
+      const stunChance = D.stun ? Math.min(100, hard / ((D.stun + (me.boast || 0) * (1 + (D.stunIf?.inc || 0) / 100)) * RSH * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
       if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && !(sheet().noStunRecent && time - (me.stunAt ?? -99) <= RECENT) && !(sheet().noStunCalm && me.struck.length < 2) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
         if (sheet().stunBlind) d.st.blind = Math.max(d.st.blind || 0, BLIND.time);   // the tree's: Blind the enemy that stuns you
         me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
@@ -5573,7 +5588,7 @@ export function initScene(el, api) {
   // half the monster's power for a normal one, all of it for a magic one, twice it for rare and unique ones, the power being
   // the rarity's 1 / 2 / 5 times the monster's own, and 20 for a unique (note: a monster's own power is not in the tables:
   // the glossary's average, 1, is used). Dying and refilling fill them, as a checkpoint or a well does.
-  const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1) + (sheet().gmPower && d?.gm && dist(d.pos, pp) <= sheet().overgrow.r ? d.gm.n : 0);   // a monster's Power (Redblade Banner: more in your Presence)
+  const pow = d => (POWER[d?.stat.rarity || 'normal'] || 1) * (sheet().redblade && d && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().redblade / 100 : 1) + (sheet().gmPower && d?.gm && dist(d.pos, pp) <= sheet().overgrow.r ? d.gm.n : 0) + (d?.rfc ? RUNEFATHER : 0);   // a monster's Power (Redblade Banner: more in your Presence; Runefather's Challenge: more)
   const POWER = { normal: 1, magic: 2, rare: 5, unique: 20 }, FLASK_GAIN = { normal: .5, magic: 1, rare: 2, unique: 2 };
   const flasks = () => sheet().flasks || [];
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
@@ -5709,6 +5724,7 @@ export function initScene(el, api) {
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
     if (c.evaDouble && meIs.NotHitRecently()) c = { ...c, evasion: (c.evasion || 0) * 2 };   // Hyrri's Ire
+    if (me.boast) c = { ...c, armour: c.armour + me.boast * (c.armourInc || 1), evasion: (c.evasion || 0) + me.boast * (c.evasionInc || 1) };   // Runefather's Boasts, with your increases
     if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
     // the tree's: every Rage grants increased evasion; increased armour and evasion per totem in your Presence
     const ER = (c.evasionPerRage || 0) * rageNow(), DT = (c.defPerTotem || 0) * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;
@@ -5884,8 +5900,8 @@ export function initScene(el, api) {
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     // the tree's Debilitate and Blind (Bastion of Light) in front of your raised Shield, each within its metres
-    const DB = sheet().debilShield, BS = sheet().blindShield; if ((DB || BS) && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) {
-      if (dist(d.pos, pp) <= DB) d.debil = time + DEBIL.time; if (dist(d.pos, pp) <= BS) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); }
+    const DB = sheet().debilShield, BS = sheet().blindShield, WP = sheet().raisedExpo; if ((DB || BS || WP) && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) {
+      if (dist(d.pos, pp) <= DB) d.debil = time + DEBIL.time; if (dist(d.pos, pp) <= BS) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); if (dist(d.pos, pp) <= WP) expo(d, ELEM); }   // Window to Paradise: Elemental Exposure
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; if (inP && !d.inPres) d.enterAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());

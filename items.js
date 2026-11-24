@@ -198,7 +198,7 @@ export function gearStats(items = {}) {
   for (const [slot, item] of Object.entries(items)) {
     if (!baseOf(item)) continue;
     const side = { ring1: 'local_left_ring_slot_', ring2: 'local_right_ring_slot_' }[slot];   // Snakepit: "Left ring slot: Projectiles from Spells Fork"
-    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots')) add(k, v); else if (side && k.startsWith(side)) add(k.slice(side.length), v);   // the belt's charm slots count for the character
+    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots') || k.startsWith('local_shield_')) add(k, v); else if (side && k.startsWith(side)) add(k.slice(side.length), v);   // the belt's charm slots count for the character, and what a shield does while raised (Dionadair)
     const l = local(item);
     add('base_physical_damage_reduction_rating', l.armour);
     add('base_evasion_rating', l.evasion);

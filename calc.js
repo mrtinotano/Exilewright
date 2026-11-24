@@ -449,7 +449,7 @@ export function character(b, sum) {
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
     // for its share of damage gained as physical per charge, for its duration; flasks recover no life
-    parryRange: v(sum, 'active_block_maximum_distance_+%'),   // increased Parry Range
+    parryRange: sum.infinite_active_block_distance ? Infinity : v(sum, 'active_block_maximum_distance_+%'),   // increased Parry Range (Calgyra's Arc: infinite)
     offerEff: v(sum, 'offering_spells_effect_+%'),
     lowFlask: v(sum, 'life_recovery_+%_from_flasks_while_on_low_life'),   // increased life recovery from flasks used on Low Life
     tides: sum.blood_mage_life_flask_buff_duration_ms ? { gain: v(sum, 'gain_X_life_flask_charges_per_4%_life_spent'), use: v(sum, 'blood_mage_life_flask_buff_%_charges_to_consume'),
@@ -498,6 +498,12 @@ export function character(b, sum) {
     // Archon of Undeath: the tree's chances to gain it; Puppet Master: the tree's (Surpassing) chance of a stack, its more stacks, their duration and effect
     blindShield: v(sum, 'inflict_blind_on_enemies_within_x_meters_while_shield_is_raised'), raiseParry: v(sum, 'raise_shield_skill_inflicts_parry_for_duration_ms') / 1000,   // Bastion of Light: Blind in front of your raised Shield (metres); its hits inflict Parried (seconds)
     debilShield: v(sum, 'debilitate_enemies_within_X_metres_while_active_blocking'),   // Debilitate in front of you while your Shield is raised (metres)
+    // uniques while your Shield is raised: Elemental Exposure in front of you (Window to Paradise: its text's 3 metres), double
+    // Stun Threshold (Dionadair); Eyes of the Runefather: Runefather's Challenge in front of you when you raise it (metres)
+    // and on off-hand Hits, and the most Runefather's Boasts; Nocturne: Parried enemies take more Spell damage instead
+    raisedExpo: sum.unique_shield_window_of_paradise_apply_elemental_exposure_while_raised ? 3 : 0, raisedStun: sum.local_shield_double_stun_threshold_while_active_blocking ? 2 : 1,
+    runefather: { r: v(sum, 'apply_ancients_challenge_in_front_facing_radius_on_raise_shield') / 10, off: !!sum.off_hand_apply_ancients_challenge_on_hit, max: v(sum, 'runefathers_boast_maximum_stacks') },
+    parrySpell: !!sum.parry_applies_spell_damage_debuff_instead,
     undeath: { cmd: v(sum, 'chance_%_to_gain_archon_of_undeath_on_using_command_skill'), offer: v(sum, 'chance_%_to_gain_archon_of_undeath_when_you_create_an_offering') },
     puppet: { ch: v(sum, 'surpassing_chance_%_to_gain_1_puppeteer_stack_on_using_command_skill'), max: v(sum, 'max_puppet_master_stacks_+'), dur: pct('puppet_master_duration_+%'), eff: pct('puppet_master_effect_+%') }, tempMinion: v(sum, 'temporary_minion_limit_+'), totemRange: v(sum, 'totem_placement_range_+%'),
     orbLimit: v(sum, 'orb_skill_limit_+'), elLimit: v(sum, 'elemental_skill_limit_+'), fissureLimit: v(sum, 'fissure_skills_limit_+'),
@@ -725,7 +731,7 @@ export function recovery(c, sum) {
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
     parryMag: v(sum, 'parried_magnitude_+%'), parryTime: 1 + v(sum, 'parry_skill_effect_duration_+%') / 100, debuffTime: v(sum, 'debuff_time_passed_+%'),   // the Parried debuff you inflict; how fast debuffs on you expire
-    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, actMove: { inc: v(sum, 'movement_speed_penalty_+%_while_performing_action'), shield: v(sum, 'movement_speed_penalty_+%_while_raising_shield'), fire: v(sum, 'movement_speed_penalty_+%_while_performing_fire_skills'), cold: v(sum, 'movement_speed_penalty_+%_while_performing_cold_skills'), more: v(sum, 'deadeye_movement_speed_penalty_+%_final_while_performing_action') }, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
+    pain: !!sum.keystone_pain_attunement, unwavering: !!sum.keystone_unwavering_stance, bulwark: !!sum.keystone_bulwark, glancing: !!sum.keystone_glancing_blows, heart: !!sum.keystone_heartstopper, equilibrium: !!sum.keystone_elemental_equilibrium, actMove: { none: !!sum.no_movement_penalty_while_shield_is_raised, inc: v(sum, 'movement_speed_penalty_+%_while_performing_action'), shield: v(sum, 'movement_speed_penalty_+%_while_raising_shield'), fire: v(sum, 'movement_speed_penalty_+%_while_performing_fire_skills'), cold: v(sum, 'movement_speed_penalty_+%_while_performing_cold_skills'), more: v(sum, 'deadeye_movement_speed_penalty_+%_final_while_performing_action') }, ancestral: !!sum.keystone_ancestral_bond, ritual: !!sum.keystone_auto_invocation, resonance: !!sum.keystone_charge_cycle, conduit: sum.keystone_conduit ? 'all' : sum.endurance_only_conduit ? 'endurance' : null,   // keystones the scene plays
     regenWhile: REGEN_WHILE.filter(([k]) => sum[k]).map(([k, to, cv, x = 1]) => ({ to, cv, val: sum[k] * x })),
     // what a kill recovers: flat life, a share of your maximum mana, of your life when it was Poisoned, the chance for all your life
     killRecover: { life: v(sum, 'base_life_gained_on_enemy_death'), lifePct: v(sum, 'recover_%_maximum_life_on_kill'), mana: v(sum, 'recover_%_maximum_mana_on_kill'), manaFlat: v(sum, 'base_mana_gained_on_enemy_death'), poisoned: v(sum, 'recover_%_maximum_life_on_killing_poisoned_enemy'),
@@ -763,7 +769,10 @@ export function recovery(c, sum) {
     // uniques on blocking: a Poison as though dealing that base chaos damage (Lycosidae), damage blocked recouped as mana
     // (Alkem Eira), Corrupted Blood (Bloodbarrier: its share of your maximum life a minute, for its time)
     uBlock: { cull: !!sum.culling_strike_enemies_on_block, intim: v(sum, 'intimidate_enemy_on_block_for_duration_ms') / 1000, poison: v(sum, 'poison_as_though_dealing_X_damage_on_block'), mana: v(sum, 'damage_blocked_%_recouped_as_mana'),
-      blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000 },
+      blood: v(sum, 'unique_blood_barrier_corrupted_blood_base_physical_damage_per_minute_as_%_of_maximum_life') / 100, bloodTime: v(sum, 'unique_blood_barrier_corrupted_blood_duration_ms') / 1000,
+      // Rondel de Ezo: Enfeeble on Block. note: the level of that curse is not in the data: the glossary's Enfeeble when nothing
+      // says otherwise (20% less damage dealt: the gem's at level 1), for that level's time and without its limit of level
+      enfeeble: sum['curse_on_block_enfeeble_chance_%'] ? (st => ({ chance: sum['curse_on_block_enfeeble_chance_%'], C: { ...curseOf(st, sum), maxLevel: null }, time: st.base_skill_effect_duration / 1000 }))(gemStats({ name: 'Enfeeble', level: 1 }, sum)) : null },
     zerphi: { toFlask: v(sum, 'charm_charges_used_%_granted_to_life_flasks'), toCharm: v(sum, 'life_flask_charges_used_%_granted_to_charms') },   // Zerphi's Genesis: charges spent passed on
     // Liminal Coil: curses at zero magnitude, spells gaining as extra chaos / physical per curse on the target; Heatshiver: cold as extra fire per 1% Chill
     coil: sum['coil_of_undoing_curse_magnitude_+%_final'] || sum['spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'] ? { zero: v(sum, 'coil_of_undoing_curse_magnitude_+%_final'), chaos: v(sum, 'spells_gain_%_of_damage_as_extra_chaos_per_curse_on_target'), phys: v(sum, 'spells_gain_%_of_damage_as_extra_phys_per_curse_on_target') } : null,
@@ -1572,6 +1581,9 @@ export function skill(g, b, treeGear) {
   const part = out.part = { ...(d.part || {}), ...(d.part_levels?.[st._level] || {}) };   // the skill's other part's stats (Supercharged Slam's Aftershocks)
   // (a 0 the main part carries for a stat of the other part does not hide it: Falling Thunder's damage per power charge)
   out.ail = ailments({ ...part, ...Object.fromEntries(Object.entries(st).filter(([k, x]) => x || !(k in part))) }, sum, Object.fromEntries(Object.entries(finals).filter(([k]) => !twice.has(k))), tags, flags);   // a stat with _final inside its name (…_final_vs_frozen_enemies) once, already in sum
+  if (shield) out.offhand = true;   // a shield skill's Hits are off-hand ones (Eyes of the Runefather)
+  // Kaltenhalt: for Parry, what modifies its Stun buildup (the gem's more, the tree's increases) goes to its Freeze buildup instead
+  if (tags.includes('parry') && sum.parry_modifiers_to_stun_buildup_instead_apply_to_freeze) out.ail = { ...out.ail, freeze: out.ail.freeze * out.ail.stun, stun: 1 };
   if (attack && w?.noPoisonLimit) out.ail.noPoisonLimit = true;   // any number of its Poisons at once (Splinter of Lorrata)
   if (attack && w?.alwaysHit) out.ail.alwaysHit = true;   // a weapon that Always Hits (Shyaba)
   if (attack && w?.stunX > 1) out.ail.stun *= w.stunX;   // a weapon that Causes Double Stun Buildup (Brynhand's Mark)
@@ -2028,6 +2040,9 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
 { const FB = 'unique_facebreaker_can_use_mace_attacks_with_both_hands_empty_using_facebreaker_base_damage', run = (sum, items = { gloves: newItem('Facebreaker') }) => skill({ name: 'Boneshatter', level: 10, supports: [] }, { gems: [], items, asc: 'Titan', level: 80 }, sum);
   const a = run({ [FB]: 1 }), f = run({ [FB]: 1, ascendancy_hand_wraps: 1 }), n = run({}), m = run({ [FB]: 1 }, { gloves: newItem('Facebreaker'), weapon: newItem('Wooden Club') });
   console.assert(a.hits.physical?.[1] > 0 && !a.hits.fire && f.hits.fire?.[1] > 0 && !f.hits.physical?.[1] && !n.hits.physical && m.hits.physical?.[1] > 0 && m.hits.physical[1] !== a.hits.physical[1], 'Facebreaker', a.hits, f.hits, n.reason, m.hits); }
+// Kaltenhalt: Parry's modifiers to Stun buildup go to its Freeze buildup, its physical damage is cold; a shield skill's Hits are off-hand ones
+{ const b = { gems: [], items: { offhand: newItem('Ridged Buckler') } }, run = s => skill({ name: 'Parry', level: 10, supports: [] }, b, s), a = run({}), k = run({ parry_modifiers_to_stun_buildup_instead_apply_to_freeze: 1, 'parry_physical_damage_%_to_convert_to_cold': 100 });
+  console.assert(a.ail.stun > 1 && a.offhand && k.ail.stun === 1 && k.ail.freeze === a.ail.stun * a.ail.freeze && k.hits.cold && !k.hits.physical, "Kaltenhalt's Parry", a.ail, k.ail, k.hits); }
 // Rathpith Globe: a non-channelling spell's damage and critical hit chance per 100 maximum Life; Tyranny's Grip: no Projectile Attacks
 { const b = { gems: [], items: {}, level: 80, asc: 'Stormweaver' }, n = Math.floor(character(b, {}).life / 100), run = s => skill({ name: 'Fireball', level: 10, supports: [] }, b, s);
   const a = run({}), d = run({ 'spell_damage_+%_per_100_max_life_with_non_channelling_skills': 6 }), c = run({ 'spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills': 3 });
