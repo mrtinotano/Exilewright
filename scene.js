@@ -343,7 +343,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -483,6 +483,7 @@ export function initScene(el, api) {
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
     let riven, m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = (o.stunX ?? 1) * (S.stunX || 1);
+    if (real && !S.src && me.hexes) g *= Math.max(0, 1 + onMe(C => C.damage) / 100);   // a curse on you (Enfeeble): less damage dealt
     // Kulemak's Sovereignty: your hits 1% more per 2 total Power of your Undead minions (a minion's is a normal monster's)
     const KU = !S.src && sheet().kulemak; if (KU) g *= 1 + Math.floor(objs.filter(x => x.minion && x.undead && !x.dead).length * POWER.normal / KU) / 100;
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
@@ -1046,6 +1047,15 @@ export function initScene(el, api) {
   // the curses on an enemy: the latest (d.curse) and those still on from before (d.hexes), up to your curse limit;
   // their effects add up
   // (the tree's increased magnitudes once half of a curse's duration has expired. note: as a factor of its own)
+  // Shackles of the Wretched: a curse you inflict is on you too (me.hexes, by its name), with the effect and the duration of
+  // curses on you, as many as your curse limit (the oldest goes); onMe: what those on you add up to (lower resistances and
+  // armour, less damage dealt, slower actions)
+  const hexMe = (name, C, s, x = 1) => {
+    const R = sheet().selfCurse; if (!R?.reflect || !C) return;
+    const H = Object.fromEntries(Object.entries(me.hexes || {}).filter(([n, h]) => n !== name && time < h.until).slice(sheet().curseIgnore ? 0 : -((sheet().curseLimit || 1) - 1) || Infinity));
+    me.hexes = { ...H, [name]: { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect } };
+  };
+  const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0);
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
@@ -2721,7 +2731,7 @@ export function initScene(el, api) {
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, sheet().curseIgnore || S.dmg?.sum?.curse_ignores_curse_limit ? Infinity : (sheet().curseLimit || 1) - 1);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
-          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -5042,6 +5052,7 @@ export function initScene(el, api) {
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
     if (me.boast) b.push(one(null, css('physical'), t("Runefather's Boast"), me.boast));
     if (souls()) b.push(one(null, css('chaos'), t('Soul Eater'), souls()));
+    for (const [n, h] of Object.entries(me.hexes || {})) if (time < h.until) { const I = api.info({ name: n }); b.push(one(I?.icon, css('chaos'), I?.label || n, 0, isFinite(h.until) ? h.until - time : null, true)); }   // the curses on you
     if (time < me.finality) b.push(one(null, css('lightning'), t('Finality'), 0, me.finality - time));
     if (me.rhythm) b.push(one(null, css('fire'), t('Explosive Rhythm'), me.rhythm));
     if (time < me.fervour) b.push(one(null, css('fire'), t('Explosive Fervour'), 0, me.fervour - time));
@@ -5403,7 +5414,7 @@ export function initScene(el, api) {
     if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.filter(x => x.name === v.name); if (o.length < BLOOD_MAX) d.dots.push(v); else Object.assign(o.reduce((a, x) => x.s < a.s ? x : a), v); }
     if (U.enfeeble && Math.random() * 100 < U.enfeeble.chance) { const E = U.enfeeble;   // Rondel de Ezo: cursed with Enfeeble, as a curse of yours
       d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== 'Enfeeble').slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
-      d.curse = { s: SIM.curseTime, full: SIM.curseTime, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; }
+      d.curse = { s: SIM.curseTime, full: SIM.curseTime, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe('Enfeeble', E.C, SIM.curseTime); }
   }
   const blocked = d => { blockU(d); me.blockAt = time; me.blockN = (me.blockN || 0) + 1; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
   // Charge Regulation: while on, each kind of charge you have grants its buff (frenzy: its skill speed, power: its more
@@ -5549,10 +5560,12 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
-  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100) * (time < me.overEnc?.until && !(me.sprint && sheet().sprintNoSlow) ? Math.max(0, 1 - OVERENC * me.overEnc.n * sheet().ailments.eff.slow / 100) : 1),   // Pathfinder: unaffected by slows
+  const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100) * (time < me.overEnc?.until && !(me.sprint && sheet().sprintNoSlow) ? Math.max(0, 1 - OVERENC * me.overEnc.n * sheet().ailments.eff.slow / 100) : 1) * (me.hexes ? Math.max(.1, 1 + onMe(C => C.speed) * sheet().ailments.eff.slow / 100) : 1) /* Temporal Chains on you: a slow */,   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
+    if (time < me.prev?.[a]) return;   // Shackles of the Wretched: not again for its time after one
+    if (sheet().ailPrevent?.[a]) (me.prev ||= {})[a] = time + sheet().ailPrevent[a] / 1000;
     if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } const EB = time < me.use?.until && me.use.S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebarT = time + EB / 1000; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
@@ -5780,6 +5793,8 @@ export function initScene(el, api) {
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
     if (c.evaDouble && meIs.NotHitRecently()) c = { ...c, evasion: (c.evasion || 0) * 2 };   // Hyrri's Ire
     if (me.boast) c = { ...c, armour: c.armour + me.boast * (c.armourInc || 1), evasion: (c.evasion || 0) + me.boast * (c.evasionInc || 1) };   // Runefather's Boasts, with your increases
+    // the curses on you (Shackles of the Wretched): their lower resistances and armour
+    if (me.hexes) c = { ...c, armour: Math.max(0, c.armour - onMe(C => C.armour)), res: c.res && Object.fromEntries(Object.entries(c.res).map(([e, r]) => { const x = onMe(C => C.res?.[e]); return [e, x ? { ...r, value: r.value + x, capped: Math.min(r.max, r.value + x) } : r]; })) };
     if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
     // the tree's: every Rage grants increased evasion; increased armour and evasion per totem in your Presence
     const ER = (c.evasionPerRage || 0) * rageNow(), DT = (c.defPerTotem || 0) * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;
@@ -5950,7 +5965,7 @@ export function initScene(el, api) {
     const BL = onS('Blasphemy');
     if (BL) api.build().gems.forEach((g, i) => {
       const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;
-      for (const d of inside(pp, S.A)) if (!(d.level > C?.maxLevel)) d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect };
+      for (const d of inside(pp, S.A)) if (!(d.level > C?.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect }; hexMe(S.name, C, .2, 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100); }
     });
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);

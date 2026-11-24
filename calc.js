@@ -757,6 +757,11 @@ export function recovery(c, sum) {
     // Runic Ward (Lifesprig, Demon Stitcher); Guard from a mana flask (Glowswarm); damage taken per elemental ailment type (Yoke of Suffering)
     // The Unleashed's hit damage bypassing energy shield below half of it, Forgotten Warden's deflection per 50 missing
     // energy shield, The Black Doubt's mana sacrificed for life off full life (a second), ailments you receive when hit (Coat of Red, Apep's Supremacy, The Infinite Pursuit)
+    // Shackles of the Wretched: no Chill / Freeze / Ignite / Shock for its time (ms) after one; the curses you inflict are on you
+    // too, with the effect and the duration of curses on you (Thief's Torment's reduced duration)
+    // note: knockback has no distance in the data: not simulated (Tyranny's Grip; Empire's Grasp's reversed direction)
+    ailPrevent: { chill: v(sum, 'chill_prevention_ms_when_chilled'), freeze: v(sum, 'freeze_prevention_ms_when_frozen'), ignite: v(sum, 'ignite_prevention_ms_when_ignited'), shock: v(sum, 'shock_prevention_ms_when_shocked') },
+    selfCurse: { reflect: !!sum.curses_reflected_to_self && !sum.unaffected_by_curses, effect: Math.max(0, 1 + v(sum, 'curse_effect_on_self_+%') / 100), time: Math.max(0, 1 + v(sum, 'self_curse_duration_+%') / 100) },
     // Ab Aeterno (a Dodge Roll avoids all Hits and leaves you Overencumbered), The Road Warrior (moving while Bleeding), Decree of
     // Loyalty (damage over time cannot bypass energy shield), Decree of Flight (the most Guard from maximum energy shield)
     uDef: { rollAll: !!sum.dodge_roll_can_avoid_all_damage, overEnc: !!sum.overencumbrance_on_dodge_roll, noBleedMove: !!sum.no_extra_bleeding_damage_while_moving,
@@ -2069,3 +2074,6 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
   const a = run({}), d = run({ 'spell_damage_+%_per_100_max_life_with_non_channelling_skills': 6 }), c = run({ 'spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills': 3 });
   const thr = skill({ name: 'Lightning Spear', level: 10, supports: [] }, { gems: [], items: { weapon: newItem("Tyranny's Grip") } }, {});
   console.assert(n > 0 && Math.abs(d.avg / a.avg - (1 + 6 * n / 100)) < .02 && Math.abs(c.crit / a.crit - (1 + 3 * n / 100)) < 1e-9 && !!thr.reason, "Rathpith Globe, Tyranny's Grip", n, a.avg, d.avg, a.crit, c.crit, thr.reason); }
+// Shackles of the Wretched: the curses you inflict are on you too (Thief's Torment: for half the time), no ailment again for 6 seconds
+{ const b = { gems: [], items: {}, level: 80 }, R = s => recovery(character(b, s), s), a = R({ curses_reflected_to_self: 1, 'self_curse_duration_+%': -50, 'curse_effect_on_self_+%': -20, shock_prevention_ms_when_shocked: 6000 });
+  console.assert(a.selfCurse.reflect && a.selfCurse.time === .5 && a.selfCurse.effect === .8 && a.ailPrevent.shock === 6000 && !a.ailPrevent.chill && !R({}).selfCurse.reflect && !R({ curses_reflected_to_self: 1, unaffected_by_curses: 1 }).selfCurse.reflect, 'Shackles of the Wretched, Thief', a.selfCurse, a.ailPrevent); }
