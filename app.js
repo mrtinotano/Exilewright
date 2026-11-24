@@ -933,8 +933,8 @@ function drawTree() {
   // against each other in the game: here each stays turned its own way. A timeless jewel has its conqueror's; the
   // circle inside a ring-shaped radius is another picture, whose line is 0.94 of the way out (measured on it)
   for (const j of jewelsOf(b)) if (j.R) {
-    const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r];
-    for (const [p, rr, turn] of [[`ring${v}_1`, outer, -.7], [`ring${v}_2`, outer, .7], ['ring_inv', inner / .94, -.7], ['ring_inv', inner / .94, .7]]) {
+    const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r], ri = inner / .94;
+    for (const [p, rr, turn] of [[`ring${v}_1`, outer, -.7], [`ring${v}_2`, outer, .7], ['ring_inv', ri, -.7], ['ring_inv', ri, .7]]) {
       const im = rr && art('tree/' + p);
       if (!im) continue;
       ctx.save(); ctx.translate(j.C.x, j.C.y); ctx.rotate(turn); ctx.drawImage(im, -rr, -rr, rr * 2, rr * 2); ctx.restore();

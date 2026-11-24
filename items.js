@@ -122,11 +122,11 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
 // free: the passives it affects can be allocated without being connected (Controlled Metamorphosis); around: the keystone
 // whose radius it is instead of the socket's (From Nothing)
 export function radiusOf(item) {
-  const base = baseOf(item), st = base && rolled(item), k = D.jewel_distance || 1, r = st?.local_jewel_effect_base_radius * k;
+  const base = baseOf(item), st = base && rolled(item), far = D.jewel_distance, r = st?.local_jewel_effect_base_radius * far;
   if (!r) return null;
   const KS = 'local_unique_jewel_disconnected_passives_can_be_allocated_around_keystone_hash', around = st[KS];
   if (KS in st && !around) return null;   // From Nothing with no keystone picked yet
-  const out = { r, small: {}, notable: {}, ring: D.jewel_rings?.[st.local_jewel_variable_ring_radius_value - 1]?.map(x => x * k) || null,
+  const out = { r, small: {}, notable: {}, ring: D.jewel_rings?.[st.local_jewel_variable_ring_radius_value - 1]?.map(x => x * far) || null,
     free: !!(around || st.local_unique_jewel_nearby_disconnected_passives_can_be_allocated), around: around ? String(around) : null };
   for (const m of item.mods || []) { const a = AFFIX[m.id]; if (a?.radius) a.stats.forEach(([id], k) => { out[a.radius][id] = (out[a.radius][id] || 0) + (m.values?.[k] ?? 0); }); }
   return out;
