@@ -12,7 +12,7 @@ import { GEM } from './skills.js';
 import { SLOTS, slotOpen, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
-import { priceOf, priceUnid, priceBulk, exchangeOf, priceGem, priceWay, gemOf, wayOf, bulkOf, bulkSeen, leagues, siteLink, TradeError } from './trade.js';
+import { priceOf, priceUnid, priceBulk, exchangeOf, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings, wornRow, stored, put } from './settings.js';
 
 const KEY = 'poe2loot';
@@ -157,7 +157,6 @@ export function initLoot(el, ctx) {
     if (!(e instanceof TradeError)) throw e;
     show({ name, lines: [tradeSays(e)] });
   };
-  const num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
   async function priceCheck(text) {
     const show = v => say({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v });
     text = text.replace(/\r/g, '').trim();
@@ -196,7 +195,7 @@ export function initLoot(el, ctx) {
     const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
-      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id);
+      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id), num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
       const game = x ? [[[`${t('Currency Exchange')} · poe2scout:`, '']],
         ...Object.entries(x).map(([c, v]) => [['· ' + (v >= 1 ? `${num(v)} ${t(c)}` : t('{0} for {1}', num(1 / v), `1 ${t(c)}`)), 'up']])] : [];
       if (x) show({ name, lines: [...game, [[t('Searching the trade site…'), 'dim']]] });
@@ -212,27 +211,11 @@ export function initLoot(el, ctx) {
           : [[[p.fail ? tradeSays(p.fail) : t('Nothing like it is listed in {0}.', league), 'dim']]]] });
     } catch (e) { tradeFail(e, show, name); }
   }
-  // where the game copies nothing (an expedition's rewards), serve.py reads the text on the game's window for that same
-  // key press: what stacks among its lines, each at what the Currency Exchange gives for its amount (poe2scout), the
-  // dearest first
-  async function seenCheck(lines) {
-    const found = bulkSeen(lines).slice(0, 12), show = ls => say({ kind: 'price', title: t('Price check'), lines: ls });
-    if (!found.length) return say({ kind: 'none', title: 'Exilewright', lines: [t('Nothing with a price was read on the screen.')] });
-    const label = b => `${b.stack}× ${tn(b)}`;
-    show([...found.map(b => [[label(b), '']]), [['…', 'dim']]]);   // at once: serve.py waits three seconds for an answer
-    const league = settings().league || (await leagues())[0];
-    // in Exalted Orbs, and in Divine Orbs too when it comes to one or more (an orb of those is worth one of itself)
-    const rows = (await Promise.all(found.map(async b => { const x = await exchangeOf(league, b.id), all = c => b.stack * (b.id === c ? 1 : x?.[c] || 0); return { b, ex: all('exalted'), div: all('divine') }; })))
-      .sort((a, b) => b.ex - a.ex);
-    show([[[`${t('Currency Exchange')} · poe2scout:`, '']],
-      ...rows.map(r => [[label(r.b) + '  ', ''], r.ex ? [`${num(r.ex)} ${t('exalted')}` + (r.div >= 1 ? ` · ${num(r.div)} ${t('divine')}` : ''), 'up'] : ['—', 'dim']]),
-      [[t('Read from the screen: names and amounts can be misread.'), 'dim']]]);
-  }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
   function watch() {
     const src = new EventSource('clipboard?lang=' + lang);
     src.onopen = () => { live = 'on'; showLive(); hasOver(); };
-    src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else if (x?.worn) wear(x.worn); else if (x?.seen) seenCheck(x.seen); else add(x); };
+    src.onmessage = m => { let x; try { x = JSON.parse(m.data); } catch { return; } if (x?.price) priceCheck(x.price); else if (x?.worn) wear(x.worn); else add(x); };
     src.onerror = () => { live = src.readyState === 2 ? 'none' : 'wait'; showLive(); };
     // a lock held for good is one of the things that keep a browser from putting a tab nobody looks at to sleep
     navigator.locks?.request('poe2loot', () => new Promise(() => {}));

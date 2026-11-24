@@ -83,10 +83,9 @@ decide what counts. Without a skill in the build only defences and the weapon's 
   Windows start the server with `python3 serve.py overlay`.
 - *What the character wears*: the planner cannot read it from the game, so it starts from the build's equipment and
   the first item copied for an empty slot is taken as the one worn; or compare with the build's own Equipment instead.
-- One key press per item, as the overlay tools for the game do: the planner never reads the game's memory and never
-  moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one read of the
-  clipboard or the screen per manual key press and nothing automatic, so there is no scan of the whole inventory. The
-  screen is read only by the price check shortcut, and only where the game copied nothing (see below).
+- One key press per item, as the overlay tools for the game do: the planner never reads the game's memory or screen
+  and never moves the mouse for you. GGG's rules for tools (https://www.pathofexile.com/developer/docs) allow one
+  read of the clipboard per manual key press and nothing automatic, so there is no scan of the whole inventory.
   Modifiers `calc.js` does not calculate are listed as not counted.
 
 **Price check over the game** (Settings): hold the pointer over an item in the game and press the shortcut
@@ -106,14 +105,6 @@ to 30%) and searches with each at the % that found something, else with any one 
 is none. Next to the pointer it lists what the 5 cheapest alike ones ask (as the site ranks the listings whatever
 the currency; never one with a "+ to Level of" line yours does not have) and a button that opens the same search on
 the trade site. Again one key press, one item.
-
-Where the game copies nothing for that key press (the rewards an expedition offers: it has no text to copy there),
-`serve.py` reads the text on the game's window instead, once (Windows only: a picture of the window goes in memory to
-Windows' own text recognition, `ocr.ps1`, on your computer; it is written nowhere and sent nowhere), and the page
-lists what stacks among the lines read, each with what the Currency Exchange gives for its amount, the dearest first.
-The text recognition reads the languages Windows has installed (Settings > Time & language): a game in Russian,
-Japanese, Korean, Thai or Chinese needs that language there. A name read with a wrong letter is not priced, and the
-game in exclusive full screen may give a black picture: use windowed full screen.
 
 **Playing with a controller**: pick the item with the controller, keep the mouse pointer over no item and press Ctrl+C or
 the price check shortcut on the keyboard: the game copies the item picked. When the controller was used after the mouse, the
