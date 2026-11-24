@@ -929,7 +929,7 @@
  "Sellers ask": "판매자 요구",
  "Buyers give": "구매자 제시",
  "Your stack of {0}: about {1}": "보유 중인 {0}개 묶음: 약 {1}",
- "{0} offers on the trade site in {1}": "{1} 거래 사이트의 제안 {0}건",
+ "Offers on the trade site in {1}: {0}": "{1} 거래 사이트의 제안 {0}건",
  "Currency Exchange": "화폐 교환",
  "Level {0} or more, {1}% quality or more": "레벨 {0} 이상, 퀄리티 {1}% 이상",
  "Level {0} or more": "레벨 {0} 이상",

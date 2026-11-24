@@ -6,7 +6,7 @@
 // are judged. It is compared with the gear kept here as worn (the build is left alone) or the build's own.
 // The verdict goes to serve.py's /overlay, which shows it over the game: there is nothing else to see.
 //   ctx: { build(), id(), sumOf(b), snap(b), sockets() ([{id, label}] of the allocated jewel sockets) }
-import { t, esc, fmt, tn, lang, cap } from './i18n.js';
+import { t, esc, fmt, tn, lang, locale, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
 import { SLOTS, slotOpen, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
@@ -195,7 +195,7 @@ export function initLoot(el, ctx) {
     const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
-      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id), num = v => +v.toPrecision(3);
+      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id), num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
       const game = x ? [[[`${t('Currency Exchange')} · poe2scout:`, '']],
         ...Object.entries(x).map(([c, v]) => [['· ' + (v >= 1 ? `${num(v)} ${t(c)}` : t('{0} for {1}', num(1 / v), `1 ${t(c)}`)), 'up']])] : [];
       if (x) show({ name, lines: [...game, [[t('Searching the trade site…'), 'dim']]] });
@@ -207,7 +207,7 @@ export function initLoot(el, ctx) {
       show({ name, link, lines: [
         ...game, ...side('Sellers ask', p.asks), ...side('Buyers give', p.bids),
         ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, (x ? Object.entries(x) : mine.map(o => [o.currency, o.pay / o.get])).map(([c, v]) => `${num(v * B.stack)} ${t(c)}`).join(' · ')), '']]] : [],
-        ...mine.length ? [[[t('{0} offers on the trade site in {1}', p.total, league), 'dim']], [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]]
+        ...mine.length ? [[[t('Offers on the trade site in {1}: {0}', p.total, league), 'dim']], [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]]
           : [[[p.fail ? tradeSays(p.fail) : t('Nothing like it is listed in {0}.', league), 'dim']]]] });
     } catch (e) { tradeFail(e, show, name); }
   }

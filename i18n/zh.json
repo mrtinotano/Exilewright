@@ -929,7 +929,7 @@
  "Sellers ask": "賣家要價",
  "Buyers give": "買家出價",
  "Your stack of {0}: about {1}": "你的 {0} 個堆疊：約 {1}",
- "{0} offers on the trade site in {1}": "{1} 的交易網站上有 {0} 筆報價",
+ "Offers on the trade site in {1}: {0}": "{1} 的交易網站上有 {0} 筆報價",
  "Currency Exchange": "通貨交換",
  "Level {0} or more, {1}% quality or more": "等級 {0} 以上，品質 {1}% 以上",
  "Level {0} or more": "等級 {0} 以上",

@@ -929,7 +929,7 @@
  "Sellers ask": "ผู้ขายขอ",
  "Buyers give": "ผู้ซื้อให้",
  "Your stack of {0}: about {1}": "กองของคุณ {0} ชิ้น: ประมาณ {1}",
- "{0} offers on the trade site in {1}": "ข้อเสนอ {0} รายการในเว็บซื้อขาย ใน {1}",
+ "Offers on the trade site in {1}: {0}": "ข้อเสนอ {0} รายการในเว็บซื้อขาย ใน {1}",
  "Currency Exchange": "ค้าเงินตรา",
  "Level {0} or more, {1}% quality or more": "เลเวล {0} ขึ้นไป คุณภาพ {1}% ขึ้นไป",
  "Level {0} or more": "เลเวล {0} ขึ้นไป",

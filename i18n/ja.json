@@ -929,7 +929,7 @@
  "Sellers ask": "売り手の希望",
  "Buyers give": "買い手の提示",
  "Your stack of {0}: about {1}": "スタック {0}個: 約{1}",
- "{0} offers on the trade site in {1}": "{1}のトレードサイトに{0}件の出品",
+ "Offers on the trade site in {1}: {0}": "{1}のトレードサイトに{0}件の出品",
  "Currency Exchange": "カレンシー交換",
  "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",
  "Level {0} or more": "レベル{0}以上",
