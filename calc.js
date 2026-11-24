@@ -1662,7 +1662,7 @@ export function skill(g, b, treeGear) {
   // a djinn (Disciple of Varashta: an invulnerable minion that acts on Command) uses the first of its monster's skills when
   // its own gem Commands it, and a Command gem the skill of that gem's name (monsters.json); the damage is the djinn's, of
   // the level of its gem
-  const djinn = x => { const T = GEM[x?.name]?.types || []; return T.includes('CommandableMinion') && T.includes('MinionsAreUndamagable') && enemy(SK.minions[x.name]?.[0]) || null; };
+  const djinn = x => { const id = SK.minions[x?.name]?.[0]; return /Djinn$/.test(id || '') && enemy(id) || null; };   // by its monster (not Supporting Fire's artillery, the other undamageable Commanded minion)
   const host = !djinn(g) && GEM[g.name]?.types?.includes('CommandsMinions') && (b.gems || []).find(x => djinn(x)?.skills?.some(k => monSkill(k)?.name === g.name)) || null;
   const DJ = djinn(host || g), ckey = DJ && (host ? DJ.skills.find(k => monSkill(k)?.name === g.name) : DJ.skills[0]);
   const mid = host ? DJ.id : SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
