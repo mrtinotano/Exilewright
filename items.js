@@ -6,6 +6,10 @@ import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
 const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
+// Way of the Stonefist's forms of the gloves worn (Fists of Stone, and the Runeforged one of gloves with that tag) are
+// bases too, of no list: the game and Path of Building give such gloves as that base already. fist: the form's implicits
+for (const f of [D.fists, D.fists.runeforged]) BASE[f.name] = { ...f, class: 'Gloves', slots: ['gloves'], level: 1, domain: 1, fist: f.implicits, implicits: [], armour: { armour: 0, evasion: 0, energy_shield: 0, 'movement_speed_%': 0 }, size: [2, 2] };
+const fistOf = it => BASE[(BASE[it.base].tags.includes('runeforged') ? D.fists.runeforged : D.fists).name];
 // uniques: unique -> mods link from poe2db, every mod matched to the game's Mods table (see _tool/uniques.py)
 const UNIQUES = await fetch('poe2_data/available/unique_items.json').then(r => r.ok ? r.json() : []).catch(() => []);
 const UNIQ = Object.fromEntries(UNIQUES.filter(u => BASE[u.base]).map(u => [u.name, u]));
@@ -63,14 +67,15 @@ const reqOf = item => { const s = rolled(item), b = BASE[item.base]?.req || {}; 
 // modifier. wornItems() marks the gloves worn so (fists: the character's level); item.fistVals: the rolls set on that form.
 // note: how a roll carries over is not in the data: a modifier both forms have keeps its roll, a rare's is as far up its
 // range as the one it comes from, a unique's (nothing tells which it comes from) at the top; no quality (the base cannot
-// be modified); what is socketed in the gloves is kept
+// be modified); what is socketed in the gloves is kept. Gloves given as Fists of Stone already (parseItem) are it
+// whatever the tree has: which gloves they were nothing tells
 // and a unique's rule for the other slots: Kalandra's Touch reflects the opposite ring, with Thief's Torment no other
 // ring counts, with The Bringer of Rain no body armour
 const uHas = (it, id) => !!UNIQ[it?.unique]?.mods.some(m => m.stats.some(([k]) => k === id));
 export function wornItems(b, sum) {
   let it = b.items; if (!it) return it;
   const less = ks => Object.fromEntries(Object.entries(it).filter(([k]) => !ks.includes(k)));
-  if (sum?.ascendancy_hand_wraps && it.gloves) it = { ...it, gloves: { ...it.gloves, fists: b.level || 1 } };
+  if (it.gloves && (sum?.ascendancy_hand_wraps || BASE[it.gloves.base]?.fist)) it = { ...it, gloves: { ...it.gloves, fists: b.level || 1 } };
   const rings = ['ring1', 'ring2', 'ring3'].filter(k => it[k]), only = rings.find(k => uHas(it[k], 'local_ring_disable_other_ring'));
   if (only && rings.length > 1) it = less(rings.filter(k => k !== only));
   for (const [a, o] of [['ring1', 'ring2'], ['ring2', 'ring1']]) if (it[o] && uHas(it[a], 'local_ring_duplicate_other_ring') && !uHas(it[o], 'local_ring_duplicate_other_ring')) it = { ...it, [a]: it[o] };
@@ -86,7 +91,7 @@ function fistMods(it) {
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
-  if (item.fists) { for (const st of Object.values(D.fists.implicits)) add(st, st.map(x => x[1])); for (const m of fistMods(item)) add(m.stats, m.values); }
+  if (item.fists) { for (const st of Object.values(fistOf(item).fist)) add(st, st.map(x => x[1])); for (const m of fistMods(item)) add(m.stats, m.values); }
   else {
     base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
     for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
@@ -389,7 +394,7 @@ const corruptLine = l => {
 console.assert(['Corrupted', 'Corrupto', 'Осквернено', 'コラプト', '已汙染', 'Verderbt'].every(corruptLine) && !['Corrupted Blood', 'Corona', 'Rarity: Rare'].some(corruptLine), 'corruptLine');
 const NAMED = new Map();   // every name the data has for a base (English, then the translations), in lower case
 for (const k of ['name', ...new Set(D.bases.flatMap(b => Object.keys(b).filter(k => k.startsWith('name_'))))])
-  for (const b of D.bases) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
+  for (const b of [...D.bases, BASE[D.fists.name], BASE[D.fists.runeforged.name]]) if (b[k] && !NAMED.has(b[k].toLowerCase())) NAMED.set(b[k].toLowerCase(), b);
 // every modifier of one kind of item (base.domain) and every implicit, as matchLines candidates: made once
 const ANY = new Map(), once = (k, f) => ANY.get(k) || ANY.set(k, f()).get(k);
 const anyOf = domain => once(domain, () => D.affixes.filter(a => a.domain === domain && !a.radius).flatMap(a => shapes(a.id, a.stats)));
@@ -459,6 +464,11 @@ export function parseItem(text) {
     }
   }
   const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+  // given as Fists of Stone already (Way of the Stonefist): that form's implicits are its own, with no roll, and its
+  // modifiers are read as that form's (item.fistVals). A unique stays the unique it is; of any other, which gloves it
+  // was nothing tells: it is kept as that base, each modifier as the one it comes from, as far up its range
+  const F = head.map(n => NAMED.get(strip(n))).find(b => b?.fist), fset = (id, vals) => { (item.fistVals ||= {})[id] = vals; };
+  if (F) { const own = Object.entries(F.fist).flatMap(([id, st]) => shapes(id, st.filter(([s]) => !/^[a-z0-9_%+\-]+: /.test(statLinesEn({ [s]: 1 })[0]))));   /* (the stats the game has words for) */ impl = matchLines(impl, own).missed; expl = matchLines(expl, own).missed; }
   const addExtra = (stats, raw) => stats.forEach(([id], k) => { (item.extra ||= {})[id] = (item.extra[id] || 0) + raw[k]; });
   // the game: "Quality: +20% (augmented)" ("Calidad: +20% (augmented)": the only "+N% (augmented)" property, the tag
   // stays English in every language), Path of Building: "Quality: 20"
@@ -487,7 +497,8 @@ export function parseItem(text) {
   const rad = expl.filter(radLine).map(l => { const [kind, said] = radLine(l), line = said.replace(/\s*\bglobal\b/i, '');
     return matchLines([line], D.affixes.filter(a => a.radius === kind && canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats))).found[0] || l; });
   expl = expl.filter(l => !radLine(l));
-  let ex = u ? null : matchLines(expl, D.affixes.filter(a => canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
+  let ex = u ? null : matchLines(expl, F ? once('fists', () => Object.entries(D.fists.mods).filter(([id]) => AFFIX[id]).flatMap(([id, st]) => shapes(id, st)))
+    : D.affixes.filter(a => canRoll(a, base, true)).flatMap(a => shapes(a.id, a.stats)), id => AFFIX[id].family);
   if (ex) { ex.found.push(...rad.filter(f => typeof f !== 'string')); ex.missed.push(...rad.filter(f => typeof f === 'string')); }
   // a unique the data has no name for in this language: lines no rare item has, and every modifier of one unique of
   // this base (two at least) among them
@@ -517,8 +528,10 @@ export function parseItem(text) {
         return vals.every(v => v != null && !Number.isNaN(v)) && !(pickKind(named) && item.mods.some(o => o !== m && o.values?.includes(vals[stats.indexOf(named)]))) ? { ...fixed, ...Object.fromEntries(stats.map((s, g) => [s, vals[g]])) } : null; };
       const hit = expl.flatMap(l => nameLines(named).map(f => read(l, f))).find(Boolean);
       if (hit) for (const [s, v] of Object.entries(hit)) if (ids.includes(s)) m.values[ids.indexOf(s)] = v; }
+    if (F) for (const f of matchLines(expl, (u.stonefist || []).flatMap(m => shapes(m.id, m.stats))).found) fset(f.key, f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
-  } else item.mods = ex.found.map(f => ({ id: f.key, values: f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }));   // as the item has them (filled)
+  } else item.mods = ex.found.map(f => { const st = F && D.fists.mods[f.key], [, a, z] = st?.[0] || [], fr = z === a ? 1 : (f.raw[0] - a) / (z - a); if (st) fset('HandWraps' + f.key, f.raw);
+    return { id: f.key, values: st ? AFFIX[f.key].stats.map(([, lo, hi]) => Math.round(lo + (hi - lo) * fr)) : f.raw, ...kinds.has(f.src) && { kind: kinds.get(f.src) } }; });   // as the item has them (filled)
   // a line worded as no modifier the base can have (Path of Building puts any modifier on any item; an implicit the
   // data does not give the base, "Has 1 Charm Slot") is read as one of any item of its kind: a modifier, or for an
   // implicit line any base's implicit too, counted as its stats (item.extra, as runes)
@@ -611,6 +624,12 @@ export function known(it) {
   // Way of the Stonefist: Facebreaker as Fists of Stone grants Smash to Smithereens and has 3 evasion and 1 energy shield per level
   const fb = make('Facebreaker'), W = fb && wornItems({ level: 50, items: { gloves: fb } }, { ascendancy_hand_wraps: 1 }), L = W && local(W.gloves);
   if (fb) console.assert(!fb.fists && String(grantedSkills(W).map(x => x[0])) === 'Smash to Smithereens' && L.evasion === 150 && L.energy_shield === 50 && !L.armour && !grantedSkills({ gloves: fb }).length && local(fb).armour > 0, 'Fists of Stone', L);
+  // gloves given as Fists of Stone already: a rare's modifiers of that form, a unique's rolls of it, the Runeforged form's ward
+  { const P = t => parseItem(t), r = P('Rarity: RARE\nGrim Fist\nFists of Stone\nImplicits: 2\nHas +3 to Evasion Rating per player level\nHas +1 to maximum Energy Shield per player level\n12% increased Area of Effect for Attacks'),
+      w = r && wornItems({ level: 10, items: { gloves: r.item } }), rs = w && rolled(w.gloves), rf = local({ base: D.fists.runeforged.name, implicits: [], mods: [], fists: 10 });
+    const uq = fb && P('Rarity: UNIQUE\nFacebreaker\nFists of Stone\nImplicits: 0\n' + UNIQ.Facebreaker.stonefist.flatMap(m => statLinesEn(Object.fromEntries(m.stats.map(([id, lo]) => [id, lo])))).join('\n'));
+    console.assert(r && !r.missed.length && r.item.mods[0]?.id === 'Strength2' && rs['attack_area_of_effect_+%'] === 12 && local(w.gloves).evasion === 30 && rf.ward === 10 && rf.evasion === 20
+      && (!fb || uq?.item.unique === 'Facebreaker' && uq.item.base === fb.base && Object.keys(uq.item.fistVals || {}).length > 0), 'parseItem: Fists of Stone', r, rs, rf, uq); }
   const rare = { base: fb?.base, implicits: [], mods: [{ id: 'Strength1', values: [5] }, { id: 'LocalIncreasedEvasionRating7_', values: [1] }] }, R = fb && rolled({ ...rare, fists: 10 });
   console.assert(gearStats({ body: make('Runeforged Iron Cuirass') }).base_maximum_ward === 43 && gearStats({ body: { ...make('Runeforged Iron Cuirass'), quality: 20, extra: { local_ward: 7, 'local_ward_+%': 100 } } }).base_maximum_ward === 120
     && String(local(make('Skysliver')).physical) === '0,0' && local(make('Nebuloch')).chaos?.[1] > 0, 'an item\'s Runic Ward, No Physical Damage, added chaos damage', local(make('Runeforged Iron Cuirass')), local(make('Nebuloch')));
@@ -905,9 +924,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     delete rest[slot];
     // Way of the Stonefist: the gloves as worn, Fists of Stone: its numbers, and under their own modifiers those of that form
     // with their rolls (the lines the game has a wording for)
-    const worn = base.class === 'Gloves' && snapOf(rest)?.fists ? { ...it, fists: getBuild().level || 1 } : it, l = local(worn);
+    const worn = base.class === 'Gloves' && (base.fist || snapOf(rest)?.fists) ? { ...it, fists: getBuild().level || 1 } : it, l = local(worn);
     const said = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).filter(x => !/^[a-z0-9_%+\-]+: /.test(x)).map(esc).join('<br>');
-    const fist = worn.fists ? `<hr><div class="mod"><b>${esc(tn(D.fists))}</b></div>` + [...Object.values(D.fists.implicits).map(st => [said(st, st.map(x => x[1])), '']),
+    const fist = worn.fists ? `<hr><div class="mod"><b>${esc(tn(fistOf(worn)))}</b></div>` + [...Object.values(fistOf(worn).fist).map(st => [said(st, st.map(x => x[1])), '']),
       ...fistMods(worn).map(m => [said(m.stats, m.values), range(m.stats, m.values, `${slot}.f.${m.id}`)])].filter(([x]) => x).map(([x, r]) => `<div class="mod">${x} ${r}</div>`).join('') : '';
     const families = new Set(mods.map(m => AFFIX[m.id].family)), desecrated = mods.some(m => AFFIX[m.id].desecrated);
     // one desecrated modifier per item (the game: "This item already has a Desecrated Modifier.")

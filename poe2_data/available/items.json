@@ -75374,6 +75374,13 @@
   "name_ko": "돌 주먹",
   "name_th": "Fists of Stone",
   "name_zh": "磐石之拳",
+  "tags": [
+   "armour",
+   "default",
+   "dex_int_armour",
+   "gloves"
+  ],
+  "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
   "implicits": {
    "HandWrapsImplicitLocalCopyPlayerLevelValue": [
     [
@@ -75399,6 +75406,57 @@
      1
     ]
    ]
+  },
+  "runeforged": {
+   "name": "Runeforged Fists of Stone",
+   "name_es": "Puños de roca forjados con runas",
+   "name_pt": "Punhos de Pedra Runiforjados",
+   "name_fr": "Poings de pierre runeforgés",
+   "name_de": "Runengeschmiedete Fäuste aus Stein",
+   "name_ru": "Руннокованые каменные кулаки",
+   "name_ja": "ルーンフォージの石の拳",
+   "name_ko": "룬벼림 돌 주먹",
+   "name_th": "Runeforged Fists of Stone",
+   "name_zh": "符鍛磐石之拳",
+   "tags": [
+    "armour",
+    "default",
+    "dex_int_armour",
+    "gloves",
+    "runeforged"
+   ],
+   "img": "Art/2DItems/Armours/Gloves/Basetypes/GlovesDexInt01.dds",
+   "implicits": {
+    "HandWrapsImplicitLocalCopyPlayerLevelValue": [
+     [
+      "local_hand_wraps_player_level_to_use",
+      0,
+      0
+     ]
+    ],
+    "HandWrapsImplicitLocalBaseEvasionEnergyShieldAndWardPerLevel": [
+     [
+      "local_hand_wraps_evasion_rating_per_level",
+      2,
+      2
+     ],
+     [
+      "local_hand_wraps_energy_shield_per_level",
+      1,
+      1
+     ],
+     [
+      "local_hand_wraps_ward_per_level",
+      1,
+      1
+     ],
+     [
+      "local_level_requirement_override",
+      1,
+      1
+     ]
+    ]
+   }
   },
   "mods": {
    "Strength1": [

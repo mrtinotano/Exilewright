@@ -726,11 +726,14 @@ save('items.json', {
                          'map_experience': 'ItemDisplayMapExperienceGained'}.items()}
                      for c, t in cs_langs.items()},
     'mod_grants': {mods[x['Mod']]['Id']: gem_name(x['Skill']) for x in load('ModGrantedSkills')},
-    # Way of the Stonefist (Martial Artist): the base worn gloves become, with its implicits, and what each of their
-    # modifiers becomes, the game's own "HandWraps<id>" row of Mods ("Strength1" -> "HandWrapsStrength1": Area of Effect)
-    'fists': (lambda f, w: {'name': f['Name'], **tr(bases_tr, f['_index']), 'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in f['Implicit_Mods']},
-                            'mods': {m['Id']: mod_stats(w['HandWraps' + m['Id'].rstrip('_')]) for m in mods if m['GenerationType'] in (1, 2) and 'HandWraps' + m['Id'].rstrip('_') in w}})(
-        next(b for b in base_types if b['Id'].endswith('/FourGlovesDexIntAscendancy')), {m['Id']: m for m in mods if m['Id'].startswith('HandWraps')}),
+    # Way of the Stonefist (Martial Artist): the base worn gloves become (the Runeforged one too: 'runeforged'), with its
+    # tags, art and implicits, and what each of their modifiers becomes, the game's own "HandWraps<id>" row of Mods
+    # ("Strength1" -> "HandWrapsStrength1": Area of Effect)
+    'fists': (lambda fs, w: {**fs[0], 'runeforged': fs[1],
+                             'mods': {m['Id']: mod_stats(w['HandWraps' + m['Id'].rstrip('_')]) for m in mods if m['GenerationType'] in (1, 2) and 'HandWraps' + m['Id'].rstrip('_') in w}})(
+        [{'name': f['Name'], **tr(bases_tr, f['_index']), 'tags': sorted(set(read_it(f['InheritsFrom']) + [tags_tab[t]['Id'] for t in f['Tags']])),
+          'img': visual[f['ItemVisualIdentity']]['DDSFile'], 'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in f['Implicit_Mods']}}
+         for f in base_types if '/FourGlovesDexIntAscendancy' in f['Id']], {m['Id']: m for m in mods if m['Id'].startswith('HandWraps')}),
     # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
     # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
     # lightning; Defence -> defences, the tag's own name)
