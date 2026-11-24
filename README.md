@@ -97,7 +97,7 @@ desecrated ones too; attributes and resistances as the item's total) and its wea
 most 10% under yours and with no top (Settings: "Numbers down to"; a number never goes past 1 towards 0, so a "+1"
 line is always asked for), every one of them (a unique: the lines that can roll otherwise). A line the app does not know ("+3 to Level of all Attack Skills") is asked by the site's own wording of it, in any language (through its English, as Exiled Exchange 2 does). An unidentified item (often sold so,
 dearer as a gamble) is priced as the unidentified ones listed of its base and rarity, of its item level or more (not
-for a unique), corrupted or not as it is. Currency and what stacks (runes, essences, omens, fragments, uncut gems, waystones...) is priced on the Currency Exchange instead: the best rate its sellers ask in each currency (Exalted, Chaos and Divine Orbs), what its buyers give when it is one of those three orbs, and what your stack comes to. A skill gem is priced as the ones of its level and quality or more, corrupted or not as it is; a waystone of its own (magic, rare) as the ones of its tier that give at least about as much item rarity, pack size, waystone drop chance... (its numbers at most the ±% under), a plain one on the Currency Exchange. One listing per seller, as Exiled Exchange 2 shows them. As Exiled Exchange 2 asks: a non-unique item finds no uniques; one not
+for a unique), corrupted or not as it is. Currency and what stacks (runes, essences, omens, fragments, uncut gems, waystones...) is priced as currency instead: what the game's own Currency Exchange trades it at in Exalted, Chaos and Divine Orbs (from [poe2scout](https://poe2scout.com)), the best rate its sellers ask in each of them on the trade site's bulk exchange (and what its buyers give, for one of those three orbs, when poe2scout does not answer), and what your stack comes to. A skill gem is priced as the ones of its level and quality or more, corrupted or not as it is; a waystone of its own (magic, rare) as the ones of its tier that give at least about as much item rarity, pack size, waystone drop chance... (its numbers at most the ±% under), a plain one on the Currency Exchange. One listing per seller, as Exiled Exchange 2 shows them. As Exiled Exchange 2 asks: a non-unique item finds no uniques; one not
 corrupted, mirrored or sanctified finds none that are (a corrupted one finds either); a corrupted one's rune sockets
 and a flask's, charm's or (not rare) weapon's or armour's quality past the usual are asked as minimums. With "Thorough search"
 (Settings), when nothing like that is listed, it goes line by line lowering that one's minimum alone (5% by 5%, down
@@ -200,8 +200,8 @@ Exilewright has no accounts, telemetry or analytics, and keeps your builds and s
 the last time it ran, and never leaves your computer). It checks GitHub for a newer version of
 itself, downloading it only when you choose to update.
 Anything else goes out only when you ask for it: a build imported or shared through the site whose link or button you
-use (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry), and the official trade site when you price an item or
-search for gear.
+use (pobb.in, poe.ninja, Maxroll, poe2db, pastebin, rentry), the official trade site when you price an item or
+search for gear, and poe2scout when what you price is currency or something else that stacks.
 
 ## Feedback
 Found a bug, a number that does not match the game, or have an idea? [Open an issue](https://github.com/mrtinotano/Exilewright/issues/new/choose)

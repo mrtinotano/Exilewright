@@ -259,7 +259,7 @@ function sameAs(r) {
     equipment_filters: { ...r.corrupted && r.sockets && { rune_sockets: { min: r.sockets } } } };
 }
 // r: parseItem's (its item, rarity, corrupted...)
-// ---------- the Currency Exchange (the site's bulk exchange): a stackable item, as Exiled Exchange 2 prices it
+// ---------- the trade site's bulk exchange: a stackable item, as Exiled Exchange 2 prices it
 const BULK = await fetch('poe2_data/available/bulk.json').then(r => r.ok ? r.json() : []).catch(() => []);
 // the copied text's lines, and those before its first separator (its names)
 const heads = text => { const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l)); return [lines, lines.slice(0, sep < 0 ? lines.length : sep)]; };
@@ -280,7 +280,8 @@ export function bulkOf(text) {
 // what it goes for there in each currency paid (Exalted, Chaos and Divine Orbs), none turned into another: the site's
 // market is thin and its sellers do not agree across currencies (an uncut gem at 20 exalted and at 1 divine at once).
 // asks: what its sellers ask, the cheapest of each currency. bids, for one of those three orbs only (its own sellers
-// are the fewest: nobody may sell divines for chaos there): what the sellers of the other two give for it, the most of each
+// are the fewest: nobody may sell divines for chaos there) and when asked for (bids): what the sellers of the other two give
+// for it, the most of each
 // -> { total, id (the exchange search), asks, bids: [{ pay, get, stock, currency }] (asks: `get` of it for `pay` of
 //      currency; bids: `pay` of currency for `get` of it; stock: what the one offering has of what is handed over) }
 const PAID = ['exalted', 'chaos', 'divine'];
@@ -294,11 +295,34 @@ function tops(s, curs, bid) {
   console.assert(rate(tops({ result: { a: { listing: { offers: [o('exalted', 480, 1), o('chaos', 24, 2)] } }, b: { listing: { offers: [o('exalted', 900, 2)] } }, c: null } }, PAID)) === 'exalted,900,2 chaos,24,2'
     && rate(tops({ result: { a: { listing: { offers: [o('divine', 1, 100, 'exalted')] } }, b: { listing: { offers: [o('divine', 10, 1, 'exalted'), o('divine', 2, 21, 'chaos')] } } } }, PAID, true)) === 'exalted,100,1 chaos,21,2'
     && !tops(null, PAID).length, 'tops'); }
-export async function priceBulk({ league, id, state = 'available' }) {
+export async function priceBulk({ league, id, state = 'available', bids = true }) {
   const curs = PAID.filter(c => c !== id), ask = (have, want) => call('exchange?league=' + encodeURIComponent(league), { engine: 'new', query: { status: { option: state === 'any' ? 'any' : 'online' }, have, want }, sort: { have: 'asc' } });
-  const s = await ask(curs, [id]), b = PAID.includes(id) ? await ask([id], curs).catch(() => null) : null;   // the asks are shown without the bids when those cannot be had
+  const s = await ask(curs, [id]), b = bids && PAID.includes(id) ? await ask([id], curs).catch(() => null) : null;   // the asks are shown without the bids when those cannot be had
   return { total: (s.total || 0) + (b?.total || 0), id: s.id, asks: tops(s, curs), bids: tops(b, curs, true) };
 }
+// ---------- what the game's own Currency Exchange trades it at, which the trade site does not say: poe2scout's public
+// API (api.poe2scout.com/swagger, through serve.py /scout). An answer is kept ten minutes; none after five seconds is none
+const scouted = {};
+function scout(league, id = '') {
+  const k = league + '|' + id;
+  if (!(scouted[k]?.at > Date.now() - 6e5)) scouted[k] = { at: Date.now(), got: fetch(`scout?league=${encodeURIComponent(league)}&id=${encodeURIComponent(id)}`, { signal: AbortSignal.timeout(5000) })
+    .then(r => r.ok ? r.json() : null).catch(() => null).then(j => { if (!j) delete scouted[k]; return j; }) };
+  return scouted[k].got;
+}
+// refs: the league's reference currencies (each worth RelativePrice of the first of them); item: one item's prices in
+// that same currency, the newest first (not needed for one of the three orbs: it is among refs)
+// -> how many of each orb one of it is worth there ({ exalted, chaos, divine }, its own left out), or null: its newest
+//    price is over a day old, or something is missing
+function worth(refs, item, id, now = Date.now()) {
+  const rate = Object.fromEntries((refs || []).map(r => [r.ApiId, r.RelativePrice])), log = item?.PriceLogs?.find(Boolean);
+  const own = PAID.includes(id) ? rate[id] : log && Date.parse(log.Time) > now - 864e5 ? log.Price : 0;
+  return own > 0 && PAID.every(c => rate[c] > 0) ? Object.fromEntries(PAID.filter(c => c !== id).map(c => [c, own / rate[c]])) : null;
+}
+{ const refs = [['exalted', 1], ['chaos', 35], ['divine', 560]].map(([ApiId, RelativePrice]) => ({ ApiId, RelativePrice })), at = Date.parse('2026-11-24T20:00:00Z');
+  const item = { PriceLogs: [null, { Price: 70, Time: '2026-11-24T12:00:00.0000000Z' }] };
+  console.assert(JSON.stringify(worth(refs, null, 'divine')) === '{"exalted":560,"chaos":16}' && JSON.stringify(worth(refs, item, 'ward-rune', at)) === '{"exalted":70,"chaos":2,"divine":0.125}'
+    && worth(refs, item, 'ward-rune', at + 864e5) === null && worth(refs, null, 'ward-rune') === null && worth(null, item, 'divine') === null, 'worth'); }
+export const exchangeOf = async (league, id) => worth(...await Promise.all([scout(league), PAID.includes(id) ? null : scout(league, id)]), id);
 // ---------- a skill gem and a waystone: the trade site's own filters of them (its level and quality; a waystone's tier
 // and what it gives: item rarity, pack size, waystone drop chance...), from the "label: number" lines of the copied
 // text, in the game's words of each language (TRADE_LABELS)
@@ -316,7 +340,7 @@ export function gemOf(text) {
 }
 // the copied text -> { name (its base, "Waystone (Tier 15)"), names, props: { map_iir, map_packsize... }, corrupted } when it is
 // a waystone with something of its own (its rarity, pack size... raised: a rare or magic one), else null (a plain one is
-// priced on the Currency Exchange, as the many like it are)
+// priced as what stacks, as the many like it are)
 export function wayOf(text) {
   const [lines, head] = heads(text), b = head.map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b?.name.startsWith('Waystone')) return null;
   const props = propNums(lines); delete props.gem_level;

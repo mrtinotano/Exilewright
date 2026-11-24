@@ -16,6 +16,10 @@ here that way: the game's site hands characters only to programs registered with
 The site's answers, errors and rate limit headers go back as they come. No login: weighted searches open on the
 official site instead.
 
+/scout?league=<name>[&id=<an item's id on the exchange>] (GET) asks poe2scout's public API (api.poe2scout.com/swagger)
+what the game's own Currency Exchange trades an item at (trade.js exchangeOf): the item's prices, or without id what
+the league's reference currencies (Exalted, Chaos and Divine Orbs) are worth.
+
 /clipboard?lang=<code> (GET, a stream of server-sent events) tells the equipment comparison (loot.js, in Settings) about the items copied in
 the game: Ctrl+C over an item puts its text in the clipboard, and a page cannot read the clipboard while the game is
 the window in use. Only text shaped like an item (it has a "--------" line) is passed on: anything else copied stays
@@ -118,6 +122,7 @@ def call(url, body=None):
 
 
 TRADE = 'https://www.pathofexile.com/api/trade2/'
+SCOUT = 'https://api.poe2scout.com/poe2/Leagues/'
 PASS = ('Retry-After', 'X-Rate-Limit-Policy', 'X-Rate-Limit-Rules', 'X-Rate-Limit-Ip', 'X-Rate-Limit-Ip-State',
         'X-Rate-Limit-Account', 'X-Rate-Limit-Account-State')
 trade_data = {}   # the site's lists (leagues, stats...): what -> (when it was asked, the answer), asked again after a day
@@ -643,6 +648,16 @@ class Handler(SimpleHTTPRequestHandler):
             return self.reply_json(502, json.dumps({'error': {'message': str(e)}}).encode())
         self.reply_json(404, b'{"error":{"message":"not found"}}')
 
+    def do_scout(self, u):
+        q = parse_qs(u.query)
+        league, item = q.get('league', [''])[0], q.get('id', [''])[0]
+        if not re.fullmatch(r'[\w ]{1,60}', league) or not re.fullmatch(r'[\w-]{0,80}', item):   # \w: "legacy-of-mjölner"
+            return self.reply_json(400, b'{"error":{"message":"bad price"}}')
+        try:
+            return self.reply_json(200, call(SCOUT + quote(league) + ('/Currencies/' + quote(item) if item else '/ReferenceCurrencies')))
+        except Exception as e:
+            return self.reply_json(502, json.dumps({'error': {'message': str(e)}}).encode())
+
     def mine(self):
         """the request is from the page this server serves: not from a foreign page that points a name of its own at
         127.0.0.1, nor from another site's page open in the same browser. Asked of every request (do_GET, do_POST): the
@@ -829,6 +844,8 @@ class Handler(SimpleHTTPRequestHandler):
         u = urlparse(self.path)
         if u.path.startswith('/trade/'):
             return self.do_trade(u)
+        if u.path == '/scout':
+            return self.do_scout(u)
         if u.path == '/clipboard':
             return self.do_clipboard(u)
         if u.path == '/pob':

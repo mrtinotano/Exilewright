@@ -12,7 +12,7 @@ import { GEM } from './skills.js';
 import { SLOTS, slotOpen, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
-import { priceOf, priceUnid, priceBulk, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
+import { priceOf, priceUnid, priceBulk, exchangeOf, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
 import { settings, wornRow, stored, put } from './settings.js';
 
 const KEY = 'poe2loot';
@@ -152,14 +152,15 @@ export function initLoot(el, ctx) {
   }
   // the price check shortcut (Settings): what the same item costs on the trade site, over the game. The item is not
   // judged
+  const tradeSays = e => e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message);
   const tradeFail = (e, show, name) => {
     if (!(e instanceof TradeError)) throw e;
-    show({ name, lines: [e.kind === 'wait' ? t('The trade site asks to wait {0} seconds before searching again.', Math.ceil(e.wait || 60)) : t('The trade site answered: {0}', e.message)] });
+    show({ name, lines: [tradeSays(e)] });
   };
   async function priceCheck(text) {
     const show = v => say({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v });
     text = text.replace(/\r/g, '').trim();
-    // a gem or a waystone of its own (rare, magic): by the site's filters of them; else what stacks: on the Currency Exchange
+    // a gem or a waystone of its own (rare, magic): by the site's filters of them; else what stacks: as currency is
     const G = gemOf(text), W = !G && wayOf(text), B = !G && !W && bulkOf(text);
     if (B) return bulkCheck(B, show);
     const r = G || W || parseItem(text);
@@ -186,21 +187,28 @@ export function initLoot(el, ctx) {
         ...asked.length ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
     } catch (e) { tradeFail(e, show, name); }
   }
-  // a stackable item (currency, runes, essences, omens...): the best rate its sellers ask on the Currency Exchange in
-  // each currency, what its buyers give (an Exalted, Chaos or Divine Orb), and what your stack comes to at those rates
+  // a stackable item (currency, runes, essences, omens...): what the game's own Currency Exchange trades it at in
+  // Exalted, Chaos and Divine Orbs (poe2scout: shown at once, the trade site takes longer), then the trade site's bulk
+  // exchange: the best rate its sellers ask in each currency and, when the first is not known, what its buyers give
+  // (for one of those three orbs); and what your stack comes to, at the game's rates when known
   async function bulkCheck(B, show) {
     const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
-      const league = s.league || (await leagues())[0], p = await priceBulk({ league, id: B.id, state: s.state }), link = p.id ? siteLink(league, p.id, true) : '';
-      const mine = p.asks.length ? p.asks : p.bids;
-      if (!mine.length) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
+      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id), num = v => +v.toPrecision(3);
+      const game = x ? [[[`${t('Currency Exchange')} · poe2scout:`, '']],
+        ...Object.entries(x).map(([c, v]) => [['· ' + (v >= 1 ? `${num(v)} ${t(c)}` : t('{0} for {1}', num(1 / v), `1 ${t(c)}`)), 'up']])] : [];
+      if (x) show({ name, lines: [...game, [[t('Searching the trade site…'), 'dim']]] });
+      // the trade site not answering takes nothing from what the game's exchange says
+      const p = await priceBulk({ league, id: B.id, state: s.state, bids: !x }).catch(e => { if (!x || !(e instanceof TradeError)) throw e; return { asks: [], bids: [], fail: e }; });
+      const link = p.id ? siteLink(league, p.id, true) : '', mine = p.asks.length ? p.asks : p.bids;
+      if (!mine.length && !x) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
       const side = (head, offers) => offers.length ? [[[t(head) + ':', '']], ...offers.map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${t(o.currency)}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']])] : [];
       show({ name, link, lines: [
-        ...side('Sellers ask', p.asks), ...side('Buyers give', p.bids),
-        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, mine.map(o => `${+(o.pay / o.get * B.stack).toPrecision(3)} ${t(o.currency)}`).join(' · ')), '']]] : [],
-        [[t('{0} offers on the Currency Exchange in {1}', p.total, league), 'dim']],
-        [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] });
+        ...game, ...side('Sellers ask', p.asks), ...side('Buyers give', p.bids),
+        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, (x ? Object.entries(x).map(([c, v]) => [v, c]) : mine.map(o => [o.pay / o.get, o.currency])).map(([v, c]) => `${num(v * B.stack)} ${t(c)}`).join(' · ')), '']]] : [],
+        ...mine.length ? [[[t('{0} offers on the trade site in {1}', p.total, league), 'dim']], [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]]
+          : [[[p.fail ? tradeSays(p.fail) : t('Nothing like it is listed in {0}.', league), 'dim']]]] });
     } catch (e) { tradeFail(e, show, name); }
   }
   // serve.py passes on what the game copies (a page cannot read the clipboard while another window is in use)
