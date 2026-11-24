@@ -130,9 +130,9 @@ export function attacksOf(m) {
 
 // Values of one attack of a monster at a level: damage per type before your defences, use interval, crit, and how it
 // reaches you (shape: melee | slam | projectile | area | bolt).
-export function attackOf(m, level, key, rarity, ally = false, mods = []) {
+export function attackOf(m, level, key, rarity, ally = false, mods = [], si = 0) {   // si: which of the skill's stat sets (its parts)
   const st = enemyStats(m, level, rarity, ally, mods), x = k => st.mods[k] || 0, sk = MON.skills[key] && usable(MON.skills[key]) ? MON.skills[key] : null;
-  const set = sk?.sets[0] || { flags: ['attack', 'melee'], eff: [1, 0, 0] }, flags = set.flags, attack = flags.includes('attack');
+  const set = sk?.sets[si] || { flags: ['attack', 'melee'], eff: [1, 0, 0] }, flags = set.flags, attack = flags.includes('attack');
   const L = clamp(Math.round(level) || 1, 1, 100);
   // "effectiveness" values grow with the monster's level; literal values (interpolation 1) are used as they are
   const eff = (K.skill_effectiveness ?? 0) * (set.eff[0] ?? 1) * (1 + set.eff[1] * (L - 1)) * (1 + set.eff[2]) ** (L - 1);

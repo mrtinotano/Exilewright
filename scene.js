@@ -229,7 +229,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast', 'Rhoa Mount'].includes(g.name) ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection), Rhoa Mount (mounting): on, and used
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime' || x === 'MinionsAreUndamagable') || ['Iron Ward', 'Grim Feast', 'Rhoa Mount'].includes(g.name) ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection), Rhoa Mount (mounting), a djinn (its own Command): on, and used
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -569,8 +569,6 @@ export function initScene(el, api) {
       const LC = has(d, 'shock') && S.dmg?.stats?.['lightning_conduit_damage_+%_final_per_5%_increased_damage_taken_from_shock'];
       if (LC) for (const e in raw) raw[e] *= 1 + LC * (shocked(d) - 1) * 20 / 100;
       if (S.chaosX && raw.chaos) raw.chaos *= S.chaosX;   // Profanity
-      const IM = S.dmg?.stats?.['active_skill_damage_+%_final_vs_immobilised_enemies'];   // Siege Cascade: more against the immobilised
-      if (IM && has(d, 'immobilised')) for (const e in raw) raw[e] *= 1 + IM / 100;
       if (S.P.attack && !S.src && raw.physical) briarStore(raw.physical);
       const CS = cstaff(S);   // Charged Staff: its added lightning per stack
       if (CS) { const st = CS.S.dmg.stats, lo = st.charged_staff_attack_minimum_added_lightning_damage_per_stack, hi = st.charged_staff_attack_maximum_added_lightning_damage_per_stack; raw.lightning = (raw.lightning || 0) + CS.n * (lo + Math.random() * (hi - lo)) * m * cm; }
@@ -1917,6 +1915,50 @@ export function initScene(el, api) {
   // Mirage Archer (a dodge roll), Mirage Deadeye (a ranged projectile attack of yours): a Mirage where you stood that uses
   // the ranged attacks placed in it, in turn, for its duration, with its less damage, once every its cooldown (skills.json
   // meta_skill, meta_support)
+  // A djinn (Disciple of Varashta's Ruzhan, Kelari and Navira) acts only on Command: its own gem, used while it is out,
+  // Commands its first skill, and a Command gem the skill of its name (calc.js cmd: the skill's cast time, and the hits and
+  // ailments of each of its parts, of the djinn's damage; monsters.json: each part's area and stats). Each damaging part
+  // hits its area at your target, the later ones a moment after and over no less than the first one's (the knives'
+  // eruption, the runes' tornado, the wave of lava); a part of several projectiles is fired from the djinn in two volleys
+  // that explode in the next part's area (Ruzhan's Fury).
+  // Kelari's Deception leaves a clone for its duration, which explodes when it is used again, with its more damage per use
+  // in a row; Navira's Fracturing hits the enemies standing on Chilled Ground within its radius of her; Navira's Well
+  // starts your energy shield's recharge at once; a Command to Navira grants her gem's increased mana regeneration for
+  // her wave's duration (Navira's Calming); Ruzhan deals his gem's more damage per damaging skill you used Recently.
+  // note: not in the data, so left out: the delay of Ruzhan's Brand (it explodes as it is placed), how many runes Ruzhan's
+  // Trap spreads and knives Kelari's Brutality throws (one hit each over the area), the stages of Kelari's Judgment
+  // (one), what Navira's Embrace absorbs, Navira's Oasis, the recharge rate of Navira's Well, whether Navira's Fracturing
+  // uses up the ground (it stays)
+  const damaging = S => Object.keys({ ...S.dmg?.hits, ...S.dmg?.dot }).length > 0;
+  function djinnCast(S) {
+    const C = S.dmg.cmd, e = objs.find(o => o.minion && o.ofS === C.owner && !o.dead), key = C.key, sets = monSkill(key).sets, at = { x: S.at.x, z: S.at.z };
+    if (!e) return toast(t('{0} needs a minion', S.label));
+    const ost = onS(C.owner)?.dmg?.stats || {}, rad = s => (s?.const?.active_skill_base_area_of_effect_radius || s?.const?.active_skill_base_secondary_area_of_effect_radius || 0) / 10, r0 = rad(sets[0]);
+    const more = 1 + (ost['djinn_damage_+%_final_per_number_of_damaging_skills_my_parent_has_used_recently'] || 0) * used.filter(u => u.dmg && !u.cmd && time - u.t <= RECENT).length / 100;
+    const part = i => { const h = C.hits[i] || {}, els = Object.keys(h); return els.length ? { ...S, src: 'minionHit', els, el: els[0], aoe: true, A: rad(sets[i + 1]) || SIM.area, dmg: { ...S.dmg, hits: h, ail: C.ail[i], stats: ost, trig: [] }, mult: S.mult * more } : null; };
+    const CL = key === 'ExplosiveTeleportSandDjinn' && me.djClone, seq = CL && !CL.dead ? CL.n + 1 : 0;
+    if (C.owner === 'Navira, the Last Mirage') { me.navira = { until: time + monSkill('PassiveTriggeredManaWaveWaterDjinn').sets[0].const.base_skill_effect_duration / 1000, v: ost['water_djinn_mana_wave_mana_regeneration_rate_+%'] || 0 }; fx.ring(e.pos, .3, 2.5, 'cold', .5); }
+    later(C.cast, () => {
+      if (e.dead) return;
+      if (key === 'ESRechargeForceRestartWaterDjinn') { me.esEarly = 1e9; fx.pillar(pp, .5, 2.6, 'arcane', .4, 2); }
+      if (seq) { const X = part(0); boom({ x: CL.pos.x, z: CL.pos.z }, r0, { ...X, mult: X.mult * (1 + sets[0].const['djinn_damage_+%_final_per_teleport_in_sequence'] * seq / 100) }); CL.dead = true; }
+      sets.forEach((s, i) => { const X = part(i), n = s.const?.base_number_of_projectiles; if (!X) return;
+        if (n > 1) { for (let k = 0; k < n; k++) later(k < n / 2 ? 0 : .35, () => { const a = Math.atan2(at.x - e.pos.x, at.z - e.pos.z) + rnd(-.35, .35); shoot(X, { x: e.pos.x, z: e.pos.z }, Math.sin(a), Math.cos(a)); }); return; }
+        later(i * .4, () => { if (key === 'ChilledGroundBurstWaterDjinn') { for (const d of inside(e.pos, r0)) if (grounds.some(g => !g.dead && g.type === 'chilled' && dist(g, d.pos) <= g.r)) { fx.explode(d.pos, 1, X.el, {}); hit(d, X); } } else boom(at, Math.max(rad(s), r0) || SIM.area, X); }); });
+      if (key === 'ExplosiveTeleportSandDjinn') { const f = makeMinion(fx, 'physical'); f.group.position.set(at.x, 0, at.z); me.djClone = thing(f.group, sets[0].const.base_skill_effect_duration / 1000, { name: S.name }); me.djClone.n = seq; }
+      if (key === 'MeteorFireDjinn') { e.pos.x = at.x; e.pos.z = at.z; }   // Ruzhan's Reckoning: he teleports there
+    });
+    say(S.label, S.el);
+  }
+  // Ruzhan's Zealotry: when you use a damaging skill yourself he Strikes the enemies near your target, inflicting Exposure,
+  // once every its cooldown. note: its area is not in the data (the scene's)
+  function zealotry(S) {
+    const Z = onS('Ruzhan, the Blazing Sword'), K = Z?.dmg?.cmd?.strike, e = K?.hits && objs.find(o => o.minion && o.ofS === Z.name && !o.dead);
+    if (!e || time < me.zealAt || !damaging(S) || S.dmg.cmd) return;
+    me.zealAt = time + K.cooldown; const els = Object.keys(K.hits), at = { x: S.at.x, z: S.at.z };
+    const n = used.filter(u => u.dmg && !u.cmd && time - u.t <= RECENT).length;
+    later(monSkill(K.key).cast, () => { boom(at, SIM.area, { ...Z, src: 'minionHit', els, el: els[0], at, dmg: { ...Z.dmg, hits: K.hits, trig: [] }, mult: 1 + (Z.dmg.stats['djinn_damage_+%_final_per_number_of_damaging_skills_my_parent_has_used_recently'] || 0) * n / 100 }); for (const d of inside(at, SIM.area)) expo(d, ELEM); });
+  }
   function mirage(name) {
     const M = onS(name), D = M && SK.skills[name], X = D && Object.values(D.meta_skill)[0];
     const js = M ? api.build().gems.map((_, j) => j).filter(j => api.usedBy(j) === M.g && base(j)?.dmg?.speed) : [];
@@ -2267,7 +2309,7 @@ export function initScene(el, api) {
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
         if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
-        else if (d && wait <= 0) {
+        else if (d && wait <= 0 && !S.dmg?.cmd) {   // (a djinn acts only on Command: djinnCast)
           // Muster: more per different kind of persistent minion you have; Upwelling's increased damage while you are not on full mana (as more here); Crazed Minions: more if it Revived Recently
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
           const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * offerX() / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
@@ -2741,7 +2783,7 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
@@ -4499,8 +4541,9 @@ export function initScene(el, api) {
     const su = S.dmg?.sum, VO = !auto && su?.support_static_charge_maximum_charge;
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
-    const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : K[S.kind] || K.area;
+    const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
     run(S); whirl(S);
+    if (!auto) zealotry(S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
     if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
     if (!auto && P.attack && P.ranged && P.projectile) mirage('Mirage Deadeye');
@@ -4541,8 +4584,8 @@ export function initScene(el, api) {
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
-    if (!auto) { const T = S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime; me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
+    if (!auto) { const T = S.dmg?.useTime || (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime); me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), dmg: damaging(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
@@ -5624,7 +5667,7 @@ export function initScene(el, api) {
   const blindLess = () => BLIND.less * (1 + (sheet().blindEffect || 0) / 100);   // your Blind on enemies, with its increased effect
   const regenNow = c => {
     // the tree's increased life and mana regeneration per minion in your Presence, up to 40% (its text)
-    const MR = c.minionRegen ? Math.min(40, c.minionRegen * minionsNear()) : 0, R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), k === 'l' || k === 'm' ? MR : 0), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
+    const MR = c.minionRegen ? Math.min(40, c.minionRegen * minionsNear()) : 0, R = (c.regenWhile || []).filter(w => meIs[w.cv]?.()), sum = k => R.reduce((t, w) => t + (w.to === k ? w.val : 0), (k === 'l' || k === 'm' ? MR : 0) + (k === 'm' && time < me.navira?.until ? me.navira.v : 0) /* Navira's Calming */), li = c.lifeInc || 1, l = (sum('l') + Math.floor(Math.max(0, 1 - me.life / me.maxL) * 20) * (c.recPerMissing || 0)) / 100;   /* Ritualist: per 5% missing life */
     const FR = c.regrow ? Math.floor(me.regrow || 0) : 0;   // Dustbloom's Fragile Regrowth
     return { life: (c.lifeRegen || 0) * (1 + l / li) + me.maxL * (sum('L') + FR * (c.regrow?.life || 0)) / 100 / 60 * (li + l) * (c.recMore ?? 1), mana: (c.manaNoCrit && !meIs.CritRecently() ? 0 : c.manaRegen || 0) * (1 + (sum('m') + FR * (c.regrow?.mana || 0)) / 100 / (c.manaInc || 1)) - me.maxM * (c.manaDegen || 0) / 100 / 60 };   // Lich: lose a share of maximum mana a second
   };

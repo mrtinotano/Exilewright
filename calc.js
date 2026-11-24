@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, attackOf, attacksOf, ENEMIES, deflection, K as MON_K } from './enemies.js';
+import { enemy, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -1658,7 +1658,13 @@ export function skill(g, b, treeGear) {
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
-  const mid = SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
+  // a djinn (Disciple of Varashta: an invulnerable minion that acts on Command) uses the first of its monster's skills when
+  // its own gem Commands it, and a Command gem the skill of that gem's name (monsters.json); the damage is the djinn's, of
+  // the level of its gem
+  const djinn = x => { const T = GEM[x?.name]?.types || []; return T.includes('CommandableMinion') && T.includes('MinionsAreUndamagable') && enemy(SK.minions[x.name]?.[0]) || null; };
+  const host = !djinn(g) && GEM[g.name]?.types?.includes('CommandsMinions') && (b.gems || []).find(x => djinn(x)?.skills?.some(k => monSkill(k)?.name === g.name)) || null;
+  const DJ = djinn(host || g), ckey = DJ && (host ? DJ.skills.find(k => monSkill(k)?.name === g.name) : DJ.skills[0]);
+  const mid = host ? DJ.id : SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
@@ -1667,14 +1673,26 @@ export function skill(g, b, treeGear) {
   const cw = (msum !== sum && v(sum, 'weapon_damage_%_granted_to_companions')) + v(sum, 'aura_grant_%_base_main_hand_attack_damage_to_nearby_allies'), W = cw && weaponStats(b.items);
   const wAdd = W ? Object.fromEntries(DMG.filter(t => W[t]).map(t => [t, W[t].map(x => x * cw / 100)])) : null;
   const gsum = mid && (flags.has('minions_are_gigantic') || flags.has('companions_are_gigantic')) ? { ...msum, minions_are_gigantic: 1 } : msum;   // Hulking Minions, Tangmazu's Thurible
-  const mn = out.minion = mid ? minionOf(st, gsum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
-  out.minionLife = mid ? minionLife(st, gsum, mid, finals) : null;
+  const mst = host ? skill(host, b, treeGear).stats : st, djPart = (key, si) => attacksOf(DJ).some(a => a.key === key) && monSkill(key).sets[si]?.label !== 'Hidden' ? minionOf(mst, gsum, fin, mid, attributes(sum, b?.asc), wAdd, key, si) : null;
+  const mn = out.minion = DJ ? djPart(ckey, 0) : mid ? minionOf(st, gsum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
+  if (DJ) {
+    // the skill's seconds to cast, its cooldown and uses (the Command's recovery rate), the hits of each of its parts, and
+    // the djinn's own strike when you use a damaging skill (its Attack: Ruzhan's Zealotry)
+    const k = monSkill(ckey), cdr = 1 + (inc(sum, 'cooldown_speed_+%', tags) + v(sum, 'minion_command_skill_cooldown_speed_+%')) / 100, own = !host && DJ.skills.find(x => monSkill(x)?.sets[0].flags.includes('attack'));
+    out.cmd = { owner: (host || g).name, key: ckey, cast: k.cast || 0, hits: k.sets.map((s, i) => i ? djPart(ckey, i)?.hits || null : mn?.hits || null),
+      strike: own ? { key: own, hits: djPart(own, 0)?.hits, cooldown: monSkill(own).cooldown || 0 } : null };
+    if (k.cooldown) { out.cooldown = k.cooldown * 1000 / cdr; out.uses = k.uses || 1; }
+    out.useTime = d.cast_time_ms / 1000 || k.cast;   // your own time to Command it (the Command gem's; the djinn's cast for its own gem)
+    // each part's ailments with that part's own stats (its more Stun or Freeze buildup, its Maim, its more chance to Ignite)
+    out.cmd.ail = k.sets.map(s => { const a = ailments({ ...mst, ...s.const }, sum, finals, tags, flags); return { ...a, stun: a.stun * (1 + (mn?.stun || 0) / 100), breakPct: a.breakPct + (mn?.breakPct || 0) }; });
+  }
+  out.minionLife = mid && !DJ ? minionLife(st, gsum, mid, finals) : null;   // a djinn cannot be damaged
   if (mn) out.ail = { ...out.ail, stun: out.ail.stun * (1 + mn.stun / 100), breakPct: out.ail.breakPct + mn.breakPct };   // the tree's Minions' Stun buildup and Armour Break
   out.minionUndead = !!mid && enemy(mid)?.category === 'Undead';   // monsters.json category (Kulemak's Sovereignty)
   if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
   if (mn) {
     const ty = Object.values(mn.hits);
-    Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
+    Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus + (DJ ? v(mst, 'base_critical_strike_multiplier_+') : 0) /* a djinn's gem's own (Kelari) */, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
   }
   if (flags.has('global_cannot_crit')) out.crit = 0;
   if (out.avg != null && out.speed) {
@@ -1700,7 +1718,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   // charge spent (Spiral Volley): [state, %, unique-only / non-unique-only / any]
   const pinAll = F('base_all_damage_can_pin') || all('base_all_damage_can_pin') > 0 || tags.includes('attack') && all('local_all_damage_can_pin') > 0 || tags.includes('projectile') && all('all_projectile_damage_can_pin') > 0 || keys.some(k => /pins_as_though_dealt_damage/.test(k));
   const consume = {}, vs = [], STATE_OF = { fully_broken_armour: 'armour', heavy_stunned: 'stun', frozen: 'freeze', bleeding: 'bleed', poisoned: 'poison',
-    ignited: 'ignite', shocked: 'shock', chilled: 'chill', electrocuted: 'electrocute', pinned: 'pin', immobilised: 'immobilised', cursed: 'curse', marked: 'mark' };
+    ignited: 'ignite', burning: 'ignite' /* Ruzhan's Brand: the Burning are the Ignited here */, shocked: 'shock', chilled: 'chill', electrocuted: 'electrocute', pinned: 'pin', immobilised: 'immobilised', cursed: 'curse', marked: 'mark' };
   for (const k of keys) {
     let m = k.match(/consume_enemy_(freeze|shock|ignite|fully_broken_armour)_to_gain_(damage|hit_damage_stun_multiplier)(?:_against_(unique|non_unique))?_\+%(?:_final)?$/);
     if (m) { const c = consume[STATE_OF[m[1]] || m[1]] ||= {}, key = m[2] === 'damage' ? m[3] || 'any' : 'stun'; c[key] = (c[key] || 0) + all(k); continue; }
@@ -1850,11 +1868,11 @@ function minionStats(st, sum, ms) {
   for (const src of [sum, st]) for (const [k, x] of Object.entries(src)) { const to = SK.minion_stats?.[k] || MS_ALSO[k] || src === sum && k.startsWith('minion:') && k.slice(7); if (to && typeof x === 'number') ms[to] = (ms[to] || 0) + x; }   // "minion:<stat>": the minion's own (Necromantic Talisman's amulet)
   return ms;
 }
-function minionOf(st, sum, fin, id, at = {}, wAdd = null) {
+function minionOf(st, sum, fin, id, at = {}, wAdd = null, key0 = null, si = 0) {   // key0, si: that skill of the monster and that part of it (a djinn's), not its first
   const m = enemy(id), level = SK.minion_level?.[st._level - 1];
-  const key = m && attacksOf(m)[0].key;   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
+  const key = m && (key0 || attacksOf(m)[0].key);   // none of its skills deals damage (Skeletal Cleric heals): no hits of its own
   if (!level || !key || key === 'basic') return null;
-  const a = attackOf(m, level, key, 'normal', true), ms = minionStats(st, sum, { ...SK.minion_intrinsic });
+  const a = attackOf(m, level, key, 'normal', true, [], si), ms = minionStats(st, sum, { ...SK.minion_intrinsic });
   // Ancestral Spirits, Manifest Weapon, Supporting Fire, Azmerian Swarms: 1% increased minion damage, attack speed and area
   // per their amount of your Strength / Dexterity
   for (const [k, to, a] of [['minion_1%_damage_+%_per_X_player_strength', 'damage_+%', 'str'], ['active_skill_minion_1%_attack_speed_+%_per_X_player_dexterity', 'attack_speed_+%', 'dex'],
