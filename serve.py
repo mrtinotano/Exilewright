@@ -479,7 +479,7 @@ def read_screen():
         old = ctypes.c_void_p(gdi.SelectObject(dc, bmp))
         gdi.BitBlt(dc, 0, 0, w, h, screen, at[0], at[1], 0x00CC0020)   # SRCCOPY
         gdi.SelectObject(dc, old)
-        head = ctypes.create_string_buffer(struct.pack('<IiiHHIIiiII', 40, w, h, 1, 24, 0, 0, 0, 0, 0, 0), 40)   # 24 bits, bottom row first
+        head = ctypes.create_string_buffer(struct.pack('<IiiHHIIiiII', 40, w, h, 1, 24, 0, 0, 0, 0, 0, 0), 40)   # 24 bits, bottom row first (40: no end byte added)
         rows = ctypes.create_string_buffer(((w * 3 + 3) & ~3) * h)
         if gdi.GetDIBits(dc, bmp, 0, h, rows, head, 0) != h:
             return []
@@ -494,7 +494,7 @@ def read_screen():
                              capture_output=True, timeout=10, creationflags=0x08000000).stdout
     except (OSError, subprocess.SubprocessError):
         return []
-    return [line.strip()[:200] for line in out.decode('utf-8', 'replace').splitlines() if line.strip()][:300]
+    return [line.strip() for line in out.decode('utf-8', 'replace').splitlines() if line.strip()]
 
 
 def watch_clipboard():

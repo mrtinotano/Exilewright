@@ -157,6 +157,7 @@ export function initLoot(el, ctx) {
     if (!(e instanceof TradeError)) throw e;
     show({ name, lines: [tradeSays(e)] });
   };
+  const num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
   async function priceCheck(text) {
     const show = v => say({ kind: 'price', title: t('Price check'), open: t('Open on the trade site'), ...v });
     text = text.replace(/\r/g, '').trim();
@@ -195,7 +196,7 @@ export function initLoot(el, ctx) {
     const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
-      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id), num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
+      const league = s.league || (await leagues())[0], x = await exchangeOf(league, B.id);
       const game = x ? [[[`${t('Currency Exchange')} · poe2scout:`, '']],
         ...Object.entries(x).map(([c, v]) => [['· ' + (v >= 1 ? `${num(v)} ${t(c)}` : t('{0} for {1}', num(1 / v), `1 ${t(c)}`)), 'up']])] : [];
       if (x) show({ name, lines: [...game, [[t('Searching the trade site…'), 'dim']]] });
@@ -217,8 +218,8 @@ export function initLoot(el, ctx) {
   async function seenCheck(lines) {
     const found = bulkSeen(lines).slice(0, 12), show = ls => say({ kind: 'price', title: t('Price check'), lines: ls });
     if (!found.length) return say({ kind: 'none', title: 'Exilewright', lines: [t('Nothing with a price was read on the screen.')] });
-    const label = b => `${b.stack}× ${b['name_' + lang] || b.name}`, num = v => v.toLocaleString(locale, { maximumSignificantDigits: 3 });
-    show([...found.map(b => [[label(b), '']]), [['…', 'dim']]]);
+    const label = b => `${b.stack}× ${tn(b)}`;
+    show([...found.map(b => [[label(b), '']]), [['…', 'dim']]]);   // at once: serve.py waits three seconds for an answer
     const league = settings().league || (await leagues())[0];
     // in Exalted Orbs, and in Divine Orbs too when it comes to one or more (an orb of those is worth one of itself)
     const rows = (await Promise.all(found.map(async b => { const x = await exchangeOf(league, b.id), all = c => b.stack * (b.id === c ? 1 : x?.[c] || 0); return { b, ex: all('exalted'), div: all('divine') }; })))
