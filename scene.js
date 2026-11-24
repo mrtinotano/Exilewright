@@ -329,7 +329,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -4174,7 +4174,7 @@ export function initScene(el, api) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
     // mana cost efficiency during a mana flask (Uhtred's Rite; attacks': Lavianga's Brew) and on Low Mana (Mental Toughness)
     const CS = S.dmg?.sum || {}, UE = (me.drink[1] ? (CS['base_mana_cost_efficiency_+%_during_mana_flask'] || 0) + (S.P?.attack ? CS['attack_mana_cost_efficiency_+%_during_mana_flask'] || 0 : 0) : 0) + (lowMana() ? CS['base_mana_cost_efficiency_+%_while_on_low_mana'] || 0 : 0), ue = S.dmg?.manaEff || 1;
-    const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (UE ? ue / (ue + UE / 100) : 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
+    const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + (sheet().uDef?.indigonCost || 0) * spent200() / 100) * (UE ? ue / (ue + UE / 100) : 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
     const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
     return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
   }
@@ -4279,6 +4279,7 @@ export function initScene(el, api) {
       if (P.channel && !P.stages) S.mult *= SIM.channelHit;
       if (time < me.perf?.until) S.mult *= 1 + PERFECTION.more * me.perf.n / 100;   // Perfection: all your skills
       if (P.spell && time < me.pmag?.until) S.mult *= 1 + me.pmag.inc / 100;   // Practical Magic's increased spell damage. note: as more here
+      { const I = P.spell && !S.src && sheet().uDef?.indigon, ts = I ? Object.keys(S.dmg?.hits || {}) : []; if (ts.length) S.mult *= 1 + I * spent200() / 100 * ts.reduce((t, k) => t + (S.dmg.incW?.[k] ?? 1), 0) / ts.length; }   // Indigon
       { const SU = S.dmg?.sum || {};
         // Minion Pact: drains its % of your life from a minion that has it all, for its more damage
         const MP = !S.src && SU['support_minion_pact_user_life_%_removed_from_nearby_minion'], need = me.maxL * MP / 100, PM = MP && objs.find(o => o.minion && !o.dead && o.segs?.[0]?.life >= need);
@@ -5126,7 +5127,10 @@ export function initScene(el, api) {
   // as your energy shield recharge begins: Elemental Archon, when not on its delay (Archon of the Blizzard). -> the time
   const recharging = () => { const EA = sheet().earch; if (EA?.recharge && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) earchGo(EA); return time; };
   function earchGo(EA) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
+  // Indigon: per 200 mana Spent Recently, increased Spell damage and increased Cost of Skills (note: the cost's as more)
+  function spent200() { const L = me.manaLog || []; while (L.length && time - L[0][0] > RECENT) L.shift(); return Math.floor(L.reduce((t, x) => t + x[1], 0) / 200); }
   function payMana(n) {
+    if (n > 0 && (sheet().uDef?.indigon || sheet().uDef?.indigonCost)) (me.manaLog ||= []).push([time, n]);
     const MH = sheet().uDef?.manaHurt; if (MH && n > 0) hurt(n * MH / 100, 0, 'physical');   // Scold's Bridle
     const EA = sheet().earch; if (EA?.mana && me.maxM > 0 && (me.spent = (me.spent || 0) + n) >= me.maxM && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) { me.spent = 0; earchGo(EA); }   // Elemental Archon after spending your maximum mana
     me.spentM = (me.spentM || 0) + n;   // the mana spent (Melting Maelstrom)
