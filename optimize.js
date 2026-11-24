@@ -73,7 +73,9 @@ const plus = (to, stats) => { for (const id in stats) to[id] = (to[id] || 0) + s
 // Returns { nodes (new ids, in order), attrs ({id: str|dex|int}), from, to (objective before / after), steps }.
 export async function optimizeTree({ tree, b, base, root, extra = [], jewels = [], f, points, pref = 'str', tick, stop }) {
   const N = tree.nodes, roots = new Set(tree.class_roots.map(String));
-  const ok = id => { const n = N[id]; return n && !n.ascendancy && n.type !== 'keystone' && (!roots.has(id) || id === root); };
+  // nor a passive that is only ever granted, or that others unlock (the Oracle's own) until the build has those
+  const got = new Set([...b.nodes, ...b.ascNodes || []]);
+  const ok = id => { const n = N[id]; return n && !n.ascendancy && n.type !== 'keystone' && (!roots.has(id) || id === root) && !n.granted && (n.needs || []).every(x => got.has(x)); };
   const counted = new Set(b['set' + (b.wset || 1)] || []);   // passives of the weapon set in use are in `base` already
   const have = new Set(b.nodes.length ? [...b.nodes, ...extra] : [root]);   // extra: the starts Split Personality opens
   const bySocket = new Map(jewels.map(j => [j.id, j]));

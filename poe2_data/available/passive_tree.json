@@ -9215,6 +9215,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupBow.dds",
@@ -9242,6 +9246,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_damage_+%": 16
    },
@@ -9272,6 +9280,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_damage_+%": 16
    },
@@ -9302,6 +9314,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_damage_+%": 16
    },
@@ -9331,6 +9347,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "movement_speed_penalty_+%_while_performing_action": -6
    },
@@ -9360,6 +9380,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "movement_speed_penalty_+%_while_performing_action": -6
    },
@@ -9389,6 +9413,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_attack_speed_+%": 5
    },
@@ -9418,6 +9446,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_attack_speed_+%": 5
    },
@@ -9447,6 +9479,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_attack_speed_+%": 5
    },
@@ -9476,6 +9512,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "bow_attacks_have_culling_strike": 1,
     "physical_bow_damage_+%": 20
@@ -9535,6 +9575,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 12,
     "lightning_damage_+%": 12
@@ -9566,6 +9610,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 15
    },
@@ -9595,6 +9643,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 15
    },
@@ -9624,6 +9676,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 15
    },
@@ -9653,6 +9709,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "lightning_damage_+%": 15
    },
@@ -9682,6 +9742,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "lightning_damage_+%": 15
    },
@@ -9711,6 +9775,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "lightning_damage_+%": 15
    },
@@ -9740,6 +9808,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "non_skill_base_physical_damage_%_to_gain_as_lightning": 18
    },
@@ -9770,6 +9842,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupLightning.dds",
@@ -9797,6 +9873,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_damage_+%": 12
    },
@@ -9827,6 +9907,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "temporary_minion_limit_+": 2
    },
@@ -9857,6 +9941,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "companion_damage_+%": 15
    },
@@ -9886,6 +9974,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "companion_damage_+%": 15
    },
@@ -9915,6 +10007,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_minion_duration_+%": 25
    },
@@ -9944,6 +10040,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_minion_duration_+%": 25
    },
@@ -9973,6 +10073,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_damage_+%": 15
    },
@@ -10002,6 +10106,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_damage_+%": 15
    },
@@ -10031,6 +10139,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "companion_takes_%_damage_before_you": 5,
     "companion_maximum_life_+%": 20
@@ -10062,6 +10174,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_commanded_skill_damage_+%_per_different_persistent_minion_in_presence": 10
    },
@@ -10092,6 +10208,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": null,
@@ -10150,6 +10270,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_stationary": 15,
     "block_chance_+%": 5
@@ -10181,6 +10305,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_stationary": 30
    },
@@ -10210,6 +10338,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_stationary": 30
    },
@@ -10239,6 +10371,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_stationary": 30
    },
@@ -10268,6 +10404,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_stationary": 30,
     "life_regeneration_rate_+%_while_stationary": 30
@@ -10298,6 +10438,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "block_chance_+%": 8
    },
@@ -10327,6 +10471,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "block_chance_+%": 8
    },
@@ -10356,6 +10504,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "block_chance_+%": 8
    },
@@ -10385,6 +10537,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "block_chance_+%": 15,
     "energy_shield_delay_-%": 20
@@ -10415,6 +10571,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryArmourandEnergyShield.dds",
@@ -12162,6 +12322,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_cast_speed_+%": 4,
     "totem_skill_attack_speed_+%": 4
@@ -12192,6 +12356,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_cast_speed_+%": 4,
     "totem_skill_attack_speed_+%": 4
@@ -12222,6 +12390,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_maximum_all_elemental_resistances_%": 2
    },
@@ -12251,6 +12423,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_maximum_all_elemental_resistances_%": 2
    },
@@ -12280,6 +12456,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_area_of_effect_+%": 10
    },
@@ -12309,6 +12489,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "summon_totem_cast_speed_+%": 30
    },
@@ -12338,6 +12522,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_cast_speed_+%": 6,
     "totem_skill_attack_speed_+%": 6,
@@ -12370,6 +12558,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_area_of_effect_+%": 20,
     "totem_maximum_all_elemental_resistances_%": 3
@@ -12401,6 +12593,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "totem_skill_cast_speed_+%": 2,
     "totem_skill_attack_speed_+%": 2,
@@ -12433,6 +12629,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryTotem.dds",
@@ -12608,6 +12808,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "mana_regeneration_rate_+%_while_shapeshifted": 20
    },
@@ -12697,6 +12901,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "mana_regeneration_rate_+%_while_shapeshifted": 40
    },
@@ -14844,6 +15052,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_effect_duration_+%": 15
    },
@@ -14873,6 +15085,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_effect_duration_+%": 30
    },
@@ -14902,6 +15118,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryPhysicalDamage.dds",
@@ -16827,6 +17047,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "shapeshift_slam_skill_aftershock_chance_%": 10
    },
@@ -16856,6 +17080,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "shapeshift_slam_skill_aftershock_chance_%": 15
    },
@@ -17496,6 +17724,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupCrit.dds",
@@ -17523,6 +17755,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_critical_strike_multiplier_+": 20
    },
@@ -17552,6 +17788,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_critical_strike_multiplier_+": 20
    },
@@ -17581,6 +17821,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_critical_strike_multiplier_+": 20
    },
@@ -17610,6 +17854,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "critical_strike_chance_+%": 50,
     "skill_speed_+%": -5
@@ -17912,6 +18160,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%_while_channelling": 25
    },
@@ -17941,6 +18193,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "x%_of_damage_taken_while_channelling_recouped_as_life": 10
    },
@@ -17970,6 +18226,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%_while_channelling": 25
    },
@@ -17999,6 +18259,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "x%_of_damage_taken_while_channelling_recouped_as_life": 10
    },
@@ -18028,6 +18292,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%_while_channelling": 60,
     "x%_of_damage_taken_while_channelling_recouped_as_life": 30
@@ -18058,6 +18326,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "inflict_blind_on_enemies_within_x_meters_while_shield_is_raised": 3,
     "raise_shield_skill_inflicts_parry_for_duration_ms": 2000
@@ -19763,6 +20032,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 12,
     "skill_effect_duration_+%": 5
@@ -19793,6 +20066,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 12,
     "skill_effect_duration_+%": 5
@@ -19823,6 +20100,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 12,
     "skill_effect_duration_+%": 5
@@ -19853,6 +20134,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 12,
     "skill_effect_duration_+%": 5
@@ -19885,6 +20170,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 16
    },
@@ -19914,6 +20203,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 35
    },
@@ -19943,6 +20236,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "spells_impale_on_hit_%_chance": 30
    },
@@ -20714,6 +21011,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": -10,
     "allies_in_presence_damage_+%": 20
@@ -20745,6 +21046,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": -10,
     "allies_in_presence_damage_+%": 20
@@ -20775,6 +21080,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_speed_+%": -3,
     "allies_in_presence_attack_speed_+%": 6,
@@ -20806,6 +21115,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_speed_+%": -3,
     "allies_in_presence_attack_speed_+%": 6,
@@ -20837,6 +21150,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_spirit_reservation_efficiency_+%": -20,
     "reservation_efficiency_+%_of_minion_skills": 40
@@ -20868,6 +21185,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": null,
@@ -22005,6 +22326,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_effect_duration_+%_when_using_shapeshift_skills": 15
    },
@@ -22035,6 +22360,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "skill_effect_duration_+%_when_using_shapeshift_skills": 30
    },
@@ -24877,6 +25206,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_power_charges_on_power_charge_gained_%_chance": 2
    },
@@ -24907,6 +25240,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_power_charges_on_power_charge_gained_%_chance": 2
    },
@@ -24937,6 +25274,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_power_charges_on_power_charge_gained_%_chance": 2
    },
@@ -24966,6 +25307,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "max_power_charges": 1,
     "gain_maximum_power_charges_on_power_charge_gained_%_chance": 2
@@ -25145,6 +25490,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%": 11,
     "ailment_threshold_+%": 11
@@ -25176,6 +25525,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25208,6 +25561,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25239,6 +25596,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25270,6 +25631,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25301,6 +25666,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_life_cost_+%": 53,
     "non_skill_base_all_damage_%_to_gain_as_chaos": 21
@@ -25332,6 +25701,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "chance_to_avoid_death_%": 7
    },
@@ -25362,6 +25735,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%": 17
    },
@@ -25391,6 +25768,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%": 17
    },
@@ -25421,6 +25802,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%": 17
    },
@@ -25450,6 +25835,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "ailment_threshold_+%": 17
    },
@@ -25479,6 +25868,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "ailment_threshold_+%": 17
    },
@@ -25508,6 +25901,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "stun_threshold_+%": 21,
     "ailment_threshold_+%": 21,
@@ -25542,6 +25939,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25574,6 +25975,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 3,
     "base_life_cost_+%": 11,
@@ -25605,6 +26010,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupLife.dds",
@@ -26548,6 +26957,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "archon_duration_+%": 10,
     "base_critical_strike_multiplier_+": 15
@@ -26578,6 +26991,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "archon_duration_+%": 10,
     "base_critical_strike_multiplier_+": 15
@@ -26608,6 +27025,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "archon_duration_+%": 10,
     "base_critical_strike_multiplier_+": 15
@@ -26638,6 +27059,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "archon_delay_expires_x%_faster": -30,
     "archon_grants_base_critical_strike_multiplier_+": 50,
@@ -30988,6 +31413,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "elemental_damage_+%": 16
    },
@@ -31017,6 +31446,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "elemental_damage_+%": 16
    },
@@ -31046,6 +31479,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "glory_generation_+%": 20
    },
@@ -31075,6 +31512,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "glory_generation_+%": 20
    },
@@ -31104,6 +31545,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds": 20
    },
@@ -31134,6 +31579,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryElementalDamage.dds",
@@ -32823,6 +33272,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "attack_minimum_added_lightning_damage": 1,
     "attack_maximum_added_lightning_damage": 7
@@ -32853,6 +33306,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "attack_minimum_added_lightning_damage": 1,
     "attack_maximum_added_lightning_damage": 7
@@ -32883,6 +33340,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "attack_minimum_added_lightning_damage": 1,
     "attack_maximum_added_lightning_damage": 37
@@ -32913,6 +33374,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupLightning.dds",
@@ -33201,6 +33666,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_maximum_life_+%": 12
    },
@@ -33230,6 +33699,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_maximum_life_+%": 12
    },
@@ -33259,6 +33732,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_damage_+%": 15
    },
@@ -33288,6 +33765,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_damage_+%": 15
    },
@@ -33317,6 +33798,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_non_skill_base_elemental_damage_%_to_gain_as_chaos": 20,
     "base_resist_all_elements_%": -10,
@@ -33350,6 +33835,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupMinions.dds",
@@ -33583,6 +34072,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_movement_velocity_+%": 3
    },
@@ -33612,6 +34105,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_cooldown_speed_+%": 6
    },
@@ -33641,6 +34138,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_movement_velocity_+%": 3
    },
@@ -33670,6 +34171,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_cooldown_speed_+%": 6
    },
@@ -33699,6 +34204,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_movement_velocity_+%": 4,
     "base_cooldown_speed_+%": 14
@@ -33729,6 +34238,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupEvasion.dds",
@@ -34736,6 +35249,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "passive_notable_kaomsblessing_fire_spells_ancestral_boosted_when_you_warcry": 1
    },
@@ -37242,6 +37756,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "elemental_damage_+%_while_shapeshifted": 12
    },
@@ -37271,6 +37789,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "elemental_damage_+%_while_shapeshifted": 12
    },
@@ -37300,6 +37822,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted": 8
    },
@@ -40032,6 +40558,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": 15,
     "minion_damage_+%": 15
@@ -40062,6 +40592,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": 15,
     "minion_damage_+%": 15
@@ -40092,6 +40626,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": 15,
     "minion_damage_+%": 15
@@ -40122,6 +40660,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": 30,
     "minion_damage_+%": 30
@@ -41620,6 +42162,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_command_skill_cooldown_speed_+%": 25
    },
@@ -41649,6 +42195,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_command_skill_cooldown_speed_+%": 25
    },
@@ -41678,6 +42228,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "minion_commanded_skill_damage_+%": 100,
     "minion_attack_speed_+%": -15,
@@ -41709,6 +42263,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": null,
@@ -43194,6 +43752,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "base_unaffected_by_bleeding": 1,
     "sprint_movement_speed_+%": 10,
@@ -43491,6 +44050,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_bleeding": 30
    },
@@ -43520,6 +44083,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_bleeding": 30
    },
@@ -43549,6 +44116,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_bleeding": 30
    },
@@ -43578,6 +44149,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "armour_+%_while_bleeding": 50,
     "base_bleeding_magnitude_+%_on_self": -50
@@ -43608,6 +44183,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/BloodMastery.dds",
@@ -44370,6 +44949,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "maximum_rage": 3
    },
@@ -44399,6 +44982,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "maximum_rage": 3
    },
@@ -44428,6 +45015,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "rage_loss_delay_recovery_rate_+%": 200,
     "maximum_rage": 15
@@ -45698,6 +46289,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_chance_to_poison_on_hit_%": 10
    },
@@ -45727,6 +46322,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_chance_to_poison_on_hit_%": 10
    },
@@ -45756,6 +46355,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_poison_effect_+%": 12
    },
@@ -45785,6 +46388,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_poison_effect_+%": 12
    },
@@ -45814,6 +46421,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "poison_effect_+%_vs_non_poisoned_enemies": 80,
     "base_chance_to_poison_on_hit_%_vs_non_poisoned_enemies": 30
@@ -45845,6 +46456,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryPoison.dds",
@@ -50814,6 +51429,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "revive_persistent_minion_%_chance_when_you_use_a_command_skill": 25,
     "surpassing_chance_%_to_gain_1_puppeteer_stack_on_using_command_skill": 25
@@ -50900,6 +51516,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "thorns_damage_+%": 20
    },
@@ -50929,6 +51549,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "thorns_damage_+%": 20
    },
@@ -50958,6 +51582,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_physical_thorns_damage_equal_to_x%_of_maximum_life_while_shapeshifted": 8
    },
@@ -50987,6 +51615,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupExtra.dds",
@@ -51045,6 +51677,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_frenzy_charges_on_frenzy_charge_gained_%_chance": 2
    },
@@ -51075,6 +51711,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_frenzy_charges_on_frenzy_charge_gained_%_chance": 2
    },
@@ -51104,6 +51744,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_frenzy_charges_on_frenzy_charge_gained_%_chance": 2
    },
@@ -51134,6 +51778,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "max_frenzy_charges": 1,
     "gain_maximum_frenzy_charges_on_frenzy_charge_gained_%_chance": 2
@@ -51789,6 +52437,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 6,
     "life_regeneration_rate_+%": 15
@@ -51820,6 +52472,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 8
    },
@@ -51849,6 +52505,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_skill_cost_life_instead_of_mana_%": 8
    },
@@ -51878,6 +52538,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_life_cost_+%": 30,
     "allies_in_presence_life_regeneration_rate_per_minute_equal_to_your_maximum_life_%": 120
@@ -51908,6 +52572,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "life_regeneration_rate_+%": 25
    },
@@ -51937,6 +52605,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "life_regeneration_rate_+%": 25
    },
@@ -51966,6 +52638,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "mana_regeneration_rate_+%_on_full_life": 40
    },
@@ -51995,6 +52671,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupLife.dds",
@@ -55555,6 +56235,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_bleed_duration_+%": 10,
     "chance_to_inflict_incision_on_attack_hit_%": 20
@@ -55585,6 +56269,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_bleed_duration_+%": 10,
     "chance_to_inflict_incision_on_attack_hit_%": 20
@@ -55615,6 +56303,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_bleed_duration_+%": 20,
     "chance_to_inflict_incision_on_attack_hit_%": 40,
@@ -55646,6 +56338,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/BloodMastery.dds",
@@ -55826,6 +56522,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupExtra.dds",
@@ -55853,6 +56553,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%": 12
    },
@@ -55886,6 +56590,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 20
    },
@@ -55915,6 +56623,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "fire_damage_+%": 20
    },
@@ -55944,6 +56656,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "cold_damage_+%": 20
    },
@@ -55973,6 +56689,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "lightning_damage_+%": 20
    },
@@ -56002,6 +56722,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "chaos_damage_+%": 20
    },
@@ -56031,6 +56755,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "physical_damage_+%": 30,
     "fire_damage_+%": 30,
@@ -60582,6 +61310,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "energy_generated_+%": 20
    },
@@ -60611,6 +61343,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "energy_generated_+%": 20
    },
@@ -60640,6 +61376,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "damage_+%_if_triggered_skill_recently": 50
    },
@@ -60670,6 +61410,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryGroupExtra.dds",
@@ -62742,6 +63486,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_chance_to_poison_on_hit_%": 8,
     "spell_damage_+%": 12
@@ -62772,6 +63520,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_chance_to_poison_on_hit_%": 8,
     "spell_damage_+%": 12
@@ -62802,6 +63554,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "base_chance_to_poison_on_hit_%": 8,
     "spell_damage_+%": 12
@@ -62832,6 +63588,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "non_skill_base_all_damage_%_to_gain_as_chaos_with_spells": 12
    },
@@ -62861,6 +63621,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "dummy_stat_zarokhs_gift_jewel_slot": 1
    },
@@ -64574,6 +65335,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "enemies_in_ignited_ground_take_+%_cold_damage": 25,
     "enemies_in_chilled_ground_take_+%_fire_damage": 25
@@ -65967,6 +66729,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_endurance_charges_on_endurance_charge_gained_%_chance": 2
    },
@@ -65996,6 +66762,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_endurance_charges_on_endurance_charge_gained_%_chance": 2
    },
@@ -66026,6 +66796,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "gain_maximum_endurance_charges_on_endurance_charge_gained_%_chance": 2
    },
@@ -66056,6 +66830,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "max_endurance_charges": 1,
     "gain_maximum_endurance_charges_on_endurance_charge_gained_%_chance": 2
@@ -69410,6 +70188,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryBlank.dds",
@@ -69731,6 +70510,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryBlank.dds",
@@ -69755,6 +70535,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryBlank.dds",
@@ -69779,6 +70560,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryBlank.dds",
@@ -69803,6 +70585,7 @@
    "type": "jewel",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {},
    "grants_skill": null,
    "icon": "Art/2DArt/SkillIcons/passives/MasteryBlank.dds",
@@ -72957,6 +73740,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "spell_damage_+%": 10,
     "base_strength": 10
@@ -72987,6 +73774,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "spell_damage_+%": 10,
     "base_strength": 10
@@ -73017,6 +73808,10 @@
    "type": "small",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "spell_damage_+%": 10,
     "base_strength": 10
@@ -73047,6 +73842,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "only_for": "Oracle",
+   "needs": [
+    "5571"
+   ],
    "stats": {
     "spell_damage_+%_per_10_strength": 2
    },
@@ -73727,6 +74526,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "ascendancy_gemling_charge_generator_buff_display": 1
    },
@@ -74261,6 +75061,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "num_additional_skill_slots": 2
    },
@@ -75139,6 +75940,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "withered_enemies_deal_+%_damage": -1
    },
@@ -83901,6 +84703,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "grant_elemental_archon_to_minions_for_x_ms_when_they_revive": 5000
    },
@@ -89208,6 +90011,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "cascadable_spells_final_echo_also_cascades_to_sides": 1
    },
@@ -89985,6 +90789,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "all_skill_gem_quality_+": 5,
     "additional_all_attributes": 5
@@ -98482,6 +99287,11 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "needs": [
+    "50239",
+    "9535",
+    "61309"
+   ],
    "stats": {
     "base_armour_%_applies_to_chaos_damage": 20,
     "base_chaos_damage_resistance_%": 8
@@ -100434,6 +101244,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "chaos_damage_over_time_+%_per_volatility": 1
    },
@@ -103556,6 +104367,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "archon_no_recovery_period": 1,
     "archon_effect_on_you_+%": -50
@@ -124043,6 +124855,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "charm_effect_+%_per_empty_charm_slot": 100
    },
@@ -138347,6 +139160,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "attack_speed_+%": 10,
     "evasion_rating_+%_per_rage": 1
@@ -139078,6 +139892,10 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "needs": [
+    "59657",
+    "49356"
+   ],
    "stats": {
     "curse_effect_on_self_+%": -50,
     "non_damaging_ailment_effect_+%_on_self": -35
@@ -139636,6 +140454,7 @@
    "type": "notable",
    "ascendancy": null,
    "ascendancy_start": false,
+   "granted": true,
    "stats": {
     "fully_broken_armour_and_sundered_armour_you_inflict_also_applies_to_cold_and_lightning_damage": 1
    },
@@ -150859,6 +151678,11 @@
    "type": "notable",
    "ascendancy": "Spirit Walker",
    "ascendancy_start": false,
+   "needs": [
+    "41401",
+    "62743",
+    "46070"
+   ],
    "stats": {
     "ascendancy_bear_companion_life_regeneration_rate_per_minute_%": 120,
     "ascendancy_bear_companion_takes_%_damage_before_you": 8,

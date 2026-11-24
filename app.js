@@ -363,7 +363,7 @@ $('charPanel').onclick = async e => {
     nodes = await moveTree(b.nodes, root, name, t('{0} starts somewhere else on the tree.', name));
     if (!nodes) return;
   }
-  edit((_, b) => { b.asc = asc; b.ascNodes = []; setNodes(b, nodes); })(e);
+  edit((_, b) => { const had = [...b.nodes, ...b.ascNodes]; b.asc = asc; b.ascNodes = []; setNodes(b, nodes); relock(b, had); })(e);
 };
 const setNodes = (b, nodes) => {
   b.nodes = nodes; fixSets(b);
@@ -537,7 +537,18 @@ const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
 // every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
 const MASTERY = Object.keys(N).filter(id => N[id].mastery_art);   // the passives with their mastery's art behind them
-const visible = () => [...main, ...(ASC[B().asc] || [])];
+// what of the tree is a build's to see: not the passives the game shows to one ascendancy alone (only_for: the Oracle's
+// own) for another, nor the ones only ever granted (granted: Voices' Sinister sockets, the notables of an anointment),
+// unless the build has them
+let shownFor = {};   // kept until the builds change
+function visible() {
+  const b = B(), key = cur + ' ' + rev;
+  if (shownFor.key !== key) {
+    const got = new Set([...sockOn(b), ...setOf(b, 1), ...setOf(b, 2), ...granted(b)]);
+    shownFor = { key, ids: [...main.filter(id => got.has(id) || !N[id].granted && (!N[id].only_for || N[id].only_for === b.asc)), ...(ASC[b.asc] || [])] };
+  }
+  return shownFor.ids;
+}
 let view = { x: 0, y: 0, s: 0 }, hover = null;
 
 // ---------- weapon sets: passives that only apply while that weapon set is in use
@@ -576,7 +587,15 @@ $('treePts').onclick = async e => {
   if (mode) swapSet(B(), mode);   // the set of the passives is the set in hand (its weapons too)
   save(); renderSide(); drawTree();
 };
-const walkable = (id, root) => N[id] && !N[id].ascendancy && (!ROOTS.has(id) || id === root);
+// a passive can be allocated once the passives that unlock it are (needs: the Oracle's own, The Unseen Path), and one
+// that is only ever granted never
+// note: the table lists them (PassiveSkills.UnlockedBy); that it takes all of them is read off The Hollowkeeper, whose
+// only link is to one of its two
+const lacks = (id, b) => (N[id].needs || []).filter(n => !b.nodes.includes(n) && !b.ascNodes.includes(n));
+const mayTake = (id, b) => !N[id].granted && !lacks(id, b).length;
+const walkable = (id, root, b = { nodes: [], ascNodes: [] }) => N[id] && !N[id].ascendancy && (!ROOTS.has(id) || id === root) && mayTake(id, b);
+console.assert((o => o && !walkable(o, '') && walkable(o, '', { nodes: [], ascNodes: N[o].needs }) && !main.some(id => N[id].granted && walkable(id, '')))(main.find(id => N[id].only_for)),
+  'walkable: a passive that another unlocks, one that is only ever granted');
 function pathTo(have, target, ok, add) {   // BFS from the allocated set to target (id or test), returns the new node ids; add: seeds not allocated (free passives), kept in the path that starts at one
   const hit = typeof target === 'function' ? target : u => u === target;
   const prev = new Map(have.map(n => [n, null])), q = [...have];
@@ -664,7 +683,7 @@ function conquest(b, js = jewelsOf(b)) {
   return out;
 }
 // the passives that can be allocated without being connected (Controlled Metamorphosis' radius, From Nothing's keystone's)
-const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(j.in)));
+const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(id => j.in(id) && mayTake(id, b))));
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
   // (its socket may hang from that start itself, as in the game: the tree can then leave the class start); sockets that
   // end up loose close their start, until nothing more goes
@@ -681,25 +700,36 @@ function prune(nodes, b) {         // keep only what is still connected to nodes
 function preview(id, b = B()) {
   if (N[id].ascendancy) {
     const st = ascStart(b.asc);
-    return id === st || b.ascNodes.includes(id) ? [] : pathTo([st, ...b.ascNodes], id, w => N[w]?.ascendancy === b.asc);
+    return id === st || b.ascNodes.includes(id) ? [] : pathTo([st, ...b.ascNodes], id, w => N[w]?.ascendancy === b.asc && mayTake(w, b));
   }
   if (b.nodes.includes(id)) return [];
   if (mode) {   // weapon set: grows from the normal tree plus that set's passives
     const own = setOf(b, mode);
     if (own.includes(id) || !b.nodes.length || !setOK(id)) return [];
     const free = new Set([...freeNodes(b)].filter(n => !b.nodes.includes(n) && !own.includes(n)));
-    const p = pathTo([...b.nodes, ...own, ...splitRoots(b), ...free], id, w => walkable(w, b.nodes[0]), free);
+    const p = pathTo([...b.nodes, ...own, ...splitRoots(b), ...free], id, w => walkable(w, b.nodes[0], b), free);
     return p.every(setOK) ? p : [];
   }
   // the tree always grows from the class start, like in the game
   const have = b.nodes.length ? b.nodes : [classRoot(b.asc)].filter(Boolean);
   if (!have.length) return [];
   const free = new Set([...freeNodes(b)].filter(n => !b.nodes.includes(n)));
-  const p = id === have[0] ? [] : pathTo([...have, ...splitRoots(b), ...free], id, w => walkable(w, have[0]), free);
+  const p = id === have[0] ? [] : pathTo([...have, ...splitRoots(b), ...free], id, w => walkable(w, have[0], b), free);
   if (id !== have[0] && !p.length) return [];
   return [...(b.nodes.length ? [] : have), ...p];
 }
+// the passives another unlocked go with it (the Oracle's own, with The Unseen Path); had: what was allocated before
+function relock(b, had) {
+  for (;;) {
+    const has = new Set([...b.nodes, ...b.ascNodes]), gone = had.filter(n => !has.has(n)), lost = n => N[n].needs?.some(x => gone.includes(x));
+    if (![...has, ...setOf(b, 1), ...setOf(b, 2)].some(lost)) return;
+    for (const k of [1, 2]) b['set' + k] = setOf(b, k).filter(n => !lost(n));
+    b.ascNodes = prune([ascStart(b.asc), ...b.ascNodes.filter(n => !lost(n))]).slice(1);
+    setNodes(b, prune(b.nodes.filter(n => !lost(n)), b));
+  }
+}
 function toggle(b, id) {   // what a click on `id` does to build b (false: nothing)
+  const had = [...b.nodes, ...b.ascNodes];
   if (N[id].ascendancy) {
     const st = ascStart(b.asc);
     if (id === st) return false;
@@ -714,6 +744,7 @@ function toggle(b, id) {   // what a click on `id` does to build b (false: nothi
     const p = preview(id, b); b.nodes.push(...p);
     for (const k of [1, 2]) b['set' + k] = setOf(b, k).filter(n => !p.includes(n));
   }
+  relock(b, had);
 }
 function clickNode(id) {
   if (toggle(B(), id) !== false) { save(); renderSide(); drawTree(); }
@@ -895,12 +926,14 @@ function drawTree() {
   ctx.setTransform(D * s, 0, 0, D * s, D * (W / 2 - view.x * s), D * (H / 2 - view.y * s));
   // behind each passive of a mastery, its art (images.py: img/mastery, at half size), bright once it is allocated,
   // faint until then (as the game shows it)
-  // note: the size (1.5 world units a pixel) and the faint 0.3 are by eye from screenshots of the game; no table says them
+  // note: no table says the size or how faint: 2 world units a pixel (one a pixel of the game's own picture) and 0.15
+  // are what the colour of 13 of them by how far from their passive fits best on a screenshot of the game (1.9, 0.08 to
+  // 0.17), and what Path of Building 2 draws them at (760 units for 776 pixels, 0.15)
   for (const id of MASTERY) {
-    const pic = art('mastery/' + N[id].mastery_art);
+    const pic = visSet.has(id) && art('mastery/' + N[id].mastery_art);
     if (!pic) continue;
-    const [x, y] = WP[id], w = pic.width * 1.5, h = pic.height * 1.5;
-    ctx.globalAlpha = on.has(id) ? 1 : .3;
+    const [x, y] = WP[id], w = pic.width * 2, h = pic.height * 2;
+    ctx.globalAlpha = on.has(id) ? 1 : .15;
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
   }
   ctx.globalAlpha = 1;
@@ -1037,7 +1070,7 @@ function showTip(id, mx, my) {
 function tipHtml(tip, id, n) {
   const b = B(), jv = n.type === 'jewel' && itemView(b.items?.['jewel:' + id]), cq = conquest(b).get(id);   // a socket: the jewel in it; a timeless jewel's conquest
   const by = cq && itemView(cq.by)?.name;
-  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], jv ? [jv.name || jv.base, ...jv.mods] : [],
+  const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], lacks(id, b).length ? [t('Requires {0}', lacks(id, b).map(x => label(N[x])).join(', '))] : [], jv ? [jv.name || jv.base, ...jv.mods] : [],
     cq?.seed ? [t('{0} changes this passive by its seed, which the game data does not show: it counts as it is.', by)] : cq ? [t('Conquered by {0}', by)] : []);
   const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start;
   const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
@@ -1281,16 +1314,17 @@ function drawSocket(c, id) {
   c.width = W * D; c.height = H * D; g.setTransform(D, 0, 0, D, 0, 0);
   g.fillStyle = '#080c12'; g.fillRect(0, 0, W, H);
   const on = new Set([...b.nodes, ...granted(b), ...splitRoots(b)]), j = jewelsOf(b).find(x => x.id === id), S = N[id];
+  const seen = new Set(visible()), mine = main.filter(a => seen.has(a));   // the passives on this build's tree
   const near = H / Math.max(4500, 2.4 * (j?.R?.ring?.[1] || j?.r || 0));
   const view = (x0, w, cx, cy, k) => {   // the tree round (cx, cy) at k pixels a unit, in the box from x0, w wide
     const X = x => x0 + w / 2 + (x - cx) * k, Y = y => H / 2 + (y - cy) * k;
     g.save(); g.beginPath(); g.rect(x0, 0, w, H); g.clip();
     const off = new Path2D(), lit = new Path2D();
-    for (const a of main) for (const l of N[a].links) { const m = String(l);
-      if (+m < +a || !N[m] || N[m].ascendancy) continue;
+    for (const a of mine) for (const l of N[a].links) { const m = String(l);
+      if (+m < +a || !seen.has(m) || N[m].ascendancy) continue;
       const p = on.has(a) && on.has(m) ? lit : off; p.moveTo(X(N[a].x), Y(N[a].y)); p.lineTo(X(N[m].x), Y(N[m].y)); }
     g.lineWidth = 1; g.strokeStyle = '#3a352b'; g.stroke(off); g.lineWidth = 2; g.strokeStyle = '#c9a24a'; g.stroke(lit);
-    for (const a of main) { const n = N[a], r = Math.max(1, R[isRoot(a) ? 'root' : n.type] * k * .7);
+    for (const a of mine) { const n = N[a], r = Math.max(1, R[isRoot(a) ? 'root' : n.type] * k * .7);
       g.fillStyle = on.has(a) ? '#f2cf74' : n.type === 'jewel' ? '#6f8fb0' : '#5a5040'; g.beginPath(); g.arc(X(n.x), Y(n.y), r, 0, 7); g.fill(); }
     g.strokeStyle = '#9fe8ff'; g.lineWidth = 2;
     g.beginPath(); g.arc(X(S.x), Y(S.y), Math.max(6, R.jewel * k * 1.3), 0, 7); g.stroke();
@@ -1308,7 +1342,7 @@ function drawSocket(c, id) {
 // (its modifiers, Megalomaniac's notables) and the passives it frees (optimize.js optimizeTree)
 const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s.slice(6)))).map(j => ({ ...j,
   stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce(plusStats, {}),
-  free: j.R?.free ? main.filter(j.in) : [],
+  free: j.R?.free ? main.filter(id => j.in(id) && mayTake(id, b)) : [],
   // what a timeless jewel changes in its radius once its socket is allocated: per passive, the stats added (removed below 0)
   swap: new Map([...conquest(b, [j])].filter(([id, c]) => !c.ks && !c.seed && !c.over).map(([id, c]) => {
     const was = nodeStats(id, b, new Map()), now = nodeStats(id, b, new Map([[id, c]])), d = {};

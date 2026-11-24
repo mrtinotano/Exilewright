@@ -226,6 +226,12 @@ for gid, conns in graph.items():
                 else 'attribute' if p['IsAttribute'] else 'small',
         'ascendancy': a, 'ascendancy_start': p['IsAscendancyStartingNode'],
         **({'option': True} if p['IsMultipleChoiceOption'] else {}),   # one of a multiple choice notable's options: picking it costs no point
+        # not everyone's: the ascendancy the game shows it to alone (the Oracle's own passives), the passives that must
+        # all be allocated before it can be (as graph ids, like the tree's keys), and one that is only ever granted (an
+        # anointed notable, Voices' Sinister sockets: on no tree until something gives it)
+        **({'only_for': asc[p['VisibleForAscendancy']]['Name']} if p['VisibleForAscendancy'] is not None else {}),
+        **({'needs': [str(passives[u]['PassiveSkillGraphId']) for u in p['UnlockedBy']]} if p['UnlockedBy'] else {}),
+        **({'granted': True} if p['IsAnointmentOnly'] else {}),
         'stats': {stats[s]['Id']: v for s, v in zip(p['Stats'], vals)},
         'grants_skill': bases[skill_gems[p['GrantedSkill']]['BaseItemType']]['Name'] if p['GrantedSkill'] is not None else None,
         'icon': p.get('Icon_DDSFile') or None,
