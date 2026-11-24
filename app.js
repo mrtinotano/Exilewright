@@ -757,8 +757,10 @@ const LINK = {
 };
 // the passives a timeless jewel conquers have that jewel's own links and frames when its tree version has them
 // (AlternateTreeArt.UIArt: Undying Hate's Abyss; images.py: img/tree/alt<version>_*): the links, read the same way off
-// AbyssPassiveSkillScreenCurves*Together.dds
+// AbyssPassiveSkillScreenCurves*Together.dds; art: what the game draws behind the socket the jewel is in
+// (AlternateTreeArt.KeystoneFrameArt, a PassiveSkillTreeMasteryArt row: images.py, img/mastery)
 const LINK_ALT = { 7: {
+  art: 'AlternateTreeAbyss',
   normal: [['#419236', 11], ['#040e04', 7], ['#0d200a', 3]],
   can: [['#bacd70', 13], ['#94d259', 9], ['#386600', 7], ['#88d242', 5], ['#a0d271', 3]],
   active: [['rgba(124,168,3,.37)', 34], ['rgba(124,168,3,.73)', 20], ['#d4ff6b', 11], ['#4c4e12', 7], ['#b1c367', 5], ['#ecfea8', 3], ['#ffffe9', 1]],
@@ -767,7 +769,8 @@ const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keys
 const HOLE = { passive: .66, notable: .592, keystone: .587, asc_passive: .651, asc_notable: .584 };
 // a passive that is not allocated has a duller icon in the game: less colour (sat) and fainter (a)
 // note: no table says them; the two that leave the same passives as bright (0.75 of what they were here) and as
-// saturated (0.47) as on a screenshot of the game, measured on it and on this page
+// saturated (0.47) as on a screenshot of the game, measured on it and on this page (Path of Building 2 halves
+// their brightness, much the same, and leaves their colour)
 const DULL = { sat: .3, a: .52, of: new Map() };
 function dull(im) {   // the picture with less colour, made once
   if (!DULL.of.has(im)) { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.filter = `saturate(${DULL.sat})`; g.drawImage(im, 0, 0); DULL.of.set(im, c); }
@@ -901,6 +904,18 @@ function drawTree() {
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
   }
   ctx.globalAlpha = 1;
+  // behind the socket of a timeless jewel whose tree has art for it, that art (Undying Hate: the runes of the Abyss)
+  // note: its size (2.75 world units a pixel of the half-size picture) and how bright (1.7 times the picture: once
+  // more, added at 0.7) are measured on a screenshot of the game; no table says them
+  for (const j of js) {
+    const name = j.R && LINK_ALT[statsOf(j.it).local_unique_jewel_alternate_tree_version]?.art, pic = name && art('mastery/' + name);
+    if (!pic) continue;
+    const [x, y] = WP[j.id], w = pic.width * 2.75, h = pic.height * 2.75;
+    ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .7;
+    ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
   // central ascendancy disc
   const disc = ctx.createRadialGradient(0, 0, CENTRE_R * .2, 0, 0, CENTRE_R);
   disc.addColorStop(0, '#221d16'); disc.addColorStop(1, '#0b0a08');
@@ -977,8 +992,8 @@ const redraw = () => raf ||= requestAnimationFrame(() => { raf = 0; drawTree(); 
 // A socketed jewel's radius (or its ring), round the socket or round the keystone it names (From Nothing): the game's
 // own pictures of it (images.py: img/tree/ring*.webp), as wide as twice the radius; a timeless jewel has its
 // conqueror's. Its two circles turn against each other; the circle inside a ring-shaped radius is another picture,
-// whose line is 0.94 of the way out (measured on it). g: where to draw; (x, y): its centre there; k: pixels a tree
-// unit; turn: how far the circles have turned
+// whose line is 0.94 of the way out (measured on it; Path of Building 2 draws its own 1.06 times as wide). g: where
+// to draw; (x, y): its centre there; k: pixels a tree unit; turn: how far the circles have turned
 function drawRings(g, j, x, y, k, turn) {
   const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r], ri = inner / .94;
   for (const [p, rr, dir] of [[`ring${v}_1`, outer, -1], [`ring${v}_2`, outer, 1], ['ring_inv', ri, -1], ['ring_inv', ri, 1]]) {
@@ -988,8 +1003,8 @@ function drawRings(g, j, x, y, k, turn) {
   }
 }
 // the rings of the tree turn all the time: they have a canvas of their own over it, so the tree is not drawn again
-// note: how fast they turn is by eye; no table says it
-const RING_TURN = .1, rcv = $('treeRings'), rctx = rcv.getContext('2d');   // radians a second
+// note: no table says how fast they turn: as fast as in Path of Building 2 (0.7 * 0.00003 radians a millisecond)
+const RING_TURN = .021, rcv = $('treeRings'), rctx = rcv.getContext('2d');   // radians a second
 let rings = [], ringRaf = 0;   // what drawTree last had in view: [jewel, x, y, pixels a tree unit]
 function turnRings(now) {
   if (rcv.width !== cv.width || rcv.height !== cv.height) { rcv.width = cv.width; rcv.height = cv.height; }
