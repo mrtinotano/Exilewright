@@ -459,7 +459,7 @@ export function initScene(el, api) {
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
       const NE = c.noEvade, sure = NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
-      if (acc > 0 && d.stat.evasion > 0 && !sure && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
+      if (acc > 0 && d.stat.evasion > 0 && !sure && !(D?.sum?.cannot_miss_against_full_life_enemies && d.life >= d.max) && Math.random() * 100 >= playerHitChance(acc, evNow)) {   /* Heightened Accuracy II: never on full life */ fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
@@ -916,6 +916,8 @@ export function initScene(el, api) {
     } else if (a === 'chill' && d.st.freeze > 0) return;
     if (AIL_DOT[a]) {   // a real value replaces a simulated one; otherwise the strongest stays
       const v = ailDps(d, a, raw, S), w = d.st[a] > 0 && d.burn[a];
+      const CM = !S.src && me.st[a] > 0 && S.dmg?.finals?.['support_ailment_effect_+%_final_while_afflicted_by_relevant_ailment'];   // Commiserate: more magnitude of an ailment you have yourself, which it removes from you
+      if (CM) { v.dps *= 1 + CM / 100; me.st[a] = 0; delete me.burn[a]; delete me.mag[a]; }
       if (o?.eff) v.dps *= o.eff;
       if (critHit === S) v.dps *= S.dmg.ail?.critAil?.[a] || 1;   // inflicted by a critical hit (afflict)
       // Pathfinder's Overwhelming Toxicity, the tree's "+1 of your Poisons at the same time": two of your poisons at once,
@@ -937,6 +939,7 @@ export function initScene(el, api) {
     // note: at once, its delay is not in the data
     const WF = a === 'ignite' && S.dmg?.sum?.support_ignite_proliferation_radius;
     if (WF) { const seen = o?.spread || new Set([d]); for (const e of dummies) if (!e.dead && !seen.has(e) && dist(e.pos, d.pos) <= WF / 10) { seen.add(e); inflict(e, 'ignite', S, k, raw, { ...o, spread: seen }); } }
+    const FX = a === 'freeze' && S.dmg?.sum?.chilling_ice_create_chilled_ground_on_freeze_base_duration_ms; if (FX) ground('chilled', { x: d.pos.x, z: d.pos.z }, S.dmg.sum.chilling_ice_freezing_area_base_radius / 10, FX / 1000, S);   // Frost Nexus
     const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
     const US = a === 'armour' && S.dmg?.sum?.['support_demolisher_physical_damage_taken_+%_on_fully_armour_breaking_up_to_20%']; if (US) d.smelt = Math.min(20, (d.smelt || 0) + US);   // Uruk's Smelting: increased physical damage taken, for good, up to 20%
     if (!S.src && sheet().immIntim && ['pin', 'stun', 'freeze', 'electrocute'].includes(a)) d.intim = Math.max(d.intim || 0, time + sheet().immIntim);   // the tree's: Intimidated when you Immobilise them
@@ -1260,7 +1263,9 @@ export function initScene(el, api) {
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
   // checked before the hit's damage, the threshold raised by its +%. A cull recovers Life Drain's and Soul Drain's % of your
   // maximum life and mana
-  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
+  const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (time < me.cullUp?.until ? me.cullUp.inc : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
+  // Culling Strike II: its increased threshold for 20 seconds after culling with it (the seconds: its text)
+  const cullUp = S => { const n = S.dmg?.sum?.['support_culling_strike_threshold_+%_on_cull_for_seconds_from_code']; if (n) me.cullUp = { inc: n, until: time + 20 }; };
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
     return !d.dead && (S.P.culls || !S.src && (S.P.attack && sheet().cullBow || sheet().cullMark && d.mark || sheet().cullBeast && d.mon?.category === 'Beast' && meIs.CompanionInPresence()) || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
@@ -1272,7 +1277,7 @@ export function initScene(el, api) {
   const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
-    me.culledAt = time; fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; cullUp(S); fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
@@ -1281,7 +1286,7 @@ export function initScene(el, api) {
     // Thrill of the Kill: culling a shocked enemy, its buff: its share of attack damage as extra lightning and its shock chance
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
-    me.culledAt = time; fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
+    me.culledAt = time; cullUp(S); fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
     const CF = X[`skill_grant_X_frenzy_charges_against_${d.stat.rarity === 'unique' ? 'unique' : d.stat.rarity === 'rare' ? 'rare' : 'normal_and_magic'}_monsters`] || 0;   // Cull The Weak: frenzy charges by the culled one's rarity
     for (let k = 0; k < CF; k++) chargeBy('frenzy', S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
@@ -5331,7 +5336,7 @@ export function initScene(el, api) {
   function ailed(d, raw, dealt, stunOnly = false) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
-    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100), more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
+    const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100 : 1),   /* Steadfast II: while channelling it */ more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
     if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)
