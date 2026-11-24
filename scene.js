@@ -5279,7 +5279,7 @@ export function initScene(el, api) {
     if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee || sheet().thornsAny) retaliate(d); if (a.melee) arctic(d); windDance(); ailed(d, raw, dealt);
-    for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken');
+    for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken'), (me.hitEl ||= {})[el] = time;   // and the types you were Hit with Recently (Adaptive Skin)
   }
   // What their hits do to you: GameConstants' ailment rules, from the hit's damage before your defences, against your
   // ailment, freeze and stun thresholds (calc.js ailmentDefence()), with the player's own durations (GameConstants <name>Player),
@@ -5349,18 +5349,18 @@ export function initScene(el, api) {
         * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1);   // Dazed: more stun buildup (keywords.json Daze)
       me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
-      const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0));   // per time you were Hit Recently, up to 100%
+      const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0)) + (I.perStun || 0) * me.stuns.length;   // per time you were Hit Recently, up to 100%; per time Stunned Recently
         return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
       const stunChance = D.stun ? Math.min(100, hard / (D.stun * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
-      if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
+      if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && !(sheet().noStunRecent && time - (me.stunAt ?? -99) <= RECENT) && !(sheet().noStunCalm && me.struck.length < 2) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
         if (sheet().stunBlind) d.st.blind = Math.max(d.st.blind || 0, BLIND.time);   // the tree's: Blind the enemy that stuns you
         me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
       }
     }
-    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed')) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical') * (D.eff.bleed ?? 1)) });
+    if (x('physical') && roll(((A['local_chance_to_bleed_on_hit_%'] || 0) + (A['main_hand_local_chance_to_bleed_on_hit_%'] || 0)) * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvBleed || 0)) && can('bleed') && !(sheet().noBleedDeflected && me.dflAt === time)) suffer('bleed', DUR.bleed * D.dur.bleed, { dot: dot('bleed', sheet().bleedSelfFire ? 'fire' : 'physical', x('physical') * (D.eff.bleed ?? 1)) });
     // maim on hit (the skill's or its main hand weapon's chance, with its increased chance)
     const maim = ((A['maim_on_hit_%'] || 0) + (A['main_hand_local_maim_on_hit_%'] || 0)) * (1 + (A['maim_chance_+%'] || 0) / 100);
-    if (roll(maim) && can('maim')) suffer('maim', MAIM.time);
+    if (roll(maim) && can('maim') && !(sheet().noMaimDeflected && me.dflAt === time)) suffer('maim', MAIM.time);
     const pois = (A['base_chance_to_poison_on_hit_%'] || 0) + (A[d.atk.attack ? 'chance_to_poison_on_hit_with_attacks_%' : 'spells_chance_to_poison_on_hit_%'] || 0);
     if ((x('physical') || x('chaos')) && roll(pois * (sheet().uDef?.recvAil || 1) + (sheet().uDef?.recvPoison || 0)) && can('poison')) suffer('poison', DUR.poison * D.dur.poison, { dot: dot('poison', 'chaos', x('physical') + x('chaos')) });
   }
@@ -5497,6 +5497,7 @@ export function initScene(el, api) {
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
     const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
     if ((RA || RE) && c.armourEl) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: c.deflect && { ...c.deflect, eva: c.deflect.eva + RE } };
+    if (c.adaptRes && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e !== 'chaos' && time - (me.hitEl?.[e] ?? -99) <= RECENT ? { ...r, max: r.max + c.adaptRes, capped: Math.min(r.max + c.adaptRes, r.value) } : r])) };   // Adaptive Skin
     const SR = shifted()?.maxRes; if (SR && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, SR[e] ? { ...r, max: r.max + SR[e], capped: Math.min(r.max + SR[e], r.value) } : r])) };   // the tree's while Shapeshifted
     if (AE || MR || BR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: (MR || BR) && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, value: r.value + BR, capped: Math.min(r.max + MR, r.value + BR) }])) : c.res };
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
@@ -5505,6 +5506,7 @@ export function initScene(el, api) {
     if (c.armourPerRage) c = { ...c, armour: c.armour * (1 + c.armourPerRage * rageNow() / 100 / (c.armourInc || 1)) };   // Horns of Bynden: increased armour per Rage
     // the tree's: every Rage grants increased evasion; increased armour and evasion per totem in your Presence
     const ER = (c.evasionPerRage || 0) * rageNow(), DT = (c.defPerTotem || 0) * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r).length;
+    if (c.armourFrozen && me.st.freeze > 0) c = { ...c, armour: c.armour + c.armourFrozen * (c.armourInc || 1) };   // Flesh Withstands: flat Armour while Frozen, with your increases
     if (DW.length || ER || DT) c = { ...c, armour: c.armour * (1 + (inc('a') + DT) / 100 / (c.armourInc || 1)), evasion: (c.evasion || 0) * (1 + (inc('e') + ER + DT) / 100 / (c.evasionInc || 1)) };
     // Unabating, Untouchable: increased armour / evasion while you use it, per 250 ms of its attack time
     const UA = time < me.use?.until ? me.use.S.dmg?.sum || {} : {}, UAa = (UA['armour_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0), UAe = (UA['evasion_+%_while_performing_action_per_250_ms_attack_time'] || 0) * (me.use?.k || 0);
