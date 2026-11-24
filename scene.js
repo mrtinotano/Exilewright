@@ -73,6 +73,9 @@ const SOUL = { speed: 1, max: 50, every: .5, wait: 4 }, FEAR = { cull: 10, time:
 // increased Attack Speed per different Grenade skill used Recently, Grenade skills ignore their cooldown and fire one more
 // projectile, Grenades explode on any impact. Redemption's text: all Rhythm removed at 10 for 10 seconds of Fervour
 const FINALITY = 100, RHYTHM = { cd: 10, max: 10 }, FERVOUR = { speed: 15, time: 10 };
+// note: KeywordPopups Spectral Fire: the target takes no damage from Ignite, which feeds it instead; when it expires or the target dies
+// it explodes, dealing all it absorbed to the enemies within 1.8 m, the target too; damage modifiers do not apply to the explosion
+const SPECTRAL = 1.8;
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
@@ -333,7 +336,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -677,7 +680,9 @@ export function initScene(el, api) {
     if (!S.src && crit && sheet().tailwind?.crit && time - (me.tailAt ?? -9) >= 1) { me.tailAt = time; me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1); }   // The Black Insignia: Tailwind on Critical Hit, once a second
     if (UE) { if (crit && S.P.spell) weaken(d, UE.spellWeak); if (crit && r(UE.volCrit)) gainVol(1); if (S.P.melee && S.P.attack && r(UE.thornsMelee)) retaliate(d); }
     if (S.src === 'minionHit' && r(sheet().minionWither || 0)) withers(d, 4);   // the tree's: your minions' chance to Wither (for the 4 s its text has elsewhere)
-    if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (S.P.attack && r(UH.daze)) daze(d, DAZE.time, S); if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
+    if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (r(D?.wHit?.daze)) daze(d, DAZE.time, S);
+      // Fairgraves' Curse: an attack's hit leaves Spectral Fire for its time (note: a new one keeps what it had absorbed)
+      if (S.P.attack && !S.src && UH.spectral && !d.dead) { if (!d.spectral) fx.text(over(d), t('Spectral Fire'), css('fire'), .32); d.spectral = { until: time + UH.spectral / 1000, n: d.spectral?.n || 0, S }; } if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     // Titan's Crushing Impacts: your hits are Crushing Blows, a Heavy Stun on an enemy Primed for Stun (keywords.json CrushingBlow)
     if (own && D?.sum?.crushing_blow && !/minion/.test(S.src || '') && !SHOCKWAVE[S.name] && (d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
@@ -1160,10 +1165,11 @@ export function initScene(el, api) {
     // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction), Herald of Blood's explosion's
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED), as a moving enemy's is (tickDummy)
-    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (sheet().uHit?.aggr || 0) : 0) + (S.aggX || 0)
+    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (S.dmg?.wHit?.aggr || 0) : 0) + (S.aggX || 0)
       + (S.P.attack && sheet().aggOld && time - (d.bleedAt ?? time) > sheet().aggOld ? 100 : 0)   /* the tree's: bleeding older than its seconds (since it began) */
       + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (d.st.pin > 0 && SU.aggravate_bleeding_when_inflicted_vs_pinned_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
-    if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }
+    if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32);
+      if (S.dmg?.wHit?.aggIgn && d.st.ignite > 0 && d.burn.ignite && !d.burn.ignite.agg) { d.burn.ignite.agg = true; fx.text(over(d), t('Aggravated Ignite'), css('fire'), .32); } }   // Saitha's Spear: the Ignites on the target too
     // Tacati's Ire: its poison deals its damage faster per Rage you have (as much damage over a shorter time)
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
     // Escalating Toxins: Poison lasts longer per Poison you inflicted Recently, with its other increased duration
@@ -1310,6 +1316,7 @@ export function initScene(el, api) {
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
   // others take its own small hit
   // a share of a monster's life dealt as one element over an area, as it is (no bonus of the scene's or the build's)
+  const spectralBlow = d => { const sp = d.spectral; d.spectral = null; if (sp.n > 0) { pop(d.pos, SPECTRAL, 'fire'); lifeBlast(d.pos, SPECTRAL, { ...sp.S, label: t('Spectral Fire'), mult: 1, gm: 1, dmg: { ...sp.S.dmg, attack: false, crit: 0 } }, 'fire', sp.n); } };   // (no hit roll, no critical hit: not the attack's)
   const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
@@ -1443,6 +1450,7 @@ export function initScene(el, api) {
   }
   const onsl = () => time < me.wildUntil || time < me.onsUntil || !!sheet().onsAlways || me.cu.some(u => u?.c.ons);   // Onslaught (Savage Fury's frenzy, the tree's on kill)
   function kill(d, S) {
+    if (d.spectral) spectralBlow(d);
     const HS = d.curse && sheet().uEv?.hexSpread; if (HS) for (const e of inside(d.pos, 3).filter(e => e !== d && !e.curse).slice(0, HS)) e.curse = { ...d.curse };   // Veilpiercer: the curse spreads to that many enemies within its text's 3 m
     const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
     if (S && !S.src && S.P?.attack && Math.random() * 100 < (sheet().axeOns || 0)) me.onsUntil = time + ONSLAUGHT.time;   // with an axe
@@ -2363,6 +2371,7 @@ export function initScene(el, api) {
       n *= (o.taken || 1) * (1 + (FN['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (FN['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
       if (this.es > 0) { const k = Math.min(this.es, n); this.es -= k; n -= k; }
       const RC = S.dmg?.minion?.recoup; if (RC && n > 0) e.rc.push({ left: n * RC / 100, rate: n * RC / 800 });
+      if (sheet().flaskUndying && lifeFlaskOn()) n = Math.min(n, this.life - 1);   // Umbilicus Immortalis: it cannot die while your life flask is in effect
       fx.emit(4, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .2, v: 1, life: .3, size: .1, c: 0xc03030 }); if (this.life > 0 && (this.life -= n) <= 0) {
         // Last Gasp, Tecrod's Revenge: a persistent one fights on for its time at 0 life, then dies
         const LG = e.keep && SU.support_last_gasp_duration_ms; if (LG) { this.life = 0; e.lg = SU['support_last_gasp_attack_and_cast_speed_+%_while_undying'] || 0; later(LG / 1000, () => { e.dead = e.slain = true; }); } else e.dead = e.slain = true; } } }] });
@@ -5093,13 +5102,16 @@ export function initScene(el, api) {
       if (d.mark.bomb) markOff(d); else d.mark = null; }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if (d.pustule) pustule(d, dt);
+    if (d.spectral && time >= d.spectral.until) spectralBlow(d);
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const VD = 1 + (sheet().volDot || 0) * (me.vol || 0) / 100;   // increased chaos damage over time per Volatility on you. note: as more here
       const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d) * (v.el === 'chaos' ? VD : 1); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       // bleeding deals its extra damage while the enemy moves, as aggravated (keywords.json Bleeding): moved since the last tick
       const mov = d.lastAt && dist(d.pos, d.lastAt) > .05; d.lastAt = { x: d.pos.x, z: d.pos.z };
-      for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) add(a === 'bleed' && mov ? { ...d.burn[a], agg: true } : d.burn[a], a !== 'ignite');
+      for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) {
+        if (a === 'ignite' && d.spectral) d.spectral.n += (d.burn[a].raw ?? d.burn[a].dps) * (d.burn[a].agg ? AGGRAVATED : 1) * .5;   // Spectral Fire: fed instead (before the enemy's resistance: the explosion's targets')
+        else add(a === 'bleed' && mov ? { ...d.burn[a], agg: true } : d.burn[a], a !== 'ignite'); }
       if (d.burn2?.until > time) add(d.burn2.v, true); for (const p of d.burnX || []) if (p.until > time) add(p.v, true);   // a second poison (Overwhelming Toxicity)
       if (st.shock > 0 && st.ignite > 0 && d.stormfire && d.burn.ignite?.raw) add({ dps: defence(d, 'lightning', d.burn.ignite.raw * d.stormfire / 100, false), el: 'lightning' });   // Stormfire: its share of the ignite as lightning too
       if (st.poison > 0 && d.burn.poison) plagueStore(d.burn.poison.dps * shocked(d) * .5);
@@ -5628,6 +5640,10 @@ export function initScene(el, api) {
   const flasks = () => sheet().flasks || [];
   const souls = () => { const s = me.souls; return s ? Math.max(0, s.n - Math.max(0, Math.floor((time - s.at - SOUL.wait) / SOUL.every))) : 0; };
   const eatSoul = () => { me.souls = { n: Math.min(SOUL.max, souls() + 1), at: time }; hudT = 0; };
+  // a life flask's recovery on your allies too (Nurturing Guardian: your Companions; Umbilicus Immortalis: your minions, which
+  // cannot die while one is in effect: lifeFlaskOn), one that applies constantly as well
+  const flaskAllies = got => { const c = sheet(); if (c.flaskCompanions || c.flaskMinions) for (const o of objs) { const s = (c.flaskMinions ? o.minion : o.companion) && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got); } };
+  const lifeFlaskOn = () => me.drink.some(D => D?.k === 'life') || flasks().some(f => f?.always && f.k === 'life');
   const flaskOn = k => flasks().reduce((t, f, n) => t + (f && me.drink[n] ? +f[k] || 0 : 0), 0);   // what the flasks in effect give (a unique's own)
   const flaskLeft = n => { const f = flasks()[n]; if (!f) return 0; return me.fl[n] = Math.min(me.fl[n] ?? f.max, f.max); };
   const flaskName = n => t(n ? 'Mana Flask' : 'Life Flask');
@@ -6091,13 +6107,13 @@ export function initScene(el, api) {
       flaskHeal(D, got); const F = flasks()[n] || {};
       const AB = D.k === 'life' && onS("Alchemist's Boon")?.dmg.stats['recovery_from_flasks_applies_to_allies_in_presence_%'];   // Alchemist's Boon: its share to your minions in your Presence
       if (AB) for (const o of objs) { const s = o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got * AB / 100); }
-      if (D.k === 'life' && c.flaskCompanions) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got); }   // Nurturing Guardian: your Companions too
+      if (D.k === 'life') flaskAllies(got);
       if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
       if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
       if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m
       if (D.s <= 0 || D.k === 'life' && me.life >= L && !sheet().elixir && !F.keepFull) { me.drink[n] = null; if (F.wardGuard && me.ward > 0) guardFor(me.ward * F.wardGuard / 100, F.wardGuardMs / 1000); if (F.endChaos) { const x = me.mana * F.endChaos / 100; hurt(x, x, 'chaos'); } }   // when its effect ends (a life flask's when your life is full, unless Enduring Elixirs): Olroth's Guard of current Runic Ward, Melting Maelstrom's chaos damage to you
     });
-    for (const f of flasks()) if (f?.always) flaskHeal(f, f.amount / f.time * dt);   // one that applies its effect constantly recovers all the time
+    for (const f of flasks()) if (f?.always) { flaskHeal(f, f.amount / f.time * dt); if (f.k === 'life') flaskAllies(f.amount / f.time * dt); }   // one that applies its effect constantly recovers all the time
     me.cu.forEach((u, n) => { if (u && (u.s -= dt) <= 0) { me.cu[n] = null; if (u.c.guard) me.guard = 0; } });
     const R = c.rage, top = rageMax();
     if (!top) { me.rage = 0; return; }

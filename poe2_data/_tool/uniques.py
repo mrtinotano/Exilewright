@@ -69,14 +69,16 @@ for page, name, _ in entries:
         for li in re.findall(r'<li>(.*?)</li>', row.get('Stats', ''), re.S):
             nums = [int(n) for n in re.findall(r'-?\d+', text(re.search(r'<span class="badge bg-primary">(.*?)</span>\s*(?:<span class="badge bg-secondary"|$)', li, re.S).group(1)))]
             want[norm(text(li.split('<span')[0]))] = (nums[0], nums[-1])
-        cands = [m for m in by_family.get(text(row.get('Family', '')), []) if mod_stats(m) == want]
+        fam = text(row.get('Family', ''))   # a modifier of two families is listed as "Strength, Intelligence"
+        family = by_family.get(fam) or [m for f in fam.split(', ') for m in by_family.get(f, [])]
+        cands = [m for m in family if mod_stats(m) == want]
         if not want:
             # "Grants Skill: Level 17 Icestorm" (its only stat is not shown): the modifier of that family that grants a skill
             # the page names and is not on this form of the item yet, its Fists of Stone one on that form (uniques.json stonefist)
             skills = re.findall(r'Grants Skill:\s*Level [^<]*<a[^>]*>([^<]+)</a>', doc)
             fist = next((i for i, f in enumerate(found) if f['id'].startswith('HandWraps')), None)
             have = {f['id'] for f in found[fist or 0:]}
-            pool = [m for m in by_family.get(text(row.get('Family', '')), []) if granted.get(m['Id']) in skills and m['Id'] not in have]
+            pool = [m for m in family if granted.get(m['Id']) in skills and m['Id'] not in have]
             pool = sorted([m for m in pool if m['Id'].startswith('HandWraps') == (fist is not None)] or pool, key=lambda m: skills.index(granted[m['Id']]))
             cands = pool[:1] or [m for m in cands if m['Id'] not in granted]
         if len(cands) >= 1 and len({json.dumps(mod_stats(c)) for c in cands}) == 1:  # same stats/values: any of them is the same mod

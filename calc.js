@@ -141,9 +141,10 @@ const first = (...xs) => xs.find(x => x != null) ?? null;
 // Strength requirement" is strength_skill_gem_level_+: every word before _skill_gem_level_+ a tag of the gem) and what
 // its quality gives (skills.json quality, and alt_quality for who has "Gem Quality grants Socketed Skills an
 // additional effect": per 1000 quality, whole numbers only). _level and _quality are the ones used.
-// note: the levels corrupted gems get are not counted
+// A gem marked corrupted counts as "corrupted" for them (Atziri's Rule: corrupted_spell_skill_gem_level_+).
+// note: the level a corruption itself gave is the gem's own, as you set it
 export function gemStats(g, sum = {}) {
-  const d = SK.skills[g.name] || {}, tags = GEM[g.name]?.tags || d.tags || [], end = '_skill_gem_level_+';
+  const d = SK.skills[g.name] || {}, tags = [...GEM[g.name]?.tags || d.tags || [], ...g.corrupted ? ['corrupted'] : []], end = '_skill_gem_level_+';
   // (a support's "+1 to Level of Supported Fire Skills": supported_fire_skill_gem_level_+; supported_active_: any)
   const fits = w => w === 'all' || w === 'supported' || w === 'active' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
   let level = g.level;
@@ -659,7 +660,7 @@ export function recovery(c, sum) {
     groundTaken: { fire: v(sum, 'enemies_in_chilled_ground_take_+%_fire_damage'), cold: v(sum, 'enemies_in_ignited_ground_take_+%_cold_damage') },
     cullRecent: v(sum, 'culling_strike_threshold_+%_if_culled_recently'), cullImmob: v(sum, 'culling_strike_threshold_+%_vs_immobilised_enemies'), cullRare: v(sum, 'culling_strike_threshold_+%_vs_rare_or_unique_monsters'), brokeShatter: !!sum.shatter_on_kill_if_fully_broken_armour, freezeFull: !!sum.local_always_freeze_on_full_life,   // Deathblow, Sculpted Suffering, Winter's Bite
     chillAll: !!sum.base_all_damage_taken_can_chill, chillReversed: !!sum.chill_effect_is_reversed, sprintNoSlow: !!sum.slows_have_no_potency_on_you_while_sprinting, spellNoPierce: !!sum.projectiles_from_spells_cannot_pierce, energyFullMana: v(sum, 'energy_generated_+%_on_full_mana'), energyCrit: v(sum, 'energy_generated_+%_if_crit_recently'), flaskCharm: v(sum, 'flask_life_and_mana_recovery_+%_while_using_charm'),
-    endOnStunRare: !!sum.gain_endurance_charge_on_heavy_stunning_rare_or_unique_enemy, flaskCompanions: !!sum.life_recovery_from_flasks_applies_to_companions, surgeLife: !!sum.arcane_surge_mana_regen_modifier_on_you_applies_to_life_regen_instead,   // Sierran Inheritance, Ab Aeterno, Snakepit, Idle Hands
+    endOnStunRare: !!sum.gain_endurance_charge_on_heavy_stunning_rare_or_unique_enemy, flaskCompanions: !!sum.life_recovery_from_flasks_applies_to_companions, flaskMinions: !!sum.your_life_flasks_also_apply_to_your_minions, flaskUndying: !!sum.minions_cannot_die_while_affected_by_life_flask, surgeLife: !!sum.arcane_surge_mana_regen_modifier_on_you_applies_to_life_regen_instead,   // Sierran Inheritance, Ab Aeterno, Snakepit, Idle Hands
     critPierce: v(sum, 'projectiles_crit_chance_+%_for_each_time_they_have_pierced'), spellCritPer: v(sum, 'spell_crit_bonus_+%_per_spell_crit_recently'), noImmob: !!sum.cannot_immobilise_enemies, lioneye: v(sum, 'unique_bow_attacks_repeat_x_times_when_no_enemies_in_your_presence'), thornsLeech: v(sum, 'base_life_leech_from_all_thorns_damage_permyriad'),   // Drillneck, Seed of Cataclysm, The Prisoner's Manacles, Lioneye's Glare, Belly of the Beast
     auspex: !!sum.enemies_in_your_presence_gain_a_stack_of_gruelling_madness_every_second, gmMinion: v(sum, 'minion_chance_to_apply_gruelling_madness_on_hit_%'), gmHit: v(sum, 'local_inflict_x_stacks_of_gruelling_madness_on_hit'), gmPower: !!sum.monsters_in_your_presence_have_additional_power_equal_to_their_gruelling_madness_stacks,   // Gruelling Madness: The Auspex, The Raven's Flock, Sadist's Mercy
     ordained: !!sum.manifest_a_fragment_of_divinity_in_your_presence_every_4_seconds,   // The Ordained: a Fragment of Divinity every 4 s
@@ -746,7 +747,7 @@ export function recovery(c, sum) {
     // uniques' on hit: Intimidate, Withered (spells), fire Exposure, Daze (attacks), Blind on Chilled enemies, Aggravated
     // Bleeding (attacks); the elemental resistances of enemies you Ignite or Chill, the fire resistance of those in your Presence
     uHit: { intim: v(sum, 'chance_to_intimidate_on_hit_%'), wither: v(sum, 'spells_have_x%_chance_inflict_withered_on_hit'), fireExpo: v(sum, 'base_inflict_fire_exposure_on_hit_%_chance'),
-      daze: v(sum, 'local_weapon_daze_chance_%'), blindChilled: v(sum, 'blind_chilled_enemies_on_hit_%'), aggr: v(sum, 'local_aggravate_bleeding_on_hit_chance_%') },
+      blindChilled: v(sum, 'blind_chilled_enemies_on_hit_%'), spectral: v(sum, 'ghostflame_on_hit_duration_ms') },   // Fairgraves' Curse: Spectral Fire from attack hits, for its time
     igChillRes: v(sum, 'ignites_and_chill_apply_elemental_resistance_+'), presFireRes: v(sum, 'enemies_in_presence_have_fire_resistance_%'),
     // uniques the scene plays: physical damage taken from the mana you pay (Scold's Bridle); Dodge Roll distance (metres)
     // without / after one recently, its speed and Guard from missing energy shield (Lioneye's Glare, Decree of Flight);
@@ -1297,7 +1298,7 @@ export function skill(g, b, treeGear) {
     const moreCost = (1 + (finals['support_inspiration_cost_+%_final'] || 0) / 100) * (wild ? .5 : 1);   // Wildsurge Incantation: 50% less   // Efficiency: "more Cost", every resource
     // Lifetap: part of the mana cost converted to a life cost (PoB2 CalcOffence: that part of the cost before modifiers,
     // rounded, with the generic and the life cost modifiers; the mana cost keeps the rest, rounded down)
-    const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%') + (own.includes('spell') ? v(sum, 'spells_cost_life_instead_of_mana_%') : 0)) / 100;   // Blood Magic: all of it
+    const toLife = sum.keystone_blood_magic ? 1 : Math.min(100, v(sum, 'base_skill_cost_life_instead_of_mana_%') + (own.includes('spell') ? v(sum, 'spells_cost_life_instead_of_mana_%') : 0) + (g.corrupted ? v(sum, 'skills_from_corrupted_gems_cost_life_instead_of_%_mana_cost') : 0)) / 100;   // Blood Magic: all of it; Atziri's Splendour: of the skills from corrupted gems
     out.manaEff = eff;   // its mana cost efficiency (Uhtred's Rite adds to it in the scene)
     out.cost = perSec ? Math.max(0, raw * inc1 * more1 * moreCost / eff) : Math.max(0, Math.round(step(step(step(Math.floor(raw), inc1), more1), moreCost) / eff));
     if (toLife) {
@@ -1599,7 +1600,7 @@ export function skill(g, b, treeGear) {
   if (attack && w?.noPoisonLimit) out.ail.noPoisonLimit = true;   // any number of its Poisons at once (Splinter of Lorrata)
   if (attack && w?.alwaysHit) out.ail.alwaysHit = true;   // a weapon that Always Hits (Shyaba)
   if (attack && w?.stunX > 1) out.ail.stun *= w.stunX;   // a weapon that Causes Double Stun Buildup (Brynhand's Mark)
-  if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; }   // the weapon's own chances
+  if (attack && w?.onHit) { const H = w.onHit; out.ail.bleed += H.bleed; out.ail.maim += H.maim; out.ail.maimCrit = H.maimCrit; out.wHit = H; }   // the weapon's own chances (wHit: the scene's Daze and Aggravate)
   // "Attacks ... Maim on Hit": none for other skills; a skill whose own description says its hits Maim (Spearfield,
   // Artillery Ballista: "[Maim|Maiming]"; not one that Maims with its final hit only, Rapid Assault, nor a minion's)
   if (!attack) out.ail.maim = out.ail.maimPoisoned = out.ail.maimBleeding = 0;
@@ -1721,6 +1722,8 @@ export function skill(g, b, treeGear) {
   const gsum = mid && (flags.has('minions_are_gigantic') || flags.has('companions_are_gigantic')) ? { ...msum, minions_are_gigantic: 1 } : msum;   // Hulking Minions, Tangmazu's Thurible
   const mst = host ? skill(host, b, treeGear).stats : st, djPart = (key, si) => attacksOf(DJ).some(a => a.key === key) && monSkill(key).sets[si]?.label !== 'Hidden' ? minionOf(mst, gsum, fin, mid, attributes(sum, b?.asc), wAdd, key, si) : null;
   const mn = out.minion = DJ ? djPart(ckey, 0) : mid ? minionOf(st, gsum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
+  // Carrion Call: your minions' resistances are your own
+  if (mn?.res && sum.minion_resistances_equal_yours) { const R = character(b, sum).res; for (const e of ['fire', 'cold', 'lightning', 'chaos']) mn.res[e] = R[e].capped; }
   if (DJ) {
     // the skill's seconds to cast, its cooldown and uses (the Command's recovery rate), the hits of each of its parts, and
     // the djinn's own strike when you use a damaging skill (its Attack: Ruzhan's Zealotry)
@@ -2009,6 +2012,8 @@ function curseOf(st, sum, finals = {}) {
 // ...and Cluster Grenade's cooldown in the game's window: 10.99 s, 2 uses (quality 16%, Payload, 45% from the tree, +1 use)
 { const c = skill({ name: 'Cluster Grenade', level: 17, quality: 16, supports: ['Payload'] }, { gems: [], items: {} }, { 'grenade_skill_cooldown_speed_+%': 45, 'grenade_skill_cooldown_count_+': 1 });
   console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2 && c.cdInc === -9, 'cooldown and uses', c); }
+// a gem marked corrupted: the levels of corrupted gems (Atziri's Rule), not another's
+{ const s = { 'corrupted_spell_skill_gem_level_+': 3 }, L = c => gemStats({ name: 'Fireball', level: 10, corrupted: c }, s)._level; console.assert(L(true) === 13 && L(false) === 10, 'corrupted gems', L(true), L(false)); }
 console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
 // self-check: mana cost. Orb of Storms 20 costs 129 (Efficiency I's 30% less: 91, up; Lifetap: 129 life instead); Shock Conduction II's x1.2 makes it 154 (154.8 down), 10% reduced
 // 139 (138.6 up), 25% cost efficiency 111; Runic Tempering costs per second, not rounded

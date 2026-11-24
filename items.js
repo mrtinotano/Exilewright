@@ -175,8 +175,10 @@ function local(item) {
     r.alwaysHit = !!s.local_always_hit; r.stunX = s.local_double_hit_damage_stun_build_up ? 2 : 1; r.forkCrit = !!s.local_weapon_roll_crits_twice; r.noThrow = !!s.local_cannot_be_thrown; r.noPoisonLimit = !!s.local_hits_with_this_weapon_ignore_poison_limit;
     if (w.reload_ms) r.reload = w.reload_ms / 1000 / (1 + (s['local_reload_speed_+%'] || 0) / 100);   // crossbow, seconds
     r.leech = { life: s.local_life_leech_from_physical_damage_permyriad || 0, mana: s.local_mana_leech_from_physical_damage_permyriad || 0 };   // of its hits' physical damage
-    // its own chances on hit: Maim (always on a critical hit) and Bleeding ("Causes Bleeding on Hit": always)
-    r.onHit = { maim: s['local_maim_on_hit_%'] || 0, maimCrit: !!s.local_always_maim_on_crit, bleed: s.local_bleed_on_hit ? 100 : s['local_chance_to_bleed_on_hit_%'] || 0 };
+    // its own chances on hit: Maim (always on a critical hit), Bleeding ("Causes Bleeding on Hit": always), Daze (Nazir's
+    // Judgement), to Aggravate Bleeding, which with it also Aggravates the Ignites on the target (Saitha's Spear)
+    r.onHit = { maim: s['local_maim_on_hit_%'] || 0, maimCrit: !!s.local_always_maim_on_crit, bleed: s.local_bleed_on_hit ? 100 : s['local_chance_to_bleed_on_hit_%'] || 0,
+      daze: s['local_weapon_daze_chance_%'] || 0, aggr: s['local_aggravate_bleeding_on_hit_chance_%'] || 0, aggIgn: !!s.local_aggravating_bleeds_also_causes_you_to_aggravate_ignites };
     r.tags = base.tags;   // mace, bow, onehand...: what kind of weapon it is
     r.pen = Object.fromEntries(['fire', 'cold', 'lightning'].map(e => [e, (s[`local_${e}_penetration_%`] || 0) + (s['local_elemental_penetration_%'] || 0)]));   // its hits penetrate
   }
@@ -1201,6 +1203,8 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 { // unique flasks: their own Duration, Rage when Hit and Perfect Timing; The Black Cat's Unlucky lightning damage
   const bw = flaskOf(make('Blood of the Warrior')), plain = flaskOf(make('Gargantuan Life Flask')), op = flaskOf(make('Opportunity')), cat = charmOf(make('The Black Cat'));
   console.assert((!bw || bw.time > plain.time && bw.keepFull && bw.rageHit > 0 && bw.noRageLoss) && (!op || op.noManual && op.onPerfect && op.perfectWin > 0) && (!cat || cat.lightRoll < 0), 'unique flasks', bw, op, cat); }
+{ const on = n => { const w = make(n); return w && weaponStats({ weapon: w }).onHit; }, s = on("Saitha's Spear"), z = on("Nazir's Judgement");   // a weapon's own on hit: to Aggravate Bleeding (and the Ignites with it), to Daze
+  console.assert((!s || s.aggr >= 25 && s.aggIgn && !s.daze) && (!z || z.daze === 100 && !z.aggIgn), "a weapon's own on hit", s, z); }
 { // Mageblood's legacies (two of Ruby, Topaz and Granite, 50% increased effect per duplicate) and Snakepit's ring slots
   const mb = make('Mageblood'), pick = [9, 9, 14, 6], sp = make('Snakepit'); let n = 0;
   for (const m of mb?.mods || []) { const id = AFFIX[m.id].stats[0][0]; if (pickKind(id) === 'legacy') m.values = [pick[n++]]; else if (/per_duplicate_mages_legacy$/.test(id)) m.values = [50]; }

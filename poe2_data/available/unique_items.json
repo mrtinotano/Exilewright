@@ -10926,6 +10926,17 @@
     ]
    },
    {
+    "id": "UniqueStrengthAndIntelligence1",
+    "text": "+(10—20) to Strength and Intelligence",
+    "stats": [
+     [
+      "additional_strength_and_intelligence",
+      10,
+      20
+     ]
+    ]
+   },
+   {
     "id": "UniqueHitDamageBypassesEnergyShieldWhileBelowHalfEnergyShield1",
     "text": "(15—25)% of Damage taken from Hits bypasses Energy Shield if Energy Shield is below half",
     "stats": [
@@ -10948,9 +10959,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(10—20) to Strength and Intelligence"
-  ]
+  "unmatched": []
  },
  {
   "name": "Sacrosanctum",
@@ -11157,6 +11166,17 @@
     ]
    },
    {
+    "id": "UniqueStrengthAndIntelligence3",
+    "text": "+(15—25) to Strength and Intelligence",
+    "stats": [
+     [
+      "additional_strength_and_intelligence",
+      15,
+      25
+     ]
+    ]
+   },
+   {
     "id": "UniqueMaximumChaosResist1",
     "text": "+(1—5)% to Maximum Chaos Resistance",
     "stats": [
@@ -11201,9 +11221,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(15—25) to Strength and Intelligence"
-  ]
+  "unmatched": []
  },
  {
   "name": "Apron of Emiran",
@@ -14863,6 +14881,17 @@
     ]
    },
    {
+    "id": "UniqueStrengthAndIntelligence2",
+    "text": "+(20—30) to Strength and Intelligence",
+    "stats": [
+     [
+      "additional_strength_and_intelligence",
+      20,
+      30
+     ]
+    ]
+   },
+   {
     "id": "UniquePhysicalDamageFromHitsContributesToChillAndFreeze1",
     "text": "Physical damage from Hits Contributes to Chill Magnitude and Freeze Buildup",
     "stats": [
@@ -14906,9 +14935,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(20—30) to Strength and Intelligence"
-  ]
+  "unmatched": []
  },
  {
   "name": "The Hollow Mask",
@@ -31341,6 +31368,17 @@
   "base": "Two-Stone Ring",
   "mods": [
    {
+    "id": "UniqueStrengthAndIntelligence1",
+    "text": "+(10—20) to Strength and Intelligence",
+    "stats": [
+     [
+      "additional_strength_and_intelligence",
+      10,
+      20
+     ]
+    ]
+   },
+   {
     "id": "UniqueFireColdResistance1",
     "text": "+(10—20)% to Fire and Cold Resistances",
     "stats": [
@@ -31374,9 +31412,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(10—20) to Strength and Intelligence"
-  ]
+  "unmatched": []
  },
  {
   "name": "Berek's Respite",
@@ -31391,6 +31427,17 @@
   "name_zh": "貝雷克的火與雷之樂",
   "base": "Two-Stone Ring",
   "mods": [
+   {
+    "id": "UniqueStrengthAndDexterity1",
+    "text": "+(10—20) to Strength and Dexterity",
+    "stats": [
+     [
+      "additional_strength_and_dexterity",
+      10,
+      20
+     ]
+    ]
+   },
    {
     "id": "UniqueFireLightningResistance1",
     "text": "+(10—20)% to Fire and Lightning Resistances",
@@ -31425,9 +31472,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(10—20) to Strength and Dexterity"
-  ]
+  "unmatched": []
  },
  {
   "name": "Berek's Grip",
@@ -31442,6 +31487,17 @@
   "name_zh": "貝雷克的冰與雷之曲",
   "base": "Two-Stone Ring",
   "mods": [
+   {
+    "id": "UniqueDexterityAndIntelligence1",
+    "text": "+(10—20) to Dexterity and Intelligence",
+    "stats": [
+     [
+      "additional_dexterity_and_intelligence",
+      10,
+      20
+     ]
+    ]
+   },
    {
     "id": "UniqueColdLightningResistance1",
     "text": "+(10—20)% to Cold and Lightning Resistances",
@@ -31476,9 +31532,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "+(10—20) to Dexterity and Intelligence"
-  ]
+  "unmatched": []
  },
  {
   "name": "Meginord's Girdle",
