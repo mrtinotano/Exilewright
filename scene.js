@@ -1868,7 +1868,8 @@ export function initScene(el, api) {
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
     const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
     return k && partOf(S, k); };
-  const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
+  const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
+const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -1931,11 +1932,11 @@ export function initScene(el, api) {
   // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes);
   // o.more(t): its damage multiplier t s after arming (Ice Shards); o.mesh: what stands there; o.then(p): after it goes off
   function hazardAt(X, p, dur, o = {}) {
-    const arm = o.arm || 0, c = o.c || 'dust', reach = o.reach || X.A, g = holder(p);
+    const arm = o.arm || 0, hold = Math.max(arm, X.dmg?.sum?.hazards_cant_trigger_x_seconds_after_creation || 0), c = o.c || 'dust', reach = o.reach || X.A, g = holder(p);   // Controlled Hazard: not set off before its seconds
     const decal = fx.decal(p, reach, 'patch', c, { a: .8, k: 1 }); if (o.mesh) g.add(o.mesh);
     const e = thing(g, dur, { name: X.name, hazard: true,
       tick() {
-        if (e.set || e.s < arm || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
+        if (e.set || e.s < hold || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
         const S2 = { ...X, haz: true, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
         later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; for (const d of inside(p, X.A)) d.hazAt = time; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
@@ -2310,7 +2311,7 @@ export function initScene(el, api) {
     const e = thing(g, S.P.dur || SIM.lifetime, { r: .3, rod: true, name: S.name, chained: 0,
       pulse(by) {
         if (time - last < .5 || by.src === 'rod') return; last = time;
-        if (++e.chained >= (S.dmg?.stats?.lightning_rod_number_of_chains_allowed || Infinity)) e.dead = true;   // gone after its most chains to it. note: every lightning that reaches it counts
+        if (++e.chained >= (S.dmg?.stats?.lightning_rod_number_of_chains_allowed || Infinity) + lasts(S)) e.dead = true;   // gone after its most chains to it. note: every lightning that reaches it counts
         say(t('{0} pulses: struck by {1}', S.label, by.label), S.el);
         fx.bolt(V(c.x, 11, c.z), V(c.x, 1.8, c.z), S.el, .2, .06, .4); fx.ring(c, .3, R, S.el, .4, { k: 2.8 }); fx.flash(c, S.el, 30, .3, 9);
         fx.emit(30, { p: { x: c.x, y: .4, z: c.z }, v: R * 3, flat: true, life: .3, size: .16, c: S.el, c2: 'white', drag: 2, k: 3 });
@@ -2338,7 +2339,7 @@ export function initScene(el, api) {
       touch(by) {   // hit by anything: it bursts, and the burst reaches the next crystals
         // a skill that Consumes Freeze shatters it at once: its more damage and area if Shattered (keywords.json IceCrystals)
         const SH = (by.P?.consumes?.includes('freeze') || by.dmg?.ail?.consume?.freeze) && (B.dmg?.stats || {}), XA = SH ? Math.sqrt(1 + (SH['ice_crystal_shatter_detonation_area_of_effect_+%_final'] || 0) / 100) : 1, XM = SH ? 1 + (SH['ice_crystal_shatter_detonation_damage_+%_final'] || 0) / 100 : 1;
-        if (!SH && life > 0 && (life -= avgHit(by)) > 0) return;
+        if (!SH && !by.breaks && life > 0 && (life -= avgHit(by)) > 0) return;   // by.breaks: destroyed outright (Vruun's Aftermath)
         e.dead = true;
         const VG = by.dmg?.sum?.['support_crystalshatter_buff_damage_%_gained_as_extra_cold_per_2000_crystal_life'];   // Verglas: the destroying skill's cold gain, per 2000 of the crystal's life
         if (VG) (me.verglas ||= {})[by.name] = { pct: VG * Math.floor(full / 2000), until: time + by.dmg.sum.support_crystalshatter_buff_duration / 1000 };
@@ -2362,7 +2363,7 @@ export function initScene(el, api) {
     // it are sucked in and it spits a ring of copies (its number, range and less damage) that are not copied again, up to
     // its most times
     const cs = o.copy, hold = new Map();
-    const e = thing(g, dur, { name: S.name, vortex: true, R, copy: cs && { left: cs.tornado_shot_number_of_hits_allowed },
+    const e = thing(g, dur, { name: S.name, vortex: true, R, copy: cs && { left: cs.tornado_shot_number_of_hits_allowed + lasts(S) },
       spit(C, k) {
         const n = cs.base_number_of_projectiles, a0 = rnd(TAU), p = { x: g.position.x, z: g.position.z };
         if (--e.copy.left <= 0) e.dur = e.s;
@@ -2645,10 +2646,13 @@ export function initScene(el, api) {
       fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
       const list = inside(c, R);
       for (const o of [...objs]) if (o.earth && o.shatter && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
+      // Vruun's Aftermath: it destroys the Ice Crystals and Ice Fragments in its area; five or more, and it Empowers its additional attacks
+      const VR = S.dmg?.sum?.support_warcries_empower_x_additional_per_5_total_ice_crystals_or_fragments_destroyed; let gone = 0;
+      if (VR) { for (const o of [...objs]) if (o.ice && !o.dead && dist(o.pos, c) <= R) { o.touch({ ...S, breaks: true }); gone++; } for (const F of [...frags]) if (dist(F.p, c) <= R) { F.off(); gone++; } }
       for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
-      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.finals?.['support_echoing_cry_warcry_monster_power_+%_final'] || 0) / 100) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0);
+      const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.finals?.['support_echoing_cry_warcry_monster_power_+%_final'] || 0) / 100) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0) + (gone >= 5 ? VR : 0);
       // Arctic Howl: its Empowered attacks gain its cold damage per 5 Power (up to its cap) instead, a Slam leaving Chilled
       // Ground for its secondary duration
       // note: that added damage as the gem gives it, without your modifiers
@@ -3577,7 +3581,7 @@ export function initScene(el, api) {
         if (by.src || by.name === S.name || time < next) return; next = time + st.bell_shockwave_cooldown_ms / 1000;
         const p = { x: e.pos.x, z: e.pos.z }; fx.ring(p, .3, S.A, 'gold', .35); boom(p, S.A, { ...S, self: e }, { soft: true });
         for (const d of inside(p, S.A)) if ((d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
-        if (++hits >= st.bell_hit_limit) e.dead = true;
+        if (++hits >= st.bell_hit_limit + lasts(S)) e.dead = true;
       } });
   }
   // Jade (Jade Heritage): a stack every its interval while you have no Guard, up to its most. Encase in Jade consumes
@@ -3709,7 +3713,7 @@ export function initScene(el, api) {
         if (!X || by.name === S.name || time < next) return; next = time + xs.bell_shockwave_cooldown_ms / 1000;
         for (const el of ['fire', 'cold', 'lightning']) if (by.els.includes(el)) ail.add(el);
         fx.ring(c, .3, X.A, 'ice', .35); boom(c, X.A, { ...X, self: e, gains: [...ail].map(el => ({ el, pct: xs['tempest_bell_physical_damage_%_as_elemental_per_ailment'] })) }, { soft: true });
-        if (++hits >= st.bell_hit_limit) e.dead = true;
+        if (++hits >= st.bell_hit_limit + lasts(S)) e.dead = true;
       } });
   };
   // Disengage: its cone of spearpoints in front of you (its radius, its angle) as you leap back its path distance; each
