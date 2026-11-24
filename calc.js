@@ -204,12 +204,12 @@ if (MON.length) console.assert(evadeChance(13176, 91) === 58 && evadeChance(1820
 // rounding: 1266 / 946 / 697 = 4 x 316.5 / 236.5 / 174.25); PoB2 has no base totem defences to compare: the table's shown
 export function totem(g, sum = {}) {
   const T = SK.skills[g.name]?.totem; if (!T) return null;
-  const s = withSupports(g, sum).sum, st = gemStats(g, s), level = SK.minion_level?.[st._level - 1];
+  const W = withSupports(g, sum), s = W.sum, st = gemStats(g, s), level = SK.minion_level?.[st._level - 1];
   if (!level) return null;
   const cap = MON_K.monster_max_resistance ?? 75, er = Math.min(cap + v(s, 'totem_maximum_all_elemental_resistances_%'), (st['totem_elemental_resistance_%'] || 0) + v(s, 'totem_elemental_resistance_%'));
   return {
     level,
-    life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + v(s, 'support_totem_life_+%_final') / 100)),   // Tawhoa's Tending: more (PoB2 TotemLife MORE)
+    life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + (W.finals['support_totem_life_+%_final'] || 0) / 100) * (1 + (W.finals['support_greatwood_maximum_life_+%_final'] || 0) / 100)),   // Tawhoa's Tending, Greatwood II: more (PoB2 TotemLife MORE)
     ailment: monster(level, 'AilmentThreshold'),
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
     regen: v(s, 'totems_regenerate_%_life_per_minute') / 60,   // % of its life a second
@@ -1120,8 +1120,11 @@ export function withSupports(g, sum, wset) {
     for (const [k, val] of Object.entries({ ...game, ...(p?.stats || {}) })) {
       if (read.has(k) || k.startsWith('_') || typeof val !== 'number') continue;
       if (!k.endsWith('_final')) { all[k] = (all[k] || 0) + val; if (k.includes('_final')) twice.add(k); }
-      else if (plainMore(k, n) || plainText(k)) fin[k] = (fin[k] || 0) + val;
+      else if (!k.startsWith('branching_fissure_') && (plainMore(k, n) || plainText(k))) fin[k] = (fin[k] || 0) + val;   // Branching Fissures: its Branched Fissures' alone (scene.js)
     }
+    // a flag of the gem that Path of Building 2 names and the dump leaves out of its stats (Pin: "Physical damage can
+    // Pin"; Tul's Stillness: "Chaos damage can Freeze"; Atziri's Allure: its curses ignore the limit), once each
+    for (const k of new Set((p?.mods || []).filter(m => m[1] === 'FLAG' && m[5] && !(m[5] in game) && !(m[5] in (p.stats || {}))).map(m => m[5]))) all[k] = (all[k] || 0) + 1;
     // every "more" of the support as the game's tables have it, for the rules calc.js reads by name (ailments()), and
     // all its stats (own: those under a condition PoB2 reads too, for the simulator, Refraction's Refractive Plating)
     for (const [k, val] of Object.entries({ ...(d?.constant || {}), ...lv })) if (typeof val === 'number') {
@@ -1131,6 +1134,8 @@ export function withSupports(g, sum, wset) {
 }
 // true when the data says what this support does to the numbers the app calculates
 export const supportKnown = name => !!SK.supports?.[name] || !!SK.skills[name]?.levels;
+console.assert(totem({ name: 'Shockwave Totem', level: 15, supports: ["Tawhoa's Tending"] }).life === Math.round(totem({ name: 'Shockwave Totem', level: 15 }).life * 1.25)
+  && withSupports({ supports: ['Pin I'] }, {}).sum.support_pin_physical_damage_can_pin === 1 && !('branching_fissure_damage_+%_final' in withSupports({ supports: ['Branching Fissures I'] }, {}).fin), 'a support\'s more totem life, PoB2-only flags, branch-only less');
 // support mods called one of <names> whose flags this use of the skill meets (has): product of the MORE ones, sum of the others
 function mod(mods, kind, names, has) {
   let m = kind === 'MORE' ? 1 : 0;
@@ -1777,7 +1782,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     stunMelee: tags.includes('melee') ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
     breakNormal: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_normal_monsters'] || 0) / 100,
     breakMagic: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_magic_monsters'] || 0) / 100,
-    never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun'), armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
+    never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun') || all('support_pin_buildup_pin_instead_of_stun') > 0, armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
     always: { freeze: F('always_freeze'), shock: F('always_shock'), ignite: F('always_ignite'), stun: F('always_stun') },
     alwaysHit: F('global_always_hit'),
     // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them
@@ -1786,7 +1791,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     // electrocute and pin from the skill, or from the build's "<type> damage can electrocute / pin" (uniques, passives)
     electrocute: F('base_lightning_damage_can_electrocute') || all('base_lightning_damage_can_electrocute') + all('base_chaos_damage_can_electrocute') + (tags.includes('attack') ? all('all_attack_damage_can_electrocute') + all('local_all_damage_can_electrocute') : 0) > 0 || keys.some(k => /electrocutes_as_though_dealt_damage/.test(k)) ? scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/) : 0,
     electrocuteIf: scale(['hit_damage_electrocute_multiplier_+%'], /electrocutes_as_though_dealt_damage_\+%_final$/),   // on an enemy any lightning can electrocute (Enervating Nova)
-    pin: pinAll || all('base_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) * (1 + (all('hit_damage_pin_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%')) / 100) : 0, pinPhys: !pinAll,   // physical alone: a unique's
+    pin: pinAll || all('base_physical_damage_can_pin') + all('support_pin_physical_damage_can_pin') > 0 ? more(/pins_as_though_dealt_damage_\+%_final$/) * more('pin_buildup_+%_final') * (1 + (all('hit_damage_pin_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%')) / 100) : 0, pinPhys: !pinAll,   // physical alone: a unique's, the Pin supports' (unable to Stun; Pin III: less buildup)
     chillDamage: more(/chill_as_though_damage_\+%_final$/),
     consume, vs,
     charge: Object.fromEntries(['frenzy', 'power', 'endurance'].map(c => [c, { per: sumOf(new RegExp(`damage_\\+%_final_per_${c}_charge(?:_consumed)?$`)), when: sumOf(new RegExp(`damage_\\+%_final_when_(?:${c}_charges_consumed|charged)$`)) }])),
