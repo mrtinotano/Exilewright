@@ -3806,6 +3806,7 @@
    2100
   ]
  ],
+ "jewel_distance": 1.2,
  "radius_grant": {
   "en": {
    "small": "Small Passive Skills in Radius also grant {0}",
@@ -5618,6 +5619,8 @@
      },
      "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex06.dds",
      "level": 80,
+     "name_es": "Yelmo gladiatoria forjado con runas",
+     "name_fr": "Casque de gladiateur runeforgé",
      "req": {
       "str": 63,
       "dex": 63
@@ -18957,6 +18960,7 @@
      },
      "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
      "level": 65,
+     "name_ja": "華美なバックラー",
      "req": {
       "dex": 91
      }
@@ -20387,6 +20391,7 @@
      },
      "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
      "level": 65,
+     "name_ja": "ルーンフォージの華美なバックラー",
      "req": {
       "dex": 91
      }
@@ -33905,6 +33910,10 @@
      },
      "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt08.dds",
      "level": 51,
+     "name_es": "Traje de ascético",
+     "name_fr": "Tenue ascétique",
+     "name_ja": "禁欲者の服",
+     "name_ru": "Одеяние аскета",
      "req": {
       "dex": 45,
       "int": 45
@@ -46816,6 +46825,7 @@
       "ward": 69
      },
      "level": 38,
+     "name_fr": "Plastron en fourrure runeforgé",
      "req": {
       "str": 61
      }
@@ -58453,6 +58463,8 @@
       "Purity of Fire"
      ],
      "img": "Art/2DItems/Weapons/OneHandWeapons/Scepters/Basetypes/Sceptre06a.dds",
+     "name_pt": "Cetro do Altar",
+     "name_ru": "Храмовый скипетр",
      "tags": [
       "default",
       "fire_implicit_skill",
@@ -58465,6 +58477,8 @@
       "Purity of Ice"
      ],
      "img": "Art/2DItems/Weapons/OneHandWeapons/Scepters/Basetypes/Sceptre06b.dds",
+     "name_pt": "Cetro do Altar",
+     "name_ru": "Храмовый скипетр",
      "tags": [
       "cold_implicit_skill",
       "default",
@@ -58476,6 +58490,8 @@
      "grants": [
       "Purity of Lightning"
      ],
+     "name_pt": "Cetro do Altar",
+     "name_ru": "Храмовый скипетр",
      "tags": [
       "default",
       "lightning_implicit_skill",

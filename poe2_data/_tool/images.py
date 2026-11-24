@@ -20,7 +20,8 @@ paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive
 paths |= {x['icon'] for v in tree['timeless']['versions'] for x in v.get('named', {}).values() if x.get('icon')}  # what a timeless jewel's conquered passives become (Tribute)
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
 # the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
-# frames), saved whole as ../available/img/tree/<role>.webp: the node frames per state and the group backgrounds
+# frames), each saved as ../available/img/tree/<role>.webp (the piece of its file the index gives: a file has a few
+# spare pixels on the right and below, which would leave a frame off its passive): the node frames per state
 def table(t):
     return json.load(open(os.path.join(ROOT, 'tables', 'English', t + '.json'), encoding='utf8'))
 uiart, frames = {r['Id']: r for r in table('PassiveSkillTreeUIArt')}, table('PassiveSkillTreeNodeFrameArt')
@@ -31,6 +32,13 @@ for prefix, row, kinds in (('', uiart['Character'], ('Passive', 'Notable', 'Keys
             TREE[f'{prefix}{kind.lower()}_{state}'] = frames[row[kind + 'Frame']][col]
 for state, col in (('normal', 'Normal'), ('active', 'Active')):
     TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
+# the ring round a socketed jewel's radius (PassiveJewelRadiiArt: two circles, turning against each other in the game):
+# ring_1/2 the Default row's, ring_inv the circle inside a ring-shaped radius, ring<version>_1/2 a timeless jewel's
+# (AlternateTreeArt, by the local_unique_jewel_alternate_tree_version of the uniques there are)
+radii, alt = table('PassiveJewelRadiiArt'), {a['TreeVersion']: a['JewelRadiiArt'] for a in table('AlternateTreeArt')}
+TREE['ring_inv'] = radii[0]['Inverse1']
+for key, row in [('', radii[0])] + [(str(n), radii[alt[n]]) for n in sorted({s[1] for u in uniques for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'})]:
+    TREE[f'ring{key}_1'], TREE[f'ring{key}_2'] = row['Circle1'], row['Circle2']
 # the character panel's icons, painted into the panel's own picture (CharacterPanelContent, 4K), saved as
 # ../available/img/panel/<role>.webp: where each sits in it, cut off the stone behind it; the resistances' are round
 # badges (centre, radius)
@@ -71,11 +79,13 @@ for p in paths:
         im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((p, str(e)))
-for folder, role, name in [('tree', *x) for x in TREE.items()] + [('mastery', *x) for x in MASTERY.items()]:   # each is a picture of its own: whole, full size (the tree's are drawn large when zoomed in; the masteries at half)
+for folder, role, name in [('tree', *x) for x in TREE.items()] + [('mastery', *x) for x in MASTERY.items()]:   # each is a picture of its own: full size (the tree's are drawn large when zoomed in; the masteries at half)
     out = os.path.join(ROOT, 'available', 'img', folder, role + '.webp')
     try:
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        im = Image.open(os.path.join(ROOT, 'files', atlas[name.lower()][0]))
+        file, (x1, y1, x2, y2) = atlas[name.lower()]
+        im = Image.open(os.path.join(ROOT, 'files', file))
+        if folder == 'tree': im = im.crop((x1, y1, x2 + 1, y2 + 1))
         (im.resize((im.width // 2, im.height // 2), Image.LANCZOS) if folder == 'mastery' else im).save(out, 'WEBP', quality=90)
     except Exception as e:
         bad.append((role, str(e)))

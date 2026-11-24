@@ -115,17 +115,18 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return legacies(out);
 }
-// A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius, tree units: PassiveJewelRadii "Small" is
-// 1000) and what each small / notable passive allocated in it also grants -> { r, small: {stat: value}, notable }, or null
+// A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius: PassiveJewelRadii "Small" is 1000; on the
+// tree, that times GameConstants PassiveTreeJewelDistanceMultiplier) and what each small / notable passive allocated in
+// it also grants -> { r, small: {stat: value}, notable }, or null
 // ring: [inner, outer] when it only affects a ring (local_jewel_variable_ring_radius_value, PassiveJewelRadii's row from 1);
 // free: the passives it affects can be allocated without being connected (Controlled Metamorphosis); around: the keystone
 // whose radius it is instead of the socket's (From Nothing)
 export function radiusOf(item) {
-  const base = baseOf(item), st = base && rolled(item), r = st?.local_jewel_effect_base_radius;
+  const base = baseOf(item), st = base && rolled(item), k = D.jewel_distance || 1, r = st?.local_jewel_effect_base_radius * k;
   if (!r) return null;
   const KS = 'local_unique_jewel_disconnected_passives_can_be_allocated_around_keystone_hash', around = st[KS];
   if (KS in st && !around) return null;   // From Nothing with no keystone picked yet
-  const out = { r, small: {}, notable: {}, ring: D.jewel_rings?.[st.local_jewel_variable_ring_radius_value - 1] || null,
+  const out = { r, small: {}, notable: {}, ring: D.jewel_rings?.[st.local_jewel_variable_ring_radius_value - 1]?.map(x => x * k) || null,
     free: !!(around || st.local_unique_jewel_nearby_disconnected_passives_can_be_allocated), around: around ? String(around) : null };
   for (const m of item.mods || []) { const a = AFFIX[m.id]; if (a?.radius) a.stats.forEach(([id], k) => { out[a.radius][id] = (out[a.radius][id] || 0) + (m.values?.[k] ?? 0); }); }
   return out;
@@ -1229,7 +1230,7 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
   console.assert(!k.missed.length && String(k.item.mods[0]?.values) === '15,8,5', 'hybrid modifier out of order', k); }
 // ...and a radius jewel as the game copies it: its line read as a small passives' modifier, not one of its own
 { const j = parseItem('Item Class: Jewels\nRarity: Magic\nSharpened Time-Lost Ruby\n--------\nRadius: Small\n--------\nItem Level: 62\n--------\nSmall Passive Skills in Radius also grant 2(1-2)% increased Global Physical Damage');
-  console.assert(!j.missed.length && radiusOf(j.item)?.r === 1000 && radiusOf(j.item).small['physical_damage_+%'] === 2 && !gearStats({ 'jewel:1': j.item })['physical_damage_+%']
+  console.assert(!j.missed.length && radiusOf(j.item)?.r === 1000 * D.jewel_distance && D.jewel_distance > 1 && radiusOf(j.item).small['physical_damage_+%'] === 2 && !gearStats({ 'jewel:1': j.item })['physical_damage_+%']
     && /^Small Passive Skills in Radius also grant 2% increased Physical Damage$/m.test(itemText(j.item)), 'radius jewel', j); }
 // ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
 console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15

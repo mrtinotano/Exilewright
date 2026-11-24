@@ -717,6 +717,8 @@ save('items.json', {
     # the rings a jewel can be limited to ("Only affects Passives in Medium-Large Ring": local_jewel_variable_ring_radius_value
     # 5, the fifth row): [inner, outer] radius
     'jewel_rings': [[r['RingInnerRadius'], r['RingOuterRadius']] for r in load('PassiveJewelRadii')],
+    # what the tree multiplies every one of those radii by (GameConstants)
+    'jewel_distance': game['PassiveTreeJewelDistanceMultiplier'],
     # how the game opens a radius jewel's line in each language (ClientStrings ModStatJewelAddTo*: "Small Passive Skills
     # in Radius also grant {0}", "[SmallPassive|Small Passive]" markup shown as its second part): {0} is the stat's line
     'radius_grant': {c: {k: re.sub(r'\[(?:[^|\]]*\|)?([^\]]*)\]', r'\1', t['ModStatJewelAddTo' + k.title()]).strip()

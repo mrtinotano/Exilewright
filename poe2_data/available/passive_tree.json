@@ -152156,14 +152156,6 @@
       "base_devotion": 10
      }
     },
-    "plus": {
-     "small": {
-      "base_devotion": 5
-     },
-     "notable": {
-      "base_devotion": 5
-     }
-    },
     "named": {
      "attribute": {
       "name": "Devotion",
@@ -152177,6 +152169,14 @@
       "name_th": "Devotion",
       "name_zh": "還願",
       "icon": "Art/2DArt/SkillIcons/passives/DevotionNode.dds"
+     }
+    },
+    "plus": {
+     "small": {
+      "base_devotion": 5
+     },
+     "notable": {
+      "base_devotion": 5
      }
     }
    },
@@ -152257,6 +152257,21 @@
       "base_tribute": 5
      }
     },
+    "named": {
+     "small": {
+      "name": "Tribute",
+      "name_es": "Tributo",
+      "name_pt": "Tributo",
+      "name_fr": "Tribut",
+      "name_de": "Tribut",
+      "name_ru": "Дань",
+      "name_ja": "トリビュート",
+      "name_ko": "공물 점수",
+      "name_th": "บรรณาการ",
+      "name_zh": "貢禮",
+      "icon": "Art/2DArt/SkillIcons/passives/AbyssJewelNode.dds"
+     }
+    },
     "extra": {
      "local_historic_abyss_jewel_conquered_attribute_passives_grant_tribute": [
       "attribute",
@@ -152330,21 +152345,6 @@
       "small",
       "ailment_threshold_+%"
      ]
-    },
-    "named": {
-     "small": {
-      "name": "Tribute",
-      "name_es": "Tributo",
-      "name_pt": "Tributo",
-      "name_fr": "Tribut",
-      "name_de": "Tribut",
-      "name_ru": "Дань",
-      "name_ja": "トリビュート",
-      "name_ko": "공물 점수",
-      "name_th": "บรรณาการ",
-      "name_zh": "貢禮",
-      "icon": "Art/2DArt/SkillIcons/passives/AbyssJewelNode.dds"
-     }
     }
    }
   ],

@@ -508,7 +508,7 @@ $('importFile').onchange = async e => {
 
 // ---------- passive tree (canvas 2D), drawn like the in-game tree
 const cv = $('treeCanvas'), ctx = cv.getContext('2d');
-const R = { keystone: 116, notable: 82, jewel: 82, attribute: 56, small: 56, root: 104 };   // half the size of the game's frame of each (img/tree), in world units
+const R = { keystone: 111, notable: 76.5, jewel: 76.5, attribute: 51.5, small: 51.5, root: 104 };   // half the size of the game's frame of each (img/tree), in world units
 const ORBIT = tree.orbit_radii || [], GROUPS = tree.groups || [];
 const CENTRE_R = 1330;   // empty middle of the tree (class roots sit at ~1450): the chosen ascendancy is drawn there
 // a node with no icon (no game art yet) is tinted by the theme of its stats instead
@@ -755,7 +755,15 @@ const LINK = {
   active: [['rgba(159,129,74,.3)', 37], ['rgba(159,129,74,.6)', 20], ['#ffd786', 13], ['#5f4509', 9], ['#f2e4b8', 7], ['#ffffff', 3]],
 };
 const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keystone: 'keystone', jewel: 'jewel' };
-const HOLE = { passive: .607, notable: .562, keystone: .561, asc_passive: .62, asc_notable: .56 };
+const HOLE = { passive: .66, notable: .592, keystone: .587, asc_passive: .651, asc_notable: .584 };
+// a passive that is not allocated has a duller icon in the game: less colour (sat) and fainter (a)
+// note: no table says them; the two that leave the same passives as bright (0.75 of what they were here) and as
+// saturated (0.47) as on a screenshot of the game, measured on it and on this page
+const DULL = { sat: .3, a: .52, of: new Map() };
+function dull(im) {   // the picture with less colour, made once
+  if (!DULL.of.has(im)) { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.filter = `saturate(${DULL.sat})`; g.drawImage(im, 0, 0); DULL.of.set(im, c); }
+  return DULL.of.get(im);
+}
 function drawNode(id, x, y, r, state, tint, pic2) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
@@ -769,15 +777,15 @@ function drawNode(id, x, y, r, state, tint, pic2) {   // state: on | path | off;
     const icon = ir > 0 && art(pic2 || n.icon);
     const drawIcon = () => {   // its icon at any size; while it loads, the colour of its stats
       if (!ir) return;
-      ctx.save(); ctx.globalAlpha = lit ? 1 : .55; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7);
-      if (icon) { ctx.clip(); ctx.drawImage(icon, x - ir, y - ir, ir * 2, ir * 2); } else { ctx.fillStyle = col; ctx.fill(); }
+      ctx.save(); ctx.globalAlpha = lit ? 1 : DULL.a; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7);
+      if (icon) { ctx.clip(); ctx.drawImage(lit ? icon : dull(icon), x - ir, y - ir, ir * 2, ir * 2); } else { ctx.fillStyle = col; ctx.fill(); }
       ctx.restore();
     };
     if (!n.ascendancy) drawIcon();
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
     if (n.ascendancy) drawIcon();
     const jw = type === 'jewel' && art(itemImg(B().items?.['jewel:' + id]));   // the jewel socketed in it
-    if (jw) { const k = w * .62 / Math.max(jw.width, jw.height); ctx.drawImage(jw, x - jw.width * k / 2, y - jw.height * k / 2, jw.width * k, jw.height * k); }
+    if (jw) { const k = w * .653 / Math.max(jw.width, jw.height); ctx.drawImage(jw, x - jw.width * k / 2, y - jw.height * k / 2, jw.width * k, jw.height * k); }
     const ring = (rr, wd, c) => { ctx.strokeStyle = c; ctx.lineWidth = wd; ctx.beginPath(); ctx.arc(x, y, rr, 0, 7); ctx.stroke(); };
     if (tint) ring(w / 2, Math.max(1.5, w * .06), tint);   // a weapon set's passive: its colour round the frame
     if (id === hover) ring(w / 2 + 2, 1.5, '#fff6d8');
@@ -920,9 +928,18 @@ function drawTree() {
   stroke(path, LINK.can, 1.6);
   stroke(lit, LINK.active, 2.4);
   for (const [c, p] of Object.entries(setLit)) stroke(p, [[c + '55', 37], [c, 13], ['#ffffff', 3]], 2.4);
-  // each socketed jewel's radius (or its ring), round the socket or round the keystone it names (From Nothing)
-  ctx.strokeStyle = 'rgba(150,200,255,.5)'; ctx.lineWidth = px(1.5);
-  for (const j of jewelsOf(b)) if (j.R) for (const rr of j.R.ring || [j.r]) { ctx.beginPath(); ctx.arc(j.C.x, j.C.y, rr, 0, 7); ctx.stroke(); }
+  // each socketed jewel's radius (or its ring), round the socket or round the keystone it names (From Nothing): the
+  // game's own pictures of it (images.py: img/tree/ring*.webp), as wide as twice the radius. Its two circles turn
+  // against each other in the game: here each stays turned its own way. A timeless jewel has its conqueror's; the
+  // circle inside a ring-shaped radius is another picture, whose line is 0.94 of the way out (measured on it)
+  for (const j of jewelsOf(b)) if (j.R) {
+    const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r];
+    for (const [p, rr, turn] of [[`ring${v}_1`, outer, -.7], [`ring${v}_2`, outer, .7], ['ring_inv', inner / .94, -.7], ['ring_inv', inner / .94, .7]]) {
+      const im = rr && art('tree/' + p);
+      if (!im) continue;
+      ctx.save(); ctx.translate(j.C.x, j.C.y); ctx.rotate(turn); ctx.drawImage(im, -rr, -rr, rr * 2, rr * 2); ctx.restore();
+    }
+  }
 
   // nodes (screen space so they stay crisp)
   ctx.setTransform(D, 0, 0, D, 0, 0);
