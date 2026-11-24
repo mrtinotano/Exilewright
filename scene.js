@@ -746,7 +746,7 @@ export function initScene(el, api) {
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
         HitProjectileRecently: time - (me.projHit ?? -99) <= (c.secs || RECENT), HitMeleeRecently: time - (me.meleeHit ?? -99) <= (c.secs || RECENT), PerfectTiming: !!S.perfect, ConsumedInfusionRecently: time - me.infUsed <= RECENT };
     const ge = (me.gloryEaten || []).filter(x => time - x.t <= 6);   // the Glory consumed in the last 6 s
-    const count = { Rage: me.rage, ComboStacks: comboNow(), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
+    const count = { Rage: me.rage, CursesOnSelf: hexN(), ComboStacks: comboNow(), FrenzyCharge: charges.frenzy, PowerCharge: charges.power, EnduranceCharge: charges.endurance,
       StationarySeconds: S.still || 0, ChannellingTime: charge?.s || 0, PoisonStacks: st('poison') ? 1 : 0, ElementalAilments: EL_AIL.filter(st).length,
       BoltsReloadedPastSixSeconds: reloaded(6), BoltsReloadedPastEightSeconds: reloaded(8), SecondsSinceInevitableCrit: time - (me.critAt?.[S.name] ?? 0),
       DifferentElementalSkillUsedRecently: new Set(used.filter(u => u.elemental && time - u.t <= RECENT).map(u => u.name)).size, MinionPresenceCount: minionsNear(),
@@ -1040,6 +1040,7 @@ export function initScene(el, api) {
   const expoMag = S => (S.dmg?.ail?.expo.skill ?? EXPO.res) * (S.dmg?.ail?.expo.effect ?? 1);   // the skill's own (Oil, Frost Bomb)
   // shocked enemies take more damage from everything (BaseShockMagnitude, or the shock's own)
   const mag2 = (d, a) => d.mag2?.[a]?.until > time ? d.mag2[a].mag : 0;   // a second shock / chill (Strike Twice, Heavy Snows)
+  const tookInc = d => shocked(d) + (d.curse ? (sheet().cursed?.taken || 0) / 100 : 0);   // and what an enemy you cursed takes increased (a glove's, Shackles of the Wretched's Runeforged)
   const shocked = d => d.st.shock > 0 ? 1 + ((d.mag.shock ?? GC.BaseShockMagnitude) + mag2(d, 'shock')) / 100 : 1;
   // what the enemy takes of r damage of a type now: armour lowered by Armour Break (none when fully broken, which also adds
   // physical damage taken) and by a curse, resistance lowered by exposure and curses (both less on rarer monsters), then by the hit's penetration, and shock
@@ -1050,11 +1051,13 @@ export function initScene(el, api) {
   // Shackles of the Wretched: a curse you inflict is on you too (me.hexes, by its name), with the effect and the duration of
   // curses on you, as many as your curse limit (the oldest goes); onMe: what those on you add up to (lower resistances and
   // armour, less damage dealt, slower actions)
-  const hexMe = (name, C, s, x = 1) => {
-    const R = sheet().selfCurse; if (!R?.reflect || !C) return;
-    const H = Object.fromEntries(Object.entries(me.hexes || {}).filter(([n, h]) => n !== name && time < h.until).slice(sheet().curseIgnore ? 0 : -((sheet().curseLimit || 1) - 1) || Infinity));
-    me.hexes = { ...H, [name]: { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect } };
+  // free: Soul Mantle's, whatever the curse limit and with no Shackles
+  const hexMe = (name, C, s, x = 1, free) => {
+    const R = sheet().selfCurse; if (!C || !free && !R?.reflect) return;
+    const live = Object.entries(me.hexes || {}).filter(([n, h]) => n !== name && time < h.until), lim = live.filter(([, h]) => !h.free);
+    me.hexes = Object.fromEntries([...live.filter(([, h]) => h.free), ...free || sheet().curseIgnore ? lim : lim.slice(-((sheet().curseLimit || 1) - 1) || Infinity), [name, { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect, free }]]);
   };
+  const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
   const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0);
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
@@ -1064,7 +1067,7 @@ export function initScene(el, api) {
   const treeTaken = (d, el) => { const T = sheet().takenTree; return T ? 1 + ((d.mark ? T.mark : 0) + (d.st.electrocute > 0 ? T.electro : 0) + (el === 'cold' && d.st.freeze > 0 ? T.frozenCold : 0) + (el === 'physical' ? T.incision * (d.inc || 0) : 0) + (sheet().uDef?.yoke || 0) * ['ignite', 'chill', 'freeze', 'shock', 'electrocute'].filter(a => d.st[a] > 0).length) / 100 : 1; };   // Yoke of Suffering: per elemental ailment type on them
   // the tree's: enemies on Chilled Ground take more fire damage, on Ignited Ground more cold
   const groundX = (d, el) => { const GT = sheet().groundTaken?.[el], k = el === 'fire' ? 'chilled' : 'burning'; return GT && grounds.some(g => !g.dead && g.type === k && dist(g, d.pos) <= g.r) ? 1 + GT / 100 : 1; };
-  function takes(d, el, r, isHit = true, ow, pen, inv, zero) { return defence(d, el, r, isHit, ow, pen, inv, zero) * groundX(d, el) * (d.st.chill > 0 && sheet().chillTaken ? 1 + (d.mag.chill || 0) / 100 : 1) * (d.st.freeze > 0 ? 1 + (sheet().frozenTaken || 0) / 100 : 1) * shocked(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
+  function takes(d, el, r, isHit = true, ow, pen, inv, zero) { return defence(d, el, r, isHit, ow, pen, inv, zero) * groundX(d, el) * (d.st.chill > 0 && sheet().chillTaken ? 1 + (d.mag.chill || 0) / 100 : 1) * (d.st.freeze > 0 ? 1 + (sheet().frozenTaken || 0) / 100 : 1) * tookInc(d) * (d.intim > time ? 1 + INTIM / 100 : 1) * watched(d) * treeTaken(d, el); }
   function defence(d, el, r, isHit = true, ow = 0, pen = 0, inv, zero) {
     let st = d.stat; const CA = curseFx(d, C => C?.armour), SE = sheet(), near = () => dist(d.pos, pp) <= SE.overgrow.r;
     // Leopold's Applause (in your Presence: Sacred Flame): elemental damage resisted by its lowest elemental resistance;
@@ -2882,6 +2885,7 @@ export function initScene(el, api) {
         },
         // Tawhoa's Tending: on death it explodes for that share of the totem's life (calc.js totemLife) in its area
         die() {
+          { const SM = !e.dead && sheet().soulCurse, X = SM?.[Math.floor(Math.random() * SM.length)]; if (X) hexMe(X.name, X.C, X.s, 1, true); }   // Soul Mantle
           e.dead = true; const T = S.dmg?.trig?.find(T => T.stats?.['base_physical_damage_equal_to_%_of_totem_life']);
           if (T && S.dmg.totemLife) { const X = asTrig(S, T, scale(T.hits, S.dmg.totemLife * T.stats['base_physical_damage_equal_to_%_of_totem_life'] / 1e4)), p = { x: e.pos.x, z: e.pos.z }; say(X.label, X.el); boom(p, X.A, X); }
         },
@@ -5117,7 +5121,7 @@ export function initScene(el, api) {
     if ((d.tick -= dt) <= 0) {   // damage over time: ignite, poison, bleeding and the skills' own, one number per tick
       d.tick = .5; let n = 0, past = 0, sim = false, el = 'chaos', best = 0;
       const VD = 1 + (sheet().volDot || 0) * (me.vol || 0) / 100;   // increased chaos damage over time per Volatility on you. note: as more here
-      const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * shocked(d) * (v.el === 'chaos' ? VD : 1); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
+      const add = (v, noEs) => { const k = v.dps * (v.agg ? AGGRAVATED : 1) * tookInc(d) * (v.el === 'chaos' ? VD : 1); n += k; if (noEs) past += k; sim ||= v.sim; if (v.dps > best) { best = v.dps; el = v.el; } };
       // bleeding deals its extra damage while the enemy moves, as aggravated (keywords.json Bleeding): moved since the last tick
       const mov = d.lastAt && dist(d.pos, d.lastAt) > .05; d.lastAt = { x: d.pos.x, z: d.pos.z };
       for (const a in AIL_DOT) if (st[a] > 0 && d.burn[a]) {
@@ -5755,7 +5759,7 @@ export function initScene(el, api) {
     DamagingAilment: () => ['ignite', 'bleed', 'poison'].some(a => me.st[a] > 0), Ailing: () => meIs.DamagingAilment() || ['chill', 'shock', 'freeze'].some(a => me.st[a] > 0), KilledRecently: () => time - (me.killAt ?? -99) <= RECENT,
     CritRecently: () => Object.values(me.critAt || {}).some(at => time - at <= RECENT), NotCritRecently: () => !meIs.CritRecently(),
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
-    LifeLeeching: () => me.leech.life.left > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
+    LifeLeeching: () => me.leech.life.left > 0, Cursed: () => hexN() > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
     PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, RaisedBlockRecently: () => time - (me.rblockAt ?? -99) <= RECENT, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, Parrying: () => time < (me.parry?.until ?? -9), ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
     ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.stunAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
     NoLifeFlaskUses: () => !!flasks()[0] && flaskLeft(0) < flasks()[0].per,

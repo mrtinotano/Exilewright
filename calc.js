@@ -697,7 +697,7 @@ export function recovery(c, sum) {
     witheredDeal: v(sum, 'withered_enemies_deal_+%_damage'), witherMag: v(sum, 'withered_magnitude_+%'),   // the Withered you inflict
     // enemies you curse: their chaos resistance, Hindered (15% reduced movement speed), and your curses' increased
     // magnitudes once half of their duration has expired
-    cursed: { chaos: v(sum, 'enemies_chaos_resistance_%_while_cursed'), hinder: sum['enemies_you_curse_have_15%_hinder'] ? 15 : 0, half: v(sum, 'while_curse_is_50%_expired_curse_effect_+%') },
+    cursed: { chaos: v(sum, 'enemies_chaos_resistance_%_while_cursed'), taken: v(sum, 'enemies_damage_taken_+%_while_cursed'), hinder: sum['enemies_you_curse_have_15%_hinder'] ? 15 : 0, half: v(sum, 'while_curse_is_50%_expired_curse_effect_+%') },
     // increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision (physical); your Ancestrally
     // Boosted attacks' increased damage and area; your minions' and companions' increased movement speed
     takenTree: { mark: v(sum, 'marked_enemy_damage_taken_+%'), electro: v(sum, 'electrocuted_enemy_damage_taken_+%'), frozenCold: v(sum, 'freeze_applies_cold_damage_taken_+%'),
@@ -729,7 +729,7 @@ export function recovery(c, sum) {
     // uniques: enemies' damage Lucky (+) / Unlucky (-) while on Low Life (The Barrow Dweller), of a type (The Sunken Vessel,
     // The Burrower); more / less damage taken while on Low Life, while not hit recently (The Dancing Mirage)
     dmgRolls: { low: v(sum, 'enemy_extra_damage_rolls_when_on_low_life'), physical: v(sum, 'enemies_extra_damage_rolls_with_physical_damage'), lightning: v(sum, 'enemies_extra_damage_rolls_with_lightning_damage') },
-    takenWhile: [['hand_wraps_damage_taken_+%_final_on_low_life', 'LowLife'], ['damage_taken_+%_if_not_hit_recently_final', 'NotHitRecently']].filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),
+    takenWhile: [['hand_wraps_damage_taken_+%_final_on_low_life', 'LowLife'], ['damage_taken_+%_if_not_hit_recently_final', 'NotHitRecently'], ['hand_wraps_damage_taken_+%_final_while_cursed', 'Cursed']].filter(([k]) => sum[k]).map(([k, cv]) => ({ cv, val: sum[k] })),
     unluckyCrit: !!sum.critical_chance_vs_self_is_unlucky,   // Oracle
     manaFirst: !!sum.hit_damage_remove_from_mana_before_life_while_mana_higher_than_life,
     curseLimit: 1 + v(sum, 'number_of_additional_curses_allowed') + (sum.keystone_hex_master ? 1 : 0), curseForever: !!sum.curses_never_expire,   // Lich
@@ -761,7 +761,11 @@ export function recovery(c, sum) {
     // too, with the effect and the duration of curses on you (Thief's Torment's reduced duration)
     // note: knockback has no distance in the data: not simulated (Tyranny's Grip; Empire's Grasp's reversed direction)
     ailPrevent: { chill: v(sum, 'chill_prevention_ms_when_chilled'), freeze: v(sum, 'freeze_prevention_ms_when_frozen'), ignite: v(sum, 'ignite_prevention_ms_when_ignited'), shock: v(sum, 'shock_prevention_ms_when_shocked') },
-    selfCurse: { reflect: !!sum.curses_reflected_to_self && !sum.unaffected_by_curses, effect: Math.max(0, 1 + v(sum, 'curse_effect_on_self_+%') / 100), time: Math.max(0, 1 + v(sum, 'self_curse_duration_+%') / 100) },
+    // Soul Mantle: a random Curse on you when a totem of yours dies, whatever the curse limit: one of the curse gems at that level,
+    // for its own duration. note: which curses it picks from is not in the data: the curse gems you can cast; without your own
+    // modifiers to the curses you inflict
+    soulCurse: sum.randomly_cursed_when_totems_die_curse_level ? Object.keys(GEM).filter(n => GEM[n].types?.includes('AppliesCurse') && !GEM[n].tags?.includes('trigger')).map(name => { const st = gemStats({ name, level: sum.randomly_cursed_when_totems_die_curse_level }, {}); return { name, s: (st.base_skill_effect_duration || 0) / 1000, C: { ...curseOf(st, {}), maxLevel: null } }; }) : null,
+    selfCurse: { reflect: !!sum.curses_reflected_to_self, effect: Math.max(0, 1 + v(sum, 'curse_effect_on_self_+%') / 100), time: Math.max(0, 1 + v(sum, 'self_curse_duration_+%') / 100) },
     // Ab Aeterno (a Dodge Roll avoids all Hits and leaves you Overencumbered), The Road Warrior (moving while Bleeding), Decree of
     // Loyalty (damage over time cannot bypass energy shield), Decree of Flight (the most Guard from maximum energy shield)
     uDef: { rollAll: !!sum.dodge_roll_can_avoid_all_damage, overEnc: !!sum.overencumbrance_on_dodge_roll, noBleedMove: !!sum.no_extra_bleeding_damage_while_moving,
@@ -1046,7 +1050,7 @@ const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'P
 // the tree's movement speed while you are in a state: [stat, the scene's condition; none: dual wielding, known here].
 // 'Green10': 10 green supports socketed, known here. note: not counted against Bloodlusting enemies (the scene's have
 // none), the penalties while performing an action
-const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_speed_+%_if_pinned_enemy_recently', 'PinnedRecently'], ['movement_speed_+%_while_using_charm', 'UsingCharm'],
+const MOVE_WHILE = [['movement_speed_+%_while_dual_wielding'], ['movement_velocity_+%_while_cursed', 'Cursed'], ['movement_speed_+%_if_pinned_enemy_recently', 'PinnedRecently'], ['movement_speed_+%_while_using_charm', 'UsingCharm'],
   ['parry_movement_speed_+%_if_youve_parried_recently', 'ParriedRecently'], ['movement_speed_+%_if_10_green_supports_socketed', 'Green10'], ['movement_speed_+%_if_enemy_killed_recently', 'KilledRecently'], ['movement_speed_+%_while_surrounded', 'Surrounded'],
   ['movement_speed_+%_while_you_have_energy_shield', 'HaveEnergyShield'], ['movement_speed_+%_for_4_seconds_on_block', 'BlockedPast4'], ['movement_speed_+%_if_used_a_mark_recently', 'MarkRecently'], ['archon_grants_movement_speed_+%', 'Archon'],
   ['movement_velocity_+%_when_on_full_life', 'FullLife'], ['movement_speed_+%_while_affected_by_ailment', 'Ailing']];   // Foxshade, The Infinite Pursuit
@@ -1528,6 +1532,8 @@ export function skill(g, b, treeGear) {
   for (const [k, from, to, cv] of [['physical_damage_%_to_gain_as_lightning_vs_electrocuted', 'physical', 'lightning', 'Electrocuted'],
     ['physical_damage_%_to_gain_as_fire_vs_heavy_stunned', 'physical', 'fire', 'HeavyStunned'], ['non_skill_cold_damage_%_to_gain_as_fire_vs_frozen_enemies', 'cold', 'fire', 'Frozen']])
     if (sum[k]) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val: sum[k], what: 'gain', from, to });
+  // the tree's, Shackles of the Wretched's and Soul Mantle's Vaal modifiers: increased (totem) damage per curse on you (the scene's count)
+  { const pc = v(sum, 'damage_+%_per_active_curse_on_self') + (tags.includes('totem') ? v(sum, 'totem_damage_+%_per_active_curse_on_self') : 0); if (pc) out.when.push({ cond: [{ type: 'Multiplier', var: 'CursesOnSelf' }], val: pc, what: 'damage', w: out.incW }); }
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
   if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
   // the tree's "Every (10) Rage also grants increased Fire / Physical / Spell Damage"
@@ -2075,5 +2081,5 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
   const thr = skill({ name: 'Lightning Spear', level: 10, supports: [] }, { gems: [], items: { weapon: newItem("Tyranny's Grip") } }, {});
   console.assert(n > 0 && Math.abs(d.avg / a.avg - (1 + 6 * n / 100)) < .02 && Math.abs(c.crit / a.crit - (1 + 3 * n / 100)) < 1e-9 && !!thr.reason, "Rathpith Globe, Tyranny's Grip", n, a.avg, d.avg, a.crit, c.crit, thr.reason); }
 // Shackles of the Wretched: the curses you inflict are on you too (Thief's Torment: for half the time), no ailment again for 6 seconds
-{ const b = { gems: [], items: {}, level: 80 }, R = s => recovery(character(b, s), s), a = R({ curses_reflected_to_self: 1, 'self_curse_duration_+%': -50, 'curse_effect_on_self_+%': -20, shock_prevention_ms_when_shocked: 6000 });
-  console.assert(a.selfCurse.reflect && a.selfCurse.time === .5 && a.selfCurse.effect === .8 && a.ailPrevent.shock === 6000 && !a.ailPrevent.chill && !R({}).selfCurse.reflect && !R({ curses_reflected_to_self: 1, unaffected_by_curses: 1 }).selfCurse.reflect, 'Shackles of the Wretched, Thief', a.selfCurse, a.ailPrevent); }
+{ const b = { gems: [], items: {}, level: 80 }, R = s => recovery(character(b, s), s), a = R({ curses_reflected_to_self: 1, 'self_curse_duration_+%': -50, 'curse_effect_on_self_+%': -20, shock_prevention_ms_when_shocked: 6000 }), sm = R({ randomly_cursed_when_totems_die_curse_level: 1 }).soulCurse;
+  console.assert(a.selfCurse.reflect && a.selfCurse.time === .5 && a.selfCurse.effect === .8 && a.ailPrevent.shock === 6000 && !a.ailPrevent.chill && !R({}).selfCurse.reflect && !R({}).soulCurse && sm.length > 3 && sm.every(x => x.s > 0 && x.C.effect === 1), 'Shackles of the Wretched, Thief, Soul Mantle', a.selfCurse, a.ailPrevent, sm); }
