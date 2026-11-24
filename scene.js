@@ -1262,7 +1262,7 @@ export function initScene(el, api) {
   const underCull = (d, S) => d.life + d.es <= (d.max + d.maxEs) * CULL[d.stat.rarity || 'normal'] * (1 + ((gst(S)['culling_strike_threshold_+%'] || 0) + (time - (me.culledAt ?? -99) <= RECENT ? sheet().cullRecent || 0 : 0) + (has(d, 'immobilised') ? sheet().cullImmob || 0 : 0) + (['rare', 'unique'].includes(d.stat.rarity) ? sheet().cullRare || 0 : 0)) / 100) / 100;   // the tree's: against Immobilised, Rare or Unique enemies
   const cullable = (d, S) => {
     const r = d.stat.rarity || 'normal';
-    return !d.dead && (S.P.culls || !S.src && (S.P.attack && sheet().cullBow || sheet().cullMark && d.mark) || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
+    return !d.dead && (S.P.culls || !S.src && (S.P.attack && sheet().cullBow || sheet().cullMark && d.mark || sheet().cullBeast && d.mon?.category === 'Beast' && meIs.CompanionInPresence()) || S.P.attack && (gst(S).local_cull_frozen_enemies_on_hit && d.st.freeze > 0 || gst(S).local_culling_strike_vs_bleeding_enemies && has(d, 'bleed')) || (r === 'rare' || r === 'unique') && (S.g?.supports?.some(n => /^Culling Strike/.test(n)) || gst(S)['kill_enemy_on_hit_if_under_10%_life'] || d.attr >= attr()?.skill_attrition_culling_strike_at_x_or_more_stacks)) && underCull(d, S);
   };
   // Detonate Living: its hit on an enemy under the Culling Strike threshold kills it, which explodes (its part) with its
   // permillage of the monster's life as physical. note: the game lets it target only such enemies; here any hit, the
@@ -3880,7 +3880,8 @@ export function initScene(el, api) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
     const EH = me.maxM * (S.dmg?.sum?.['recoup_mana_%_on_minion_death'] || 0) / 100, RT = sheet().recoup?.time || 8; if (EH > 0) me.recoup.push({ k: 'mana', left: EH, rate: EH / RT });   // Essence Harvest: its % of your maximum mana Recouped
     const RS = sheet().resummon, SC = S.dmg?.minionUndead ? onS('Sacrifice')?.dmg.stats['harvester_minion_resummon_speed_+%_final'] || 0 : 0;   // Sacrifice: undead ones Revive more slowly
-    if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / RS.speed / (1 + SC / 100);   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
+    const FR = RS.friends && [e, ...objs.filter(o => o.minion && !o.dead)].every(o => o.companion) ? RS.friends : 0;   // Lifelong Friend: faster if all your minions are Companions
+    if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / (RS.speed + FR) / (1 + SC / 100);   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
@@ -4930,6 +4931,8 @@ export function initScene(el, api) {
   }
   // Infernalist's Pyromantic Pact: a mana cost adds its share as Infernal Flame instead (up to your maximum mana); at the
   // most you take its share of your maximum life and energy shield as fire damage and lose its share of the Flame
+  // as your energy shield recharge begins: Elemental Archon, when not on its delay (Archon of the Blizzard). -> the time
+  const recharging = () => { const EA = sheet().earch; if (EA?.recharge && !(time < me.earch) && time >= (me.earch ?? -99) + EA.delay) earchGo(EA); return time; };
   function earchGo(EA) { me.earch = time + EA.time; buffs.push({ label: t('Elemental Archon'), c: css('fire'), s: EA.time, earch: true }); say(t('{0} active', t('Elemental Archon')), 'fire'); }
   function payMana(n) {
     const MH = sheet().uDef?.manaHurt; if (MH && n > 0) hurt(n * MH / 100, 0, 'physical');   // Scold's Bridle
@@ -5812,7 +5815,7 @@ export function initScene(el, api) {
     const MD = held && base(held.i)?.kind === 'meditate' && base(held.i).dmg?.stats?.['meditate_energy_shield_recharge_rate_+%_final'];
     if (typeof MD === 'number' && E) { me.es = Math.min(E * OVERFLOW, me.es + (c.esRecharge || 0) * (1 + MD / 100) * dt); if (me.es >= E * OVERFLOW) held = null; }
     else if (c.lifeRecharge && !c.vaal && me.life < RL && time - me.hurt >= (c.esDelay ?? 4)) me.life = Math.min(RL, me.life + c.lifeRecharge * dt);   // Eternal Youth
-    else if (me.es < E && (time < (me.ebarT ?? -99) || time - Math.max(me.esHurt ?? me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1))) me.esRech ??= time, me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
+    else if (me.es < E && (time < (me.ebarT ?? -99) || time - Math.max(me.esHurt ?? me.hurt, me.esStop ?? -99) + (me.esEarly || 0) >= (c.esDelay ?? 4) * (shifted()?.esDelay || 1) * (me.life < me.maxL ? c.esDelayHurt || 1 : 1) * (time - (me.stunAt ?? -99) <= RECENT ? c.esDelayStun || 1 : 1) * (meIs.Archon() ? c.esDelayArchon || 1 : 1))) me.esRech ??= recharging(), me.es = Math.min(E, me.es + (c.esRecharge || 0) * (shifted()?.esRecharge || 1) * (me.es <= E * LOW ? 1 + (c.esLowMore || 0) / 100 : 1) * dt);
     // mana regenerates; Rage regenerates from its gem while that is on, is lost once the delay passes without gaining
     // any, and Berserk costs life per Rage while Rage is not being lost
     const M = c.mana || 0;
