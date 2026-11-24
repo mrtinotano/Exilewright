@@ -2126,8 +2126,9 @@ export function initScene(el, api) {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
       const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
-      if ((P.chains || S.addChains || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
-        chain(m.position.clone(), hitD, cur, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0), seen, mult());
+      const SC = hitD && has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
+      if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
+        chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
         const by = chest(hitD);
         for (const e of nearest(hitD.pos, D.extraTargets || 0, e => !seen.has(e) && dist(e.pos, hitD.pos) <= S.A)) {
@@ -2223,7 +2224,8 @@ export function initScene(el, api) {
         const IL = S.dmg?.sum?.['support_minions_ignite_for_%_max_life'];
         if (IL && L > 0 && q0?.life > 0) {
           q0.hurt(q0.max * (S.dmg.sum['minion_fire_damage_%_of_maximum_life_taken_per_minute'] || 0) / 6000 * dt * (1 - (q0.res?.fire || 0) / 100));
-          if ((e.ilT = (e.ilT ?? 0) - dt) <= 0) { e.ilT = .5; for (const d of inside(e.pos, S.dmg.sum.infernal_legion_minion_burning_effect_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IL / 100 }); }
+          const CB = S.dmg.sum.minion_cathas_brilliance_blind_aura_radius;   // Catha's Brilliance: it Blinds those within its radius too
+          if ((e.ilT = (e.ilT ?? 0) - dt) <= 0) { e.ilT = .5; for (const d of inside(e.pos, S.dmg.sum.infernal_legion_minion_burning_effect_radius / 10)) inflict(d, 'ignite', MS, 1, { fire: L * IL / 100 }); if (CB) for (const d of inside(e.pos, CB / 10)) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); }
         }
         // Minion Instability: reduced to Low Life it explodes for its % of its maximum life as fire (once, until healed above). note: the explosion's area is the scene's
         const MI = S.dmg?.sum?.['explode_on_low_life_%_maximum_life_to_deal'], low = q0 && q0.life > 0 && q0.life <= q0.max * LOW;
@@ -2411,10 +2413,10 @@ export function initScene(el, api) {
   // Aftershock along it, as keywords.json MoltenFissure has it (the rule the game states for its long-lasting fissures):
   // its damage again to those on it, on to the fissures it crosses, each at most once per 0.2 s
   function fissure(S, from, ang, len, r = .8, mult = .5, o = {}) {
-    // Upheaval, Kaom's Madness: its additional fissures, fanned beside the first. ponytail: once per use, its fissures within 0.5 s
-    const AF = !o.branch && !o.extra && !(time - (S.addAt ?? -9) < .5) && S.dmg?.sum?.base_number_of_additional_fissures;
-    if (AF) { S.addAt = time; for (let k = 1; k <= AF; k++) later(.08 * k, () => fissure(S, from, ang + (k % 2 ? 1 : -1) * .5 * Math.ceil(k / 2), len, r, mult, { ...o, extra: true })); }
-    if (!o.branch && !o.extra && !(time - (S.fissAt ?? -9) < .5) && Math.random() * 100 < (S.dmg?.sum?.['skill_additional_fissure_chance_%'] || 0)) { S.fissAt = time; later(.08, () => fissure(S, from, ang + .5, len, r, mult, { ...o, extra: true })); }   // the tree's chance of another. ponytail: a use's fissures within 0.5 s roll once
+    // more fissures fanned beside the first: Upheaval and Kaom's Madness's additional ones, the tree's chance of another.
+    // ponytail: once per use, its fissures within 0.5 s
+    const AF = !o.branch && !o.extra && !(time - (S.fissAt ?? -9) < .5) && (S.dmg?.sum?.base_number_of_additional_fissures || 0) + (Math.random() * 100 < (S.dmg?.sum?.['skill_additional_fissure_chance_%'] || 0));
+    if (AF) { S.fissAt = time; for (let k = 1; k <= AF; k++) later(.08 * k, () => fissure(S, from, ang + (k % 2 ? 1 : -1) * .5 * Math.ceil(k / 2), len, r, mult, { ...o, extra: true })); }
     const dx = Math.sin(ang), dz = Math.cos(ang), b = { x: from.x + dx * len, z: from.z + dz * len }, seen = new Set();   // each enemy once
     const decal = fx.strip(from, b, .9, 0x070605, o.dur || 4, { dark: true, tex: 'beam', a: .9, y: .033 });
     if (o.dur) {
@@ -3883,7 +3885,12 @@ export function initScene(el, api) {
     limit(o => o[tag], max);
     if (Math.random() * 100 < sheet().undeath.offer) undeathGo();   // the tree's chance of Archon of Undeath
     const OH = sheet().offerHeal; if (OH) me.life = Math.min(me.maxL, me.life + me.maxL * OH / 100);   // the tree's life recovered when you create an Offering
-    fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: S.dmg.stats, R: S.A, off: () => ring.remove() }); say(t('{0} active', S.label), 'blood');
+    // Guatelitzi's Ablation: a Power Charge every its interval while the Offering stands; when it ends, its share of your
+    // life and mana a second for as long as it stood. note: its life Sacrificed on use is not simulated (of which life, the data does not say)
+    const GA = S.dmg?.sum || {}, PC = GA.supported_offerings_grant_you_a_powercharge_every_x_ms / 1000, RG = GA['recover_%_life_and_mana_per_minute_for_supported_offering_lifetime'] / 6000;
+    fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: S.dmg.stats, R: S.A, off: () => ring.remove(),
+      tick(dt, e) { if (PC && Math.floor(e.s / PC) > Math.floor((e.s - dt) / PC)) gainCharge('power', S.label); },
+      end(e) { if (RG) for (const [k, M] of [['life', me.maxL], ['mana', me.maxM]]) me.recoup.push({ k, left: M * RG * e.s, rate: M * RG }); } }); say(t('{0} active', S.label), 'blood');
   }
   K.pain = S => offer(S, 'pain', S.dmg.stats.base_number_of_pain_offerings_allowed);
   // Soul Offering: while its spike stands, your spells deal its more damage. note: its increased spell damage is applied as more
@@ -4274,6 +4281,7 @@ export function initScene(el, api) {
     if (!auto && P.attack && P.projectile && (walk || move) && Math.random() * 100 < sheet().moveProj) S = { ...S, dmg: { ...S.dmg, shape: { ...sh(S), projectiles: (sh(S).projectiles || 1) + 2 } } };   // the tree's two more projectiles while moving
     // Titan's Ancestral Empowerment: every second Slam you use yourself is Ancestrally Boosted
     // (and Mountain Splitter's every third, at the slam: S.slamN)
+    if (!auto && P.melee && time < me.styrn?.until && !api.info(S.g || {})?.gem?.types?.includes('ActiveBlock')) S.mult *= 1 + me.styrn.more / 100;   // Styrn's Mountain: the melee skills that do not raise a shield, if you Blocked with its skill Recently
     const PX = !auto && P.attack && me.parryNext?.[P.melee ? 'melee' : 'ranged']; if (PX) { S.mult *= 1 + PX / 100; me.parryNext = null; }   // a parry's increased damage to this attack (note: as a factor of its own)
     const RU = !auto && S.dmg?.sum?.support_ruthless_big_hit_max_count;   // Ruthless: every that many uses of it, its more Stun buildup
     if (RU && ((me.ruth ||= {})[S.name] = (me.ruth[S.name] || 0) + 1) % RU === 0) S.stunEmp = (S.stunEmp || 1) * (1 + (S.dmg.finals?.['support_ruthless_big_hit_stun_damage_+%_final'] || 0) / 100);
@@ -4317,9 +4325,10 @@ export function initScene(el, api) {
       let { cost, life } = costOf(S, o.held);
       if (sheet().divCost) { me.div ??= sheet().divinity || 0; if (cost + life > me.div) { toast(t('Not enough Divinity for {0}', S.label) + ` (${Math.ceil(cost + life)})`); return false; } me.div -= cost + life; cost = life = 0; }   // Immaculate Adherence: skills cost Divinity instead of mana or life
       if (cost > me.mana && !sheet().flame) { toast(t('Not enough mana for {0}', S.label) + ` (${Math.ceil(cost)})`); return false; }
-      // a Runic Ward cost (Conductive Runes); Olroth's Hubris: its share of your maximum Ward more, added physical and
+      // a Runic Ward cost (Conductive Runes); Scouring Flame, Runic Extraction, Olroth's Conviction: its share of the life
+      // and mana cost as Runic Ward too; Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
-      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100;
+      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100 + (cost + life) * (OH?.['base_skill_ward_cost_as_%_of_life_and_mana_cost'] || 0) / 100;
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) { spendWard(WC); S.wardPaid = WC; }
       // Derange: an Energy Shield cost equal to your Intelligence
@@ -4421,6 +4430,8 @@ export function initScene(el, api) {
     if (VO) me.voltAt[S.name] = me.trav;
     const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : K[S.kind] || K.area;
     run(S); whirl(S);
+    // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
+    const OC = S.dmg?.sum?.support_empowers_x_additional_other_skills; if (OC) for (const e of empower) if (e.name === S.name && e.uses && !e.oc) { e.uses += OC; e.oc = true; }
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration
     const RS = !auto && S.P.spell && S.els.includes('fire') && onS('Raging Spirits'), rs = RS && RS.dmg.stats;
@@ -4894,7 +4905,7 @@ export function initScene(el, api) {
     // the bars empty after a while without buildup (monster.ot poise decay)
     if (d.focusMax > 0 && time - (d.focusAt ?? -99) > sheet().focus?.delay) d.focus = Math.min(d.focusMax, d.focus + d.focusMax * sheet().focus.decay / 100 / 60 * dt);   // drained Focus comes back after its delay
     if ((d.calm += dt) * 1000 > GAME.poise_decay_delay_ms) for (const k in d.bar) d.bar[k] = Math.max(0, d.bar[k] - GAME.poise_decay_per_second * dt);
-    if (d.curse && (d.curse.s -= dt) <= 0) d.curse = d.hexes?.pop() || null;
+    if (d.curse && (d.curse.s -= dt) <= 0) { const KC = d.curse.S?.dmg?.sum?.apply_unaffected_by_pacifying_curses_for_x_ms_on_curse_expiry; if (KC) d.noPac = time + KC / 1000; d.curse = d.hexes?.pop() || null; }   // Kalisa's Crescendo: not Pacified again for its time
     if (d.hexes?.length) d.hexes = d.hexes.filter(u => (u.s -= dt) > 0);
     if (d.mark && !(d.mark.hound && st.bleed > 0) && (d.mark.s -= dt) <= 0) {   // Bloodhound's Mark lasts while they bleed
       if (d.mark.bomb) markOff(d); else d.mark = null; }
@@ -5222,11 +5233,12 @@ export function initScene(el, api) {
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
     } else { R.blocked = me.rblockAt = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
+    const SM = (P || R).dmg?.sum?.['knights_legacy_non_active_blocking_melee_skill_damage_+%_final_to_grant_if_active_blocked_with_supported_skills_recently']; if (SM) me.styrn = { more: SM, until: time + RECENT };   // Styrn's Mountain
     blocked(d); return true;
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
   // Kalisa's Crescendo: an enemy in the final share of its curse's duration is Pacified and deals no damage (keywords.json Pacify)
-  const pacified = d => { const C = d.curse, P = C?.S?.dmg?.sum?.['curse_pacify_for_final_%_of_duration']; return P && C.s <= C.full * P / 100; };
+  const pacified = d => { const C = d.curse, P = C?.S?.dmg?.sum?.['curse_pacify_for_final_%_of_duration']; return P && C.s <= C.full * P / 100 && !(time < d.noPac); };
   function struck(d) {
     if (pacified(d)) return;
     const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
