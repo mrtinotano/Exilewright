@@ -112,8 +112,8 @@ def documents():
 POB = os.path.join(documents(), 'Path of Building (PoE2)', 'Builds')
 
 
-def call(url, body=None):
-    headers = dict(UA, **({'Content-Type': 'application/x-www-form-urlencoded'} if body is not None else {}))
+def call(url, body=None, ua=UA):
+    headers = dict(ua, **({'Content-Type': 'application/x-www-form-urlencoded'} if body is not None else {}))
     try:
         with urlopen(Request(url, data=body, headers=headers), timeout=20) as r:
             return r.read()
@@ -547,6 +547,8 @@ def watch_keys():
 
 VERSION = '0.72'   # the app's version: the window's title, the update check and the installer (build_app.py) take it from here
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
+# poe2scout asks those who keep using its API for contact information in the User-Agent: where the app lives
+SCOUT_UA = {'User-Agent': f'Exilewright/{VERSION} (+https://github.com/{RELEASES})'}
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
@@ -654,7 +656,7 @@ class Handler(SimpleHTTPRequestHandler):
         if not re.fullmatch(r'[\w ]{1,60}', league) or not re.fullmatch(r'[\w-]{0,80}', item):   # \w: "legacy-of-mjölner"
             return self.reply_json(400, b'{"error":{"message":"bad price"}}')
         try:
-            return self.reply_json(200, call(SCOUT + quote(league) + ('/Currencies/' + quote(item) if item else '/ReferenceCurrencies')))
+            return self.reply_json(200, call(SCOUT + quote(league) + ('/Currencies/' + quote(item) if item else '/ReferenceCurrencies'), ua=SCOUT_UA))
         except Exception as e:
             return self.reply_json(502, json.dumps({'error': {'message': str(e)}}).encode())
 
