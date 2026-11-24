@@ -1175,7 +1175,7 @@ export function initScene(el, api) {
   // Overwhelming Presence: the enemies in your Presence have its less stun and ailment thresholds
   const awe = (d, k) => { const D = onS('Overwhelming Presence')?.dmg, st = D?.stats; return st && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + st[`skill_overwhelming_pressure_aura_enemy_${k}_threshold_+%`] * (1 + (D.sum['aura_effect_+%'] || 0) / 100) / 100 : 1; };   // its magnitude with the build's aura effect
   // Daze: for its time the enemy takes more stun buildup
-  const daze = (d, s, S) => { if (!(s > 0) || S && [S.name, ...(S.g?.supports || [])].some(n => SK.skills[n]?.flags?.includes('cannot_daze'))) return;   /* S: the skill that would Daze: not Vaulting Impact, nor one with Dazzle */ if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
+  const daze = (d, s, S) => { if (!(s > 0) || S && [S.name, ...(S.g?.supports || [])].some(n => flagOf(n, 'cannot_daze'))) return;   /* S: the skill that would Daze: not Vaulting Impact, nor one with Dazzle */ if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
     if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
@@ -1593,7 +1593,7 @@ export function initScene(el, api) {
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
     seen.add(d); hit(d, S, { mult });
-    const free = d.curse && flagOf(S, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
+    const free = d.curse && flagOf(S.name, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
     if (n <= 0 && !free) return;
     later(.07, () => {
       // a lightning rod within reach takes the bolt and pulses over its whole area
@@ -1881,8 +1881,8 @@ export function initScene(el, api) {
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
     const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
     return k && partOf(S, k); };
-  const flagOf = (S, f) => !!SK.skills[S.name]?.flags?.includes(f);   // a flag of the skill itself (skills.json)
-const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
+  const flagOf = (n, f) => !!SK.skills[n]?.flags?.includes(f);   // a flag of the skill or support called n (skills.json)
+  const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
   const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
@@ -1913,6 +1913,21 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
     const q = { p, r: .3, life: Math.max(1, me.maxL * st['lingering_illusion_clone_base_maximum_life_%_of_owner_maximum_life'] / 100),
       hurt(n) { if (q.life > 0 && (q.life -= n) <= 0) { e.dead = true; pop(p, .6, 'arcane'); remnant(S, p); } } };
     const e = thing(f.group, durOf(S), { name: S.name, decoy: true, segs: [q] });
+  }
+  // Mirage Archer (a dodge roll), Mirage Deadeye (a ranged projectile attack of yours): a Mirage where you stood that uses
+  // the ranged attacks placed in it, in turn, for its duration, with its less damage, once every its cooldown (skills.json
+  // meta_skill, meta_support)
+  function mirage(name) {
+    const M = onS(name), D = M && SK.skills[name], X = D && Object.values(D.meta_skill)[0];
+    const js = M ? api.build().gems.map((_, j) => j).filter(j => api.usedBy(j) === M.g && base(j)?.dmg?.speed) : [];
+    if (!js.length || time < me.mirAt?.[name]) return;
+    (me.mirAt ||= {})[name] = time + X.constant._cooldown_ms / 1000;
+    const p = { x: pp.x, z: pp.z }, f = makeMinion(fx, 'arcane'), more = 1 + D.meta_support['support_lingering_mirage_damage_+%_final'] / 100; f.group.position.set(p.x, 0, p.z);
+    let wait = .3, k = 0;
+    // ponytail: the Mirage attacks from where it stands by moving you there for the use (aim reads your position), as Hollow Form's images
+    thing(f.group, (X.levels[M.g.level] || X.levels[1]).base_skill_effect_duration / 1000, { name, tick(dt) {
+      if ((wait -= dt) > 0) return; const j = js[k++ % js.length], d = near(p, SIM.projRange); wait = 1 / base(j).dmg.speed; if (!d) return;
+      const o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z; use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta', more }); pp.x = o.x; pp.z = o.z; } });
   }
   // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
   // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
@@ -2141,7 +2156,7 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
       const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
-      const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
+      const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
       if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
         chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
@@ -2954,7 +2969,7 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
       const P = S.P, reach = strikeR(S), FL = S.dmg?.stats?.flicker_strike_additional_flickers_from_power_charges, n = S.times || (FL ? 1 + S.spent * FL : P.dash ? Math.max(1, S.spent) : 1);   // Flicker Strike: its more strikes per Power Charge
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
-      if (flagOf(S, 'cannot_gain_power_charges_during_skill')) me.noPower = time + n * .13;   // Flicker Strike, for its strikes
+      if (flagOf(S.name, 'cannot_gain_power_charges_during_skill')) me.noPower = time + n * .13;   // Flicker Strike, for its strikes
       const go = (d, k) => {
         if (d.dead) return;
         if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
@@ -4240,7 +4255,7 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
       const hits = !NOHIT.has(S.kind), tally = () => empower.reduce((t, e) => t + 1 + (e.uses || 0), 0), had = tally();
       { const LD = sheet().lethal, F = flasks()[0], need = F && F.max * (LD?.pct || 0) / 100; if (LD?.pct && P.attack && hits && S.dmg && flaskLeft(0) >= need && api.info(S.g)?.gem?.types?.includes('Bow')) { me.fl[0] = flaskLeft(0) - need; const h = S.dmg.hits.physical || [0, 0], n = F.amount * LD.add / 100; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, physical: [h[0] + n, h[1] + n] } }; } }   // The Lethal Draw: bow attacks spend life flask charges for added physical damage
       { const OV = sheet().olro, n = OV && P.attack && hits && S.dmg ? Math.min(OV, (me.olro || []).reduce((t, u) => t + (u.until > time ? u.v : 0), 0)) : 0; if (n) { const h = S.dmg.hits.lightning || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, lightning: [h[0], h[1] + n] } }; } }   // Olrovasara: maximum added lightning damage from the Power of the enemies hit in the past 20 s
-      const noCry = flagOf(S, 'cannot_be_empowered_by_warcries');   // Resonating Shield
+      const noCry = flagOf(S.name, 'cannot_be_empowered_by_warcries');   // Resonating Shield
       for (let k = empower.length - 1; k >= 0; k--) {
         const E = empower[k];
         if (noCry && ['break', 'cold', 'fire', 'echo', 'wave'].includes(E.type)) continue;   // those a warcry leaves (K.warcry)
@@ -4488,6 +4503,7 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
     run(S); whirl(S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
     if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
+    if (!auto && P.attack && P.ranged && P.projectile) mirage('Mirage Deadeye');
     // Staggering Palm's buff: your Quarterstaff attacks also fire its projectile
     if (!auto && P.attack && time < me.palm?.until && me.palm.X && S.name !== 'Staggering Palm' && SK.skills[S.name]?.weapons?.includes('Quarterstaves')) shoot({ ...me.palm.X, mult: S.mult }, { x: pp.x, z: pp.z }, S.dx, S.dz);
     const OC = S.dmg?.sum?.support_empowers_x_additional_other_skills; if (OC) for (const e of empower) if (e.name === S.name && e.uses && !e.oc) { e.uses += OC; e.oc = true; }
@@ -4722,6 +4738,7 @@ const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry |
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
+    mirage('Mirage Archer');
     // Primal Bounty: the dodge expends an Owl Feather (up to its number more with The Mhacha's Gift, each 100% more
     // Empowerment effect) to empower your next projectile skill: its additional projectiles and faster flight
     // note: 2 additional projectiles is poe2db's (Primal_Bounty), not in the data; the granted skill's level is not in

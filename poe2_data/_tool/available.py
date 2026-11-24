@@ -458,6 +458,9 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                                                                   for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}) else {}),
         'meta_support': {sid(a): v for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Support')
                          for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])} or None,
+        # the skill a meta gem itself uses for the skills in it (Mirage Archer's Mirage: its duration, its cooldown)
+        **({'meta_skill': m} if (m := {ge_tab[x]['Id']: dict(zip(('constant', 'levels'), stat_levels([ge_tab[x]], [ge_tab[x]['StatSet']])))
+                                      for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].endswith('SpawnPlayer')}) else {}),
     }
     totem = next((art_variety[k[10:]] for k in implicit | set(const) if k.startswith('totem_has_') and k[10:] in art_variety), None) \
         or next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)

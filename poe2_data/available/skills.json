@@ -26071,6 +26071,136 @@
    "meta_support": {
     "support_lingering_mirage_damage_+%_final": -50,
     "skill_disabled_unless_cloned": 1
+   },
+   "meta_skill": {
+    "MirageDeadeyeSpawnPlayer": {
+     "constant": {
+      "_cooldown_ms": 10000,
+      "_stored_uses": 1
+     },
+     "levels": {
+      "1": {
+       "base_skill_effect_duration": 4050
+      },
+      "2": {
+       "base_skill_effect_duration": 4100
+      },
+      "3": {
+       "base_skill_effect_duration": 4150
+      },
+      "4": {
+       "base_skill_effect_duration": 4200
+      },
+      "5": {
+       "base_skill_effect_duration": 4250
+      },
+      "6": {
+       "base_skill_effect_duration": 4300
+      },
+      "7": {
+       "base_skill_effect_duration": 4350
+      },
+      "8": {
+       "base_skill_effect_duration": 4400
+      },
+      "9": {
+       "base_skill_effect_duration": 4450
+      },
+      "10": {
+       "base_skill_effect_duration": 4500
+      },
+      "11": {
+       "base_skill_effect_duration": 4550
+      },
+      "12": {
+       "base_skill_effect_duration": 4600
+      },
+      "13": {
+       "base_skill_effect_duration": 4650
+      },
+      "14": {
+       "base_skill_effect_duration": 4700
+      },
+      "15": {
+       "base_skill_effect_duration": 4750
+      },
+      "16": {
+       "base_skill_effect_duration": 4800
+      },
+      "17": {
+       "base_skill_effect_duration": 4850
+      },
+      "18": {
+       "base_skill_effect_duration": 4900
+      },
+      "19": {
+       "base_skill_effect_duration": 4950
+      },
+      "20": {
+       "base_skill_effect_duration": 5000
+      },
+      "21": {
+       "base_skill_effect_duration": 5050
+      },
+      "22": {
+       "base_skill_effect_duration": 5100
+      },
+      "23": {
+       "base_skill_effect_duration": 5150
+      },
+      "24": {
+       "base_skill_effect_duration": 5200
+      },
+      "25": {
+       "base_skill_effect_duration": 5250
+      },
+      "26": {
+       "base_skill_effect_duration": 5300
+      },
+      "27": {
+       "base_skill_effect_duration": 5350
+      },
+      "28": {
+       "base_skill_effect_duration": 5400
+      },
+      "29": {
+       "base_skill_effect_duration": 5450
+      },
+      "30": {
+       "base_skill_effect_duration": 5500
+      },
+      "31": {
+       "base_skill_effect_duration": 5550
+      },
+      "32": {
+       "base_skill_effect_duration": 5600
+      },
+      "33": {
+       "base_skill_effect_duration": 5650
+      },
+      "34": {
+       "base_skill_effect_duration": 5700
+      },
+      "35": {
+       "base_skill_effect_duration": 5750
+      },
+      "36": {
+       "base_skill_effect_duration": 5800
+      },
+      "37": {
+       "base_skill_effect_duration": 5850
+      },
+      "38": {
+       "base_skill_effect_duration": 5900
+      },
+      "39": {
+       "base_skill_effect_duration": 5950
+      },
+      "40": {
+       "base_skill_effect_duration": 6000
+      }
+     }
+    }
    }
   },
   "Inevitable Agony": {
@@ -27322,7 +27452,139 @@
     "",
     "Talismans"
    ],
-   "meta_support": null
+   "meta_support": null,
+   "meta_skill": {
+    "VoidIllusionSpawnPlayer": {
+     "constant": {
+      "base_skill_effect_duration": 2000,
+      "active_skill_base_area_of_effect_radius": 30,
+      "_cooldown_ms": 4000,
+      "_stored_uses": 3
+     },
+     "levels": {
+      "1": {
+       "_base_multiplier": 35000
+      },
+      "2": {
+       "_base_multiplier": 38500
+      },
+      "3": {
+       "_base_multiplier": 42400
+      },
+      "4": {
+       "_base_multiplier": 46300
+      },
+      "5": {
+       "_base_multiplier": 50100
+      },
+      "6": {
+       "_base_multiplier": 54100
+      },
+      "7": {
+       "_base_multiplier": 58100
+      },
+      "8": {
+       "_base_multiplier": 61900
+      },
+      "9": {
+       "_base_multiplier": 65400
+      },
+      "10": {
+       "_base_multiplier": 69200
+      },
+      "11": {
+       "_base_multiplier": 73200
+      },
+      "12": {
+       "_base_multiplier": 77500
+      },
+      "13": {
+       "_base_multiplier": 82200
+      },
+      "14": {
+       "_base_multiplier": 87200
+      },
+      "15": {
+       "_base_multiplier": 92600
+      },
+      "16": {
+       "_base_multiplier": 98500
+      },
+      "17": {
+       "_base_multiplier": 104700
+      },
+      "18": {
+       "_base_multiplier": 111500
+      },
+      "19": {
+       "_base_multiplier": 118900
+      },
+      "20": {
+       "_base_multiplier": 126800
+      },
+      "21": {
+       "_base_multiplier": 135200
+      },
+      "22": {
+       "_base_multiplier": 144200
+      },
+      "23": {
+       "_base_multiplier": 153800
+      },
+      "24": {
+       "_base_multiplier": 164100
+      },
+      "25": {
+       "_base_multiplier": 175000
+      },
+      "26": {
+       "_base_multiplier": 186700
+      },
+      "27": {
+       "_base_multiplier": 199100
+      },
+      "28": {
+       "_base_multiplier": 212400
+      },
+      "29": {
+       "_base_multiplier": 226500
+      },
+      "30": {
+       "_base_multiplier": 241600
+      },
+      "31": {
+       "_base_multiplier": 257700
+      },
+      "32": {
+       "_base_multiplier": 274900
+      },
+      "33": {
+       "_base_multiplier": 293200
+      },
+      "34": {
+       "_base_multiplier": 312700
+      },
+      "35": {
+       "_base_multiplier": 333500
+      },
+      "36": {
+       "_base_multiplier": 355800
+      },
+      "37": {
+       "_base_multiplier": 379500
+      },
+      "38": {
+       "_base_multiplier": 404700
+      },
+      "39": {
+       "_base_multiplier": 431700
+      },
+      "40": {
+       "_base_multiplier": 460500
+      }
+     }
+    }
+   }
   },
   "Paquate's Pact": {
    "cast_time_ms": 0,
@@ -86612,7 +86874,141 @@
    "duration_ms": 3000,
    "projectile_collision": null,
    "weapons": null,
-   "meta_support": null
+   "meta_support": null,
+   "meta_skill": {
+    "LingeringIllusionSpawnPlayer": {
+     "constant": {
+      "base_skill_effect_duration": 3000,
+      "lingering_illusion_clone_base_maximum_life_%_of_owner_maximum_life": 1,
+      "base_remnant_duration_ms": 5000,
+      "_cost": {
+       "Mana": 10
+      }
+     },
+     "levels": {
+      "1": {
+       "chance_%_to_create_additional_remnant": 0
+      },
+      "2": {
+       "chance_%_to_create_additional_remnant": 4
+      },
+      "3": {
+       "chance_%_to_create_additional_remnant": 8
+      },
+      "4": {
+       "chance_%_to_create_additional_remnant": 12
+      },
+      "5": {
+       "chance_%_to_create_additional_remnant": 16
+      },
+      "6": {
+       "chance_%_to_create_additional_remnant": 20
+      },
+      "7": {
+       "chance_%_to_create_additional_remnant": 24
+      },
+      "8": {
+       "chance_%_to_create_additional_remnant": 28
+      },
+      "9": {
+       "chance_%_to_create_additional_remnant": 32
+      },
+      "10": {
+       "chance_%_to_create_additional_remnant": 36
+      },
+      "11": {
+       "chance_%_to_create_additional_remnant": 40
+      },
+      "12": {
+       "chance_%_to_create_additional_remnant": 44
+      },
+      "13": {
+       "chance_%_to_create_additional_remnant": 48
+      },
+      "14": {
+       "chance_%_to_create_additional_remnant": 52
+      },
+      "15": {
+       "chance_%_to_create_additional_remnant": 56
+      },
+      "16": {
+       "chance_%_to_create_additional_remnant": 60
+      },
+      "17": {
+       "chance_%_to_create_additional_remnant": 64
+      },
+      "18": {
+       "chance_%_to_create_additional_remnant": 68
+      },
+      "19": {
+       "chance_%_to_create_additional_remnant": 72
+      },
+      "20": {
+       "chance_%_to_create_additional_remnant": 76
+      },
+      "21": {
+       "chance_%_to_create_additional_remnant": 80
+      },
+      "22": {
+       "chance_%_to_create_additional_remnant": 84
+      },
+      "23": {
+       "chance_%_to_create_additional_remnant": 88
+      },
+      "24": {
+       "chance_%_to_create_additional_remnant": 92
+      },
+      "25": {
+       "chance_%_to_create_additional_remnant": 96
+      },
+      "26": {
+       "chance_%_to_create_additional_remnant": 100
+      },
+      "27": {
+       "chance_%_to_create_additional_remnant": 104
+      },
+      "28": {
+       "chance_%_to_create_additional_remnant": 108
+      },
+      "29": {
+       "chance_%_to_create_additional_remnant": 112
+      },
+      "30": {
+       "chance_%_to_create_additional_remnant": 116
+      },
+      "31": {
+       "chance_%_to_create_additional_remnant": 120
+      },
+      "32": {
+       "chance_%_to_create_additional_remnant": 124
+      },
+      "33": {
+       "chance_%_to_create_additional_remnant": 128
+      },
+      "34": {
+       "chance_%_to_create_additional_remnant": 132
+      },
+      "35": {
+       "chance_%_to_create_additional_remnant": 136
+      },
+      "36": {
+       "chance_%_to_create_additional_remnant": 140
+      },
+      "37": {
+       "chance_%_to_create_additional_remnant": 144
+      },
+      "38": {
+       "chance_%_to_create_additional_remnant": 148
+      },
+      "39": {
+       "chance_%_to_create_additional_remnant": 152
+      },
+      "40": {
+       "chance_%_to_create_additional_remnant": 156
+      }
+     }
+    }
+   }
   },
   "Ghost Dance": {
    "quality": {
@@ -121793,6 +122189,136 @@
    "meta_support": {
     "support_lingering_mirage_damage_+%_final": -30,
     "skill_disabled_unless_cloned": 1
+   },
+   "meta_skill": {
+    "MirageArcherSpawnPlayer": {
+     "constant": {
+      "_cooldown_ms": 10000,
+      "_stored_uses": 1
+     },
+     "levels": {
+      "1": {
+       "base_skill_effect_duration": 5050
+      },
+      "2": {
+       "base_skill_effect_duration": 5100
+      },
+      "3": {
+       "base_skill_effect_duration": 5150
+      },
+      "4": {
+       "base_skill_effect_duration": 5200
+      },
+      "5": {
+       "base_skill_effect_duration": 5250
+      },
+      "6": {
+       "base_skill_effect_duration": 5300
+      },
+      "7": {
+       "base_skill_effect_duration": 5350
+      },
+      "8": {
+       "base_skill_effect_duration": 5400
+      },
+      "9": {
+       "base_skill_effect_duration": 5450
+      },
+      "10": {
+       "base_skill_effect_duration": 5500
+      },
+      "11": {
+       "base_skill_effect_duration": 5550
+      },
+      "12": {
+       "base_skill_effect_duration": 5600
+      },
+      "13": {
+       "base_skill_effect_duration": 5650
+      },
+      "14": {
+       "base_skill_effect_duration": 5700
+      },
+      "15": {
+       "base_skill_effect_duration": 5750
+      },
+      "16": {
+       "base_skill_effect_duration": 5800
+      },
+      "17": {
+       "base_skill_effect_duration": 5850
+      },
+      "18": {
+       "base_skill_effect_duration": 5900
+      },
+      "19": {
+       "base_skill_effect_duration": 5950
+      },
+      "20": {
+       "base_skill_effect_duration": 6000
+      },
+      "21": {
+       "base_skill_effect_duration": 6050
+      },
+      "22": {
+       "base_skill_effect_duration": 6100
+      },
+      "23": {
+       "base_skill_effect_duration": 6150
+      },
+      "24": {
+       "base_skill_effect_duration": 6200
+      },
+      "25": {
+       "base_skill_effect_duration": 6250
+      },
+      "26": {
+       "base_skill_effect_duration": 6300
+      },
+      "27": {
+       "base_skill_effect_duration": 6350
+      },
+      "28": {
+       "base_skill_effect_duration": 6400
+      },
+      "29": {
+       "base_skill_effect_duration": 6450
+      },
+      "30": {
+       "base_skill_effect_duration": 6500
+      },
+      "31": {
+       "base_skill_effect_duration": 6550
+      },
+      "32": {
+       "base_skill_effect_duration": 6600
+      },
+      "33": {
+       "base_skill_effect_duration": 6650
+      },
+      "34": {
+       "base_skill_effect_duration": 6700
+      },
+      "35": {
+       "base_skill_effect_duration": 6750
+      },
+      "36": {
+       "base_skill_effect_duration": 6800
+      },
+      "37": {
+       "base_skill_effect_duration": 6850
+      },
+      "38": {
+       "base_skill_effect_duration": 6900
+      },
+      "39": {
+       "base_skill_effect_duration": 6950
+      },
+      "40": {
+       "base_skill_effect_duration": 7000
+      }
+     }
+    }
    }
   },
   "Combat Frenzy": {
