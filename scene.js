@@ -382,8 +382,9 @@ export function initScene(el, api) {
     const E = type === 'power' && S.dmg?.trig?.find(T => T.stats?.support_empower_X_attacks_with_spark_on_power_charge_gain), X = E && S.dmg.trig.find(T => T.support === E.support && T.hits?.lightning);
     if (X) { const A = asTrig(S, X); empower = empower.filter(e => e.type !== 'spark'); empower.push({ type: 'spark', uses: E.stats.support_empower_X_attacks_with_spark_on_power_charge_gain, X: A, label: A.label, name: S.name, el: 'lightning' }); }
   }
-  // Combo now: lost after the skill's delay without gaining any (its supports' 4 or 6 s, longer with Flow)
-  const comboNow = S => time - (me.comboAt ?? -99) > (S.dmg?.combo?.decay || 4) ? 0 : me.combo || 0;
+  // Combo now: lost after the delay without gaining any, the longest among your skills that count it (Tempest Bell's own
+  // 8 s, a support's 4 or 6 s, longer with Flow), whichever skill built it
+  const comboNow = () => time - (me.comboAt ?? -99) > (api.build().gems.reduce((m, g, j) => Math.max(m, base(j)?.dmg?.combo?.decay || 0), 0) || 4) ? 0 : me.combo || 0;
   // Arcane Surge: its increased cast speed (useTime) and more mana regeneration (vitals), by its effect on you
   const surge = () => { const A = sheet().arcaneSurge; return time < me.surgeUntil || A?.always ? (A?.effect || 1) + (A?.missing || 0) * Math.floor(Math.max(0, 1 - me.mana / (me.maxM || 1)) * 10) / 100 : 0; };
   function arcaneSurge(s) {
@@ -582,7 +583,7 @@ export function initScene(el, api) {
       const SG = !S.src && sheet().tides, LF = SG && flasks()[0];   // Sanguine Tides: a hit while the life flask is full
       if (LF && flaskLeft(0) >= LF.max) { const n = Math.floor(LF.max * SG.use / 100); me.fl[0] -= n; me.tides = { pct: n * SG.per, until: time + SG.dur }; }
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
-        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
+        { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.breath || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
           + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
@@ -1253,14 +1254,14 @@ export function initScene(el, api) {
     if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need))); say(t('{0} triggers {1}', T.label, base(j).label), T.el);
     for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
   }
-  function event(type, p, S, d) {
+  function event(type, p, S, d, n) {   // n: how much of it, where the gain is not per the enemy's Power
     if (S.src === 'meta') return;
     for (const k in tog) {
       const T = tog[k];
       if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
         const j = trigOf(T);
         if (j < 0) continue;
-        if (T.per) { gainEnergy(T, T.per[type] / 100 * pow(d), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
         else { if (++T.energy < T.need) continue; T.energy = 0; }
         if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
@@ -1752,7 +1753,7 @@ export function initScene(el, api) {
   // over one grants the Infusion for 20 s (its increased duration) or until a skill consumes it, up to the most of each
   // kind, with its chance of one more (calc.js infusion). A skill that can consume one does on use (skillfx infuses),
   // its own kind first, else a Verisium one; its chance not to remove it, the power charge it may grant
-  const chanAt = {}, chanInf = {}, fus = {};   // fus: Ember Fusillade's Embers
+  const chanAt = {}, chan0 = {}, chanInf = {}, fus = {};   // chan0: when a channelling started (and whether Empowered: Flame Breath)   // fus: Ember Fusillade's Embers
   const INF_TIME = 20, INF_C = { fire: 'fire', cold: 'cold', lightning: 'lightning', verisium: 'gold' };   // note: keywords.json "for 20 seconds"
   const infNow = el => (me.inf[el] = (me.inf[el] || []).filter(x => x > time));
   const EQUILIBRIUM = { fire: 'lightning', lightning: 'cold', cold: 'fire' };   // Elemental Equilibrium: the Infusion Remnant you create instead
@@ -2249,7 +2250,7 @@ export function initScene(el, api) {
       },
       remove() {
         fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
-        if (!e.keep || e.slain) event('miniondeath', e.pos, MS);
+        if (!e.keep || e.slain) event('miniondeath', e.pos, MS, null, 1);
         if (e.keep && e.slain) fallen(S, e);
         if (e.slain) me.minionDiedAt = time;   // the tree's "if one of your Minions has died Recently"
         // Deathmarch: on death it heals the allied minions within its radius for its % of its life (their ailments: minions have none here)
@@ -2701,10 +2702,15 @@ export function initScene(el, api) {
       if (S.kind === 'meta') {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), su = S.dmg?.sum || {}, per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
+        // those whose gain is not per Power (their texts): Cast on Dodge per metre rolled, Spellslinger per 0.1 s of the base
+        // cast time of the spells you cast, Cast on Charm Use per charge used, Barrier Invocation 1 per its energy shield lost to
+        // an enemy's hit, Cast on Minion Death 50 by the minion's Power (note: its Power is not in the data: 1)
+        for (const [ev, v] of [['dodge', st.cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling], ['cast', st.spellslinger_invocation_gain_X_centienergy_per_10ms_base_cast_time * 10], ['charm', st.cast_on_using_charm_gain_X_centienergy_per_charm_charge_used_on_using_charm],
+          ['eshit', 100 / st.barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit], ['miniondeath', 1e4 / st['cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%']]]) if (v) per[ev] = v;
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' ? 1 : 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
@@ -4149,7 +4155,7 @@ export function initScene(el, api) {
       // (a channelled skill once as its channelling starts, keeping them while it goes on: Incinerate)
       const going = P.channel && time - (chanAt[S.name] ?? -9) <= SIM.channelTick * 2; if (P.channel) chanAt[S.name] = time;
       S.infs = going ? chanInf[S.name] || [] : !inhib && P.infuses.length ? P.infuses.filter(e => infTake(S, e)) : [];
-      if (P.channel && !going) { chanInf[S.name] = S.infs; S.fresh = true; }
+      if (P.channel && !going) { chanInf[S.name] = S.infs; S.fresh = true; chan0[S.name] = { t: time }; }
       const st = S.dmg?.stats || {}, arc = st['arc_damage_+%_final_from_infusion_consumption'], fs = st['firestorm_damage_+%_if_consumed_fire_infusion'];
       S.addChains = 0;
       if (arc && S.infs.includes('lightning')) { S.mult *= 1 + arc / 100; S.addChains = st.arc_chains_gained_from_infusion_consumption || 0; }
@@ -4157,8 +4163,12 @@ export function initScene(el, api) {
       const sv = S.spent && st['spiral_volley_damage_+%_final_when_frenzy_charges_consumed'];
       if (sv) { S.mult *= (1 + sv / 100) * (1 + S.spent * st['spiral_volley_damage_+%_final_per_frenzy_charge_consumed'] / 100); S.addChains = S.spent * st.spiral_volley_X_chains_per_frenzy_charge_consumed; }
       if (fs && S.infs.includes('fire')) S.mult *= 1 + fs / 100 * (S.dmg.incW?.fire ?? 1);   // "increased", against the skill's own
-      if (!inhib && !byCharge) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n, c); charges[c] -= n; }
+      // Flame Breath: it consumes its Power Charge as its channelling starts, Empowered for all of it: its share of damage
+      // gained as lightning, its less Rage a second
+      const FE = st['wyvern_devour_empowered_flame_breath_base_all_damage_%_to_gain_as_lightning'];
+      if (!inhib && !byCharge && !(FE && going)) for (const c of P.spend) if (charges[c]) { const n = P.spendOne ? 1 : charges[c]; S.gm *= 1 + ((ch[c]?.per || 0) * n + (ch[c]?.when || 0)) / 100; S.spent += n; chargesSpent(n, c); charges[c] -= n; }
       if (S.spent) { say(t('{0} spends {1} charges', S.label, S.spent), 'gold'); }
+      if (FE) { if (!going) chan0[S.name].emp = S.spent > 0; if (chan0[S.name]?.emp) S.breath = FE; }
       // Profanity: consumes up to its number of corpses within its distance of you, its more chaos damage if it did (I) or per corpse (II)
       const PF = !auto && S.dmg?.sum, PN = PF?.skill_consume_up_to_X_corpses_on_use, eaten = PN ? corpses(pp, PF.skill_consume_corpse_within_X_units_on_use / 10).slice(0, PN) : [];
       for (const d of eaten) eat(d, 'chaos');
@@ -4351,6 +4361,9 @@ export function initScene(el, api) {
       if (OH?.['added_physical_damage_%_ward_cost']) { const H = { ...S.dmg.hits }; for (const [el, k] of [['physical', 'added_physical_damage_%_ward_cost'], ['cold', 'added_cold_damage_%_ward_cost']]) H[el] = (H[el] || [0, 0]).map(v => v + WC * OH[k] / 100); S.dmg = { ...S.dmg, hits: H }; }
       if (life && life >= me.life) { toast(t('Not enough life for {0}', S.label)); return false; }   // a life cost cannot kill you
       const RC = sheet().rage?.cost; if (RC && me.rage < RC) { toast(t('Not enough Rage for {0}', S.label)); return false; }   // Furious Wellspring: Rage cost on every skill
+      // Rampage, Flame Breath: its Rage a second while it channels, none for its first seconds; an Empowered Flame Breath's less
+      const RT = S.dmg?.stats || {}, C0 = P.channel && chan0[S.name], RPS = C0 && time - C0.t >= (RT.channelled_skill_suppress_ongoing_rage_cost_for_first_X_ms || 0) / 1000 ? (RT._cost?.RagePerSecond || 0) * (o.held ?? SIM.channelTick) * (C0.emp ? 1 + RT['wyvern_devour_empowered_flame_breath_rage_consumption_+%'] / 100 : 1) : 0;
+      if (RPS && me.rage < RPS) { toast(t('Not enough Rage for {0}', S.label)); return false; }
       // Incinerate's fuel: it needs its least to start and burns one second per second channelled
       const FS = S.dmg?.stats, fuel = FS?.incinerate_maximum_fuel, F = me.fuel[S.name] || 0;
       if (fuel && (F <= 0 || !fueling(S.name) && F < FS.incinerate_minimum_fuel_to_use / 1000)) { toast(t('Not enough fuel for {0}', S.label)); return false; }
@@ -4364,7 +4377,7 @@ export function initScene(el, api) {
       const CH = S.dmg?.sum?.support_charged_shots_applies_every_X_shots;
       const shot = CH && ((me.shots ||= {})[S.name] = (me.shots[S.name] || 0) + 1) % CH === 0;
       S.charged = shot && S.dmg.sum['support_charged_shots_%_damage_to_gain_as_lightning'];
-      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life + (sheet().skillLife || 0); if (life > 0 && sheet().tecrod) (me.spent ||= []).push({ t: time, n: life }); if (me.life <= 0) died(S.label); if (RC) spendRage(RC); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
+      payMana(cost * (shot ? 1 - S.dmg.sum['support_charged_shots_recover_%_mana_cost_on_use'] / 100 : 1)); me.life -= life + (sheet().skillLife || 0); if (life > 0 && sheet().tecrod) (me.spent ||= []).push({ t: time, n: life }); if (me.life <= 0) died(S.label); if (RC) spendRage(RC); if (RPS) spendRage(RPS); if (cost > 0) for (const o of objs) if (o.spend && !o.dead && dist(o.c, pp) <= o.R) o.spend(cost); gainRage(sheet().rage?.gain.use); if (life > 0) { gloryPaid('life', life, S.name); if (sheet().tides && me.maxL > 0) flaskGain(0, sheet().tides.gain * life / (me.maxL * .02)); }   // Sanguine Tides: charges per 2% of life spent
       // Arcane Surge (support): once its skills have spent its share of your maximum mana, Arcane Surge for its duration
       const AS = S.dmg?.sum?.['support_arcane_surge_gain_buff_on_%_of_maximum_mana_use_threshold'];
       if (AS && cost > 0 && (me.surgeMana = (me.surgeMana || 0) + cost) >= me.maxM * AS / 100) { me.surgeMana = 0; arcaneSurge(S.dmg.sum.support_arcane_surge_base_duration_ms / 1000); }
@@ -4440,6 +4453,7 @@ export function initScene(el, api) {
     const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : K[S.kind] || K.area;
     run(S); whirl(S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
+    if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
     const OC = S.dmg?.sum?.support_empowers_x_additional_other_skills; if (OC) for (const e of empower) if (e.name === S.name && e.uses && !e.oc) { e.uses += OC; e.oc = true; }
     // Raging Spirits: a fire spell you use yourself also summons them, one per its radius of the spell's area, up to its
     // most per use and its limit, for its duration
@@ -4669,7 +4683,7 @@ export function initScene(el, api) {
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06; if (Object.keys(DR.dmg.hits).length) boom(move.from, DR.A, { ...DR, mult: 1 }); }
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
-    event('dodge', near(pp, 30)?.pos || pp, NONE);
+    event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
     // Primal Bounty: the dodge expends an Owl Feather (up to its number more with The Mhacha's Gift, each 100% more
@@ -5039,6 +5053,7 @@ export function initScene(el, api) {
     const other = (n - chaos) * (1 - BY), es0 = me.es; let e = noEs ? 0 : Math.min(me.es, other), left = other - e + (n - chaos) * BY; me.es -= e;
     e = noEs ? 0 : Math.min(me.es, chaos * 2); me.es -= e; left += chaos - e / 2;
     // Barkskin: the energy shield enemy hits take gives its share as armour for its duration, stacking
+    if (d && es0 > me.es) event('eshit', pp, NONE, null, es0 - me.es);   // Barrier Invocation
     const BK = d && es0 > me.es && onS('Barkskin');
     if (BK) me.bark.push({ until: time + durOf(BK), v: (es0 - me.es) * BK.dmg.stats['barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits'] / 100 });
     // Oracle's Harmony Within: from mana before life while mana is higher than life; Mind Over Matter: always
@@ -5486,7 +5501,7 @@ export function initScene(el, api) {
     charms().forEach((f, n) => {
       const CM = me.maxM * (sheet().charmMana || 0) / 100, lack = f && charmLeft(n) < f.per;   // Mind Phylacteries: mana instead of the missing charges
       if (!f || f.on !== on || me.cu[n] || lack && !(CM > 0 && me.mana >= CM)) return;
-      if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) { me.cc[n] -= f.per; flaskGain(0, f.per * (sheet().zerphi?.toFlask || 0) / 100); }
+      if (lack) me.mana -= CM; else if (!(Math.random() * 100 < f.keep)) { event('charm', pp, NONE, null, f.per); me.cc[n] -= f.per; flaskGain(0, f.per * (sheet().zerphi?.toFlask || 0) / 100); }
       useCharm(f, n);
       // the tree's chance to use another charm without consuming its charges
       const m = Math.random() * 100 < (sheet().charmAnother || 0) ? charms().findIndex((g, j) => g && j !== n && !me.cu[j]) : -1;

@@ -1652,8 +1652,8 @@ export function skill(g, b, treeGear) {
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
-  out.combo = { strike: !all2('area_of_effect_+%_per_combo_stack') && (own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit')), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
-    need: all2('support_combo_finisher_required_number_of_combo_stacks'), extra: all2('additional_combo_gain_chance_%') };
+  out.combo = { strike: !all2('area_of_effect_+%_per_combo_stack') && (own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit')), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: (all2('base_combo_stacks_decay_delay_ms') + v(st, 'base_combo_stacks_decay_delay_ms')) / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
+    need: all2('support_combo_finisher_required_number_of_combo_stacks') + v(st, 'active_skill_required_number_of_combo_stacks'),   /* Combo Finisher; Tempest Bell and Mantra of Destruction's own */ extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
   // a support's skill that creates a minion (Living Lightning, Skittering Stone): the game's monster of its name summoned by the player
