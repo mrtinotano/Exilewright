@@ -19,6 +19,7 @@ import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem } fro
 import { makeHumanoid, clipOf } from './humanoid.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
+import { statLines } from './stats.js';
 import { SK } from './skilldata.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
@@ -4180,6 +4181,7 @@ export function initScene(el, api) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
+    if (!auto && S.kind === 'warcry' && sheet().uDef?.noWarcry) { toast(statLines({ cannot_use_warcries: 1 })[0] || S.label); return false; }   // The Empty Roar: Cannot use Warcries
     if (!auto && me.mounted && S.name !== 'Rhoa Mount' && !mountable(S)) { toast(t('{0} cannot be used while mounted', S.label)); return false; }
     // Forge Hammer: used again while its hammer is lodged, it recalls it (its Recall part, its more attack speed) and its
     // cooldown starts over
@@ -4347,7 +4349,7 @@ export function initScene(el, api) {
       if (LI?.power && charges.power > 0) { charges.power--; chargesSpent(1, 'power'); S.mult *= 1 + LI.power / 100; }
       if (P.attack && !S.src && !auto && time < me.mountUntil && me.mount > 0) { S.mult *= 1 + sheet().mountain.attack / 100; if (--me.mount <= 0) me.mountUntil = 0; }
       const EF = P.attack && S.dmg?.sum?.['empowered_attack_physical_damage_%_to_gain_as_fire'], ph = S.dmg?.hits?.physical;   // the tree's: Empowered attacks' physical damage gained as extra fire
-      if (tally() < had) { S.empd = true; const F = S.dmg?.finals || {};
+      if (tally() < had || P.attack && !S.src && S.kind !== 'totem' && sheet().uDef?.allEmp) { S.empd = true; const F = S.dmg?.finals || {};
         const VP = S.dmg?.sum?.gain_X_volatility_on_empowered_skill_use; if (VP) gainVol(VP);   // Volatile Power
         if (EF && ph) { S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, fire: ph.map((x, i) => (S.dmg.hits.fire?.[i] || 0) + x * EF / 100) } }; const { els, ail } = withEl(S, 'fire'); Object.assign(S, { els, ail }); }
         S.mult *= 1 + (F['support_empowered_damage_+%_final'] || 0) / 100;
@@ -5896,6 +5898,7 @@ export function initScene(el, api) {
       if (PS.blind) d.st.blind = Math.max(d.st.blind || 0, .25); if (PS.intim) d.intim = Math.max(d.intim || 0, time + .25);
       if (PS.hinder) { const h = d.presSlow ||= { pct: -HINDER.slow }; if (!d.slows.includes(h)) d.slows.push(h); h.until = time + .25; }
     }
+    { const G2 = sheet().uDef?.glory2; if (G2 && time - (me.glory2At ?? 0) >= 2) { me.glory2At = time; for (const S of gloryOf()) gloryAdd(S, G2); } }   // Fury of the King: skills which require Glory generate some every 2 seconds
     if (PS.weak && time - (me.presWeakAt ?? -99) >= 1) { me.presWeakAt = time; for (const d of dummies) if (d.inPres && !d.dead) weaken(d, 1, PS.weak); }   // Sandstorm Visage: every second, Critical Weakness for its seconds
     // Healing Runes: while the buff it supports is on, every its interval you lose up to its % of your maximum Ward and
     // heal its % of what you lost, split between your minions not on full life. note: who counts as nearby is not in
