@@ -2941,7 +2941,7 @@ export function initScene(el, api) {
       const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
       fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .45 : .7 });
       fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
-      for (const d of inside(c, R)) if (inCone(c, a0, half, d.pos)) hit(d, S);
+      for (const d of inside(c, R)) if (inCone(c, a0, half, d.pos) && hit(d, S) && S.parries) d.parried = S.parries;
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
       // Incinerate's Fire Infusion: Ignited Ground in front of you as its channelling starts (its ground part)
       const X = S.fresh && S.infs?.includes('fire') && infPart(S, 'fire');
@@ -3880,7 +3880,7 @@ export function initScene(el, api) {
     me.fallen.push({ name: S.name, life: e.segs[0].max });
     const EH = me.maxM * (S.dmg?.sum?.['recoup_mana_%_on_minion_death'] || 0) / 100, RT = sheet().recoup?.time || 8; if (EH > 0) me.recoup.push({ k: 'mana', left: EH, rate: EH / RT });   // Essence Harvest: its % of your maximum mana Recouped
     const RS = sheet().resummon, SC = S.dmg?.minionUndead ? onS('Sacrifice')?.dmg.stats['harvester_minion_resummon_speed_+%_final'] || 0 : 0;   // Sacrifice: undead ones Revive more slowly
-    const FR = RS.friends && [e, ...objs.filter(o => o.minion && !o.dead)].every(o => o.companion) ? RS.friends : 0;   // Lifelong Friend: faster if all your minions are Companions
+    const FR = RS.friends && e.companion && objs.every(o => !o.minion || o.dead || o.companion) ? RS.friends : 0;   // Lifelong Friend: faster if all your minions are Companions
     if (RS.base) me.reviveAt = time + (S.dmg?.stats?.minion_base_resummon_time_ms / 1000 || RS.base) / (RS.speed + FR) / (1 + SC / 100);   // they all Revive after its delay, anew at each death (keywords.json Reviving Minions)
     if (sheet().volMinion) gainVol(sheet().volMinion);   // the tree's Volatility on a persistent minion's death
     const G = onS('Grim Feast'), s = G && rstats(G);
@@ -4508,7 +4508,7 @@ export function initScene(el, api) {
   function release() {
     const c = charge; charge = null; held = null;
     const RS = me.raised; me.raised = null;   // Raise Shield: its Shield Bash when released soon after a block
-    if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z } });
+    if (RS && time - (RS.blocked ?? -9) <= RS.S.dmg.stats.raise_shield_base_retaliation_duration_ms / 1000 && near(pp, meleeR(RS.S) + SIM.body)) K.sweep({ ...RS.S, from: { x: pp.x, z: pp.z }, parries: sheet().raiseParry && { more: RS.S.dmg.stats['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + sheet().raiseParry * (sheet().parryTime || 1) } });   // Bastion of Light: Parried on Hit
     const P = c && base(c.i)?.P; if (!P) return;
     // Assailum, Tasalio's Rhythm: a longer Perfect Timing window; each stack of the Rhythm a shorter one. note: its 30% shorter as less
     const SU = base(c.i).dmg?.sum || {}, TR = SU.gain_X_tasalios_perfection_on_perfect_timing, win = .2 * (1 + ((sheet().perfectWin || 0) + (SU['perfect_timing_window_ms_+%'] || 0)) / 100) * (TR ? (1 - TASALIO.win / 100) ** (me.tasalio || 0) : 1);
@@ -4722,7 +4722,7 @@ export function initScene(el, api) {
     const st = S?.dmg?.stats || {}, f = S?.dmg?.finals || {}, P = st[PERFORM]; if (P == null) return null;
     const A = sheet().actMove || {}, more = ['support_mobility_movement_speed_penalty_+%_final_while_performing_action', 'support_deliberation_movement_speed_penalty_+%_final_while_performing_action']
       .reduce((m, k) => m * (1 + ((st[k] || 0) + (f[k] || 0)) / 100), 1 + (A.more || 0) / 100);
-    const pen = -P * (1 + ((A.inc || 0) + (S.els?.includes('fire') ? A.fire || 0 : 0) + (S.els?.includes('cold') ? A.cold || 0 : 0)) / 100) * more;
+    const pen = -P * (1 + ((A.inc || 0) + (S.els?.includes('fire') ? A.fire || 0 : 0) + (S.els?.includes('cold') ? A.cold || 0 : 0) + (S.kind === 'shield' ? A.shield || 0 : 0)) / 100) * more;
     return Math.max(0, 1 - pen / 100);
   }
   const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
@@ -5682,7 +5682,9 @@ export function initScene(el, api) {
     });
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
-    const DB = sheet().debilShield; if (DB && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= DB && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) d.debil = time + DEBIL.time;   // the tree's Debilitate in front of your raised Shield
+    // the tree's Debilitate and Blind (Bastion of Light) in front of your raised Shield, each within its metres
+    const DB = sheet().debilShield, BS = sheet().blindShield; if ((DB || BS) && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) {
+      if (dist(d.pos, pp) <= DB) d.debil = time + DEBIL.time; if (dist(d.pos, pp) <= BS) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); }
     for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; if (inP && !d.inPres) d.enterAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());
