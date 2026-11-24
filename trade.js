@@ -296,7 +296,7 @@ function tops(s, curs, bid) {
     && !tops(null, PAID).length, 'tops'); }
 export async function priceBulk({ league, id, state = 'available' }) {
   const curs = PAID.filter(c => c !== id), ask = (have, want) => call('exchange?league=' + encodeURIComponent(league), { engine: 'new', query: { status: { option: state === 'any' ? 'any' : 'online' }, have, want }, sort: { have: 'asc' } });
-  const s = await ask(curs, [id]), b = curs.length < PAID.length ? await ask([id], curs).catch(() => null) : null;   // the asks are shown without the bids when those cannot be had
+  const s = await ask(curs, [id]), b = PAID.includes(id) ? await ask([id], curs).catch(() => null) : null;   // the asks are shown without the bids when those cannot be had
   return { total: (s.total || 0) + (b?.total || 0), id: s.id, asks: tops(s, curs), bids: tops(b, curs, true) };
 }
 // ---------- a skill gem and a waystone: the trade site's own filters of them (its level and quality; a waystone's tier
