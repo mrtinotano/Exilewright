@@ -841,6 +841,7 @@
  "Damage over time taken per second": "每秒承受的持續傷害",
  "{0}: life lost per second": "{0}：每秒失去的生命",
  "{0} needs {1} Combo": "{0}需要{1}連擊",
+ "{0} needs {1} Blocked Hits": "{0}需要格擋{1}次擊中",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動：{0} 天賦點所需的等級，計入各章任務給予的天賦點（如 Path of Building 2 的估算）。手動：你輸入的等級。",
  "The allocated points need level {0}.": "已配置的點數需要等級 {0}。",
  "Auto": "自動",

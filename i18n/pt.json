@@ -841,6 +841,7 @@
  "Damage over time taken per second": "Dano degenerativo sofrido por segundo",
  "{0}: life lost per second": "{0}: vida perdida por segundo",
  "{0} needs {1} Combo": "{0} precisa de {1} de combo",
+ "{0} needs {1} Blocked Hits": "{0} precisa de {1} acertos bloqueados",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Auto: o nível que seus {0} pontos passivos exigem, contando os pontos passivos que as missões de cada ato dão (como o Path of Building 2 estima). Manual: o nível que você digitar.",
  "The allocated points need level {0}.": "Os pontos alocados exigem o nível {0}.",
  "Auto": "Auto",

@@ -841,6 +841,7 @@
  "Damage over time taken per second": "ความเสียหายต่อเนื่องที่ได้รับต่อวินาที",
  "{0}: life lost per second": "{0}: พลังชีวิตที่เสียต่อวินาที",
  "{0} needs {1} Combo": "{0} ต้องใช้คอมโบ {1}",
+ "{0} needs {1} Blocked Hits": "{0} ต้องบล็อกการโจมตี {1} ครั้ง",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "อัตโนมัติ: เลเวลที่แต้มพาสซีฟ {0} แต้มต้องการ โดยนับแต้มพาสซีฟที่ได้จากเควสต์ของแต่ละองก์ (ตามที่ Path of Building 2 ประเมิน) กำหนดเอง: เลเวลที่คุณพิมพ์",
  "The allocated points need level {0}.": "แต้มที่จัดสรรต้องการเลเวล {0}",
  "Auto": "อัตโนมัติ",

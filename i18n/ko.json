@@ -841,6 +841,7 @@
  "Damage over time taken per second": "초당 받는 지속 피해",
  "{0}: life lost per second": "{0}: 초당 잃는 생명력",
  "{0} needs {1} Combo": "{0}에 연계 {1} 필요",
+ "{0} needs {1} Blocked Hits": "{0}에 막기 {1}회 필요",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "자동: 패시브 포인트 {0}에 필요한 레벨. 각 막의 퀘스트로 얻는 패시브 포인트를 포함합니다(Path of Building 2의 추정 방식). 수동: 직접 입력한 레벨.",
  "The allocated points need level {0}.": "할당한 포인트에는 레벨 {0}이(가) 필요합니다.",
  "Auto": "자동",

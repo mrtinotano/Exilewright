@@ -841,6 +841,7 @@
  "Damage over time taken per second": "毎秒受ける継続ダメージ",
  "{0}: life lost per second": "{0}：毎秒失うライフ",
  "{0} needs {1} Combo": "{0}には{1}コンボが必要です",
+ "{0} needs {1} Blocked Hits": "{0}にはブロックが{1}回必要です",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "自動: パッシブポイント{0}に必要なレベル。各章のクエストで得られるパッシブポイントを含みます（Path of Building 2 の推定と同じ）。手動: 入力したレベル。",
  "The allocated points need level {0}.": "割り振ったポイントにはレベル{0}が必要です。",
  "Auto": "自動",

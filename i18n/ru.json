@@ -841,6 +841,7 @@
  "Damage over time taken per second": "Получаемый урон со временем в секунду",
  "{0}: life lost per second": "{0}: потеря здоровья в секунду",
  "{0} needs {1} Combo": "{0}: нужно {1} комбо",
+ "{0} needs {1} Blocked Hits": "{0}: нужно заблокировать ударов: {1}",
  "Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.": "Авто: уровень, который нужен для {0} пассивных очков, с учётом пассивных очков за задания каждого акта (как оценивает Path of Building 2). Вручную: уровень, который вы введёте.",
  "The allocated points need level {0}.": "Распределённым очкам нужен уровень {0}.",
  "Auto": "Авто",

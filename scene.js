@@ -43,7 +43,7 @@ const WARD_REGEN = 5;                     // note: keywords.json Ward: Runic War
 const EXPO = { time: 4, res: 20 };        // note: keywords.json Exposure: -20% elemental resistances for 4 s by default
 const DMG_AIL = ['bleed', 'ignite', 'poison'];   // keywords.json DamagingAilments
 const CHILL_MIN = 30;                     // note: keywords.json Chill: a chill under 30% is ignored
-const ANCESTRAL = { slam: 30, area: 25 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area
+const ANCESTRAL = { slam: 30, area: 25, strike: 2 };   // note: keywords.json Ancestral Boost: a Slam 30% more damage, 25% increased area; a Strike 2 additional enemies
 const MAIM = { move: 30, evasion: 15, time: 4 };   // note: keywords.json Maim: 30% slower movement, 15% reduced evasion, 4 s
 const BLIND = { less: 20, time: 4 };   // note: keywords.json Blind: 20% less accuracy and evasion, 4 s
 const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 };   // note: keywords.json Volatility
@@ -1108,7 +1108,7 @@ export function initScene(el, api) {
     // against the enemy's maximum life, 100% at all of it, none under the least chance (GameConstants); it cannot act for
     // its length (monster.ot)
     const LS = Math.min(100, all * A.stunMelee * A.stun * STX * (o.stunX || 1) / Math.max(1, d.max) * 100);
-    if (!N.stun && !(d.st.stun > 0) && LS >= GAME.light_stun_min && roll(LS)) {
+    if (!N.stun && !SU.cannot_cause_stun_but_allow_stun_buildup && !(d.st.stun > 0) && LS >= GAME.light_stun_min && roll(LS)) {
       d.lstun = time + GAME.light_stun_ms / 1000; fx.ring(d.pos, .2, .8, 'white', .2, { a: .5 });
       if (!S.src) { vanguard(S, false); remnantOn('stun', d); }
     }
@@ -1136,11 +1136,11 @@ export function initScene(el, api) {
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
-    const brk = N.armour ? 0 : (A.breakFlat + (S.breakAdd || 0) + x('physical') * (A.breakPct + (S.breakPct || 0) + (d.st.freeze > 0 ? d.frozeBy?.dmg?.sum?.['freeze_applies_%_physical_damage_taken_as_armour_break'] || 0 : 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
+    const brk = N.armour ? 0 : (A.breakFlat + (S.breakAdd || 0) + x('physical') * (A.breakPct + (S.breakPct || 0) + (time < d.parried?.until ? S.dmg.sum?.['armour_break_physical_damage_%_dealt_as_armour_break_vs_parried_enemies'] || 0 : 0) + (d.st.freeze > 0 ? d.frozeBy?.dmg?.sum?.['freeze_applies_%_physical_damage_taken_as_armour_break'] || 0 : 0)) / 100 + x('chaos') * (S.dmg.sum?.['chaos_damage_%_dealt_as_armour_break'] || 0) / 100 + x('fire') * (S.dmg.stats?.['armour_break_fire_damage_%_dealt_as_armour_break'] || 0) / 100
       + (d.crushed > time ? x('physical') * (S.dmg.sum?.['crushed_target_%_physical_damage_taken_as_armour_break'] || 0) / 100 : 0)
       + x('physical') * (d.mark?.S?.dmg?.sum?.['marked_target_%_physical_damage_taken_as_armour_break'] || 0) / 100   // Mark for Death: hits on the enemy its Mark is on
       + (S.P.spell && o.crit ? x('physical') * (S.dmg.sum?.['armour_break_equal_to_%_physical_damage_dealt_on_critical_strike_with_spells'] || 0) / 100 : 0)
-      + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
+      + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.final ? S.chain0?.sum?.['final_strike_attack_damage_%_dealt_as_armour_break'] || 0 : 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
@@ -1159,6 +1159,7 @@ export function initScene(el, api) {
     if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
     const G = BAR[a], hard = d.lock[a] > 0 ? 1 + GC[G + 'ThresholdModifier'] / 100 : 1;
     d.bar[a] = (d.bar[a] || 0) + n / (Math.max(1, (a === 'stun' ? d.stat.poise : d.stat.ailPoise) * awe(d, a === 'stun' ? 'stun' : 'ailment')) * hard) * 100; d.calm = 0;
+    if (a === 'stun' && S.dmg?.sum?.cannot_cause_stun_but_allow_stun_buildup) { d.bar.stun = Math.min(d.bar.stun, 100); return; }   // Brink: it builds up, and the hit of another skill Stuns
     if (d.bar[a] < (['freeze', 'electrocute', 'pin'].includes(a) && sheet().ccAt || 100)) return;   // Sine Aequo: Immobilised at its share of the buildup
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime * vsAil(A, 'freeze', 'dur', d, S) : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
@@ -2409,7 +2410,7 @@ export function initScene(el, api) {
     });
     // Branching Fissures: its number of secondary fissures off this one, with its less area and damage
     // note: where they branch, their angle and length are not in its data: evenly along it, alternating sides at 45°, half its length
-    const BF = !o.branch && S.dmg?.finals, n = !o.branch && S.dmg?.sum?.number_of_branching_fissures || 0;
+    const BF = !o.branch && S.dmg?.finals, n = BF && S.dmg.sum?.number_of_branching_fissures || 0;
     for (let k = 1; k <= n; k++) { const f = len * k / (n + 1), q = { x: from.x + dx * f, z: from.z + dz * f };
       later(f * .06, () => fissure(S, q, ang + (k % 2 ? 1 : -1) * Math.PI / 4, len / 2, r * Math.sqrt(1 + BF['branching_fissure_area_of_effect_+%_final'] / 100), mult * (1 + BF['branching_fissure_damage_+%_final'] / 100), { branch: true })); }
   }
@@ -2707,6 +2708,8 @@ export function initScene(el, api) {
       const every = (real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3) / less('support_splinter_totem_skill_speed_+%_final_each_splinter');
       if (gen) f.group.scale.setScalar(.8 ** gen);
       let acts = 0;
+      const GT = su.support_greatwood_number_of_active_totems_in_base_radius_to_track, gwN = () => GT ? Math.min(su.support_greatwood_maximum_number_of_active_totems_in_radius_for_effects, objs.filter(o => o.totemOf && o !== e && !o.dead && dist(o.pos, e.pos) <= GT / 10).length) : 0;
+      const GR = su['support_greatwood_life_regeneration_rate_per_minute_%_per_totem_in_radius'] || 0;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
@@ -2714,12 +2717,12 @@ export function initScene(el, api) {
       const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
-          const sg = e.segs?.[0]; if (sg && S.dmg.totemRegen) sg.life = Math.min(sg.max, sg.life + sg.max * S.dmg.totemRegen / 100 * dt);   // the tree's totem life regeneration
+          const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
           if ((wait -= dt) > 0) return;
           const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
           wait = every / (F.P?.spell && sheet().totemCast ? 1 + sheet().totemCast * objs.filter(o => o.totemOf && !o.dead).length / 100 : 1);   // the tree's totem cast speed per summoned totem
           const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
-          const gw = su.support_greatwood_number_of_active_totems_in_base_radius_to_track ? Math.min(su.support_greatwood_maximum_number_of_active_totems_in_radius_for_effects, objs.filter(o => o.totemOf && o !== e && !o.dead && dist(o.pos, e.pos) <= su.support_greatwood_number_of_active_totems_in_base_radius_to_track / 10).length) : 0;
+          const gw = gwN();
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
@@ -2733,7 +2736,7 @@ export function initScene(el, api) {
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
-      const TL = S.dmg?.totemLife * (S.totemLife || 1);   // Spell Totem: more per Endurance Charge consumed
+      const TL = S.dmg?.totemLife * (S.totemLife || 1) * less('support_splinter_totem_maximum_life_+%_final_each_splinter');   // Spell Totem: more per Endurance Charge consumed; Splinter Totem: less each time it splintered
       if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
     },
@@ -4225,7 +4228,7 @@ export function initScene(el, api) {
         const n = Math.min(SL, XB ? Math.floor(((me.blockN || 0) - (me.sealBlk?.[S.name] ?? 0)) / XB) : Math.floor((time - (me.sealAt[S.name] ?? -Infinity)) / every));
         me.sealAt[S.name] = time; (me.sealBlk ||= {})[S.name] = me.blockN || 0;
         if (n > 0 && SU.skill_rapid_fire_repeats_per_broken_seal) { S.rep = (S.rep || 0) + n * SU.skill_rapid_fire_repeats_per_broken_seal; S.repBy = t('Seal') + ` ×${n}`; S.repX = 1 + (S.dmg.finals?.['support_spell_rapid_fire_repeat_use_damage_+%_final'] || 0) / 100; }
-        if (n > 0) { S.addProj = (S.addProj || 0) + n * (SU.skill_additional_projectiles_per_seal_broken || 0); S.sealEcho = n * (SU.skill_echoes_per_seal_broken || 0); }
+        if (n > 0) { S.addProj = (S.addProj || 0) + n * (SU.skill_additional_projectiles_per_seal_broken || 0); S.sealEcho = n * (SU.skill_echoes_per_seal_broken || 0); S.A *= Math.sqrt(1 + n * (SU['skill_area_of_effect_+%_per_broken_seal'] || 0) / 100); }   /* Expand: its increased area per Seal broken */
       }
       // Fist of Kalguur: a Slam spends a share of its cost as Ward for a Runic Boost (Empowered): part of its damage
       // gained as physical, and its rune on the first enemy it hits
@@ -4257,11 +4260,18 @@ export function initScene(el, api) {
     // Ancestrally Boosted: its more damage and increased area, with the tree's increased ones (note: its damage as a factor)
     const AB = sheet().ancBoost || {};
     const AN = !auto && P.attack && time < me.ancNext; if (AN) me.ancNext = 0;
+    // Fist of War: a Slam is Ancestrally Boosted every its interval; Ancestral Call: a Strike; Ancestral Aid: its Strike,
+    // always (it needs its Blocked hits to be used)
+    // note: Fist of War III's "very powerful" Boost has no number in the data: the keyword's
+    const BS = S.dmg?.sum || {}, BI = !auto && (P.slams ? BS.ancestral_slam_interval_duration : S.kind === 'strike' && BS.ancestral_call_spirit_strike_interval_ms);
+    const BT = BI && time - ((me.ancAt ||= {})[S.name] ?? -Infinity) >= BI / 1000, BO = BT || !auto && S.kind === 'strike' && BS.ancestral_aid_required_count_of_recent_blocks > 0;
+    if (BT) me.ancAt[S.name] = time;
     // the tree's increased area while you are in a state, and per enemy you Ignited in the last 8 s (up to 40%)
     const AW = (S.dmg?.areaWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0) + Math.min(40, (S.dmg?.areaIgnited || 0) * dummies.filter(d => time - (d.ignAt ?? -99) <= 8).length);
     if (AW) S.A *= Math.sqrt(1 + AW / 100);
-    if (KA && P.slams || AE || AN) { S.mult *= (1 + ANCESTRAL.slam / 100) * (1 + (AB.dmg || 0) / 100); S.A *= Math.sqrt(1 + (ANCESTRAL.area + (AB.area || 0)) / 100); }
+    if (KA && P.slams || AE || AN || BO && P.slams) { S.mult *= (1 + ANCESTRAL.slam / 100) * (1 + (AB.dmg || 0) / 100); S.A *= Math.sqrt(1 + (ANCESTRAL.area + (AB.area || 0)) / 100); }
     else if (KA && S.kind === 'strike') { S.addTargets = KA.more; S.kaom = KA; }
+    else if (BO) S.addTargets = ANCESTRAL.strike;
     // Echoing Cry: usable once you have travelled its distance since its last use
     const MV = !auto && S.dmg?.sum?.skill_unusable_until_moved_X_distance;
     const left = MV && MV / 10 - (me.trav - (me.travAt[S.name] ?? -Infinity));
@@ -4269,7 +4279,17 @@ export function initScene(el, api) {
     if (MV) me.travAt[S.name] = me.trav;
     const CB = S.dmg?.combo;
     if (!auto && CB?.need && comboNow(S) < CB.need) { toast(t('{0} needs {1} Combo', S.label, CB.need)); return false; }   // Combo Finisher
-    if (!auto && CB?.need) { S.comboSpent = comboNow(S); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB.esSooner || 0); me.combo = 0; }   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
+    // Vruun's Inevitability: it expends the Combo your other melee attacks built (up to its most), its increased area each
+    const VA = S.dmg?.sum?.['area_of_effect_+%_per_combo_stack'];
+    if (!auto && (CB?.need || VA)) { S.comboSpent = Math.min(comboNow(S), VA && S.dmg.sum.skill_maximum_number_of_combo_stacks || Infinity); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB?.esSooner || 0); me.combo = 0;   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
+      if (VA) S.A *= Math.sqrt(1 + S.comboSpent * VA / 100);
+      // Ailith's Chimes: its Surpassing chance of a Power Charge per Combo expended (over 100%: one for sure, the rest for one more)
+      for (let c = S.comboSpent * (S.dmg.sum?.['chance_%_to_gain_power_charges_per_combo_spent'] || 0); c > 0; c -= 100) if (Math.random() * 100 < c) gainCharge('power', S.label);
+    }
+    // Ancestral Aid: usable once you have Blocked its number of hits since its last use
+    const AA = !auto && S.dmg?.sum?.ancestral_aid_required_count_of_recent_blocks, AK = AA && (me.blockN || 0) - (me.aidAt?.[S.name] ?? 0);
+    if (AA && AK < AA) { toast(t('{0} needs {1} Blocked Hits', S.label, AA - AK)); return false; }
+    if (AA) (me.aidAt ||= {})[S.name] = me.blockN;
     // as in the game, a skill the weapon in hand cannot use is not used (calc.js skill)
     if (S.dmg?.reason === 'This skill cannot be used with the weapon in hand') { toast(`${S.label}: ${t(S.dmg.reason)}`); return false; }
     if (!auto && me.maxM && !tog[S.name]) {
@@ -4365,8 +4385,11 @@ export function initScene(el, api) {
     // being its final part (its first), Tempest Flurry's third striking three times
     // note: "quick succession" has no time in the data; SEQ_GAP s here
     if (!auto && S.dmg?.parts && S.dmg.stats?.statset_index_for_final_animation_combo_index != null) {
-      const len = S.dmg.stats.statset_index_for_third_animation_combo_index != null ? 4 : 3, q = (me.seq ||= {})[S.name], n = q && time - q.at < SEQ_GAP ? q.n % len + 1 : 1;
-      me.seq[S.name] = { n, at: time }; S.chain0 = S.dmg;
+      const len = S.dmg.stats.statset_index_for_third_animation_combo_index != null ? 4 : 3, q = (me.seq ||= {})[S.name], live = q && time - q.at < SEQ_GAP;
+      // Crescendo: the Final Strike can be used twice in succession; Crescendo III: it is Ancestrally Boosted
+      const again = !!(live && q.n === len && !q.again && S.dmg.sum?.repeat_last_step_of_combo_attack), n = again ? len : live ? q.n % len + 1 : 1;
+      me.seq[S.name] = { n, at: time, again }; S.chain0 = S.dmg;
+      if (n === len && S.dmg.sum?.final_strike_is_ancestrally_boosted) S.addTargets = ANCESTRAL.strike;
       if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el); }
       else if (len === 4 && n === 3) S.times = 3;
     }

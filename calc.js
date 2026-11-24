@@ -209,7 +209,7 @@ export function totem(g, sum = {}) {
   const cap = MON_K.monster_max_resistance ?? 75, er = Math.min(cap + v(s, 'totem_maximum_all_elemental_resistances_%'), (st['totem_elemental_resistance_%'] || 0) + v(s, 'totem_elemental_resistance_%'));
   return {
     level,
-    life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + (W.finals['support_totem_life_+%_final'] || 0) / 100) * (1 + (W.finals['support_greatwood_maximum_life_+%_final'] || 0) / 100)),   // Tawhoa's Tending, Greatwood II: more (PoB2 TotemLife MORE)
+    life: Math.round(Math.floor(monster(level, 'AllyLife') * T.life_mult) * (1 + (v(s, 'totem_life_+%') + (st['totem_life_+%'] || 0)) / 100) * (1 + v(W.finals, 'support_totem_life_+%_final') / 100) * (1 + v(W.finals, 'support_greatwood_maximum_life_+%_final') / 100)),   // Tawhoa's Tending, Greatwood II: more (PoB2 TotemLife MORE)
     ailment: monster(level, 'AilmentThreshold'),
     armour: monster(level, 'Armour') * (1 + 3 * (T.armour || 0) / 100), evasion: monster(level, 'Evasion'),
     regen: v(s, 'totems_regenerate_%_life_per_minute') / 60,   // % of its life a second
@@ -1643,7 +1643,7 @@ export function skill(g, b, treeGear) {
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
-  out.combo = { strike: own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit'), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
+  out.combo = { strike: !all2('area_of_effect_+%_per_combo_stack') && (own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit')), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
     need: all2('support_combo_finisher_required_number_of_combo_stacks'), extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
@@ -1708,6 +1708,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   const SF = 1 + all('ascendancy_tactician_suppressing_fire_hit_damage_immobilisation_multiplier_+%_final') / 100;
   // buildup of the skill's tags or weapon (melee_, projectile_, quarterstaff_, mace_, ballista_, hazard_, parry_...)
   const tagInc = k => inc(sum, k, tags) - (sum[k] || 0) - (sum['base_' + k] || 0);
+  const EX = 1 + all('support_ailment_cooldown_ailment_chance_+%_final') / 100;   // Execrate: more chance to inflict Ailments (ignite, shock, bleeding, poison: PoB2)
   const ailInc = all('ailment_chance_+%') + tagInc('ailment_chance_+%'), stunInc = all('hit_damage_stun_multiplier_+%') + tagInc('hit_damage_stun_multiplier_+%');
   // with critical hits: more of the ailments' magnitude, with their other increased ([increased, the critical ones])
   const critX = (incs, ...c) => { const i = incs.reduce((t, k) => t + all(k), 0), x = c.reduce((t, k) => t + all(k), 0); return x ? (1 + (i + x) / 100) / (1 + i / 100) : 1; };
@@ -1746,9 +1747,9 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     maimOnBreak: all('maim_enemy_on_full_armour_break') > 0, maimAfterPin: all('enemies_are_maimed_for_x_seconds_after_becoming_unpinned'),
     // increased chance to inflict Ailments (the skill's tags': projectile_, one_handed_attack_) counts for bleeding, poison,
     // ignite and shock (PoB2 CalcOffence AilmentChance); more against rare or unique enemies, shock against electrocuted
-    ailChance: 1 + ailInc / 100, ailRare: (1 + (ailInc + all('ailment_chance_+%_vs_rare_or_unique_enemy')) / 100) / (1 + ailInc / 100),
+    ailChance: (1 + ailInc / 100) * EX, ailRare: (1 + (ailInc + all('ailment_chance_+%_vs_rare_or_unique_enemy')) / 100) / (1 + ailInc / 100),
     shockElectro: (1 + (ailInc + all('shock_chance_+%') + all('shock_chance_+%_vs_electrocuted_enemies')) / 100) / (1 + (ailInc + all('shock_chance_+%')) / 100),
-    igniteChance: (1 + (all('ignite_chance_+%') + ailInc) / 100) * more(/(ignite_chance|chance_to_ignite)_\+%_final$/) * (all('chance_to_ignite_is_doubled') ? 2 : 1), shockChance: (1 + (all('shock_chance_+%') + ailInc) / 100) * more(/(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow); Candlemaker: its ignite chance doubled
+    igniteChance: (1 + (all('ignite_chance_+%') + ailInc) / 100) * more(/(ignite_chance|chance_to_ignite)_\+%_final$/) * (all('chance_to_ignite_is_doubled') ? 2 : 1) * EX, shockChance: EX * (1 + (all('shock_chance_+%') + ailInc) / 100) * more(/(shock_chance|chance_to_shock)_\+%_final$/) * more(/shock_as_though_damage_\+%_final$/),   // shocks as though dealing more damage (Stormcaller Arrow); Candlemaker: its ignite chance doubled
     freeze: (1 + (all('hit_damage_freeze_multiplier_+%') + all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_freeze_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * more('hit_damage_freeze_multiplier_+%_final') * SF,
     immob: (1 + (all('hit_damage_immobilisation_multiplier_+%') + tagInc('hit_damage_immobilisation_multiplier_+%')) / 100) * SF,   // increased Immobilisation buildup: freeze, electrocute, pin
     // the character's own 50% more from physical and melee hits (character.ot) is added by the scene
