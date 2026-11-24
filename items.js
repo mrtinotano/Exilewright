@@ -19,11 +19,11 @@ const fistOf = it => BASE[(baseOf(it).tags.includes('runeforged') ? D.fists.rune
 const UNIQUES = await fetch('poe2_data/available/unique_items.json').then(r => r.ok ? r.json() : []).catch(() => []);
 const UNIQ = Object.fromEntries(UNIQUES.filter(u => baseOf(u)).map(u => [u.name, u]));
 // a unique's modifier that is one of several, each item with its own (Split Personality: a class start each): all of
-// them under each one's id (available.py mod_forms); the data names one, the item's own line says which
-const FORMS = D.mod_forms || {};
+// them by each one's id (available.py mod_forms); the data names one, the item's own line says which
+const FORMS = Object.fromEntries((D.mod_forms || []).flatMap(g => g.map(m => [m.id, g])));
 export const formsOf = id => FORMS[id] || [];
 const AFFIX = Object.fromEntries([...D.affixes.map(a => [a.id, a]),
-  ...Object.values(FORMS).flat().map(m => [m.id, { ...m, affix: 'unique', level: '' }]),
+  ...(D.mod_forms || []).flat().map(m => [m.id, { ...m, affix: 'unique', level: '' }]),
   ...UNIQUES.flatMap(u => [...u.mods, ...u.mutated || []].map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);   // and the Vaal modifiers an Architect's Orb can give it
 export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots', amulet: 'Amulet',
   ring1: 'Ring 1', ring2: 'Ring 2', ring3: 'Ring 3', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
