@@ -579,8 +579,8 @@ export function initScene(el, api) {
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
       const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
-      const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of the enemy's heavy stun buildup
-      if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((d.bar.stun || 0) / 5) / 100;
+      const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of your own Heavy Stun buildup (its description)
+      if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((me.bar.stun || 0) / 5) / 100;
       const AT = d.attr >= 1 && attr();   // Attrition
       if (AT) for (const e in raw) raw[e] *= 1 + AT['skill_attrition_hit_damage_+%_final_vs_rare_or_unique_enemy_per_second_ever_in_presence_up_to_max'] * Math.floor(d.attr) / 100;
       // Vorana's Siege: more against an Isolated enemy, none of its allies within 6 m (keywords.json Isolated)
@@ -1161,7 +1161,7 @@ export function initScene(el, api) {
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1) * (d.life <= d.max * LOW ? A.stunLow || 1 : 1) * (!S.src && meIs.Shapeshifted() ? A.stunShifted || 1 : 1) * (o.crit ? A.stunCrit || 1 : 1) * (S.stunEmp || 1);   // the tree's stun buildup after Shapeshifting, within 2 m, on Low Life ones, while Shapeshifted; an Empowered attack's
     if (!N.stun) AL.stun || o.full && S.P.attack && SU.local_always_heavy_stun_on_full_life ? inflict(d, 'stun', S, 1, null, { dur: DUR.stun }) :
-      build(d, 'stun', all * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);   // Marohi Erqi: on full life
+      build(d, 'stun', (all - x('cold')) * A.stunMelee * GC.HeavyStunDamageScale * A.stun * STX * (o.stunX || 1), S, A);   // Marohi Erqi: on full life; cold damage builds up no Heavy Stun (keywords.json Cold)
     // Light Stun (keywords.json): the hit's chance, its damage (more from physical and melee, as its heavy stun buildup)
     // against the enemy's maximum life, 100% at all of it, none under the least chance (GameConstants); it cannot act for
     // its length (monster.ot)
@@ -3705,7 +3705,7 @@ export function initScene(el, api) {
   K.reprieve = S => {
     const st = S.dmg.stats, on = time < me.reprieve?.until;
     if (!on && me.ward < me.maxW * st['rune_ward_requires_%_maximum_ward_to_perform'] / 100) return toast(t('Not enough Runic Ward for {0}', S.label));
-    me.reprieve = { st, until: time + SIM.channelTick * 2 }; if (!on) fx.ring(pp, .3, 1.2, 'holy', .4, { a: .5 });
+    me.reprieve = { st, S, until: time + SIM.channelTick * 2 }; if (!on) fx.ring(pp, .3, 1.2, 'holy', .4, { a: .5 });
   };
   // Triskelion Cascade: your next Cascadable spell is empowered (its less damage and area), centred on you, for its duration
   // and its share of the empowered spell's cast time is added to its cooldown (use(): lengthen)
@@ -5453,7 +5453,9 @@ export function initScene(el, api) {
     fx.sector(pp, dx, dz, S.A, half, 'fire', .35, { grow: true, a: .7 }); for (const e of inside(pp, S.A)) if (inCone(pp, Math.atan2(dz, dx), half, e.pos)) hit(e, S);
     chargeBy('endurance', S); say(S.label, 'fire');
   }
+  const wouldTake = (c, a) => Object.fromEntries(Object.entries(a.hits).map(([el, [lo, hi]]) => [el, playerTakes(c, el, lo + Math.random() * (hi - lo), true, true, a.pen)]));   // a hit's damage as it would be after your defences
   function activeBlock(d, a) {
+    if (frozen() || me.st.stun > 0) return false;   // not while Stunned or Frozen (keywords.json Block)
     const P = time < me.parry?.until && me.parry.S, R = time < me.raised?.until && me.raised, RF = time < me.refute?.until && me.refute.st;
     if (RF) { weaken(d, sheet().uEv?.parryWeak || 0); me.parryAt = time; d.parried = { more: RF['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + RF.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) }; blocked(d); return true; }
     if (!P && !R) return false;
@@ -5464,8 +5466,10 @@ export function initScene(el, api) {
       me.parry = null; K.sweep({ ...P, from: { x: pp.x, z: pp.z }, dx: (d.pos.x - pp.x) / l, dz: (d.pos.z - pp.z) / l });
       me.parryAt = time; d.parried = { more: st['base_parry_buff_damage_taken_+%_final_to_apply'] * (1 + (sheet().parryMag || 0) / 100), until: time + st.base_parry_duration_ms / 1000 * (sheet().parryTime || 1) };
     } else { R.blocked = me.rblockAt = time; spray(d); if (Math.random() * 100 < (sheet().blockDaze || 0)) daze(d, DAZE.time); }   // the tree's Daze on blocking with a raised shield
-    const SM = (P || R).dmg?.sum?.['knights_legacy_non_active_blocking_melee_skill_damage_+%_final_to_grant_if_active_blocked_with_supported_skills_recently']; if (SM) me.styrn = { more: SM, until: time + RECENT };   // Styrn's Mountain
-    blocked(d); return true;
+    const SM = (P || R.S).dmg?.sum?.['knights_legacy_non_active_blocking_melee_skill_damage_+%_final_to_grant_if_active_blocked_with_supported_skills_recently']; if (SM) me.styrn = { more: SM, until: time + RECENT };   // Styrn's Mountain
+    // the stun of a hit you block yourself (keywords.json Block, HeavyStunPlayer): Heavy Stun buildup, and behind a raised
+    // shield its Light Stun too (Raise Shield's own light stun threshold while blocking)
+    blocked(d); { const est = wouldTake(sheet(), a); ailed(d, est, est, P ? 'heavy' : true, P || R.S); } return true;
   }
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
   // Kalisa's Crescendo: an enemy in the final share of its curse's duration is Pacified and deals no damage (keywords.json Pacify)
@@ -5497,16 +5501,16 @@ export function initScene(el, api) {
     if (move && !move.S && foresight) { me.life = me.maxL; me.sight = time + FP.dmg.stats.base_secondary_skill_effect_duration / 1000; me.fpAt = time; say(FP.label, 'gold'); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'gold', .5); }
     if (!a.unblockable && activeBlock(d, a)) return;
     // Runic Reprieve's bubble Blocks the hit: you take its share of the damage, also taken off your Runic Ward, and are not
-    // Light Stunned by it (nor its ailments here). note: the Heavy Stun buildup of blocking with it is not simulated
+    // Light Stunned by it (nor its ailments here); it builds up Heavy Stun as any hit you block yourself
     const RR = !a.unblockable && time < me.reprieve?.until && me.reprieve.st;
-    if (RR) blocked(d);
+    if (RR) { blocked(d); const est = wouldTake(c, a); ailed(d, est, est, 'heavy', me.reprieve.S); }
     const HC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1) * (d.mark ? 1 + (c.markedAcc || 0) / 100 : 1) * (c.cover ? 1 - falloff(d) * .9 : 1), (c.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evadeMax), evd = () => Math.random() * 100 >= HC;
-    if (!RR && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
+    if (!RR && !heavyStunned() && evd() && (!c.glancing || evd()))   /* Glancing Blows: evading is Unlucky */ return fx.text(above(), t('Evaded'), GREY, .32), record('avoid', d.mon.name, t('Evaded'), 0, GREY);
     if (a.shape === 'projectile' && Math.random() * 100 < (c.avoidProj || 0)) return fx.text(above(), t('Avoided'), GREY, .32), record('avoid', d.mon.name, t('Avoided'), 0, GREY);   // The Sunken Vessel
     const BR = () => Math.random() * 100 < blockChance(c, a), BL = !RR && !frozen() && !(me.st.stun > 0) && (BR() || c.luckyBlock && BR());   // not while Stunned or Frozen (keywords.json Block); Turtle Charm: a blocked hit still deals its share
     if (BL) {   // you still take the stun of a blocked hit (keywords.json Block): its damage as it would be after your defences
       blocked(d);
-      if (!c.blockTaken) { const est = Object.fromEntries(Object.entries(a.hits).map(([el, [lo, hi]]) => [el, playerTakes(c, el, lo + Math.random() * (hi - lo), true, true, a.pen)])); return ailed(d, est, est, true); }
+      if (!c.blockTaken) { const est = wouldTake(c, a); return ailed(d, est, est, true); }
     }
     // Seraph's Heart: while the buff it supports is on, its chance for the hit to treat your resistances as 90%
     const SH = 'support_seraphs_heart_enemy_hits_%_chance_to_treat_all_resistances_as_90%', SR = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[SH]);
@@ -5514,7 +5518,7 @@ export function initScene(el, api) {
     // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
     // deals its less damage
     const DFW = (c.deflMove && meIs.Moving() ? c.deflMove : 0) + (c.deflSurr && meIs.Surrounded() ? c.deflSurr : 0);   // increased deflection rating while moving, while Surrounded
-    const DF = c.deflect && deflection(DFW ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + DFW / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
+    const DF = c.deflect && deflection(DFW ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + DFW / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && !heavyStunned() && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
@@ -5566,7 +5570,7 @@ export function initScene(el, api) {
     if (RC) { add('life', ((dealt.physical || 0) * RC.phys + el * RC.el + total * (RC.all + RC.lme + flasks().reduce((t, f, n) => t + (f?.recoup && me.drink[n] ? f.recoup : 0), 0) + Math.floor((me.rage || 0) / 5) * (RC.perRage || 0) + (dfl ? RC.deflect : 0) + (meIs.Channelling() ? RC.channel : 0))) * RT / 100
       + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.prevented / 100); add('es', (el * RC.es + total * RC.lme) * RT / 100 + Math.max(0, (raw.physical || 0) - (dealt.physical || 0)) * RC.scarred * pow(d) / 100); add('mana', total * RT * (RC.mana + RC.lme) / 100); }
     if (RR) { me.ward = Math.max(0, me.ward - total * RT); return; }
-    if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
+    if (me.sprint) { me.sprint = null; if (!sheet().noFall) suffer('stun', sheet().ailments?.heavy || DUR.stun, { heavy: true }); }   // hit while sprinting, you fall over (SprintTutorialContent)
     if (me.safe > 0) return;   // not after the hit killed you
     resolve(d); if (a.melee || sheet().thornsAny) retaliate(d); if (a.melee) arctic(d); windDance(); ailed(d, raw, dealt);
     for (const el of ['fire', 'cold', 'lightning', 'chaos']) if (raw[el] > 0) charmUse(el + '_damage_taken'), (me.hitEl ||= {})[el] = time;   // and the types you were Hit with Recently (Adaptive Skin)
@@ -5577,13 +5581,14 @@ export function initScene(el, api) {
   // Ignite, bleeding and poison deal their share of the hit per second (monsters.json constants); the strongest stays.
   // Heavy stun builds up from every hit, more from physical and melee ones (monster.ot), and lasts your own heavy stun time (character.ot).
   const PL = GAME.player || {};
+  const heavyStunned = () => me.st.stun > 0 && time < me.heavyEnd;   // you neither Evade nor Deflect then (keywords.json HeavyStunPlayer)
   const frozen = () => me.st.freeze > 0, stuck = () => frozen() || me.st.stun > 0 || me.st.electrocute > 0, slowed = () => (me.st.chill > 0 && sheet().ailments.eff.slow !== 0 && !(me.sprint && sheet().sprintNoSlow) ? 1 - me.mag.chill / 100 * (sheet().chillReversed ? -1 : 1) : 1) * (1 - (shrineOn()?.['action_speed_-%'] || 0) / 100) * (time < me.overEnc?.until && !(me.sprint && sheet().sprintNoSlow) ? Math.max(0, 1 - OVERENC * me.overEnc.n * sheet().ailments.eff.slow / 100) : 1) * (me.hexes ? Math.max(.1, 1 + onMe(C => C.speed) * sheet().ailments.eff.slow / 100) : 1) /* Temporal Chains on you: a slow */,   // Pathfinder: unaffected by slows
     maimed = () => me.st.maim > 0 ? 1 - MAIM.move * sheet().ailments.eff.slow / 100 : 1;   // maim slows only your movement, as much as the Slow Potency of debuffs on you
   function suffer(a, s, o = {}) {
     if (immune(a) || sheet().oneDmgAil && DMG_AIL.includes(a) && DMG_AIL.some(k => me.st[k] > 0)) return;   // the tree's: no damaging ailment while you have one
     if (time < me.prev?.[a]) return;   // Shackles of the Wretched: not again for its time after one
     if (sheet().ailPrevent?.[a]) (me.prev ||= {})[a] = time + sheet().ailPrevent[a] / 1000;
-    if (a === 'stun') { me.stunAt = time; if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } const EB = time < me.use?.until && me.use.S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebarT = time + EB / 1000; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
+    if (a === 'stun') { me.stunAt = time; if (o.heavy) { me.heavyAt = time; me.heavyEnd = time + s; } if (Math.random() * 100 < (sheet().volOnStun || 0)) { gainVol(1); } const EB = time < me.use?.until && me.use.S.dmg?.sum?.support_no_energy_shield_recharge_delay_for_duration_ms_on_stunned; if (EB) me.ebarT = time + EB / 1000; }   // "if you haven't been Stunned Recently"; Volatility when Stunned; Energy Barrier: stunned while using it, no recharge delay for its time
     const fresh = !(me.st[a] > 0); me.st[a] = Math.max(me.st[a] || 0, s);
     if (fresh && a === 'stun' && recOn('stunned')) { const n = me.maxL * recOn('stunned') / 100; me.recoup.push({ k: 'life', left: n, rate: n }); }   // over a second
     if (o.mag) me.mag[a] = fresh ? o.mag : Math.max(me.mag[a] || 0, o.mag);
@@ -5594,23 +5599,23 @@ export function initScene(el, api) {
     fx.text(above(), t(a === 'stun' ? (o.heavy ? 'Heavy Stun' : 'Light Stun') : STATE[a]), css(PIP[a]), .34); fx.ring(pp, .2, 1, PIP[a], .3); hudT = 0;
     charmUse(a === 'stun' ? 'stunned' : a === 'maim' ? 'affected_by_slow' : 'affected_by_' + a);   // maim is a slow (its BuffDefinitions text)
   }
-  function ailed(d, raw, dealt, stunOnly = false) {
+  function ailed(d, raw, dealt, stunOnly = false, held) {
     const D = sheet().ailments, A = d.atk.ail, x = e => raw[e] || 0, roll = c => Math.random() * 100 < c;
     if (!D?.ail || !me.known) return;
     const thr = Math.max(1, D.ail) * (1 + banner('ailment_threshold_+%_final') / 100) * (1 + (charge && base(charge.i)?.dmg?.sum?.['support_steadfast_ailment_threshold_+%_final_while_channelling'] || 0) / 100) /* Steadfast II, while channelling it */, more = (inc, fin) => (1 + (A[inc] || 0) / 100) * (1 + (A[fin] || 0) / 100), can = a => !immune(a) && !roll(D.avoid[a]);
     const dot = (a, el, base) => ({ dps: base * GAME[a + '_per_minute'] / 6000, el });
     me.by = d;
-    if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)
     // freeze and electrocute build up against their thresholds; once one fills, it is harder to fill again for a while
     // (GameConstants <name>ThresholdModifier / <name>ModifierDuration, the player's where the game has its own)
-    const build = (a, n, cap, dur) => {
+    const build = (a, n, cap, dur, o) => {
       if (!(n > 0) || !cap || me.st[a] > 0) return;
-      const G = a[0].toUpperCase() + a.slice(1), rule = k => PL[G + k] ?? GC[G + k];
+      const G = BAR[a], rule = k => PL[G + k] ?? GC[G + k];
       me.bar[a] = (me.bar[a] || 0) + n / (cap * (me.lock[a] > 0 ? 1 + rule('ThresholdModifier') / 100 : 1)) * 100; me.calm = 0;
       if (me.bar[a] < 100) return;
       me.bar[a] = 0; me.lock[a] = rule('ModifierDuration');
-      if (can(a)) suffer(a, dur);
+      if (can(a)) suffer(a, dur, o);
     };
+    if (stunOnly) return stunNow();   // a blocked hit: only its stun (keywords.json Block)
     // a monster modifier's: all damage of its hits counts for ignite / chill, its hits always ignite / shock
     const all = Object.values(raw).reduce((t, n) => t + n, 0), IG = A.all_damage_can_ignite ? all : x('fire');
     if (IG) {   // flammability: each hit adds some for a while, the total is the chance to ignite you
@@ -5636,16 +5641,22 @@ export function initScene(el, api) {
     // under the least chance; each stun of the last few seconds raises your threshold (character.ot)
     stunNow();
     function stunNow() {
-      const melee = d.atk.melee, hard = Object.entries(dealt).reduce((t, [e, v]) => t + v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1), 0)
-        * (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
-        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1);   // Dazed: more stun buildup (keywords.json Daze)
+      const melee = d.atk.melee, tot = cold => Object.entries(dealt).reduce((t, [e, v]) => t + (e === 'cold' && !cold ? 0 : v * (e === 'physical' ? 1 + GAME.stun_physical / 100 : 1)), 0),
+        X = (melee ? 1 + GAME.stun_melee / 100 : 1) * (1 + ((A['hit_damage_stun_multiplier_+%'] || 0) + (melee ? A['melee_hit_damage_stun_multiplier_+%'] || 0 : 0)) / 100)
+        * (1 + (A['active_skill_hit_damage_stun_multiplier_+%_final'] || 0) / 100) * (time < me.dazed ? 1 + DAZE.stun / 100 : 1), hard = tot(true) * X;   // Dazed: more stun buildup (keywords.json Daze)
       me.stuns = me.stuns.filter(at => time - at < GAME.player_light_stun_repeat_ms / 1000);
       // the tree's increased stun threshold if you haven't been stunned recently / while channelling, added to its always-on one
       const stunIf = D => { const I = D.stunIf; if (!I) return 1; const x = (time - (me.stunAt ?? -99) > RECENT ? I.notRecent : 0) + (charge ? I.channel : 0) + (me.life >= me.maxL ? I.full || 0 : 0) + (time < me.parry?.until ? I.parry || 0 : 0) + (time < me.use?.until && me.use.S.empd ? I.emp || 0 : 0) + (meIs.Shapeshifted() ? I.shift || 0 : 0) + (meIs.Surrounded() ? I.surr || 0 : 0) + Math.min(100, (I.perHit || 0) * (me.struck?.length || 0)) + (I.perStun || 0) * me.stuns.length;   // per time you were Hit Recently, up to 100%; per time Stunned Recently
         return x ? (1 + (I.inc + x) / 100) / (1 + I.inc / 100) : 1; };
+      // a hit you block yourself (shield raised, parry, Runic Reprieve) builds up Heavy Stun on you (keywords.json HeavyStunPlayer):
+      // its damage but the cold (keywords.json Cold) at the player's scale (GameConstants), against your stun threshold with the
+      // skill's own (Parry's less, Runic Reprieve's increased) and Unbreakable's and Styrn's Mountain's more while using it
+      if (held) { const own = held.dmg?.stats || {}, U = held.dmg?.sum || {}, f = k => 1 + (k || 0) / 100;
+        build('stun', tot() * X * PL.HeavyStunDamageScale, D.stun * stunIf(D) * f(own['stun_threshold_+%_final_while_performing_action']) * f(own['active_skill_stun_threshold_+%_while_performing_action']) * f(U['support_stability_heavy_stun_threshold_+%_final_while_performing_action']) * f(U['support_knights_legacy_heavy_stun_threshold_+%_final_while_performing_action']), (D.heavy || DUR.stun) * D.dur.stun, { heavy: true });
+        if (stunOnly === 'heavy') return; }
       // with your Shield raised: Raise Shield's own more light stun threshold, doubled by Dionadair; Runefather's Boasts add theirs
       const RSH = time < me.raised?.until ? (sheet().raisedStun || 1) * (1 + (me.raised.S.dmg?.stats?.['active_block_light_stun_threshold_+%_final'] || 0) / 100) : 1;
-      const stunChance = D.stun ? Math.min(100, hard / ((D.stun + (me.boast || 0) * (1 + (D.stunIf?.inc || 0) / 100)) * RSH * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? 1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100 : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
+      const stunChance = D.stun ? Math.min(100, hard / ((D.stun + (me.boast || 0) * (1 + (D.stunIf?.inc || 0) / 100)) * RSH * (1 + me.rage * (sheet().stunPerRage || 0) / 100) * (time < me.mountUntil ? 1 + sheet().mountain.stun / 100 : 1) * (time < me.refute?.until ? Math.max(0, me.refute.stun) : 1) * stunIf(D) * (1 + GAME.player_light_stun_repeat_pct * me.stuns.length / 100) * (time < me.use?.until ? (1 + (me.use.S.dmg?.sum?.['support_unbreakable_light_stun_threshold_+%_final_while_performing_action'] || 0) / 100) * (1 + (me.use.S.dmg?.stats?.['active_skill_stun_threshold_+%_while_performing_action'] || 0) / 100) /* the skill's own while using it: Rolling Slam, Furious Slam */ : 1) * (charge ? 1 + (base(charge.i)?.dmg?.sum?.['support_steadfast_stun_threshold_+%_final_while_channelling'] || 0) / 100 : 1)) * 100) : 0;   // more threshold with Mountain's Teachings
       if (!frozen() && !sheet().unwavering && !sheet().noLightStun && !(sheet().noStunDeflected && me.dflAt === time) && !(sheet().noStunRecent && time - (me.stunAt ?? -99) <= RECENT) && !(sheet().noStunCalm && me.struck.length < 2) && stunChance >= GAME.player_light_stun_min && roll(stunChance) && can('stun')) {
         if (sheet().stunBlind) d.st.blind = Math.max(d.st.blind || 0, BLIND.time);   // the tree's: Blind the enemy that stuns you
         me.stuns.push(time); suffer('stun', GAME.player_light_stun_ms / 1000 * D.dur.stun * (1 + (A['base_stun_duration_+%'] || 0) / 100));
@@ -5774,7 +5785,7 @@ export function initScene(el, api) {
     CritPast8: () => Object.values(me.critAt || {}).some(at => time - at <= 8), NonCritRecently: () => time - (me.nonCritAt ?? -99) <= RECENT,
     LifeLeeching: () => me.leech.life.left > 0, Cursed: () => hexN() > 0, TotemActive: () => objs.some(o => o.totemOf && !o.dead), HeraldOn: () => Object.values(tog).some(T => T.kind === 'herald'),
     PowerGainedRecently: () => time - (chargeAt.power ?? -99) <= RECENT, BlockedPast4: () => time - (me.blockAt ?? -99) <= 4, RaisedBlockRecently: () => time - (me.rblockAt ?? -99) <= RECENT, PinnedRecently: () => time - (me.pinAt ?? -99) <= RECENT, Parrying: () => time < (me.parry?.until ?? -9), ParriedRecently: () => time - (me.parryAt ?? -99) <= RECENT, UsingCharm: () => me.cu.some(Boolean),
-    ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.stunAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
+    ConsumedCorpseRecently: () => time - (me.corpseAt ?? -99) <= RECENT, HeavyStunnedRecently: () => time - (me.heavyAt ?? -99) <= RECENT, TriggeredRecently: () => time - (me.trigAt ?? -99) <= RECENT,
     NoLifeFlaskUses: () => !!flasks()[0] && flaskLeft(0) < flasks()[0].per,
     Shapeshifted: () => !!me.form || !!me.demon, ShapeshiftedRecently: () => time - (me.shiftAt ?? -99) <= RECENT, RevertedRecently: () => time - (me.revertAt ?? -99) <= RECENT,
     ConsumedFrenzyRecently: () => time - (me.spentAt?.frenzy ?? -99) <= RECENT, ConsumedPowerRecently: () => time - (me.spentAt?.power ?? -99) <= RECENT, ConsumedEnduranceRecently: () => time - (me.spentAt?.endurance ?? -99) <= RECENT,
@@ -6070,7 +6081,9 @@ export function initScene(el, api) {
     // Arbiter's Reach: every 6 s, Guard of 10% of your maximum life on the allies in your Presence for its time (its stat text)
     const MW = sheet().motherWard; if (MW && time >= (me.mwAt ?? -99) + 6) { me.mwAt = time; for (const o of objs) if (o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r) o.guard = { n: me.maxL * .1, until: time + MW / 1000 }; }
     // your freeze and stun bars empty after a while without buildup (character.ot poise decay)
-    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + sheet().stunDecay / 100 : 1));   // the tree's Heavy Stun buildup emptying faster
+    // your Heavy Stun bar does not empty while you block yourself (keywords.json HeavyStunPlayer), nor for the skill's own time after
+    { const G = [me.raised, me.parry, me.reprieve].find(x => time < x?.until); if (G) me.guard = time + (G.S?.dmg?.stats?.active_skill_heavy_stun_decay_after_action_delay_ms || 0) / 1000; }
+    if ((me.calm += dt) * 1000 > GAME.player_poise_decay_delay_ms) for (const a in me.bar) if (a !== 'stun' || !(time < me.guard)) me.bar[a] = Math.max(0, me.bar[a] - GAME.player_poise_decay_per_second * dt * (a === 'stun' ? 1 + (sheet().stunDecay + (time - (me.parryAt ?? -99) <= RECENT ? sheet().stunDecayParry : 0)) / 100 : 1));   // the tree's Heavy Stun buildup emptying faster (Resolute Reprisal: if you Parried Recently)
     if ((me.tick -= dt) <= 0) {   // ignite, bleeding and poison after your resistances (bleeding ignores armour), one number per tick
       me.tick = .5; let n = 0, chaos = 0, worst = 'fire', best = 0, bled = 0, bEl = 'physical';
       // bleeding: its extra damage while you move, and it bypasses energy shield (keywords.json Bleeding)
