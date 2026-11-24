@@ -360,7 +360,7 @@ $('charPanel').onclick = async e => {
   picking = null;
   const b = B();
   if (el.dataset.asc) {
-    if (el.dataset.asc === b.asc) renderStats(); else edit((_, b) => { b.asc = el.dataset.asc; b.ascNodes = []; })(e);
+    if (el.dataset.asc === b.asc) renderStats(); else edit((_, b) => { b.asc = el.dataset.asc; b.ascNodes = []; setNodes(b, prune(b.nodes, b)); })(e);
     return;
   }
   const cls = el.dataset.cls;
@@ -374,7 +374,7 @@ $('charPanel').onclick = async e => {
     nodes = await moveTree(b.nodes, root, name, t('{0} starts somewhere else on the tree.', name));
     if (!nodes) return;
   }
-  edit((_, b) => { const had = [...b.nodes, ...b.ascNodes]; b.asc = asc; b.ascNodes = []; setNodes(b, nodes); relock(b, had); })(e);
+  edit((_, b) => { const had = [...b.nodes, ...b.ascNodes]; b.asc = asc; b.ascNodes = []; setNodes(b, prune(nodes, b)); relock(b, had); })(e);
 };
 const setNodes = (b, nodes) => {
   b.nodes = nodes; fixSets(b);
@@ -647,11 +647,14 @@ function reroot(nodes, root) {
   return have;
 }
 // Split Personality: a jewel in an allocated socket lets passives be allocated from another class start (its stat names
-// the start's attributes; the tree's starts are named by the old classes). The start itself costs no point
+// the start's attributes; the tree's starts are named by the old classes). The start itself costs no point. An ascendancy
+// passive does the same (the Pathfinder's Path of the Warrior: display_can_take_character_start_point, 1 to 6 in that order)
 const SPLIT = { str: 'MARAUDER', dex: 'RANGER', int: 'WITCH', strdex: 'DUELIST', strint: 'TEMPLAR', dexint: 'SIX' };
 const ROOT_OF = Object.fromEntries([...ROOTS].map(id => [N[id].name, id]));
-const splitRoots = (b, has = new Set(b.nodes)) => Object.entries(b.items || {}).flatMap(([slot, it]) => !slot.startsWith('jewel:') || !has.has(slot.slice(6)) ? []
-  : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]]).filter(Boolean));
+const splitRoots = (b, has = new Set(b.nodes)) => [...Object.entries(b.items || {}).flatMap(([slot, it]) => !slot.startsWith('jewel:') || !has.has(slot.slice(6)) ? []
+  : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]])),
+  ...(b.ascNodes || []).map(id => ROOT_OF[Object.values(SPLIT)[N[id]?.stats?.display_can_take_character_start_point - 1]])].filter(Boolean);
+console.assert(splitRoots({ nodes: [], ascNodes: ['57253'] })[0] === ROOT_OF.MARAUDER && !splitRoots({ nodes: [], ascNodes: [] }).length, "Path of the Warrior opens the Warrior's start");
 // the jewels in allocated sockets (has: the allocated passives): its socket, the item, its radius (items.js radiusOf) and
 // in(id): whether a passive is within that radius, or its ring, of the socket or of the keystone it names (From Nothing)
 const radiusScale = b => 1 + (b.ascNodes || []).reduce((a, id) => a + (N[id]?.stats?.['ascendancy_non_unique_jewel_radius_+%'] || 0), 0) / 100;   // Baryanic Leylines: a larger radius for a non-unique jewel
@@ -759,6 +762,7 @@ function toggle(b, id) {   // what a click on `id` does to build b (false: nothi
     const st = ascStart(b.asc);
     if (id === st) return false;
     b.ascNodes = b.ascNodes.includes(id) ? prune([st, ...b.ascNodes.filter(n => n !== id)]).slice(1) : [...b.ascNodes, ...preview(id, b)];
+    setNodes(b, prune(b.nodes, b));   // what hung from a class start one of them opened goes with it
   } else if (mode) {
     const own = setOf(b, mode);
     if (own.includes(id)) { b['set' + mode] = own.filter(n => n !== id); fixSets(b); }
