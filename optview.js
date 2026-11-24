@@ -8,7 +8,7 @@ import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimiz
 import { GEM, colour, supportText } from './skills.js';
 import { SK } from './skilldata.js';
 import { usedBy } from './calc.js';
-import { SLOTS, classOf, slotClasses, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
+import { SLOTS, classOf, slotClasses, slotOpen, flaskOf, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { stored, put, ask } from './settings.js';
 import { CATEGORY, SEARCH_SLOTS, STATUS, CURRENCY, MONEY, wanted, withIds, findGear, findLike, findBetter, leagues, weighted, siteQuery, listingQuery } from './trade.js';
@@ -21,6 +21,7 @@ const NOTES = {
   tough: 'Toughness: how many hits of a normal monster of your level it takes to bring the character down. Evasion, block, armour and resistances count; recovery does not.',
 };
 const SHOWN = 20;   // items of a gear search on screen
+const OWN = /^(flask|charm)/;   // slots whose items change none of the objectives (a flask, a charm): searched by the modifiers picked alone
 const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
 const chk = (k, on, text, tip = '') => `<label class="chk" title="${esc(tip)}"><input type="checkbox" data-c="${k}"${on ? ' checked' : ''}> ${esc(text)}</label>`;
 
@@ -200,8 +201,17 @@ export function initOpt(el, ctx) {
   }
 
   // ---------- gear on the trade site
+  // the slots a search can be for: the gear's that the build has (the third ring: the Ritualist's) and its allocated jewel sockets
+  const slotsMemo = { key: '', list: [] };
+  function gearSlots(b) {
+    const key = ctx.id() + '|' + ctx.rev();
+    if (slotsMemo.key !== key) { const sum = ctx.sumOf(b); slotsMemo.key = key; slotsMemo.list = [...SEARCH_SLOTS.filter(s => slotOpen(s, sum)), ...ctx.sockets(b).map(id => 'jewel:' + id)]; }
+    return slotsMemo.list;
+  }
+  const slotName = (b, s) => s.startsWith('jewel:') ? `${t('Jewel')} · ${t('socket {0}', ctx.sockets(b).map(String).indexOf(s.slice(6)) + 1)}` : t(SLOTS[s]);
+  const likeNow = sel => S.how === 'like' || OWN.test(sel.slot);
   function gearSel(b) {
-    const slot = SEARCH_SLOTS.includes(S.slot) ? S.slot : 'weapon', classes = slotClasses(slot).filter(c => CATEGORY[c]), mine = classOf(b.items?.[slot]);
+    const slot = gearSlots(b).includes(S.slot) ? S.slot : 'weapon', classes = slotClasses(slot).filter(c => CATEGORY[c]), mine = classOf(b.items?.[slot]);
     return { slot, classes, cls: classes.includes(S.cls[slot]) ? S.cls[slot] : classes.includes(mine) ? mine : classes[0] };
   }
   const valueOf = (b, g, key) => items => { const z = { ...b, items }; return g || !OBJECTIVES[key].skill ? score(key, z, ctx.sumOf(z), g) : null; };
@@ -270,12 +280,14 @@ export function initOpt(el, ctx) {
       .filter(x => hit.like || x.v != null && JSON.stringify(x.l.item) !== mine && (cur == null ? x.v > 0 : x.v > cur * (1 + 1e-9) + 1e-9))
       .sort((x, y) => hit.like ? 0 : y.v - x.v).slice(0, SHOWN);
     const onSite = l => siteQuery(league, listingQuery(l, hit.state)), lvl = b.level > 1 ? b.level : 101, s = without(b, sel.slot);
+    const fw = flaskOf(items[sel.slot]), own = OWN.test(sel.slot);
     const card = ({ l, i, v }) => {
-      const off = new Set(l.missed);
+      const off = new Set(l.missed), fl = flaskOf(l.item);
       return `<div class="gitem ${esc(l.rarity)}"><div class="ghead"><b>${esc(l.name || l.base)}</b>${l.name ? `<span>${esc(l.base)}</span>` : ''}<small>${l.ilvl ? t('Item level {0}', l.ilvl) : ''}</small></div>
         <div class="gmods">${modsOf(l).map(m => `<div class="mod${off.has(m) ? ' off' : ''}">${esc(m)}</div>`).join('')}${l.extra.map(m => `<div class="mod off">${esc(m)}</div>`).join('')}</div>
         ${impactList(diff(base, ctx.snap({ ...b, items: { ...items, [sel.slot]: l.item } })))}
-        <div class="gfoot"><div class="gval">${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}</div>
+        <div class="gfoot"><div class="gval">${fl ? `${esc(t(fl.k === 'life' ? 'Recovers Life' : 'Recovers Mana'))}: <b>${fmt(fl.amount)}</b> ${pct(fw?.amount, fl.amount)}`
+          : own ? '' : `${esc(t(OBJECTIVES[key].label))}: ${key === 'mix' ? '' : `<b>${num(v, key)}</b> `}${pct(cur, v)}`}</div>
           <div class="gprice">${l.price ? priceHtml(l.price) : t('no price')}</div>
           ${l.seller ? `<div class="note">${t('Seller')}: ${esc(l.seller)}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}
           <div class="gbtns"><button data-do="equip" data-i="${i}">${t('Equip')}</button><a class="gsite" href="${esc(onSite(l))}" target="_blank" rel="noopener">${t('Trade')}</a></div></div></div>`;
@@ -289,7 +301,7 @@ export function initOpt(el, ctx) {
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
       ${hit.like ? `<a class="golink" href="${esc(siteQuery(league, res.body))}" target="_blank" rel="noopener">${t('Open this search on the trade site')}</a>` : ''}
       <div class="gitems">${list.map(card).join('')}</div>
-      ${res.found.length ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.')}</p>` : ''}
+      ${res.found.length && !own ? `<p class="note">${t('Rated with each item on the build. Not counted: quality, runes, enchantments and the lines in grey.')}</p>` : ''}
       ${w ? `<p class="note"><a href="${esc(siteQuery(league, w))}" target="_blank" rel="noopener">${t('Open the weighted search on the trade site')}</a> — ${t('every modifier weighted by what it is worth to this build, the search Path of Building makes. The site only runs it when you are logged in there.')}</p>` : ''}</div>`;
   }
   // the modifiers picked for the slot: each with the least it must have, a list to add more, and the worn item's to start from
@@ -310,12 +322,12 @@ export function initOpt(el, ctx) {
         ${list.length ? `<button data-do="clearLike">${t('Clear')}</button>` : ''}</div>`;
   }
   function gearCard(b, g) {
-    const like = S.how === 'like', sel = gearSel(b), blocked = !like && OBJECTIVES[gk()].skill && !g, wants = blocked || like ? [] : wantsFor(b, g, sel), hit = G[gearKey(b, sel) + (like ? '|like' : '')];
+    const sel = gearSel(b), like = likeNow(sel), blocked = !like && OBJECTIVES[gk()].skill && !g, wants = blocked || like ? [] : wantsFor(b, g, sel), hit = G[gearKey(b, sel) + (like ? '|like' : '')];
     return `<section><h3>${t('Gear on the trade site')}</h3>
       <p class="note">${t('Works out what each modifier the slot can roll is worth to the objective, looks for items listed on the official trade site that have the best ones, puts each on the build and ranks them by what they really change.')}</p>
-      <div class="optrow"><label>${t('Look for')} <select data-s="how">${opt('best', t('The best for a stat'), !like)}${opt('like', t('Chosen modifiers'), like)}</select></label>
+      <div class="optrow"><label>${t('Look for')} <select data-s="how">${OWN.test(sel.slot) ? '' : opt('best', t('The best for a stat'), !like)}${opt('like', t('Chosen modifiers'), like)}</select></label>
         ${like ? '' : `<label>${t('Stat to improve')} <select data-s="gear">${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), k === gk())).join('')}</select></label>`}
-        <label>${t('Slot')} <select data-s="slot">${SEARCH_SLOTS.map(s => opt(s, t(SLOTS[s]), s === sel.slot)).join('')}</select></label>
+        <label>${t('Slot')} <select data-s="slot">${gearSlots(b).map(s => opt(s, slotName(b, s), s === sel.slot)).join('')}</select></label>
         ${sel.classes.length > 1 ? `<label>${t('Type')} <select data-cls>${sel.classes.map(c => opt(c, t(c), c === sel.cls)).join('')}</select></label>` : ''}
         <label>${t('League')} <select data-s="league">${leagueList().map(l => opt(l, l, l === leagueNow())).join('')}</select></label>
         <label>${t('Seller')} <select data-s="state">${Object.entries(STATUS).map(([k, v]) => opt(k, t(v), k === (STATUS[S.state] ? S.state : 'securable'))).join('')}</select></label></div>
@@ -407,7 +419,7 @@ export function initOpt(el, ctx) {
         to.sockets = Math.max(to.sockets ?? 2, names.length + held); to.supports = [...names]; });
     }
     if (what === 'equip') {
-      const sel = gearSel(b), l = G[gearKey(b, sel)]?.res.found[+btn.dataset.i], item = l?.item; if (!item) return;
+      const sel = gearSel(b), l = G[gearKey(b, sel) + (likeNow(sel) ? '|like' : '')]?.res.found[+btn.dataset.i], item = l?.item; if (!item) return;
       // a rare keeps its name, as one read from the game's text does
       ctx.change(b => wear(b, sel.slot, { ...structuredClone(item), ...l.name && !item.unique && { name: l.name } }, ctx.sumOf(b).keystone_giants_blood));   // the one it wore stays in the saved items
     }

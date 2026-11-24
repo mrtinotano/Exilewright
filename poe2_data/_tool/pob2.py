@@ -250,7 +250,7 @@ print(f'{len(supports)} of {len(support_names)} supports with stats; without: {"
 print(f'{len(minions)} minion gems with their monster')
 print(f'{len(quests)} campaign rewards, {sum(1 for q in quests if q.get("pick"))} of them a choice')
 
-# The trade site's stat of every modifier line. ModItem.lua / ModItemExclusive.lua, one modifier per row:
+# The trade site's stat of every modifier line. ModItem.lua / ModItemExclusive.lua (ModFlask, ModCharm, ModJewel), one modifier per row:
 #   ["Strength1"] = { type = "Suffix", affix = "of the Brute", "+(5-8) to Strength", ..., tradeHashes = { [4080418644] = { "+(5-8) to Strength" }, } },
 # -> id: [English name, [hash, lo, hi, lo, hi...] per line]: the site's stat is "explicit.stat_<hash>" and the numbers
 # are those the line shows, in order ("(5-8)" is a roll, a bare number is fixed).
@@ -260,7 +260,7 @@ used = {a['id'] for a in json.load(open(os.path.join(ROOT, 'available', 'items.j
 used |= {m['id'] for u in json.load(open(os.path.join(ROOT, 'available', 'unique_items.json'), encoding='utf8')) for m in u['mods']}
 num = lambda x: int(float(x)) if float(x) == int(float(x)) else float(x)
 trade = {}
-for path in ('ModItem.lua', 'ModItemExclusive.lua'):
+for path in ('ModItem.lua', 'ModItemExclusive.lua', 'ModFlask.lua', 'ModCharm.lua', 'ModJewel.lua'):  # a flask's, a charm's and a jewel's own modifiers have their files
     for mod, name, hashes in ROW.findall(get(path)):
         if mod in used:
             trade[mod] = [name] + [[int(h)] + [num(x) for a, b, c in SHOWN.findall(' '.join(re.findall(r'"((?:[^"\\]|\\.)*)"', lines))) for x in ((a, b) if a else (c, c))]

@@ -636,7 +636,7 @@ def read_it(p, cache={}):
 tags_tab = load('Tags')
 tag_ids = {t['Id'] for t in tags_tab}
 SLOT_CLASSES = {  # ItemClasses.Name -> slots it can go in
-    'Amulets': ['amulet'], 'Rings': ['ring1', 'ring2'], 'Belts': ['belt'], 'Gloves': ['gloves'], 'Boots': ['boots'],
+    'Amulets': ['amulet'], 'Rings': ['ring1', 'ring2', 'ring3'], 'Belts': ['belt'], 'Gloves': ['gloves'], 'Boots': ['boots'],
     'Body Armours': ['body'], 'Helmets': ['helmet'], 'Shields': ['offhand'], 'Foci': ['offhand'], 'Bucklers': ['offhand'], 'Quivers': ['offhand'],
     **{c: ['weapon', 'offhand'] for c in ('Claws', 'Daggers', 'Wands', 'One Hand Swords', 'One Hand Axes', 'One Hand Maces', 'Sceptres', 'Spears', 'Flails')},
     'Jewels': ['jewel'], 'Life Flasks': ['flask1'], 'Mana Flasks': ['flask2'], 'Charms': ['charm1', 'charm2', 'charm3'],

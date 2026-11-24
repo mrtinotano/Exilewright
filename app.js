@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
+import { initItems, slotOpen, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -171,11 +171,11 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b, cq))) sum[s] = (sum[s] || 0) + v * k; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
-  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
+  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
   if (NT) for (const [k, v] of Object.entries(gearStats({ amulet: b.items.amulet }))) sum['minion:' + k] = (sum['minion:' + k] || 0) + v;
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
-  if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'amulet'].filter(s => b.items?.[s]).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
+  if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'ring3', 'amulet'].filter(s => b.items?.[s] && slotOpen(s, sum)).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;
   // Ingenuity: increased bonuses from the left / right ring (note: Ingenuity's own count too, as the jewellery above)
   for (const s of ['ring1', 'ring2']) { const RE = sum[`equipped_${s}_effect_of_bonuses_+%`]; if (RE && b.items?.[s]) for (const [x, v] of Object.entries(gearStats({ [s]: b.items[s] }))) sum[x] = (sum[x] || 0) + v * RE / 100; }
   // The Adorned: increased effect of the allocated jewel sockets holding a corrupted magic / rare jewel (note: the whole of what the jewel grants)
@@ -1256,7 +1256,7 @@ const sockets = () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map(
 const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
   sockets,
   items => snap({ ...B(), items }), treeSum,
-  { can: slot => SEARCH_SLOTS.includes(slot), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), tough: items => { const b = { ...B(), items }; return toughness(character(b, sumOf(b))); }, find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
+  { can: slot => SEARCH_SLOTS.includes(slot) || slot.startsWith('jewel:'), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), tough: items => { const b = { ...B(), items }; return toughness(character(b, sumOf(b))); }, find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(id => N[id].type === 'jewel'), setNodes, showOnTree,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });

@@ -6,7 +6,7 @@
 // the items with the most of each of the best modifiers (or the best damage / defence of the item) and reads those;
 // the weighted search itself is offered as a link that opens on the official site, where the user is logged in.
 // No DOM here: optview.js is the screen.
-import { affixLines, tradeItem, priceLines, classOf, needOf, haveFor, TRADE_LABELS, isCorrupted } from './items.js';
+import { affixLines, tradeItem, priceLines, classOf, needOf, haveFor, TRADE_LABELS, isCorrupted, slotType, flaskOf } from './items.js';
 import { englishOf } from './stats.js';
 
 const SITE = 'https://www.pathofexile.com/trade2/search/poe2/';
@@ -18,8 +18,10 @@ export const CATEGORY = {
   Daggers: 'weapon.dagger', Flails: 'weapon.flail', Claws: 'weapon.claw',
   Helmets: 'armour.helmet', 'Body Armours': 'armour.chest', Gloves: 'armour.gloves', Boots: 'armour.boots', Quivers: 'armour.quiver',
   Shields: 'armour.shield', Foci: 'armour.focus', Bucklers: 'armour.buckler', Amulets: 'accessory.amulet', Belts: 'accessory.belt', Rings: 'accessory.ring',
+  'Life Flasks': 'flask.life', 'Mana Flasks': 'flask.mana', Charms: 'flask.charm', Jewels: 'jewel',   // the rest of the site's list (data/filters) is nothing a build wears: gems, waystones, relics, currency
 };
-export const SEARCH_SLOTS = ['weapon', 'offhand', 'helmet', 'body', 'gloves', 'boots', 'amulet', 'ring1', 'ring2', 'belt'];
+// the slots a search can be for; an allocated jewel socket too ("jewel:<node id>")
+export const SEARCH_SLOTS = ['weapon', 'offhand', 'helmet', 'body', 'gloves', 'boots', 'amulet', 'ring1', 'ring2', 'ring3', 'belt', 'flask1', 'flask2', 'charm1', 'charm2', 'charm3'];
 export const STATUS = { securable: 'Instant buyout', available: 'Instant buyout or in person', any: 'Any' };
 // the currencies the site prices in: the game's names and art (available.py: currency.json); `price` is the site's price
 // filter, whose first option ('': no currency) is any currency worth the same in Exalted Orbs
@@ -175,7 +177,9 @@ console.assert(fits({ lvl: 40, s: { str: 50 } }, { req: { lvl: 30 } }) && !fits(
 export function readListing(r) {
   const it = r.item || {}, lines = Object.keys(KINDS).flatMap(k => linesOf(it, k)), name = plain(it.name || ''), base = plain(it.baseType || it.typeLine || '');
   const extra = ['enchantMods', 'runeMods'].flatMap(k => linesOf(it, k).map(l => l.text)), p = tradeItem({ name, base, lines, runes: extra });
-  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), stats: [...new Set(lines.filter(l => l.hash).map(l => `${l.kind}.stat_${l.hash}`))], extra, quality: +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0,
+  const quality = +(it.properties || []).find(x => /Quality/.test(x.name))?.values?.[0]?.[0]?.replace(/\D/g, '') || 0;
+  if (quality && flaskOf(p?.item)) p.item.quality = quality;   // a flask's quality is in what it recovers (flaskOf): counted, unlike a weapon's or an armour's
+  return { id: r.id, name, base, rarity: (it.rarity || '').toLowerCase(), ilvl: it.ilvl, mods: lines.map(l => l.text), stats: [...new Set(lines.filter(l => l.hash).map(l => `${l.kind}.stat_${l.hash}`))], extra, quality,
     price: r.listing?.price ? { amount: r.listing.price.amount, currency: r.listing.price.currency } : null, seller: r.listing?.account?.name || '',
     item: p?.item || null, slots: p?.slots || [], missed: p?.missed || [], sockets: (it.sockets || []).length,
     req: Object.fromEntries((it.requirements || []).map(q => [REQ[q.type], parseInt(q.values?.[0]?.[0])]).filter(([k, n]) => k && n > 0)) };
@@ -424,7 +428,7 @@ export async function findBetter({ league, item, base, skip = [], price, req, st
   const url = 'search?league=' + encodeURIComponent(league);
   let s, need = 0, full = 0, cap = 0, more = 0;
   const take = () => { const ids = spread((s.result || []).filter(id => !seen.has(id)), cap - seen.size); ids.forEach(id => seen.add(id)); if (ids.length) groups.push({ ids, q: s.id }); more = Math.max(more, (s.total || 0) - seen.size); };
-  for (const own of base || item.unique ? [true] : [true, false]) {
+  for (const own of base || item.unique || classOf(item) === 'Charms' ? [true] : [true, false]) {   // a charm of another base is another charm
     if (!own) delete body.query.type;
     body.query.stats = stats; cap = seen.size + READ; s = await call(url, body); const had = seen.size; take(); full += seen.size - had;
     for (const k of fewer(n)) { if (seen.size >= cap) break; body.query.stats = atLeast(stats, k); need = k; s = await call(url, body); take(); }
@@ -447,7 +451,7 @@ async function search(out, seen, { league, slot, items, value, per, req, tick },
     for (const r of (await call(`fetch?ids=${ids.join()}&query=${encodeURIComponent(s.id)}`)).result || []) {
       const l = r && readListing(r);
       if (!l || !fits(req, l)) continue;
-      if (!l.item || !l.slots.includes(slot)) { out.unread++; continue; }
+      if (!l.item || !l.slots.includes(slotType(slot))) { out.unread++; continue; }
       out.found.push({ ...l, value: value({ ...items, [slot]: l.item }), plan });
     }
     return true;

@@ -9,7 +9,7 @@
 import { t, esc, fmt, tn, lang, cap } from './i18n.js';
 import { OBJECTIVES, score, whyNot } from './optimize.js';
 import { GEM } from './skills.js';
-import { SLOTS, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
+import { SLOTS, slotOpen, parseItem, itemView, gearStats, offhandFits, classOf, propText, modDiff } from './items.js';
 import { shownLines } from './stats.js';
 import { diff, impactText } from './impact.js';
 import { priceOf, priceUnid, priceBulk, priceGem, priceWay, gemOf, wayOf, bulkOf, leagues, siteLink, TradeError } from './trade.js';
@@ -88,10 +88,10 @@ export function initLoot(el, ctx) {
   }
   // an item in every slot it fits, the best slot first (none: a jewel with no socket allocated)
   function verdict(e) {
-    const b = ctx.build(), g = gemOf(b), gear = gearOf(b), giant = ctx.sumOf(b).keystone_giants_blood;
+    const b = ctx.build(), g = gemOf(b), gear = gearOf(b), sum = ctx.sumOf(b), giant = sum.keystone_giants_blood;
     // with no skill to say which weapons the build uses, a weapon is only compared with one of its own kind
     const fits = s => s === 'offhand' ? offhandFits(gear.weapon, e.r.item, giant) : s !== 'weapon' || g || !gear.weapon || classOf(gear.weapon) === classOf(e.r.item);
-    const slots = e.r.slots.includes('jewel') ? ctx.sockets().map(j => 'jewel:' + j.id) : e.r.slots.filter(s => SLOTS[s] && fits(s));
+    const slots = e.r.slots.includes('jewel') ? ctx.sockets().map(j => 'jewel:' + j.id) : e.r.slots.filter(s => SLOTS[s] && slotOpen(s, sum) && fits(s));
     return slots.map(slot => rate(b, g, gear, slot, e.r.item)).sort((p, q) => RANK[q.kind] - RANK[p.kind] || q.gain - p.gain);
   }
 

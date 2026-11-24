@@ -12,7 +12,7 @@ const POB_ASC = { Deadeye: 'Ranger1', Pathfinder: 'Ranger3', Amazon: 'Huntress1'
   'Abyssal Lich': 'Witch3b', Stormweaver: 'Sorceress1', Chronomancer: 'Sorceress2', 'Disciple of Varashta': 'Sorceress3',
   'Martial Artist': 'Monk1', Invoker: 'Monk2', 'Acolyte of Chayula': 'Monk3' };
 const POB_SLOT = { weapon: 'Weapon 1', offhand: 'Weapon 2', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots',
-  amulet: 'Amulet', ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Flask 1', flask2: 'Flask 2', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3',
+  amulet: 'Amulet', ring1: 'Ring 1', ring2: 'Ring 2', ring3: 'Ring 3', belt: 'Belt', flask1: 'Flask 1', flask2: 'Flask 2', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3',
   'swap:weapon': 'Weapon 1 Swap', 'swap:offhand': 'Weapon 2 Swap' };   // weapon set II
 const rev = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [String(v), k]));
 const ASC_OF = rev(POB_ASC), SLOT_OF = rev(POB_SLOT), CLASS_OF = rev(POB_CLASS);

@@ -12,8 +12,11 @@ const UNIQ = Object.fromEntries(UNIQUES.filter(u => BASE[u.base]).map(u => [u.na
 const AFFIX = Object.fromEntries([...D.affixes.map(a => [a.id, a]),
   ...UNIQUES.flatMap(u => [...u.mods, ...u.mutated || []].map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);   // and the Vaal modifiers an Architect's Orb can give it
 export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots', amulet: 'Amulet',
-  ring1: 'Ring 1', ring2: 'Ring 2', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
-const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
+  ring1: 'Ring 1', ring2: 'Ring 2', ring3: 'Ring 3', belt: 'Belt', flask1: 'Life Flask', flask2: 'Mana Flask', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3' };
+export const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // jewels go in allocated tree sockets: "jewel:<node id>"
+// the third ring slot is the Ritualist's Unfurled Finger's: there with it allocated (sum: the build's stats), and what is in it only counts then
+export const slotOpen = (slot, sum) => slot !== 'ring3' || !!sum.enable_ring_slot_3;
+console.assert(slotOpen('ring2', {}) && !slotOpen('ring3', {}) && slotOpen('ring3', { enable_ring_slot_3: 1 }), 'slotOpen');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || BASE[it?.base]?.img); };
 // stats whose number is a name: a passive's hash (Megalomaniac's notables, From Nothing's keystone), a keystone's index
@@ -555,7 +558,7 @@ export const baseOf = it => BASE[it?.base];                           // the bas
 export const known = it => !!BASE[it?.base] && (it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values)), true);
 { const it = { base: D.bases[0].name, mods: [{ id: D.affixes[0].id, values: [1] }, { id: 'gone', values: [1] }, { id: D.affixes[0].id }] };
   console.assert(known(it) && it.mods.length === 1 && !known({ base: 'gone' }) && !known(null), 'known'); }
-export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slot)).map(b => b.class))];
+export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slotType(slot))).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
 // stored per minute...). -> [{ hash, at: [{ k (index in stats), scale (shown / stored) } | null per number shown] }]
 const SHOWN_AS = [1, -1, 1 / 60, -1 / 60, 1 / 100, -1 / 100, 1 / 10, 1 / 1000], partsOf = new Map();
@@ -771,8 +774,8 @@ export function modDiff(old, item) {
   return [gain, lose].map(s => shownLines(s));
 }
 // paper doll like the in-game inventory (8x8 grid); letters are grid areas
-const DOLL = ['v v . . . . u u', 'w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w . b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
-const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
+const DOLL = ['v v . . . . u u', 'w w . h h . o o', 'w w . h h a o o', 'w w r b b s o o', 'w w q b b . o o', '. g g b b t t .', '. g g l l t t .', 'f . x y z . m .', 'f . . . . . m .'];
+const AREA = { weapon: 'w', offhand: 'o', helmet: 'h', amulet: 'a', ring1: 'r', ring2: 's', ring3: 'q', body: 'b', gloves: 'g', belt: 'l', boots: 't', flask1: 'f', flask2: 'm', charm1: 'x', charm2: 'y', charm3: 'z' };
 const DEFS = [['armour', 'Armour'], ['evasion', 'Evasion Rating'], ['energy_shield', 'Energy Shield']];   // an armour piece's own defences (local())
 const ATTR = { str: 'Strength', dex: 'Dexterity', int: 'Intelligence' };
 // why the character cannot wear a listed item yet (l.req, from the site): the levels to go, and each attribute short of
@@ -797,6 +800,7 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 //   (and map(canvas, socket) / show(socket): where a jewel socket is on the tree)
 export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, trade) {
   const giant = () => tree().keystone_giants_blood, staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
+  const open = s => slotOpen(s, s === 'ring3' && tree());   // the build's stats only asked for the slot that needs them
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
   const lists = Object.fromEntries(types.map(s => [s, [
@@ -880,7 +884,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   const buy = { max: '', cur: '', base: false, lvl: true, attr: true, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
   const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
-    return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s]) || slots[0] || null; };
+    return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s] && open(s)) || slots[0] || null; };
   // the items found better than the one worn (trade.find): cheapest first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
   // a listed item as the build counts it and as Equip puts it on: with what the worn one has socketed (runes, soul
@@ -900,15 +904,18 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // ponytail: no exchange rates, a price in another currency goes by its place in the site's list of currencies
     // (Exalted, Chaos, Divine); the Currency Exchange's rates if mixed prices matter
     const dmg = s => s.dps.reduce((x, [, y]) => x + (y || 0), 0), rel = (a, z) => a ? z / a : z ? 2 : 1, d0 = dmg(now), t0 = trade.tough(B.items || {}), cur = trade.money().map(c => c[0]);
+    // a flask: what it recovers a use (its base, quality and modifiers) is its number, and no number of the build has it
+    const f0 = flaskOf(worn), FL = f0 && (f0.k === 'life' ? 'Recovers Life' : 'Recovers Mana');
     const key = JSON.stringify([B, now.dps, t0]);   // each listing on the build: worked out once per build, not at every render
     if (better.key !== key) Object.assign(better, { key, on: res.found.map(l => { const items = { ...B.items, [slot]: asWorn(l.item, worn) }; return [snapOf(items), trade.tough(items)]; }) });
     const all = res.found.map((l, i) => { const [z, tz] = better.on[i];
-      return { l, i, rows: diff(now, z), net: rel(d0, dmg(z)) * rel(t0, tz), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
+      return { l, i, rows: diff(now, z), net: rel(d0, dmg(z)) * rel(t0, tz) * (f0 ? rel(f0.amount, flaskOf(l.item)?.amount || 0) : 1), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
     const rated = all.filter(x => Math.abs(x.net - 1) <= .005 ? !x.rows.length || x.rows.some(r => r.d > 0) : x.net > 1).sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1]), worse = all.length - rated.length;
     return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
-      const defs = DEFS.filter(([k]) => L[k] || wl[k]).map(([k, name]) => { const d = (L[k] || 0) - (wl[k] || 0);
-        return `<span>${t(name)}: ${wl[k] && d ? `${wl[k]} → ` : ''}<b>${L[k] || 0}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${wl[k] ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / wl[k] * 100, Math.abs(d) / wl[k] < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
+      const fl = f0 && flaskOf(l.item), own = [...DEFS.map(([k, name]) => [name, wl[k] || 0, L[k] || 0]), ...fl ? [[FL, Math.round(f0.amount), Math.round(fl.amount)]] : []];   // a flask's: what it recovers
+      const defs = own.filter(([, a, z]) => a || z).map(([name, a, z]) => { const d = z - a;
+        return `<span>${t(name)}: ${a && d ? `${a} → ` : ''}<b>${z}</b>${d ? ` <i class="${d > 0 ? 'dup' : 'ddn'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${a ? ` (${d > 0 ? '+' : '−'}${fmt(Math.abs(d) / a * 100, Math.abs(d) / a < .1 ? 1 : 0)}%)` : ''}</i>` : ''}</span>`; }).join('');   // and its share of the worn one's
       const order = byGain(rows);   // most improved first
       // its base's own modifiers (implicits) apart from the rest by a line, as the game shows them, under its name and base
       const P = itemParts(l.item, false), div = x => `<div>${esc(x)}</div>`;
@@ -924,7 +931,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       return `<div class="stashit buyit ${l.rarity}"><div class="buyl"><img src="${img(u && D.unique_img[u.name] || base?.img)}" alt="">${l.price ? `<span class="buyp">${trade.price(l.price)}</span>` : ''}<button data-act="wearbuy" data-i="${i}">${t('Equip')}</button><a class="buysite" href="${esc(trade.item(res.league, l, res.body?.query?.status?.option))}" target="_blank" rel="noopener">${t('Trade')}</a></div>
         <span><b>${esc(l.name || P?.base.name || l.base)}</b>${l.name && P ? `<div class="bbase">${esc(P.base.name)}</div>` : ''}${defs ? `<div class="bdefs">${defs}</div>` : ''}<div class="bmods">${mods}</div>${impactList(order, true)}${sock ? `<div class="bsock">${sock}</div>` : ''}${unmet(l, lvl, s).map(x => `<div class="ddn">${esc(x)}</div>`).join('')}</span></div>`; }).join('')
       || (worse ? '' : `<p class="note">${t('Nothing listed matches. Try another league, a higher price or "Any" seller.')}</p>`)}</div>
-      ${worse ? `<p class="note">${t('{0} listed left out: with them the build is worse ({1} goes down).', worse, t('Damage × toughness'))}</p>` : ''}
+      ${worse ? `<p class="note">${t('{0} listed left out: with them the build is worse ({1} goes down).', worse, t(FL || 'Damage × toughness'))}</p>` : ''}
       ${res.more > 0 ? `<p class="note">${t('{0} more listed were not read: those read are spread over their prices. A lower price narrows the search.', res.more)}</p>` : ''}
       ${res.need ? `<p class="note">${res.full ? t('{0} listed have all {1} of the modifiers; the others have at least {2} of them.', res.full, res.of, res.need) : t('None listed has all {1} of the modifiers: these have at least {0} of them.', res.need, res.of)}</p>` : ''}
       ${res.left ? `<p class="note">${t('{0} of the modifiers are not on the trade site: left out of the search.', res.left)}</p>` : ''}
@@ -948,7 +955,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     }
     now = snapOf(items); gains.clear();
     const g = gearStats(items), charms = (g.local_charm_slots || 0) + (g.local_additional_charm_slots || 0) + (g.num_charm_slots || 0);
-    const sockets = jewelSockets(), names = Object.fromEntries(Object.entries(SLOTS).map(([k, x]) => [k, t(x)]));
+    const sockets = jewelSockets(), names = Object.fromEntries(Object.entries(SLOTS).filter(([k]) => open(k)).map(([k, x]) => [k, t(x)]));
     sockets.forEach(j => names['jewel:' + j.id] = t('Jewel') + ' · ' + j.label);
     if (!names[sel]) sel = 'weapon';
     // a weapon that takes both hands shows in the off hand too, dimmed, as in the game (picking it there picks the weapon)
@@ -961,7 +968,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const set = getBuild().wset === 2 ? 2 : 1, tabs = area => `<div class="wsets" style="grid-area:${area}">${[1, 2].map(n =>
       `<button data-act="wset" data-n="${n}"${n === set ? ' class="on"' : ''} title="${esc(t('Weapon set {0}', n))}">${n === 1 ? 'I' : 'II'}</button>`).join('')}</div>`;
     el.innerHTML = `<div class="inv"><div><div class="doll" style="grid-template-areas:${DOLL.map(r => `'${r}'`).join(' ')}">${
-      Object.keys(SLOTS).map(s => cell(s, AREA[s])).join('')}${tabs('v')}${tabs('u')}</div>
+      Object.keys(SLOTS).filter(s => names[s]).map(s => cell(s, AREA[s])).join('')}${tabs('v')}${tabs('u')}</div>
       <h3>${t('Jewels ({0} sockets allocated on the tree)', sockets.length)}</h3>
       <div class="jewels">${sockets.map(j => cell('jewel:' + j.id, 'auto')).join('') || `<p class="note">${t('Allocate jewel sockets on the tree to add jewels.')}</p>`}</div>
       <p class="note">${t('Charm slots from your gear mods: {0}. The belt base slot is not in the game data.', charms)}</p>
@@ -983,7 +990,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const r = parseItem(text);
     if (!r) { msg = t('That is not item text, or the planner does not have its base.'); render(); msg = ''; return; }
     const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
-    const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s]) || r.slots[0];
+    const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s] && open(s)) || r.slots[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
     put(slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
