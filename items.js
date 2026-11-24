@@ -1,7 +1,7 @@
 // Equipment: bases, implicits and affixes from poe2_data/available/items.json (game tables + .it tag inheritance).
 // Local stats (local_*) only change the item they are on; everything else is summed into the character.
 import { t, esc, tn, lang, fmt, KW } from './i18n.js';
-import { statLines, statLinesEn, shownLines, nameLines } from './stats.js';
+import { statLines, statLinesEn, shownLines, nameLines, NAMES } from './stats.js';
 import { diff, byGain, impactHtml, impactLine, impactList, impactText } from './impact.js';
 
 const D = await fetch('poe2_data/available/items.json').then(r => r.json());
@@ -31,13 +31,16 @@ export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return i
 // stats whose number is a name: a passive's hash (Megalomaniac's notables, From Nothing's keystone), a keystone's index
 // (Flesh Crucible: the tree's keystone_list, from 1), a skill's (Prism of Belief: gems.json specific), the notable an
 // Undying Hate's modifier makes a conquered one become (passive_tree.json timeless.overrides). Any value, picked by name;
-// the names come from the app (setNames)
+// the names come from the app (setNames); a Mage's Legacy's (Mageblood: items.json mages_legacy, from 1) from here
 const pickKind = id => /conquored_notable_to_passive_hash_\d+$/.test(id) ? 'override' : /_hash(_\d+)?$/.test(id) ? (id.includes('keystone') ? 'keystone' : 'notable') : /vivisection_random_keystone_index$/.test(id) ? 'kindex'
-  : id === 'unique_jewel_specific_skill_level_+_skill' ? 'skill' : null;
+  : id === 'unique_jewel_specific_skill_level_+_skill' ? 'skill' : /^local_unique_mages_legacy_\d$/.test(id) ? 'legacy' : null;
+NAMES.mages_legacy_index = i => tn(D.mages_legacy?.[i - 1]);
 const CHOICES = {}, BY_NAME = {};   // kind -> [[value, name]] / {lower case name in any language: value}
+const named = (kind, rows, label = tn) => { CHOICES[kind] = rows.map(([v, x]) => [v, label(x)]).sort((a, b) => a[1].localeCompare(b[1]));
+  BY_NAME[kind] = {}; for (const [v, x] of rows) for (const k in x) if (k.startsWith('name') && x[k]) BY_NAME[kind][x[k].toLowerCase()] = v; };
+named('legacy', (D.mages_legacy || []).map((x, i) => [i + 1, x]));
 export function setNames(nodes, label, keystones, skills, overrides = {}) {
-  const of = (kind, rows) => { CHOICES[kind] = rows.map(([v, x]) => [v, label(x)]).sort((a, b) => a[1].localeCompare(b[1]));
-    BY_NAME[kind] = {}; for (const [v, x] of rows) for (const k in x) if (k.startsWith('name') && x[k]) BY_NAME[kind][x[k].toLowerCase()] = v; };
+  const of = (kind, rows) => named(kind, rows, label);
   for (const type of ['notable', 'keystone']) of(type, Object.entries(nodes).filter(([, n]) => n.type === type && !n.ascendancy).map(([h, n]) => [+h, n]));
   of('kindex', keystones.map((h, i) => [i + 1, nodes[h]]));
   of('skill', skills.map(g => [g.specific, g]));
@@ -93,6 +96,14 @@ function fistMods(it) {
     || (it.mods || []).filter(m => AFFIX[m.id]).map(m => { const st = D.fists.mods[m.id], [, lo, hi] = AFFIX[m.id].stats[0] || [], f = hi === lo || m.values[0] == null ? 1 : (m.values[0] - lo) / (hi - lo);
       return st ? set('HandWraps' + m.id, st, st.map(([, a, z]) => Math.round(a + (z - a) * f))) : { id: m.id, stats: AFFIX[m.id].stats, values: m.values }; });
 }
+// Mageblood: each Mage's Legacy picked grants its stats, all of them with the increased effect per duplicate one.
+// note: a duplicate is each one beyond the first of its kind; the effect rounded towards zero, as a charm's
+function legacies(out) {
+  const leg = [1, 2, 3, 4].map(k => out['local_unique_mages_legacy_' + k]).filter(Boolean);
+  const x = 1 + (out['local_unique_mages_legacy_effect_+%_per_duplicate_mages_legacy'] || 0) * (leg.length - new Set(leg).size) / 100;
+  for (const i of leg) for (const [id, v] of Object.entries(D.mages_legacy?.[i - 1]?.stats || {})) out[id] = (out[id] || 0) + Math.trunc(v * x);
+  return out;
+}
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = baseOf(item), out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
@@ -102,7 +113,7 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
     for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
   }
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
-  return out;
+  return legacies(out);
 }
 // A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius, tree units: PassiveJewelRadii "Small" is
 // 1000) and what each small / notable passive allocated in it also grants -> { r, small: {stat: value}, notable }, or null
@@ -184,9 +195,10 @@ export const weaponStats = (items = {}) => items.weapon && baseOf(items.weapon)?
 export function gearStats(items = {}) {
   const sum = {};
   const add = (k, v) => { if (v) sum[k] = (sum[k] || 0) + v; };
-  for (const item of Object.values(items)) {
+  for (const [slot, item] of Object.entries(items)) {
     if (!baseOf(item)) continue;
-    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots')) add(k, v);   // the belt's charm slots count for the character
+    const side = { ring1: 'local_left_ring_slot_', ring2: 'local_right_ring_slot_' }[slot];   // Snakepit: "Left ring slot: Projectiles from Spells Fork"
+    for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots')) add(k, v); else if (side && k.startsWith(side)) add(k.slice(side.length), v);   // the belt's charm slots count for the character
     const l = local(item);
     add('base_physical_damage_reduction_rating', l.armour);
     add('base_evasion_rating', l.evasion);
@@ -533,11 +545,12 @@ export function parseItem(text) {
     // what a line names ("Allocates Heavy Buffer", "Passives in Radius of Zealot's Oath can be Allocated", "+3 to Level of
     // all Raise Zombie Skills", a timeless jewel's "Remembrancing 4500 songworthy deeds by the line of Medved"): its value,
     // and the numbers of that line (a name no other modifier of it took already)
+    let legs = 0;   // (Mageblood's legacies read so far: one line each, the same one any number of times)
     for (const m of item.mods) { const ids = AFFIX[m.id].stats.map(([id]) => id), named = ids.find(id => pickKind(id) || id === 'local_unique_jewel_alternate_tree_seed'); if (!named) continue;
       const read = (l, { re, stats, fixed }) => { const x = l.match(re); if (!x) return null;
         const vals = stats.map((s, g) => pickKind(s) ? BY_NAME[pickKind(s)]?.[x[g + 1].toLowerCase()] : +x[g + 1]);
-        return vals.every(v => v != null && !Number.isNaN(v)) && !(pickKind(named) && item.mods.some(o => o !== m && o.values?.includes(vals[stats.indexOf(named)]))) ? { ...fixed, ...Object.fromEntries(stats.map((s, g) => [s, vals[g]])) } : null; };
-      const hit = expl.flatMap(l => nameLines(named).map(f => read(l, f))).find(Boolean);
+        return vals.every(v => v != null && !Number.isNaN(v)) && !(pickKind(named) && pickKind(named) !== 'legacy' && item.mods.some(o => o !== m && o.values?.includes(vals[stats.indexOf(named)]))) ? { ...fixed, ...Object.fromEntries(stats.map((s, g) => [s, vals[g]])) } : null; };
+      const hit = expl.map(l => nameLines(named).map(f => read(l, f)).find(Boolean)).filter(Boolean)[pickKind(named) === 'legacy' ? legs++ : 0];
       if (hit) for (const [s, v] of Object.entries(hit)) if (ids.includes(s)) m.values[ids.indexOf(s)] = v; }
     if (F) for (const f of matchLines(expl, (u.stonefist || []).flatMap(m => shapes(m.id, m.stats))).found) fset(f.key, f.values);
     ex.missed = [];   // flavour text and anything poe2db could not link: the unique keeps its own mods
@@ -1181,6 +1194,12 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and quality, a multiplier of its own on the item's defences
 { const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && baseOf(r.item).armour.energy_shield;
   console.assert(r?.item.quality === 20 && local(r.item).energy_shield === Math.round(base * 1.2), 'parseItem: quality'); }
+{ // Mageblood's legacies (two of Ruby, Topaz and Granite, 50% increased effect per duplicate) and Snakepit's ring slots
+  const mb = make('Mageblood'), pick = [9, 9, 14, 6], sp = make('Snakepit'); let n = 0;
+  for (const m of mb?.mods || []) { const id = AFFIX[m.id].stats[0][0]; if (pickKind(id) === 'legacy') m.values = [pick[n++]]; else if (/per_duplicate_mages_legacy$/.test(id)) m.values = [50]; }
+  const s = mb ? gearStats({ belt: mb }) : {}, L = sp ? gearStats({ ring1: sp }) : {}, R = sp ? gearStats({ ring2: sp }) : {};
+  console.assert(!mb || n === 4 && s['base_fire_damage_resistance_%'] === 180 && s['base_maximum_fire_damage_resistance_%'] === 14 && s['base_lightning_damage_resistance_%'] === 90 && s.base_physical_damage_reduction_rating === 3000, "Mageblood's legacies", s);
+  console.assert(!sp || L.projectiles_from_spells_fork && L.projectiles_from_spells_cannot_chain && !L.number_of_additional_chains_for_spell_projectiles && R.number_of_additional_chains_for_spell_projectiles === 1 && R.projectiles_from_spells_cannot_fork, "Snakepit's ring slots", L, R); }
 { // a skill the item grants, and its level as the game words it (English and Spanish)
   const g = l => grantedSkills({ weapon: parseItem(`Item Class: Sceptres\nRarity: Normal\nShrine Sceptre\n--------\n${l}\n--------\nItem Level: 40`)?.item })[0];
   const two = parseItem('Rarity: RARE\nGrim Loop\nTwo-Stone Ring\nImplicits: 1\n+14% to Fire and Cold Resistances')?.item, ts = two && rolled(two);   // bases of one name: the one the text is

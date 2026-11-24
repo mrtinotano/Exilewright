@@ -9,8 +9,8 @@ const byStat = lang === 'en' ? EN : await load(`stat_texts.${lang}.json`).then(i
 
 const DIV = { two: 2, three: 3, four: 4, five: 5, ten: 10, fifteen: 15, twenty: 20, fifty: 50, one_hundred: 100 };
 // a number that is a name, set by the app: a passive's hash (Megalomaniac's "Allocates {0}", From Nothing's keystone), a
-// keystone's index (Flesh Crucible), a skill's (Prism of Belief)
-export const NAMES = { passive_hash: null, passive_keystone_index: null, specific_skill: null };
+// keystone's index (Flesh Crucible), a skill's (Prism of Belief), a Mage's Legacy's (Mageblood: set by items.js)
+export const NAMES = { passive_hash: null, passive_keystone_index: null, specific_skill: null, mages_legacy_index: null };
 function apply(h, v) {
   if (h in NAMES) return v && NAMES[h]?.(v) || '—';
   if (h === 'negate') return -v;

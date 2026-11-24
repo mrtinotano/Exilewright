@@ -79241,6 +79241,222 @@
    ]
   }
  },
+ "mages_legacy": [
+  {
+   "name": "Amethyst",
+   "name_es": "Amatista",
+   "name_pt": "Ametista",
+   "name_fr": "Améthyste",
+   "name_de": "Amethyst",
+   "name_ru": "Аметист",
+   "name_ja": "アメジスト",
+   "name_ko": "자수정",
+   "name_th": "Amethyst",
+   "name_zh": "紫晶",
+   "stats": {
+    "base_chaos_damage_resistance_%": 45
+   }
+  },
+  {
+   "name": "Basalt",
+   "name_es": "Basalto",
+   "name_pt": "Basalto",
+   "name_fr": "Basalte",
+   "name_de": "Basalt",
+   "name_ru": "Базальт",
+   "name_ja": "バサルト",
+   "name_ko": "현무암",
+   "name_th": "Basalt",
+   "name_zh": "堅岩",
+   "stats": {
+    "physical_damage_reduction_rating_+%": 150
+   }
+  },
+  {
+   "name": "Bismuth",
+   "name_es": "Bismuto",
+   "name_pt": "Bismuto",
+   "name_fr": "Bismuth",
+   "name_de": "Bismut",
+   "name_ru": "Висмут",
+   "name_ja": "ビスマス",
+   "name_ko": "비스무트",
+   "name_th": "Bismuth",
+   "name_zh": "灰岩",
+   "stats": {
+    "base_resist_all_elements_%": 45
+   }
+  },
+  {
+   "name": "Diamond",
+   "name_es": "Diamante",
+   "name_pt": "Diamante",
+   "name_fr": "Diamant",
+   "name_de": "Diamant",
+   "name_ru": "Алмаз",
+   "name_ja": "ダイアモンド",
+   "name_ko": "다이아몬드",
+   "name_th": "Diamond",
+   "name_zh": "寶鑽",
+   "stats": {
+    "critical_strike_chance_+%": 75
+   }
+  },
+  {
+   "name": "Gold",
+   "name_es": "Oro",
+   "name_pt": "Ouro",
+   "name_fr": "Or",
+   "name_de": "Gold",
+   "name_ru": "Золото",
+   "name_ja": "金",
+   "name_ko": "금",
+   "name_th": "Gold",
+   "name_zh": "黃金",
+   "stats": {
+    "base_item_found_rarity_+%": 45
+   }
+  },
+  {
+   "name": "Granite",
+   "name_es": "Granito",
+   "name_pt": "Granito",
+   "name_fr": "Granite",
+   "name_de": "Granit",
+   "name_ru": "Гранит",
+   "name_ja": "グラナイト",
+   "name_ko": "화강암",
+   "name_th": "Granite",
+   "name_zh": "石化",
+   "stats": {
+    "base_physical_damage_reduction_rating": 2000
+   }
+  },
+  {
+   "name": "Jade",
+   "name_es": "Jade",
+   "name_pt": "Jade",
+   "name_fr": "Jade",
+   "name_de": "Jade",
+   "name_ru": "Нефрит",
+   "name_ja": "ヒスイ",
+   "name_ko": "비취",
+   "name_th": "Jade",
+   "name_zh": "翠玉",
+   "stats": {
+    "base_evasion_rating": 2000
+   }
+  },
+  {
+   "name": "Quicksilver",
+   "name_es": "Celeridad",
+   "name_pt": "Mercúrio",
+   "name_fr": "Vif-argent",
+   "name_de": "Quecksilber",
+   "name_ru": "Ртуть",
+   "name_ja": "水銀",
+   "name_ko": "수은",
+   "name_th": "Quicksilver",
+   "name_zh": "水銀",
+   "stats": {
+    "base_movement_velocity_+%": 30
+   }
+  },
+  {
+   "name": "Ruby",
+   "name_es": "Rubí",
+   "name_pt": "Rubi",
+   "name_fr": "Rubis",
+   "name_de": "Rubin",
+   "name_ru": "Рубин",
+   "name_ja": "ルビー",
+   "name_ko": "루비",
+   "name_th": "Ruby",
+   "name_zh": "紅玉",
+   "stats": {
+    "base_fire_damage_resistance_%": 60,
+    "base_maximum_fire_damage_resistance_%": 5
+   }
+  },
+  {
+   "name": "Sapphire",
+   "name_es": "Zafiro",
+   "name_pt": "Safira",
+   "name_fr": "Saphir",
+   "name_de": "Saphir",
+   "name_ru": "Сапфир",
+   "name_ja": "サファイア",
+   "name_ko": "사파이어",
+   "name_th": "Sapphire",
+   "name_zh": "藍玉",
+   "stats": {
+    "base_cold_damage_resistance_%": 60,
+    "base_maximum_cold_damage_resistance_%": 5
+   }
+  },
+  {
+   "name": "Silver",
+   "name_es": "Plata",
+   "name_pt": "Prata",
+   "name_fr": "Argent",
+   "name_de": "Silber",
+   "name_ru": "Серебро",
+   "name_ja": "シルバー",
+   "name_ko": "은",
+   "name_th": "Silver",
+   "name_zh": "真銀",
+   "stats": {
+    "skill_speed_+%": 30
+   }
+  },
+  {
+   "name": "Stibnite",
+   "name_es": "Antimonio",
+   "name_pt": "Estibina",
+   "name_fr": "Stibnite",
+   "name_de": "Stibnit",
+   "name_ru": "Стибнит",
+   "name_ja": "スティブナイト",
+   "name_ko": "휘안석",
+   "name_th": "Stibnite",
+   "name_zh": "迷霧",
+   "stats": {
+    "evasion_rating_+%": 150
+   }
+  },
+  {
+   "name": "Sulphur",
+   "name_es": "Azufre",
+   "name_pt": "Enxofre",
+   "name_fr": "Soufre",
+   "name_de": "Schwefel",
+   "name_ru": "Сера",
+   "name_ja": "硫黄",
+   "name_ko": "유황",
+   "name_th": "Sulphur",
+   "name_zh": "硫磺",
+   "stats": {
+    "consecrated_ground_while_stationary_radius": 25,
+    "damage_+%": 60
+   }
+  },
+  {
+   "name": "Topaz",
+   "name_es": "Topacio",
+   "name_pt": "Topázio",
+   "name_fr": "Topaze",
+   "name_de": "Topas",
+   "name_ru": "Топаз",
+   "name_ja": "トパーズ",
+   "name_ko": "토파즈",
+   "name_th": "Topaz",
+   "name_zh": "黃玉",
+   "stats": {
+    "base_lightning_damage_resistance_%": 60,
+    "base_maximum_lightning_damage_resistance_%": 5
+   }
+  }
+ ],
  "catalysts": {
   "Quality (Life Modifiers)": "life",
   "Quality (Mana Modifiers)": "mana",

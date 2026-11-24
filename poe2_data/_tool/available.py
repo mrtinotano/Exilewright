@@ -747,6 +747,9 @@ save('items.json', {
         [{'name': f['Name'], **tr(bases_tr, f['_index']), 'tags': sorted(set(read_it(f['InheritsFrom']) + [tags_tab[t]['Id'] for t in f['Tags']])),
           'img': visual[f['ItemVisualIdentity']]['DDSFile'], 'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in f['Implicit_Mods']}}
          for f in base_types if '/FourGlovesDexIntAscendancy' in f['Id']], {m['Id']: m for m in mods if m['Id'].startswith('HandWraps')}),
+    # Mageblood's legacies (UniqueMagesLegacy, picked by local_unique_mages_legacy_*, from 1): what each one grants
+    'mages_legacy': [{'name': plain(r['DisplayText']), **tr(load_langs('UniqueMagesLegacy'), i, 'DisplayText'), 'stats': {stats[s]['Id']: v for s, v in zip(r['Stats'], r['StatValues'])}}
+                     for i, r in enumerate(load('UniqueMagesLegacy'))],
     # catalyst quality on jewellery and jewels (AlternateQualityTypes): how each language shows it ("Quality (Lightning
     # Modifiers)", "Calidad (mods. de rayo)") -> the tag of the modifiers it makes stronger (JewelleryQualityLightning ->
     # lightning; Defence -> defences, the tag's own name)
