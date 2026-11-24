@@ -1710,7 +1710,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
   }
   for (const s of ['freeze', 'shock']) if (F(`base_consume_enemy_${s}_on_hit`)) consume[s] ||= {};
   const sumOf = re => keys.filter(k => re.test(k)).reduce((t, k) => t + all(k), 0);
-  const never = a => F('never_' + a) || (F('active_skill_never_freeze_shock_ignite') || F('cannot_inflict_elemental_ailments')) && ['freeze', 'shock', 'ignite'].includes(a);   // Excoriate, Elemental Armament III
+  const never = a => F('never_' + a) || F('never_freeze_or_chill') && (a === 'freeze' || a === 'chill') || (F('active_skill_never_freeze_shock_ignite') || F('cannot_inflict_elemental_ailments')) && ['freeze', 'shock', 'ignite'].includes(a);   // Excoriate, Elemental Armament III
   const skip = /mark_|debuff|_from_ot|from_current_poise|_vs_|against_|_per_|_when_|_while_|_if_|consume/;
   const more = end => keys.filter(k => !(k in sum) || k in st || k in finals).filter(k => (typeof end === 'string' ? k.endsWith(end) : end.test(k)) && !skip.test(k)).reduce((m, k) => m * (1 + all(k) / 100), 1);
   const scale = (incs, end) => (1 + incs.reduce((t, k) => t + all(k), 0) / 100) * more(end);
@@ -1794,7 +1794,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     stunMelee: tags.includes('melee') ? 1 + (CHAR['melee_hit_damage_stun_multiplier_+%_final_from_ot'] || 0) / 100 : 1,
     breakNormal: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_normal_monsters'] || 0) / 100,
     breakMagic: 1 + (CHAR['object_inherent_armour_break_amount_+%_final_against_magic_monsters'] || 0) / 100,
-    never: { freeze: never('freeze'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun') || all('support_pin_buildup_pin_instead_of_stun') > 0, armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
+    never: { freeze: never('freeze'), chill: never('chill'), poison: F('cannot_poison'), shock: never('shock'), ignite: never('ignite'), stun: F('cannot_stun') || all('support_pin_buildup_pin_instead_of_stun') > 0, armour: F('cannot_break_armour'), bleed: F('cannot_cause_bleeding') },
     always: { freeze: F('always_freeze'), shock: F('always_shock'), ignite: F('always_ignite'), stun: F('always_stun') },
     alwaysHit: F('global_always_hit'),
     // Impale: its chance on hit (any hit, attacks', spells'), its magnitude more and how many it applies; whether the skill extracts them

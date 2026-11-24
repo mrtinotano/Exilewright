@@ -321,7 +321,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.slows = []; d.gm = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.slows = []; d.gm = d.riven = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -398,6 +398,7 @@ export function initScene(el, api) {
   function gainCharge(type, by) {
     if (sheet().resonance) type = RESONANCE[type] || type;
     if (sheet().conduit === 'all' || sheet().conduit === 'endurance' && type === 'endurance') return;
+    if (type === 'power' && time < me.noPower) return;   // Flicker Strike: none gained during it
     chargeAt[type] = time;   // gaining one refreshes them all
     if (charges[type] >= maxC(type)) return;
     charges[type]++;
@@ -460,12 +461,13 @@ export function initScene(el, api) {
       const acc = (c.accuracy + (mine && c.accBleed && has(d, 'bleed') ? c.accBleed : 0)) * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100 + accIn) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);
       const evNow = d.stat.evasion * (d.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1) * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1);
       if (acc > 0 && c.critFromHit) overHit = Math.max(0, hitRaw(acc, evNow) - 100) * c.critFromHit / 100;
-      const NE = c.noEvade, sure = NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
+      const DZ = d.dazed > time && S.g?.supports?.includes('Dazzle'); if (DZ) later(0, () => { d.dazed = 0; });   // Dazzle: it always hits a Dazed enemy, and Consumes the Daze
+      const NE = c.noEvade, sure = DZ || NE?.heavy && d.st.stun > 0 || NE?.pin && d.st.pin > 0;   // the tree's: Heavy Stunned or Pinned enemies cannot evade your hits
       if (acc > 0 && d.stat.evasion > 0 && !sure && !(D?.sum?.cannot_miss_against_full_life_enemies && d.life >= d.max) && Math.random() * 100 >= playerHitChance(acc, evNow)) { fx.text(over(d), t('Miss'), '#9a968c', .3); return false; }   // Heightened Accuracy II: never on full life
     }
     if (S.spear && !S.src && sheet().lances) d.lances = Math.min(30, (d.lances || 0) + 1);   // Atziri's Contempt: a Bloodstone Lance, up to 30 (note: its text)
     // m: the scene's multipliers; g, gp: the game's (on the whole hit, on its physical part); stunX: the consumed state's stun
-    let m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = (o.stunX ?? 1) * (S.stunX || 1);
+    let riven, m = (o.mult ?? 1) * S.mult, g = S.gm ?? 1, gp = 1, stunX = (o.stunX ?? 1) * (S.stunX || 1);
     // Kulemak's Sovereignty: your hits 1% more per 2 total Power of your Undead minions (a minion's is a normal monster's)
     const KU = !S.src && sheet().kulemak; if (KU) g *= 1 + Math.floor(objs.filter(x => x.minion && x.undead && !x.dead).length * POWER.normal / KU) / 100;
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
@@ -488,6 +490,9 @@ export function initScene(el, api) {
       for (const s of new Set([...P.consumes, ...Object.keys(C)])) if (has(d, s)) {
         consume(d, S, s);
         const c = C[s];
+        // High Velocity Rounds: against Fully Broken Armour its own stronger damage (its part), and Riven Armour for its duration
+        const RV = s === 'armour' && D?.parts?.HighVelocityRoundsArmourBrokenPlayer;
+        if (RV) { g *= RV.avg / D.avg; riven = RV.stats; continue; }
         if (!c) { m += SIM.consume; continue; }
         g *= 1 + ((c.any || 0) + (c[uniq ? 'unique' : 'non_unique'] || 0)) / 100; stunX *= 1 + (c.stun || 0) / 100;
       }
@@ -598,6 +603,10 @@ export function initScene(el, api) {
       const dealt = {}, TIA = S.src === 'thorns' && Math.random() * 100 < (D.ignoreArmour || 0) || Math.random() * 100 < (D.sum?.['hits_ignore_enemy_monster_physical_damage_reduction_%_chance'] || 0);   // the tree's chance for Thorns to ignore armour; Brutality III's for hits
       const INV = Math.random() * 100 < (D.sum?.['treat_enemy_resistances_as_negated_on_elemental_damage_hit_%_chance'] || 0);   // the tree's chance to treat elemental resistances as inverted
       const ZR = crit && !S.src ? sheet().critIgnoreRes : null;   // Beacon of Azis, Choir of the Storm: your critical hits ignore those resistances
+      // Riven Armour (keywords.json RivenArmour): it stores 5% of the physical damage of the hit that inflicts it, before
+      // mitigation; your later attack hits on that enemy gain as much added physical damage, and its armour breaks no further
+      if (!S.src && S.P.attack && d.riven?.until > time) raw.physical = (raw.physical || 0) + d.riven.mag;
+      if (riven) d.riven = { until: time + riven.base_skill_effect_duration / 1000, mag: (raw.physical || 0) * riven['exploit_debuff_attack_damage_to_convert_to_magnitude_%'] / 100 };
       for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR); total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
@@ -655,7 +664,7 @@ export function initScene(el, api) {
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
     if (UE) { if (crit && S.P.spell) weaken(d, UE.spellWeak); if (crit && r(UE.volCrit)) gainVol(1); if (S.P.melee && S.P.attack && r(UE.thornsMelee)) retaliate(d); }
     if (S.src === 'minionHit' && r(sheet().minionWither || 0)) withers(d, 4);   // the tree's: your minions' chance to Wither (for the 4 s its text has elsewhere)
-    if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (S.P.attack && r(UH.daze)) daze(d, DAZE.time); if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
+    if (UH) { if (r(UH.intim)) d.intim = Math.max(d.intim || 0, time + 4); if (S.P.spell && r(UH.wither)) withers(d, 4); if (r(UH.fireExpo)) expo(d, ['fire']); if (S.P.attack && r(UH.daze)) daze(d, DAZE.time, S); if (d.st.chill > 0 && r(UH.blindChilled)) d.st.blind = BLIND.time; }
     if (own && S.name === 'Blood Hunt' && !S.src) bloodHunt(S, d);
     // Titan's Crushing Impacts: your hits are Crushing Blows, a Heavy Stun on an enemy Primed for Stun (keywords.json CrushingBlow)
     if (own && D?.sum?.crushing_blow && !/minion/.test(S.src || '') && !SHOCKWAVE[S.name] && (d.bar.stun || 0) >= PRIMED[d.stat.rarity]) { d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun }); }
@@ -947,7 +956,7 @@ export function initScene(el, api) {
     if (a === 'shock' && S.dmg?.sum?.['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage']) d.stormfire = S.dmg.sum['support_stormfire_targets_shocked_by_this_take_%_of_damage_from_ignite_as_lightning_damage'];   // Stormfire
     // Wildfire: the ignite spreads to the enemies within its radius, never twice to one (keywords.json AilmentSpread)
     // note: at once, its delay is not in the data
-    const WF = a === 'ignite' && S.dmg?.sum?.support_ignite_proliferation_radius;
+    const WF = a === 'ignite' && (S.dmg?.sum?.support_ignite_proliferation_radius || S.dmg?.stats?.active_skill_ignite_proliferation_radius);   // or the skill's own (Phantasmal Arrow's explosion)
     if (WF) { const seen = o?.spread || new Set([d]); for (const e of dummies) if (!e.dead && !seen.has(e) && dist(e.pos, d.pos) <= WF / 10) { seen.add(e); inflict(e, 'ignite', S, k, raw, { ...o, spread: seen }); } }
     const FX = a === 'freeze' && S.dmg?.sum?.chilling_ice_create_chilled_ground_on_freeze_base_duration_ms; if (FX) ground('chilled', { x: d.pos.x, z: d.pos.z }, S.dmg.sum.chilling_ice_freezing_area_base_radius / 10, FX / 1000, S);   // Frost Nexus
     const PM = a === 'stun' && S.dmg?.sum?.['support_stunning_magic_grant_spell_damage_+%_buff_on_heavy_stunning']; if (PM) me.pmag = { inc: PM, until: time + S.dmg.sum.support_stunning_magic_buff_duration_ms / 1000 };   // Practical Magic
@@ -1065,7 +1074,7 @@ export function initScene(el, api) {
   function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
-    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time);   // Wind Blast, Siphoning Strike; the tree's projectiles from further than 6 m
+    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time, S);   // Wind Blast, Siphoning Strike; the tree's projectiles from further than 6 m
     // the damage of the hit that counts for an ailment: its own type's, every type's with "all damage can <ailment>" (the
     // build's; Pinnacle of Power's buff: every Elemental Ailment, BuffDefinitions elemental_power; all damage to bleeding /
     // poisoned enemies contributing to chill), and the types the build's "<type> damage can <ailment>" add (EXTRA)
@@ -1100,7 +1109,7 @@ export function initScene(el, api) {
     }
     if (xa('chill', 'cold') || xa('freeze', 'cold')) {
       const mag = Math.min(SU.elementalist_chill_maximum_magnitude_override || GC.ChillMaxEffect, GC.ChillEffectMultiplier * xa('chill', 'cold') * A.chillDamage / thr * A.chillEffect * VS('chill', 'eff'));
-      if (mag >= CHILL_MIN) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime * VS('chill', 'dur'), mag });   // the most: Heavy Snows' override, else the game's
+      if (mag >= CHILL_MIN && !N.chill) inflict(d, 'chill', S, 1, raw, { dur: DUR.chill * A.chillTime * VS('chill', 'dur'), mag });   // the most: Heavy Snows' override, else the game's
       if (!N.freeze) AL.freeze || !S.src && S.P.attack && d.life >= d.max && sheet().freezeFull ? inflict(d, 'freeze', S, 1, null, { dur: DUR.freeze * A.freezeTime }) : build(d, 'freeze', xa('freeze', 'cold') * GC.FreezeDamageScale * A.freeze * IC * rimeOn(d) * FFm * EAx * (UB ? UB.build : 1) * (1 + (d.mark?.D?.freeze || 0) / 100) * (1 + (W?.freeze || 0) / 100) * (S.freezeEmp || 1), S, A);
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
@@ -1145,7 +1154,7 @@ export function initScene(el, api) {
     const PF = 1 + (S.dmg?.sum?.['faster_poison_%_per_current_rage'] || 0) * me.rage / 100;
     // Escalating Toxins: Poison lasts longer per Poison you inflicted Recently, with its other increased duration
     const PR = A.poisonRecent, PD = PR ? (1 + (PR.inc + Math.min(100, PR.per * (me.poisAt = (me.poisAt || []).filter(u => time - u <= RECENT)).length)) / 100) / (1 + PR.inc / 100) : 1;
-    if (xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime * VS('poison', 'dur') * PD / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * VS('poison', 'eff') * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) }), me.poisAt?.push(time);   // Admixture, Poison III against the Bleeding
+    if (!N.poison && xa('poison', 'physical') + x('chaos') && roll((A.poison + (d.st.poison > 0 ? 0 : A.poisonFirst || 0) + (o.crit ? A.poisonCrit || 0 : 0)) * AC)) inflict(d, 'poison', S, 1, can('poison') ? { physical: allD } : raw, { dur: DUR.poison * A.poisonTime * VS('poison', 'dur') * PD / PF, eff: (A.poisonEffect + (d.st.poison > 0 ? 0 : (sheet().firstPoison || 0) / 100)) * VS('poison', 'eff') * PF * (d.st.bleed > 0 ? 1 + (S.dmg?.sum?.['mixed_maladies_poison_effect_+%_final_vs_bleeding'] || 0) / 100 : 1) }), me.poisAt?.push(time);   // Admixture, Poison III against the Bleeding
     if (roll(A.maim + (d.st.poison > 0 ? A.maimPoisoned : 0) + (d.st.bleed > 0 ? A.maimBleeding : 0)) || o.crit && A.maimCrit) inflict(d, 'maim', S, 1, null, { dur: MAIM.time, mag: MAIM.move + (A.maimMore || 0) });
     if (A.maimAfterPin && d.st.pin > 0) d.unpin = { s: A.maimAfterPin, S };   // maimed for a while once this Pin ends
     if (E.hit) expo(d, ELEM, E.hit * E.effect, (E.hitMs || DUR.expo * 1000) / 1000);
@@ -1154,10 +1163,10 @@ export function initScene(el, api) {
       + x('physical') * (d.mark?.S?.dmg?.sum?.['marked_target_%_physical_damage_taken_as_armour_break'] || 0) / 100   // Mark for Death: hits on the enemy its Mark is on
       + (S.P.spell && o.crit ? x('physical') * (S.dmg.sum?.['armour_break_equal_to_%_physical_damage_dealt_on_critical_strike_with_spells'] || 0) / 100 : 0)
       + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.final ? S.chain0?.sum?.['final_strike_attack_damage_%_dealt_as_armour_break'] || 0 : 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
-    if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0)) {
+    if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0) && !(d.riven?.until > time)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
-      if (d.cut >= d.stat.armour) { d.cut = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
+      if (d.cut >= d.stat.armour) { d.cut = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -1166,7 +1175,7 @@ export function initScene(el, api) {
   // Overwhelming Presence: the enemies in your Presence have its less stun and ailment thresholds
   const awe = (d, k) => { const D = onS('Overwhelming Presence')?.dmg, st = D?.stats; return st && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + st[`skill_overwhelming_pressure_aura_enemy_${k}_threshold_+%`] * (1 + (D.sum['aura_effect_+%'] || 0) / 100) / 100 : 1; };   // its magnitude with the build's aura effect
   // Daze: for its time the enemy takes more stun buildup
-  const daze = (d, s) => { if (!(s > 0)) return; if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
+  const daze = (d, s, S) => { if (!(s > 0) || S && [S.name, ...(S.g?.supports || [])].some(n => SK.skills[n]?.flags?.includes('cannot_daze'))) return;   /* S: the skill that would Daze: not Vaulting Impact, nor one with Dazzle */ if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
     if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
@@ -1263,7 +1272,7 @@ export function initScene(el, api) {
       if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
         const j = trigOf(T);
         if (j < 0) continue;
-        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)), j); if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)) * (1 + (S.dmg?.stats?.['active_skill_energy_generated_+%_final'] || 0) / 100), j);   /* the skill's own less Energy generated (Flame Wall, Incinerate) */ if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
         else { if (++T.energy < T.need) continue; T.energy = 0; }
         if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
@@ -1584,12 +1593,13 @@ export function initScene(el, api) {
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
     seen.add(d); hit(d, S, { mult });
-    if (n <= 0) return;
+    const free = d.curse && flagOf(S, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
+    if (n <= 0 && !free) return;
     later(.07, () => {
       // a lightning rod within reach takes the bolt and pulses over its whole area
       if (S.els.includes('lightning')) for (const o of objs) if (o.rod && !o.dead && !seen.has(o) && o !== S.self && dist(o.pos, d.pos) <= R) { seen.add(o); fx.bolt(to, V(o.pos.x, 1.7, o.pos.z), S.el, .18); o.pulse(S); break; }
       const e = near(d.pos, R, e => !seen.has(e));
-      if (e) chain(to, e, S, n - 1, seen, mult);
+      if (e) chain(to, e, S, free ? n : n - 1, seen, mult);
     });
   }
   // Rime: an enemy in the chilled ground of a skill it supports builds up freeze as though dealing its less damage
@@ -1871,7 +1881,8 @@ export function initScene(el, api) {
   const infPart = (S, el) => { const ks = Object.keys(S.dmg?.parts || {}), E = cap(el);
     const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
     return k && partOf(S, k); };
-  const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
+  const flagOf = (S, f) => !!SK.skills[S.name]?.flags?.includes(f);   // a flag of the skill itself (skills.json)
+const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
   const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
@@ -2130,7 +2141,7 @@ export function initScene(el, api) {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
       const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
-      const SC = hitD && has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
+      const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
       if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
         chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
@@ -2141,7 +2152,9 @@ export function initScene(el, api) {
       }
       else if (cur.perfect && cur.dmg?.parts?.SnipeExplosionPlayer) snipeBlast(cur, hitD, p, mult());
       else if (P.explodes || S.aoe) {
-        boom(p, S.A, cur);
+        // Phantasmal Arrow: the arrow hits and sticks, and explodes after its duration (its explosion part)
+        const PX = partOf(cur, 'PhantasmalArrowExplosionPlayer');
+        if (PX) { if (hitD) hit(hitD, cur, { mult: mult() }); later(durOf(cur), () => boom(p, PX.A, PX)); } else boom(p, S.A, cur);
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
         if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
       }
@@ -2464,6 +2477,7 @@ export function initScene(el, api) {
       { const SS = S.P.spell && !S.src && S.dmg?.sum, WS = SS?.['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova_per_wildshard_stack'], N = SS && (SS.spell_projectile_skills_fire_X_additional_projectiles_in_a_circle || (Math.random() * 100 < (SS['spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova'] || 0) + (WS ? WS * (me.wildshard || 0) : 0) ? 8 : 0)); if (N) { S = { ...S, circle: true, addProj: (S.addProj || 0) + N }; if (WS) me.wildshard = 0; } }   // Sire of Shards, Seed of Cataclysm: spells' additional projectiles in a circle; Sione's Temper: its chance per Wildshard, all lost on the circle
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
+      const CB = partOf(S, 'CoilingBoltsChaosPlayer'); if (CB) shoot(CB, S.from, Math.sin(a0 + spread), Math.cos(a0 + spread));   // Coiling Bolts: its Chaos projectile, fired with its Physical one
       fx.glow(h, .9, S.el, .2);
     },
     chain(S) {
@@ -2940,6 +2954,7 @@ export function initScene(el, api) {
       const P = S.P, reach = strikeR(S), FL = S.dmg?.stats?.flicker_strike_additional_flickers_from_power_charges, n = S.times || (FL ? 1 + S.spent * FL : P.dash ? Math.max(1, S.spent) : 1);   // Flicker Strike: its more strikes per Power Charge
       const first = S.src ? near(S.at, 1) : near(S.at, SIM.snap, e => dist(e.pos, pp) <= reach);
       if (!first) return slash(S, S.dx, S.dz);   // nothing in reach: swings at the air
+      if (flagOf(S, 'cannot_gain_power_charges_during_skill')) me.noPower = time + n * .13;   // Flicker Strike, for its strikes
       const go = (d, k) => {
         if (d.dead) return;
         if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
@@ -4225,8 +4240,10 @@ export function initScene(el, api) {
       const hits = !NOHIT.has(S.kind), tally = () => empower.reduce((t, e) => t + 1 + (e.uses || 0), 0), had = tally();
       { const LD = sheet().lethal, F = flasks()[0], need = F && F.max * (LD?.pct || 0) / 100; if (LD?.pct && P.attack && hits && S.dmg && flaskLeft(0) >= need && api.info(S.g)?.gem?.types?.includes('Bow')) { me.fl[0] = flaskLeft(0) - need; const h = S.dmg.hits.physical || [0, 0], n = F.amount * LD.add / 100; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, physical: [h[0] + n, h[1] + n] } }; } }   // The Lethal Draw: bow attacks spend life flask charges for added physical damage
       { const OV = sheet().olro, n = OV && P.attack && hits && S.dmg ? Math.min(OV, (me.olro || []).reduce((t, u) => t + (u.until > time ? u.v : 0), 0)) : 0; if (n) { const h = S.dmg.hits.lightning || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, lightning: [h[0], h[1] + n] } }; } }   // Olrovasara: maximum added lightning damage from the Power of the enemies hit in the past 20 s
+      const noCry = flagOf(S, 'cannot_be_empowered_by_warcries');   // Resonating Shield
       for (let k = empower.length - 1; k >= 0; k--) {
         const E = empower[k];
+        if (noCry && ['break', 'cold', 'fire', 'echo', 'wave'].includes(E.type)) continue;   // those a warcry leaves (K.warcry)
         if (E.type === 'infuse' && P.attack && hits) {
           S.els = [...new Set([...S.els, E.el])]; S.el = E.el; S.ail = [...new Set([...S.ail, ...ailOf([E.el])])]; empower.splice(k, 1);
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
