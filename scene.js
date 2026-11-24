@@ -68,6 +68,11 @@ const RUNEFATHER = 5, BLOOD_MAX = 10;
 // note: KeywordPopups Soul Eater: each eaten Soul 1% increased Skill Speed, up to 50, one lost every 0.5 s once 4 s pass without
 // eating; Fear Incarnate: 10% increased Culling Strike threshold each for 10 s (refreshed), up to 20; Overencumbered: Slows by 10%, stacking
 const SOUL = { speed: 1, max: 50, every: .5, wait: 4 }, FEAR = { cull: 10, time: 10, max: 20 }, OVERENC = 10;
+// note: KeywordPopups Finality: 100% increased Critical Hit Chance with Final Strikes, Strike skills skip to their Final Strike, no
+// Combo gained meanwhile; Explosive Rhythm: 10% increased Cooldown Recovery Rate of Grenade skills each; Explosive Fervour: 15%
+// increased Attack Speed per different Grenade skill used Recently, Grenade skills ignore their cooldown and fire one more
+// projectile, Grenades explode on any impact. Redemption's text: all Rhythm removed at 10 for 10 seconds of Fervour
+const FINALITY = 100, RHYTHM = { cd: 10, max: 10 }, FERVOUR = { speed: 15, time: 10 };
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
@@ -335,7 +340,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -659,7 +664,7 @@ export function initScene(el, api) {
     if (!S.src && H) {
       if (crit && H.loseRageOnCrit) me.rage = Math.max(0, me.rage - rageMax() * H.loseRageOnCrit / 100);
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
-      if (D.combo?.strike) { me.combo = comboNow() + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
+      if (D.combo?.strike && !(time < me.finality)) { me.combo = comboNow() + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
     const full = d.life >= d.max; d.by = S; damage(d, total, S);
     if (FO && d.focusMax > 0) { d.focus = Math.max(0, d.focus - total * FO.drain / 100); d.focusAt = time; }
@@ -2616,6 +2621,9 @@ export function initScene(el, api) {
       });
     },
     grenade(S) {
+      // its projectiles land apart in a fan (note: the spread is the scene's projectiles'), one more in Explosive Fervour
+      const n = S.one ? 1 : (sh(S).projectiles || 1) + (time < me.fervour ? 1 : 0), o = S.origin || pp, dx = S.at.x - o.x, dz = S.at.z - o.z;
+      if (n > 1) { for (let k = 0; k < n; k++) { const a = (k - (n - 1) / 2) * .13, cs = Math.cos(a), sn = Math.sin(a); K.grenade({ ...S, one: true, at: { x: o.x + dx * cs + dz * sn, z: o.z + dz * cs - dx * sn } }); } return; }
       const P = S.P, c = S.at;
       lob(fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
         if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
@@ -2630,7 +2638,7 @@ export function initScene(el, api) {
           const X = { ...S, self: e }; boom(c, S.A, X);
           for (let i = 0; i < (P.cluster || 0); i++) later(.22 + i * .08, () => { const a = rnd(TAU), r = rnd(.4, .9) * S.A; boom({ x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, S.A * .45, X, { soft: true, mult: .5, noPay: true }); });
         };
-        thing(m, sh(S).detonate || (/Flash/.test(S.name) ? .7 : SIM.fuse), { r: .25, name: S.name,
+        thing(m, time < me.fervour ? .05 : sh(S).detonate || (/Flash/.test(S.name) ? .7 : SIM.fuse), { r: .25, name: S.name,   // (Explosive Fervour: it explodes where it lands)
           tick(dt, e) { m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; say(t('{0} detonates {1}', by.label, S.label), 'fire'); later(.06, () => blow(this)); } },
           end: e => blow(e) });
@@ -4207,7 +4215,7 @@ export function initScene(el, api) {
     const FD = !auto && S.name === 'Righteous Descent' && divine.find(f => dist(f.p, pp) <= S.A || dist(f.p, o.at || cursor) <= S.A), FB = FD && partOf(S, 'RighteousDescentPlayerBoosted');
     if (FB) { divine = divine.filter(f => f !== FD || f.dec.remove()); fx.ring(FD.p, .2, 1.2, 'lightning', .35); S = { ...FB, label: S.label, g: S.g }; const st = FB.dmg.stats || {};
       for (const [k, M, r] of [['life', me.maxL, 'recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment'], ['mana', me.maxM, 'recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment']]) { const n = M * (st[r] || 0) / 100; if (n) me.recoup.push({ k, left: n, rate: n / 2 }); } }
-    const C = !auto && !FB && !(S.kind === 'warcry' && sheet().bellow.free) && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
+    const C = !auto && !FB && !(S.kind === 'warcry' && sheet().bellow.free) && !(S.kind === 'grenade' && time < me.fervour) /* Explosive Fervour: no cooldown */ && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     // one whose game text says a charge can bypass its cooldown (Ice-Tipped Arrows a Frenzy Charge, Fortifying Cry an
     // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
     // (its only use of charges: none spent otherwise)
@@ -4418,7 +4426,10 @@ export function initScene(el, api) {
     const PX = !auto && P.attack && me.parryNext?.[P.melee ? 'melee' : 'ranged']; if (PX) { S.mult *= 1 + PX / 100; me.parryNext = null; }   // a parry's increased damage to this attack (note: as a factor of its own)
     const RU = !auto && S.dmg?.sum?.support_ruthless_big_hit_max_count;   // Ruthless: every that many uses of it, its more Stun buildup
     if (RU && ((me.ruth ||= {})[S.name] = (me.ruth[S.name] || 0) + 1) % RU === 0) S.stunEmp = (S.stunEmp || 1) * (1 + (S.dmg.finals?.['support_ruthless_big_hit_stun_damage_+%_final'] || 0) / 100);
-    S.slamN = !auto && P.slams ? ++me.slams : 0; const AE = S.slamN && S.slamN % 2 === 0 && S.dmg?.sum?.ancestral_slam_every_other_slam;
+    // Surge of the Tide: while Shapeshifted every second Slam, and every second Strike, you use is Ancestrally Boosted
+    // note: its Slams are counted with all of yours
+    const ST = !auto && (me.form || me.demon) && S.dmg?.sum?.ancestral_slam_strike_every_other_strike_or_slam_while_shapeshifted;
+    S.slamN = !auto && P.slams ? me.slams = (me.slams || 0) + 1 : 0; const AE = S.slamN && S.slamN % 2 === 0 && (S.dmg?.sum?.ancestral_slam_every_other_slam || ST);
     // Ancestrally Boosted: its more damage and increased area, with the tree's increased ones (note: its damage as a factor)
     const AB = sheet().ancBoost || {};
     const AN = !auto && P.attack && time < me.ancNext; if (AN) me.ancNext = 0;
@@ -4426,7 +4437,7 @@ export function initScene(el, api) {
     // always (it needs its Blocked hits to be used)
     // note: Fist of War III's "very powerful" Boost has no number in the data: the keyword's
     const BS = S.dmg?.sum || {}, BI = !auto && (P.slams ? BS.ancestral_slam_interval_duration : S.kind === 'strike' && BS.ancestral_call_spirit_strike_interval_ms);
-    const BT = BI && time - ((me.ancAt ||= {})[S.name] ?? -Infinity) >= BI / 1000, BO = BT || !auto && S.kind === 'strike' && BS.ancestral_aid_required_count_of_recent_blocks > 0;
+    const BT = BI && time - ((me.ancAt ||= {})[S.name] ?? -Infinity) >= BI / 1000, BO = BT || !auto && S.kind === 'strike' && (BS.ancestral_aid_required_count_of_recent_blocks > 0 || !!ST && (me.strikes = (me.strikes || 0) + 1) % 2 === 0);
     if (BT) me.ancAt[S.name] = time;
     // the tree's increased area while you are in a state, and per enemy you Ignited in the last 8 s (up to 40%)
     const AW = (S.dmg?.areaWhile || []).reduce((t, w) => t + (meIs[w.cv]?.() ? w.val : 0), 0) + Math.min(40, (S.dmg?.areaIgnited || 0) * dummies.filter(d => time - (d.ignAt ?? -99) <= 8).length);
@@ -4444,6 +4455,10 @@ export function initScene(el, api) {
     // Vruun's Inevitability: it expends the Combo your other melee attacks built (up to its most), its increased area each
     const VA = S.dmg?.sum?.['area_of_effect_+%_per_combo_stack'];
     if (!auto && (CB?.need || VA)) { S.comboSpent = Math.min(comboNow(), VA && S.dmg.sum.skill_maximum_number_of_combo_stacks || Infinity); me.esEarly = (me.esEarly || 0) + S.comboSpent * (CB?.esSooner || 0); me.combo = 0;   /* it spends the Combo; Martial Adept: energy shield recharge sooner per Combo spent */
+      // Duality: its Guard for 0.5 seconds, and Finality for its time, per Combo expended
+      const DG = S.dmg.sum?.unique_gain_x_guard_for_500_ms_per_combo_lost_using_skills, DF = S.dmg.sum?.gain_finality_for_x_ms_per_combo_lost_using_skills;
+      if (S.comboSpent && DG) guardFor(DG, .5 * S.comboSpent);
+      if (S.comboSpent && DF) me.finality = time + DF / 1000 * S.comboSpent;
       if (VA) S.A *= Math.sqrt(1 + S.comboSpent * VA / 100);
       // Ailith's Chimes: its Surpassing chance of a Power Charge per Combo expended (over 100%: one for sure, the rest for one more)
       for (let c = S.comboSpent * (S.dmg.sum?.['chance_%_to_gain_power_charges_per_combo_spent'] || 0); c > 0; c -= 100) if (Math.random() * 100 < c) gainCharge('power', S.label);
@@ -4519,7 +4534,12 @@ export function initScene(el, api) {
       if (U.lifePerCooldown && C) me.life = Math.min(me.maxL, me.life + me.maxL * U.lifePerCooldown * C / 1000 / 100);   // Second Wind III
       if (U.lifePer5Rage) me.life = Math.max(1, me.life - me.maxL * U.lifePer5Rage * Math.floor(me.rage / 5) / 100);
     }
-    if (C && !BY && !RG) ready.push(time + C / 1000 / (uarch() && isCmd(S) ? 1 + UARCHON.cd * sheet().overgrow.archonEffect / 100 : 1));   // Archon of Undeath: more command cooldown recovery
+    // Explosive Rhythm: its increased cooldown recovery of Grenade skills, with the skill's own increased
+    const RH = S.kind === 'grenade' && me.rhythm ? RHYTHM.cd * me.rhythm / Math.max(1, 100 + (S.dmg?.cdInc || 0)) : 0;
+    if (C && !BY && !RG) ready.push(time + C / 1000 / (1 + RH) / (uarch() && isCmd(S) ? 1 + UARCHON.cd * sheet().overgrow.archonEffect / 100 : 1));   // Archon of Undeath: more command cooldown recovery
+    // Redemption: an Explosive Rhythm every that many Grenade skills you use (none in Explosive Fervour); at their most they are all removed for it
+    const RD = !auto && S.kind === 'grenade' && !(time < me.fervour) && S.dmg?.sum?.gain_stack_of_disorderly_conduct_every_x_grenade_skills_used;
+    if (RD && (me.gren = (me.gren || 0) + 1) % RD === 0 && (me.rhythm = (me.rhythm || 0) + 1) >= RHYTHM.max) { me.rhythm = 0; me.fervour = time + FERVOUR.time; }
     for (let k = !auto && S.dmg?.stats?.verisium_infusion_skill_number_of_verisium_infusion_to_grant || 0; k > 0; k--) infGain('verisium', pp);   // Powered by Verisium
     // Unbound Avatar: usable at its Unbound Fury, which it consumes to make you Unbound for its duration: its more elemental
     // damage, elemental ailment chance and freeze / electrocute buildup
@@ -4553,10 +4573,11 @@ export function initScene(el, api) {
     if (!auto && S.dmg?.parts && S.dmg.stats?.statset_index_for_final_animation_combo_index != null) {
       const len = S.dmg.stats.statset_index_for_third_animation_combo_index != null ? 4 : 3, q = (me.seq ||= {})[S.name], live = q && time - q.at < SEQ_GAP;
       // Crescendo: the Final Strike can be used twice in succession; Crescendo III: it is Ancestrally Boosted
-      const again = !!(live && q.n === len && !q.again && S.dmg.sum?.repeat_last_step_of_combo_attack), n = again ? len : live ? q.n % len + 1 : 1;
+      const again = !!(live && q.n === len && !q.again && S.dmg.sum?.repeat_last_step_of_combo_attack), n = again || time < me.finality ? len : live ? q.n % len + 1 : 1;   // (Finality: straight to the Final Strike)
       me.seq[S.name] = { n, at: time, again }; S.chain0 = S.dmg;
       if (n === len && S.dmg.sum?.final_strike_is_ancestrally_boosted) S.addTargets = ANCESTRAL.strike;
-      if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el); }
+      if (n === len) { const X = partOf(S, Object.keys(S.dmg.parts)[0]); Object.assign(S, { dmg: X.dmg, el: X.el, els: X.els, ail: X.ail, final: true }); say(t('{0}: Final Strike', S.label), S.el);
+        if (time < me.finality) S.critX = (S.critX || 1) * (1 + FINALITY * (X.dmg.critW ?? 1) / 100); }   // Finality's increased Critical Hit Chance, with the skill's own increased
       else if (len === 4 && n === 3) S.times = 3;
     }
     // Volt: its Voltaic Charge from how far you moved since its last use (its gain a metre, up to its most), spent for
@@ -4608,7 +4629,7 @@ export function initScene(el, api) {
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
     if (!auto) { const T = S.dmg?.useTime || (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime); me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), dmg: damaging(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', gren: S.kind === 'grenade', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), dmg: damaging(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
@@ -4682,7 +4703,7 @@ export function initScene(el, api) {
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
       / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Puppet Master. note: as more here */
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
-      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (1 + souls() * SOUL.speed / 100) / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
+      / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (1 + souls() * SOUL.speed / 100) / (time < me.fervour && b.P.attack ? 1 + FERVOUR.speed * new Set(used.filter(u => u.gren && time - u.t <= RECENT).map(u => u.name)).size / 100 : 1) /* Explosive Fervour. note: as more here */ / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
       / (1 + Math.floor(me.rage / 5) * (b.dmg?.sum?.['supported_skill_attack_speed_+%_per_5_rage'] || 0) / 100)
       // Rapid Casting III: its cast speed per different spell you cast in the last eight seconds
@@ -5012,6 +5033,9 @@ export function initScene(el, api) {
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
     if (me.boast) b.push(one(null, css('physical'), t("Runefather's Boast"), me.boast));
     if (souls()) b.push(one(null, css('chaos'), t('Soul Eater'), souls()));
+    if (time < me.finality) b.push(one(null, css('lightning'), t('Finality'), 0, me.finality - time));
+    if (me.rhythm) b.push(one(null, css('fire'), t('Explosive Rhythm'), me.rhythm));
+    if (time < me.fervour) b.push(one(null, css('fire'), t('Explosive Fervour'), 0, me.fervour - time));
     if (time < me.fear?.until) b.push(one(null, css('blood'), t('Fear Incarnate'), me.fear.n, me.fear.until - time));
     if (time < me.overEnc?.until) b.push(one(null, css('dust'), t('Overencumbered'), me.overEnc.n, me.overEnc.until - time, true));
     if (me.locust) b.push(one(icon("Queen's Procession"), css('physical'), t("Swarm's Advance"), me.locust));

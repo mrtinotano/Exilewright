@@ -1480,7 +1480,8 @@ export function skill(g, b, treeGear) {
   // Uhtred's Constellation adds its uses to a skill that is not instant
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
   if (st._cooldown_ms) {
-    out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + (v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit) + (GEM[g.name]?.types?.includes('CommandsMinions') ? v(sum, 'minion_command_skill_cooldown_speed_+%') : 0)) / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
+    out.cdInc = v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit) + (GEM[g.name]?.types?.includes('CommandsMinions') ? v(sum, 'minion_command_skill_cooldown_speed_+%') : 0);   // its increased recovery rate (the scene adds Explosive Rhythm's)
+    out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + out.cdInc / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
     // Second Wind: less recovery rate, twice the uses (support_double_number_of_cooldown_uses)
     out.uses = ((st._stored_uses || 1) + inc(sum, 'cooldown_count_+', tags) + (d.cast_time_ms ? v(sum, 'support_added_cooldown_count_if_not_instant') : 0)) * ((g.supports || []).some(n => SK.skills[n]?.flags?.includes('support_double_number_of_cooldown_uses')) ? 2 : 1);
     out.useTime = out.speed && 1 / out.speed;   // the game's "Attack time", apart from the cooldown
@@ -1505,6 +1506,7 @@ export function skill(g, b, treeGear) {
   const critInc = inc(sum, 'critical_strike_chance_+%', tags) + rath * v(sum, 'spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills') + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit);
   out.incW = Object.fromEntries(DMG.map(t => [t, 1 / (1 + incOf(t) / 100)]));   // what one point of increased damage is worth per type
   const critW = 1 / (1 + critInc / 100), cbW = 100 / (out.critBonus || 100);   // what one point of increased crit chance / crit damage bonus is worth
+  out.critW = critW;   // (the scene's Finality)
   out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
     .filter(([[name, kind, , fl, cond, stat]]) => Array.isArray(cond) && /^(?:(?:Physical|Elemental)?Damage|CritChance|CritMultiplier)$/.test(name) && /^(?:MORE|INC)$/.test(kind)
       && fl.every(hit) && !/consume_enemy_|damage_\+%_final_(?:vs|against)_\w+_enemies$/.test(stat))
@@ -2006,7 +2008,7 @@ function curseOf(st, sum, finals = {}) {
 // self-check: Multishot II in Mortar Cannon slows its grenades, not the cannon (the game: use time 1 s)
 // ...and Cluster Grenade's cooldown in the game's window: 10.99 s, 2 uses (quality 16%, Payload, 45% from the tree, +1 use)
 { const c = skill({ name: 'Cluster Grenade', level: 17, quality: 16, supports: ['Payload'] }, { gems: [], items: {} }, { 'grenade_skill_cooldown_speed_+%': 45, 'grenade_skill_cooldown_count_+': 1 });
-  console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2, 'cooldown and uses', c); }
+  console.assert(Math.round(c.cooldown) === 10989 && c.uses === 2 && c.cdInc === -9, 'cooldown and uses', c); }
 console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot II'] }, { gems: [], items: {} }, {}).speed === 1, 'meta gem supports');
 // self-check: mana cost. Orb of Storms 20 costs 129 (Efficiency I's 30% less: 91, up; Lifetap: 129 life instead); Shock Conduction II's x1.2 makes it 154 (154.8 down), 10% reduced
 // 139 (138.6 up), 25% cost efficiency 111; Runic Tempering costs per second, not rounded
