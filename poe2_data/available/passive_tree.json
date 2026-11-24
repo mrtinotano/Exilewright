@@ -29,6 +29,9 @@
   "Flesh Crucible": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveVivisectionJewel",
   "Voices": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveDeliriumJewel"
  },
+ "socket_art": {
+  "Undying Hate": "Art/2DArt/UIImages/InGame/Abyss/AbyssActivePatternKeystone"
+ },
  "attribute_options": {
   "strength": {
    "base_strength": 5

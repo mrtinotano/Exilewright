@@ -296,7 +296,8 @@ for r in load('AlternateTreeExtraPassiveOverridesFromJewelStats'):
 words = load('Words')
 socketed = {**{bases[r['BaseItemTypesKey']]['Name']: r['SocketedImage'] for r in load('PassiveJewelArt')},
             **{words[r['Name']]['Text']: r['JewelArt'] for r in load('PassiveJewelUniqueArt')}}
-save('passive_tree.json', {'class_roots': roots, 'socketed': socketed, 'attribute_options': attr_opts, 'attribute_icons': attr_icons, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
+socket_art = {words[r['Name']]['Text']: r['KeystoneArt'] for r in load('PassiveJewelUniqueArt') if r['KeystoneArt']}   # and the art behind that socket
+save('passive_tree.json', {'class_roots': roots, 'socketed': socketed, 'socket_art': socket_art, 'attribute_options': attr_opts, 'attribute_icons': attr_icons, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
                            'timeless': {'versions': alt_versions, 'keystones': conquerors, 'overrides': alt_over},
                            # Flesh Crucible's keystone (local_vivisection_random_keystone_index, from 1): PassiveKeystoneList's rows
                            'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})

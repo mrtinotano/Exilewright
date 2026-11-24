@@ -795,10 +795,8 @@ const LINK = {
 };
 // the passives a timeless jewel conquers have that jewel's own links and frames when its tree version has them
 // (AlternateTreeArt.UIArt: Undying Hate's Abyss; images.py: img/tree/alt<version>_*): the links, read the same way off
-// AbyssPassiveSkillScreenCurves*Together.dds; art: what the game draws behind the socket the jewel is in
-// (AlternateTreeArt.KeystoneFrameArt, a PassiveSkillTreeMasteryArt row: images.py, img/mastery)
+// AbyssPassiveSkillScreenCurves*Together.dds
 const LINK_ALT = { 7: {
-  art: 'AlternateTreeAbyss',
   normal: [['#419236', 11], ['#040e04', 7], ['#0d200a', 3]],
   can: [['#bacd70', 13], ['#94d259', 9], ['#386600', 7, 1], ['#88d242', 5], ['#a0d271', 3]],
   active: [['rgba(124,168,3,.37)', 34], ['rgba(124,168,3,.73)', 20], ['#d4ff6b', 11], ['#4c4e12', 7, 1], ['#b1c367', 5, 1], ['#ecfea8', 3], ['#ffffe9', 1]],
@@ -946,13 +944,15 @@ function drawTree() {
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
   }
   ctx.globalAlpha = 1;
-  // behind the socket of a timeless jewel whose tree has art for it, that art (Undying Hate: the runes of the Abyss)
-  // note: its size (2.75 world units a pixel of the half-size picture) and how bright (1.7 times the picture: once
-  // more, added at 0.7) are measured on a screenshot of the game; no table says them
+  // behind the socket of a unique jewel that has art for it, that art (passive_tree.json socket_art,
+  // PassiveJewelUniqueArt.KeystoneArt: the runes of the Abyss behind Undying Hate), as large as a mastery's; it does
+  // not turn (a video of the game)
+  // note: how bright (1.7 times the picture: once more, added at 0.7) is measured on a screenshot of the game; no
+  // table says it
   for (const j of js) {
-    const name = j.R && LINK_ALT[statsOf(j.it).local_unique_jewel_alternate_tree_version]?.art, pic = name && art('mastery/' + name);
+    const name = tree.socket_art[j.it.unique], pic = name && art('mastery/' + name.split('/').pop());
     if (!pic) continue;
-    const [x, y] = WP[j.id], w = pic.width * 2.75, h = pic.height * 2.75;
+    const [x, y] = WP[j.id], w = pic.width * 2, h = pic.height * 2;
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
     ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .7;
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
@@ -1049,7 +1049,8 @@ function drawRings(g, j, x, y, k, turn) {
   }
 }
 // the rings of the tree turn all the time: they have a canvas of their own over it, so the tree is not drawn again
-// note: no table says how fast they turn: as fast as in Path of Building 2 (0.7 * 0.00003 radians a millisecond)
+// note: no table says how fast they turn: 0.021 radians a second each way, measured on a video of the game (the
+// angle its band moved after 1.5 and 3 seconds), which is Path of Building 2's 0.7 * 0.00003 radians a millisecond
 const RING_TURN = .021, rcv = $('treeRings'), rctx = rcv.getContext('2d');   // radians a second
 let rings = [], ringRaf = 0;   // what drawTree last had in view: [jewel, x, y, pixels a tree unit]
 function turnRings(now) {

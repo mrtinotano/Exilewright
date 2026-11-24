@@ -60,6 +60,7 @@ BADGES, BADGE_R = {'fire': (102, 539), 'cold': (670, 537), 'lightning': (102, 65
 # the art behind a group of the tree, by its mastery (PassiveSkillTreeMasteryArt.ActiveEffectImage), saved whole at
 # half size as ../available/img/mastery/<id>.webp
 MASTERY = {r['Id']: r['ActiveEffectImage'] for r in table('PassiveSkillTreeMasteryArt') if r['ActiveEffectImage']}
+MASTERY.update({pic.split('/')[-1]: pic for pic in tree['socket_art'].values()})   # and the art behind a unique jewel's socket, the same way
 ui = set(TREE.values()) | set(MASTERY.values())
 atlas = {}
 if ui:
@@ -91,6 +92,13 @@ for p in paths:
         im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, 'WEBP', quality=85)
     except Exception as e:
         bad.append((p, str(e)))
+# The game lays a radius ring over the tree with its colour as it is, dimming only what is behind it by its alpha
+# (measured on a video of the game: the ring's brightness across its band, within a few percent of that and twice
+# what dimming the colour by the alpha too gives). A page dims the colour as well, so the ring is saved with its
+# colour divided by its alpha, and no less alpha than its brightest channel where it is brighter than its alpha allows
+def lit(im):
+    r, g, b, a = im.convert('RGBA').split()
+    return Image.merge('RGBa', (r, g, b, ImageChops.lighter(a, ImageChops.lighter(r, ImageChops.lighter(g, b))))).convert('RGBA')
 for folder, role, name in [('tree', *x) for x in TREE.items()] + [('mastery', *x) for x in MASTERY.items()]:   # each is a picture of its own: full size (the tree's are drawn large when zoomed in; the masteries at half)
     out = os.path.join(ROOT, 'available', 'img', folder, role + '.webp')
     try:
@@ -98,6 +106,7 @@ for folder, role, name in [('tree', *x) for x in TREE.items()] + [('mastery', *x
         file, (x1, y1, x2, y2) = atlas[name.lower()]
         im = Image.open(os.path.join(ROOT, 'files', file))
         if folder == 'tree': im = im.crop((x1, y1, x2 + 1, y2 + 1))
+        if role.startswith('ring'): im = lit(im)
         (im.resize((im.width // 2, im.height // 2), Image.LANCZOS) if folder == 'mastery' else im).save(out, 'WEBP', quality=90)
     except Exception as e:
         bad.append((role, str(e)))
