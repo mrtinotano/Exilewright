@@ -678,7 +678,7 @@ for i, b in enumerate(base_types):
     implicit_ids.update(b['Implicit_Mods'])
     a, w, fl = armour.get(i), weapon.get(i), flasks.get(i)
     bases.append({
-        'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'slots': SLOT_CLASSES[cls], 'level': b['DropLevel'], 'domain': b['ModDomain'],
+        'id': b['Id'].split('/')[-1], 'name': b['Name'], **tr(bases_tr, i), 'class': cls, 'slots': SLOT_CLASSES[cls], 'level': b['DropLevel'], 'domain': b['ModDomain'],
         'tags': sorted(set(read_it(b['InheritsFrom']) + [tags_tab[t]['Id'] for t in b['Tags']])),
         'implicits': [mods[m]['Id'] for m in b['Implicit_Mods']],
         # (ward: the Runic Ward of a Runeforged / Runemastered base, only where it has any)
@@ -693,6 +693,15 @@ for i, b in enumerate(base_types):
         **({'req': req[i]} if req.get(i) else {}),
         **({'grants': inherent[i]} if i in inherent else {}),
     })
+# bases of one name (a Two-Stone Ring's three pairs of resistances, a Runeforged Grasping Mail's kinds of defence): one is
+# kept, the last of the lowest drop level, with what each other has otherwise in its 'variants', by the game's id
+def one_name(bases):
+    out = {}
+    for b in sorted(bases, key=lambda b: -b['level']): out.setdefault((b['class'], b['name']), []).append(b)
+    for (*rest, kept) in out.values():
+        var = {b['id']: {f: b.get(f) for f in sorted(set(b) | set(kept)) if f != 'id' and b.get(f) != kept.get(f)} for b in rest}
+        if var := {k: d for k, d in var.items() if d}: kept['variants'] = var
+    return [{k: v for k, v in g[-1].items() if k != 'id'} for g in out.values()]
 # what a rune (soul core, talisman...) gives in a socket, every set of stats once ([[id, value, value], ...]): parseItem
 # reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
 rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValues'])): 1 for r in load('SoulCoreStats') if r['Stats']})
@@ -713,7 +722,7 @@ save('items.json', {
     'radius_grant': {c: {k: re.sub(r'\[(?:[^|\]]*\|)?([^\]]*)\]', r'\1', t['ModStatJewelAddTo' + k.title()]).strip()
                          for k in ('small', 'notable')}
                      for c, t in cs_langs.items()},
-    'bases': list({(b['class'], b['name']): b for b in sorted(bases, key=lambda b: -b['level'])}.values()),  # dedupe: same name, keep lowest drop level
+    'bases': one_name(bases),
     'implicits': {mods[m]['Id']: mod_stats(mods[m]) for m in implicit_ids},
     # the tags of a modifier (Mods.ImplicitTags: elemental, lightning, resistance...), for catalyst quality
     'implicit_tags': {mods[m]['Id']: [tags_tab[t]['Id'] for t in mods[m]['ImplicitTags']] for m in implicit_ids if mods[m]['ImplicitTags']},

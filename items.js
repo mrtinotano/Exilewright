@@ -9,10 +9,15 @@ const BASE = Object.fromEntries(D.bases.map(b => [b.name, b]));
 // Way of the Stonefist's forms of the gloves worn (Fists of Stone, and the Runeforged one of gloves with that tag) are
 // bases too, of no list: the game and Path of Building give such gloves as that base already. fist: the form's implicits
 for (const f of [D.fists, D.fists.runeforged]) BASE[f.name] = { ...f, class: 'Gloves', slots: ['gloves'], level: 1, domain: 1, fist: f.implicits, implicits: [], armour: { armour: 0, evasion: 0, energy_shield: 0, 'movement_speed_%': 0 }, size: [2, 2] };
-const fistOf = it => BASE[(BASE[it.base].tags.includes('runeforged') ? D.fists.runeforged : D.fists).name];
+// bases of one name (a Two-Stone Ring's three pairs of resistances, a Runeforged Grasping Mail's kinds of defence): the
+// one the data keeps and, in its `variants`, what each other has otherwise, by the game's id; item.variant says which
+// one an item is (none: the kept one). "Name#id" names one (make, the pickers)
+for (const b of D.bases) for (const [k, x] of Object.entries(b.variants || {})) b.variants[k] = { ...b, ...x, variant: k };
+export const baseOf = it => { const b = BASE[it?.base]; return b?.variants?.[it.variant] || b; };   // the base of an item (name, class, tags, armour...)
+const fistOf = it => BASE[(baseOf(it).tags.includes('runeforged') ? D.fists.runeforged : D.fists).name];
 // uniques: unique -> mods link from poe2db, every mod matched to the game's Mods table (see _tool/uniques.py)
 const UNIQUES = await fetch('poe2_data/available/unique_items.json').then(r => r.ok ? r.json() : []).catch(() => []);
-const UNIQ = Object.fromEntries(UNIQUES.filter(u => BASE[u.base]).map(u => [u.name, u]));
+const UNIQ = Object.fromEntries(UNIQUES.filter(u => baseOf(u)).map(u => [u.name, u]));
 const AFFIX = Object.fromEntries([...D.affixes.map(a => [a.id, a]),
   ...UNIQUES.flatMap(u => [...u.mods, ...u.mutated || []].map(m => [m.id, { ...m, affix: 'unique', level: '' }]))]);   // and the Vaal modifiers an Architect's Orb can give it
 export const SLOTS = { weapon: 'Weapon', offhand: 'Off Hand', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots', amulet: 'Amulet',
@@ -22,7 +27,7 @@ export const slotType = slot => slot.startsWith('jewel:') ? 'jewel' : slot;  // 
 export const slotOpen = (slot, sum) => slot !== 'ring3' || !!sum.enable_ring_slot_3;
 console.assert(slotOpen('ring2', {}) && !slotOpen('ring3', {}) && slotOpen('ring3', { enable_ring_slot_3: 1 }), 'slotOpen');
 const img = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
-export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || BASE[it?.base]?.img); };
+export const itemImg = it => { const u = it?.unique && UNIQ[it.unique]; return img(u && D.unique_img[u.name] || baseOf(it)?.img); };
 // stats whose number is a name: a passive's hash (Megalomaniac's notables, From Nothing's keystone), a keystone's index
 // (Flesh Crucible: the tree's keystone_list, from 1), a skill's (Prism of Belief: gems.json specific), the notable an
 // Undying Hate's modifier makes a conquered one become (passive_tree.json timeless.overrides). Any value, picked by name;
@@ -42,7 +47,7 @@ export function setNames(nodes, label, keystones, skills, overrides = {}) {
 export const uniqueName = name => tn(UNIQ[name]) || name;
 // an item with its skill not picked yet (0) given this one (Prism of Belief)
 export const pickSkill = (it, v) => { for (const m of it.mods || []) AFFIX[m.id]?.stats.forEach(([id], k) => { if (pickKind(id) === 'skill' && !m.values[k]) m.values[k] = v; }); return it; };
-export const JEWEL_UNIQUES = UNIQUES.filter(u => BASE[u.base]?.class === 'Jewels').map(u => u.name);
+export const JEWEL_UNIQUES = UNIQUES.filter(u => baseOf(u)?.class === 'Jewels').map(u => u.name);
 // what desecrating a timeless jewel can add (Undying Hate: HistoricAbyssJewel*), for a unique whose modifier is Abyss'
 const historicFor = u => !!u?.mods.some(m => /Abyss/.test(m.id));
 const namePick = (id, v, path, k) => `<select data-path="${path}" data-k="${k}"><option value="0">—</option>${(CHOICES[pickKind(id)] || [])
@@ -60,7 +65,7 @@ const boost = (item, tags, vals) => !item.catalyst || !tags?.includes(item.catal
   : vals.map(v => Math.trunc(v * (1 + (item.quality || 0) / 100)));
 const modVals = (item, m, vals = m.values) => boost(item, AFFIX[m.id]?.tags, vals);
 // the attributes the base needs, with the item's own "+100 Strength Requirement" (Mjölner, Shyaba)
-const reqOf = item => { const s = rolled(item), b = BASE[item.base]?.req || {}; return Object.fromEntries(['str', 'dex', 'int'].map(k => [k, (b[k] || 0) + (s[`local_${{ str: 'strength', dex: 'dexterity', int: 'intelligence' }[k]}_requirement_+`] || 0)])); };
+const reqOf = item => { const s = rolled(item), b = baseOf(item)?.req || {}; return Object.fromEntries(['str', 'dex', 'int'].map(k => [k, (b[k] || 0) + (s[`local_${{ str: 'strength', dex: 'dexterity', int: 'intelligence' }[k]}_requirement_+`] || 0)])); };
 // Way of the Stonefist (Martial Artist: sum.ascendancy_hand_wraps): the gloves worn become Fists of Stone (items.json fists:
 // its implicits give it evasion and energy shield per character level) and their explicit modifiers "more powerful related"
 // ones: a unique's as poe2db lists that form of it (unique_items.json stonefist), any other's the game's own HandWraps<id>
@@ -75,7 +80,7 @@ const uHas = (it, id) => !!UNIQ[it?.unique]?.mods.some(m => m.stats.some(([k]) =
 export function wornItems(b, sum) {
   let it = b.items; if (!it) return it;
   const less = ks => Object.fromEntries(Object.entries(it).filter(([k]) => !ks.includes(k)));
-  if (it.gloves && (sum?.ascendancy_hand_wraps || BASE[it.gloves.base]?.fist)) it = { ...it, gloves: { ...it.gloves, fists: b.level || 1 } };
+  if (it.gloves && (sum?.ascendancy_hand_wraps || baseOf(it.gloves)?.fist)) it = { ...it, gloves: { ...it.gloves, fists: b.level || 1 } };
   const rings = ['ring1', 'ring2', 'ring3'].filter(k => it[k]), only = rings.find(k => uHas(it[k], 'local_ring_disable_other_ring'));
   if (only && rings.length > 1) it = less(rings.filter(k => k !== only));
   for (const [a, o] of [['ring1', 'ring2'], ['ring2', 'ring1']]) if (it[o] && uHas(it[a], 'local_ring_duplicate_other_ring') && !uHas(it[o], 'local_ring_duplicate_other_ring')) it = { ...it, [a]: it[o] };
@@ -89,7 +94,7 @@ function fistMods(it) {
       return st ? set('HandWraps' + m.id, st, st.map(([, a, z]) => Math.round(a + (z - a) * f))) : { id: m.id, stats: AFFIX[m.id].stats, values: m.values }; });
 }
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
-  const base = BASE[item.base], out = {};
+  const base = baseOf(item), out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
   if (item.fists) { for (const st of Object.values(fistOf(item).fist)) add(st, st.map(x => x[1])); for (const m of fistMods(item)) add(m.stats, m.values); }
   else {
@@ -105,7 +110,7 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
 // free: the passives it affects can be allocated without being connected (Controlled Metamorphosis); around: the keystone
 // whose radius it is instead of the socket's (From Nothing)
 export function radiusOf(item) {
-  const base = BASE[item?.base], st = base && rolled(item), r = st?.local_jewel_effect_base_radius;
+  const base = baseOf(item), st = base && rolled(item), r = st?.local_jewel_effect_base_radius;
   if (!r) return null;
   const KS = 'local_unique_jewel_disconnected_passives_can_be_allocated_around_keystone_hash', around = st[KS];
   if (KS in st && !around) return null;   // From Nothing with no keystone picked yet
@@ -130,7 +135,7 @@ const radLines = (a, lines, code = lang) => !a.radius ? lines : lines.map(l => (
 // item's own numbers after its local mods: (base + flat) × (1 + increased%) × (1 + quality%), quality on its own as
 // Path of Building 2 has it (Item.lua: armour, evasion, energy shield and a weapon's physical damage)
 function local(item) {
-  const base = BASE[item.base], s = rolled(item), r = {}, F = item.fists, q = F ? 1 : 1 + (item.quality || 0) / 100;
+  const base = baseOf(item), s = rolled(item), r = {}, F = item.fists, q = F ? 1 : 1 + (item.quality || 0) / 100;
   // Fists of Stone: evasion and energy shield per character level, of its implicits and what its modifiers add to them
   const A = F ? { armour: 0, evasion: (s.local_hand_wraps_evasion_rating_per_level || 0) * F, energy_shield: (s.local_hand_wraps_energy_shield_per_level || 0) * F, 'movement_speed_%': 0 } : base.armour;
   if (A) {
@@ -170,17 +175,17 @@ function local(item) {
 }
 
 // an equipped piece's own armour or evasion (Titan's Stone Skin, Amazon's Stalking Panther)
-export const pieceDef = (items = {}, slot, k) => items[slot] && BASE[items[slot].base]?.armour ? local(items[slot])[k] || 0 : 0;
+export const pieceDef = (items = {}, slot, k) => items[slot] && baseOf(items[slot])?.armour ? local(items[slot])[k] || 0 : 0;
 // main-hand weapon after its local mods (damage ranges, attacks/s, crit), null if none
-export const statsOf = it => it && BASE[it.base] ? rolled(it) : {};   // every stat of an equipped item, with its rolled values
-export const weaponStats = (items = {}) => items.weapon && BASE[items.weapon.base]?.weapon ? local(items.weapon) : null;
+export const statsOf = it => it && baseOf(it) ? rolled(it) : {};   // every stat of an equipped item, with its rolled values
+export const weaponStats = (items = {}) => items.weapon && baseOf(items.weapon)?.weapon ? local(items.weapon) : null;
 
 // global stats the gear gives the character (stat id -> value)
 export function gearStats(items = {}) {
   const sum = {};
   const add = (k, v) => { if (v) sum[k] = (sum[k] || 0) + v; };
   for (const item of Object.values(items)) {
-    if (!BASE[item.base]) continue;
+    if (!baseOf(item)) continue;
     for (const [k, v] of Object.entries(rolled(item))) if (!k.startsWith('local_') || k.endsWith('charm_slots')) add(k, v);   // the belt's charm slots count for the character
     const l = local(item);
     add('base_physical_damage_reduction_rating', l.armour);
@@ -196,7 +201,7 @@ export function gearStats(items = {}) {
 // The armour, evasion and energy shield of the equipped armour pieces (the character panel's "Item Armour"...)
 export function armourItems(items = {}) {
   const out = { armour: 0, evasion: 0, energy_shield: 0, movement: 0, block: 0 };   // movement: their base's movement speed penalty, %; block: the shield's chance to block
-  for (const it of Object.values(items)) if (BASE[it?.base]?.armour) { const l = local(it); for (const k in out) out[k] += l[k] || 0; }
+  for (const it of Object.values(items)) if (baseOf(it)?.armour) { const l = local(it); for (const k in out) out[k] += l[k] || 0; }
   return out;
 }
 console.assert(D.bases.filter(b => /^(Shields|Bucklers)$/.test(b.class)).every(b => armourItems({ offhand: { base: b.name, implicits: [], mods: [] } }).block > 0), 'a shield without a chance to block');
@@ -217,7 +222,7 @@ export function flaskRecovery(items = {}, sum = {}) {
 // holds and what a use spends (ComponentCharges, with its own and the character's modifiers) and how much more it gains
 // on kill; always: it applies its effect constantly; es: its life recovery also recovers energy shield. null for an item that is not a flask.
 export function flaskOf(it, sum = {}) {
-  const base = BASE[it?.base]; if (!base?.flask || base.charm) return null;
+  const base = baseOf(it); if (!base?.flask || base.charm) return null;
   const s = rolled(it), k = base.class === 'Life Flasks' ? 'life' : 'mana', g = id => sum[id] || 0, F = base.flask;
   const gInc = g(`flask_${k}_to_recover_+%`) + g('flask_life_and_mana_to_recover_+%');   // the character's increased
   const amount = F[k] * (1 + ((s[`local_flask_${k}_to_recover_+%`] || 0) + (s['local_flask_amount_to_recover_+%'] || 0)) / 100) * (1 + (it.quality || 0) / 100)
@@ -239,7 +244,7 @@ const mostCharges = (F, s) => Math.floor((F.charges + (s.local_extra_max_charges
 // buff and the buff's stats: UtilityFlaskBuffs) and for how long, the life, mana and guard it gives when used, and its
 // charges as a flask's; null for an item that is not a charm
 export function charmOf(it, sum = {}) {
-  const base = BASE[it?.base]; if (!base?.charm) return null;
+  const base = baseOf(it); if (!base?.charm) return null;
   const s = rolled(it), g = id => sum[id] || 0, F = base.flask;
   // increased Charm Effect: what its buff grants, rounded towards zero
   const E = 1 + g('charm_effect_+%') / 100, stats = base.charm.stats && Object.fromEntries(Object.entries(base.charm.stats).map(([k, x]) => [k, Math.trunc(x * E)]));
@@ -265,7 +270,7 @@ const linesIn = (say, stats, vals) => say(Object.fromEntries(stats.map(([id], k)
 // a trade listing's modifiers in the game's language (what the planner read of them; the rest as the site words them)
 export const modsOf = l => { const p = l.item && itemParts(l.item, false); return p ? [...p.impl, ...p.expl, ...l.missed] : l.mods; };
 export function itemParts(it, en = true) {
-  const base = BASE[it.base];
+  const base = baseOf(it);
   if (!base) return null;
   const say = en ? statLinesEn : statLines, lines = (stats, vals) => linesIn(say, stats, vals);
   const r = rarityOf(it), mods = (it.mods || []).filter(m => AFFIX[m.id]);
@@ -422,7 +427,7 @@ export function parseItem(text) {
   for (let i = ri + 1; i < raw.length && head.length < 2 && !META.test(raw[i]); i++) head.push(raw[i]);
   const strip = n => n.replace(/^Superior /, '').toLowerCase();
   let u = head.map(n => UNIQ[n]).find(Boolean);
-  const base = u ? BASE[u.base] : head.map(n => NAMED.get(strip(n))).find(Boolean)   // a magic item's name has the base's in it
+  let base = u ? baseOf(u) : head.map(n => NAMED.get(strip(n))).find(Boolean)   // a magic item's name has the base's in it
     || [...NAMED].filter(([n]) => head.some(h => h.toLowerCase().includes(n))).sort((a, b) => b[0].length - a[0].length)[0]?.[1];
   if (!base) return null;
   // "{…}" opens a line in Path of Building (its tags) and is a whole line in the game's detailed text (the modifier's
@@ -463,7 +468,13 @@ export function parseItem(text) {
       impl = own ? [...mine, ...impl] : [...impl, ...mine];
     }
   }
-  const item = { base: base.name, implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
+  // a base of several of one name: the one whose implicits, granted skill and kinds of defence the text has. note: the
+  // skill's name and the defences' labels in English only; weapons that differ only in their numbers are not told apart
+  if (base.variants) { const kinds = [['armour', 'Armour:'], ['evasion', 'Evasion'], ['energy_shield', 'Energy Shield:']], shown = kinds.map(([, l]) => raw.some(x => x.startsWith(l)));
+    const score = v => matchLines([...impl, ...expl], v.implicits.flatMap((id, i) => shapes(i, D.implicits[id]))).found.length * 4 - v.implicits.length
+      + (v.grants || []).filter(g => raw.some(l => l.includes(g))).length * 4 + (v.armour && shown.includes(true) ? kinds.filter(([k], i) => !!v.armour[k] === shown[i]).length : 0);
+    base = [base, ...Object.values(base.variants)].reduce((a, v) => score(v) > score(a) ? v : a); }
+  const item = { base: base.name, ...(base.variant && { variant: base.variant }), implicits: base.implicits.map(id => fixVals(D.implicits[id])), mods: [] };
   // given as Fists of Stone already (Way of the Stonefist): that form's implicits are its own, with no roll, and its
   // modifiers are read as that form's (item.fistVals). A unique stays the unique it is; of any other, which gloves it
   // was nothing tells: it is kept as that base, each modifier as the one it comes from, as far up its range
@@ -556,21 +567,21 @@ export function parseItem(text) {
 const TRADE = await fetch('poe2_data/available/trade_mods.json').then(r => r.ok ? r.json() : {}).then(j => j.mods || {}).catch(() => ({}));
 // a base or unique as it is when first equipped: every roll at its best
 export const newItem = name => make(name);   // a base or unique as first equipped, for the optimizer's suggestions
-const make = name => { const u = UNIQ[name], b = BASE[u ? u.base : name];
-  return b && { ...(u && { unique: u.name }), base: b.name, implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
-export const classOf = it => BASE[it?.base]?.class;
-const martial = it => !!BASE[it?.base]?.tags?.includes('weapon');   // keywords MartialWeapon: the weapons tagged so (no wands, staves, sceptres)
-export const isMelee = it => martial(it) && !BASE[it.base].tags.includes('ranged');
+const make = name => { const [n, variant] = name.split('#'), u = UNIQ[n], b = baseOf({ base: u ? u.base : n, variant });
+  return b && { ...(u && { unique: u.name }), base: b.name, ...(b.variant && { variant: b.variant }), implicits: b.implicits.map(id => fixVals(D.implicits[id])), mods: u ? u.mods.map(m => ({ id: m.id, values: fixVals(m.stats) })) : [] }; };
+export const classOf = it => baseOf(it)?.class;
+const martial = it => !!baseOf(it)?.tags?.includes('weapon');   // keywords MartialWeapon: the weapons tagged so (no wands, staves, sceptres)
+export const isMelee = it => martial(it) && !baseOf(it).tags.includes('ranged');
 export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's property labels in each language, by the trade site's filter
 export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
 // the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
 export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
-  [...BASE[it.base]?.grants || [], ...(it.fists ? fistMods(it) : it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
+  [...baseOf(it)?.grants || [], ...(it.fists ? fistMods(it) : it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
 // what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
 // bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand; staffFocus:
 // Instruments of Power, a Focus next to a Staff
 export function offhandFits(weapon, off, giant, staffFocus) {
-  const w = BASE[weapon?.base], quiver = !!BASE[off?.base]?.tags.includes('quiver');
+  const w = baseOf(weapon), quiver = !!baseOf(off)?.tags.includes('quiver');
   if (!w) return true;
   if (staffTakesFocus(weapon, staffFocus) && isFocus(off)) return true;
   if (quiver || w.tags.includes('bow')) return quiver && w.tags.includes('bow');
@@ -579,11 +590,11 @@ export function offhandFits(weapon, off, giant, staffFocus) {
 // a weapon that takes both hands (the game shows it in the off hand too): two-handed, not a bow (it holds a quiver), and
 // not one Giant's Blood holds in one hand
 const staffTakesFocus = (weapon, staffFocus) => !!staffFocus && classOf(weapon) === 'Staves';
-export const bothHands = (weapon, giant) => { const w = BASE[weapon?.base];
+export const bothHands = (weapon, giant) => { const w = baseOf(weapon);
   return !!w?.tags.includes('twohand') && !w.tags.includes('bow') && !(giant && /^Two Hand (Axes|Maces|Swords)$/.test(w.class)); };
 // Weapon sets (the game's I and II): the set not in use waits in b.swap (its weapon and off hand) and b.wset is the one
 // in use; switching trades them, so everything else only ever sees the set in hand
-export const isQuiver = it => BASE[it?.base]?.class === 'Quivers', isFocus = it => BASE[it?.base]?.class === 'Foci';
+export const isQuiver = it => baseOf(it)?.class === 'Quivers', isFocus = it => baseOf(it)?.class === 'Foci';
 export function swapSet(b, n) {
   if (n === (b.wset === 2 ? 2 : 1)) return;   // that set is in hand already
   const items = b.items ||= {}, other = b.swap || {};
@@ -606,12 +617,11 @@ export function wear(b, slot, it, giant, staffFocus) {
   keep(b, items[slot]); items[slot] = it;
   if (items.weapon && items.offhand && !offhandFits(items.weapon, items.offhand, giant, staffFocus)) { const o = slot === 'weapon' ? 'offhand' : 'weapon'; keep(b, items[o]); delete items[o]; }
 }
-export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
 // a piece as this version of the game's data has it: of a base it knows, less the modifiers it does not (a patch took
 // them away, or the build comes from elsewhere)
 // ...; and a unique with the skill it grants itself (the data once gave every such unique The Covenant's Life Remnants)
 export function known(it) {
-  if (!BASE[it?.base]) return false;
+  if (!baseOf(it)) return false;
   it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values));
   const G = D.mod_grants || {}, u = UNIQ[it.unique], own = u ? [...u.mods, ...u.mutated || []].map(m => m.id) : [], free = own.filter(id => G[id] && !it.mods.some(m => m.id === id));
   if (u) it.mods = it.mods.flatMap(m => !G[m.id] || own.includes(m.id) ? [m] : free.length ? [{ id: free[0], values: fixVals(AFFIX[free.shift()].stats) }] : []);
@@ -826,7 +836,7 @@ const rarityOf = it => { const mods = it.mods || [], c = a => mods.filter(m => A
   return it.unique ? 'unique' : !mods.length ? 'normal' : c('prefix') <= 1 && c('suffix') <= 1 ? 'magic' : 'rare'; };
 // an item for a card, in the language of the page: its names, art, own numbers and modifier lines (loot.js)
 export function itemView(it) {
-  const base = BASE[it?.base];
+  const base = baseOf(it);
   if (!base) return null;
   const l = local(it), say = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]])));
   const hit = ['physical', 'fire', 'cold', 'lightning'].reduce((s, k) => s + (l[k] ? (l[k][0] + l[k][1]) / 2 : 0), 0);
@@ -882,12 +892,15 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   const giant = () => tree().keystone_giants_blood || Object.values(getBuild().items || {}).some(it => uHas(it, 'can_wield_2h_axe_sword_mace_in_one_hand')), staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
   const open = s => slotOpen(s, s === 'ring3' && tree());   // the build's stats only asked for the slot that needs them
   const types = [...Object.keys(SLOTS), 'jewel'];
-  // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art
+  // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art. tell: what tells a
+  // base from the others of its name (its implicits, the skill it grants, its defences, its damage)
+  const tell = b => [...b.implicits.flatMap(id => statLines(Object.fromEntries(D.implicits[id].map(([k, , hi]) => [k, hi])))), ...b.grants || [],
+    ...DEFS.filter(([k]) => b.armour?.[k]).map(([k, l]) => `${t(l)} ${b.armour[k]}`), ...b.weapon ? [`${b.weapon.min}–${b.weapon.max}`] : []].join(' · ');
   const lists = Object.fromEntries(types.map(s => [s, [
-    ...Object.values(UNIQ).filter(u => BASE[u.base].slots.includes(s)).sort((a, b) => a.name.localeCompare(b.name))
-      .map(u => ({ v: u.name, cls: 'unique', name: tn(u), sub: t('Unique') + ' · ' + (tn(BASE[u.base]) || u.base), img: D.unique_img[u.name] || BASE[u.base].img })),
-    ...D.bases.filter(b => b.slots.includes(s)).sort((a, b) => a.level - b.level)
-      .map(b => ({ v: b.name, cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level), img: b.img })),
+    ...Object.values(UNIQ).filter(u => baseOf(u).slots.includes(s)).sort((a, b) => a.name.localeCompare(b.name))
+      .map(u => ({ v: u.name, cls: 'unique', name: tn(u), sub: t('Unique') + ' · ' + (tn(baseOf(u)) || u.base), img: D.unique_img[u.name] || baseOf(u).img })),
+    ...D.bases.filter(b => b.slots.includes(s)).flatMap(b => [b, ...Object.values(b.variants || {})]).sort((a, b) => a.level - b.level)
+      .map(b => ({ v: b.name + (b.variant ? '#' + b.variant : ''), cls: 'normal', name: tn(b), sub: (tn(b) !== b.name ? b.name + ' · ' : '') + t('lv {0}', b.level) + (b.variants ? ' · ' + tell(b) : ''), img: b.img })),
   ].map(o => ({ ...o, key: (o.name + ' ' + o.sub + ' ' + o.v).toLowerCase(),
     html: `<li class="${o.cls}" data-base="${esc(o.v)}"><img src="${img(o.img)}" alt="" loading="lazy"><span>${esc(o.name)}<small>${esc(o.sub)}</small>` }))]));
   // what the build would gain or lose with `it` in `slot`, against how it is now; kept until the next render
@@ -916,7 +929,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   }
 
   function card(slot, title, it) {
-    const base = it && BASE[it.base];
+    const base = it && baseOf(it);
     if (!base) return `<section class="item"><h3>${title}</h3><input data-slot="${slot}" data-act="filter" placeholder="${t('Search base or unique…')}" autocomplete="off"><ul class="picklist" data-slot="${slot}">${pickList(slot)}</ul></section>`;
     const uniq = it.unique && UNIQ[it.unique], mods = it.mods || [];
     const count = a => mods.filter(m => AFFIX[m.id].affix === a).length;
@@ -969,7 +982,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   let sel = 'weapon', msg = '';
   const buy = { max: '', cur: '', base: false, lvl: true, attr: true, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
-  const whereTo = it => { const slots = BASE[it.base]?.slots || [], items = getBuild().items || {};
+  const whereTo = it => { const slots = baseOf(it)?.slots || [], items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s] && open(s)) || slots[0] || null; };
   // the items found better than the one worn (trade.find): cheapest first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
@@ -981,7 +994,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const { text, res } = better;
     if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
     if (res.error) return `<p class="opterr">${esc(res.error)}</p>`;
-    const B = getBuild(), worn = B.items?.[slot], wl = worn && BASE[worn.base] ? local(worn) : {}, { [slot]: _, ...rest } = B.items || {};
+    const B = getBuild(), worn = B.items?.[slot], wl = worn && baseOf(worn) ? local(worn) : {}, { [slot]: _, ...rest } = B.items || {};
     const lvl = B.level > 1 ? B.level : 101, s0 = B.level > 1 ? snapOf(rest) : null, s = s0?.glovesFree && slotType(slot) === 'gloves' ? null : s0;   // no character yet: nothing to check
     // what each changes on the build. Left out: those the build is worse with: its damage (its skills' DPS added up)
     // times its toughness goes down (the Loot verdict's two numbers), or neither moves and nothing else is gained (the
@@ -997,7 +1010,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const all = res.found.map((l, i) => { const [z, tz] = better.on[i];
       return { l, i, rows: diff(now, z), net: rel(d0, dmg(z)) * rel(t0, tz) * (f0 ? rel(f0.amount, flaskOf(l.item)?.amount || 0) : 1), at: l.price ? [cur.indexOf(l.price.currency) + 1 || 99, l.price.amount] : [100, 0] }; });
     const rated = all.filter(x => Math.abs(x.net - 1) <= .005 ? !x.rows.length || x.rows.some(r => r.d > 0) : x.net > 1).sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1]), worse = all.length - rated.length;
-    return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = BASE[l.item.base], u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
+    return `<div class="stash">${rated.map(({ l, i, rows }) => { const base = baseOf(l.item), u = l.item.unique && UNIQ[l.item.unique], L = base ? local(l.item) : {};
       // the piece's own armour, evasion and energy shield against the worn one's (yours → its, the change and its share of yours)
       const fl = f0 && flaskOf(l.item), own = [...DEFS.map(([k, name]) => [name, wl[k] || 0, L[k] || 0]), ...fl ? [[FL, Math.round(f0.amount), Math.round(fl.amount)]] : []];   // a flask's: what it recovers
       const defs = own.filter(([, a, z]) => a || z).map(([name, a, z]) => { const d = z - a;
@@ -1026,7 +1039,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   function stashHtml() {
     const list = getBuild().stash || [];
     return `<h3>${t('Saved items')}</h3>${list.length ? `<div class="stash">${list.map((it, i) => {
-      const base = BASE[it.base], u = it.unique && UNIQ[it.unique], to = base && whereTo(it);
+      const base = baseOf(it), u = it.unique && UNIQ[it.unique], to = base && whereTo(it);
       return base ? `<div class="stashit ${rarityOf(it)}"><img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">
         <span><b>${esc(it.name || tn(u || base))}</b><small>${esc(it.name || u ? tn(base) : base.class)}</small>${to ? `<span data-stash="${i}"></span>` : ''}</span>
         <button data-act="wear" data-i="${i}"${to ? '' : ' disabled'} title="${esc(to ? t(SLOTS[slotType(to)] || 'Jewel') : t('Select an allocated jewel socket first.'))}">${t('Equip')}</button>
@@ -1036,7 +1049,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   function render() {
     const items = getBuild().items ||= {};
     for (const [slot, it] of Object.entries(items)) {  // data can change between patches: drop what no longer exists
-      if (!BASE[it.base] || it.unique && !UNIQ[it.unique]) delete items[slot];
+      if (!baseOf(it) || it.unique && !UNIQ[it.unique]) delete items[slot];
       else it.mods = (it.mods || []).filter(m => AFFIX[m.id]);
     }
     now = snapOf(items); gains.clear();
@@ -1047,7 +1060,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     // a weapon that takes both hands shows in the off hand too, dimmed, as in the game (picking it there picks the weapon)
     const both = !items.offhand && bothHands(items.weapon, giant()) && !staffTakesFocus(items.weapon, staffFocus());   // Instruments of Power: its Focus slot stays open
     const cell = (slot, area) => {
-      const ghost = both && slot === 'offhand', at = ghost ? 'weapon' : slot, it = items[at], base = it && BASE[it.base], u = it?.unique && UNIQ[it.unique];
+      const ghost = both && slot === 'offhand', at = ghost ? 'weapon' : slot, it = items[at], base = it && baseOf(it), u = it?.unique && UNIQ[it.unique];
       return `<div class="cell ${base ? rarityOf(it) : ''}${ghost ? ' ghost' : ''}${slot === sel ? ' sel' : ''}" data-pick="${at}" style="grid-area:${area}" title="${esc(names[slot] + (base ? ': ' + tn(u || base) : ''))}">${
         base ? `<img src="${img(u && D.unique_img[u.name] || base.img)}" alt="">` : `<span>${names[slot]}</span>`}</div>`;
     };
@@ -1115,7 +1128,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       arr[+t.dataset.k] = +t.value; (it.fistVals ||= {})[id] = fixVals(m.stats, arr);
     } else if (t.dataset.path) {
       const [s, kind, i] = t.dataset.path.split('.'), it = items[s];
-      const stats = kind === 'i' ? D.implicits[BASE[it.base].implicits[i]] : AFFIX[it.mods[i].id].stats;
+      const stats = kind === 'i' ? D.implicits[baseOf(it).implicits[i]] : AFFIX[it.mods[i].id].stats;
       const arr = kind === 'i' ? it.implicits[i] : it.mods[i].values;
       arr[+t.dataset.k] = +t.value;
       if (kind === 'i') it.implicits[i] = fixVals(stats, arr); else it.mods[i].values = fixVals(stats, arr);
@@ -1166,10 +1179,13 @@ console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSoc
 console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem Level: 70\n--------\n32% increased Life and Mana Recovery from Flasks (rune)')
   ?.item.extra?.['flask_life_and_mana_to_recover_+%'] === 32, 'parseItem: a rune of its own wording');
 // ...and quality, a multiplier of its own on the item's defences
-{ const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && BASE[r.item.base].armour.energy_shield;
+{ const r = parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nQuality: +20% (augmented)\nEnergy Shield: 48 (augmented)\n--------\nItem Level: 70'), base = r && baseOf(r.item).armour.energy_shield;
   console.assert(r?.item.quality === 20 && local(r.item).energy_shield === Math.round(base * 1.2), 'parseItem: quality'); }
 { // a skill the item grants, and its level as the game words it (English and Spanish)
   const g = l => grantedSkills({ weapon: parseItem(`Item Class: Sceptres\nRarity: Normal\nShrine Sceptre\n--------\n${l}\n--------\nItem Level: 40`)?.item })[0];
+  const two = parseItem('Rarity: RARE\nGrim Loop\nTwo-Stone Ring\nImplicits: 1\n+14% to Fire and Cold Resistances')?.item, ts = two && rolled(two);   // bases of one name: the one the text is
+  console.assert(two?.variant && ts['fire_and_cold_damage_resistance_%'] === 14 && Object.keys(ts).length === 1 && !rolled(make('Two-Stone Ring'))['fire_and_cold_damage_resistance_%']
+    && rolled(make('Two-Stone Ring#' + two.variant))['fire_and_cold_damage_resistance_%'] > 0 && String(g('Grants Skill: Level 11 Purity of Fire')) === 'Purity of Fire,weapon,11', 'bases of one name', two, ts);
   console.assert(String(g('Grants Skill: Level 11 Impurity')) === 'Impurity,weapon,11' && g('Otorga la habilidad: Impureza nivel 9')?.[2] === 9, 'grantedSkills', g('Grants Skill: Level 11 Impurity')); }
 { // catalyst quality: the game's own ring (checked in game: lightning resistance +50, not the copied 28 + 19)
   const r = parseItem('Item Class: Rings\nRarity: Rare\nRapture Gyre\nTopaz Ring\n--------\nQuality (Lightning Modifiers): +10% (augmented)\n--------\nItem Level: 49\n--------\n{ Implicit Modifier — Elemental, Lightning, Resistance — 10% Increased }\n+28(20-30)% to Lightning Resistance\n--------\n{ Prefix Modifier "Healthy" (Tier: 7) — Life }\n+21(20-29) to maximum Life\n{ Prefix Modifier "Coursing" (Tier: 3) — Damage, Elemental, Lightning — 10% Increased }\n19(18-22)% increased Lightning Damage\n{ Suffix Modifier "of the Storm" (Tier: 6) — Elemental, Lightning, Resistance — 10% Increased }\n+19(16-20)% to Lightning Resistance'), s = r && rolled(r.item);

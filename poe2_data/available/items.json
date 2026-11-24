@@ -5606,6 +5606,31 @@
    "req": {
     "str": 46,
     "dex": 46
+   },
+   "variants": {
+    "FourHelmetStrDex6EndgameVerisium": {
+     "armour": {
+      "armour": 86,
+      "evasion": 78,
+      "energy_shield": 0,
+      "movement_speed_%": 0,
+      "ward": 254
+     },
+     "img": "Art/2DItems/Armours/Helmets/Basetypes/HelmetStrDex06.dds",
+     "level": 80,
+     "req": {
+      "str": 63,
+      "dex": 63
+     },
+     "tags": [
+      "armour",
+      "default",
+      "helmet",
+      "karui_basetype",
+      "runeforged",
+      "str_dex_armour"
+     ]
+    }
    }
   },
   {
@@ -11862,6 +11887,18 @@
    "req": {
     "str": 67,
     "dex": 67
+   },
+   "variants": {
+    "FourBodyStrDex4aEndgame": {
+     "implicits": [
+      "BodyArmourImplicitFireResistance1"
+     ]
+    },
+    "FourBodyStrDex4bEndgame": {
+     "implicits": [
+      "BodyArmourImplicitColdResistance1"
+     ]
+    }
    }
   },
   {
@@ -13223,6 +13260,18 @@
    "req": {
     "str": 67,
     "dex": 67
+   },
+   "variants": {
+    "FourBodyStrDex4aEndgameVerisium": {
+     "implicits": [
+      "BodyArmourImplicitFireResistance1"
+     ]
+    },
+    "FourBodyStrDex4bEndgameVerisium": {
+     "implicits": [
+      "BodyArmourImplicitColdResistance1"
+     ]
+    }
    }
   },
   {
@@ -14452,6 +14501,42 @@
    "spirit": null,
    "req": {
     "str": 163
+   },
+   "variants": {
+    "FourTwoHandMaceUnique1VerisiumUnique1": {
+     "implicits": [],
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 1000,
+      "min": 151,
+      "max": 315,
+      "range": 15
+     }
+    },
+    "FourTwoHandMaceUnique1VerisiumUnique2": {
+     "implicits": [
+      "TwistedEmpyreanVerisiumImplicitAdditionalFissures1"
+     ],
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 833,
+      "min": 74,
+      "max": 154,
+      "range": 15
+     }
+    },
+    "FourTwoHandMaceUnique1VerisiumUnique3": {
+     "implicits": [
+      "TwistedEmpyreanVerisiumImplicitFreezeBuildup1"
+     ],
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 833,
+      "min": 74,
+      "max": 154,
+      "range": 15
+     }
+    }
    }
   },
   {
@@ -14726,6 +14811,38 @@
    "req": {
     "str": 67,
     "int": 67
+   },
+   "variants": {
+    "FourBodyStrInt11VerisiumUnique1": {
+     "armour": {
+      "armour": 232,
+      "evasion": 0,
+      "energy_shield": 64,
+      "movement_speed_%": -400,
+      "ward": 86
+     },
+     "implicits": [
+      "BodyArmourImplicitMaximumElementalResistance1",
+      "TheUnleashedVerisiumImplicitArcaneSurgeEffect1"
+     ]
+    },
+    "FourBodyStrInt11VerisiumUnique2": {
+     "armour": {
+      "armour": 199,
+      "evasion": 0,
+      "energy_shield": 88,
+      "movement_speed_%": -400,
+      "ward": 86
+     },
+     "implicits": [
+      "BodyArmourImplicitMaximumElementalResistance1",
+      "TheUnleashedVerisiumImplicitBypassEnergyShield1"
+     ],
+     "req": {
+      "str": 57,
+      "int": 85
+     }
+    }
    }
   },
   {
@@ -15685,6 +15802,85 @@
    "spirit": null,
    "req": {
     "str": 124
+   },
+   "variants": {
+    "FourOneHandMace13VerisiumUnique1": {
+     "implicits": [
+      "OlrovasaraVerisiumImplicitLightningToCold1",
+      "OlrovasaraVerisiumWeaponImplicitDamageIsCold1"
+     ],
+     "req": {
+      "str": 114
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 44,
+      "max": 209,
+      "range": 13
+     }
+    },
+    "FourOneHandMace13VerisiumUnique2": {
+     "implicits": [
+      "OlrovasaraVerisiumImplicitDamageAsExtraLightningPerRunicWard1"
+     ],
+     "req": {
+      "str": 114
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 44,
+      "max": 73,
+      "range": 13
+     }
+    },
+    "FourOneHandMace13VerisiumUnique3": {
+     "implicits": [
+      "OlrovasaraVerisiumImplicitWeaponRange1"
+     ],
+     "req": {
+      "str": 114
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 44,
+      "max": 73,
+      "range": 13
+     }
+    },
+    "FourOneHandMace13VerisiumUnique4": {
+     "implicits": [
+      "MjolnerVerisiumImplicitLightningDamage1",
+      "MjolnerVerisiumImplicitLocalLightningConvert1"
+     ],
+     "req": {
+      "str": 114
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 85,
+      "max": 403,
+      "range": 13
+     }
+    },
+    "FourOneHandMace13VerisiumUnique5": {
+     "implicits": [
+      "MjolnerVerisiumImplicitLightningChain1"
+     ],
+     "req": {
+      "str": 114
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 44,
+      "max": 73,
+      "range": 13
+     }
+    }
    }
   },
   {
@@ -16071,6 +16267,18 @@
    "spirit": null,
    "req": {
     "int": 114
+   },
+   "variants": {
+    "FourWandUnique2VerisiumUnique1": {
+     "implicits": [
+      "RuneseekersCallVerisiumImplicitChanceForTwoProjectiles1"
+     ]
+    },
+    "FourWandUnique2VerisiumUnique2": {
+     "implicits": [
+      "RuneseekersCallVerisiumImplicitManaRegen1"
+     ]
+    }
    }
   },
   {
@@ -16868,7 +17076,21 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "variants": {
+    "FourAmuletUnique1VerisiumUnique1": {
+     "implicits": [
+      "AmuletImplicitRunicWard1",
+      "EventidePetalsVerisiumImplicitMaxColdRes1"
+     ]
+    },
+    "FourAmuletUnique1VerisiumUnique2": {
+     "implicits": [
+      "AmuletImplicitRunicWard1",
+      "EventidePetalsVerisiumImplicitColdSkills1"
+     ]
+    }
+   }
   },
   {
    "name": "Runemastered Heavy Belt",
@@ -16904,7 +17126,27 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "variants": {
+    "FourBelt9VerisiumUnique1": {
+     "implicits": [
+      "BeltImplicitIncreasedStunThreshold1",
+      "WaistgateVerisiumImplicitLifeFlaskToRunicWard1"
+     ]
+    },
+    "FourBelt9VerisiumUnique2": {
+     "implicits": [
+      "BeltImplicitIncreasedStunThreshold1",
+      "WaistgateVerisiumImplicitRunicWardRegeneration1"
+     ]
+    },
+    "FourBelt9VerisiumUnique3": {
+     "implicits": [
+      "BeltImplicitIncreasedStunThreshold1",
+      "WaistgateVerisiumImplicitRunicWardCanOverflow1"
+     ]
+    }
+   }
   },
   {
    "name": "Grand Regalia",
@@ -17090,6 +17332,47 @@
     "str": 41,
     "dex": 41,
     "int": 41
+   },
+   "variants": {
+    "FourBodyStrDexInt3Verisium1": {
+     "armour": {
+      "armour": 232,
+      "evasion": 211,
+      "energy_shield": 0,
+      "movement_speed_%": -400,
+      "ward": 107
+     },
+     "req": {
+      "str": 61,
+      "dex": 61
+     }
+    },
+    "FourBodyStrDexInt3Verisium2": {
+     "armour": {
+      "armour": 0,
+      "evasion": 211,
+      "energy_shield": 64,
+      "movement_speed_%": -300,
+      "ward": 107
+     },
+     "req": {
+      "dex": 61,
+      "int": 61
+     }
+    },
+    "FourBodyStrDexInt3Verisium3": {
+     "armour": {
+      "armour": 232,
+      "evasion": 0,
+      "energy_shield": 64,
+      "movement_speed_%": -400,
+      "ward": 107
+     },
+     "req": {
+      "str": 61,
+      "int": 61
+     }
+    }
    }
   },
   {
@@ -17139,6 +17422,44 @@
     "str": 41,
     "dex": 41,
     "int": 41
+   },
+   "variants": {
+    "FourBodyStrDexInt3Verisium5": {
+     "armour": {
+      "armour": 421,
+      "evasion": 0,
+      "energy_shield": 0,
+      "movement_speed_%": -400,
+      "ward": 150
+     },
+     "req": {
+      "str": 112
+     }
+    },
+    "FourBodyStrDexInt3Verisium6": {
+     "armour": {
+      "armour": 0,
+      "evasion": 384,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 150
+     },
+     "req": {
+      "dex": 112
+     }
+    },
+    "FourBodyStrDexInt3Verisium7": {
+     "armour": {
+      "armour": 0,
+      "evasion": 0,
+      "energy_shield": 117,
+      "movement_speed_%": -400,
+      "ward": 150
+     },
+     "req": {
+      "int": 112
+     }
+    }
    }
   },
   {
@@ -18625,7 +18946,22 @@
    },
    "grants": [
     "Parry"
-   ]
+   ],
+   "variants": {
+    "FourShieldDex3Endgame": {
+     "armour": {
+      "armour": 0,
+      "evasion": 148,
+      "energy_shield": 0,
+      "movement_speed_%": 0
+     },
+     "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
+     "level": 65,
+     "req": {
+      "dex": 91
+     }
+    }
+   }
   },
   {
    "name": "Druidic Focus",
@@ -18715,6 +19051,59 @@
    "req": {
     "str": 80,
     "int": 80
+   },
+   "variants": {
+    "FourBodyStrDexInt2Verisium1": {
+     "armour": {
+      "armour": 200,
+      "evasion": 182,
+      "energy_shield": 56,
+      "movement_speed_%": -300,
+      "ward": 301
+     },
+     "implicits": [
+      "BodyArmourImplicitLevelOfAllCorruptedSkillGems1"
+     ],
+     "req": {
+      "str": 72,
+      "dex": 72,
+      "int": 72
+     }
+    },
+    "FourBodyStrDexInt2Verisium2": {
+     "armour": {
+      "armour": 273,
+      "evasion": 248,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 129
+     },
+     "implicits": [
+      "BodyArmourImplicitLevelOfAllCorruptedSkillGems1",
+      "VerisiumSacrificialGarbImplicitLifePerCorruptedItem1"
+     ],
+     "req": {
+      "str": 80,
+      "dex": 80
+     }
+    },
+    "FourBodyStrDexInt2Verisium3": {
+     "armour": {
+      "armour": 0,
+      "evasion": 248,
+      "energy_shield": 76,
+      "movement_speed_%": -300,
+      "ward": 129
+     },
+     "implicits": [
+      "BodyArmourImplicitLevelOfAllCorruptedSkillGems1",
+      "VerisiumSacrificialGarbImplicitAllResistancePerCorruptedItem1"
+     ],
+     "req": {
+      "dex": 80,
+      "int": 80
+     }
+    }
    }
   },
   {
@@ -19986,7 +20375,23 @@
    },
    "grants": [
     "Parry"
-   ]
+   ],
+   "variants": {
+    "FourShieldDex3EndgameVerisium": {
+     "armour": {
+      "armour": 0,
+      "evasion": 141,
+      "energy_shield": 0,
+      "movement_speed_%": 0,
+      "ward": 35
+     },
+     "img": "Art/2DItems/Offhand/Shields/Buckler03.dds",
+     "level": 65,
+     "req": {
+      "dex": 91
+     }
+    }
+   }
   },
   {
    "name": "Runeforged Druidic Focus",
@@ -20076,7 +20481,45 @@
     "max": 99,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "variants": {
+    "FourOneHandMace14Verisium1": {
+     "implicits": [
+      "MaceImplicitHasXSockets"
+     ],
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 571,
+      "min": 59,
+      "max": 99,
+      "range": 13
+     }
+    },
+    "FourOneHandMace14Verisium2": {
+     "implicits": [
+      "MaceImplicitHasXSockets"
+     ],
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 690,
+      "min": 98,
+      "max": 163,
+      "range": 13
+     }
+    },
+    "FourOneHandMace14Verisium3": {
+     "implicits": [
+      "MaceImplicitHasXSockets"
+     ],
+     "weapon": {
+      "crit": 10.0,
+      "attack_time_ms": 690,
+      "min": 59,
+      "max": 99,
+      "range": 13
+     }
+    }
+   }
   },
   {
    "name": "Runeforged Morning Star",
@@ -20363,6 +20806,26 @@
    "req": {
     "dex": 127,
     "int": 50
+   },
+   "variants": {
+    "FourQuarterstaffUnique1VerisiumUnique1": {
+     "weapon": {
+      "crit": 10.0,
+      "attack_time_ms": 625,
+      "min": 51,
+      "max": 85,
+      "range": 14
+     }
+    },
+    "FourQuarterstaffUnique1VerisiumUnique2": {
+     "weapon": {
+      "crit": 15.0,
+      "attack_time_ms": 714,
+      "min": 51,
+      "max": 85,
+      "range": 14
+     }
+    }
    }
   },
   {
@@ -21139,6 +21602,20 @@
    "req": {
     "str": 50,
     "int": 50
+   },
+   "variants": {
+    "FourHelmetStrInt6VerisiumUnique1": {
+     "implicits": [
+      "KeeperOfTheArcVerisiumImplicit3Sockets1"
+     ]
+    },
+    "FourHelmetStrInt6VerisiumUnique2": {
+     "implicits": [
+      "KeeperOfTheArcVerisiumImplicitWardRegen1",
+      "KeeperOfTheArcVerisiumImplicitIntelligenceRequirement1",
+      "KeeperOfTheArcVerisiumImplicitUnaffectedbyCurses1"
+     ]
+    }
    }
   },
   {
@@ -21642,7 +22119,47 @@
    },
    "grants": [
     "Raise Shield"
-   ]
+   ],
+   "variants": {
+    "FourShieldStr9VerisiumUnique1": {
+     "armour": {
+      "armour": 0,
+      "evasion": 0,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 250
+     },
+     "implicits": []
+    },
+    "FourShieldStr9VerisiumUnique2": {
+     "armour": {
+      "armour": 100,
+      "evasion": 0,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 100
+     },
+     "implicits": [
+      "SvalinnVerisiumImplicitRunicWardOnBlock1"
+     ]
+    },
+    "FourShieldStr9VerisiumUnique3": {
+     "armour": {
+      "armour": 0,
+      "evasion": 148,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 35
+     },
+     "grants": [
+      "Parry"
+     ],
+     "implicits": [],
+     "req": {
+      "dex": 91
+     }
+    }
+   }
   },
   {
    "name": "Runemastered Blacksteel Tower Shield",
@@ -21742,7 +22259,34 @@
    },
    "grants": [
     "Raise Shield"
-   ]
+   ],
+   "variants": {
+    "FourShieldStrDexUnique1VerisiumUnique1": {
+     "armour": {
+      "armour": 203,
+      "evasion": 0,
+      "energy_shield": 0,
+      "movement_speed_%": -300,
+      "ward": 53
+     },
+     "block": 26,
+     "req": {
+      "str": 107
+     }
+    },
+    "FourShieldStrDexUnique1VerisiumUnique2": {
+     "armour": {
+      "armour": 0,
+      "evasion": 0,
+      "energy_shield": 135,
+      "movement_speed_%": 0,
+      "ward": 53
+     },
+     "req": {
+      "int": 107
+     }
+    }
+   }
   },
   {
    "name": "Runemastered Venerable Defender",
@@ -27589,6 +28133,25 @@
    "spirit": null,
    "req": {
     "dex": 68
+   },
+   "variants": {
+    "FourBowVerisium2b": {
+     "img": "Art/2DItems/Weapons/TwoHandWeapons/Bows/Basetypes/Bow03.dds",
+     "implicits": [
+      "QuillRainVerisiumImplicitForkExtraProjectile"
+     ],
+     "level": 55,
+     "req": {
+      "dex": 97
+     },
+     "weapon": {
+      "crit": 5.0,
+      "attack_time_ms": 714,
+      "min": 44,
+      "max": 81,
+      "range": 120
+     }
+    }
    }
   },
   {
@@ -33331,6 +33894,29 @@
    "req": {
     "dex": 41,
     "int": 41
+   },
+   "variants": {
+    "FourBodyDexInt8": {
+     "armour": {
+      "armour": 0,
+      "evasion": 197,
+      "energy_shield": 63,
+      "movement_speed_%": -300
+     },
+     "img": "Art/2DItems/Armours/BodyArmours/Basetypes/BodyDexInt08.dds",
+     "level": 51,
+     "req": {
+      "dex": 45,
+      "int": 45
+     },
+     "tags": [
+      "armour",
+      "body_armour",
+      "default",
+      "dex_int_armour",
+      "karui_basetype"
+     ]
+    }
    }
   },
   {
@@ -46219,6 +46805,21 @@
    "spirit": null,
    "req": {
     "str": 10
+   },
+   "variants": {
+    "FourBodyStr2VerisiumUnique1": {
+     "armour": {
+      "armour": 275,
+      "evasion": 0,
+      "energy_shield": 0,
+      "movement_speed_%": -500,
+      "ward": 69
+     },
+     "level": 38,
+     "req": {
+      "str": 61
+     }
+    }
    }
   },
   {
@@ -46264,6 +46865,24 @@
    "spirit": null,
    "req": {
     "dex": 25
+   },
+   "variants": {
+    "FourHelmetDex3VerisiumUnique1": {
+     "armour": {
+      "armour": 0,
+      "evasion": 90,
+      "energy_shield": 0,
+      "movement_speed_%": 0,
+      "ward": 72
+     },
+     "implicits": [
+      "VerisiumHelmetImplicitIgniteMagnitudeUnique1"
+     ],
+     "level": 38,
+     "req": {
+      "dex": 54
+     }
+    }
    }
   },
   {
@@ -52206,7 +52825,19 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "variants": {
+    "FourRing13a": {
+     "implicits": [
+      "RingImplicitFireColdResistance"
+     ]
+    },
+    "FourRing13b": {
+     "implicits": [
+      "RingImplicitFireLightningResistance"
+     ]
+    }
+   }
   },
   {
    "name": "Rabid Talisman",
@@ -57815,7 +58446,44 @@
    },
    "grants": [
     "Impurity"
-   ]
+   ],
+   "variants": {
+    "FourSceptre6a": {
+     "grants": [
+      "Purity of Fire"
+     ],
+     "img": "Art/2DItems/Weapons/OneHandWeapons/Scepters/Basetypes/Sceptre06a.dds",
+     "tags": [
+      "default",
+      "fire_implicit_skill",
+      "onehand",
+      "sceptre"
+     ]
+    },
+    "FourSceptre6b": {
+     "grants": [
+      "Purity of Ice"
+     ],
+     "img": "Art/2DItems/Weapons/OneHandWeapons/Scepters/Basetypes/Sceptre06b.dds",
+     "tags": [
+      "cold_implicit_skill",
+      "default",
+      "onehand",
+      "sceptre"
+     ]
+    },
+    "FourSceptre6c": {
+     "grants": [
+      "Purity of Lightning"
+     ],
+     "tags": [
+      "default",
+      "lightning_implicit_skill",
+      "onehand",
+      "sceptre"
+     ]
+    }
+   }
   },
   {
    "name": "Studded Vest",
@@ -64196,7 +64864,23 @@
    ],
    "flask": null,
    "weapon": null,
-   "spirit": null
+   "spirit": null,
+   "variants": {
+    "HelmetDemigods1": {
+     "img": "Art/2DItems/Armours/Helmets/DemigodsImmortality.dds",
+     "implicits": [
+      "AllResistancesImplictHelmetDemigods1"
+     ],
+     "level": 12,
+     "tags": [
+      "armour",
+      "default",
+      "demigods",
+      "helmet",
+      "not_for_sale"
+     ]
+    }
+   }
   },
   {
    "name": "Simple Dagger",
