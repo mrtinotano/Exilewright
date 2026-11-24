@@ -18,6 +18,7 @@ tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), enco
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
 paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
 paths |= {x['icon'] for v in tree['timeless']['versions'] for x in v.get('named', {}).values() if x.get('icon')}  # what a timeless jewel's conquered passives become (Tribute)
+paths |= set(tree['attribute_icons'].values())   # an attribute passive with its attribute picked
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
 # the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
 # frames), each saved as ../available/img/tree/<role>.webp (the piece of its file the index gives: a file has a few
@@ -41,10 +42,15 @@ TREE['ring_inv'] = radii[0]['Inverse1']
 TREE['ring_1'], TREE['ring_2'] = radii[0]['Circle1'], radii[0]['Circle2']
 for n in sorted({s[1] for u in uniques for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'}):
     TREE[f'ring{n}_1'], TREE[f'ring{n}_2'] = radii[alt[n]['JewelRadiiArt']]['Circle1'], radii[alt[n]['JewelRadiiArt']]['Circle2']
+    paths |= {k['icon'] for k in tree['timeless']['keystones'] if k['version'] == n}   # the keystone its conqueror puts in place of the tree's
     if alt[n]['UIArt'] is not None:
         for kind in ('Passive', 'Notable', 'Keystone'):
             for state, col in (('normal', 'Normal'), ('can', 'CanAllocate'), ('active', 'Active')):
                 TREE[f'alt{n}_{kind.lower()}_{state}'] = frames[table('PassiveSkillTreeUIArt')[alt[n]['UIArt']][kind + 'Frame']][col]
+# a socket with a jewel in it (passive_tree.json socketed), for the jewels there are: sock_<the picture's name>
+for name, pic in tree['socketed'].items():
+    if name in {b['name'] for b in items['bases']} | {u['name'] for u in uniques}:
+        TREE['sock_' + pic.split('/')[-1].lower()] = pic
 # the character panel's icons, painted into the panel's own picture (CharacterPanelContent, 4K), saved as
 # ../available/img/panel/<role>.webp: where each sits in it, cut off the stone behind it; the resistances' are round
 # badges (centre, radius)

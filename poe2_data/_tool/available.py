@@ -246,6 +246,7 @@ for gid, n in nodes.items():
 # what an "Attribute" node turns into when you pick one (hidden passives the game swaps in)
 attr_opts = {k: {stats[st]['Id']: p[f'Stat{i + 1}Value'] for i, st in enumerate(p['Stats'])}
              for p in passives for k in ('strength', 'dexterity', 'intelligence') if p['Id'].startswith('generic_attribute_' + k)}
+attr_icons = {k: p['Icon_DDSFile'] for p in passives for k in attr_opts if p['Id'].startswith('generic_attribute_' + k)}   # and what it then looks like
 # the art the game draws behind a passive of a mastery (images.py: img/mastery/<id>): PassiveSkills.MasteryGroup ->
 # PassiveSkillMasteryGroups.Art -> PassiveSkillTreeMasteryArt
 mastery_groups, mastery_art = load('PassiveSkillMasteryGroups'), load('PassiveSkillTreeMasteryArt')
@@ -259,7 +260,7 @@ alt_versions = [{'replaces': {'small': v['SmallNormalPassiveReplaced'], 'attribu
                  'adds': {'small': v['SmallNormalPassiveSkillAdditions'][1] > 0, 'attribute': v['SmallAttributePassiveSkillAdditions'][1] > 0, 'notable': v['NotableAdditions'][1] > 0}}
                 for v in load('AlternateTreeVersions')]
 alt_tr = load_langs('AlternatePassiveSkills')
-conquerors = [{'version': x['AlternateTreeVersion'], 'index': x['ConquerorIndex'], 'name': x['Name'], **tr(alt_tr, i),
+conquerors = [{'version': x['AlternateTreeVersion'], 'index': x['ConquerorIndex'], 'name': x['Name'], **tr(alt_tr, i), 'icon': x['DDSIcon'],
                'stats': {stats[st]['Id']: x[f'Stat{k + 1}'][0] for k, st in enumerate(x['Stats'])}}
               for i, x in enumerate(load('AlternatePassiveSkills')) if 4 in x['PassiveType'] and x['ConquerorVersion'] == 0]
 # what a conqueror does in its radius whatever the seed: a kind of passive (PassiveType 1 attribute, 2 small, 3 notable)
@@ -291,7 +292,11 @@ for r in load('AlternateTreeExtraPassiveOverridesFromJewelStats'):
     p = passives[r['PassiveSkill']]
     alt_over[str(p['PassiveSkillGraphId'])] = {'name': p['Name'], **tr(passives_tr, p['PassiveSkillGraphId']),
         'stats': {stats[st]['Id']: p[f'Stat{k + 1}Value'] for k, st in enumerate(p['Stats'])}}
-save('passive_tree.json', {'class_roots': roots, 'attribute_options': attr_opts, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
+# the picture of a socket with a jewel in it: by the jewel's base (PassiveJewelArt), a unique's own (PassiveJewelUniqueArt)
+words = load('Words')
+socketed = {**{bases[r['BaseItemTypesKey']]['Name']: r['SocketedImage'] for r in load('PassiveJewelArt')},
+            **{words[r['Name']]['Text']: r['JewelArt'] for r in load('PassiveJewelUniqueArt')}}
+save('passive_tree.json', {'class_roots': roots, 'socketed': socketed, 'attribute_options': attr_opts, 'attribute_icons': attr_icons, 'groups': centres, 'orbit_radii': radii, 'nodes': {str(k): v for k, v in nodes.items()},
                            'timeless': {'versions': alt_versions, 'keystones': conquerors, 'overrides': alt_over},
                            # Flesh Crucible's keystone (local_vivisection_random_keystone_index, from 1): PassiveKeystoneList's rows
                            'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})

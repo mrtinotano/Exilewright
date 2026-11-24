@@ -7,6 +7,28 @@
   54447,
   44683
  ],
+ "socketed": {
+  "Timeless Jewel": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSpecialSanctumJewel",
+  "Ruby": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveRubyJewel",
+  "Emerald": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveEmeraldJewel",
+  "Sapphire": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActive_SapphireJewel",
+  "Time-Lost Ruby": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSpecialRubyJewel",
+  "Time-Lost Emerald": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSpecialEmeraldJewel",
+  "Time-Lost Sapphire": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSpecialSapphireJewel",
+  "Diamond": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveDiamondBaseJewel",
+  "Time-Lost Diamond": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveDiamondBaseTimelost",
+  "Megalomaniac": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveDeliriumJewel",
+  "Heroic Tragedy": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveExpeditionJewel",
+  "From Nothing": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveRitualJewel",
+  "Controlled Metamorphosis": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveBreachJewel",
+  "Prism of Belief": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSacredFlameJewel",
+  "Against the Darkness": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveSpecialSanctumJewel",
+  "The Adorned": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveTrialmasterJewel",
+  "Undying Hate": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveAbyssJewel",
+  "Heart of the Well": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveApostatesHeartJewel",
+  "Flesh Crucible": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveVivisectionJewel",
+  "Voices": "Art/2DArt/UIImages/InGame/PassiveSkillScreenJewelSocketActiveDeliriumJewel"
+ },
  "attribute_options": {
   "strength": {
    "base_strength": 5
@@ -17,6 +39,11 @@
   "intelligence": {
    "base_intelligence": 5
   }
+ },
+ "attribute_icons": {
+  "strength": "Art/2DArt/SkillIcons/passives/plusstrength.dds",
+  "dexterity": "Art/2DArt/SkillIcons/passives/plusdexterity.dds",
+  "intelligence": "Art/2DArt/SkillIcons/passives/plusintelligence.dds"
  },
  "groups": [
   [
@@ -153186,6 +153213,7 @@
     "name_ko": "신성한 육체",
     "name_th": "Divine Flesh",
     "name_zh": "神聖血肉",
+    "icon": "Art/2DArt/SkillIcons/passives/DivineFlesh.dds",
     "stats": {
      "keystone_divine_flesh": 1
     }
@@ -153203,6 +153231,7 @@
     "name_ko": "영원한 젊음",
     "name_th": "Eternal Youth",
     "name_zh": "青春永駐",
+    "icon": "Art/2DArt/SkillIcons/passives/EternalYouth.dds",
     "stats": {
      "keystone_eternal_youth": 1
     }
@@ -153220,6 +153249,7 @@
     "name_ko": "타락한 영혼",
     "name_th": "Corrupted Soul",
     "name_zh": "腐化之魂",
+    "icon": "Art/2DArt/SkillIcons/passives/CorruptedDefences.dds",
     "stats": {
      "dummy_stat_display_nothing": 1
     }
@@ -153237,6 +153267,7 @@
     "name_ko": "피의 힘",
     "name_th": "Strength of Blood",
     "name_zh": "血之力量",
+    "icon": "Art/2DArt/SkillIcons/passives/StrengthOfBlood.dds",
     "stats": {
      "keystone_strength_of_blood": 1
     }
@@ -153254,6 +153285,7 @@
     "name_ko": "전쟁의 담금질",
     "name_th": "Tempered by War",
     "name_zh": "戰爭淬煉",
+    "icon": "Art/2DArt/SkillIcons/passives/TemperedByWar.dds",
     "stats": {
      "keystone_tempered_by_war": 1
     }
@@ -153271,6 +153303,7 @@
     "name_ko": "비껴내기",
     "name_th": "Glancing Blows",
     "name_zh": "側身之擊",
+    "icon": "Art/2DArt/SkillIcons/passives/GlancingBlows.dds",
     "stats": {
      "keystone_glancing_blows": 1
     }
@@ -153288,6 +153321,7 @@
     "name_ko": "바람의 무희",
     "name_th": "Wind Dancer",
     "name_zh": "風魔舞者",
+    "icon": "Art/2DArt/SkillIcons/passives/WindDancer.dds",
     "stats": {
      "dummy_stat_display_nothing": 1
     }
@@ -153305,6 +153339,7 @@
     "name_ko": "죽음의 춤",
     "name_th": "Dance with Death",
     "name_zh": "與死共舞",
+    "icon": "Art/2DArt/SkillIcons/passives/SharpandBrittle.dds",
     "stats": {
      "keystone_sharp_and_brittle": 1
     }
@@ -153322,6 +153357,7 @@
     "name_ko": "꿰뚫어 보는 눈",
     "name_th": "Second Sight",
     "name_zh": "先見之明",
+    "icon": "Art/2DArt/SkillIcons/passives/TheBlindMonk.dds",
     "stats": {
      "keystone_blind_monk": 1
     }
@@ -153339,6 +153375,7 @@
     "name_ko": "불가지론자",
     "name_th": "The Agnostic",
     "name_zh": "不可知論",
+    "icon": "Art/2DArt/SkillIcons/passives/MiracleMaker.dds",
     "stats": {
      "unique_body_armour_black_doubt_drain_%_mana_to_recover_life_until_full_and_dot_bypasses_es": 1
     }
@@ -153356,6 +153393,7 @@
     "name_ko": "내면의 신념",
     "name_th": "Inner Conviction",
     "name_zh": "內觀信念",
+    "icon": "Art/2DArt/SkillIcons/passives/InnerConviction.dds",
     "stats": {
      "keystone_quiet_might": 1
     }
@@ -153373,6 +153411,7 @@
     "name_ko": "의지력의 힘",
     "name_th": "Power of Purpose",
     "name_zh": "力量之意",
+    "icon": "Art/2DArt/SkillIcons/passives/PowerOfPurpose.dds",
     "stats": {
      "keystone_mental_conditioning": 1
     }
@@ -153390,6 +153429,7 @@
     "name_ko": "타락의 정점",
     "name_th": "Supreme Decadence",
     "name_zh": "至高．頹廢",
+    "icon": "Art/2DArt/SkillIcons/passives/SupremeDecadence.dds",
     "stats": {
      "keystone_emperors_heart": 1
     }
@@ -153407,6 +153447,7 @@
     "name_ko": "과시의 정점",
     "name_th": "Supreme Grandstanding",
     "name_zh": "至高．譁眾",
+    "icon": "Art/2DArt/SkillIcons/passives/SupremeGrandstand.dds",
     "stats": {
      "keystone_magnetic_charge": 1
     }
@@ -153424,6 +153465,7 @@
     "name_ko": "자만의 정점",
     "name_th": "Supreme Ego",
     "name_zh": "至高．自我",
+    "icon": "Art/2DArt/SkillIcons/passives/SupremeEgo.dds",
     "stats": {
      "dummy_stat_display_nothing": 1
     }
@@ -153441,6 +153483,7 @@
     "name_ko": "검은 낫의 교육",
     "name_th": "Black Scythe Training",
     "name_zh": "黑暗血鐮訓練",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranStrKeystone.dds",
     "stats": {
      "keystone_alternate_strength_bonus": 1
     }
@@ -153458,6 +153501,7 @@
     "name_ko": "원의 가르침",
     "name_th": "Circular Teachings",
     "name_zh": "循環教義",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranDexKeystone.dds",
     "stats": {
      "keystone_alternate_dexterity_bonus": 1
     }
@@ -153475,6 +153519,7 @@
     "name_ko": "기사의 신조",
     "name_th": "Knightly Tenets",
     "name_zh": "騎士信條",
+    "icon": "Art/2DArt/SkillIcons/passives/KalguuranIntKeystone.dds",
     "stats": {
      "keystone_alternate_intelligence_bonus": 1
     }
@@ -153492,6 +153537,7 @@
     "name_ko": "육체의 희생",
     "name_th": "Sacrifice of Flesh",
     "name_zh": "血肉獻祭",
+    "icon": "Art/2DArt/SkillIcons/passives/AmanamusDefiance.dds",
     "stats": {
      "keystone_amanamus_defiance": 1
     }
@@ -153509,6 +153555,7 @@
     "name_ko": "충성의 희생",
     "name_th": "Sacrifice of Loyalty",
     "name_zh": "忠誠獻祭",
+    "icon": "Art/2DArt/SkillIcons/passives/KulemaksSovereignty.dds",
     "stats": {
      "keystone_kulemaks_sovereignty": 1
     }
@@ -153526,6 +153573,7 @@
     "name_ko": "정신의 희생",
     "name_th": "Sacrifice of Mind",
     "name_zh": "心靈獻祭",
+    "icon": "Art/2DArt/SkillIcons/passives/KurgasAmbition.dds",
     "stats": {
      "keystone_kurgals_ambition": 1
     }
@@ -153543,6 +153591,7 @@
     "name_ko": "피의 희생",
     "name_th": "Sacrifice of Blood",
     "name_zh": "鮮血獻祭",
+    "icon": "Art/2DArt/SkillIcons/passives/TecrodsBrutality.dds",
     "stats": {
      "keystone_tecrods_brutality": 1
     }
@@ -153560,6 +153609,7 @@
     "name_ko": "시야의 희생",
     "name_th": "Sacrifice of Sight",
     "name_zh": "遠目獻祭",
+    "icon": "Art/2DArt/SkillIcons/passives/UlamansVision.dds",
     "stats": {
      "keystone_ulamans_vision": 1
     }

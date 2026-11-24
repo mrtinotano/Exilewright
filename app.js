@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf } from './items.js';
+import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -790,8 +790,8 @@ function art(p) {
 // icon shows through (measured on those pictures); an ascendancy frame has a backing, so its icon goes on top
 const LINK = {
   normal: [['#5e5846', 11], ['#0c0b05', 7], ['#2c200e', 3]],
-  can: [['#b8a458', 11], ['#483e06', 9], ['#dacc7d', 7], ['#fbf9ef', 3]],
-  active: [['rgba(159,129,74,.3)', 37], ['rgba(159,129,74,.6)', 20], ['#ffd786', 13], ['#5f4509', 9], ['#f2e4b8', 7], ['#ffffff', 3]],
+  can: [['#b8a458', 11], ['#483e06', 9, 1], ['#dacc7d', 7], ['#fbf9ef', 3]],
+  active: [['rgba(159,129,74,.3)', 37], ['rgba(159,129,74,.6)', 20], ['#ffd786', 13], ['#5f4509', 9, 1], ['#f2e4b8', 7], ['#ffffff', 3]],
 };
 // the passives a timeless jewel conquers have that jewel's own links and frames when its tree version has them
 // (AlternateTreeArt.UIArt: Undying Hate's Abyss; images.py: img/tree/alt<version>_*): the links, read the same way off
@@ -800,8 +800,8 @@ const LINK = {
 const LINK_ALT = { 7: {
   art: 'AlternateTreeAbyss',
   normal: [['#419236', 11], ['#040e04', 7], ['#0d200a', 3]],
-  can: [['#bacd70', 13], ['#94d259', 9], ['#386600', 7], ['#88d242', 5], ['#a0d271', 3]],
-  active: [['rgba(124,168,3,.37)', 34], ['rgba(124,168,3,.73)', 20], ['#d4ff6b', 11], ['#4c4e12', 7], ['#b1c367', 5], ['#ecfea8', 3], ['#ffffe9', 1]],
+  can: [['#bacd70', 13], ['#94d259', 9], ['#386600', 7, 1], ['#88d242', 5], ['#a0d271', 3]],
+  active: [['rgba(124,168,3,.37)', 34], ['rgba(124,168,3,.73)', 20], ['#d4ff6b', 11], ['#4c4e12', 7, 1], ['#b1c367', 5, 1], ['#ecfea8', 3], ['#ffffe9', 1]],
 } };
 const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keystone: 'keystone', jewel: 'jewel' };
 const HOLE = { passive: .66, notable: .592, keystone: .587, asc_passive: .651, asc_notable: .584 };
@@ -814,7 +814,7 @@ function dull(im) {   // the picture with less colour, made once
   if (!DULL.of.has(im)) { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.filter = `saturate(${DULL.sat})`; g.drawImage(im, 0, 0); DULL.of.set(im, c); }
   return DULL.of.get(im);
 }
-function drawNode(id, x, y, r, state, tint, pic2, alt) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it; alt: the tree version whose frames it has
+function drawNode(id, x, y, r, state, tint, pic2, alt) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it, or of the attribute picked for it; alt: the tree version whose frames it has
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
   const frame = tint || state === 'on' ? tint || '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
@@ -834,8 +834,10 @@ function drawNode(id, x, y, r, state, tint, pic2, alt) {   // state: on | path |
     if (!n.ascendancy) drawIcon();
     ctx.drawImage(pic, x - w / 2, y - h / 2, w, h);
     if (n.ascendancy) drawIcon();
-    const jw = type === 'jewel' && art(itemImg(B().items?.['jewel:' + id]));   // the jewel socketed in it
-    if (jw) { const k = w * .653 / Math.max(jw.width, jw.height); ctx.drawImage(jw, x - jw.width * k / 2, y - jw.height * k / 2, jw.width * k, jw.height * k); }
+    // the jewel socketed in it: the game's picture of it in a socket, a unique's own or its base's (passive_tree.json
+    // socketed; images.py: img/tree/sock_*), as large as the frame
+    const it = type === 'jewel' && B().items?.['jewel:' + id], so = it && (tree.socketed[it.unique] || tree.socketed[it.base]), jw = so && art('tree/sock_' + so.split('/').pop());
+    if (jw) ctx.drawImage(jw, x - w / 2, y - h / 2, w, h);
     const ring = (rr, wd, c) => { ctx.strokeStyle = c; ctx.lineWidth = wd; ctx.beginPath(); ctx.arc(x, y, rr, 0, 7); ctx.stroke(); };
     if (tint) ring(w / 2, Math.max(1.5, w * .06), tint);   // a weapon set's passive: its colour round the frame
     if (id === hover) ring(w / 2 + 2, 1.5, '#fff6d8');
@@ -987,10 +989,14 @@ function drawTree() {
   const px = v => v / s;   // screen pixels -> world units
   ctx.lineCap = 'round';
   // each kind of link as the game's own (PassiveSkillScreenCurves*Together.dds: its colours across the line, outside
-  // in, one pixel a world unit), never thinner on screen than `least` pixels
+  // in, one pixel a world unit), never thinner on screen than `least` pixels. The dark line inside a lit one (third: 1)
+  // is left out while it is under 0.6 screen pixels a side: the game's filtering blends it away at that size, and
+  // strokes laid one over another speckle the link with it
+  // note: 0.6 is measured here, not the game's: how far the brightness along a link's middle strays, 9-14% with it
+  // and 2-5% without at 0.2 to 0.5 pixels a unit, 2-5% either way above
   const stroke = (p, layers, least) => {
     const k = Math.max(1, px(least) / layers[0][1]);
-    for (const [c, w] of layers) { ctx.strokeStyle = c; ctx.lineWidth = w * k; ctx.stroke(p); }
+    layers.forEach(([c, w, dark], i) => { if (dark && (w - layers[i + 1][1]) * k * s * D < 1.2) return; ctx.strokeStyle = c; ctx.lineWidth = w * k; ctx.stroke(p); });
   };
   stroke(off, LINK.normal, 1.2);
   stroke(path, LINK.can, 1.6);
@@ -1009,7 +1015,7 @@ function drawTree() {
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
     if (x < -r * 2 || y < -r * 2 || x > W + r * 2 || y > H + r * 2) continue;
     if (found.has(id)) drawFound(x, y, r);
-    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), cq.get(id)?.named?.icon, alt.get(id));
+    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), (cq.get(id)?.ks || cq.get(id)?.named)?.icon || tree.attribute_icons[ATTR[(b.attrs || {})[id]]?.[0]], alt.get(id));
   }
   // labels
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
