@@ -32,8 +32,11 @@ for m in mods:
             by_family.setdefault(fams[f]['Id'], []).append(m)
 mod_stats = lambda m: {norm(stats[m[f'Stat{k}']]['Id']): tuple(m[f'Stat{k}Value']) for k in range(1, 9) if m[f'Stat{k}'] is not None}
 
+base_types, skill_gems = load('BaseItemTypes'), load('SkillGems')
+# the skill a modifier grants, by the gem's name: a "Grants Skill" modifier has no stats to be told by
+granted = {mods[x['Mod']]['Id']: base_types[skill_gems[x['Skill']]['BaseItemType']]['Name'] for x in load('ModGrantedSkills')}
 base_implicits = {}
-for b in load('BaseItemTypes'):  # poe2db also lists the base implicit among the unique's mods; the base already gives it
+for b in base_types:  # poe2db also lists the base implicit among the unique's mods; the base already gives it
     base_implicits.setdefault(b['Name'], set()).update(mods[i]['Id'] for i in b['Implicit_Mods'])
 names = {u['name']: u for u in json.load(open(os.path.join(ROOT, 'available', 'uniques.json'), encoding='utf8')) if not u['hidden_in_stash_tab']}
 # and only those GGG's trade site lists for the live patch, with their base (written by available.py)
@@ -67,6 +70,15 @@ for page, name, _ in entries:
             nums = [int(n) for n in re.findall(r'-?\d+', text(re.search(r'<span class="badge bg-primary">(.*?)</span>\s*(?:<span class="badge bg-secondary"|$)', li, re.S).group(1)))]
             want[norm(text(li.split('<span')[0]))] = (nums[0], nums[-1])
         cands = [m for m in by_family.get(text(row.get('Family', '')), []) if mod_stats(m) == want]
+        if not want:
+            # "Grants Skill: Level 17 Icestorm" (its only stat is not shown): the modifier of that family that grants a skill
+            # the page names and is not on this form of the item yet, its Fists of Stone one on that form (uniques.json stonefist)
+            skills = re.findall(r'Grants Skill:\s*Level [^<]*<a[^>]*>([^<]+)</a>', doc)
+            fist = next((i for i, f in enumerate(found) if f['id'].startswith('HandWraps')), None)
+            have = {f['id'] for f in found[fist or 0:]}
+            pool = [m for m in by_family.get(text(row.get('Family', '')), []) if granted.get(m['Id']) in skills and m['Id'] not in have]
+            pool = sorted([m for m in pool if m['Id'].startswith('HandWraps') == (fist is not None)] or pool, key=lambda m: skills.index(granted[m['Id']]))
+            cands = pool[:1] or [m for m in cands if m['Id'] not in granted]
         if len(cands) >= 1 and len({json.dumps(mod_stats(c)) for c in cands}) == 1:  # same stats/values: any of them is the same mod
             m = cands[0]
             if m['Id'] in base_implicits.get(base, ()):

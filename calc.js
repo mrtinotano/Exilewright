@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef } from './items.js';
+import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
 import { enemy, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
@@ -311,7 +311,7 @@ export function character(b, sum) {
   // what the tree gives from one equipped piece's own defences: increased ("from Equipped Helmet / Body Armour"), or
   // another defence per point of it ("+1 to Evasion Rating per 1 Item Armour on Equipped Gloves"), and Armour from the
   // Strength requirements of the boots, gloves and helmet
-  const P = (s, k) => pieceDef(b.items, s, k);
+  const P = (s, k) => pieceDef(wornItems(b, sum), s, k);   // (the gloves as Fists of Stone with Way of the Stonefist)
   const pieceA = P('body', 'armour') * v(sum, 'body_armour_+%') / 100 + P('boots', 'energy_shield') * v(sum, 'armour_+_per_1_boots_energy_shield') + Math.floor(['boots', 'gloves', 'helmet'].reduce((t, s) => t + P(s, 'str'), 0) * v(sum, 'armour_+_from_%_strength_requirements_from_boots_gloves_helmets') / 100);
   const pieceE = P('body', 'evasion') * v(sum, 'body_armour_evasion_rating_+%') / 100 + P('gloves', 'armour') * v(sum, 'evasion_rating_+_per_1_armour_on_gloves') + P('helmet', 'energy_shield') * v(sum, 'evasion_rating_+_per_1_helmet_energy_shield');
   const perEva = v(sum, 'maximum_energy_shield_+1_per_x_body_armour_evasion_rating');
@@ -335,12 +335,12 @@ export function character(b, sum) {
   // accuracy: the increased with the main hand's kind of weapon (one_handed_melee_, bow_, spear_...) and while dual wielding
   const mw = weaponStats(b.items), mwTags = mw ? [...weaponTags(mw), ...(mw.tags || []).includes('ranged') ? [] : ['melee']] : [];
   const accInc = 1 + (inc(sum, 'accuracy_rating_+%', mwTags) + (mw && weaponStats({ weapon: b.items?.offhand }) ? v(sum, 'accuracy_rating_while_dual_wielding_+%') : 0)) / 100;
-  const worn = armourItems(b.items), blockInc = 1 + (v(sum, 'block_chance_+%') + Math.floor(worn.armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours')) / 100;
+  const worn = armourItems(wornItems(b, sum)), blockInc = 1 + (v(sum, 'block_chance_+%') + Math.floor(worn.armour / 100) * v(sum, 'block_chance_+X%_per_100_base_armour_on_armours')) / 100;
   const c = {
     level: lvl, attrs: at, armourEl, deflect,
     // stun / ailment threshold from the gear: the lowest of the helmet's (boots') evasion and armour, a share of the armour
     // items' armour. note: the passives' value (2) is not in their text: taken as "on"
-    stunGear: (sum['stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour'] ? Math.min(P('helmet', 'armour'), P('helmet', 'evasion')) : 0) + armourItems(b.items).armour * v(sum, 'add_%_base_armour_on_equipment_to_stun_threshold') / 100,
+    stunGear: (sum['stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour'] ? Math.min(P('helmet', 'armour'), P('helmet', 'evasion')) : 0) + worn.armour * v(sum, 'add_%_base_armour_on_equipment_to_stun_threshold') / 100,
     ailGear: sum['ailment_threshold_+_from_lowest_of_base_boots_evasion_rating_and_armour'] ? Math.min(P('boots', 'armour'), P('boots', 'evasion')) : 0,
     life: lifeBase == null ? null : Math.round((lifeBase + v(sum, 'base_maximum_life') + Math.floor(at.dex / 4) * v(sum, 'X_life_per_4_dexterity') + fromAttr('life') * (sum.keystone_giants_blood ? .5 : 1)) * pct('maximum_life_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('titan_maximum_life_+%_final') * pct('oracle_maximum_life_+%_final')),   // Titan: more; Oracle: less
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('oracle_maximum_mana_+%_final')),
@@ -534,7 +534,7 @@ export function character(b, sum) {
   // note: a modifier to all elemental resistances is not counted as one to each
   for (const [k, of, to] of [['cold_and_lightning_resist_+_per_equipped_item_with_a_fire_resistance_mod', 'fire', ['cold', 'lightning']], ['fire_and_cold_resist_+_per_equipped_item_with_a_lightning_resistance_mod', 'lightning', ['fire', 'cold']], ['fire_and_lightning_resist_+_per_equipped_item_with_a_cold_resistance_mod', 'cold', ['fire', 'lightning']]]) {
     if (!sum[k]) continue;
-    const n = Object.values(b.items || {}).filter(it => Object.keys(statsOf(it)).some(id => id.includes(of) && /_resistance_%$/.test(id) && !id.includes('maximum'))).length;
+    const n = Object.values(wornItems(b, sum) || {}).filter(it => Object.keys(statsOf(it)).some(id => id.includes(of) && /_resistance_%$/.test(id) && !id.includes('maximum'))).length;
     for (const e of to) { const r = c.res[e]; r.value += n * sum[k]; r.capped = Math.min(r.value, r.max); }
   }
   // uniques' more Global Evasion Rating and Energy Shield
@@ -905,7 +905,7 @@ export function sheet(b, sum) {
     ]],
   ];
   const flask = flaskRecovery(b.items, sum), esFlask = sum.life_recovery_from_flasks_also_recovers_energy_shield ? flask.life : 0;
-  const worn = armourItems(b.items);
+  const worn = armourItems(wornItems(b, sum));
   // Rage: once the build has some (a gem that regenerates it, or more maximum Rage): GameConstants' 30, loss delay and
   // loss per minute, plus maximum Rage and Berserk's Gemling quality (the game's panel, 17/11: 30 + 14 + 2 = 46)
   const R = rageOf(b, sum), rage = R.base && R.base + (R.berserk?.max || 0);
@@ -1209,7 +1209,7 @@ export function skill(g, b, treeGear) {
   // level (pob2.json hollow_palm: Path of Building 2's Misc.lua), 1% more attack speed per 75 evasion and +0.1% critical
   // hit chance per 10 energy shield of the equipped armour
   const HP = SK.hollow_palm, palm = attack && sum.keystone_hollow_palm_technique && !b.items?.weapon && !b.items?.offhand && d.weapons?.includes('Quarterstaves') && cb?.WeaponSpeed && HP?.length;
-  const pw = palm && armourItems(b.items), lv = palm && Math.min(HP.length, Math.max(1, st._level || g.level || 1));
+  const pw = palm && armourItems(wornItems(b, sum)), lv = palm && Math.min(HP.length, Math.max(1, st._level || g.level || 1));
   const w = palm ? { physical: [...HP[lv - 1]], attacks_per_second: 1000 / cb.WeaponSpeed * (1 + Math.floor(pw.evasion / 75) / 100),
     crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100 + Math.floor(pw.energy_shield / 10) * .1, range: cb.MaxAttackDistance }
     : attack ? weaponStats(b.items) || (bare ? { physical: [cb.MinDamage, cb.MaxDamage], attacks_per_second: 1000 / cb.WeaponSpeed, crit: (CHAR.unarmed_base_critical_strike_chance || 0) / 100, range: cb.MaxAttackDistance } : null) : null;
@@ -1976,7 +1976,7 @@ export function snapshot(b, sum) {
   return { life: c.life, es: c.es, mana: c.mana, spirit: c.spirit, armour: c.armour, evasion: c.evasion, block: c.block,
     fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs,
     lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
-    reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves,   // the Equipment card's requirements
+    reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves, fists: !!sum.ascendancy_hand_wraps,   // the Equipment card's requirements
     reqFree: !!sum.global_equipment_no_attribute_requirements, noStrMelee: !!sum.ignore_strength_requirements_of_melee_weapons_and_skills, giant: !!sum.keystone_giants_blood,   // Giant's Blood: triple on martial weapons
     satisfy: [sum.dexterity_can_satisfy_strength_and_intelligence_requirements_of_melee_weapons_and_skills && 'dex', sum.strength_can_satisfy_dexterity_and_intelligence_requirements_of_melee_weapons_and_skills && 'str'].filter(Boolean),   // Jarngreipr: of melee weapons
     dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };

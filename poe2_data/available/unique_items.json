@@ -515,11 +515,20 @@
       4
      ]
     ]
+   },
+   {
+    "id": "UniqueGrantsCastLightningSpellOnHit1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    }
   ],
-  "unmatched": [
-   ""
-  ]
+  "unmatched": []
  },
  {
   "name": "Olrovasara",
@@ -600,7 +609,7 @@
   "base": "Kalguuran Forgehammer",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "RunicTemperingUnique__1",
     "text": "",
     "stats": []
    },
@@ -2200,11 +2209,20 @@
       1
      ]
     ]
+   },
+   {
+    "id": "UniqueGrantsChaosInfusion1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    }
   ],
-  "unmatched": [
-   ""
-  ]
+  "unmatched": []
  },
  {
   "name": "The Blood Thorn",
@@ -3123,9 +3141,15 @@
   "base": "Runemastered Runic Fork",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueTheStarsAnswerSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueOnlySocketRunes1",
@@ -3641,7 +3665,7 @@
     ]
    },
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueGrantsIcestormSkill",
     "text": "",
     "stats": []
    }
@@ -4300,7 +4324,7 @@
   "base": "Artillery Bow",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "GhostfuseArrowUnique_1",
     "text": "",
     "stats": []
    },
@@ -5387,9 +5411,15 @@
   "base": "Nettle Talisman",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueSanguineRevelrySkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent23",
@@ -5463,9 +5493,15 @@
   "base": "Familial Talisman",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueCacklingCompanionSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent17",
@@ -5797,9 +5833,15 @@
   "base": "Flanged Mace",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueHarbingerOfMadnessSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent27",
@@ -5873,9 +5915,15 @@
   "base": "Aberrant Sledge",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueStarbornOnslaughtSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent22",
@@ -6122,9 +6170,15 @@
   "base": "Heartwood Shortbow",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAzmerianSwarmSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalAddedFireDamage9",
@@ -6366,9 +6420,15 @@
   "base": "Pronged Spear",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueShatteringSpiteSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent20",
@@ -6516,9 +6576,15 @@
   "base": "Grand Spear",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueRighteousDescentSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamagePercent21",
@@ -6597,9 +6663,15 @@
   "base": "Ashbark Talisman",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueVesselOfWrathSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalAddedFireDamage7",
@@ -8104,9 +8176,15 @@
   "base": "Exquisite Vest",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueMistRavenCompanionSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedEvasionRatingPercent35",
@@ -10124,6 +10202,39 @@
     ]
    },
    {
+    "id": "UniqueGrantsHeraldOfAsh1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueGrantsHeraldOfIce1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "UniqueGrantsHeraldOfThunder1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
+   },
+   {
     "id": "UniqueHeraldDamage1",
     "text": "Herald Skills deal (50—100)% increased Damage",
     "stats": [
@@ -10135,11 +10246,7 @@
     ]
    }
   ],
-  "unmatched": [
-   "",
-   "",
-   ""
-  ]
+  "unmatched": []
  },
  {
   "name": "Enfolding Dawn",
@@ -10275,9 +10382,15 @@
   "base": "Shaman Mantle",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueSigilOfLifeSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedArmourAndEnergyShield7",
@@ -11636,6 +11749,17 @@
   "base": "Assassin Garb",
   "mods": [
    {
+    "id": "UniqueGrantsWitheringPresence1",
+    "text": "",
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
+   },
+   {
     "id": "UniqueLocalIncreasedEvasionAndEnergyShield3",
     "text": "(150—200)% increased Evasion and Energy Shield",
     "stats": [
@@ -11691,9 +11815,7 @@
     ]
    }
   ],
-  "unmatched": [
-   ""
-  ]
+  "unmatched": []
  },
  {
   "name": "Wings of Caelyn",
@@ -14802,9 +14924,15 @@
   "base": "Hewn Mask",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAncientGiftsSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "BodyArmourImplicitIncreasedLife1",
@@ -15618,7 +15746,7 @@
   "unmatched": [],
   "stonefist": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "HandWrapsUniqueStunDamageIncrease1",
     "text": "",
     "stats": []
    },
@@ -16154,9 +16282,15 @@
   "base": "Moulded Mitts",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAtziriHeraldSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
@@ -16217,9 +16351,15 @@
   "unmatched": [],
   "stonefist": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAtziriHeraldSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
@@ -16321,8 +16461,7 @@
    "UniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
    "UniqueIncreasedLife25",
    "PercentOfPhysicalHitDamageAsAdditionalBloodLoss",
-   "UniqueVaalPact1",
-   "PercentOfPhysicalHitDamageAsAdditionalBloodLoss"
+   "UniqueVaalPact1"
   ]
  },
  {
@@ -16492,9 +16631,7 @@
    "UniqueGainChargesOnMaximumRage1",
    "UniqueLoseRageOnMaximumRage1",
    "UniqueMaximumRage1",
-   "UniqueRageOnAnyHit1",
-   "UniqueLoseRageOnMaximumRage1",
-   "UniqueMaximumRage1"
+   "UniqueRageOnAnyHit1"
   ]
  },
  {
@@ -17387,9 +17524,15 @@
   "base": "Engraved Bracers",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueCrushingFearSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueLocalIncreasedEvasionRatingPercent36",
@@ -17455,9 +17598,15 @@
   "unmatched": [],
   "stonefist": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueCrushingFearSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "HandWrapsUniqueLocalIncreasedPhysicalDamageReductionRatingPercent11",
@@ -19556,7 +19705,6 @@
    "UniqueFreezeImmunityWhenFrozen1",
    "UniqueIgniteImmunityWhenIgnited1",
    "UniqueShockImmunityWhenShocked1",
-   "UniqueReflectCurseToSelf1",
    "UniqueReflectCurseToSelf1"
   ]
  },
@@ -20513,7 +20661,7 @@
   "unmatched": [],
   "stonefist": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "HandWrapsThunderfistUnique__1",
     "text": "",
     "stats": []
    },
@@ -22614,7 +22762,7 @@
     ]
    },
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueGrantsCastOnBlock1",
     "text": "",
     "stats": []
    },
@@ -25134,7 +25282,7 @@
   "base": "Tethering Bands",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAbyssalLivingBomb1",
     "text": "",
     "stats": []
    },
@@ -25213,7 +25361,7 @@
   "unmatched": [],
   "stonefist": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueAbyssalLivingBomb1",
     "text": "",
     "stats": []
    },
@@ -25487,9 +25635,15 @@
   "base": "Glacial Fortress",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueSoaringMidnightSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueStrengthRequirements3",
@@ -28479,7 +28633,7 @@
   "base": "Stellar Amulet",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "ForesightUnique__1",
     "text": "",
     "stats": []
    },
@@ -28882,9 +29036,15 @@
   "base": "Veridical Chain",
   "mods": [
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueMidnightStarSkill1",
     "text": "",
-    "stats": []
+    "stats": [
+     [
+      "dummy_stat_display_nothing",
+      1,
+      1
+     ]
+    ]
    },
    {
     "id": "UniqueCriticalStrikeChance2",
@@ -32141,7 +32301,7 @@
     ]
    },
    {
-    "id": "UniqueGrantsLifeRemnants1",
+    "id": "UniqueGrantsCastOnCharmUseSkill1",
     "text": "",
     "stats": []
    }

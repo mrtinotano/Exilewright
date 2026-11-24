@@ -57,11 +57,26 @@ const boost = (item, tags, vals) => !item.catalyst || !tags?.includes(item.catal
 const modVals = (item, m, vals = m.values) => boost(item, AFFIX[m.id]?.tags, vals);
 // the attributes the base needs, with the item's own "+100 Strength Requirement" (Mjölner, Shyaba)
 const reqOf = item => { const s = rolled(item), b = BASE[item.base]?.req || {}; return Object.fromEntries(['str', 'dex', 'int'].map(k => [k, (b[k] || 0) + (s[`local_${{ str: 'strength', dex: 'dexterity', int: 'intelligence' }[k]}_requirement_+`] || 0)])); };
+// Way of the Stonefist (Martial Artist: sum.ascendancy_hand_wraps): the gloves worn become Fists of Stone (items.json fists:
+// its implicits give it evasion and energy shield per character level) and their explicit modifiers "more powerful related"
+// ones: a unique's as poe2db lists that form of it (unique_items.json stonefist), any other's the game's own HandWraps<id>
+// modifier. wornItems() marks the gloves worn so (fists: the character's level); item.fistVals: the rolls set on that form.
+// note: how a roll carries over is not in the data: a modifier both forms have keeps its roll, a rare's is as far up its
+// range as the one it comes from, a unique's (nothing tells which it comes from) at the top; no quality (the base cannot
+// be modified); what is socketed in the gloves is kept
+export const wornItems = (b, sum) => sum?.ascendancy_hand_wraps && b.items?.gloves ? { ...b.items, gloves: { ...b.items.gloves, fists: b.level || 1 } } : b.items;
+function fistMods(it) {
+  const set = (id, stats, dflt) => ({ id, stats, values: fixVals(stats, it.fistVals?.[id] || dflt) });
+  return UNIQ[it.unique]?.stonefist?.map(m => set(m.id, m.stats, it.mods?.find(x => x.id === m.id)?.values))
+    || (it.mods || []).filter(m => AFFIX[m.id]).map(m => { const st = D.fists.mods[m.id], [, lo, hi] = AFFIX[m.id].stats[0] || [], f = hi === lo || m.values[0] == null ? 1 : (m.values[0] - lo) / (hi - lo);
+      return st ? set('HandWraps' + m.id, st, st.map(([, a, z]) => Math.round(a + (z - a) * f))) : { id: m.id, stats: AFFIX[m.id].stats, values: m.values }; });
+}
 function rolled(item) {   // [{stat: value}] of every mod on the item, with the chosen values
   const base = BASE[item.base], out = {};
   const add = (stats, vals) => stats.forEach(([id], k) => { out[id] = (out[id] || 0) + (vals?.[k] ?? 0); });
-  base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
-  for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
+  if (item.fists) { for (const st of Object.values(D.fists.implicits)) add(st, st.map(x => x[1])); for (const m of fistMods(item)) add(m.stats, m.values); }
+  else base.implicits.forEach((id, i) => add(D.implicits[id], boost(item, D.implicit_tags?.[id], item.implicits?.[i])));
+  if (!item.fists) for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
   return out;
 }
@@ -96,17 +111,19 @@ const radLines = (a, lines, code = lang) => !a.radius ? lines : lines.map(l => (
 // item's own numbers after its local mods: (base + flat) × (1 + increased%) × (1 + quality%), quality on its own as
 // Path of Building 2 has it (Item.lua: armour, evasion, energy shield and a weapon's physical damage)
 function local(item) {
-  const base = BASE[item.base], s = rolled(item), r = {}, q = 1 + (item.quality || 0) / 100;
-  if (base.armour) {
+  const base = BASE[item.base], s = rolled(item), r = {}, F = item.fists, q = F ? 1 : 1 + (item.quality || 0) / 100;
+  // Fists of Stone: evasion and energy shield per character level, of its implicits and what its modifiers add to them
+  const A = F ? { armour: 0, evasion: (s.local_hand_wraps_evasion_rating_per_level || 0) * F, energy_shield: (s.local_hand_wraps_energy_shield_per_level || 0) * F, 'movement_speed_%': 0 } : base.armour;
+  if (A) {
     const inc = (...ids) => 1 + ids.reduce((t, id) => t + (s[`local_${id}_+%`] || 0), 0) / 100, all = 'armour_and_evasion_and_energy_shield';
     // note: Math.round, the game's exact rounding for defences isn't in the data
-    r.armour = Math.round((base.armour.armour + (s.local_base_physical_damage_reduction_rating || 0)) * inc('physical_damage_reduction_rating', 'armour_and_evasion', 'armour_and_energy_shield', all) * q);
-    r.evasion = Math.round((base.armour.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
-    r.energy_shield = Math.round((base.armour.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
-    r.movement = base.armour['movement_speed_%'] / 100;
+    r.armour = Math.round((A.armour + (s.local_base_physical_damage_reduction_rating || 0)) * inc('physical_damage_reduction_rating', 'armour_and_evasion', 'armour_and_energy_shield', all) * q);
+    r.evasion = Math.round((A.evasion + (s.local_base_evasion_rating || 0)) * inc('evasion_rating', 'armour_and_evasion', 'evasion_and_energy_shield', all) * q);
+    r.energy_shield = Math.round((A.energy_shield + (s.local_energy_shield || 0)) * inc('energy_shield', 'armour_and_energy_shield', 'evasion_and_energy_shield', all) * q);
+    r.movement = A['movement_speed_%'] / 100;
     if (base.block) r.block = Math.round((base.block + (s['local_additional_block_chance_%'] || 0)) * (1 + (s['local_block_chance_+%'] || 0) / 100));   // a shield's chance to block (ShieldTypes), with its own modifiers
     // its Strength requirement with its own reduced / no requirements. note: the tree's increased / reduced ones not counted
-    r.str = s.local_no_attribute_requirements ? 0 : Math.floor(reqOf(item).str * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
+    r.str = F || s.local_no_attribute_requirements ? 0 : Math.floor(reqOf(item).str * Math.max(0, 1 + (s['local_attribute_requirements_+%'] || 0) / 100));
   }
   if (base.weapon) {
     const w = base.weapon, phys = (1 + (s['local_physical_damage_+%'] || 0) / 100) * q;
@@ -512,7 +529,7 @@ export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's 
 export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
 // the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
 export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
-  [...BASE[it.base]?.grants || [], ...(it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
+  [...BASE[it.base]?.grants || [], ...(it.fists ? fistMods(it) : it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
 // what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
 // bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand; staffFocus:
 // Instruments of Power, a Focus next to a Staff
@@ -556,9 +573,23 @@ export function wear(b, slot, it, giant, staffFocus) {
 export const baseOf = it => BASE[it?.base];                           // the base of an item (name, class, tags, armour...)
 // a piece as this version of the game's data has it: of a base it knows, less the modifiers it does not (a patch took
 // them away, or the build comes from elsewhere)
-export const known = it => !!BASE[it?.base] && (it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values)), true);
+// ...; and a unique with the skill it grants itself (the data once gave every such unique The Covenant's Life Remnants)
+export function known(it) {
+  if (!BASE[it?.base]) return false;
+  it.mods = (Array.isArray(it.mods) ? it.mods : []).filter(m => AFFIX[m?.id] && Array.isArray(m.values));
+  const G = D.mod_grants || {}, u = UNIQ[it.unique], own = u ? [...u.mods, ...u.mutated || []].map(m => m.id) : [], free = own.filter(id => G[id] && !it.mods.some(m => m.id === id));
+  if (u) it.mods = it.mods.flatMap(m => !G[m.id] || own.includes(m.id) ? [m] : free.length ? [{ id: free[0], values: fixVals(AFFIX[free.shift()].stats) }] : []);
+  return true;
+}
 { const it = { base: D.bases[0].name, mods: [{ id: D.affixes[0].id, values: [1] }, { id: 'gone', values: [1] }, { id: D.affixes[0].id }] };
-  console.assert(known(it) && it.mods.length === 1 && !known({ base: 'gone' }) && !known(null), 'known'); }
+  console.assert(known(it) && it.mods.length === 1 && !known({ base: 'gone' }) && !known(null), 'known');
+  const ice = make('The Whispering Ice'), g = ice?.mods.findIndex(m => D.mod_grants[m.id]);
+  if (ice) { ice.mods[g] = { id: 'UniqueGrantsLifeRemnants1', values: [1] }; console.assert(known(ice) && /Icestorm$/.test(grantedSkills({ weapon: ice }).map(x => x[0])), 'known: the skill a unique grants', ice.mods[g]); }
+  // Way of the Stonefist: Facebreaker as Fists of Stone grants Smash to Smithereens and has 3 evasion and 1 energy shield per level
+  const fb = make('Facebreaker'), W = fb && wornItems({ level: 50, items: { gloves: fb } }, { ascendancy_hand_wraps: 1 }), L = W && local(W.gloves);
+  if (fb) console.assert(!fb.fists && String(grantedSkills(W).map(x => x[0])) === 'Smash to Smithereens' && L.evasion === 150 && L.energy_shield === 50 && !L.armour && !grantedSkills({ gloves: fb }).length && local(fb).armour > 0, 'Fists of Stone', L);
+  const rare = { base: fb?.base, implicits: [], mods: [{ id: 'Strength1', values: [5] }, { id: 'LocalIncreasedEvasionRating7_', values: [1] }] }, R = fb && rolled({ ...rare, fists: 10 });
+  if (fb) console.assert(R['attack_area_of_effect_+%'] === 7 && !R.additional_strength && R.local_hand_wraps_evasion_rating_per_level === 7 && local({ ...rare, fists: 10 }).evasion === 70, 'Fists of Stone: the modifiers of a rare', R); }
 export const slotClasses = slot => [...new Set(D.bases.filter(b => b.slots.includes(slotType(slot))).map(b => b.class))];
 // Which stat each number of a modifier's lines is: the one with that range, as shown (reduced: negated; per second:
 // stored per minute...). -> [{ hash, at: [{ k (index in stats), scale (shown / stored) } | null per number shown] }]
@@ -839,10 +870,16 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   function card(slot, title, it) {
     const base = it && BASE[it.base];
     if (!base) return `<section class="item"><h3>${title}</h3><input data-slot="${slot}" data-act="filter" placeholder="${t('Search base or unique…')}" autocomplete="off"><ul class="picklist" data-slot="${slot}">${pickList(slot)}</ul></section>`;
-    const uniq = it.unique && UNIQ[it.unique], l = local(it), mods = it.mods || [];
+    const uniq = it.unique && UNIQ[it.unique], mods = it.mods || [];
     const count = a => mods.filter(m => AFFIX[m.id].affix === a).length;
     const rarity = rarityOf(it), rest = { ...getBuild().items };
     delete rest[slot];
+    // Way of the Stonefist: the gloves as worn, Fists of Stone: its numbers, and under their own modifiers those of that form
+    // with their rolls (the lines the game has a wording for)
+    const worn = base.class === 'Gloves' && snapOf(rest)?.fists ? { ...it, fists: getBuild().level || 1 } : it, l = local(worn);
+    const said = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).filter(x => !/^[a-z0-9_%+\-]+: /.test(x)).map(esc).join('<br>');
+    const fist = worn.fists ? `<hr><div class="mod"><b>${esc(tn(D.fists))}</b></div>` + [...Object.values(D.fists.implicits).map(st => [said(st, st.map(x => x[1])), '']),
+      ...fistMods(worn).map(m => [said(m.stats, m.values), range(m.stats, m.values, `${slot}.f.${m.id}`)])].filter(([x]) => x).map(([x, r]) => `<div class="mod">${x} ${r}</div>`).join('') : '';
     const families = new Set(mods.map(m => AFFIX[m.id].family)), desecrated = mods.some(m => AFFIX[m.id].desecrated);
     // one desecrated modifier per item (the game: "This item already has a Desecrated Modifier.")
     const options = uniq ? historicFor(uniq) ? D.affixes.filter(a => a.historic && !families.has(a.family)) : [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
@@ -871,7 +908,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
-        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}
+        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}${fist}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${uniq ? '+ ' + t('Desecrated') : t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(without, now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
@@ -1025,6 +1062,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       if (to && i >= 0) { it.mods[i] = { id: to, values: fixVals(AFFIX[to].stats) }; it.mutatedFrom = from; }
     } else if (t.dataset.act === 'add' && t.value) {
       items[slot].mods.push({ id: t.value, values: fixVals(AFFIX[t.value].stats) });
+    } else if (t.dataset.path?.split('.')[1] === 'f') {   // a roll of the gloves' Fists of Stone form
+      const [s, , id] = t.dataset.path.split('.'), it = items[s], m = fistMods(it).find(x => x.id === id), arr = [...m.values];
+      arr[+t.dataset.k] = +t.value; (it.fistVals ||= {})[id] = fixVals(m.stats, arr);
     } else if (t.dataset.path) {
       const [s, kind, i] = t.dataset.path.split('.'), it = items[s];
       const stats = kind === 'i' ? D.implicits[BASE[it.base].implicits[i]] : AFFIX[it.mods[i].id].stats;

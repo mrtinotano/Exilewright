@@ -7,7 +7,7 @@ export { canSupport, GEM };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
-import { grantedSkills, SLOTS } from './items.js';
+import { grantedSkills, wornItems, SLOTS } from './items.js';
 const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const GEMS = await load('gems.json');
 export const SUPPORTS = GEMS.filter(g => g.kind === 'support');
@@ -128,7 +128,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
     }).join('');
     const per = SK.support_capacity_per_attribute;
     // what the gear gives that the build does not have yet (the build's own gems are what is worked out)
-    const give = grantedSkills(b.items).filter(([n]) => GEM[n] && !b.gems.some(g => g.name === n)).map(([n, slot, level]) =>
+    const give = grantedSkills(wornItems(b, getSum())).filter(([n]) => GEM[n] && !b.gems.some(g => g.name === n)).map(([n, slot, level]) =>
       `<p class="note">${t('Your {0} grants {1}: it is not in the build.', t(SLOTS[slot] || 'Jewel'), esc(tn(GEM[n])))} <button data-grant="${esc(n)}" data-level="${level || ''}">${t('Add')}</button></p>`).join('');
     const cur = b.gems[sel] && GEM[b.gems[sel].name]?.kind !== 'support' ? b.gems[sel] : null;
     side.innerHTML = cur ? details(cur, b, sum, geo) : `<p class="note">${t('Select a skill to see all its stats.')}</p>`;

@@ -74778,6 +74778,3142 @@
   "HandWrapsUniqueStunDamageIncrease1": "Smash to Smithereens",
   "UniqueAbyssalLivingBomb1": "Untether"
  },
+ "fists": {
+  "name": "Fists of Stone",
+  "name_es": "Puños de roca",
+  "name_pt": "Punhos de Pedra",
+  "name_fr": "Poings de pierre",
+  "name_de": "Fäuste aus Stein",
+  "name_ru": "Каменные кулаки",
+  "name_ja": "石の拳",
+  "name_ko": "돌 주먹",
+  "name_th": "Fists of Stone",
+  "name_zh": "磐石之拳",
+  "implicits": {
+   "HandWrapsImplicitLocalCopyPlayerLevelValue": [
+    [
+     "local_hand_wraps_player_level_to_use",
+     0,
+     0
+    ]
+   ],
+   "HandWrapsImplicitLocalBaseEvasionAndEnergyShieldPerLevel": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ],
+    [
+     "local_level_requirement_override",
+     1,
+     1
+    ]
+   ]
+  },
+  "mods": {
+   "Strength1": [
+    [
+     "attack_area_of_effect_+%",
+     7,
+     10
+    ]
+   ],
+   "Strength2": [
+    [
+     "attack_area_of_effect_+%",
+     11,
+     13
+    ]
+   ],
+   "Strength3": [
+    [
+     "attack_area_of_effect_+%",
+     14,
+     16
+    ]
+   ],
+   "Strength4": [
+    [
+     "attack_area_of_effect_+%",
+     17,
+     19
+    ]
+   ],
+   "Strength5": [
+    [
+     "attack_area_of_effect_+%",
+     20,
+     22
+    ]
+   ],
+   "Strength6": [
+    [
+     "attack_area_of_effect_+%",
+     23,
+     25
+    ]
+   ],
+   "Strength7": [
+    [
+     "attack_area_of_effect_+%",
+     26,
+     28
+    ]
+   ],
+   "Strength8": [
+    [
+     "attack_area_of_effect_+%",
+     29,
+     32
+    ]
+   ],
+   "Dexterity1": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     15,
+     18
+    ]
+   ],
+   "Dexterity2": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     19,
+     22
+    ]
+   ],
+   "Dexterity3": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     23,
+     26
+    ]
+   ],
+   "Dexterity4": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     27,
+     30
+    ]
+   ],
+   "Dexterity5": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     31,
+     35
+    ]
+   ],
+   "Dexterity6": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     36,
+     40
+    ]
+   ],
+   "Dexterity7": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     41,
+     45
+    ]
+   ],
+   "Dexterity8": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     46,
+     50
+    ]
+   ],
+   "Dexterity9": [
+    [
+     "chance_to_fire_1_additional_projectile_%_with_rollover",
+     51,
+     60
+    ]
+   ],
+   "Intelligence1": [
+    [
+     "base_cooldown_speed_+%",
+     5,
+     8
+    ]
+   ],
+   "Intelligence2": [
+    [
+     "base_cooldown_speed_+%",
+     9,
+     12
+    ]
+   ],
+   "Intelligence3": [
+    [
+     "base_cooldown_speed_+%",
+     13,
+     16
+    ]
+   ],
+   "Intelligence4": [
+    [
+     "base_cooldown_speed_+%",
+     17,
+     20
+    ]
+   ],
+   "Intelligence5": [
+    [
+     "base_cooldown_speed_+%",
+     21,
+     24
+    ]
+   ],
+   "Intelligence6": [
+    [
+     "base_cooldown_speed_+%",
+     25,
+     28
+    ]
+   ],
+   "Intelligence7": [
+    [
+     "base_cooldown_speed_+%",
+     29,
+     32
+    ]
+   ],
+   "Intelligence8": [
+    [
+     "base_cooldown_speed_+%",
+     33,
+     36
+    ]
+   ],
+   "FireResist1": [
+    [
+     "base_fire_damage_resistance_%",
+     11,
+     15
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "FireResist2": [
+    [
+     "base_fire_damage_resistance_%",
+     16,
+     20
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "FireResist3": [
+    [
+     "base_fire_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "FireResist4": [
+    [
+     "base_fire_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "FireResist5": [
+    [
+     "base_fire_damage_resistance_%",
+     26,
+     30
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "FireResist6": [
+    [
+     "base_fire_damage_resistance_%",
+     31,
+     35
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "FireResist7": [
+    [
+     "base_fire_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "FireResist8": [
+    [
+     "base_fire_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     3,
+     3
+    ]
+   ],
+   "ColdResist1": [
+    [
+     "base_cold_damage_resistance_%",
+     11,
+     15
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ColdResist2": [
+    [
+     "base_cold_damage_resistance_%",
+     16,
+     20
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ColdResist3": [
+    [
+     "base_cold_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ColdResist4": [
+    [
+     "base_cold_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "ColdResist5": [
+    [
+     "base_cold_damage_resistance_%",
+     26,
+     30
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "ColdResist6": [
+    [
+     "base_cold_damage_resistance_%",
+     31,
+     35
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "ColdResist7": [
+    [
+     "base_cold_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "ColdResist8": [
+    [
+     "base_cold_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     3,
+     3
+    ]
+   ],
+   "LightningResist1": [
+    [
+     "base_lightning_damage_resistance_%",
+     11,
+     15
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "LightningResist2": [
+    [
+     "base_lightning_damage_resistance_%",
+     16,
+     20
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "LightningResist3": [
+    [
+     "base_lightning_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "LightningResist4": [
+    [
+     "base_lightning_damage_resistance_%",
+     21,
+     25
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "LightningResist5": [
+    [
+     "base_lightning_damage_resistance_%",
+     26,
+     30
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "LightningResist6": [
+    [
+     "base_lightning_damage_resistance_%",
+     31,
+     35
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "LightningResist7": [
+    [
+     "base_lightning_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "LightningResist8": [
+    [
+     "base_lightning_damage_resistance_%",
+     36,
+     40
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     3,
+     3
+    ]
+   ],
+   "ChaosResist1": [
+    [
+     "base_chaos_damage_resistance_%",
+     6,
+     9
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ChaosResist2": [
+    [
+     "base_chaos_damage_resistance_%",
+     10,
+     13
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ChaosResist3": [
+    [
+     "base_chaos_damage_resistance_%",
+     14,
+     17
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ChaosResist4": [
+    [
+     "base_chaos_damage_resistance_%",
+     18,
+     21
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ChaosResist5": [
+    [
+     "base_chaos_damage_resistance_%",
+     22,
+     25
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     1,
+     1
+    ]
+   ],
+   "ChaosResist6": [
+    [
+     "base_chaos_damage_resistance_%",
+     22,
+     25
+    ],
+    [
+     "base_maximum_chaos_damage_resistance_%",
+     2,
+     2
+    ]
+   ],
+   "IncreasedLife1": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -5,
+     -5
+    ]
+   ],
+   "IncreasedLife2": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -6,
+     -6
+    ]
+   ],
+   "IncreasedLife3": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -7,
+     -7
+    ]
+   ],
+   "IncreasedLife4": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -8,
+     -8
+    ]
+   ],
+   "IncreasedLife5": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -9,
+     -9
+    ]
+   ],
+   "IncreasedLife6": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -10,
+     -10
+    ]
+   ],
+   "IncreasedLife7": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -11,
+     -11
+    ]
+   ],
+   "IncreasedLife8": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -12,
+     -12
+    ]
+   ],
+   "IncreasedLife9": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -13,
+     -13
+    ]
+   ],
+   "IncreasedLife10": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -14,
+     -14
+    ]
+   ],
+   "IncreasedLife11": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -15,
+     -15
+    ]
+   ],
+   "IncreasedLife12": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -16,
+     -16
+    ]
+   ],
+   "IncreasedLife13": [
+    [
+     "hand_wraps_damage_taken_+%_final_on_low_life",
+     -17,
+     -17
+    ]
+   ],
+   "IncreasedMana1": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     10,
+     11
+    ]
+   ],
+   "IncreasedMana2": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     12,
+     13
+    ]
+   ],
+   "IncreasedMana3": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     14,
+     15
+    ]
+   ],
+   "IncreasedMana4": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     16,
+     17
+    ]
+   ],
+   "IncreasedMana5": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     18,
+     19
+    ]
+   ],
+   "IncreasedMana6": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     20,
+     21
+    ]
+   ],
+   "IncreasedMana7": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     22,
+     23
+    ]
+   ],
+   "IncreasedMana8": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     24,
+     25
+    ]
+   ],
+   "IncreasedMana9": [
+    [
+     "hand_wraps_attack_damage_+%_final_on_low_mana",
+     26,
+     27
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating2": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating5": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating6": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRating7__": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating2": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating5": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating6": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEvasionRating7_": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield2": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield5": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield6": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedEnergyShield7": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEvasionRating1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEvasionRating2": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEvasionRating3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEvasionRating4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEnergyShield1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEnergyShield2_": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEnergyShield3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseArmourAndEnergyShield4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseEvasionRatingAndEnergyShield1": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     1,
+     1
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseEvasionRatingAndEnergyShield2": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     2,
+     2
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseEvasionRatingAndEnergyShield3": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     3,
+     3
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalBaseEvasionRatingAndEnergyShield4": [
+    [
+     "local_hand_wraps_evasion_rating_per_level",
+     4,
+     4
+    ],
+    [
+     "local_hand_wraps_energy_shield_per_level",
+     1,
+     1
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedPhysicalDamageReductionRatingPercent7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedEvasionRatingPercent7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedEnergyShieldPercent7_": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasion7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShield7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield5_": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShield7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedArmourAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedArmourAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedArmourAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedArmourAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedArmourAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedArmourAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedEvasionAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedEnergyShieldAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedArmourAndEnergyShieldAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife1": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     3,
+     3
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife2": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     4,
+     4
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife3": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     5,
+     5
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife4": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     6,
+     6
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife5": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     7,
+     7
+    ]
+   ],
+   "LocalIncreasedEvasionAndEnergyShieldAndLife6": [
+    [
+     "damage_taken_goes_to_life_mana_es_over_4_seconds_%",
+     8,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield1": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     7,
+     8
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield2": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     9,
+     10
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield3": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     11,
+     12
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield4": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     13,
+     14
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield5": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     15,
+     16
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield6": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     17,
+     18
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield7": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     19,
+     20
+    ]
+   ],
+   "LocalIncreasedArmourAndEvasionAndEnergyShield8": [
+    [
+     "hand_wraps_evasion_rating_and_energy_shield_+%_final",
+     21,
+     22
+    ]
+   ],
+   "ReducedLocalAttributeRequirements1": [
+    [
+     "additional_all_attributes",
+     5,
+     10
+    ]
+   ],
+   "ReducedLocalAttributeRequirements2": [
+    [
+     "additional_all_attributes",
+     11,
+     15
+    ]
+   ],
+   "ReducedLocalAttributeRequirements3": [
+    [
+     "additional_all_attributes",
+     16,
+     20
+    ]
+   ],
+   "ReducedLocalAttributeRequirements4": [
+    [
+     "additional_all_attributes",
+     21,
+     25
+    ]
+   ],
+   "ReducedLocalAttributeRequirements5": [
+    [
+     "additional_all_attributes",
+     26,
+     30
+    ]
+   ],
+   "AddedPhysicalDamage1": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     10,
+     10
+    ]
+   ],
+   "AddedPhysicalDamage2": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     11,
+     11
+    ]
+   ],
+   "AddedPhysicalDamage3": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     12,
+     12
+    ]
+   ],
+   "AddedPhysicalDamage4": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     13,
+     13
+    ]
+   ],
+   "AddedPhysicalDamage5": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     14,
+     14
+    ]
+   ],
+   "AddedPhysicalDamage6": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     15,
+     16
+    ]
+   ],
+   "AddedPhysicalDamage7": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     17,
+     18
+    ]
+   ],
+   "AddedPhysicalDamage8": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     19,
+     20
+    ]
+   ],
+   "AddedPhysicalDamage9": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_physical_with_attacks",
+     21,
+     23
+    ]
+   ],
+   "AddedFireDamage1": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     10,
+     10
+    ]
+   ],
+   "AddedFireDamage2": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     11,
+     11
+    ]
+   ],
+   "AddedFireDamage3": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     12,
+     12
+    ]
+   ],
+   "AddedFireDamage4": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     13,
+     13
+    ]
+   ],
+   "AddedFireDamage5": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     14,
+     14
+    ]
+   ],
+   "AddedFireDamage6": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     15,
+     16
+    ]
+   ],
+   "AddedFireDamage7": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     17,
+     18
+    ]
+   ],
+   "AddedFireDamage8": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     19,
+     20
+    ]
+   ],
+   "AddedFireDamage9": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_fire_with_attacks",
+     21,
+     23
+    ]
+   ],
+   "AddedColdDamage1": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     10,
+     10
+    ]
+   ],
+   "AddedColdDamage2": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     11,
+     11
+    ]
+   ],
+   "AddedColdDamage3": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     12,
+     12
+    ]
+   ],
+   "AddedColdDamage4": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     13,
+     13
+    ]
+   ],
+   "AddedColdDamage5": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     14,
+     14
+    ]
+   ],
+   "AddedColdDamage6": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     15,
+     16
+    ]
+   ],
+   "AddedColdDamage7": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     17,
+     18
+    ]
+   ],
+   "AddedColdDamage8": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     19,
+     20
+    ]
+   ],
+   "AddedColdDamage9": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_cold_with_attacks",
+     21,
+     23
+    ]
+   ],
+   "AddedLightningDamage1": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     10,
+     10
+    ]
+   ],
+   "AddedLightningDamage2": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     11,
+     11
+    ]
+   ],
+   "AddedLightningDamage3": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     12,
+     12
+    ]
+   ],
+   "AddedLightningDamage4": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     13,
+     13
+    ]
+   ],
+   "AddedLightningDamage5": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     14,
+     14
+    ]
+   ],
+   "AddedLightningDamage6": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     15,
+     16
+    ]
+   ],
+   "AddedLightningDamage7": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     17,
+     18
+    ]
+   ],
+   "AddedLightningDamage8": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     19,
+     20
+    ]
+   ],
+   "AddedLightningDamage9": [
+    [
+     "non_skill_base_all_damage_%_to_gain_as_lightning_with_attacks",
+     21,
+     23
+    ]
+   ],
+   "GlobalMeleeSkillGemLevel1": [
+    [
+     "all_skill_gem_quality_+",
+     10,
+     12
+    ]
+   ],
+   "GlobalMeleeSkillGemLevel2": [
+    [
+     "all_skill_gem_quality_+",
+     10,
+     12
+    ],
+    [
+     "melee_skill_gem_level_+",
+     1,
+     1
+    ]
+   ],
+   "LifeLeech1": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     800,
+     890
+    ],
+    [
+     "base_life_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "LifeLeech2": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     900,
+     1090
+    ],
+    [
+     "base_life_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "LifeLeech3": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     1100,
+     1190
+    ],
+    [
+     "base_life_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "LifeLeech4": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     1200,
+     1390
+    ],
+    [
+     "base_life_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "LifeLeech5": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     1400,
+     1500
+    ],
+    [
+     "base_life_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "ManaLeech1": [
+    [
+     "base_mana_leech_from_physical_attack_damage_permyriad",
+     600,
+     790
+    ],
+    [
+     "base_mana_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "ManaLeech2": [
+    [
+     "base_mana_leech_from_physical_attack_damage_permyriad",
+     800,
+     890
+    ],
+    [
+     "base_mana_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "ManaLeech3": [
+    [
+     "base_mana_leech_from_physical_attack_damage_permyriad",
+     900,
+     1090
+    ],
+    [
+     "base_mana_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "ManaLeech4": [
+    [
+     "base_mana_leech_from_physical_attack_damage_permyriad",
+     1100,
+     1190
+    ],
+    [
+     "base_mana_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "ManaLeech5": [
+    [
+     "base_mana_leech_from_physical_attack_damage_permyriad",
+     1200,
+     1300
+    ],
+    [
+     "base_mana_leech_rate_+%",
+     -25,
+     -20
+    ]
+   ],
+   "LifeGainedFromEnemyDeath1": [
+    [
+     "recover_%_maximum_life_on_kill",
+     1,
+     1
+    ]
+   ],
+   "LifeGainedFromEnemyDeath2": [
+    [
+     "recover_%_maximum_life_on_kill",
+     1,
+     1
+    ]
+   ],
+   "LifeGainedFromEnemyDeath3": [
+    [
+     "recover_%_maximum_life_on_kill",
+     1,
+     1
+    ]
+   ],
+   "LifeGainedFromEnemyDeath4": [
+    [
+     "recover_%_maximum_life_on_kill",
+     2,
+     2
+    ]
+   ],
+   "LifeGainedFromEnemyDeath5": [
+    [
+     "recover_%_maximum_life_on_kill",
+     2,
+     2
+    ]
+   ],
+   "LifeGainedFromEnemyDeath6": [
+    [
+     "recover_%_maximum_life_on_kill",
+     2,
+     2
+    ]
+   ],
+   "LifeGainedFromEnemyDeath7": [
+    [
+     "recover_%_maximum_life_on_kill",
+     2,
+     2
+    ]
+   ],
+   "LifeGainedFromEnemyDeath8": [
+    [
+     "recover_%_maximum_life_on_kill",
+     3,
+     3
+    ]
+   ],
+   "ManaGainedFromEnemyDeath1": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     1,
+     1
+    ]
+   ],
+   "ManaGainedFromEnemyDeath2": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     1,
+     1
+    ]
+   ],
+   "ManaGainedFromEnemyDeath3": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     1,
+     1
+    ]
+   ],
+   "ManaGainedFromEnemyDeath4": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     2,
+     2
+    ]
+   ],
+   "ManaGainedFromEnemyDeath5": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     2,
+     2
+    ]
+   ],
+   "ManaGainedFromEnemyDeath6": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     2,
+     2
+    ]
+   ],
+   "ManaGainedFromEnemyDeath7": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     2,
+     2
+    ]
+   ],
+   "ManaGainedFromEnemyDeath8": [
+    [
+     "recover_%_maximum_mana_on_kill",
+     3,
+     3
+    ]
+   ],
+   "LifeGainPerTarget1": [
+    [
+     "life_gained_on_attack_hit_if_crit_recently",
+     4,
+     6
+    ]
+   ],
+   "LifeGainPerTarget2": [
+    [
+     "life_gained_on_attack_hit_if_crit_recently",
+     7,
+     9
+    ]
+   ],
+   "LifeGainPerTarget3": [
+    [
+     "life_gained_on_attack_hit_if_crit_recently",
+     10,
+     12
+    ]
+   ],
+   "LifeGainPerTarget4": [
+    [
+     "life_gained_on_attack_hit_if_crit_recently",
+     13,
+     15
+    ]
+   ],
+   "IncreasedAttackSpeed1": [
+    [
+     "base_onlsaught_on_hit_%_chance",
+     8,
+     12
+    ]
+   ],
+   "IncreasedAttackSpeed2": [
+    [
+     "base_onlsaught_on_hit_%_chance",
+     14,
+     18
+    ]
+   ],
+   "IncreasedAttackSpeed3": [
+    [
+     "base_onlsaught_on_hit_%_chance",
+     20,
+     24
+    ]
+   ],
+   "IncreasedAttackSpeed4": [
+    [
+     "base_onlsaught_on_hit_%_chance",
+     26,
+     30
+    ]
+   ],
+   "IncreasedAccuracy1": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     12,
+     14
+    ]
+   ],
+   "IncreasedAccuracy2": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     15,
+     17
+    ]
+   ],
+   "IncreasedAccuracy3": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     18,
+     20
+    ]
+   ],
+   "IncreasedAccuracy4": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     21,
+     23
+    ]
+   ],
+   "IncreasedAccuracy5": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     24,
+     26
+    ]
+   ],
+   "IncreasedAccuracy6": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     27,
+     29
+    ]
+   ],
+   "IncreasedAccuracy7": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     30,
+     32
+    ]
+   ],
+   "IncreasedAccuracy8": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     33,
+     35
+    ]
+   ],
+   "IncreasedAccuracy9": [
+    [
+     "attacks_chance_to_blind_on_hit_%",
+     36,
+     38
+    ]
+   ],
+   "CriticalMultiplier1": [
+    [
+     "additional_base_critical_strike_chance",
+     50,
+     100
+    ]
+   ],
+   "CriticalMultiplier2": [
+    [
+     "additional_base_critical_strike_chance",
+     110,
+     150
+    ]
+   ],
+   "CriticalMultiplier3": [
+    [
+     "additional_base_critical_strike_chance",
+     160,
+     200
+    ]
+   ],
+   "CriticalMultiplier4": [
+    [
+     "additional_base_critical_strike_chance",
+     210,
+     250
+    ]
+   ],
+   "CriticalMultiplier5": [
+    [
+     "additional_base_critical_strike_chance",
+     250,
+     300
+    ]
+   ],
+   "ItemFoundRarityIncrease1": [
+    [
+     "gold_+%_from_enemies",
+     15,
+     20
+    ]
+   ],
+   "ItemFoundRarityIncrease2": [
+    [
+     "gold_+%_from_enemies",
+     21,
+     25
+    ]
+   ],
+   "ItemFoundRarityIncrease3": [
+    [
+     "gold_+%_from_enemies",
+     26,
+     30
+    ]
+   ],
+   "EnergyShieldRechargeRate1": [
+    [
+     "energy_shield_delay_-%",
+     26,
+     30
+    ]
+   ],
+   "EnergyShieldRechargeRate2": [
+    [
+     "energy_shield_delay_-%",
+     31,
+     35
+    ]
+   ],
+   "EnergyShieldRechargeRate3": [
+    [
+     "energy_shield_delay_-%",
+     36,
+     40
+    ]
+   ],
+   "EnergyShieldRechargeRate4": [
+    [
+     "energy_shield_delay_-%",
+     41,
+     45
+    ]
+   ],
+   "EnergyShieldRechargeRate5______": [
+    [
+     "energy_shield_delay_-%",
+     46,
+     50
+    ]
+   ],
+   "EnergyShieldRechargeRate6": [
+    [
+     "energy_shield_delay_-%",
+     51,
+     55
+    ]
+   ],
+   "ArmourAppliesToElementalDamage1": [
+    [
+     "base_resist_all_elements_%",
+     10,
+     12
+    ]
+   ],
+   "ArmourAppliesToElementalDamage2": [
+    [
+     "base_resist_all_elements_%",
+     13,
+     15
+    ]
+   ],
+   "ArmourAppliesToElementalDamage3": [
+    [
+     "base_resist_all_elements_%",
+     16,
+     18
+    ]
+   ],
+   "ArmourAppliesToElementalDamage4": [
+    [
+     "base_resist_all_elements_%",
+     19,
+     21
+    ]
+   ],
+   "ArmourAppliesToElementalDamage5": [
+    [
+     "base_resist_all_elements_%",
+     22,
+     24
+    ]
+   ],
+   "EvasionGrantsDeflection1": [
+    [
+     "base_damage_%_deflected",
+     3,
+     3
+    ]
+   ],
+   "EvasionGrantsDeflection2": [
+    [
+     "base_damage_%_deflected",
+     4,
+     4
+    ]
+   ],
+   "EvasionGrantsDeflection3": [
+    [
+     "base_damage_%_deflected",
+     5,
+     5
+    ]
+   ],
+   "EvasionGrantsDeflection4": [
+    [
+     "base_damage_%_deflected",
+     6,
+     6
+    ]
+   ],
+   "EvasionGrantsDeflection5": [
+    [
+     "base_damage_%_deflected",
+     7,
+     7
+    ]
+   ],
+   "EssenceLocalRuneAndSoulCoreEffect1": [
+    [
+     "generate_x_charges_for_life_flasks_per_minute",
+     8,
+     16
+    ],
+    [
+     "generate_x_charges_for_mana_flasks_per_minute",
+     8,
+     16
+    ]
+   ],
+   "EssenceLightningRecoupLife1": [
+    [
+     "deflected_hit_damage_taken_%_recouped_as_life",
+     12,
+     23
+    ]
+   ],
+   "EssenceGoldDropped1": [
+    [
+     "generate_x_charges_for_charms_per_minute",
+     8,
+     16
+    ]
+   ],
+   "AbyssModArmourJewelleryUlamanSuffixLightningChaosResistance": [
+    [
+     "base_chaos_damage_resistance_%",
+     13,
+     17
+    ],
+    [
+     "base_maximum_lightning_damage_resistance_%",
+     2,
+     3
+    ]
+   ],
+   "AbyssModArmourJewelleryUlamanSuffixStrengthAndDexterity": [
+    [
+     "strength_and_dexterity_+%",
+     7,
+     9
+    ]
+   ],
+   "AbyssModArmourJewelleryAmanamuSuffixFireChaosResistance": [
+    [
+     "base_chaos_damage_resistance_%",
+     13,
+     17
+    ],
+    [
+     "base_maximum_fire_damage_resistance_%",
+     2,
+     3
+    ]
+   ],
+   "AbyssModArmourJewelleryAmanamuSuffixStrengthAndIntelligence": [
+    [
+     "strength_and_intelligence_+%",
+     7,
+     9
+    ]
+   ],
+   "AbyssModArmourJewelleryKurgalSuffixColdChaosResistance": [
+    [
+     "base_chaos_damage_resistance_%",
+     13,
+     17
+    ],
+    [
+     "base_maximum_cold_damage_resistance_%",
+     2,
+     3
+    ]
+   ],
+   "AbyssModArmourJewelleryKurgalSuffixDexterityAndIntelligence": [
+    [
+     "dexterity_and_intelligence_+%",
+     7,
+     9
+    ]
+   ],
+   "AbyssModFourCatKurgalSuffixManaCostEfficiency": [
+    [
+     "base_reservation_efficiency_+%",
+     6,
+     10
+    ]
+   ],
+   "AbyssModGlovesUlamanSuffixAilmentMagnitude": [
+    [
+     "critical_hit_damaging_ailment_effect_+%",
+     20,
+     35
+    ]
+   ],
+   "AbyssModGlovesUlamanSuffixPoisonChance": [
+    [
+     "base_poison_chance_is_bleed_chance_instead",
+     1,
+     1
+    ]
+   ],
+   "AbyssModGlovesUlamanSuffixBleedChance": [
+    [
+     "base_bleed_chance_is_poison_chance_instead",
+     1,
+     1
+    ]
+   ],
+   "AbyssModGlovesUlamanSuffixIncisionChance": [
+    [
+     "aggravate_bleeding_older_than_ms_on_hit",
+     3000,
+     4000
+    ]
+   ],
+   "AbyssModGlovesUlamanSuffixFrenzyChargeConsumedSkillSpeed": [
+    [
+     "attack_speed_+%_if_not_been_hit_recently",
+     13,
+     17
+    ]
+   ],
+   "AbyssModGlovesAmanamuSuffixCurseAreaOfEffect": [
+    [
+     "mark_use_speed_+%",
+     15,
+     25
+    ]
+   ],
+   "AbyssModGlovesAmanamuSuffixDazeChance": [
+    [
+     "non_skill_base_physical_damage_%_to_gain_as_cold_vs_dazed_enemies",
+     11,
+     15
+    ]
+   ],
+   "AbyssModGlovesAmanamuSuffixPercentOfLifeLeechInstant": [
+    [
+     "life_leech_can_overcap_life",
+     1,
+     1
+    ]
+   ],
+   "AbyssModGlovesAmanamuSuffixImmobilisationBuildUp": [
+    [
+     "damage_+%_vs_immobilised_enemies",
+     26,
+     35
+    ]
+   ],
+   "AbyssModGlovesKurgalSuffixArcaneSurgeOnCriticalHit": [
+    [
+     "add_power_charge_on_critical_strike_%",
+     5,
+     10
+    ]
+   ],
+   "AbyssModGlovesKurgalSuffixCastSpeedWhileOnFullMana": [
+    [
+     "attack_speed_+%_when_on_full_life",
+     17,
+     23
+    ]
+   ],
+   "AlloyRemnantPickupRange1": [
+    [
+     "created_remnants_have_%_chance_to_duplicate_pick_up_results",
+     17,
+     23
+    ]
+   ],
+   "AlloyCastSpeedGloves1": [
+    [
+     "chance_to_gain_power_charge_on_stun_%",
+     10,
+     30
+    ]
+   ],
+   "AlloyDamagingAilmentDuration1": [
+    [
+     "critical_hit_damaging_ailment_effect_+%",
+     15,
+     25
+    ]
+   ],
+   "AlloyElementalPenetration1": [
+    [
+     "base_resist_all_elements_%",
+     20,
+     30
+    ]
+   ],
+   "AlloyAttackAreaOfEffect1": [
+    [
+     "attack_area_of_effect_+%_per_10_int",
+     1,
+     1
+    ]
+   ],
+   "DecayInfluenceIgniteMagnitude1": [
+    [
+     "enemies_explode_on_kill",
+     1,
+     1
+    ],
+    [
+     "explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%",
+     10,
+     30
+    ]
+   ],
+   "DecayInfluenceIgniteMagnitude2": [
+    [
+     "enemies_explode_on_kill",
+     1,
+     1
+    ],
+    [
+     "explode_burning_enemies_for_10%_life_as_fire_on_kill_chance_%",
+     31,
+     50
+    ]
+   ],
+   "DecayInfluenceBleedMagnitude1": [
+    [
+     "explode_enemies_for_10%_life_as_physical_on_kill_chance_%",
+     10,
+     30
+    ]
+   ],
+   "DecayInfluenceBleedMagnitude2": [
+    [
+     "explode_enemies_for_10%_life_as_physical_on_kill_chance_%",
+     31,
+     50
+    ]
+   ],
+   "DecayInfluencePoisonMagnitude1": [
+    [
+     "explode_enemies_for_25%_life_as_chaos_on_kill_chance_%",
+     9,
+     14
+    ]
+   ],
+   "DecayInfluencePoisonMagnitude2": [
+    [
+     "explode_enemies_for_25%_life_as_chaos_on_kill_chance_%",
+     15,
+     20
+    ]
+   ],
+   "DecayInfluenceAilmentMagnitude1": [
+    [
+     "ailment_threshold_+",
+     10,
+     25
+    ],
+    [
+     "ailment_threshold_+%",
+     10,
+     20
+    ]
+   ],
+   "DecayInfluenceAilmentMagnitude2": [
+    [
+     "ailment_threshold_+",
+     26,
+     40
+    ],
+    [
+     "ailment_threshold_+%",
+     21,
+     35
+    ]
+   ],
+   "DecayInfluenceFasterDamagingAilments1": [
+    [
+     "elemental_ailment_types_apply_damage_taken_+%",
+     5,
+     10
+    ]
+   ],
+   "DecayInfluenceFasterDamagingAilments2": [
+    [
+     "elemental_ailment_types_apply_damage_taken_+%",
+     11,
+     15
+    ]
+   ],
+   "DecayInfluenceAilmentDuration1": [
+    [
+     "base_all_ailment_duration_+%",
+     10,
+     22
+    ]
+   ],
+   "DecayInfluenceAilmentDuration2": [
+    [
+     "base_all_ailment_duration_+%",
+     23,
+     37
+    ]
+   ],
+   "DecayInfluenceFasterLeech1": [
+    [
+     "damage_+%_while_leeching",
+     15,
+     35
+    ]
+   ],
+   "DecayInfluenceSlowerLeech1": [
+    [
+     "evasion_rating_+%_while_leeching",
+     15,
+     35
+    ]
+   ],
+   "DecayInfluenceLeechAmount1": [
+    [
+     "base_life_leech_from_physical_attack_damage_permyriad",
+     700,
+     1200
+    ]
+   ],
+   "DecayInfluenceWitherMagnitude1": [
+    [
+     "reduce_enemy_chaos_resistance_with_weapons_%",
+     5,
+     9
+    ]
+   ],
+   "DecayInfluenceWitherMagnitude2": [
+    [
+     "reduce_enemy_chaos_resistance_with_weapons_%",
+     10,
+     17
+    ]
+   ],
+   "DecayInfluenceCurseMagnitude1": [
+    [
+     "number_of_additional_curses_allowed",
+     1,
+     1
+    ]
+   ],
+   "DecayInfluenceCurseMagnitude2": [
+    [
+     "number_of_additional_curses_allowed",
+     1,
+     1
+    ],
+    [
+     "curse_effect_+%",
+     5,
+     15
+    ]
+   ],
+   "DecayInfluenceExposureEffect1": [
+    [
+     "reduce_enemy_elemental_resistance_%",
+     4,
+     8
+    ]
+   ],
+   "DecayInfluenceExposureEffect2": [
+    [
+     "reduce_enemy_elemental_resistance_%",
+     9,
+     15
+    ]
+   ],
+   "DecayInfluenceIncreasedCurseDuration1": [
+    [
+     "life_gained_on_attack_hit_vs_cursed_enemies",
+     1,
+     10
+    ]
+   ],
+   "DecayInfluenceFasterCurseActivation1": [
+    [
+     "mana_gained_on_attack_hit_vs_cursed_enemies",
+     1,
+     10
+    ]
+   ],
+   "MarksmanInfluenceProjectileDamage1": [
+    [
+     "melee_attacks_number_of_additional_projectiles",
+     1,
+     1
+    ]
+   ],
+   "MarksmanInfluenceProjectileDamage2": [
+    [
+     "melee_attacks_number_of_additional_projectiles",
+     2,
+     2
+    ]
+   ],
+   "MarksmanInfluenceProjectileDamage3": [
+    [
+     "melee_attacks_number_of_additional_projectiles",
+     3,
+     3
+    ]
+   ],
+   "MarksmanInfluenceMarkEffect1": [
+    [
+     "critical_strike_chance_+%_vs_marked_enemies",
+     32,
+     46
+    ]
+   ],
+   "MarksmanInfluenceMarkEffect2": [
+    [
+     "critical_strike_chance_+%_vs_marked_enemies",
+     47,
+     61
+    ]
+   ],
+   "MarksmanInfluenceProjectileSpeed1": [
+    [
+     "projectile_damage_+%_per_power_charge",
+     1,
+     2
+    ]
+   ],
+   "MarksmanInfluenceProjectileSpeed2": [
+    [
+     "projectile_damage_+%_per_power_charge",
+     3,
+     4
+    ]
+   ],
+   "MarksmanInfluenceProjectileSpeed3": [
+    [
+     "projectile_damage_+%_per_power_charge",
+     5,
+     6
+    ]
+   ],
+   "MarksmanInfluenceCriticalHitChance1": [
+    [
+     "base_self_critical_strike_multiplier_-%",
+     30,
+     39
+    ]
+   ],
+   "MarksmanInfluenceCriticalHitChance2": [
+    [
+     "base_self_critical_strike_multiplier_-%",
+     40,
+     49
+    ]
+   ],
+   "MarksmanInfluenceCriticalHitChance3": [
+    [
+     "base_self_critical_strike_multiplier_-%",
+     50,
+     60
+    ]
+   ],
+   "MarksmanInfluenceChanceToPierce1": [
+    [
+     "projectile_base_number_of_targets_to_pierce",
+     1,
+     1
+    ]
+   ],
+   "MarksmanInfluenceChanceToPierce2": [
+    [
+     "projectile_base_number_of_targets_to_pierce",
+     2,
+     2
+    ]
+   ],
+   "MarksmanInfluenceSurpassingChanceAdditionalProjectiles1": [
+    [
+     "projectile_shock_chance_%",
+     15,
+     20
+    ]
+   ],
+   "MarksmanInfluenceSurpassingChanceAdditionalProjectiles2": [
+    [
+     "projectile_shock_chance_%",
+     21,
+     25
+    ]
+   ],
+   "MarksmanInfluenceSurpassingChanceAdditionalProjectiles3": [
+    [
+     "projectile_shock_chance_%",
+     26,
+     30
+    ]
+   ],
+   "MarksmanInfluenceChainToChainOffTerrain1": [
+    [
+     "attacks_num_of_additional_chains",
+     1,
+     1
+    ]
+   ],
+   "MarksmanInfluenceChainToChainOffTerrain2": [
+    [
+     "attacks_num_of_additional_chains",
+     2,
+     2
+    ]
+   ],
+   "MarksmanInfluenceChanceForAdditionalProjectileWhenForking1": [
+    [
+     "projectiles_fork_chance_%_if_youve_dealt_melee_hit_recently",
+     45,
+     64
+    ]
+   ],
+   "MarksmanInfluenceChanceForAdditionalProjectileWhenForking2": [
+    [
+     "projectiles_fork_chance_%_if_youve_dealt_melee_hit_recently",
+     65,
+     85
+    ]
+   ],
+   "MarksmanInfluenceIncreasedMarkDuration1": [
+    [
+     "your_marks_spread_to_a_nearby_enemies_on_consume_%_chance",
+     10,
+     19
+    ]
+   ],
+   "MarksmanInfluenceIncreasedMarkDuration2": [
+    [
+     "your_marks_spread_to_a_nearby_enemies_on_consume_%_chance",
+     20,
+     29
+    ]
+   ],
+   "MarksmanInfluenceMarkSkillUseSpeed1": [
+    [
+     "damage_+%_against_enemies_marked_by_you",
+     10,
+     19
+    ]
+   ],
+   "MarksmanInfluenceMarkSkillUseSpeed2": [
+    [
+     "damage_+%_against_enemies_marked_by_you",
+     20,
+     29
+    ]
+   ],
+   "MarksmanInfluenceMarkSkillLevels1": [
+    [
+     "marked_enemy_damage_taken_+%",
+     1,
+     5
+    ]
+   ],
+   "MarksmanInfluenceMarkSkillLevels2": [
+    [
+     "marked_enemy_damage_taken_+%",
+     6,
+     10
+    ]
+   ],
+   "MarksmanInfluenceProjectileSkills1": [
+    [
+     "projectile_chance_to_fork_%",
+     25,
+     44
+    ]
+   ],
+   "MarksmanInfluenceProjectileSkills2": [
+    [
+     "projectile_chance_to_fork_%",
+     45,
+     65
+    ]
+   ]
+  }
+ },
  "catalysts": {
   "Quality (Life Modifiers)": "life",
   "Quality (Mana Modifiers)": "mana",

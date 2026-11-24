@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
+import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -171,7 +171,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b, cq))) sum[s] = (sum[s] || 0) + v * k; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
-  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(b.items || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
+  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(wornItems(b, sum) || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
   if (NT) for (const [k, v] of Object.entries(gearStats({ amulet: b.items.amulet }))) sum['minion:' + k] = (sum['minion:' + k] || 0) + v;
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
@@ -200,7 +200,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Greatest Defence / Spiked Shield: increased attack damage per 75 armour and evasion on the shield
   if (sum['attack_damage_+%_per_75_armour_or_evasion_on_shield']) sum['attack_damage_+%'] = (sum['attack_damage_+%'] || 0) + sum['attack_damage_+%_per_75_armour_or_evasion_on_shield'] * Math.floor((pieceDef(b.items, 'offhand', 'armour') + pieceDef(b.items, 'offhand', 'evasion')) / 75);
   // Amazon's Stalking Panther: evasion of the helmet, gloves and boots doubled, the body armour's halved
-  if (sum.double_evasion_rating_from_gloves_helmets_boots) sum.base_evasion_rating = (sum.base_evasion_rating || 0) + ['helmet', 'gloves', 'boots'].reduce((t, s) => t + pieceDef(b.items, s, 'evasion'), 0);
+  if (sum.double_evasion_rating_from_gloves_helmets_boots) sum.base_evasion_rating = (sum.base_evasion_rating || 0) + ['helmet', 'gloves', 'boots'].reduce((t, s) => t + pieceDef(wornItems(b, sum), s, 'evasion'), 0);
   if (sum.halve_evasion_rating_from_body) sum.base_evasion_rating = (sum.base_evasion_rating || 0) - pieceDef(b.items, 'body', 'evasion') / 2;
   // uniques' stats per so many points of an attribute (Pillar of the Caged God, Hand of Wisdom and Action, Brutus' Lead
   // Sprinkler, The Whispering Ice, Tetzlapokal's Desire, Geofri's Sanctuary): as the stat they give, for the attribute
