@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
+import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -97,7 +97,7 @@ function clean(b) {
   console.assert(b.name === 'a<"b' && b.notes === '' && b.asc === ascs[0].class && JSON.stringify(b.gems) === JSON.stringify([{ name: g, level: '1>img onerror=x>', supports: [g, null] }])
     && b.nodes + '' === n && !b.ascNodes.length && !('<k' in b) && JSON.stringify(b.items) === '{}' && !b.stash.length && !('swap' in b), 'clean'); }
 function select(id) {
-  cur = id; rev++; put(KEY + ':last', id); if (B()) linkMetas(clean(B())); shown = JSON.stringify(B() ?? null); undoBtns();
+  cur = id; rev++; put(KEY + ':last', id); if (B()) { linkMetas(clean(B())); fixSplit(B()); } shown = JSON.stringify(B() ?? null); undoBtns();
   renderSide(); drawTree(); renderItems?.();
   checkStart();
 }
@@ -379,6 +379,13 @@ async function moveTree(nodes, root, cls, why) {
   return pick < 0 ? null : pick === 1 ? linked : [];
 }
 // builds made before the start was enforced may begin at another class start
+// a Split Personality read before its class start was (as the Sorceress's, whatever it said): the form with which the
+// tree hangs together, when with the one it has part of it hangs from nothing
+function fixSplit(b) {
+  const whole = () => prune(b.nodes, b).length === b.nodes.length;
+  if (!whole()) for (const it of Object.values(b.items || {})) for (const m of it.mods || []) { const was = m.id;
+    if (formsOf(was).some(f => (m.id = f.id, whole()))) return; m.id = was; }
+}
 async function checkStart() {
   const b = B(), root = classRoot(b.asc), id = cur;
   if (!b.nodes.length || !root || b.nodes[0] === root) return;

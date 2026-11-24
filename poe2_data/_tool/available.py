@@ -716,6 +716,16 @@ assert next(b for b in bases if b['name'] == 'Ruby Charm')['charm']['stats'] == 
 assert all(b.get('charm') and b['charm']['icon'] for b in bases if b['class'] == 'Charms'), 'a charm without its effect or icon'
 assert next(b for b in bases if b['name'] == 'Lesser Life Flask')['flask'] == {'life': 50, 'mana': 0, 'recovery_s': 3.0, 'charges': 60, 'per_use': 10}, 'Flasks / ComponentCharges'
 cs_langs = {'en': cs, **{c: {x['Id']: x['Text'] for x in rows} for c, rows in load_langs('ClientStrings').items()}}   # ClientStrings of each language
+# a unique's modifier that is one of several, each drop with its own (Split Personality: a class start each; poe2db
+# names a single one): every modifier of its family under each one's id, for the item's own line to say which
+# note: no table says a family's modifiers are one unique's alternatives; this one is seen on a character's jewel
+FORM_FAMILIES = ('UniqueJewelGrantsAlternateClassStart',)
+mod_forms = {}
+for fam_i, fam in enumerate(load('ModFamily')):
+    if fam['Id'] in FORM_FAMILIES:
+        group = [{'id': m['Id'], 'stats': [[stats[m[f'Stat{k}']]['Id'], *m[f'Stat{k}Value']] for k in range(1, 9) if m[f'Stat{k}'] is not None]}
+                 for m in mods if m['GenerationType'] == 3 and fam_i in m['Families']]
+        mod_forms.update({g['id']: group for g in group})
 save('items.json', {
     'runes': rune_sets,
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
@@ -747,6 +757,7 @@ save('items.json', {
                          'map_experience': 'ItemDisplayMapExperienceGained'}.items()}
                      for c, t in cs_langs.items()},
     'mod_grants': {mods[x['Mod']]['Id']: gem_name(x['Skill']) for x in load('ModGrantedSkills')},
+    'mod_forms': mod_forms,
     # Way of the Stonefist (Martial Artist): the base worn gloves become (the Runeforged one too: 'runeforged'), with its
     # tags, art and implicits, and what each of their modifiers becomes, the game's own "HandWraps<id>" row of Mods
     # ("Strength1" -> "HandWrapsStrength1": Area of Effect)
