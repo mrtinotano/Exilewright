@@ -227,7 +227,7 @@ function geo(g) {
   if (FX && !b0.items?.weapon && tags.includes('attack')) T['attack_area_of_effect_+%'] = (T['attack_area_of_effect_+%'] || 0) + Math.floor((character(b0, T).attrs?.int || 0) / FX);
   const { sum, finals } = withSupports(g, T);  // supports' area / speed count
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
-  const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1);
+  const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1 + (d.levels?.[g.level]?.['area_of_effect_+%_final_from_whirling_assault_level'] || 0) / 100);   // Whirling Assault's own, by its level
   const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
   const moreSpeed = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
   const rad = b => b ? Math.floor(b * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0;

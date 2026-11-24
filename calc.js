@@ -1319,8 +1319,9 @@ export function skill(g, b, treeGear) {
       lo += v(sum, `attack_minimum_added_${t}_damage`); hi += v(sum, `attack_maximum_added_${t}_damage`);
       if (unarmed && tags.includes('melee')) { lo += v(sum, `attack_minimum_added_melee_${t}_damage_while_unarmed`); hi += v(sum, `attack_maximum_added_melee_${t}_damage_while_unarmed`); }   // Thunderfist
     }
-    lo += first(st[`spell_minimum_base_${t}_damage`], st[`attack_minimum_added_${t}_damage`], st[`minimum_base_${t}_damage`], 0);
-    hi += first(st[`spell_maximum_base_${t}_damage`], st[`attack_maximum_added_${t}_damage`], st[`maximum_base_${t}_damage`], 0);
+    // a skill's "secondary" damage is its base too (PoB2's SkillStatMap): Seismic Cry, Arctic Howl, Black Powder Blitz
+    lo += first(st[`spell_minimum_base_${t}_damage`], st[`secondary_minimum_base_${t}_damage`], st[`attack_minimum_added_${t}_damage`], st[`minimum_base_${t}_damage`], 0);
+    hi += first(st[`spell_maximum_base_${t}_damage`], st[`secondary_maximum_base_${t}_damage`], st[`attack_maximum_added_${t}_damage`], st[`maximum_base_${t}_damage`], 0);
     base[t] = [lo, hi];
   }
   // the skill's own conversion (Lightning Arrow: 80% of physical to lightning); converted damage scales as its new type
@@ -1427,6 +1428,8 @@ export function skill(g, b, treeGear) {
   if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + (sum.additive_modifiers_to_minion_attack_speed_also_affect_you ? v(sum, 'minion_attack_speed_+%', 'minion_attack_and_cast_speed_+%') : 0) + speedInc + perTotemSpeed + atkSp) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed * dwd;
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd;
   if (byTotem && out.speed) out.speed *= 1 + v(sum, 'ascendency_tactician_totem_skill_speed_+%_final') / 100;   // Tactician's Cannons, Ready!: more skill speed of totems' skills
+  // "+X seconds to Total Attack / Cast Time" (Leap Slam, Rolling Slam, Comet): added to the use time whatever the speed (PoB2's TotalAttackTime)
+  const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) out.speed = 1 / (1 / out.speed + addT);
   // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
   // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
   const bolts = attack && w?.reload && v(st, 'base_number_of_crossbow_bolts') + v(sum, 'support_double_barrel_number_of_crossbow_bolts_+');
@@ -1775,7 +1778,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     shockTime: scale(durI.shock, 'shock_duration_+%_final'),
     chillTime: scale(durI.chill, 'chill_duration_+%_final'),
     freezeTime: scale(durI.freeze, 'freeze_duration_+%_final'), pinTime: (1 + all('pin_duration_+%') / 100) * (1 + all('support_pin_pin_duration_+%_final') / 100),
-    igniteTime: scale(durI.ignite, 'damaging_ailment_duration_+%_final') / FB,
+    igniteTime: scale(durI.ignite, /(?:damaging_ailment|active_skill_ignite)_duration_\+%_final$/) / FB,   // Molten Blast's own more
     bleedTime: scale(durI.bleed, 'damaging_ailment_duration_+%_final') / FBl,   // and Bleeding's own faster
     poisonTime: scale(durI.poison, /(?:damaging_ailment|_poison)_duration_\+%_final$/) / FA * (1 + all('pathfinder_poison_duration_+%_final') / 100),   // Overwhelming Toxicity's less (the tree's)   // Escalating Poison's less
     // Armour Break: a flat amount per hit and / or a share of the physical damage dealt

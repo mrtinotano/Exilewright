@@ -647,7 +647,7 @@ export function initScene(el, api) {
     if (FO && d.focusMax > 0) { d.focus = Math.max(0, d.focus - total * FO.drain / 100); d.focusAt = time; }
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
-    if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
+    if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
     if (UE) { if (crit && S.P.spell) weaken(d, UE.spellWeak); if (crit && r(UE.volCrit)) gainVol(1); if (S.P.melee && S.P.attack && r(UE.thornsMelee)) retaliate(d); }
@@ -1869,7 +1869,7 @@ export function initScene(el, api) {
     const k = ks.find(k => k.includes(E + 'Infus')) || ks.find(k => /Infus/.test(k) && !/(Cold|Fire|Lightning)Infus/.test(k)) || ks.find(k => /Secondary|Ground|Beam/.test(k));
     return k && partOf(S, k); };
   const lasts = S => S.dmg?.sum?.support_number_of_additional_uses_before_expiry || 0;   // Durability: the additional Hits its object lasts
-const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
+  const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_of_effect_radius`] || 10) / 10;   // a part's other radius, m
   // a part of the skill with its own damage (calc.js parts), as a skill of the scene
   const partOf = (S, id) => { const D = S.dmg?.parts?.[id], els = Object.keys(D?.hits || {}), r = D?.stats.active_skill_base_area_of_effect_radius; return D && { ...S, dmg: { ...D, trig: [] }, A: r < 0 ? Math.max(.1, S.A + r / 10) : (r || 10) / 10, el: els.find(e => e !== 'physical') || els[0], els, ail: ailOf(els), mult: 1, gm: 1 }; };
   // Shield Wall: its wall of earth in segments (its secondary radius each), each with its life; enemies on their way to
@@ -2558,7 +2558,7 @@ const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_
         tick(dt, e) {
           m.position.y = 1.3 + Math.sin(e.s * 3) * .08; if (P.detonates) m.userData.core.scale.setScalar(.3 * (1 + e.s / dur * .7));
           if ((tk -= dt) > 0) return;
-          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { expo(d, ELEM, cmp && d.st.expo > 0 && d.expo ? Math.min(st.active_skill_all_elemental_exposure_compounding_magnitude_cap * eff, d.expo.mag + cmp * eff) : expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
+          if (P.detonates) { tk = .6; fx.ring(c, .3, R, S.el, .5, { a: .55 }); for (const d of inside(c, R)) { if (!(d.level > st.frost_bomb_exposure_does_not_apply_to_enemies_of_level_higher_than_X)) expo(d, ELEM, cmp && d.st.expo > 0 && d.expo ? Math.min(st.active_skill_all_elemental_exposure_compounding_magnitude_cap * eff, d.expo.mag + cmp * eff) : expoMag(S)); inflict(d, 'chill', S); } }   // pulses of exposure, then the blast
           else if (P.chains) { tk = sh(S).bolts || .9; e.zap(); }
           else { tk = (st.solar_orb_base_pulse_frequency_ms || 1000) / 1000; fx.ring(c, .3, R, S.el, .5); area(c, R, { ...S, self: e, src: 'orb' }, { mult: st.solar_orb_base_pulse_frequency_ms ? 1 : .5 }); }   // Solar Orb: its whole hit every its pulse interval
         },
@@ -2649,7 +2649,12 @@ const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_
       // Vruun's Aftermath: it destroys the Ice Crystals and Ice Fragments in its area; five or more, and it Empowers its additional attacks
       const VR = S.dmg?.sum?.support_warcries_empower_x_additional_per_5_total_ice_crystals_or_fragments_destroyed; let gone = 0;
       if (VR) { for (const o of [...objs]) if (o.ice && !o.dead && dist(o.pos, c) <= R) { o.touch({ ...S, breaks: true }); gone++; } for (const F of [...frags]) if (dist(F.p, c) <= R) { F.off(); gone++; } }
-      for (const d of list) { d.wob = 1; for (const a of ailOf(S.P.els)) inflict(d, a, S); trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
+      // a damaging Warcry hits (Seismic Cry, Arctic Howl); Seismic Cry Heavy Stuns the enemies Primed for Stun and Arctic
+      // Howl Freezes those Primed for Freeze (their descriptions; keywords.json PrimedStun)
+      const real = Object.keys(S.dmg?.hits || {}).length > 0, PR = { 'Seismic Cry': 'stun', 'Arctic Howl': 'freeze' }[S.name];
+      for (const d of list) { d.wob = 1; if (real) hit(d, S); else for (const a of ailOf(S.P.els)) inflict(d, a, S);
+        if (PR && !d.dead && (d.bar[PR] || 0) >= PRIMED[d.stat.rarity]) { d.bar[PR] = 0; if (PR === 'stun') d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, PR, S, 1, null, { dur: DUR[PR] }); }
+        trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
       // performs Seismic Cry's additional Aftershocks
       const ws = S.dmg?.stats || {}, per = ws.warcry_empowers_per_X_monster_power, pw = Math.max(CY.min || 0, list.reduce((n, d) => n + pow(d), 0) * (1 + (S.dmg?.finals?.['support_echoing_cry_warcry_monster_power_+%_final'] || 0) / 100) * (1 + (S.dmg?.sum?.['warcry_monster_power_+%'] || 0) / 100)), mp = Math.min(ws.warcry_empowers_per_X_monster_power_mp_cap, pw), FG = ws.shielding_cry_grant_X_guard_per_5_mp, uses = (per ? Math.floor(mp / per) : 2) + (CY.more || 0) + (Math.random() * 100 < (S.dmg?.sum?.['chance_to_gain_3_additional_exerted_attacks_%'] || 0) ? 3 : 0) + (gone >= 5 ? VR : 0);
@@ -3028,7 +3033,7 @@ const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_
         tick(dt, e) {   // impacts scattered over the area for as long as it lasts; plants in it Overgrow (its description)
           if (MV) { const l = dist(c, to), v = Math.min(l, MV * dt); if (l > .01) { c.x += (to.x - c.x) / l * v; c.z += (to.z - c.z) / l * v; out.move(c); } }
           for (const o of objs) if (o.plant && dist(o.c, c) <= Z) overgrow(o);
-          if (wet) for (const d of inside(c, Z)) d.wet = { ...wet, until: time + .2 };
+          if (wet) for (const d of inside(c, Z)) if (!(d.level > (st.thunderstorm_wet_debuff_cannot_apply_to_targets_above_level || Infinity))) d.wet = { ...wet, until: time + .2 };   // not above its level limit (none at 0)
           if ((tk -= dt) > 0) return; tk = (every + rnd(-vary, vary)) / (fi ? 1 + (st['firestorm_bolt_frequency_+%_if_consumed_fire_infusion'] || 0) / 100 : 1);
           for (const X of extra) { const q2 = around(c, Z); fx.bolt(V(q2.x, 12, q2.z), V(q2.x, 0, q2.z), X.el, .18, .05, .4); later(fall, () => { pop(q2, X.A, X.el); area(q2, X.A, { ...X, self: e }); }); }
           const a = rnd(TAU), r = Math.sqrt(rnd()) * Z, q = V(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r);
@@ -4656,9 +4661,13 @@ const radOf = (X, k = 'secondary') => (X.dmg.stats[`active_skill_base_${k}_area_
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
     const dx = steer ? steer.x : l > .1 ? fx0 / l : Math.sin(facing), dz = steer ? steer.z : l > .1 ? fz0 / l : Math.cos(facing);
-    const UD = sheet().uDef || {}, L = 3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
+    // Blink, Black Powder Blitz (on): the dodge is its teleport / its leap as far as it travels, once every its cooldown
+    // (the roll meanwhile); Black Powder Blitz's round explodes where you leave (it Blinds and Ignites: its stats; a Detonator)
+    const DR = ['Blink', 'Black Powder Blitz'].map(onS).find(X => X && sh(X).travel && !(time < me.leapAt?.[X.name]));
+    const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
     if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; facing = Math.atan2(dx, dz); charge = held = goal = null;
+    if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06; if (Object.keys(DR.dmg.hits).length) boom(move.from, DR.A, { ...DR, mult: 1 }); }
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
