@@ -186,18 +186,19 @@ export function initLoot(el, ctx) {
         ...asked.length ? [[[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] : []] });
     } catch (e) { tradeFail(e, show, name); }
   }
-  // a stackable item (currency, runes, essences, omens...): the best rates its sellers ask on the Currency Exchange, and
-  // what your stack comes to at the best one
+  // a stackable item (currency, runes, essences, omens...): the best rate its sellers ask on the Currency Exchange in
+  // each currency, what its buyers give (an Exalted, Chaos or Divine Orb), and what your stack comes to at those rates
   async function bulkCheck(B, show) {
     const s = settings(), name = B['name_' + lang] || B.name;
     show({ name, lines: [t('Searching the trade site…')] });
     try {
       const league = s.league || (await leagues())[0], p = await priceBulk({ league, id: B.id, state: s.state }), link = p.id ? siteLink(league, p.id, true) : '';
-      if (!p.offers.length) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
-      const best = p.offers[0], unit = best.pay / best.get, cur = t(best.currency);
+      const mine = p.asks.length ? p.asks : p.bids;
+      if (!mine.length) return show({ name, link, lines: [t('Nothing like it is listed in {0}.', league)] });
+      const side = (head, offers) => offers.length ? [[[t(head) + ':', '']], ...offers.map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${t(o.currency)}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']])] : [];
       show({ name, link, lines: [
-        ...p.offers.slice(0, 5).map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${cur}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']]),
-        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, `${+(unit * B.stack).toPrecision(3)} ${cur}`), '']]] : [],
+        ...side('Sellers ask', p.asks), ...side('Buyers give', p.bids),
+        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, mine.map(o => `${+(o.pay / o.get * B.stack).toPrecision(3)} ${t(o.currency)}`).join(' · ')), '']]] : [],
         [[t('{0} offers on the Currency Exchange in {1}', p.total, league), 'dim']],
         [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]] });
     } catch (e) { tradeFail(e, show, name); }

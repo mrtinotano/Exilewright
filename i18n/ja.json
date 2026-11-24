@@ -926,6 +926,8 @@
  "Aggravated Bleeding": "出血を悪化させる",
  "{0} for {1}": "{1}で{0}個",
  "{0} in stock": "在庫 {0}",
+ "Sellers ask": "売り手の希望",
+ "Buyers give": "買い手の提示",
  "Your stack of {0}: about {1}": "スタック {0}個: 約{1}",
  "{0} offers on the Currency Exchange in {1}": "{1}のカレンシー交換に{0}件の出品",
  "Level {0} or more, {1}% quality or more": "レベル{0}以上、品質{1}%以上",

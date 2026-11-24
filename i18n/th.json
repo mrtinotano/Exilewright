@@ -926,6 +926,8 @@
  "Aggravated Bleeding": "เลือดไหลรุนแรง",
  "{0} for {1}": "{0} ต่อ {1}",
  "{0} in stock": "มีในสต็อก {0}",
+ "Sellers ask": "ผู้ขายขอ",
+ "Buyers give": "ผู้ซื้อให้",
  "Your stack of {0}: about {1}": "กองของคุณ {0} ชิ้น: ประมาณ {1}",
  "{0} offers on the Currency Exchange in {1}": "ข้อเสนอ {0} รายการในค้าเงินตรา ใน {1}",
  "Level {0} or more, {1}% quality or more": "เลเวล {0} ขึ้นไป คุณภาพ {1}% ขึ้นไป",

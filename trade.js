@@ -263,24 +263,41 @@ function sameAs(r) {
 const BULK = await fetch('poe2_data/available/bulk.json').then(r => r.ok ? r.json() : []).catch(() => []);
 // the copied text's lines, and those before its first separator (its names)
 const heads = text => { const lines = text.split('\n').map(l => l.trim()), sep = lines.findIndex(l => /^-{4,}$/.test(l)); return [lines, lines.slice(0, sep < 0 ? lines.length : sep)]; };
-const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k.startsWith('name')).map(([, n]) => [n.toLowerCase(), b])));
+// by its name in every language; "Uncut Skill Gem (Level 19)" also as "uncut skill gem|19", for a copied text with the
+// name and its "Level: 19" on lines apart
+// note: which of the two the game copies for an uncut gem has not been seen; both are read
+const BULK_BY = new Map(BULK.flatMap(b => Object.entries(b).filter(([k]) => k.startsWith('name')).flatMap(([, n]) => {
+  const m = n.toLowerCase().match(/^(.+?)\s*[(（]\D*(\d+)\D*[)）]$/);
+  return [[n.toLowerCase(), b], ...m ? [[m[1] + '|' + m[2], b]] : []];
+})));
 // the copied text -> { id (the exchange's), name (English), name_<lang>..., stack } when the exchange lists it, else null: its name
 // among the lines before the first separator, in any language; its stack the first "label: n/m" line ("Stack Size: 12/40")
 export function bulkOf(text) {
-  const [lines, head] = heads(text), b = head.map(l => BULK_BY.get(l.toLowerCase())).find(Boolean); if (!b) return null;
+  const [lines, head] = heads(text), lvl = propNums(lines).gem_level, b = head.map(l => BULK_BY.get(l.toLowerCase()) || BULK_BY.get(l.toLowerCase() + '|' + lvl)).find(Boolean); if (!b) return null;
   const n = lines.map(l => l.match(/^[^:：]+[:：]\s*([\d.,\s]+?)\s*\/\s*[\d.,\s]+$/)?.[1]).find(Boolean);   // \s: a thousands space too
   return { ...b, stack: n ? +n.replace(/\D/g, '') || 1 : 1 };
 }
-// what its sellers ask for it: in the currency most of them take (Exalted, Divine or Chaos Orbs; the site's market is thin,
-// nobody may sell divines for exalts there), the offers of one item each, the best rate first, as Exiled Exchange 2 lists them
-// -> { total, offers: [{ pay, get (for `pay` of currency, `get` of it), stock, currency }] (at most MANY), id (the exchange search) }
+// what it goes for there in each currency paid (Exalted, Chaos and Divine Orbs), none turned into another: the site's
+// market is thin and its sellers do not agree across currencies (an uncut gem at 20 exalted and at 1 divine at once).
+// asks: what its sellers ask, the cheapest of each currency. bids, for one of those three orbs only (its own sellers
+// are the fewest: nobody may sell divines for chaos there): what the sellers of the other two give for it, the most of each
+// -> { total, id (the exchange search), asks, bids: [{ pay, get, stock, currency }] (asks: `get` of it for `pay` of
+//      currency; bids: `pay` of currency for `get` of it; stock: what the one offering has of what is handed over) }
+const PAID = ['exalted', 'chaos', 'divine'];
+// an exchange answer -> the best offer of each currency (bid: the offers are of the currency, for the item)
+function tops(s, curs, bid) {
+  const offers = Object.values(s?.result || {}).flatMap(r => r?.listing?.offers || []).map(({ exchange: x, item: i }) => bid
+    ? { pay: i.amount, get: x.amount, stock: i.stock, currency: i.currency } : { pay: x.amount, get: i.amount, stock: i.stock, currency: x.currency });
+  return curs.map(c => offers.filter(o => o.currency === c).sort((a, b) => (a.pay / a.get - b.pay / b.get) * (bid ? -1 : 1))[0]).filter(Boolean);
+}
+{ const o = (cur, pay, get, c2) => ({ exchange: { currency: cur, amount: pay }, item: { currency: c2, amount: get, stock: 9 } }), rate = l => l.map(x => [x.currency, x.pay, x.get]).join(' ');
+  console.assert(rate(tops({ result: { a: { listing: { offers: [o('exalted', 480, 1), o('chaos', 24, 2)] } }, b: { listing: { offers: [o('exalted', 900, 2)] } }, c: null } }, PAID)) === 'exalted,900,2 chaos,24,2'
+    && rate(tops({ result: { a: { listing: { offers: [o('divine', 1, 100, 'exalted')] } }, b: { listing: { offers: [o('divine', 10, 1, 'exalted'), o('divine', 2, 21, 'chaos')] } } } }, PAID, true)) === 'exalted,100,1 chaos,21,2'
+    && !tops(null, PAID).length, 'tops'); }
 export async function priceBulk({ league, id, state = 'available' }) {
-  const have = ['exalted', 'divine', 'chaos'].filter(h => h !== id);
-  const s = await call('exchange?league=' + encodeURIComponent(league), { engine: 'new', query: { status: { option: state === 'any' ? 'any' : 'online' }, have, want: [id] }, sort: { have: 'asc' } });
-  const offers = Object.values(s.result || {}).filter(r => r?.listing?.offers?.length === 1).map(r => r.listing.offers[0]);
-  const count = h => offers.filter(o => o.exchange.currency === h).length, currency = have.reduce((a, b) => count(b) > count(a) ? b : a);   // the one most sellers take
-  return { total: s.total || 0, id: s.id, offers: offers.filter(o => o.exchange.currency === currency)
-    .map(o => ({ pay: o.exchange.amount, get: o.item.amount, stock: o.item.stock, currency })).sort((a, b) => a.pay / a.get - b.pay / b.get).slice(0, MANY) };
+  const curs = PAID.filter(c => c !== id), ask = (have, want) => call('exchange?league=' + encodeURIComponent(league), { engine: 'new', query: { status: { option: state === 'any' ? 'any' : 'online' }, have, want }, sort: { have: 'asc' } });
+  const s = await ask(curs, [id]), b = curs.length < PAID.length ? await ask([id], curs).catch(() => null) : null;   // the asks are shown without the bids when those cannot be had
+  return { total: (s.total || 0) + (b?.total || 0), id: s.id, asks: tops(s, curs), bids: tops(b, curs, true) };
 }
 // ---------- a skill gem and a waystone: the trade site's own filters of them (its level and quality; a waystone's tier
 // and what it gives: item rarity, pack size, waystone drop chance...), from the "label: number" lines of the copied
@@ -305,6 +322,8 @@ export function wayOf(text) {
   const props = propNums(lines); delete props.gem_level;
   return Object.keys(props).some(f => f !== 'map_revives' && props[f] > 0) ? { name: b.name, names: b, props, corrupted: isCorrupted(text) } : null;
 }
+console.assert(!BULK.length || bulkOf('Item Class: Uncut Skill Gems\nRarity: Currency\nUncut Skill Gem\n--------\nLevel: 19\n--------\nItem Level: 19')?.id === 'uncut-skill-gem-19'
+  && bulkOf('Rarity: Currency\nUncut Skill Gem (Level 19)\n--------\nItem Level: 19')?.id === 'uncut-skill-gem-19' && bulkOf('Rarity: Currency\nDivine Orb\n--------\nStack Size: 3/10')?.stack === 3, 'bulkOf');
 // the cheapest ones like a gem: its level and quality or more, corrupted or not as it is. -> as priceOf
 export async function priceGem({ league, name, level, quality: q, corrupted, state = 'available' }) {
   const s = await call('search?league=' + encodeURIComponent(league), { query: { status: { option: state }, type: name, filters: {
