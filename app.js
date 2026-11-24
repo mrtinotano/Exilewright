@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM } from './calc.js';
+import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemImg, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone } from './items.js';
 import { initSkills } from './skills.js';
@@ -212,7 +212,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   // Tribute (Undying Hate's conquered passives, base_tribute and its increase): the stats given per so much of it, or
   // with at least so much ("2% increased Mana Recovery rate per 10 Tribute", "+1% to all Maximum Resistances if you have
   // at least 100 Tribute"), as the stat they name
-  const trib = Math.floor((sum.base_tribute || 0) * (1 + (sum['tribute_+%'] || 0) / 100));
+  const trib = tributeOf(sum);
   for (const [k, v] of Object.entries(sum)) { const m = k.match(/^(.+)_(per|if_you_have_at_least)_(\d+)_tribute$/);
     if (m) sum[m[1]] = (sum[m[1]] || 0) + v * (m[2] === 'per' ? Math.floor(trib / m[3]) : trib >= m[3] ? 1 : 0); }
   return sum;
@@ -643,7 +643,7 @@ function sockOn(b) {
 // attribute ones add Tribute), with what the jewel's own modifiers add to that kind; a notable its modifier names
 // ("One Conquered Notable Passive Skill becomes Ephemeral Contact": the first of them allocated, which one is the seed's).
 // The rest the seed changes is only marked (which passive and how is not in the game's client data)
-// -> Map id -> { ks, by (the jewel) } | { stats, by } | { add, by } | { over (the notable it became), by } | { seed: true, by }
+// -> Map id -> { ks, by (the jewel) } | { stats, named (the passive it became: its name and art), by } | { add, by } | { over (the notable it became), by } | { seed: true, by }
 const TL = tree.timeless || { versions: [], keystones: [], overrides: {} };
 function conquest(b, js = jewelsOf(b)) {
   const out = new Map();
@@ -655,7 +655,7 @@ function conquest(b, js = jewelsOf(b)) {
     const over = Object.entries(st).filter(([k, x]) => /^local_historic_jewel_override_\d+_conquored_notable_to_passive_hash_\d+$/.test(k) && TL.overrides?.[x]).map(([, x]) => TL.overrides[x]);
     for (const id of main) if (j.in(id)) { const ty = N[id].type;
       if (ty === 'keystone') { if (ks) out.set(id, { ks, by }); continue; }
-      if (v.becomes?.[ty]) out.set(id, { stats: plusStats({ ...v.becomes[ty] }, extra[ty] || {}), by });
+      if (v.becomes?.[ty]) out.set(id, { stats: plusStats({ ...v.becomes[ty] }, extra[ty] || {}), named: v.named?.[ty], by });
       else if (v.replaces[ty] || v.adds[ty] && !v.plus?.[ty]) out.set(id, ty === 'notable' && b.nodes.includes(id) && over.length ? (o => ({ over: o, stats: o.stats, by }))(over.shift()) : { seed: true, by });
       else if (v.plus?.[ty] || extra[ty]) out.set(id, { add: plusStats({ ...v.plus?.[ty] }, extra[ty] || {}), by });
     }
@@ -756,7 +756,7 @@ const LINK = {
 };
 const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keystone: 'keystone', jewel: 'jewel' };
 const HOLE = { passive: .607, notable: .562, keystone: .561, asc_passive: .62, asc_notable: .56 };
-function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint: weapon set colour
+function drawNode(id, x, y, r, state, tint, pic2) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
   const frame = tint || state === 'on' ? tint || '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
@@ -766,7 +766,7 @@ function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint:
   if (pic) {
     // a frame is drawn one pixel a world unit, like the game's links; its icon fills the hole
     const f = r / R[type], w = pic.width * f, h = pic.height * f, ir = (HOLE[kind] || 0) * w / 2;
-    const icon = ir > 0 && art(n.icon);
+    const icon = ir > 0 && art(pic2 || n.icon);
     const drawIcon = () => {   // its icon at any size; while it loads, the colour of its stats
       if (!ir) return;
       ctx.save(); ctx.globalAlpha = lit ? 1 : .55; ctx.beginPath(); ctx.arc(x, y, ir, 0, 7);
@@ -793,7 +793,7 @@ function drawNode(id, x, y, r, state, tint) {   // state: on | path | off; tint:
   if (type === 'jewel') { for (let i = 0; i < 6; i++) ctx.lineTo(x + r * .8 * Math.cos(i * Math.PI / 3), y + r * .8 * Math.sin(i * Math.PI / 3)); ctx.closePath(); }
   else ctx.arc(x, y, r * .82, 0, 7);
   ctx.fill(); ctx.shadowBlur = 0;
-  const icon = r >= 6 && art(n.icon);
+  const icon = r >= 6 && art(pic2 || n.icon);
   if (icon) { ctx.save(); ctx.clip(); ctx.drawImage(icon, x - r * .82, y - r * .82, r * 1.64, r * 1.64); ctx.restore(); }
   ctx.globalAlpha = 1;
   // frame: thin ring for smalls, double gilded ring for notables, heavy ornate ring for keystones / class starts
@@ -932,7 +932,7 @@ function drawTree() {
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
     if (x < -r * 2 || y < -r * 2 || x > W + r * 2 || y > H + r * 2) continue;
     if (found.has(id)) drawFound(x, y, r);
-    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id));
+    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), cq.get(id)?.named?.icon);
   }
   // labels
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -946,7 +946,7 @@ function drawTree() {
     ctx.font = `${n.type === 'keystone' ? 13 : 11}px Georgia, serif`;
     ctx.fillStyle = on.has(id) ? '#f2d58a' : '#a8987a';
     ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
-    const name = label(cq.get(id)?.ks || cq.get(id)?.over || n);
+    const name = label(cq.get(id)?.ks || cq.get(id)?.over || cq.get(id)?.named || n);
     ctx.strokeText(name, x, y + r * 1.25 + 2); ctx.fillText(name, x, y + r * 1.25 + 2);
   }
 }
@@ -982,7 +982,7 @@ function tipHtml(tip, id, n) {
   const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
   const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode);
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
-  tip.innerHTML = `<div class="th">${esc(label(cq?.ks || cq?.over || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
+  tip.innerHTML = `<div class="th">${esc(label(cq?.ks || cq?.over || cq?.named || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
     + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')

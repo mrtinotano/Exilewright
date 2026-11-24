@@ -102680,6 +102680,34 @@
  },
  {
   "stats": [
+   "base_devotion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}奉獻",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}貢禮",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_strength"
   ],
   "rows": [

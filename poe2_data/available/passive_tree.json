@@ -152163,6 +152163,21 @@
      "notable": {
       "base_devotion": 5
      }
+    },
+    "named": {
+     "attribute": {
+      "name": "Devotion",
+      "name_es": "Devoción",
+      "name_pt": "Devoção",
+      "name_fr": "Ferveur",
+      "name_de": "Hingabe",
+      "name_ru": "Набожность",
+      "name_ja": "献身",
+      "name_ko": "헌신",
+      "name_th": "Devotion",
+      "name_zh": "還願",
+      "icon": "Art/2DArt/SkillIcons/passives/DevotionNode.dds"
+     }
     }
    },
    {
@@ -152179,6 +152194,34 @@
     "becomes": {
      "attribute": {},
      "small": {}
+    },
+    "named": {
+     "attribute": {
+      "name": "Price of Glory",
+      "name_es": "Precio de la gloria",
+      "name_pt": "Preço da Glória",
+      "name_fr": "Le Prix de la gloire",
+      "name_de": "Preis des Ruhms",
+      "name_ru": "Цена славы",
+      "name_ja": "栄光の代償",
+      "name_ko": "영광의 대가",
+      "name_th": "Price of Glory",
+      "name_zh": "榮耀代價",
+      "icon": "Art/2DArt/SkillIcons/passives/EternalEmpireBlank.dds"
+     },
+     "small": {
+      "name": "Price of Glory",
+      "name_es": "Precio de la gloria",
+      "name_pt": "Preço da Glória",
+      "name_fr": "Le Prix de la gloire",
+      "name_de": "Preis des Ruhms",
+      "name_ru": "Цена славы",
+      "name_ja": "栄光の代償",
+      "name_ko": "영광의 대가",
+      "name_th": "Price of Glory",
+      "name_zh": "榮耀代價",
+      "icon": "Art/2DArt/SkillIcons/passives/EternalEmpireBlank.dds"
+     }
     }
    },
    {
@@ -152287,6 +152330,21 @@
       "small",
       "ailment_threshold_+%"
      ]
+    },
+    "named": {
+     "small": {
+      "name": "Tribute",
+      "name_es": "Tributo",
+      "name_pt": "Tributo",
+      "name_fr": "Tribut",
+      "name_de": "Tribut",
+      "name_ru": "Дань",
+      "name_ja": "トリビュート",
+      "name_ko": "공물 점수",
+      "name_th": "บรรณาการ",
+      "name_zh": "貢禮",
+      "icon": "Art/2DArt/SkillIcons/passives/AbyssJewelNode.dds"
+     }
     }
    }
   ],

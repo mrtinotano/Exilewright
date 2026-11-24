@@ -17,6 +17,7 @@ paths |= {c['img'] for c in json.load(open(os.path.join(ROOT, 'available', 'curr
 tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), encoding='utf8'))
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
 paths |= {n['icon'] for n in tree['nodes'].values() if n.get('icon')}  # passive node icons
+paths |= {x['icon'] for v in tree['timeless']['versions'] for x in v.get('named', {}).values() if x.get('icon')}  # what a timeless jewel's conquered passives become (Tribute)
 paths |= {a[k] for a in ascs for k in ('tree_image', 'class_tree_image') if a.get(k)}  # central circle art
 # the passive tree's own art (PassiveSkillTreeUIArt rows Character and Ascendancy, their PassiveSkillTreeNodeFrameArt
 # frames), saved whole as ../available/img/tree/<role>.webp: the node frames per state and the group backgrounds

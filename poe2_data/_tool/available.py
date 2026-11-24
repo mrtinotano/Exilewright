@@ -257,7 +257,8 @@ conquerors = [{'version': x['AlternateTreeVersion'], 'index': x['ConquerorIndex'
                'stats': {stats[st]['Id']: x[f'Stat{k + 1}'][0] for k, st in enumerate(x['Stats'])}}
               for i, x in enumerate(load('AlternatePassiveSkills')) if 4 in x['PassiveType'] and x['ConquerorVersion'] == 0]
 # what a conqueror does in its radius whatever the seed: a kind of passive (PassiveType 1 attribute, 2 small, 3 notable)
-# replaced by the only passive it can become (Abyss: small passives -> Tribute), what every passive of a kind gets added
+# replaced by the only passive it can become (Abyss: small passives -> Tribute; 'named': its name and art), what every
+# passive of a kind gets added
 # (Abyss: attribute passives +3 Tribute), and what the jewel's own modifiers add to a kind
 # (AlternateTreeExtraAdditionsFromJewelStats: "Conquered Small Passive Skills also grant ...")
 PTYPE = {1: 'attribute', 2: 'small', 3: 'notable'}
@@ -270,7 +271,9 @@ for vi, (v, out) in enumerate(zip(load('AlternateTreeVersions'), alt_versions)):
     cnt = {1: v['SmallAttributePassiveSkillAdditions'], 2: v['SmallNormalPassiveSkillAdditions'], 3: v['NotableAdditions']}
     for ty, kind in PTYPE.items():
         c = [x for x in alt_skills if x['AlternateTreeVersion'] == vi and ty in x['PassiveType'] and x['SpawnWeight'] > 0]
-        if rep_[ty] and len(c) == 1 and (st := alt_fixed(c[0], 6)) is not None: out.setdefault('becomes', {})[kind] = st
+        if rep_[ty] and len(c) == 1 and (st := alt_fixed(c[0], 6)) is not None:
+            out.setdefault('becomes', {})[kind] = st
+            out.setdefault('named', {})[kind] = {'name': c[0]['Name'], **tr(alt_tr, c[0]['_index']), 'icon': c[0]['DDSIcon']}
         a = [x for x in alt_adds if x['AlternateTreeVersion'] == vi and ty in x['PassiveType'] and x['SpawnWeight'] > 0]
         if cnt[ty][0] == cnt[ty][1] > 0 and len(a) == 1 and (st := alt_fixed(a[0], 3)) is not None: out.setdefault('plus', {})[kind] = {k: x * cnt[ty][0] for k, x in st.items()}
     ex = {stats[r['Id']]['Id']: [PTYPE[r['NodeType']], stats[r['Stat']]['Id']] for r in load('AlternateTreeExtraAdditionsFromJewelStats') if r['JewelType'] == vi}
@@ -591,6 +594,7 @@ skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
 used |= {s for k in [*conquerors, *alt_over.values()] for s in k['stats']}   # the keystones timeless jewels put in place of the tree's, the notables Undying Hate's modifiers name
+used |= {s for v in alt_versions for st in [*v.get('becomes', {}).values(), *v.get('plus', {}).values()] for s in st} | {to for v in alt_versions for _, to in v.get('extra', {}).values()}   # and what the passives they conquer become or get (Tribute)
 kept = [d for d in descs.values() if used & set(d['stats'])]
 # a skill's own .csd (it includes the general ones and overrides them): entries marked with the skills that use it
 for csd, names in sorted(skill_csd.items()):

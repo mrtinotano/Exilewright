@@ -102665,6 +102665,34 @@
  },
  {
   "stats": [
+   "base_devotion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "헌신 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "공물 점수 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_strength"
   ],
   "rows": [

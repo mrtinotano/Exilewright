@@ -102671,6 +102671,34 @@
  },
  {
   "stats": [
+   "base_devotion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} a la devoción",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} al tributo",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_strength"
   ],
   "rows": [

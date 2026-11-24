@@ -1,7 +1,7 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
 import { t, esc, tn, fmt, lang as LANG, kwHtml } from './i18n.js';
 import { statLines, shownLines } from './stats.js';
-import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick } from './calc.js';
+import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick, tributeOf } from './calc.js';
 
 const n = x => fmt(x == null ? x : Math.round(x));
 const f = (x, d = 2) => fmt(x, d);
@@ -29,7 +29,7 @@ export function renderChar(el, b, sum, { asc, cls, points, need, pending, classe
         <div class="cp-level${b.lvl && b.lvl < need ? ' over' : ''}" title="${t('Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.', points)}${b.lvl && b.lvl < need ? ' ' + t('The allocated points need level {0}.', need) : ''}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}<button class="cp-auto" data-act="lvlmode">${t(b.lvl ? 'Manual' : 'Auto')}</button></div>
       </div>
       <div class="cp-portrait" title="${esc(asc ? ascLabel(asc) : '')}"${portrait ? ` style="background-image:url('poe2_data/available/img/${esc(portrait)}')"` : ''}>${portrait ? '' : esc((asc ? ascLabel(asc) : '?')[0])}</div>
-      <div class="cp-id cp-attr"><div class="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div></div>
+      <div class="cp-id cp-attr"><div class="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div>${tributeOf(sum) ? `<div><span>${t('Tribute')}</span><b>${n(tributeOf(sum))}</b></div>` : ''}</div>
     </div>
     ${picking ? `<div class="cp-classes">${(picking === 'cls' ? classes : ascOptions).map(k => `<button data-${picking}="${esc(k)}" class="${k === (picking === 'cls' ? cls : asc) ? 'on' : ''}">${esc(picking === 'cls' ? clsLabel(k) : ascLabel(k))}</button>`).join('')}</div>` : ''}
     <div class="cp-row4">${box('life', 'Life', n(c.life), c.life == null ? NO_BASE : '')}${box('es', 'Energy Shield', n(c.es))}${box('mana', 'Mana', n(c.mana), c.mana == null ? NO_BASE : '')}${box('spirit', 'Spirit', c.reserved ? `${n(c.spirit - c.reserved)} <i>/ ${n(c.spirit)}</i>` : n(c.spirit), c.reserved ? t('{0} reserved by your skills', c.reserved) : '')}</div>

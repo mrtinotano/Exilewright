@@ -102673,6 +102673,34 @@
  },
  {
   "stats": [
+   "base_devotion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Devotion",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_tribute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_strength"
   ],
   "rows": [

@@ -8,7 +8,7 @@ const ROWS = [
   ['life', 'Life'], ['es', 'Energy Shield'], ['mana', 'Mana'], ['spirit', 'Spirit'],
   ['armour', 'Armour'], ['evasion', 'Evasion'], ['block', 'Block', 0, '%'],
   ['fire', 'Fire Resistance', 0, '%'], ['cold', 'Cold Resistance', 0, '%'], ['lightning', 'Lightning Resistance', 0, '%'], ['chaos', 'Chaos Resistance', 0, '%'],
-  ['str', 'Strength'], ['dex', 'Dexterity'], ['int', 'Intelligence'],
+  ['str', 'Strength'], ['dex', 'Dexterity'], ['int', 'Intelligence'], ['tribute', 'Tribute'],
   ['lifeRegen', 'Life Recovery per second from Regeneration', 1], ['esRecharge', 'Energy Shield Recharge per second', 1],
   ['move', 'Base Movement Speed', 0, '%'], ['accuracy', 'Accuracy'],
 ];

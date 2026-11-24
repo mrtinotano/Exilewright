@@ -1992,10 +1992,12 @@ console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot I
     && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true
     && skill({ name: 'Orb of Storms', level: 20, supports: ['Efficiency I'] }, b, {}).cost === 91 && skill({ name: 'Orb of Storms', level: 20, supports: ['Lifetap'] }, b, {}).lifeCost === 129, 'mana cost'); }
 
+// Tribute (Undying Hate's conquered passives: base_tribute), with its increase
+export const tributeOf = sum => Math.floor(v(sum, 'base_tribute') * (1 + v(sum, 'tribute_+%') / 100));
 export function snapshot(b, sum) {
   const c = character(b, sum), r = recovery(c, sum), R = c.res;
   return { life: c.life, es: c.es, mana: c.mana, spirit: c.spirit, armour: c.armour, evasion: c.evasion, block: c.block,
-    fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs,
+    fire: R.fire.capped, cold: R.cold.capped, lightning: R.lightning.capped, chaos: R.chaos.capped, ...c.attrs, tribute: tributeOf(sum),
     lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
     reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves, fists: !!sum.ascendancy_hand_wraps,   // the Equipment card's requirements
     reqFree: !!sum.global_equipment_no_attribute_requirements, noStrMelee: !!sum.ignore_strength_requirements_of_melee_weapons_and_skills, giant: !!sum.keystone_giants_blood,   // Giant's Blood: triple on martial weapons
