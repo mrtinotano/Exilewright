@@ -1163,7 +1163,7 @@ export function initScene(el, api) {
     d.bar[a] = 0; d.lock[a] = GC[G + 'ModifierDuration'];
     inflict(d, a, S, 1, null, { dur: a === 'freeze' ? DUR.freeze * A.freezeTime * vsAil(A, 'freeze', 'dur', d, S) : a === 'pin' ? DUR.pin * (A.pinTime || 1) : DUR[a] });
     if (a === 'stun' && !S.src) trigger(S, 'heavyStun', d);   // Smash to Smithereens
-    if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) gainPct('life', recOn('stunRare'));
+    if (a === 'stun' && ['rare', 'unique'].includes(d.stat.rarity)) { gainPct('life', recOn('stunRare')); if (sheet().endOnStunRare) gainCharge('endurance', S.label); }   // Cranial Impact
     const H = a === 'stun' && !S.src && S.dmg?.onHit;   // Enduring Impact: endurance charges on heavy stunning
     if (H) for (let k = d.stat.rarity === 'unique' ? H.stunEnduranceUnique : Math.random() * 100 < H.stunEndurance ? 1 : 0; k > 0; k--) chargeBy('endurance', S);
     if (a === 'stun' && !S.src) vanguard(S, true);
@@ -1231,7 +1231,7 @@ export function initScene(el, api) {
     if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
     const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
     T.need = 1000 / sp / T.perMs;
-    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more * (sheet().energyFullMana && me.mana >= me.maxM ? 1 + sheet().energyFullMana / 100 : 1));   // Idle Hands: more on full mana
+    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more * (1 + ((me.mana >= me.maxM ? sheet().energyFullMana || 0 : 0) + (meIs.CritRecently() ? sheet().energyCrit || 0 : 0)) / 100));   // Idle Hands: more on full mana; Evocational Practitioner: after a Critical Hit
   }
   function invoke(T) {
     const j = trigOf(T); let n = 0;
@@ -5389,7 +5389,8 @@ export function initScene(el, api) {
     if (f.always) return toast(t('{0} applies its effect constantly', flaskName(n)));
     if (flaskLeft(n) < f.per) return toast(t('{0} needs {1} charges and has {2}', flaskName(n), f.per, Math.floor(me.fl[n])));
     if (!(Math.random() * 100 < f.keep)) { me.fl[n] -= f.per; const Z = !n && sheet().zerphi?.toCharm; if (Z) charms().forEach((c, k) => { if (c) me.cc[k] = Math.min(c.max, charmLeft(k) + f.per * Z / 100); }); }   // the tree's chance to not consume charges; Zerphi's Genesis
-    const LL = f.k === 'life' && lowLife() ? (1 + (f.inc + (sheet().lowFlask || 0)) / 100) / (1 + f.inc / 100) : 1;   // increased life recovery when used on Low Life, with the other increased
+    // increased life recovery when used on Low Life, and of any flask while a Charm is active (Efficient Alchemy), with the other increased. ponytail: as it is drunk; per tick if a charm ending mid-flask matters
+    const LL = (1 + (f.inc + (f.k === 'life' && lowLife() ? sheet().lowFlask || 0 : 0) + (me.cu.some(Boolean) ? sheet().flaskCharm || 0 : 0)) / 100) / (1 + f.inc / 100);
     const OC = time < me.chalice && !f.es ? (1 + (f.inc + CHALICE.rec) / 100) / (1 + f.inc / 100) : 1;   // Overflowing Chalice's increased recovery
     me.drink[n] = { k: f.k, es: f.es, over: f.over, overLife: f.overLife, rate: f.amount * LL * OC / f.time, s: f.time, ...f.nova && { m0: me.spentM || 0, nt: 3 } }; (me.drankAt ||= [])[n] = time; if (n) gainPct('life', recOn('manaFlask')); if (n && sheet().uDef?.flaskGuard) guardFor(f.amount * sheet().uDef.flaskGuard / 100, 4);   // Glowswarm
     if (n && sheet().esOnManaFlask) me.esEarly = 1e9;   // Bitterbloom: a mana flask starts energy shield recharge
@@ -5497,8 +5498,9 @@ export function initScene(el, api) {
     const CR = regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges');
     const RA = banner('%_armour_to_apply_to_elemental_damage') + (shifted()?.armourEl || 0), RE = banner('deflection_rating_%_of_evasion_rating');   // Refractive Plating; the tree's while Shapeshifted
     if ((RA || RE) && c.armourEl) c = { ...c, armourEl: Object.fromEntries(Object.entries(c.armourEl).map(([e, x]) => [e, x + (e === 'chaos' ? 0 : RA)])), deflect: c.deflect && { ...c.deflect, eva: c.deflect.eva + RE } };
-    if (c.adaptRes && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e !== 'chaos' && time - (me.hitEl?.[e] ?? -99) <= RECENT ? { ...r, max: r.max + c.adaptRes, capped: Math.min(r.max + c.adaptRes, r.value) } : r])) };   // Adaptive Skin
-    const SR = shifted()?.maxRes; if (SR && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, SR[e] ? { ...r, max: r.max + SR[e], capped: Math.min(r.max + SR[e], r.value) } : r])) };   // the tree's while Shapeshifted
+    // the tree's maximum resistances while Shapeshifted, and of the elements you were Hit with Recently (Adaptive Skin)
+    const SR = shifted()?.maxRes, AR = e => (SR?.[e] || 0) + (c.adaptRes && e !== 'chaos' && time - (me.hitEl?.[e] ?? -99) <= RECENT ? c.adaptRes : 0);
+    if ((SR || c.adaptRes) && c.res) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, AR(e) ? { ...r, max: r.max + AR(e), capped: Math.min(r.max + AR(e), r.value) } : r])) };
     if (AE || MR || BR || WE || PL || CR > 1) c = { ...c, armour: c.armour * (1 + AE / 100) * (1 + PL / 100) * CR, evasion: (c.evasion || 0) * (1 + AE / 100) * (1 + WE / 100) * CR, res: (MR || BR) && c.res ? Object.fromEntries(Object.entries(c.res).map(([e, r]) => [e, e === 'chaos' ? r : { ...r, max: r.max + MR, value: r.value + BR, capped: Math.min(r.max + MR, r.value + BR) }])) : c.res };
     // the tree's increased armour / evasion while you are in a state, added to the increases they have
     const DW = (c.defWhile || []).filter(w => meIs[w.cv]?.()), inc = k => DW.reduce((t, w) => t + (w.to.includes(k) ? w.val : 0), 0);
@@ -5786,7 +5788,7 @@ export function initScene(el, api) {
     const RG = regenNow(c), RL = c.lowCap ? L * LOW : L, PU = c.regenPulse;   // Cat O' Nine Tails: recovery other than flasks only up to Low Life
     if (PU && RG.life > 0 && time - (me.pulseAt ?? -9) >= 4) { me.pulseAt = time; me.life = Math.min(RL, me.life + RG.life * 60 / PU); }   // Igniferis: no regeneration, its life every 4 s instead
     // Rip's faster regeneration; Zealot's Oath: what would go over maximum life goes to energy shield; Vaal Pact: no life but from leech
-    const LG = RG.life > 0 && !c.vaal && !PU ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, RL - me.life));
+    const LG = RG.life > 0 && !c.vaal && !PU ? RG.life * (time < me.rip?.until ? 1 + me.rip.rate / 100 : 1) * (c.surgeLife ? 1 + ARCANE.regen * surge() / 100 : 1) * dt : 0, LI = Math.max(0, Math.min(LG, RL - me.life));
     if (c.lifeToEs) me.es = Math.min(E, me.es + LG); else { me.life += LI; if (c.zealot && LG > LI && me.es < E) me.es = Math.min(E, me.es + LG - LI); }   // Ligurium Talisman: all of it to energy shield
     if (c.uDef?.doubt && me.life < L) { const m = Math.min(me.mana, L - me.life, (c.mana || 0) * c.uDef.doubt / 100 * dt); me.mana -= m; me.life += m; }   // The Black Doubt (its damage over time bypassing energy shield: hurt())
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
@@ -5816,7 +5818,7 @@ export function initScene(el, api) {
     const M = c.mana || 0;
     if (M !== me.maxM) { me.mana = me.maxM ? me.mana / me.maxM * M : M; me.maxM = M; }
     const MM = c.kurgal ? M * OVERFLOW : M;
-    if (RG.mana > 0 && me.mana < MM) me.mana = Math.min(MM, me.mana + RG.mana * (1 + ARCANE.regen * surge() / 100) * dt);   // Kurgal's Ambition: it Overflows
+    if (RG.mana > 0 && me.mana < MM) me.mana = Math.min(MM, me.mana + RG.mana * (c.surgeLife ? 1 : 1 + ARCANE.regen * surge() / 100) * dt);   // Kurgal's Ambition: it Overflows; Sanguimantic Rituals: Arcane Surge's goes to life regeneration
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     // Tecrod's Brutality: life a second for the life skills cost in its last seconds
     if (c.tecrod) { me.spent = (me.spent || []).filter(x => time - x.t <= c.tecrod.secs); const TR = me.spent.reduce((s, x) => s + x.n, 0) / c.tecrod.per; if (TR > 0 && !c.vaal) me.life = Math.min(RL, me.life + TR * dt); }
@@ -5826,6 +5828,7 @@ export function initScene(el, api) {
       flaskHeal(D, got); const F = flasks()[n] || {};
       const AB = D.k === 'life' && onS("Alchemist's Boon")?.dmg.stats['recovery_from_flasks_applies_to_allies_in_presence_%'];   // Alchemist's Boon: its share to your minions in your Presence
       if (AB) for (const o of objs) { const s = o.minion && !o.dead && dist(o.pos, pp) <= sheet().overgrow.r && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got * AB / 100); }
+      if (D.k === 'life' && c.flaskCompanions) for (const o of objs) { const s = o.companion && !o.dead && o.segs?.[0]; if (s) s.life = Math.min(s.max, s.life + got); }   // Nurturing Guardian: your Companions too
       if (F.wardRegen && me.maxW) me.ward = gain(me.ward, me.maxW, me.maxW * F.wardRegen / 6000 * dt);   // Olroth's Resolve: maximum Runic Ward a second during its effect
       if (F.noWard && !(me.ward > 0)) me.life = Math.max(1, me.life - L * F.noWard / 6000 * dt);   // Uhtred's Chalice: life lost while you have no Runic Ward
       if (F.nova && (D.nt -= dt) <= 0) { D.nt += 3; const m = (me.spentM || 0) - D.m0; D.m0 = me.spentM || 0; if (m > 0) for (const e of inside(pp, 3)) damage(e, takes(e, 'chaos', m * F.nova / 100), { src: 'flask', label: flaskName(n), el: 'chaos' }); fx.ring(pp, 3, .4, 'chaos', .4); }   // Melting Maelstrom: the mana spent in those 3 s as chaos to enemies within 3 m
