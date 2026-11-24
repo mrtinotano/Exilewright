@@ -206,7 +206,7 @@ export function initLoot(el, ctx) {
       const side = (head, offers) => offers.length ? [[[t(head) + ':', '']], ...offers.map(o => [['· ' + t('{0} for {1}', o.get, `${o.pay} ${t(o.currency)}`), 'up'], [' ' + t('{0} in stock', o.stock), 'dim']])] : [];
       show({ name, link, lines: [
         ...game, ...side('Sellers ask', p.asks), ...side('Buyers give', p.bids),
-        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, (x ? Object.entries(x).map(([c, v]) => [v, c]) : mine.map(o => [o.pay / o.get, o.currency])).map(([v, c]) => `${num(v * B.stack)} ${t(c)}`).join(' · ')), '']]] : [],
+        ...B.stack > 1 ? [[[t('Your stack of {0}: about {1}', B.stack, (x ? Object.entries(x) : mine.map(o => [o.currency, o.pay / o.get])).map(([c, v]) => `${num(v * B.stack)} ${t(c)}`).join(' · ')), '']]] : [],
         ...mine.length ? [[[t('{0} offers on the trade site in {1}', p.total, league), 'dim']], [[t('What they ask, not what they sold for: check on the trade site to be sure.'), 'dim']]]
           : [[[p.fail ? tradeSays(p.fail) : t('Nothing like it is listed in {0}.', league), 'dim']]]] });
     } catch (e) { tradeFail(e, show, name); }
