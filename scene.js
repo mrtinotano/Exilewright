@@ -76,6 +76,9 @@ const FINALITY = 100, RHYTHM = { cd: 10, max: 10 }, FERVOUR = { speed: 15, time:
 // note: KeywordPopups Spectral Fire: the target takes no damage from Ignite, which feeds it instead; when it expires or the target dies
 // it explodes, dealing all it absorbed to the enemies within 1.8 m, the target too; damage modifiers do not apply to the explosion
 const SPECTRAL = 1.8;
+// Dark Whispers (KeywordPopups DarkWhispers): increased Curse magnitudes each, their maximum, how long they last since the last
+// one gained, and the share of life, mana and energy shield each takes when they expire, over that many seconds
+const WHISPER = { mag: 4, max: 10, time: 8, loss: 3, over: 4 };
 const SURROUNDED = { n: 5, r: 3 };   // keywords.json Surrounded: at least 5 enemies within 3 metres of you
 const ARCANE = { cast: 15, regen: 20 };   // note: Arcane Surge's increased cast speed and more mana regeneration, PoB2's (CalcDefence): not in the game data here
 const CRUSH = 15;   // keywords.json Crushed: 15% less physical damage reduction, possibly below 0
@@ -343,7 +346,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = me.whisp = me.drain = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -740,7 +743,7 @@ export function initScene(el, api) {
       Shocked: st('shock'), Chilled: st('chill'), Electrocuted: st('electrocute'), Pinned: st('pin'), Maimed: st('maim'), Blinded: st('blind'), Immobilised: st('immobilised'), HeavyStunned: st('stun'),
       Ailing: ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed'].some(st), ArmourFullyBroken: st('armour'), Dazed: d.dazed > time,
       Stunned: st('stun') || d.lstun > time, Unique: d.stat.rarity === 'unique', RareOrUnique: ['rare', 'unique'].includes(d.stat.rarity), Hindered: hind,
-      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Cursed: !!d.curse, Slowed: st('chill') || st('maim') || hind, Beast: d.mon?.category === 'Beast', Construct: d.mon?.category === 'Construct', Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, Humanoid: d.mon?.category === 'Humanoid' }
+      Further6m: dist(pp, d.pos) > 6, Within2m: dist(pp, d.pos) <= 2, Marked: !!d.mark, Exposed: d.st.expo > 0, Cursed: !!d.curse, Slowed: st('chill') || st('maim') || hind, Beast: d.mon?.category === 'Beast', Construct: d.mon?.category === 'Construct', Demon: d.mon?.category === 'Demon', Undead: d.mon?.category === 'Undead', ExitedPresenceRecently: time - (d.leftAt ?? -99) <= RECENT, EnteredPresenceRecently: time - (d.enterAt ?? -99) <= RECENT, InPresence: dist(pp, d.pos) <= sheet().overgrow.r, Humanoid: d.mon?.category === 'Humanoid' }
       : { FullMana: me.mana >= me.maxM * .9,   // Zenith: "above 90% of your Maximum Mana"; the rest of your states: meIs
         FullEnergyShield: me.maxE > 0 && me.es >= me.maxE, HaveMaximumRage: rageMax() > 0 && me.rage >= rageMax(), Moved2m: (S.moved || 0) >= 2,
         Stationary: (S.still || 0) > 0, Channelling: !!charge, EnemyHigherLifePercent: lifeK(d) > me.life / Math.max(1, me.maxL),
@@ -1059,7 +1062,7 @@ export function initScene(el, api) {
   };
   const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
   const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0);
-  const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) : 0), 0);
+  const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) * (me.whisp ? 1 + me.whisp.n * WHISPER.mag / 100 / (u.C?.inc || 1) : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
   // the tree's increased damage taken by enemies you Mark, Electrocute, Freeze (cold) and per Incision on them (physical).
@@ -5056,6 +5059,7 @@ export function initScene(el, api) {
     if (me.jade) b.push(one(icon('Encase in Jade'), css('cold'), t('Jade'), me.jade));
     if (me.boast) b.push(one(null, css('physical'), t("Runefather's Boast"), me.boast));
     if (souls()) b.push(one(null, css('chaos'), t('Soul Eater'), souls()));
+    if (me.whisp) b.push(one(null, css('chaos'), t('Dark Whispers'), me.whisp.n, me.whisp.until - time));
     for (const [n, h] of Object.entries(me.hexes || {})) if (time < h.until) { const I = api.info({ name: n }); b.push(one(I?.icon, css('chaos'), I?.label || n, 0, isFinite(h.until) ? h.until - time : null, true)); }   // the curses on you
     if (time < me.finality) b.push(one(null, css('lightning'), t('Finality'), 0, me.finality - time));
     if (me.rhythm) b.push(one(null, css('fire'), t('Explosive Rhythm'), me.rhythm));
@@ -6120,6 +6124,13 @@ export function initScene(el, api) {
     else if (RG.mana < 0) me.mana = Math.max(0, me.mana + RG.mana * dt);   // more lost than regenerated (Lich)
     // Tecrod's Brutality: life a second for the life skills cost in its last seconds
     if (c.tecrod) { me.spent = (me.spent || []).filter(x => time - x.t <= c.tecrod.secs); const TR = me.spent.reduce((s, x) => s + x.n, 0) / c.tecrod.per; if (TR > 0 && !c.vaal) me.life = Math.min(RL, me.life + TR * dt); }
+    // Veilpiercer: a Dark Whisper a second while a Cursed enemy is in your Presence; when they expire, their loss over time
+    if (c.whispers) {
+      if (!dummies.some(d => !d.dead && d.curse && dist(d.pos, pp) <= c.overgrow.r)) me.whispT = 0;
+      else if ((me.whispT = (me.whispT || 0) + dt) >= 1) { me.whispT -= 1; me.whisp = { n: Math.min(WHISPER.max, (me.whisp?.n || 0) + c.whispers), until: time + WHISPER.time }; }
+      if (me.whisp && time >= me.whisp.until) { for (const [k, M] of [['life', me.maxL], ['mana', me.maxM], ['es', me.maxE]]) { const n = M * WHISPER.loss * me.whisp.n / 100; if (n > 0) (me.drain ||= []).push({ k, left: n, rate: n / WHISPER.over }); } me.whisp = null; }
+    }
+    if (me.drain) me.drain = me.drain.filter(R => { const n = Math.min(R.left, R.rate * dt); R.left -= n; me[R.k] = Math.max(R.k === 'life' ? 1 : 0, me[R.k] - n); return R.left > 0; });   // note: this loss does not kill here
     me.recoup = me.recoup.filter(R => { const n = R.k === 'life' && c.vaal ? 0 : Math.min(R.left, R.rate * (R.k === 'mana' ? 1 : c.recMore ?? 1) * dt), top = R.k === 'life' ? L : R.k === 'mana' ? me.maxM : c.scarred ? Math.min(E, c.armour || 0) : E;   /* Vaal Pact; Scarred Faith: not above armour */ R.left -= n; me[R.k] = Math.min(Math.max(me[R.k], top), me[R.k] + n); return R.left > 0; });   // Recoup
     me.drink.forEach((D, n) => {   // a flask recovers its amount over its time
       if (!D) return; const got = D.rate * (D.k === 'life' ? c.recMore ?? 1 : 1) * Math.min(D.s, dt); D.s -= dt;   // a life flask recovers less a second for its time

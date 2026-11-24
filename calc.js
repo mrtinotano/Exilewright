@@ -765,6 +765,7 @@ export function recovery(c, sum) {
     // for its own duration. note: which curses it picks from is not in the data: the curse gems you can cast; without your own
     // modifiers to the curses you inflict
     soulCurse: sum.randomly_cursed_when_totems_die_curse_level ? Object.keys(GEM).filter(n => GEM[n].types?.includes('AppliesCurse') && !GEM[n].tags?.includes('trigger')).map(name => { const st = gemStats({ name, level: sum.randomly_cursed_when_totems_die_curse_level }, {}); return { name, s: (st.base_skill_effect_duration || 0) / 1000, C: { ...curseOf(st, {}), maxLevel: null } }; }) : null,
+    whispers: v(sum, 'gain_dark_whispers_every_second_there_is_a_cursed_enemy_in_presence'),   // Veilpiercer's Dark Whispers (the scene's)
     selfCurse: { reflect: !!sum.curses_reflected_to_self, effect: Math.max(0, 1 + v(sum, 'curse_effect_on_self_+%') / 100), time: Math.max(0, 1 + v(sum, 'self_curse_duration_+%') / 100) },
     // Ab Aeterno (a Dodge Roll avoids all Hits and leaves you Overencumbered), The Road Warrior (moving while Bleeding), Decree of
     // Loyalty (damage over time cannot bypass energy shield), Decree of Flight (the most Guard from maximum energy shield)
@@ -1019,7 +1020,7 @@ function panel(own, sum, used, derived, hide) {
 
 const DMG = ['physical', 'fire', 'cold', 'lightning', 'chaos'];
 // the enemy states of "damage against <state> enemies" stats, as the scene's conditions (scene.js condN) name them
-const VS_STATE = { frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_enemies: 'Burning', chilled_enemies: 'Chilled', ignited_enemies: 'Ignited',
+const VS_STATE = { enemies_in_presence: 'InPresence' /* Veilpiercer */, frozen_enemies: 'Frozen', maimed_enemies: 'Maimed', burning_enemies: 'Burning', chilled_enemies: 'Chilled', ignited_enemies: 'Ignited',
   shocked_enemies: 'Shocked', poisoned_enemies: 'Poisoned', bleeding_enemies: 'Bleeding', electrocuted_enemies: 'Electrocuted', pinned_enemies: 'Pinned',
   immobilised_enemies: 'Immobilised', heavy_stunned_enemies: 'HeavyStunned', stunned_enemies: 'Stunned', rare_or_unique_enemy: 'RareOrUnique', unique_enemies: 'Unique',
   enemies_on_full_life: 'FullLife', enemies_on_low_life: 'LowLife', enemies_with_fully_broken_armour: 'ArmourFullyBroken',
@@ -2001,6 +2002,7 @@ function curseOf(st, sum, finals = {}) {
   const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, (st[`base_skill_buff_${e}_damage_resistance_%_to_apply`] || 0) + (e !== 'chaos' ? st['base_skill_buff_all_elements_resistance_%_to_apply'] || 0 : 0)]));
   return { res, armour: st['base_skill_buff_total_armour_-_to_grant'] || 0, damage: st['base_skill_buff_damage_+%_final_to_apply'] || 0,
     speed: st['base_skill_debuff_action_speed_+%_final_to_inflict'] || 0, expire: st['base_temporal_chains_other_buff_time_passed_+%_to_apply'] || 0, maxLevel: st.skill_curses_cannot_apply_to_targets_above_level || null,
+    inc: 1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100,   // its increased magnitudes: what Dark Whispers add to
     effect: (1 + (v(sum, 'curse_effect_+%') + (st['curse_effect_+%'] || 0)) / 100) * (1 + (finals['support_atziri_curse_effect_+%_final'] || 0) / 100) };   // Atziri's Allure: less
 }
 // self-check: Purity of Fire at level 10 grants +31% fire resistance, 50% more with 50% increased aura magnitudes
