@@ -34,11 +34,17 @@ for state, col in (('normal', 'Normal'), ('active', 'Active')):
     TREE['asc_start_' + state] = frames[uiart['Ascendancy']['AscendancyStart']][col]
 # the ring round a socketed jewel's radius (PassiveJewelRadiiArt: two circles, turning against each other in the game):
 # ring_1/2 the Default row's, ring_inv the circle inside a ring-shaped radius, ring<version>_1/2 a timeless jewel's
-# (AlternateTreeArt, by the local_unique_jewel_alternate_tree_version of the uniques there are)
-radii, alt = table('PassiveJewelRadiiArt'), {a['TreeVersion']: a['JewelRadiiArt'] for a in table('AlternateTreeArt')}
+# (AlternateTreeArt, by the local_unique_jewel_alternate_tree_version of the uniques there are); and the frames of the
+# passives such a jewel conquers, when its version has its own (AlternateTreeArt.UIArt): alt<version>_<frame>_<state>
+radii, alt = table('PassiveJewelRadiiArt'), {a['TreeVersion']: a for a in table('AlternateTreeArt')}
 TREE['ring_inv'] = radii[0]['Inverse1']
-for key, row in [('', radii[0])] + [(str(n), radii[alt[n]]) for n in sorted({s[1] for u in uniques for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'})]:
-    TREE[f'ring{key}_1'], TREE[f'ring{key}_2'] = row['Circle1'], row['Circle2']
+TREE['ring_1'], TREE['ring_2'] = radii[0]['Circle1'], radii[0]['Circle2']
+for n in sorted({s[1] for u in uniques for m in u.get('mods', []) for s in m.get('stats', []) if s[0] == 'local_unique_jewel_alternate_tree_version'}):
+    TREE[f'ring{n}_1'], TREE[f'ring{n}_2'] = radii[alt[n]['JewelRadiiArt']]['Circle1'], radii[alt[n]['JewelRadiiArt']]['Circle2']
+    if alt[n]['UIArt'] is not None:
+        for kind in ('Passive', 'Notable', 'Keystone'):
+            for state, col in (('normal', 'Normal'), ('can', 'CanAllocate'), ('active', 'Active')):
+                TREE[f'alt{n}_{kind.lower()}_{state}'] = frames[table('PassiveSkillTreeUIArt')[alt[n]['UIArt']][kind + 'Frame']][col]
 # the character panel's icons, painted into the panel's own picture (CharacterPanelContent, 4K), saved as
 # ../available/img/panel/<role>.webp: where each sits in it, cut off the stone behind it; the resistances' are round
 # badges (centre, radius)

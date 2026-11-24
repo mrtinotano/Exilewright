@@ -186,7 +186,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
   // a radius jewel in an allocated socket: its modifiers once for each small / notable passive allocated within its
   // radius (or ring) of the socket. note: attribute passives counted as small ones (they are no notables)
-  for (const j of jewelsOf(b, undefined, 1 + (sum['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100)) {   // Baryanic Leylines: a larger radius for a non-unique jewel
+  for (const j of jewelsOf(b)) {
     if (!j.R) continue;
     const n = { small: 0, notable: 0 };
     for (const id of new Set([...b.nodes, ...setOf(b, b.wset || 1)])) { const k = radKind(id); if (k && j.in(id)) n[k]++; }
@@ -617,7 +617,8 @@ const splitRoots = (b, has = new Set(b.nodes)) => Object.entries(b.items || {}).
   : Object.keys(statsOf(it)).map(k => ROOT_OF[SPLIT[k.match(/^local_jewel_can_allocate_passives_from_(\w+)_start$/)?.[1]]]).filter(Boolean));
 // the jewels in allocated sockets (has: the allocated passives): its socket, the item, its radius (items.js radiusOf) and
 // in(id): whether a passive is within that radius, or its ring, of the socket or of the keystone it names (From Nothing)
-function jewelsOf(b, has = sockOn(b), scale = 1) {
+const radiusScale = b => 1 + (b.ascNodes || []).reduce((a, id) => a + (N[id]?.stats?.['ascendancy_non_unique_jewel_radius_+%'] || 0), 0) / 100;   // Baryanic Leylines: a larger radius for a non-unique jewel
+function jewelsOf(b, has = sockOn(b), scale = radiusScale(b)) {
   return Object.entries(b.items || {}).flatMap(([slot, it]) => {
     const id = slot.startsWith('jewel:') && slot.slice(6);
     if (!id || !N[id] || !has.has(id)) return [];
@@ -754,6 +755,14 @@ const LINK = {
   can: [['#b8a458', 11], ['#483e06', 9], ['#dacc7d', 7], ['#fbf9ef', 3]],
   active: [['rgba(159,129,74,.3)', 37], ['rgba(159,129,74,.6)', 20], ['#ffd786', 13], ['#5f4509', 9], ['#f2e4b8', 7], ['#ffffff', 3]],
 };
+// the passives a timeless jewel conquers have that jewel's own links and frames when its tree version has them
+// (AlternateTreeArt.UIArt: Undying Hate's Abyss; images.py: img/tree/alt<version>_*): the links, read the same way off
+// AbyssPassiveSkillScreenCurves*Together.dds
+const LINK_ALT = { 7: {
+  normal: [['#419236', 11], ['#040e04', 7], ['#0d200a', 3]],
+  can: [['#bacd70', 13], ['#94d259', 9], ['#386600', 7], ['#88d242', 5], ['#a0d271', 3]],
+  active: [['rgba(124,168,3,.37)', 34], ['rgba(124,168,3,.73)', 20], ['#d4ff6b', 11], ['#4c4e12', 7], ['#b1c367', 5], ['#ecfea8', 3], ['#ffffe9', 1]],
+} };
 const FRAME = { small: 'passive', attribute: 'passive', notable: 'notable', keystone: 'keystone', jewel: 'jewel' };
 const HOLE = { passive: .66, notable: .592, keystone: .587, asc_passive: .651, asc_notable: .584 };
 // a passive that is not allocated has a duller icon in the game: less colour (sat) and fainter (a)
@@ -764,13 +773,13 @@ function dull(im) {   // the picture with less colour, made once
   if (!DULL.of.has(im)) { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.filter = `saturate(${DULL.sat})`; g.drawImage(im, 0, 0); DULL.of.set(im, c); }
   return DULL.of.get(im);
 }
-function drawNode(id, x, y, r, state, tint, pic2) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it
+function drawNode(id, x, y, r, state, tint, pic2, alt) {   // state: on | path | off; tint: weapon set colour; pic2: the art of what a timeless jewel made of it; alt: the tree version whose frames it has
   const n = N[id], lit = state !== 'off', type = isRoot(id) ? 'root' : n.type;
   const col = n.type === 'attribute' ? (ATTR[(B().attrs || {})[id]]?.[1] || '#b8b0a0') : isRoot(id) ? '#e8d8b0' : HUE[id];
   const frame = tint || state === 'on' ? tint || '#f2cf74' : state === 'path' ? '#c9b07a' : '#6a5d47';
   if (r < 3) { ctx.fillStyle = lit ? frame : type === 'keystone' || type === 'notable' ? '#8a7650' : '#4a4236'; ctx.beginPath(); ctx.arc(x, y, Math.max(1.2, r), 0, 7); ctx.fill(); return; }
   const kind = n.ascendancy_start ? 'asc_start' : n.ascendancy ? (type === 'notable' ? 'asc_notable' : 'asc_passive') : FRAME[type];
-  const pic = kind && !isRoot(id) && art(`tree/${kind}_${state === 'on' ? 'active' : state === 'path' && kind !== 'asc_start' ? 'can' : 'normal'}`);
+  const pic = kind && !isRoot(id) && art(`tree/${alt && kind !== 'jewel' ? `alt${alt}_` : ''}${kind}_${state === 'on' ? 'active' : state === 'path' && kind !== 'asc_start' ? 'can' : 'normal'}`);
   if (pic) {
     // a frame is drawn one pixel a world unit, like the game's links; its icon fills the hole
     const f = r / R[type], w = pic.width * f, h = pic.height * f, ir = (HOLE[kind] || 0) * w / 2;
@@ -868,7 +877,7 @@ function drawTree() {
   view.s ||= Math.min(W, H) / 26000;   // fit whole tree on first draw
   const s = view.s, b = B(), st = ascStart(b.asc);
   const set1 = new Set(setOf(b, 1)), set2 = new Set(setOf(b, 2));
-  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b), ...granted(b), ...sockOn(b)]), cq = conquest(b);   // and the starts Split Personality opens, what jewels allocate
+  const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b), ...granted(b), ...sockOn(b)]), js = jewelsOf(b), cq = conquest(b, js);   // and the starts Split Personality opens, what jewels allocate
   const setTint = id => b.nodes.includes(id) ? null : set1.has(id) && (mode !== 2 || !set2.has(id)) ? SET_COL[1] : set2.has(id) ? SET_COL[2] : null;
   const pre = new Set(hover ? preview(hover) : []);
   const vis = visible(), visSet = new Set(vis);
@@ -907,14 +916,18 @@ function drawTree() {
   ctx.strokeStyle = '#7a6440'; ctx.lineWidth = 18; ctx.stroke();
   ctx.strokeStyle = '#3a3022'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(0, 0, CENTRE_R - 40, 0, 7); ctx.stroke();
 
-  // links: off, preview, allocated (glowing)
-  const off = new Path2D(), path = new Path2D(), lit = new Path2D(), setLit = { [SET_COL[1]]: new Path2D(), [SET_COL[2]]: new Path2D() };
+  // the passives within a timeless jewel whose tree has its own links and frames: id -> its tree version
+  const alt = new Map();
+  for (const j of js) { const v = j.R && statsOf(j.it).local_unique_jewel_alternate_tree_version; if (LINK_ALT[v]) for (const id of main) if (j.in(id)) alt.set(id, v); }
+  // links: off, preview, allocated (glowing); altP: those between two passives of such a jewel, by version
+  const off = new Path2D(), path = new Path2D(), lit = new Path2D(), setLit = { [SET_COL[1]]: new Path2D(), [SET_COL[2]]: new Path2D() }, altP = {};
   for (const id of vis) for (const l of N[id].links) {
     const m = String(l);
     if (!visSet.has(m) || +m < +id || !N[id].ascendancy !== !N[m].ascendancy) continue;
     const A = on.has(id), Bo = on.has(m);
     const tint = A && Bo && (setTint(id) || setTint(m));
-    linkPath(tint ? setLit[tint] : A && Bo ? lit : (A || pre.has(id)) && (Bo || pre.has(m)) ? path : off, id, m);
+    const kind = A && Bo ? 'active' : (A || pre.has(id)) && (Bo || pre.has(m)) ? 'can' : 'normal', av = alt.get(id) === alt.get(m) && alt.get(id);
+    linkPath(tint ? setLit[tint] : (av ? altP[av] ||= { normal: new Path2D(), can: new Path2D(), active: new Path2D() } : { normal: off, can: path, active: lit })[kind], id, m);
   }
   const px = v => v / s;   // screen pixels -> world units
   ctx.lineCap = 'round';
@@ -927,19 +940,11 @@ function drawTree() {
   stroke(off, LINK.normal, 1.2);
   stroke(path, LINK.can, 1.6);
   stroke(lit, LINK.active, 2.4);
+  for (const [v, P] of Object.entries(altP)) { stroke(P.normal, LINK_ALT[v].normal, 1.2); stroke(P.can, LINK_ALT[v].can, 1.6); stroke(P.active, LINK_ALT[v].active, 2.4); }
   for (const [c, p] of Object.entries(setLit)) stroke(p, [[c + '55', 37], [c, 13], ['#ffffff', 3]], 2.4);
-  // each socketed jewel's radius (or its ring), round the socket or round the keystone it names (From Nothing): the
-  // game's own pictures of it (images.py: img/tree/ring*.webp), as wide as twice the radius. Its two circles turn
-  // against each other in the game: here each stays turned its own way. A timeless jewel has its conqueror's; the
-  // circle inside a ring-shaped radius is another picture, whose line is 0.94 of the way out (measured on it)
-  for (const j of jewelsOf(b)) if (j.R) {
-    const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r], ri = inner / .94;
-    for (const [p, rr, turn] of [[`ring${v}_1`, outer, -.7], [`ring${v}_2`, outer, .7], ['ring_inv', ri, -.7], ['ring_inv', ri, .7]]) {
-      const im = rr && art('tree/' + p);
-      if (!im) continue;
-      ctx.save(); ctx.translate(j.C.x, j.C.y); ctx.rotate(turn); ctx.drawImage(im, -rr, -rr, rr * 2, rr * 2); ctx.restore();
-    }
-  }
+  // the radius of each socketed jewel in view goes over the tree, on its own canvas (turnRings)
+  rings = js.filter(j => j.R).map(j => [j, sx(j.C.x), sy(j.C.y), s]).filter(([j, x, y]) => { const r = (j.R.ring?.[1] || j.r) * s; return x + r > 0 && x - r < W && y + r > 0 && y - r < H; });
+  ringRaf ||= requestAnimationFrame(turnRings);
 
   // nodes (screen space so they stay crisp)
   ctx.setTransform(D, 0, 0, D, 0, 0);
@@ -949,7 +954,7 @@ function drawTree() {
     const r = R[isRoot(id) ? 'root' : n.type] * s * (n.ascendancy ? FIT[n.ascendancy].k : 1);
     if (x < -r * 2 || y < -r * 2 || x > W + r * 2 || y > H + r * 2) continue;
     if (found.has(id)) drawFound(x, y, r);
-    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), cq.get(id)?.named?.icon);
+    drawNode(id, x, y, r, on.has(id) ? 'on' : pre.has(id) || (id === myRoot && !b.nodes.length) ? 'path' : 'off', on.has(id) && setTint(id), cq.get(id)?.named?.icon, alt.get(id));
   }
   // labels
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -969,6 +974,30 @@ function drawTree() {
 }
 let raf = 0;
 const redraw = () => raf ||= requestAnimationFrame(() => { raf = 0; drawTree(); });
+// A socketed jewel's radius (or its ring), round the socket or round the keystone it names (From Nothing): the game's
+// own pictures of it (images.py: img/tree/ring*.webp), as wide as twice the radius; a timeless jewel has its
+// conqueror's. Its two circles turn against each other; the circle inside a ring-shaped radius is another picture,
+// whose line is 0.94 of the way out (measured on it). g: where to draw; (x, y): its centre there; k: pixels a tree
+// unit; turn: how far the circles have turned
+function drawRings(g, j, x, y, k, turn) {
+  const v = statsOf(j.it).local_unique_jewel_alternate_tree_version || '', [inner, outer] = j.R.ring || [0, j.r], ri = inner / .94;
+  for (const [p, rr, dir] of [[`ring${v}_1`, outer, -1], [`ring${v}_2`, outer, 1], ['ring_inv', ri, -1], ['ring_inv', ri, 1]]) {
+    const im = rr && art('tree/' + p);
+    if (!im) continue;
+    g.save(); g.translate(x, y); g.rotate(dir * turn); g.drawImage(im, -rr * k, -rr * k, rr * 2 * k, rr * 2 * k); g.restore();
+  }
+}
+// the rings of the tree turn all the time: they have a canvas of their own over it, so the tree is not drawn again
+// note: how fast they turn is by eye; no table says it
+const RING_TURN = .1, rcv = $('treeRings'), rctx = rcv.getContext('2d');   // radians a second
+let rings = [], ringRaf = 0;   // what drawTree last had in view: [jewel, x, y, pixels a tree unit]
+function turnRings(now) {
+  if (rcv.width !== cv.width || rcv.height !== cv.height) { rcv.width = cv.width; rcv.height = cv.height; }
+  const D = dpr();
+  rctx.setTransform(D, 0, 0, D, 0, 0); rctx.clearRect(0, 0, cv.clientWidth, cv.clientHeight);
+  for (const [j, x, y, k] of rings) drawRings(rctx, j, x, y, k, now / 1000 * RING_TURN);
+  ringRaf = rings.length && cv.offsetParent ? requestAnimationFrame(turnRings) : 0;   // nothing to turn, or the tree is not shown: until it is drawn again
+}
 function nodeAt(mx, my) {
   let best = null, bd = Infinity;
   for (const id of visible()) {
@@ -1250,7 +1279,7 @@ function drawSocket(c, id) {
       g.fillStyle = on.has(a) ? '#f2cf74' : n.type === 'jewel' ? '#6f8fb0' : '#5a5040'; g.beginPath(); g.arc(X(n.x), Y(n.y), r, 0, 7); g.fill(); }
     g.strokeStyle = '#9fe8ff'; g.lineWidth = 2;
     g.beginPath(); g.arc(X(S.x), Y(S.y), Math.max(6, R.jewel * k * 1.3), 0, 7); g.stroke();
-    if (j?.R) { g.strokeStyle = 'rgba(150,200,255,.6)'; g.lineWidth = 1.5; for (const rr of j.R.ring || [j.r]) { g.beginPath(); g.arc(X(j.C.x), Y(j.C.y), rr * k, 0, 7); g.stroke(); } }
+    if (j?.R) drawRings(g, j, X(j.C.x), Y(j.C.y), k, .7);
     g.restore();
     return { X, Y };
   };
@@ -1262,7 +1291,7 @@ function drawSocket(c, id) {
 }
 // the build's jewels as the optimizer takes them: every socket holding one, allocated or not, with what it grants there
 // (its modifiers, Megalomaniac's notables) and the passives it frees (optimize.js optimizeTree)
-const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s.slice(6))), 1 + (sumOf(b)['ascendancy_non_unique_jewel_radius_+%'] || 0) / 100).map(j => ({ ...j,
+const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s.slice(6)))).map(j => ({ ...j,
   stats: [gearStats({ ['jewel:' + j.id]: j.it }), ...granted(b, new Set([j.id])).filter(x => !b.nodes.includes(x)).map(x => N[x].stats)].reduce(plusStats, {}),
   free: j.R?.free ? main.filter(j.in) : [],
   // what a timeless jewel changes in its radius once its socket is allocated: per passive, the stats added (removed below 0)

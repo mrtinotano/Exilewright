@@ -306,6 +306,7 @@
   .up b, i.up, .impv .up { color:#7ccf7c; } .down b, i.down, .impv .down { color:#e87070; }
   .impl { display:flex; flex-wrap:wrap; gap:0 10px; font-variant-numeric:lining-nums; } .impl i { font-style:normal; }
   #treeCanvas { cursor:grab; }
+  #treeRings { position:absolute; inset:0; pointer-events:none; }
   /* skill info window, like the in-game gem tooltip */
   .gtip { position:fixed; z-index:20; width:360px; }
   .gtip[hidden] { display:none; }
@@ -496,7 +497,7 @@
 </aside>
 <main>
   <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="filter" data-t>Loot filter</button><button data-v="scene" data-t>Simulator</button><button data-v="settings" data-t>Settings</button></nav>
-  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
+  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><canvas id="treeRings"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
   <div class="view" id="items" hidden></div>
   <div class="view" id="skills" hidden></div>
   <div class="view" id="opt" hidden></div>
