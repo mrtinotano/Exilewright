@@ -52,7 +52,8 @@ const VOLATILITY = { fuse: 4, dmg: 100, power: 1, time: 10, every: .1, max: 200 
 const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as extra chaos
 const PERFECTION = { time: 10, max: 4, more: 5 };   // keywords.json PerfectionBuff: 10 s, up to 4 stacks, 5% more damage each
 const TASALIO = { more: 10, max: 5, win: 30 };   // Tasalio's Rhythm (its text): 10% more damage and a 30% shorter Perfect Timing window per stack, up to 5
-const JAGGED = { slow: 20 };   // keywords.json Jagged Ground: slows enemies in its area by 20%
+const JAGGED = { slow: 20 };
+const WASTING = { regen: 50, time: 6 };   // KeywordPopups AbyssalWasting: 50% less life regeneration rate for 6 seconds   // keywords.json Jagged Ground: slows enemies in its area by 20%
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
@@ -349,7 +350,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.vile = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.vile = d.wasting = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -695,6 +696,7 @@ export function initScene(el, api) {
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (Math.random() * 100 < D?.stats?.['%_chance_to_apply_hounded_by_wisps_on_hit']) d.ff = [...(d.ff || []).filter(u => u > time).slice(1 - FAERIE.max), time + FAERIE.time];   // Azmerian Swarms: a Swarm's hit inflicts Faerie Fire
+    if (!S.src && sheet().wasting) d.wasting = time + WASTING.time;   // Grip of Kulemak: Abyssal Wasting on hit
     if (own && !D?.sum?.cannot_inflict_blind && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade); not with Blindside
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
@@ -5977,7 +5979,7 @@ export function initScene(el, api) {
     if (d.dead) return;
     // a modifier's life regeneration (per minute); the tree's: none while Bleeding or Fully Broken, its +% in your Presence or Cursed
     const FR = sheet().foeRegen, RG = FR && (FR.bleed && d.st.bleed > 0 || FR.broken && d.st.armour > 0) ? 0 : d.stat.regen * (1 + ((dist(d.pos, pp) <= sheet().overgrow.r ? FR?.pres || 0 : 0) + (d.curse ? FR?.cursed || 0 : 0)) / 100);
-    if (RG > 0 && d.life < d.max) d.life = Math.min(d.max, d.life + d.max * RG / 6000 * dt);
+    if (RG > 0 && d.life < d.max) d.life = Math.min(d.max, d.life + d.max * RG / 6000 * dt * (d.wasting > time ? 1 - WASTING.regen / 100 : 1));   // Abyssal Wasting
     if (d.curse && sheet().whisper) d.life = Math.min(d.life, d.max * (1 - sheet().whisper / 100));   // Whispers of the Flesh: a Cursed enemy's life reserved. note: its less life regeneration is not applied
     if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
@@ -6113,6 +6115,8 @@ export function initScene(el, api) {
     // Gifts from Above: you have it around you while stationary (note: its radius is not in the data: it is under you alone)
     const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
+    // Gloomform: a Smoke Cloud of its radius around you while stationary; the enemies standing in it are Blinded (KeywordPopups SmokeCloud)
+    if (sheet().smoke && !walk && !move) for (const d of inside(pp, sheet().smoke)) d.st.blind = Math.max(d.st.blind || 0, .2);
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
     const RG2 = sheet().griefIgnite; if (RG2 && time - (me.griefAt ?? -9) >= 1) { me.griefAt = time; const X = thornX({ hits: {} }, 'Radiant Grief'); for (const d of inside(pp, sheet().overgrow.r)) inflict(d, 'ignite', X, 1, { fire: RG2 }, {}); }   // Radiant Grief: enemies in your Presence Ignited as though dealt its base fire damage (note: once a second here)
