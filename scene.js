@@ -2678,7 +2678,7 @@ export function initScene(el, api) {
           if (rains[S.name] && rains[S.name] !== id) return;
           const a = rnd(TAU), r = Math.sqrt(rnd()) * R, q = { x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r };
           fx.streak(V(q.x + 1.5, 12, q.z - 1), V(q.x, 0, q.z), S.el, .13, .025, 1.6);
-          later(.13, () => { fx.ring(q, .1, ar, S.el, .25, { a: .7 }); fx.emit(4, { p: { x: q.x, y: .1, z: q.z }, v: 1.5, up: 1.5, life: .3, size: .12, c: S.el, c2: 'white' }); area(q, ar, S, { mult: RA ? 1 : .5, noTouch: i % 4 > 0 }); });
+          later(.13, () => { fx.ring(q, .1, ar, S.el, .25, { a: .3 }); fx.stuck(q, S.el); area(q, ar, S, { mult: RA ? 1 : .5, noTouch: i % 4 > 0 }); });   // arrows left stuck in the ground
         });
         return;
       }
@@ -3215,7 +3215,7 @@ export function initScene(el, api) {
       // Firestorm's consumed Infusions: Fire, a larger area and more frequent bolts; Cold and Lightning, their own bolts too
       const fi = S.infs?.includes('fire'), G0 = stormGeo(S), Z = (G0.Z + (fi ? (st['firestorm_secondary_radius_+_if_consumed_fire_infusion'] || 0) / 10 : 0)) * shrink, R = G0.R * shrink;
       const extra = (S.infs || []).filter(e => e !== 'fire').map(e => infPart(S, e)).filter(Boolean);
-      const out = fx.decal(c, Z, 'outline', S.el, { a: .4, rot: 0 }), bolt = S.els.includes('lightning');
+      const out = fx.decal(c, Z, 'outline', S.el, { a: .2, rot: 0 }), bolt = S.els.includes('lightning');
       // Thunderstorm drenches the enemies in it: more shock chance and freeze buildup against them while they stay
       const ws = st['thunderstorm_wet_debuff_shock_chance_on_+%_final'], wet = ws != null && { shock: ws, freeze: st['thunderstorm_wet_debuff_hit_damage_freeze_multiplier_+%_final'] || 0 };
       // Icestorm: the chill and freeze of the enemies in front of you are consumed, each improving its bolts (per chill;
