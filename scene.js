@@ -1638,6 +1638,21 @@ export function initScene(el, api) {
       }
     }
   }
+  // Acidic Concoction: its flask Consumes the Poisons of each enemy it hits, which bursts there (its secondary radius,
+  // more area per Poison consumed): the enemies in the burst lose its % of the expected remaining damage of the
+  // strongest Poison consumed (its description: Life lost, not a hit). note: the tree's increased area is not on the burst
+  function acidBurst(S, c, R) {
+    const X = S.dmg.part || {}, pct = X['poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison'];
+    if (!pct) return;
+    for (const d of dummies) {
+      if (d.dead || dist(d.pos, c) > R + SIM.body || !(d.st.poison > 0) || !d.burn.poison) continue;
+      const n = 1 + (d.burn2?.until > time ? 1 : 0) + (d.burnX || []).filter(q => q.until > time).length, lose = d.burn.poison.dps * d.st.poison * pct / 100;
+      d.st.poison = 0; delete d.burn.poison; d.burn2 = null; d.burnX = [];
+      const p = { x: d.pos.x, z: d.pos.z }, r = radOf(S) * Math.sqrt(1 + n * (X['poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed'] || 0) / 100);
+      fx.acidBurst(p, r);
+      for (const e of inside(p, r)) damage(e, lose, S, false, true);
+    }
+  }
   function boom(c, R, S, o = {}) {
     fx.explode(c, R, S.el, o);
     if (R > 1.4 && !o.soft) shake = Math.max(shake, Math.min(.5, R * .09));
@@ -2089,6 +2104,7 @@ export function initScene(el, api) {
         k = Math.min(1, k + dt / dur);
         mesh.position.set(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k + Math.sin(k * Math.PI) * h, from.z + (to.z - from.z) * k);
         if (o.spin) mesh.rotation.x += dt * 9;
+        if (o.drip && Math.random() < dt * 40) fx.emit(1, { p: mesh.position, v: .2, life: .7, size: .09, c: o.drip, g: 9 });   // a flask spilling its liquid as it flies (liquid_spill trails)
         if (o.trail) fx.emit(o.big ? 4 : 1, { p: mesh.position, v: .5, life: o.big ? .6 : .3, size: o.big ? .6 : .16, c: o.trail, c2: 'white', drag: 1 });
         if (k >= 1) { e.dead = true; land(); }
       },
@@ -2653,8 +2669,11 @@ export function initScene(el, api) {
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
     rain(S) {
-      const P = S.P, c = S.at, R = S.A, h = hand();
-      const shot = land => lob(P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, { trail: S.el });
+      const P = S.P, c = S.at, R = S.A, h = hand(), FT = S.dmg?.stats?.throw_flask_effects_type;   // a Concoction's flask (4: Acidic's acid)
+      // a Concoction's projectiles (Multishot) each a flask of its own, landing apart in a fan as a grenade's (note: the spread is the scene's)
+      const fn = FT && !S.one ? sh(S).projectiles || 1 : 1;
+      if (fn > 1) { const o = pp, dx = c.x - o.x, dz = c.z - o.z; for (let k = 0; k < fn; k++) { const a = (k - (fn - 1) / 2) * .25, cs = Math.cos(a), sn = Math.sin(a); K.rain({ ...S, one: true, at: { x: o.x + dx * cs + dz * sn, z: o.z + dz * cs - dx * sn } }); } return; }
+      const shot = land => lob(FT ? fx.flask(FT === 4 ? 'acid' : S.el) : P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, FT ? { spin: true, drip: FT === 4 ? 'acid' : S.el } : { trail: S.el });
       // Tornado Shot: its shot's hit (PoB2's main part) and its tornado (its own part) where it lands
       // note: its secondary radius taken as the tornado's
       const TX = partOf(S, 'Tornado');
@@ -2696,6 +2715,7 @@ export function initScene(el, api) {
         return;
       }
       shot(() => {
+        if (FT === 4) { fx.acid(c, R); shake = Math.max(shake, Math.min(.5, R * .09)); area(c, R, S); return acidBurst(S, c, R); }
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
         boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur, S);
         // Explosive Concoction: its smaller flasks (its part, its number) thrown at the Ignited enemies nearest the explosion

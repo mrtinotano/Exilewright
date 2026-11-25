@@ -5,7 +5,7 @@ import * as THREE from 'three';
 
 export const COL = {
   fire: 0xff6a1e, cold: 0x7fd2ff, lightning: 0xa9b9ff, chaos: 0xb44be6, physical: 0xd9c3a0, arcane: 0x6f9cff,
-  poison: 0x74d43c, blood: 0xd42a20, holy: 0xffe2a0, ice: 0xcdf1ff, gold: 0xffc45a, white: 0xffffff, ember: 0xffb040,
+  poison: 0x74d43c, acid: 0x6eff12, blood: 0xd42a20, holy: 0xffe2a0, ice: 0xcdf1ff, gold: 0xffc45a, white: 0xffffff, ember: 0xffb040,
   smoke: 0x2c2926, dust: 0x7d6f5e, oil: 0x0b0805, gas: 0x9bc43a, curse: 0x9a3ad6, mark: 0xff4030,
 };
 export const hex = c => typeof c === 'number' ? c : COL[c] ?? COL.arcane;
@@ -125,6 +125,9 @@ export function createFx(scene) {
   const PLANE = new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), QUAD = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const BALL = new THREE.IcosahedronGeometry(1, 2), TUBE = new THREE.CylinderGeometry(1, 1, 1, 14, 1, true).translate(0, .5, 0);
   const SHAFT = new THREE.CylinderGeometry(.018, .018, .9, 5).rotateX(Math.PI / 2), UP = new THREE.Vector3(0, 1, 0), tv = new THREE.Vector3();
+  // a flask's glass (a round body, a neck) and the iron band at its neck
+  const FLASK = new THREE.LatheGeometry([[0, -.13], [.08, -.12], [.125, -.06], [.13, 0], [.115, .06], [.06, .1], [.04, .13], [.04, .2], [.05, .21], [0, .21]].map(([x, y]) => new THREE.Vector2(x, y)), 14);
+  const BAND = new THREE.TorusGeometry(.045, .012, 6, 14).rotateX(Math.PI / 2);
   const sectors = {};
   const color = (c, k = 1) => new THREE.Color(hex(c)).multiplyScalar(k);
   const glowMat = (c, k = 2, a = 1, map = null) => new THREE.MeshBasicMaterial({ map, color: color(c, k), transparent: true, opacity: a, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false });
@@ -373,6 +376,47 @@ export function createFx(scene) {
       const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.glow, color: color(c, 1.6), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));
       s.scale.setScalar(r * 7); g.add(s); g.userData.glow = s; g.userData.core = core;
       return g;
+    },
+    // a thrown flask (the Concoctions, flask_throw_poison flask_loop.ao: flaskGlass, flaskBands, flaskContent): a glass
+    // bottle banded in iron, its liquid glowing in the colour of its effect
+    flask(c) {
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(FLASK, new THREE.MeshStandardMaterial({ color: 0xd8efe8, roughness: .1, metalness: .2, transparent: true, opacity: .4, depthWrite: false })));
+      const liquid = new THREE.Mesh(BALL, new THREE.MeshBasicMaterial({ color: color(c, 2.4), fog: false })); liquid.scale.set(.11, .09, .11); liquid.position.y = -.02; g.add(liquid);
+      const band = new THREE.Mesh(BAND, new THREE.MeshStandardMaterial({ color: 0x3a3430, roughness: .6, metalness: .7 })); band.position.y = .17; g.add(band);
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.glow, color: color(c, 1.2), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));
+      s.scale.setScalar(.75); g.add(s); g.scale.setScalar(1.5);
+      return g;
+    },
+    // Acidic Concoction's flask bursting (flask_throw_poison explosion_01.ao: flask_core_blast, flask_glass_shards): a
+    // flash, a crown of acid splashing up, acid sparks thrown high that rain down for a while, a green ring out to its
+    // radius, a puff, the glass flying apart and acid splats left on the ground for 5 s
+    acid(p, r) {
+      const y = p.y || 0, at = { x: p.x, y: y + .3, z: p.z }, n = Math.min(140, Math.round(30 + r * r * 8));
+      flash(p, 'acid', 30 + r * 20, .3, 8 + r * 3);
+      fx.glow({ x: p.x, y: y + .4, z: p.z }, r * 1.6, 'acid', .12, 3);
+      fx.ring(p, .2, r, 'acid', .43, { k: 2.6 });
+      fx.ring(p, .3, r * 1.15, 'white', .2, { a: .3, k: 1 });
+      fx.disc(p, r, 'acid', .3, { a: .3 });
+      for (let i = 0; i < 14; i++) {
+        const a = rnd(TAU), l = rnd(.3, .7) * Math.min(r, 2);
+        fx.streak(new THREE.Vector3(p.x, y + .1, p.z), new THREE.Vector3(p.x + Math.cos(a) * l, y + rnd(.6, 1.4), p.z + Math.sin(a) * l), 'acid', rnd(.2, .3), rnd(.03, .06), rnd(.4, .7));
+      }
+      emit(n, { p: at, r: .2, v: r * 2.2, up: 5.5, life: 1.8, size: .1, c: 'acid', c2: 'poison', g: 9, drag: .3 });
+      emit(n / 4, { p: at, r: r * .5, v: 1, up: 1.2, life: 1, size: .9, grow: 2, c: 'acid', k: .5, drag: 1.2 });
+      emit(16, { p: at, r: .1, v: 3.5, up: 3, life: 1, size: .07, c: 0xdff5ee, c2: 'white', k: 1.2, g: 9 });
+      for (let i = 0, N = 4 + Math.round(r * 2); i < N; i++) {
+        const a = rnd(TAU), l = Math.sqrt(rnd()) * r * .8;
+        fx.disc({ x: p.x + Math.cos(a) * l, z: p.z + Math.sin(a) * l }, rnd(.2, .5), 'acid', 5, { tex: 'patch', a: .45, hold: .7, k: .9, y: .03 + i * .001 });
+      }
+    },
+    // the acidic burst of a consumed Poison (poison_plague_bearer nova.ao): acid thrown out flat to its radius in a ring
+    acidBurst(p, r) {
+      flash(p, 'acid', 15, .2, 5);
+      fx.ring(p, .1, r, 'acid', .35, { k: 2.4 });
+      fx.disc(p, r, 'poison', .3, { a: .4 });
+      emit(Math.min(60, 20 + r * 12), { p: { x: p.x, y: .4, z: p.z }, r: r * .3, v: r * 3, up: .8, life: .5, size: .22, c: 'acid', c2: 'poison', drag: 2, flat: true });
+      emit(8, { p: { x: p.x, y: .3, z: p.z }, r: r * .5, v: .5, up: .6, life: .8, size: .8, grow: 2, c: 'acid', k: .4, drag: 1 });
     },
     arrow(c) {
       const g = new THREE.Group(), sh = new THREE.Mesh(SHAFT, new THREE.MeshBasicMaterial({ color: color(c, 2.6), fog: false }));
