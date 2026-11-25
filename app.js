@@ -178,7 +178,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const [k, v] of Object.entries(skillStats(b))) sum[k] = (sum[k] || 0) + v;
   // Titan's Hulking Form: increased effect of the small passives (attribute ones included)
   // with an anointed amulet's passive ("Allocates Cooked", items.js parseItem), unless the tree has it already
-  const all = [...new Set([...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1), ...Object.values(b.items || {}).map(it => NODE_BY_NAME.get(it.anoint)).filter(Boolean), ...granted(b)])], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
+  const all = [...new Set([...b.nodes, ...b.ascNodes, ...setOf(b, b.wset || 1), ...Object.values(b.items || {}).flatMap(it => [it.anoint || []].flat().map(n => NODE_BY_NAME.get(n))).filter(Boolean), ...granted(b)])], small = 1 + all.reduce((t, id) => t + (N[id]?.stats?.['small_passives_effect_+%'] || 0), 0) / 100;
   const cq = conquest(b);
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b, cq))) sum[s] = (sum[s] || 0) + v * k; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours

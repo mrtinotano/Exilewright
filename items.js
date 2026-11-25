@@ -303,7 +303,7 @@ export function itemParts(it, en = true) {
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
   const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang).map(l => en && m.kind ? `{${m.kind}}${l}` : l));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
-  const rune = [...it.anoint ? [say({ mod_granted_passive_hash: 1 })[0].replace('1', it.anoint)] : [], ...it.extra ? say(it.extra).flatMap(l => l.split('\n')) : []];   // its anointment, runes and enchantments (parseItem)
+  const rune = [...[it.anoint || []].flat().map(n => say({ mod_granted_passive_hash: 1 })[0].replace(/1|—/, n)), ...it.extra ? say(it.extra).flatMap(l => l.split('\n')) : []];   // its anointment, runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
   return { r, base: en ? base : { ...base, name: tn(base) || base.name }, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name };
 }
@@ -523,8 +523,8 @@ export function parseItem(text) {
   // runes and enchantments count where the line is worded as a modifier the item can have, else one of any item, else
   // as what the runes themselves give (SoulCoreStats: "32% increased Life and Mana Recovery from Flasks"): the stats are
   // that one's and the number is the line's own (two runes add up in one line). The rest is left out
-  // an anointed amulet's enchantment (Distilled Emotions): "Allocates Cooked", the passive by its name. note: English text only
-  for (const l of tagged.keys()) { const m = l.match(/^Allocates (.+)$/); if (m) { item.anoint = m[1]; tagged.delete(l); } }
+  // an anointed amulet's enchantment (Distilled Emotions): "Allocates Cooked", the passive by its name (Strugglescream's several: a list). note: English text only
+  for (const l of tagged.keys()) { const m = l.match(/^Allocates (.+)$/); if (m) { item.anoint = item.anoint ? [item.anoint, m[1]].flat() : m[1]; tagged.delete(l); } }
   const left = runesOf([...tagged.keys()], base, addExtra);
   const own = x => matchLines(expl, [...x.mods, ...x.mods.flatMap(m => formsOf(m.id).filter(f => f.id !== m.id)), ...x.mutated || []].flatMap(m => shapes(m.id, m.stats)));
   // reminder text "(…)", one word states ("Corrupted" in any language) and sentences closed by a full stop (how to use
@@ -917,6 +917,10 @@ const prop = (k, v) => `<div class="prop">${t(k)}: <span>${v}</span></div>`;
 //   (and map(canvas, socket) / show(socket): where a jewel socket is on the tree)
 export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, trade) {
   const giant = () => tree().keystone_giants_blood || Object.values(getBuild().items || {}).some(it => uHas(it, 'can_wield_2h_axe_sword_mace_in_one_hand')), staffFocus = () => tree().can_equip_staff_with_focus;   // Giant's Blood, Instruments of Power
+  // Waistgate: a life or mana flask in either flask slot
+  const eitherFlask = () => uHas(getBuild().items?.belt, 'life_and_mana_flasks_can_be_equipped_in_either_slot'), FLASKS = ['flask1', 'flask2'];
+  const slotsOf = b => eitherFlask() && FLASKS.includes(b?.slots?.[0]) ? FLASKS : b?.slots || [];
+  const listOf = slot => eitherFlask() && FLASKS.includes(slot) ? [...lists.flask1, ...lists.flask2] : lists[slotType(slot)];
   const open = s => slotOpen(s, s === 'ring3' && tree());   // the build's stats only asked for the slot that needs them
   const types = [...Object.keys(SLOTS), 'jewel'];
   // base / unique picker per slot type: uniques first, in the game's unique colour, each with its art. tell: what tells a
@@ -937,7 +941,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (!gains.has(k)) gains.set(k, diff(now, snapOf({ ...getBuild().items, [slot]: it })));
     return gains.get(k); };
   const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
-    return lists[slotType(slot)].filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
+    return listOf(slot).filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
   // each candidate's gains are a whole calculation of the build: filled in a few at a time after the panel shows, not
   // before (the bases and uniques to pick, the saved items, what each affix to add would change)
   let fillRun = 0;
@@ -1011,7 +1015,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   let sel = 'weapon', msg = '';
   const buy = { max: '', cur: '', base: false, lvl: true, attr: true, skip: new Set() };   // skip: the worn item's lines not asked (by their key)   // the price typed for the trade search
   // where a saved item goes: the selected slot if it fits there, else the first free slot it fits, else the first it fits
-  const whereTo = it => { const slots = baseOf(it)?.slots || [], items = getBuild().items || {};
+  const whereTo = it => { const slots = slotsOf(baseOf(it)), items = getBuild().items || {};
     return slots.includes(slotType(sel)) ? sel : slots.includes('jewel') ? null : slots.find(s => !items[s] && open(s)) || slots[0] || null; };
   // the items found better than the one worn (trade.find): cheapest first, each with its price, what it changes and Equip
   let better = null;   // { slot, text (while searching), res }
@@ -1117,8 +1121,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   function paste(text) {
     const r = parseItem(text);
     if (!r) { msg = t('That is not item text, or the planner does not have its base.'); render(); msg = ''; return; }
-    const items = getBuild().items ||= {}, fits = s => r.slots.includes(slotType(s));
-    const slot = fits(sel) ? sel : r.slots.includes('jewel') ? null : r.slots.find(s => !items[s] && open(s)) || r.slots[0];
+    const items = getBuild().items ||= {}, rs = slotsOf(baseOf(r.item)), fits = s => rs.includes(slotType(s));
+    const slot = fits(sel) ? sel : rs.includes('jewel') ? null : rs.find(s => !items[s] && open(s)) || rs[0];
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
     put(slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
@@ -1138,7 +1142,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (['likebase', 'likelvl', 'likeattr'].includes(t.dataset.act)) { buy[t.dataset.act.slice(4)] = t.checked; return; }
     if (t.dataset.act === 'likeline') { buy.skip[t.checked ? 'delete' : 'add'](t.dataset.k); return; }
     if (t.dataset.act === 'filter') {  // Enter / blur with an exact name still works
-      const o = lists[slotType(slot)].find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
+      const o = listOf(slot).find(o => o.v.toLowerCase() === t.value.trim().toLowerCase() || o.name.toLowerCase() === t.value.trim().toLowerCase());
       if (o) equip(slot, o.v);
       return;
     } else if (t.dataset.act === 'quality') {
@@ -1249,5 +1253,7 @@ console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightn
 // self-check: Path of Building's unrolled lines, at their range, and an anointed passive
 { const r = parseItem('Rarity: RARE\nNew Item\nFeathered Raiment\nImplicits: 2\n{enchant}Allocates Cooked\n{tags:resource}{range:0.5}(5-10)% of Damage is taken from Mana before Life\n{range:0.2}+(10-20) to maximum Life');
   console.assert(r?.item.implicits[0]?.[0] === 8 && r.item.mods[0]?.values[0] === 12 && r.item.anoint === 'Cooked' && !r.missed.length, 'parseItem: {range:} lines, an anointment', r); }
+{ const r = parseItem('Rarity: UNIQUE\nStrugglescream\nStellar Amulet\nImplicits: 0\n{enchant}Allocates Cooked\n{enchant}Allocates Heavy Frost\nCan have 3 additional Instilled Modifiers');   // Strugglescream: several anointments
+  console.assert(r?.item.anoint + '' === 'Cooked,Heavy Frost' && /Cooked/.test(itemText(r.item)) && /Heavy Frost/.test(itemText(r.item)), 'parseItem: several anointments', r); }
 { const r = parseItem("Item Class: Jewels\nRarity: Unique\nSplit Personality\nRuby\n--------\nItem Level: 81\n--------\nCan Allocate Passive Skills from the Templar's starting point");
   console.assert(!UNIQ['Split Personality'] || statsOf(r?.item).local_jewel_can_allocate_passives_from_strint_start === 1, 'parseItem: the form of a modifier that is one of several', r); }
