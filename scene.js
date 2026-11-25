@@ -2400,6 +2400,52 @@ export function initScene(el, api) {
       remove() { fx.drop(m); } };
     objs.push(q); return q;
   }
+  // Warbringer's Ancestral Spirits: one of the four Karui spirits (MonsterVarieties' Ancestral Spirit Turtle, Jade Hulk,
+  // Jadecaster and Warhorn: minion_*.ao), a pale blue see-through spectre (spectreSkin_01.mat: RGB 0.45 / 0.84 / 1)
+  // trailing ghost ribbons (ghostRibbons.pet), called by a beam from its totem (spawn_beam.ao), each with its own blow:
+  // the Hulk's slam in jade debris (debris_r.mat: 0.22 / 1 / 0.3), the Jadecaster's jade projectile, the Warhorn's blow
+  // of its horn, the Turtle's bite and its bubble (turtle_aura.mat). note: which one a totem calls is not in the data:
+  // one at random here; their own skills' effects (the bubble, the horn's buff, the jade prison) are not simulated
+  const SPECTRE = 0x73d6ff, JADE = 0x38ff4d, SPIRIT_SIZE = { hulk: 1.5, caster: 1, horn: 1.25, turtle: 1 };
+  function spectre(f, kind, p, from) {
+    f.group.traverse(m => { if (m.isMesh) m.visible = false; });
+    const plate = f.group.children.find(m => m.isSprite), sz = SPIRIT_SIZE[kind];
+    let G = null, shell = null;
+    const skin = m => { m.color.set(0x9fe2ff); m.emissive?.set(SPECTRE); m.emissiveIntensity = .55; m.transparent = true; m.opacity = .55; m.depthWrite = false; };
+    if (kind === 'turtle') {   // its shell, head and legs
+      shell = new THREE.Group(); const m = new THREE.MeshStandardMaterial(); skin(m);
+      const s = new THREE.Mesh(new THREE.SphereGeometry(.55, 16, 10, 0, TAU, 0, Math.PI / 2), m); s.scale.y = .75; s.position.y = .18; shell.add(s);
+      const h = new THREE.Mesh(new THREE.SphereGeometry(.16, 10, 8), m); h.position.set(0, .28, .62); shell.add(h);
+      for (const [x, z] of [[.35, .3], [-.35, .3], [.35, -.3], [-.35, -.3]]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(.08, .1, .22, 6), m); l.position.set(x, .1, z); shell.add(l); }
+      f.group.add(shell); if (plate) plate.position.y = 1.2;
+    } else { G = makeHumanoid(fx); G.group.scale.setScalar(sz); f.group.add(G.group); if (plate) plate.position.y = 1.95 * sz; }
+    // called: a beam from the totem, a flare where it stands
+    if (from) fx.bolt(V(from.x, 1.3, from.z), V(p.x, .9, p.z), SPECTRE, .35, .06, 0);
+    fx.glow({ x: p.x, y: 1, z: p.z }, 1.6 * sz, SPECTRE, .4, 2); fx.ring(p, .2, 1.2 * sz, SPECTRE, .4, { a: .6 });
+    const bubble = q => fx.ball({ x: q.x, y: .6, z: q.z }, 1.3, SPECTRE, .9, .6);
+    if (kind === 'turtle') bubble(p);
+    let last = { x: p.x, z: p.z };
+    return {
+      tick(dt, e) {
+        const moving = Math.hypot(e.pos.x - last.x, e.pos.z - last.z) > 1e-3; last = { x: e.pos.x, z: e.pos.z };
+        if (G) { G.update(dt, { moving, speed: 4 }); G.group.traverse(m => { if (m.isMesh && m.material && !m.userData.dyed) { m.userData.dyed = true; m.material = m.material.clone(); skin(m.material); m.castShadow = false; } }); }
+        else shell.position.y = moving ? Math.abs(Math.sin(e.s * 8)) * .04 : 0;
+        if (Math.random() < dt * 14) fx.emit(1, { p: { x: e.pos.x, y: rnd(.3, 1.6) * (G ? sz : .5), z: e.pos.z }, r: .3 * sz, up: .5, v: .4, life: .55, size: .14, c: SPECTRE, k: 1.4, drag: 1 });   // its ghost ribbons
+      },
+      blow(e, d, MX, k) {
+        const dx = (d.pos.x - e.pos.x) / k, dz = (d.pos.z - e.pos.z) / k;
+        if (kind === 'caster') { G.act('fire', .5); shoot({ ...MX, el: JADE }, e.pos, dx, dz, { speed: 14, range: 13 }); return; }
+        if (kind === 'hulk') {
+          G.act('slam', .6); fx.ring(d.pos, .2, 1.6, JADE, .4, { a: .7 });
+          fx.emit(18, { p: { x: d.pos.x, y: .2, z: d.pos.z }, r: .5, v: 2.5, up: 3, life: .6, size: .16, c: JADE, c2: 0x1f6b2e, k: 1.2, g: 8 });
+        } else if (kind === 'horn') { G.act('shout', .6); fx.ring(e.pos, .3, 3, SPECTRE, .55, { a: .55 }); fx.emit(16, { p: { x: e.pos.x, y: 1.6, z: e.pos.z }, r: .2, v: 2.5, flat: true, life: .5, size: .18, c: SPECTRE, c2: 'white', drag: 1.5 }); }
+        else { fx.sector(e.pos, dx, dz, 1.1, .7, SPECTRE, .2, { a: .7 }); if (Math.random() < .3) bubble(e.pos); }
+        if (G) fx.sector(e.pos, dx, dz, 1.3 * sz, .8, kind === 'hulk' ? JADE : SPECTRE, .18, { a: .6 });
+        hit(d, MX);
+      },
+      off() { G?.dispose(); },
+    };
+  }
   function minion(S, p, life, o = {}) {
     // a minion with the damage of its own (calc.js minionOf) attacks at its speed; else the scene's half hit every 1.1 / 1.5 s.
     // o.attacks: it is gone after that many; o.chains: its hit chains to that many more enemies. With its life (calc.js
@@ -2408,13 +2454,14 @@ export function initScene(el, api) {
     // shield is lost before its life, it regenerates and Recoups (over 8 seconds: keywords.json Recoup) what the tree
     // gives minions, and a Gigantic one is 20% bigger. note: its armour and evasion are not counted, and its energy
     // shield does not recharge (a monster's recharge is not in the data)
-    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = S.P.ranged;
+    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = o.spirit ? o.spirit === 'caster' : S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
-    fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
+    const SP = o.spirit && spectre(f, o.spirit, p, o.from);
+    if (!SP) { fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el }); }
     let wait = rnd(.3, 1), sw = 0;
     const e = { pos: f.group.position, fig: f, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
       update(dt) {
-        e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
+        e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2; SP?.tick(dt, e);
         if (e.s >= life) { e.dead = true; return; }
         if (e.rhoa && me.mounted) { e.pos.x = pp.x; e.pos.z = pp.z; f.group.rotation.y = facing; return; }   // ridden: under you, no attacks
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
@@ -2447,14 +2494,15 @@ export function initScene(el, api) {
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
           const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * PO._x / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * (PO?._x || 1) / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
-          if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
+          if (SP) SP.blow(e, d, MX, k);
+          else if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
           if (o.attacks && --o.attacks <= 0) e.dead = true;
         }
       },
       remove() {
-        fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); f.dispose();
+        if (SP) fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .4, v: 1.2, up: 1.5, life: .7, size: .16, c: SPECTRE, k: 1.4, drag: 1 }); else fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); SP?.off(); f.dispose();
         if (!e.keep || e.slain) event('miniondeath', e.pos, MS, null, 1);
         if (e.keep && e.slain) fallen(S, e);
         if (e.slain) { me.minionDiedAt = time; const H = sheet().uDef?.minionDeath; if (H) hurt(H, 0, 'physical'); }   /* Heartbound Loop: physical damage taken on Minion death */   // the tree's "if one of your Minions has died Recently"
@@ -2998,7 +3046,7 @@ export function initScene(el, api) {
       // Warbringer's Answered Call: summoning a totem triggers Ancestral Spirits (the build's gem), an Ancestral Spirit
       // minion for its duration that dies with that totem (its description)
       const AJ = sheet().defender ? api.build().gems.findIndex(g => g.name === 'Ancestral Spirits') : -1, AS = AJ >= 0 && base(AJ);
-      if (AS?.dmg) e.spirit = minion(AS, around(c, 1), durOf(AS) || Infinity, { kind: AS.name });   // no duration in the data: as long as the totem
+      if (AS?.dmg) e.spirit = minion(AS, around(c, 1.4), durOf(AS) || Infinity, { kind: AS.name, spirit: ['turtle', 'hulk', 'caster', 'horn'][Math.floor(rnd(4))], from: c });   // no duration in the data: as long as the totem
     },
     travel(S) {
       // Shield Charge: it crashes into the first enemy on its path and stops there, its more damage from the distance
